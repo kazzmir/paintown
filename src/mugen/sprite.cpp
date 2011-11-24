@@ -3,8 +3,11 @@
 #include <string.h>
 #include "sprite.h"
 #include "util/funcs.h"
+#include "util/pointer.h"
 #include "util/debug.h"
 #include <math.h>
+
+namespace PaintownUtil = ::Util;
 
 using namespace std;
 using namespace Mugen;
@@ -22,14 +25,12 @@ imageNumber(0),
 prev(0),
 samePalette(false),
 pcx(NULL),
-unmaskedBitmap(NULL),
-maskedBitmap(NULL){
-    //Nothing
+width(0),
+height(0),
+loaded(false){
 }
 
-MugenSprite::MugenSprite( const MugenSprite &copy ):
-unmaskedBitmap(NULL),
-maskedBitmap(NULL){
+MugenSprite::MugenSprite(const MugenSprite &copy){
     this->next = copy.next;
     this->location = copy.location;
     this->length = copy.length;
@@ -41,6 +42,9 @@ maskedBitmap(NULL){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
+    this->width = copy.width;
+    this->height = copy.height;
+    this->loaded = copy.loaded;
 
     if (copy.comments != 0){
         /* this line is right */
@@ -56,13 +60,8 @@ maskedBitmap(NULL){
         this->pcx = NULL;
     }
 
-    if (copy.unmaskedBitmap){
-        this->unmaskedBitmap = new Graphics::Bitmap(*copy.unmaskedBitmap);
-    }
-
-    if (copy.maskedBitmap){
-        this->maskedBitmap = new Graphics::Bitmap(*copy.maskedBitmap);
-    }
+    this->unmaskedBitmap = copy.unmaskedBitmap;
+    this->maskedBitmap = copy.maskedBitmap;
 }
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
@@ -79,58 +78,68 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->imageNumber = copy.imageNumber;
     this->prev = copy.prev;
     this->samePalette = copy.samePalette;
+    this->width = copy.width;
+    this->height = copy.height;
+    this->loaded = copy.loaded;
     if (copy.comments){
         memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
     }
 
     if (copy.pcx){
+        if (this->pcx != NULL){
+            delete[] this->pcx;
+            this->pcx = NULL;
+        }
         this->pcx = new char[this->reallength];
         memcpy(this->pcx, copy.pcx, this->reallength);
     }
 
-    if (copy.unmaskedBitmap){
-        this->unmaskedBitmap = new Graphics::Bitmap(*copy.unmaskedBitmap);
-    }
-
-    if (copy.maskedBitmap){
-        this->maskedBitmap = new Graphics::Bitmap(*copy.maskedBitmap);
-    }
+    this->unmaskedBitmap = copy.unmaskedBitmap;
+    this->maskedBitmap = copy.maskedBitmap;
     
     return *this;
 }
-        
+
 void MugenSprite::copyImage(const MugenSprite * copy){
-    cleanup();
+    this->reallength = copy->reallength;
+    this->newlength = copy->newlength;
 
-    if (copy->unmaskedBitmap){
-        this->unmaskedBitmap = new Graphics::Bitmap(*copy->unmaskedBitmap);
+    if (this->pcx != NULL){
+        delete[] this->pcx;
+        this->pcx = NULL;
     }
 
-    if (copy->maskedBitmap){
-        this->maskedBitmap = new Graphics::Bitmap(*copy->maskedBitmap);
+    if (copy->pcx != NULL){
+        this->pcx = new char[this->reallength];
+        memcpy(this->pcx, copy->pcx, this->reallength);
     }
+
+    this->width = copy->width;
+    this->height = copy->height;
+    this->unmaskedBitmap = copy->unmaskedBitmap;
+    this->maskedBitmap = copy->maskedBitmap;
+    this->loaded = copy->loaded;
 }
 
-bool MugenSprite::operator<( const MugenSprite &copy ){
-    return ( (this->groupNumber < copy.groupNumber) && (this->imageNumber < copy.imageNumber) );
+bool MugenSprite::isLoaded() const {
+    return loaded;
+}
+
+bool MugenSprite::operator<(const MugenSprite &copy){
+    return (this->groupNumber < copy.groupNumber) &&
+           (this->imageNumber < copy.imageNumber);
 }
 
 void MugenSprite::cleanup(){
-    /* **FIXME** this needs fixing on determining pcx is empty or not */
     if (pcx){
         delete[] pcx;
         pcx = NULL;
     }
 
-    if (unmaskedBitmap){
-        delete unmaskedBitmap;
-        unmaskedBitmap = NULL;
-    }
+    loaded = false;
 
-    if (maskedBitmap){
-        delete maskedBitmap;
-        maskedBitmap = NULL;
-    }
+    unmaskedBitmap = NULL;
+    maskedBitmap = NULL;
 }
 
 MugenSprite::~MugenSprite(){
@@ -207,13 +216,13 @@ static bool isScaled(const Mugen::Effects & effects){
            fabs(effects.scaley - 1) > epsilon;
 }
 
-Graphics::Bitmap MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
-    Graphics::Bitmap * use = getBitmap(effects.mask);
+PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> use = getBitmap(effects.mask);
 
-    Graphics::Bitmap modImage = *use;
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> modImage = use;
     if (isScaled(effects)){
-        modImage = Graphics::Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley));
-        use->Stretch(modImage);
+        modImage = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley))));
+        use->Stretch(*(modImage.raw()));
     }
 
     return modImage;
@@ -226,45 +235,38 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Graphics::Bitma
 void MugenSprite::load(bool mask){
     if (pcx){
         if (mask){
-            maskedBitmap = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+            maskedBitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
             maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
         } else {
-            unmaskedBitmap = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask);
+            unmaskedBitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
         }
     }
 }
 
 void MugenSprite::reload(bool mask){
-    if (maskedBitmap){
-        delete maskedBitmap;
-        maskedBitmap = NULL;
-    }
-
-    if (unmaskedBitmap){
-        delete unmaskedBitmap;
-        unmaskedBitmap = NULL;
-    }
+    maskedBitmap = NULL;
+    unmaskedBitmap = NULL;
 
     load(mask);
 }
 
-Graphics::Bitmap * MugenSprite::getBitmap(bool mask){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask){
     if (mask){
-        if (maskedBitmap){
+        if (maskedBitmap != NULL){
             return maskedBitmap;
         }
-        if (unmaskedBitmap){
-            maskedBitmap = new Graphics::Bitmap(*unmaskedBitmap, true);
+        if (unmaskedBitmap != NULL){
+            maskedBitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*unmaskedBitmap, true));
             maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
             return maskedBitmap;
         }
     } else {
-        if (unmaskedBitmap){
+        if (unmaskedBitmap != NULL){
             return unmaskedBitmap;
         }
         return maskedBitmap;
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
 }
 
 /* deletes raw data */
@@ -275,18 +277,18 @@ void MugenSprite::unloadRaw(){
     }
 }
 
-int MugenSprite::getWidth(){
-    if (maskedBitmap){
-        return maskedBitmap->getWidth();
-    }
-    return unmaskedBitmap->getWidth();
+int MugenSprite::getWidth() const {
+    return width;
 }
 
-int MugenSprite::getHeight(){
-    if (maskedBitmap){
-        return maskedBitmap->getHeight();
-    }
-    return unmaskedBitmap->getHeight();
+int MugenSprite::getHeight() const {
+    return height;
+}
+
+static int littleEndian16(const char * input){
+    int byte1 = input[0];
+    int byte2 = input[1];
+    return (((unsigned char) byte2) << 8) | (unsigned char) byte1;
 }
 
 void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
@@ -334,14 +336,31 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 	}
     }
 
+    /* read values directly from the pcx header */
+    int xmin = littleEndian16(&pcx[4]);
+    int ymin = littleEndian16(&pcx[6]);
+    int xmax = littleEndian16(&pcx[8]);
+    int ymax = littleEndian16(&pcx[10]);
+
+    width = (xmax - xmin) + 1;
+    height = (ymax - ymin) + 1;
+
+    loaded = true;
+
     load(mask);
 }
 
-void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+void MugenSprite::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> final = getFinalBitmap(effects);
+    Graphics::Bitmap single(*final, sourceX1, sourceY, sourceWidth, sourceHeight);
+    single.drawStretched(destX, destY, destWidth, destHeight, work);
+}
+
+static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     int startWidth = 0;
     int startHeight = 0;
-    int width = bmp.getWidth();
-    int height = bmp.getHeight();
+    int width = bmp->getWidth();
+    int height = bmp->getHeight();
 
     if (effects.dimension.x1 != -1){
         startWidth = effects.dimension.x1;
@@ -361,8 +380,8 @@ void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int y
 
     const int normalX = (xaxis - x);
     const int normalY = (yaxis - y);
-    const int flippedX = (xaxis - bmp.getWidth() + x);
-    const int flippedY = (yaxis - bmp.getHeight() + y);
+    const int flippedX = (xaxis - bmp->getWidth() + x);
+    const int flippedY = (yaxis - bmp->getHeight() + y);
 
     const int FLIPPED = -1;
     const int NOT_FLIPPED = 1;
@@ -399,29 +418,29 @@ void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int y
 
     if ((effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
         if (effects.trans != None){
-            bmp.translucent().drawHFlip(flippedX, normalY, effects.filter, where);
+            bmp->translucent().drawHFlip(flippedX, normalY, effects.filter, where);
         } else {
             // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
-            bmp.drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
+            bmp->drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
         }
     } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
         if (effects.trans != None){
-            bmp.translucent().drawVFlip(normalX, flippedY, effects.filter, where);
+            bmp->translucent().drawVFlip(normalX, flippedY, effects.filter, where);
         } else {
-            bmp.drawVFlip(normalX, flippedY, effects.filter, where);
+            bmp->drawVFlip(normalX, flippedY, effects.filter, where);
         }
     } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
         if (effects.trans != None){
-            bmp.translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
+            bmp->translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
         } else {
-            bmp.drawHVFlip(flippedX, flippedY, effects.filter, where);
+            bmp->drawHVFlip(flippedX, flippedY, effects.filter, where);
         }
     } else {
         //if( effects.mask ){
         if (effects.trans != None){
-            bmp.translucent().draw(normalX, normalY, effects.filter, where);
+            bmp->translucent().draw(normalX, normalY, effects.filter, where);
         } else {
-            bmp.draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
+            bmp->draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
         }
         //} else {
         //    bmp.Blit( placex, placey, where );
@@ -429,6 +448,6 @@ void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int y
     }
 }
 
-void MugenSprite::draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
-    draw(bmp, xaxis, yaxis, this->x, this->y, where, effects);
+void MugenSprite::draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+    drawReal(bmp, xaxis, yaxis, this->x, this->y, where, effects);
 }

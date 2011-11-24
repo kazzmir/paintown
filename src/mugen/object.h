@@ -49,10 +49,12 @@ public:
 
     virtual void setX(double what);
     virtual void setY(double what);
-    virtual void moveX(double x);
-    virtual void moveY(double y);
+    virtual void moveX(double x, bool force = false);
+    virtual void moveY(double y, bool force = false);
     virtual void moveLeft(double x);
     virtual void moveRight(double y);
+    virtual void moveLeftForce(double x);
+    virtual void moveRightForce(double y);
     
     virtual double getHealth() const = 0;
         

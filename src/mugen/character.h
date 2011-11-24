@@ -622,7 +622,7 @@ public:
             return this->sprites[group][image];
         }
 
-        virtual const Graphics::Bitmap * getCurrentFrame() const;
+        virtual const MugenSprite * getCurrentFrame() const;
         MugenAnimation * getCurrentAnimation() const;
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
@@ -1117,8 +1117,8 @@ public:
 
         virtual void doFreeze();
 	
-        virtual void moveX(double x);
-        virtual void moveY(double y);
+        virtual void moveX(double x, bool force = false);
+        virtual void moveY(double y, bool force = false);
 
         virtual void setSpritePriority(int priority);
         

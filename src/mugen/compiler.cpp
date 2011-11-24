@@ -1205,7 +1205,13 @@ public:
             class AnimTime: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getCurrentAnimation()->animationTime());
+                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    if (animation == NULL){
+                        std::ostringstream out;
+                        out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
+                        throw MugenException(out.str());
+                    }
+                    return RuntimeValue(animation->animationTime());
                 }
 
                 virtual std::string toString() const {
@@ -3482,6 +3488,11 @@ public:
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
+                    if (environment.getCharacter().getCurrentAnimation() == NULL){
+                        std::ostringstream out;
+                        out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
+                        throw MugenException(out.str());
+                    }
                     /* FIXME */
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
                     return RuntimeValue((int) (environment.getCharacter().getCurrentAnimation()->getPosition() + 1));

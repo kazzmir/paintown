@@ -907,29 +907,32 @@ void Mugen::Stage::physics(Object * mugen){
                 // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(mplayer, menemy) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
+
+                    /* use move*Force to override pos freeze */
+
                     if (enemy->getX() < mugen->getX()){
                         if (enemy->getX() <= maximumLeft()){
                             /* FIXME */
-                            mugen->moveRight(0.5);
+                            mugen->moveRightForce(0.5);
                         } else {
                             /* FIXME! */
-                            enemy->moveLeft(0.5);
+                            enemy->moveLeftForce(0.5);
                         }
                         // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
                     } else if (enemy->getX() > mugen->getX()){
                         if (enemy->getX() >= maximumRight()){
                             /* FIXME */
-                            mugen->moveLeft(0.5);
+                            mugen->moveLeftForce(0.5);
                         } else {
                             /* FIXME! */
-                            enemy->moveRight(0.5);
+                            enemy->moveRightForce(0.5);
                         }
                         // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
                     } else if (enemy->getX() == mugen->getX()){
                         if (enemy->getX() >= maximumRight()){
-                            mugen->moveLeft(0.5);
+                            mugen->moveLeftForce(0.5);
                         } else {
-                            mugen->moveRight(0.5);
+                            mugen->moveRightForce(0.5);
                         }
                     }
                 }

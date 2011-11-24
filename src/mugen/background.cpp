@@ -858,9 +858,9 @@ void ParallaxElement::act(){
     getSinY().act();
 }
 
-static void doParallaxXScale(const Graphics::Bitmap & bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta){
-    const int height = bmp.getHeight();
-    const int width = bmp.getWidth();
+static void doParallaxXScale(MugenSprite * bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta, const Mugen::Effects & effects){
+    const int height = bmp->getHeight();
+    const int width = bmp->getWidth();
 
     // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
     // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
@@ -888,12 +888,15 @@ static void doParallaxXScale(const Graphics::Bitmap & bmp, const Graphics::Bitma
         // bmp.BlitMasked(0, liney, width, 1, movex, y + liney, work);
         // bmp.BlitMasked(0, liney, width, 1, movex, movey, work);
 
-        /* FIXME: sprig has an off-by-1 error so the height can't be 2 here.
+        /* FIXME: sprig has an off-by-1 error so the height can't be 1 here.
          * try to fix this someday!
          */
+        bmp->drawPartStretched(0, liney, width, 2, movex, movey, width, 2 - cameraY * liney * yscaleDelta / 100, effects, work);
+        /*
         Graphics::Bitmap single(bmp, 0, liney, width, 2);
         // single.drawStretched(movex, movey, width, 1 - cameraY * (liney + 1) * yscaleDelta, work);
         single.drawStretched(movex, movey, width, 2 - cameraY * liney * yscaleDelta / 100, work);
+        */
 
         // bmp.Blit(0, localy, width, 1, movex, lefty + localy, work);
 	//z +=  z_add;
@@ -903,9 +906,9 @@ static void doParallaxXScale(const Graphics::Bitmap & bmp, const Graphics::Bitma
 
 }
 
-static void doParallax(const Graphics::Bitmap & bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY){
-    const int height = bmp.getHeight();
-    const int width = bmp.getWidth();
+static void doParallax(MugenSprite * bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, const Mugen::Effects & effects){
+    const int height = bmp->getHeight();
+    const int width = bmp->getWidth();
 
     // bmp.draw(offsetX + cameraX - width / 2, offsetY + cameraY - height / 2, work);
     // bmp.draw(centerX - width / 2 + offsetX, centerY + offsetY, work);
@@ -999,8 +1002,14 @@ static void doParallax(const Graphics::Bitmap & bmp, const Graphics::Bitmap & wo
         int destY = y + liney;
         int destWidth = x2 - x1;
         int destHeight = 1;
+
+        bmp->drawPartStretched(0, liney, width, 1, x1, y + liney, x2 - x1, 1, effects, work);
+
+        /*
         Graphics::Bitmap single(bmp, 0, liney, width, 1);
         single.drawStretched(x1, y + liney, x2 - x1, 1, work);
+        */
+
         // bmp.Stretch(work, 0, liney, width, 1, x1, y + liney, (x2 - x1), 1);
         // bmp.drawStretched(destX, destY, destWidth, destHeight, work);
         /*
@@ -1039,7 +1048,7 @@ void ParallaxElement::render(int cameraX, int cameraY, const Graphics::Bitmap & 
     if (!getVisible()){
         return;
     }
-    const Graphics::Bitmap & show = *sprite->getBitmap(getMask());
+    // const Graphics::Bitmap & show = *sprite->getBitmap(getMask());
     // const int addw = show.getWidth() + getTileSpacing().x;
     // const int addh = show.getHeight() + getTileSpacing().y;
     /* parallax ignores tile spacing */
@@ -1049,8 +1058,8 @@ void ParallaxElement::render(int cameraX, int cameraY, const Graphics::Bitmap & 
     const int currentX = getCurrentX();
     const int currentY = getCurrentY();
 
-    const int addw = show.getWidth();
-    const int addh = show.getHeight();
+    const int addw = sprite->getWidth();
+    const int addh = sprite->getHeight();
     const int windowAddX = (int) (getWindowDeltaX() * cameraX);
     const int windowAddY = (int) (getWindowDeltaY() * cameraY);
 
@@ -1063,6 +1072,9 @@ void ParallaxElement::render(int cameraX, int cameraY, const Graphics::Bitmap & 
      * otherwise do width.
      */
 
+    Mugen::Effects effects;
+    effects.mask = getMask();
+
     Mugen::Point tile = getTile();
     /* mugen doesn't actually tile in the y direction for parallax */
     tile.y = 0;
@@ -1071,13 +1083,13 @@ void ParallaxElement::render(int cameraX, int cameraY, const Graphics::Bitmap & 
         Tiler tiler(tile, currentX, currentY, addw, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
         while (tiler.hasMore()){
             Point where = tiler.nextPoint();
-            doParallaxXScale(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY(), getYScaleDelta());
+            doParallaxXScale(sprite, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), xscaleX, xscaleY, work.getWidth()/2, 0, getDeltaX(), getDeltaY(), getYScaleDelta(), effects);
         }
     } else {
         Tiler tiler(tile, currentX, currentY, width.x, addh, sprite->getX(), sprite->getY(), sprite->getWidth(), sprite->getHeight(), work.getWidth(), work.getHeight());
         while (tiler.hasMore()){
             Point where = tiler.nextPoint();
-            doParallax(show, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY());
+            doParallax(sprite, work, cameraX, cameraY, where.x, where.y, sprite->getX(), sprite->getY(), (double) width.x / sprite->getWidth(), (double) width.y / sprite->getWidth(), work.getWidth()/2, 0, getDeltaX(), getDeltaY(), effects);
         }
     }
 

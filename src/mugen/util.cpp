@@ -502,7 +502,7 @@ public:
 
     /* Actually loads the pcx data */
     MugenSprite * loadSprite(MugenSprite * sprite, bool mask){
-        if (sprite->getBitmap(mask) == NULL){
+        if (!sprite->isLoaded()){
             if (sprite->getLength() == 0){
                 const MugenSprite * temp = loadSprite(spriteIndex[sprite->getPrevious()], mask);
                 if (!temp){

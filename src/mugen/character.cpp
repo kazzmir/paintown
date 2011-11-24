@@ -437,11 +437,11 @@ double Object::getRY() const {
     return getZ() - getY();
 }
     
-void Object::moveX(double x){
+void Object::moveX(double x, bool force){
     virtualx += x;
 }
 
-void Object::moveY(double y){
+void Object::moveY(double y, bool force){
     virtualy += y;
 }
     
@@ -453,11 +453,27 @@ void Object::moveLeft(double x){
     }
 }
 
+void Object::moveLeftForce(double x){
+    if (getFacing() == FacingLeft){
+        moveX(x, true);
+    } else {
+        moveX(-x, true);
+    }
+}
+
 void Object::moveRight(double x){
     if (getFacing() == FacingRight){
         moveX(x);
     } else {
         moveX(-x);
+    }
+}
+
+void Object::moveRightForce(double x){
+    if (getFacing() == FacingRight){
+        moveX(x, true);
+    } else {
+        moveX(-x, true);
     }
 }
 
@@ -2167,11 +2183,16 @@ void Character::fixAssumptions(){
 void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp , const int flip, const double scalex, const double scaley ){
     MugenSprite *sprite = sprites[group][image];
     if (sprite){
-        Graphics::Bitmap *bitmap = sprite->getBitmap(true); //bitmaps[group][image];
-	/*if (!bitmap){
-	    bitmap = new Bitmap(Bitmap::memoryPCX((unsigned char*) sprite->pcx, sprite->newlength));
-	    bitmaps[group][image] = bitmap;
-	}*/
+        Mugen::Effects effects;
+        /* -1 in effects.facing means its flipped */
+        effects.facing = (flip == 1) ? -1 : 1;
+        effects.scalex = scalex;
+        effects.scaley = scaley;
+
+        sprite->render(x, y, *bmp, effects);
+
+        /*
+        Graphics::Bitmap *bitmap = sprite->getBitmap(true);
 	const int width = (int)(bitmap->getWidth() * scalex);
 	const int height =(int)(bitmap->getHeight() * scaley);
 	if (flip == 1){
@@ -2183,6 +2204,7 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 	    bitmap->drawHFlip(0,0,temp);
 	    temp.drawStretched(x-width,y, width, height, *bmp);
 	}
+        */
     }
 }
         
@@ -2206,12 +2228,18 @@ void Character::priorPalette(){
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
 }
 
-const Graphics::Bitmap * Character::getCurrentFrame() const {
-    return getCurrentAnimation()->getCurrentFrame()->getSprite()->getBitmap(true);
+const MugenSprite * Character::getCurrentFrame() const {
+    if (getCurrentAnimation() != NULL){
+        return getCurrentAnimation()->getCurrentFrame()->getSprite();
+    } else {
+        return NULL;
+    }
 }
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
-    getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work);
+    if (getCurrentAnimation() != NULL){
+        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work);
+    }
 }
 
 MugenAnimation * Character::getCurrentAnimation() const {
@@ -2285,9 +2313,11 @@ void Character::processAfterImages(){
         // int life = 200;
         afterImage.currentTime += afterImage.timegap;
         MugenAnimation * animation = getCurrentAnimation();
-        // afterImage.currentTime -= afterImage.timegap;
-        MugenFrame * currentSprite = animation->getCurrentFrame();
-        afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+        if (animation != NULL){
+            // afterImage.currentTime -= afterImage.timegap;
+            MugenFrame * currentSprite = animation->getCurrentFrame();
+            afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+        }
         /*
            while (afterImage.frames.size() > afterImage.length){
            afterImage.frames.pop_front();
@@ -2357,7 +2387,7 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     */
 
     MugenAnimation * animation = getCurrentAnimation();
-    if (animation != 0){
+    if (animation != NULL){
 	/* Check debug state */
 	if (debug){
 	    if (!animation->showingDefense()){
@@ -2758,7 +2788,8 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     Effects total = frame.effects + afterImage.translucent;
     total.filter = &filter;
 
-    MugenSprite::draw(frame.sprite->getSprite()->getFinalBitmap(frame.effects), x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), work, total);
+    // MugenSprite::draw(frame.sprite->getSprite()->getFinalBitmap(frame.effects), x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), work, total);
+    frame.sprite->render(x, y, work, total);
 
     // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
     /*
@@ -3071,11 +3102,17 @@ void Character::doTurn(Mugen::Stage & stage){
 }
 
 const vector<MugenArea> Character::getAttackBoxes() const {
-    return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft);
+    if (getCurrentAnimation() != NULL){
+        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft);
+    }
+    return vector<MugenArea>();
 }
 
 const vector<MugenArea> Character::getDefenseBoxes() const {
-    return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft);
+    if (getCurrentAnimation() != NULL){
+        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft);
+    }
+    return vector<MugenArea>();
 }
 
 const std::string Character::getAttackName(){
@@ -3267,8 +3304,8 @@ void Character::doFreeze(){
     frozen = true;
 }
         
-void Character::moveX(double x){
-    if (!frozen){
+void Character::moveX(double x, bool force){
+    if (force || !frozen){
 	if (getFacing() == FacingLeft){
             virtualx -= x;
 	} else {
@@ -3277,8 +3314,8 @@ void Character::moveX(double x){
     }
 }
 
-void Character::moveY(double y){
-    if (!frozen){
+void Character::moveY(double y, bool force){
+    if (force || !frozen){
         virtualy += y;
     }
 }
