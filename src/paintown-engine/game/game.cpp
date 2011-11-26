@@ -279,6 +279,20 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         };
 
+        class CommandClear: public Console::Command {
+        public:
+            CommandClear(Console::Console & console):
+            console(console){
+            }
+
+            Console::Console & console;
+
+            string act(const string & line){
+                console.clear();
+                return "";
+            }
+        };
+
         class CommandGodMode: public Console::Command {
         public:
             CommandGodMode(const vector<Paintown::Object *> & players):
@@ -322,6 +336,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         console.addAlias("?", "help");
         console.addCommand("memory", Util::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("god-mode", Util::ReferenceCount<Console::Command>(new CommandGodMode(players)));
+        console.addCommand("clear", Util::ReferenceCount<Console::Command>(new CommandClear(console)));
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
