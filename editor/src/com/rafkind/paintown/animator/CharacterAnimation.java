@@ -73,13 +73,23 @@ public class CharacterAnimation extends JPanel {
         super.paint(g);
     }
 
-    public CharacterAnimation(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
+    public CharacterAnimation(final AnimatedObject object, final Animation animation, final Lambda2 changeName, final Detacher outerDetacher){
+        final Detacher detacher = new Detacher(){
+            public JFrame detach(JComponent object, String name){
+                return outerDetacher.detach(CharacterAnimation.this, name);
+            }
+
+            public void attach(JComponent object, String name){
+                outerDetacher.attach(CharacterAnimation.this, name);
+            }
+        };
+
         this.animation = animation;
         this.loader = new Lambda0(){
             public Object invoke() throws Exception {
                 CharacterAnimation.this.setLayout(new GridBagLayout());
 
-                JPanel area = new CharacterCanvas(object, animation, changeName);
+                JPanel area = new CharacterCanvas(object, animation, changeName, detacher);
                 
                 GridBagConstraints animConstraints = new GridBagConstraints();
 
@@ -101,8 +111,8 @@ public class CharacterAnimation extends JPanel {
     }
 
     private class CharacterCanvas extends AnimationCanvas {
-        public CharacterCanvas(AnimatedObject object, Animation animation, Lambda2 changeName){
-            super(object, animation, changeName);
+        public CharacterCanvas(AnimatedObject object, Animation animation, Lambda2 changeName, final Detacher detacher){
+            super(object, animation, changeName, detacher);
         }
 
         protected JComponent makeProperties(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
@@ -111,7 +121,7 @@ public class CharacterAnimation extends JPanel {
             final SwingEngine contextEditor = animEditor;
             final JTextField nameField = (JTextField) contextEditor.find("name");
 
-            nameField.setText( animation.getName() );
+            nameField.setText(animation.getName());
 
             nameField.getDocument().addDocumentListener(new DocumentListener(){
                 final CharacterAnimation self = CharacterAnimation.this;

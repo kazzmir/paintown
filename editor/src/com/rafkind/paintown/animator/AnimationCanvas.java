@@ -43,7 +43,7 @@ public abstract class AnimationCanvas extends JPanel {
         private Object obj;
     }
 
-    public AnimationCanvas(AnimatedObject object, Animation animation, Lambda2 changeName){
+    public AnimationCanvas(AnimatedObject object, Animation animation, Lambda2 changeName, final Detacher detacher){
         setLayout(new GridBagLayout());
 
         GridBagConstraints constraints = new GridBagConstraints();
@@ -55,10 +55,10 @@ public abstract class AnimationCanvas extends JPanel {
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.NORTHWEST;
 
-        this.add(createPane(object, animation, changeName), constraints);
+        this.add(createPane(object, animation, changeName, detacher), constraints);
     }
 
-    private JPanel createPane(final AnimatedObject object, final Animation animation, final Lambda2 changeName){
+    private JPanel createPane(final AnimatedObject object, final Animation animation, final Lambda2 changeName, final Detacher detacher){
         final SwingEngine animEditor = new SwingEngine("animator/animation.xml");
 
         final JTabbedPane tabs = (JTabbedPane) animEditor.find("tabs");
@@ -75,6 +75,36 @@ public abstract class AnimationCanvas extends JPanel {
                    */
 
                 return null;
+            }
+        });
+
+        final JButton popOut = (JButton) animEditor.find("pop-out");
+        popOut.addActionListener(new AbstractAction(){
+            /* detach if true, otherwise attach */
+            boolean mode = true;
+
+            /* might be called by the window being destroyed */
+            private void reAttach(){
+                popOut.setText("Pop out");
+                detacher.attach(AnimationCanvas.this, animation.getName());
+                mode = ! mode;
+            }
+
+            public void actionPerformed(ActionEvent event){
+                if (mode){
+                    mode = ! mode;
+                    JFrame frame = detacher.detach(AnimationCanvas.this, animation.getName());
+                    frame.addWindowListener(new WindowAdapter(){
+                        public void windowClosing(WindowEvent event){
+                            reAttach();
+                        }
+                    });
+
+                    popOut.setText("Put back");
+                } else {
+                    reAttach();
+                }
+
             }
         });
 

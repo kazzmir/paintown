@@ -66,13 +66,46 @@ public final class Player{
             }
         };
 
+        final Detacher detacher = new Detacher(){
+            JFrame lastFrame;
+            public void destroyFrame(JComponent object){
+                if (lastFrame != null){
+                    lastFrame.setVisible(false);
+                    lastFrame = null;
+                }
+            }
+
+            public JFrame detach(final JComponent object, String name){
+                animations.remove(object);
+                JFrame frame = new JFrame(name);
+                lastFrame = frame;
+                frame.setSize(600, 600);
+                frame.getContentPane().add(object);
+                frame.setVisible(true);
+
+                frame.addWindowListener(new WindowAdapter(){
+                    public void windowClosing(WindowEvent event){
+                        destroyFrame(object);
+                    }
+                });
+
+                return frame;
+            }
+
+            public void attach(JComponent object, final String name){
+                animations.add(object, name);
+                animations.setSelectedComponent(object);
+                destroyFrame(object);
+            }
+        };
+
         final JButton addAnimation = (JButton) playerEditor.find("add-animation");
         addAnimation.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 Animation animation = new Animation();
                 character.addAnimation(animation);
                 new Thread(animation).start();
-                JComponent tab = new CharacterAnimation(character, animation, changeName);
+                JComponent tab = new CharacterAnimation(character, animation, changeName, detacher);
                 animations.add("New animation", tab);
                 animations.setSelectedComponent(tab);
             }
@@ -95,7 +128,7 @@ public final class Player{
 
 
         for (Animation animation : character.getAnimations()){
-            animations.add(animation.getName(), new CharacterAnimation(character, animation, changeName));
+            animations.add(animation.getName(), new CharacterAnimation(character, animation, changeName, detacher));
 	}
 
         /*

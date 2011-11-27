@@ -27,20 +27,31 @@ public class ProjectilePane {
 
         final JTabbedPane tabs = (JTabbedPane) engine.find("tabs");
 
+        final Detacher detacher = new Detacher(){
+            public JFrame detach(JComponent object, String name){
+                /* TODO */
+                return null;
+            }
+
+            public void attach(JComponent object, String name){
+                /* TODO */
+            }
+        };
+
         for (Animation animation: projectile.getAnimations()){
-            tabs.add(new ProjectileCanvas(projectile, animation), animation.getName());
+            tabs.add(new ProjectileCanvas(projectile, animation, detacher), animation.getName());
         }
         
         mainPanel = (JPanel) engine.getRootComponent();
     }
 
     private class ProjectileCanvas extends AnimationCanvas {
-        ProjectileCanvas(Projectile projectile, Animation animation){
+        ProjectileCanvas(Projectile projectile, Animation animation, Detacher detacher){
             super(projectile, animation, new Lambda2(){
                 public Object invoke(Object o1, Object o2){
                     return null;
                 }
-            });
+            }, detacher);
         }
     
         protected JComponent makeProperties(final AnimatedObject object, final Animation animation, final Lambda2 changeName){

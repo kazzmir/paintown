@@ -21,6 +21,8 @@
                 fill="GridBagConstraints.BOTH"
                 />
         </panel>
+        <vbox>
+        <button id="pop-out" text="Pop out" />
         <panel layout="GridBagLayout">
             <tabbedpane id="tabs">
                 <gridbagconstraints
@@ -91,5 +93,6 @@
                 </hbox>
             </vbox>
         </panel>
+        </vbox>
     </splitpane>
 </panel>
