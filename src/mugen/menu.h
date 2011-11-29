@@ -291,8 +291,6 @@ class MugenMenu {
 	std::vector<Mugen::ItemOption *> options;
 	
 	std::vector<Mugen::ItemOption *>::iterator currentOption;
-
-        Mugen::Searcher searcher;
 };
 
 namespace Mugen{

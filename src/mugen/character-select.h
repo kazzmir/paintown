@@ -13,6 +13,7 @@
 #include "util/gui/fadetool.h"
 #include "util/input/input-map.h"
 #include "util/thread.h"
+#include "util/pointer.h"
 
 #include "util.h"
 
@@ -340,7 +341,7 @@ class Cell{
         virtual ~Cell();
 
         virtual void act();
-        virtual void randomize(std::vector<CharacterInfo *> &characters);
+        virtual void randomize(std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > &characters);
         virtual void render(const Graphics::Bitmap &);
 	
 	virtual inline bool operator==(const Cell &cell) const{
@@ -355,12 +356,12 @@ class Cell{
 	    this->background = sprite;
 	}
 	
-	virtual inline void setCharacter(CharacterInfo *character){
+	virtual inline void setCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
 	    this->empty = false;
 	    this->character = character;
 	}
 	
-	virtual inline CharacterInfo *getCharacter(){
+	virtual inline PaintownUtil::ReferenceCount<CharacterInfo> getCharacter(){
 	    return this->character;
 	}
 	
@@ -472,7 +473,7 @@ class Cell{
 	MugenSprite *background;
 	
 	//! Set Character
-        CharacterInfo *character;
+        PaintownUtil::ReferenceCount<CharacterInfo> character;
 	
 	//! Set Random Sprite
 	MugenSprite *randomSprite;
@@ -525,7 +526,7 @@ class Grid{
 	virtual void render(const Graphics::Bitmap &);
 	
         virtual void addBlank();
-	virtual void addCharacter(CharacterInfo *character, bool isRandom = false);
+	virtual void addCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character, bool isRandom = false);
 	
 	virtual void setCursorPlayer1Start(Cursor &cursor);
 	
@@ -603,7 +604,7 @@ class Grid{
 	    this->player2Start.set(x, y);
 	}
         
-        std::vector<CharacterInfo *> getCharacters() const;
+        std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > getCharacters() const;
 
         /* lock for safety. grab this if any changes will be made to the grid
          * itself or any cells.
@@ -612,9 +613,9 @@ class Grid{
         virtual void unlock();
 
         /* add the characterinfo to the grid, can be called from another thread */
-        bool addInfo(CharacterInfo * character);
+        bool addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & character);
         /* true if no grid cell has the same characterinfo */
-        bool isUniqueCharacter(CharacterInfo * character);
+        bool isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character);
     
     private:
 	
@@ -664,7 +665,7 @@ class Grid{
 	double portraitScaleY;
 
         //! Character list 
-        std::vector< CharacterInfo * > characters;
+        std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > characters;
 	
         //! Cells of the grid
         CellMap cells;
@@ -1060,14 +1061,14 @@ class CharacterSelect {
         void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
         void addFile(const Filesystem::AbsolutePath & file);
 
-        bool addInfo(CharacterInfo * info);
-        bool isUniqueCharacter(CharacterInfo * character);
+        bool addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & info);
+        bool isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character);
 	
 	/*! Temporary to accomodate above above condition */
 	bool checkPlayerData();
 	
 	//! Get group of characters by order number
-	std::vector<CharacterInfo *> getCharacterGroup(int orderNumber);
+	std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > getCharacterGroup(int orderNumber);
 	
 	//! Parse select file to get characters and stages
 	void parseSelect(const Filesystem::AbsolutePath &selectFile);
@@ -1106,7 +1107,7 @@ class CharacterSelect {
 	FontHandler titleFont;
 	
 	//! Characters
-	std::vector<CharacterInfo *> characters;
+	std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > characters;
 	
 	//! Sprites
 	Mugen::SpriteMap sprites;
@@ -1124,15 +1125,15 @@ class CharacterSelect {
 	VersusScreen versus;
 	
 	//! Arcade matches
-	std::queue< std::queue<CharacterInfo *> > arcadeMatches;
+	std::queue< std::queue<PaintownUtil::ReferenceCount<CharacterInfo> > > arcadeMatches;
 	
 	//! Team matches
-	std::queue< std::queue<CharacterInfo *> > teamMatches;
+	std::queue< std::queue<PaintownUtil::ReferenceCount<CharacterInfo> > > teamMatches;
 	
 	//! Current set Player 1
-	CharacterInfo *currentPlayer1;
+        PaintownUtil::ReferenceCount<CharacterInfo> currentPlayer1;
 	//! Current set Player 2
-	CharacterInfo *currentPlayer2;
+        PaintownUtil::ReferenceCount<CharacterInfo> currentPlayer2;
 	//! Current set Stage
 	Mugen::Stage *currentStage;
 	

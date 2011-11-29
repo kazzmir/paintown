@@ -652,8 +652,7 @@ void OptionOptions::doOptions(MugenFont & font, int x, int y, const Graphics::Bi
 }
 */
 
-OptionArcade::OptionArcade(const string & name, Searcher & searcher):
-searcher(searcher){
+OptionArcade::OptionArcade(const string & name){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to versus");
     }
@@ -665,10 +664,12 @@ OptionArcade::~OptionArcade(){
 	// Nothing
 }
 
+/*
 static void runGame(const PlayerType & player, GameType kind, Searcher & searcher){
     Game versus(player, kind, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
     versus.run(searcher);
 }
+*/
 
 void OptionArcade::executeOption(const Mugen::PlayerType & player, bool &endGame){
     /* Get default motif system.def */
@@ -676,11 +677,11 @@ void OptionArcade::executeOption(const Mugen::PlayerType & player, bool &endGame
     Game versus(player, Arcade, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
     versus.run();
     */
-    runGame(player, Arcade, searcher);
+    // runGame(player, Arcade, searcher);
+    throw StartGame(player, Arcade);
 }
 
-OptionVersus::OptionVersus(const std::string &name, Searcher & searcher):
-searcher(searcher){
+OptionVersus::OptionVersus(const std::string &name){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to versus");
     }
@@ -698,7 +699,8 @@ void OptionVersus::executeOption(const Mugen::PlayerType & player, bool &endGame
     versus.run();
     */
 
-    runGame(player, Versus, searcher);
+    // runGame(player, Versus, searcher);
+    throw StartGame(player, Versus);
 }
 
 }

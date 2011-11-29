@@ -239,6 +239,21 @@ enum PlayerType{
     NoControl,
 };
 
+/* thrown by options to start a game */
+class StartGame: public std::exception {
+public:
+    StartGame(PlayerType player, GameType game):
+    player(player),
+    game(game){
+    }
+
+    virtual ~StartGame() throw (){
+    }
+
+    PlayerType player;
+    GameType game;
+};
+
 /*! Player1 keys for menus including keyboard shortcuts */
 inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     InputMap<Mugen::Keys> input;

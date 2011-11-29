@@ -395,7 +395,7 @@ void Cell::act(){
     }
 }
 
-void Cell::randomize(std::vector<CharacterInfo *> &characters){
+void Cell::randomize(std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > & characters){
     if (random){
 	unsigned int num = PaintownUtil::rnd(0,characters.size());
         character = characters[num];
@@ -453,7 +453,6 @@ Grid::~Grid(){
             }
         }
     }
-
 }
 
 void Grid::lock(){
@@ -464,7 +463,7 @@ void Grid::unlock(){
     gridLock.release();
 }
         
-std::vector<CharacterInfo *> Grid::getCharacters() const {
+std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > Grid::getCharacters() const {
     PaintownUtil::Thread::ScopedLock scoped(gridLock);
     /* a copy of characters will be returned */
     return characters;
@@ -556,7 +555,7 @@ void Grid::addBlank(){
     }
 }
 
-bool Grid::isUniqueCharacter(CharacterInfo * character){
+bool Grid::isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
     lock();
 
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
@@ -564,7 +563,7 @@ bool Grid::isUniqueCharacter(CharacterInfo * character){
 	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
 	    Cell *cell = (*column);
             if (!cell->isEmpty() && cell->getCharacter() != NULL){
-                CharacterInfo * his = cell->getCharacter();
+                PaintownUtil::ReferenceCount<CharacterInfo> his = cell->getCharacter();
                 if (*his == *character){
                     unlock();
                     return false;
@@ -578,7 +577,7 @@ bool Grid::isUniqueCharacter(CharacterInfo * character){
     return true;
 }
 
-bool Grid::addInfo(CharacterInfo * character){
+bool Grid::addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
     lock();
     vector<Cell*> candidates;
 
@@ -626,9 +625,6 @@ bool Grid::addInfo(CharacterInfo * character){
         character->setReferenceCell(cell);
         characters.push_back(character);
         success = true;
-    } else {
-        /* failed to find an empty cell */
-        delete character;
     }
 
     unlock();
@@ -636,7 +632,7 @@ bool Grid::addInfo(CharacterInfo * character){
     return success;
 }
 
-void Grid::addCharacter(CharacterInfo *character, bool isRandom){
+void Grid::addCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character, bool isRandom){
     for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
 	std::vector< Cell *> &row = (*i);
 	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
@@ -977,7 +973,7 @@ void Cursor::playRandomSound(){
 void Cursor::renderPortrait(const Graphics::Bitmap &bmp){
     // Lets do the portrait and name
     if (!currentCell->isEmpty() && !currentCell->isBlank()){
-	const CharacterInfo *character = currentCell->getCharacter();
+	PaintownUtil::ReferenceCount<CharacterInfo> character = currentCell->getCharacter();
 	Mugen::Effects effects;
 	effects.facing = facing;
 	effects.scalex = faceScaleX;
@@ -1570,10 +1566,6 @@ CharacterSelect::~CharacterSelect(){
     // Cleanup fonts
     for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
         if (*f) delete (*f);
-    }
-
-    for (vector<CharacterInfo*>::iterator it = characters.begin(); it != characters.end(); it++){
-        delete *it;
     }
 
     /* background */
@@ -2242,10 +2234,10 @@ void CharacterSelect::load(){
 }
 
 //! Get group of characters by order number
-std::vector<CharacterInfo *> CharacterSelect::getCharacterGroup(int orderNumber){
-    std::vector<CharacterInfo *> tempCharacters;
-    for (std::vector<CharacterInfo *>::iterator i = characters.begin(); i != characters.end(); ++i){
-	CharacterInfo *character = *i;
+std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > CharacterSelect::getCharacterGroup(int orderNumber){
+    std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > tempCharacters;
+    for (std::vector<PaintownUtil::ReferenceCount<CharacterInfo> >::iterator i = characters.begin(); i != characters.end(); ++i){
+        PaintownUtil::ReferenceCount<CharacterInfo> character = *i;
 	if (character->getOrder() == orderNumber){
 	    tempCharacters.push_back(character);
 	}
@@ -2280,11 +2272,11 @@ public:
     std::string song;
 };
         
-bool CharacterSelect::addInfo(CharacterInfo * info){
+bool CharacterSelect::addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & info){
     return grid.addInfo(info);
 }
         
-bool CharacterSelect::isUniqueCharacter(CharacterInfo * character){
+bool CharacterSelect::isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
     return grid.isUniqueCharacter(character);
 }
 
@@ -2307,12 +2299,10 @@ static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath
 bool CharacterSelect::maybeAddCharacter(const Filesystem::AbsolutePath & path){
     Global::debug(1) << "Checking character " << path.path() << endl;
     try{
-        CharacterInfo * info = new CharacterInfo(path);
+        PaintownUtil::ReferenceCount<CharacterInfo> info(new CharacterInfo(path));
         Global::debug(1) << path.path() << " is good" << endl;
         if (isUniqueCharacter(info)){
             return addInfo(info);
-        } else {
-            delete info;
         }
         return true;
     } catch (const Filesystem::NotFound & fail){
@@ -3072,7 +3062,7 @@ void CharacterSelect::renderVersusScreen(){
 }
 
 bool CharacterSelect::setNextArcadeMatch(){
-    vector<CharacterInfo*> characters = grid.getCharacters();
+    vector<PaintownUtil::ReferenceCount<CharacterInfo> > characters = grid.getCharacters();
     if (characters.size() == 0){
         return false;
     }
