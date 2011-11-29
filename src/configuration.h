@@ -5,7 +5,7 @@
 #include <map>
 #include "util/input/input.h"
 #include "util/pointer.h"
-#include "menu/font-info.h"
+#include "util/menu/font-info.h"
 
 namespace Menu{
 class FontInfo;

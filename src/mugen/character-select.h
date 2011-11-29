@@ -8,8 +8,6 @@
 
 #include "exception.h"
 
-#include "menu/menu.h"
-
 #include "util/gui/fadetool.h"
 #include "util/input/input-map.h"
 #include "util/thread.h"

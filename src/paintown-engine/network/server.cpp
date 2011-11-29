@@ -23,7 +23,7 @@
 #include "../object/player.h"
 #include "../game/mod.h"
 #include "exceptions/exception.h"
-#include "menu/menu.h"
+#include "util/menu/menu.h"
 #include "server.h"
 #include <sstream>
 #include "util/font.h"
@@ -35,7 +35,7 @@
 #include "util/input/text-input.h"
 
 #include "../game/options.h"
-#include "menu/font-info.h"
+#include "util/menu/font-info.h"
 
 #include "configuration.h"
 

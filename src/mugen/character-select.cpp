@@ -29,9 +29,6 @@
 #include "factory/font_render.h"
 #include "exceptions/shutdown_exception.h"
 
-#include "menu/menu_option.h"
-#include "menu/options.h"
-
 #include "animation.h"
 #include "background.h"
 #include "character.h"

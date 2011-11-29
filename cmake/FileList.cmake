@@ -138,14 +138,14 @@ src/util/loadpng/regpng.c
 src/util/loadpng/savepng.c)
 
 set(MENU_SRC
-src/menu/actionfactory.cpp
-src/menu/action_speed.cpp
-src/menu/menu.cpp
-src/menu/font-info.cpp
-src/menu/menu_action.cpp
-src/menu/menu_option.cpp
-src/menu/options.cpp
-src/menu/optionfactory.cpp
+src/util/menu/actionfactory.cpp
+src/util/menu/action_speed.cpp
+src/util/menu/menu.cpp
+src/util/menu/font-info.cpp
+src/util/menu/menu_action.cpp
+src/util/menu/menu_option.cpp
+src/util/menu/options.cpp
+src/util/menu/optionfactory.cpp
 )
 
 set(GUI_SRC

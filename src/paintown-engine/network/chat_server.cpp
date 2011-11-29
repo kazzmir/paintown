@@ -18,7 +18,7 @@
 #include "util/input/input-source.h"
 #include "util/gui/lineedit.h"
 #include "util/input/input-manager.h"
-#include "menu/menu.h"
+#include "util/menu/menu.h"
 #include "util/timer.h"
 #include <iostream>
 #include <sstream>

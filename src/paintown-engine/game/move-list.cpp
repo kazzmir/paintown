@@ -9,7 +9,7 @@
 #include "util/gui/scroll-list.h"
 #include "util/input/input-map.h"
 #include "util/input/input-manager.h"
-#include "menu/menu.h"
+#include "util/menu/menu.h"
 #include "configuration.h"
 #include "util/stretch-bitmap.h"
 #include "util/init.h"

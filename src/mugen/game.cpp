@@ -6,7 +6,6 @@
 #include "util/font.h"
 #include "util/token.h"
 #include "configuration.h"
-#include "menu/menu.h"
 #include "globals.h"
 #include "util/init.h"
 #include "util/input/keyboard.h"
