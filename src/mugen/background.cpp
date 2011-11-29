@@ -1861,7 +1861,12 @@ clearColor(Graphics::MaskColor()){
                             // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
                             // Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
-                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            try{
+                                Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
+                            } catch (const Filesystem::NotFound & fail){
+                                Global::debug(0) << "Could not load background sprites: " << fail.getTrace() << std::endl;
+                                /* FIXME: throw a mugen error here? */
+                            }
                         } else if (simple == "debugbg"){
                             simple.view() >> self.debug;
                         } else if (simple == "bgclearcolor"){

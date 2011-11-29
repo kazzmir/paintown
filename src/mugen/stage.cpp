@@ -1614,12 +1614,15 @@ void Mugen::Stage::cleanup(){
         }
         sounds.clear();
 
-        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/){
             Mugen::Object * object = *it;
 
             /* remove any non-player objects, like projectiles or helpers */
             if (!isaPlayer(object)){
                 delete object;
+                it = objects.erase(it);
+            } else {
+                it++;
             }
         }
     }

@@ -1312,6 +1312,8 @@ void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Muge
                     this->fail = new MugenException(fail);
                 } catch (const LoadException & fail){
                     this->fail = new LoadException(fail);
+                } catch (const Filesystem::NotFound & fail){
+                    this->fail = new Filesystem::NotFound(fail);
                 }
             }
 
