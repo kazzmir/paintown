@@ -223,7 +223,7 @@ def main():
     
 def androidSDLMain():
     if useAndroid():
-        return ['android/jni/SDL_android_main.cpp']
+        return ['util/android/jni/SDL_android_main.cpp']
     else:
         return []
 
