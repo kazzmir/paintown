@@ -34,6 +34,7 @@
 #include "util/debug.h"
 #include "configuration.h"
 #include "util/init.h"
+#include "util/main.h"
 #include "mugen/config.h"
 
 using std::vector;

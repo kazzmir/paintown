@@ -352,7 +352,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
-    Background * background = NULL;
+    PaintownUtil::ReferenceCount<Background> background;
     std::vector< MugenFont *> fonts;
     SoundMap sounds;
     
@@ -428,7 +428,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             section->walk(walker);
 	} else if (head == "OptionBGdef"){ 
 	    /* Background management */
-	    background = new Background(systemFile, "optionbg");
+	    background = PaintownUtil::ReferenceCount<Background>(new Background(systemFile, "optionbg"));
 	}
     }
 
@@ -459,7 +459,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(bool & escaped, MugenSound * cancel, MugenSound * move, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption, Background * background):
+        Logic(bool & escaped, MugenSound * cancel, MugenSound * move, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption, const PaintownUtil::ReferenceCount<Background> & background):
         escaped(escaped),
         logic_done(false),
         cancelSound(cancel),
@@ -480,7 +480,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         MugenSound * cancelSound;
         MugenSound * moveSound;
     
-        Background * background;
+        PaintownUtil::ReferenceCount<Background> background;
 
         const vector<class Option *> & options;
         vector<class Option *>::const_iterator & selectedOption;
@@ -556,7 +556,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(Background * background, MugenFont * font, const vector<class Option *> & options):
+        Draw(const PaintownUtil::ReferenceCount<Background> & background, MugenFont * font, const vector<class Option *> & options):
         background(background),
         font(font),
         options(options){
@@ -570,7 +570,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             optionArea.colors.border = Graphics::makeColor(0,0,20);
         }
 
-        Background * background;
+        PaintownUtil::ReferenceCount<Background> background;
         MugenFont * font;
         Box optionArea;
         const vector<class Option *> & options;
@@ -619,120 +619,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Logic logic(escaped, cancel, move, options, selectedOption, background);
     Draw draw(background, font, options);
     PaintownUtil::standardLoop(logic, draw);
-    
-#if 0
-    while (!done){
-    
-	bool draw = false;
-	
-	if ( Global::speed_counter > 0 ){
-	    draw = true;
-	    runCounter += Util::gameTicks(Global::speed_counter);
-	    Global::speed_counter = 0;
-	    while (runCounter >= 1.0){
-		// tick tock
-		ticker++;
-		
-		runCounter -= 1;
-		// Key handler
-		InputManager::poll();
-		
-		// InputMap<Keys>::Output out1 = InputManager::getMap(player1Input);
-		// InputMap<Keys>::Output out2 = InputManager::getMap(player2Input);
 
-                vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input);
-                vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input);
-                out1.insert(out1.end(), out2.begin(), out2.end());
-                for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
-                    const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                    if (!event.enabled){
-                        continue;
-                    }
-
-
-                    if (event[Esc]){
-                        done = escaped = true;
-                        if (sounds[cancelSound.x][cancelSound.y]){
-                            sounds[cancelSound.x][cancelSound.y]->play();
-                        }
-                        InputManager::waitForRelease(player1Input, Esc);
-                        InputManager::waitForRelease(player2Input, Esc);
-                    }
-
-                    if (event[Up]){
-                        (*selectedOption)->toggleSelected();
-                        if (selectedOption > options.begin()){
-                            selectedOption--;
-                        } else {
-                            selectedOption = options.begin() + options.size()-1;
-                        }
-                        (*selectedOption)->toggleSelected();
-                        if (sounds[moveSound.x][moveSound.y]){
-                            sounds[moveSound.x][moveSound.y]->play();
-                        }
-                    }
-                    if (event[Down]){
-                        (*selectedOption)->toggleSelected();
-                        selectedOption++;
-                        if (selectedOption == options.end()){
-                            selectedOption = options.begin();
-                        }
-                        (*selectedOption)->toggleSelected();
-                        if (sounds[moveSound.x][moveSound.y]){
-                            sounds[moveSound.x][moveSound.y]->play();
-                        }
-                    }
-                    if (event[Left]){
-                        (*selectedOption)->prev();
-                    }
-                    if (event[Right]){
-                        (*selectedOption)->next();
-                    }
-                    if (event[Start]){
-                        (*selectedOption)->enter();
-                    }
-                }
-
-                // Backgrounds
-                background->act();
-            }
-	}
-		
-	while ( Global::second_counter > 0 ){
-	    game_time--;
-	    Global::second_counter--;
-	    if ( game_time < 0 ){
-		    game_time = 0;
-	    }
-	}
-
-	if ( draw ){
-	    // render backgrounds
-	    background->renderBackground(0,0,workArea);
-	    
-	    // render fonts
-	    font->render(DEFAULT_WIDTH/2, 20, 0, 0, workArea, "OPTIONS" );
-	    
-	    optionArea.render(workArea);
-	    
-	    doOptions(*font,optionArea.location.getX(),optionArea.location.getY(),workArea);
-	    
-	    // render Foregrounds
-	    background->renderForeground(0,0,workArea);
-	    
-	    // Finally render to screen
-	    workArea.Stretch(screen);
-	    screen.BlitToScreen();
-	}
-
-	while ( Global::speed_counter < 1 ){
-		PaintownUtil::rest( 1 );
-	}
-    }
-#endif
-    
-    delete background;
-    
     // Get rid of sprites
     for (std::vector<MugenFont *>::iterator i = fonts.begin() ; i != fonts.end() ; ++i){
 	if (*i){

@@ -361,11 +361,6 @@ public:
          * not allocating columns at all.
          */
         memset(memo, 0, sizeof(Column*) * memo_size);
-        /*
-        for (int i = 0; i < memo_size; i++){
-            memo[i] = new Column();
-        }
-        */
     }
 
     int length(){
@@ -405,12 +400,6 @@ public:
         // std::cout << "Read char '" << buffer[position] << "'" << std::endl;
 
         return buffer[position];
-        /*
-        char z;
-        stream.seekg(position, std::ios_base::beg);
-        stream >> z;
-        return z;
-        */
     }
 
     bool find(const char * str, const int position){
@@ -423,14 +412,16 @@ public:
     void growMemo(){
         int newSize = memo_size * 2;
         Column ** newMemo = new Column*[newSize];
+        /* Copy old memo table */
         memcpy(newMemo, memo, sizeof(Column*) * memo_size);
+
+        /* Zero out new entries */
         memset(&newMemo[memo_size], 0, sizeof(Column*) * (newSize - memo_size));
-        /*
-        for (int i = memo_size; i < newSize; i++){
-            newMemo[i] = new Column();
-        }
-        */
+
+        /* Delete old memo table */
         delete[] memo;
+
+        /* Set up new memo table */
         memo = newMemo;
         memo_size = newSize;
     }

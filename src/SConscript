@@ -219,7 +219,7 @@ def hawknlLibrary(env):
     return env.SConscript('util/network/hawknl/SConscript', exports = ['env'])
 
 def main():
-    return ['xmain.cpp']
+    return ['util/xmain.cpp']
     
 def androidSDLMain():
     if useAndroid():
