@@ -16,17 +16,7 @@
 
 #include "util/music.h"
 
-/*
-#include "paintown-engine/object/object.h"
-#include "paintown-engine/object/player.h"
-#include "paintown-engine/object/buddy_player.h"
-*/
-
-/* TODO: remove this dependancy */
-#include "paintown-engine/level/utils.h"
-
 #include "util/input/keyboard.h"
-// #include "paintown-engine/game/game.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "factory/font_factory.h"
@@ -41,9 +31,6 @@
 #include "util/fire.h"
 #include "util/input/input-map.h"
 #include "util/input/input-manager.h"
-
-// #include "openbor/pack-reader.h"
-// #include "paintown-engine/game/mod.h"
 
 #include "platformer/game/game.h"
 
