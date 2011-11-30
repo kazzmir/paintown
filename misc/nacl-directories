@@ -1,8 +1,25 @@
-#!/bin/sh
+#!/usr/bin/python
 
-for directory in $(find . -type d  ! -regex '.*.svn.*')
-do
-        echo $directory
-        # \ls "$directory" > "$directory/directory.txt"
-        \ls -l "$directory" | awk -F" " '{printf "%s %s\n", $8, $5}' > "$directory/directory.txt"
-done
+def find_all_files():
+    import os
+    for root, dirs, files in os.walk("."):
+        if ".svn" in root:
+            continue
+        print root
+        yield root, filter(lambda n: not ".svn" in n, dirs + files)
+
+def filesize(path):
+    import os.path
+    try:
+        if os.path.isdir(path):
+            return 0
+        return os.path.getsize(path)
+    except OSError:
+        return 0
+
+for directory, files in find_all_files():
+    import os.path
+    file = open('%s/directory.txt' % directory, 'w')
+    for path in files:
+        file.write('%s %s\n' % (path, filesize(os.path.join(directory, path))))
+    file.close()
