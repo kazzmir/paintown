@@ -44,7 +44,7 @@ test/util/input/allegro/allegro-joystick.cpp
 test/util/input/sdl/joystick.cpp
 test/globals.cpp
 test/util/debug.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test/configuration.cpp
 test/util/events.cpp
 test/util/thread.cpp
@@ -105,7 +105,7 @@ test/mugen/item.cpp
 test/mugen/parse-cache.cpp
 test/mugen/characterhud.cpp
 test/util/gui/rectarea.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test/util/audio.cpp
 test-parser/air.cpp
 test-parser/def.cpp
@@ -231,7 +231,7 @@ test/util/network/network.cpp
 test/util/token_exception.cpp
 test/util/input/keyboard.cpp
 test/util/tokenreader.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test/util/load_exception.cpp
 test/util/music-player.cpp
 test/util/audio.cpp

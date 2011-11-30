@@ -47,7 +47,7 @@ test/util/input/allegro/allegro-joystick.cpp
 test/util/input/sdl/joystick.cpp
 test/globals.cpp
 test/util/debug.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test/configuration.cpp
 test/util/events.cpp
 test/util/thread.cpp
@@ -106,7 +106,7 @@ test/mugen/item.cpp
 test/mugen/parse-cache.cpp
 test/mugen/characterhud.cpp
 test/gui/rectarea.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
@@ -302,7 +302,7 @@ test/paintown-engine/factory/object_factory.cpp
 test/paintown-engine/factory/heart_factory.cpp
 test/factory/collector.cpp
 test/paintown-engine/object/display_character.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test/mugen/exception.cpp
 test/paintown-engine/object/player-common.cpp
 test/paintown-engine/game/nameplacer.cpp
@@ -398,7 +398,7 @@ test/paintown-engine/factory/heart_factory.cpp
 test/factory/collector.cpp
 test/paintown-engine/object/display_character.cpp
 test/paintown-engine/object/effect.cpp
-test/menu/font-info.cpp
+test/util/menu/font-info.cpp
 test/mugen/exception.cpp
 test/paintown-engine/object/player-common.cpp
 test/paintown-engine/game/nameplacer.cpp

@@ -6,7 +6,7 @@
 #include "util/bitmap.h"
 #include "paintown-engine/game/options.h"
 #include "factory/collector.h"
-#include "menu/menu.h"
+#include "util/menu/menu.h"
 
 using namespace std;
 
