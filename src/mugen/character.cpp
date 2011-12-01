@@ -2637,11 +2637,11 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
                     }
                 }
             } catch (const MugenNormalRuntimeException & me){
-                /* nothing for now */
+                Global::debug(1, getName()) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
             } catch (const MugenFatalRuntimeException & me){
-                Global::debug(0, getName()) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
+                Global::debug(0, getName()) << "Fatal error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
             } catch (const MugenException & me){
-                Global::debug(0, getName()) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
+                Global::debug(0, getName()) << "Abnormal error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
             }
         }
     }
