@@ -227,7 +227,7 @@ public:
     virtual void removeEffects(const Character * owner, int id);
     virtual int countMyEffects(const Character * owner) const;
     virtual int countMyHelpers(const Character * owner) const;
-    virtual const Character & findRoot(const Character & who) const;
+    virtual std::vector<Helper*> findHelpers(const Character * owner) const;
     virtual std::vector<Helper*> findHelpers(const Character * owner, int id) const;
     virtual Effect * findEffect(const Character * owner, int id);
     virtual std::vector<Effect *> findEffects(const Character * owner, int id);

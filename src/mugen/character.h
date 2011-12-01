@@ -935,6 +935,8 @@ public:
         
         void enableHit();
         void disableHit();
+    
+        virtual const Character * getRoot() const;
 
         virtual inline int getHeight() const {
             return height;

@@ -1662,8 +1662,11 @@ public:
                     const Character & guy = environment.getCharacter();
                     if (guy.isHelper()){
                         const Mugen::Helper & myhelper = *(const Mugen::Helper*)&guy;
-                        Character & parent = myhelper.getParent();
-                        FullEnvironment parentEnvironment(environment.getStage(), parent, environment.getCommands());
+                        Character * parent = myhelper.getParent();
+                        if (parent == NULL){
+                            throw MugenException("Helper has no parent");
+                        }
+                        FullEnvironment parentEnvironment(environment.getStage(), *parent, environment.getCommands());
                         return argument->evaluate(parentEnvironment);
                     }
                     throw MugenException("Cannot redirect to a parent from a non-helper");
@@ -3769,8 +3772,11 @@ public:
                     const Character & helper = environment.getCharacter();
                     if (helper.isHelper()){
                         const Helper & realHelper = *(const Helper*) &helper;
-                        const Character & parent = realHelper.getParent();
-                        return parent.getX() - realHelper.getX();
+                        const Character * parent = realHelper.getParent();
+                        if (parent == NULL){
+                            throw MugenException("Helper has no parent");
+                        }
+                        return parent->getX() - realHelper.getX();
                     }
                     throw MugenException("Cannot use 'parentdist x' on a non-helper");
                 }
@@ -3790,8 +3796,11 @@ public:
                     const Character & helper = environment.getCharacter();
                     if (helper.isHelper()){
                         const Helper & realHelper = *(const Helper*) &helper;
-                        const Character & parent = realHelper.getParent();
-                        return realHelper.getY() - parent.getY();
+                        const Character * parent = realHelper.getParent();
+                        if (parent == NULL){
+                            throw MugenException("Helper has no parent");
+                        }
+                        return realHelper.getY() - parent->getY();
                     }
                     throw MugenException("Cannot use 'parentdist x' on a non-helper");
                 }
@@ -3849,8 +3858,11 @@ public:
             class RootDistX: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const Character & root = environment.getStage().findRoot(environment.getCharacter());
-                    return RuntimeValue(root.getX() - environment.getCharacter().getX());
+                    const Character * root = environment.getCharacter().getRoot();
+                    if (root == NULL){
+                        throw MugenException("No root");
+                    }
+                    return RuntimeValue(root->getX() - environment.getCharacter().getX());
                 }
 
                 Value * copy() const {
@@ -3865,8 +3877,11 @@ public:
             class RootDistY: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const Character & root = environment.getStage().findRoot(environment.getCharacter());
-                    return RuntimeValue(environment.getCharacter().getX() - root.getY());
+                    const Character * root = environment.getCharacter().getRoot();
+                    if (root == NULL){
+                        throw MugenException("No root");
+                    }
+                    return RuntimeValue(environment.getCharacter().getX() - root->getY());
                 }
 
                 Value * copy() const {

@@ -2227,6 +2227,11 @@ void Character::priorPalette(){
     } else currentPalette = palDefaults.size() -1;
     Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
 }
+        
+/* players are their own root normally, only helpers differ */
+const Character * Character::getRoot() const {
+    return this;
+}
 
 const MugenSprite * Character::getCurrentFrame() const {
     if (getCurrentAnimation() != NULL){

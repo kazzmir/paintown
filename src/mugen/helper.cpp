@@ -7,10 +7,12 @@ using namespace std;
 
 namespace Mugen{
 
-Helper::Helper(Character & owner, int id):
-Character(owner),
+Helper::Helper(Character * owner, const Character * root, int id):
+Character(*owner),
 owner(owner),
-id(id){
+root(root),
+id(id),
+name(owner->getName() + " (helper)"){
     behavior = &dummy;
 }
 
@@ -25,6 +27,10 @@ Helper::~Helper(){
         delete state;
     }
 }
+    
+void Helper::reParent(Character * parent){
+    this->owner = parent;
+}
 
 State * Helper::getState(int id) const {
     /* states -3 and -2 are disabled for helpers */
@@ -37,8 +43,8 @@ State * Helper::getState(int id) const {
         return NULL;
     }
     map<int, State*>::const_iterator findIt = proxyStates.find(id);
-    if (findIt == proxyStates.end()){
-        State * dad = owner.getState(id);
+    if (findIt == proxyStates.end() && owner != NULL){
+        State * dad = owner->getState(id);
         if (dad != NULL){
             /* this is why proxyStates has to be mutable */
             proxyStates[id] = dad->deepCopy();
@@ -52,7 +58,7 @@ State * Helper::getState(int id) const {
 }
     
 const std::string Helper::getName() const {
-    return owner.getName() + " (helper)";
+    return name;
 }
 
 /*
@@ -69,9 +75,9 @@ bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, in
     
 MugenAnimation * Helper::getAnimation(int id) const {
     map<int, MugenAnimation*>::const_iterator findIt = proxyAnimations.find(id);
-    if (findIt == proxyAnimations.end()){
-        if (owner.hasAnimation(id)){
-            MugenAnimation * dad = owner.getAnimation(id);
+    if (findIt == proxyAnimations.end() && owner != NULL){
+        if (owner->hasAnimation(id)){
+            MugenAnimation * dad = owner->getAnimation(id);
             /* this is why proxyAnimations has to be mutable */
             proxyAnimations[id] = new MugenAnimation(*dad);
             return proxyAnimations[id];

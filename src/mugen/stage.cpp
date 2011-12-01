@@ -2171,20 +2171,12 @@ int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
         Mugen::Character * who = (Mugen::Character*) *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (&helper->getParent() == owner){
+            if (helper->getParent() == owner){
                 count += 1;
             }
         }
     }
     return count;
-}
-
-const Mugen::Character & Mugen::Stage::findRoot(const Mugen::Character & who) const {
-    if (who.isHelper()){
-        const Mugen::Helper & helper = *(const Mugen::Helper *) &who;
-        return findRoot(helper.getParent());
-    }
-    return who;
 }
 
 vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Character * from) const {
@@ -2201,6 +2193,12 @@ void Mugen::Stage::setEnvironmentColor(Graphics::Color color, int time, bool und
 void Mugen::Stage::removeHelper(Mugen::Character * who){
     /* The character will ultimately be removed in the logic loop */
     who->setHealth(-1);
+    vector<Mugen::Helper*> children = findHelpers(who);
+    for (vector<Mugen::Helper*>::iterator it = children.begin(); it != children.end(); it++){
+        Mugen::Helper * helper = *it;
+        /* lose parent association, still has root though */
+        helper->reParent(NULL);
+    }
 }
     
 void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
@@ -2214,7 +2212,7 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
         }
     }
 }
-    
+
 vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner, int id) const {
     vector<Mugen::Helper*> out;
     for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
@@ -2222,7 +2220,22 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner,
         Mugen::Character * who = (Mugen::Character*) *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (helper->getHelperId() == id && &helper->getParent() == owner){
+            if (helper->getHelperId() == id && helper->getParent() == owner){
+                out.push_back(helper);
+            }
+        }
+    }
+    return out;
+}
+
+vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner) const {
+    vector<Mugen::Helper*> out;
+    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        /* FIXME! dont assume its a character */
+        Mugen::Character * who = (Mugen::Character*) *it;
+        if (who->isHelper()){
+            Mugen::Helper * helper = (Mugen::Helper*) who;
+            if (helper->getParent() == owner){
                 out.push_back(helper);
             }
         }

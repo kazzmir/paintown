@@ -5567,7 +5567,7 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         /* FIXME */
-        Mugen::Helper * helper = new Mugen::Helper(guy, (int) evaluateNumber(id, environment, 0));
+        Mugen::Helper * helper = new Mugen::Helper(&guy, guy.getRoot(), (int) evaluateNumber(id, environment, 0));
         helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
         if (posType == Player1){
             double x = evaluateNumber(posX, environment, 0) + guy.getX();
@@ -5765,14 +5765,17 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             Mugen::Helper & helper = *(Mugen::Helper*)&guy;
-            Character & parent = helper.getParent();
+            Character * parent = helper.getParent();
+            if (parent == NULL){
+                throw MugenException("No parent for helper");
+            }
             FullEnvironment environment(stage, guy, commands);
             if (floatIndex != NULL && floatValue != NULL){
-                parent.setFloatVariable((int) evaluateNumber(floatIndex, environment, 0), floatValue->evaluate(environment));
+                parent->setFloatVariable((int) evaluateNumber(floatIndex, environment, 0), floatValue->evaluate(environment));
             }
 
             if (integerIndex != NULL && integerValue != NULL){
-                parent.setVariable((int) evaluateNumber(integerIndex, environment, 0), integerValue->evaluate(environment));
+                parent->setVariable((int) evaluateNumber(integerIndex, environment, 0), integerValue->evaluate(environment));
             }
         } else {
             Global::debug(0) << "Warning, trying to use ParentVarSet on a non-helper" << endl;
