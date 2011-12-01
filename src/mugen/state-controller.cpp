@@ -183,6 +183,14 @@ bool StateController::canTrigger(const Mugen::Stage & stage, const Character & c
         */
         RuntimeValue result = expression->evaluate(FullEnvironment(stage, character, commands));
         return result.toBool();
+    } catch (const MugenNormalRuntimeException e){
+        ostringstream out;
+        out << "Expression `" << expression->toString() << "' " << e.getReason();
+        throw MugenNormalRuntimeException(out.str());
+    } catch (const MugenFatalRuntimeException e){
+        ostringstream out;
+        out << "Expression `" << expression->toString() << "' " << e.getReason();
+        throw MugenFatalRuntimeException(out.str());
     } catch (const MugenException & e){
         ostringstream out;
         out << "Expression `" << expression->toString() << "' " << e.getReason();
@@ -4994,7 +5002,7 @@ public:
         } else {
             ostringstream out;
             out << "No animation found for " << animation;
-            throw MugenException(out.str());
+            throw MugenNormalRuntimeException(out.str());
         }
     }
 
@@ -5323,7 +5331,7 @@ public:
         if (effect == NULL){
             ostringstream out;
             out << "No explode found for id " << id;
-            throw MugenException(out.str());
+            throw MugenNormalRuntimeException(out.str());
         }
 
         effect->setX((int) evaluateNumber(this->posX, environment, effect->getX()));
@@ -5767,7 +5775,7 @@ public:
             Mugen::Helper & helper = *(Mugen::Helper*)&guy;
             Character * parent = helper.getParent();
             if (parent == NULL){
-                throw MugenException("No parent for helper");
+                throw MugenNormalRuntimeException("No parent for helper");
             }
             FullEnvironment environment(stage, guy, commands);
             if (floatIndex != NULL && floatValue != NULL){
@@ -5778,7 +5786,7 @@ public:
                 parent->setVariable((int) evaluateNumber(integerIndex, environment, 0), integerValue->evaluate(environment));
             }
         } else {
-            Global::debug(0) << "Warning, trying to use ParentVarSet on a non-helper" << endl;
+            Global::debug(1) << "Warning, trying to use ParentVarSet on a non-helper" << endl;
         }
     }
 

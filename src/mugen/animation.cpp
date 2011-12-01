@@ -184,7 +184,7 @@ int MugenAnimation::animationElementElapsed(int position) const {
     if (position < 1 || position > (int) frames.size() + 1){
         ostringstream out;
         out << "Invalid animation position: " << position << ". Position must be in the range 1 to " << (frames.size() + 1);
-        throw MugenException(out.str());
+        throw MugenNormalRuntimeException(out.str());
     }
 
     for (int from = (int) this->position; from < position - 1; from++){

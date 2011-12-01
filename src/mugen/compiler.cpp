@@ -213,6 +213,14 @@ namespace PaintownUtil = ::Util;
 namespace Mugen{
 namespace Compiler{
 
+void compileError(const std::string & fail){
+    throw MugenException(fail);
+}
+
+void runtimeError(const std::string & fail){
+    throw MugenNormalRuntimeException(fail);
+}
+
 namespace{
 
 class CompileWalker: public Ast::Walker {
@@ -352,7 +360,7 @@ public:
                     types.push_back(AttackType::HyperProjectile);
                 }
             } else {
-                throw MugenException(std::string("Invalid attack type '") + attack + "'");
+                compileError(std::string("Invalid attack type '") + attack + "'");
             }
         }
 
@@ -1209,7 +1217,7 @@ public:
                     if (animation == NULL){
                         std::ostringstream out;
                         out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
-                        throw MugenException(out.str());
+                        runtimeError(out.str());
                     }
                     return RuntimeValue(animation->animationTime());
                 }
@@ -1631,7 +1639,8 @@ public:
 
         std::ostringstream out;
         out << "Don't know how to compile identifier '" << identifier.toString() << "' on line " << identifier.getLine() << " at column " << identifier.getColumn();
-        throw MugenException(out.str());
+        compileError(out.str());
+        return NULL;
     }
 
     Value * compileHelper(const Ast::Helper & helper){
@@ -1664,12 +1673,13 @@ public:
                         const Mugen::Helper & myhelper = *(const Mugen::Helper*)&guy;
                         Character * parent = myhelper.getParent();
                         if (parent == NULL){
-                            throw MugenException("Helper has no parent");
+                            runtimeError("Helper has no parent");
                         }
                         FullEnvironment parentEnvironment(environment.getStage(), *parent, environment.getCommands());
                         return argument->evaluate(parentEnvironment);
                     }
-                    throw MugenException("Cannot redirect to a parent from a non-helper");
+                    runtimeError("Cannot redirect to a parent from a non-helper");
+                    return RuntimeValue();
                 }
             };
 
@@ -1860,7 +1870,8 @@ public:
 
         std::ostringstream out;
         out << "Don't know how to compile helper '" << helper.toString() << "'";
-        throw MugenException(out.str());
+        compileError(out.str());
+        return NULL;
     }
     
     virtual void onHelper(const Ast::Helper & helper){
@@ -1901,7 +1912,7 @@ public:
                     case Ast::Range::AllExclusive : return RuntimeValue(low, high);
                     case Ast::Range::LeftInclusiveRightExclusive : return RuntimeValue(low - 1, high);
                     case Ast::Range::LeftExclusiveRightInclusive : return RuntimeValue(low, high + 1);
-                    default : throw MugenException("Can't get here");
+                    default: compileError("Can't get here"); return RuntimeValue();
                 }
             }
 
@@ -1924,7 +1935,7 @@ public:
             case Ast::Range::LeftExclusiveRightInclusive : {
                 break;
             }
-            default : throw MugenException("Unexpected range type");
+            default: compileError("Unexpected range type");
         }
 
         Value * const  low = compile(range.getLow());
@@ -2505,7 +2516,7 @@ public:
             ConstWalker walker;
             function.getArg1()->walk(walker);
             if (walker.compiled == NULL){
-                throw MugenException("Unknown const value " + function.getArg1()->toString());
+                compileError("Unknown const value " + function.getArg1()->toString());
             }
             return walker.compiled;
         }
@@ -2562,7 +2573,7 @@ public:
                     if (num <= 0){
                         std::ostringstream out;
                         out << "Argument to ln must be positive but was " << num;
-			throw MugenException(out.str());
+                        runtimeError(out.str());
 		    }
 
 		    const double value = log(num);
@@ -2599,11 +2610,11 @@ public:
                     if (base <= 0){
                         std::ostringstream out;
                         out << "Base of log must be positive but was " << base;
-			throw MugenException(out.str());
+                        runtimeError(out.str());
 		    } else if (value <= 0){
                         std::ostringstream out;
                         out << "Value of log must be positive but was " << value;
-			throw MugenException(out.str());
+                        runtimeError(out.str());
 		    }
 
 		    const double result = log(value) / log(base);
@@ -2758,7 +2769,7 @@ public:
             };
 
             if (function.getArg1() == 0){
-                throw MugenException("No argument given to gethitvar");
+                compileError("No argument given to gethitvar");
             }
 
             std::string var = PaintownUtil::lowerCaseAll(function.getArg1()->toString());
@@ -2805,7 +2816,8 @@ public:
                         } else if (state(environment).hitType == AttackType::Trip){
                             return RuntimeValue(3);
                         }
-                        throw MugenException("Invalid hit type");
+                        compileError("Invalid hit type");
+                        return RuntimeValue();
                     }
 
                     Value * copy() const {
@@ -3100,7 +3112,7 @@ public:
                 return new HitVarFallRecoverTime();
             }
 
-            throw MugenException("Unknown gethitvar variable " + var);
+            compileError("Unknown gethitvar variable " + var);
         }
 
         if (function == "teammode!="){
@@ -3399,7 +3411,7 @@ public:
                     int index = (int) this->index->evaluate(environment).toNumber();
                     MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
                     if (animation == NULL){
-                        throw MugenException("Current animation is NULL");
+                        runtimeError("Current animation is NULL");
                     }
                     return RuntimeValue(animation->animationElementElapsed(index));
                 }
@@ -3494,7 +3506,7 @@ public:
                     if (environment.getCharacter().getCurrentAnimation() == NULL){
                         std::ostringstream out;
                         out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
-                        throw MugenException(out.str());
+                        runtimeError(out.str());
                     }
                     /* FIXME */
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
@@ -3515,7 +3527,8 @@ public:
         if (function.getLine() != -1){
             out << " at line " << function.getLine() << " column " << function.getColumn();
         }
-        throw MugenException(out.str());
+        compileError(out.str());
+        return NULL;
     }
 
     virtual void onFunction(const Ast::Function & string){
@@ -3558,7 +3571,7 @@ public:
                     case Ast::ExpressionUnary::Negation : {
                         return RuntimeValue(~(int)toNumber(expression->evaluate(environment)));
                     }
-                    default : throw MugenException("Can't get here");
+                    default: compileError("Can't get here"); return RuntimeValue();
                 }
             }
         };
@@ -3572,7 +3585,7 @@ public:
             default : {
                 std::ostringstream out;
                 out << "Unknown expression: " << expression.toString();
-                throw MugenException(out.str());
+                compileError(out.str());
             }
         }
 
@@ -3774,11 +3787,12 @@ public:
                         const Helper & realHelper = *(const Helper*) &helper;
                         const Character * parent = realHelper.getParent();
                         if (parent == NULL){
-                            throw MugenException("Helper has no parent");
+                            runtimeError("Helper has no parent");
                         }
                         return parent->getX() - realHelper.getX();
                     }
-                    throw MugenException("Cannot use 'parentdist x' on a non-helper");
+                    runtimeError("Cannot use 'parentdist x' on a non-helper");
+                    return RuntimeValue();
                 }
 
                 Value * copy() const {
@@ -3798,11 +3812,12 @@ public:
                         const Helper & realHelper = *(const Helper*) &helper;
                         const Character * parent = realHelper.getParent();
                         if (parent == NULL){
-                            throw MugenException("Helper has no parent");
+                            runtimeError("Helper has no parent");
                         }
                         return realHelper.getY() - parent->getY();
                     }
-                    throw MugenException("Cannot use 'parentdist x' on a non-helper");
+                    runtimeError("Cannot use 'parentdist x' on a non-helper");
+                    return RuntimeValue();
                 }
 
                 Value * copy() const {
@@ -3860,7 +3875,7 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * root = environment.getCharacter().getRoot();
                     if (root == NULL){
-                        throw MugenException("No root");
+                        runtimeError("No root");
                     }
                     return RuntimeValue(root->getX() - environment.getCharacter().getX());
                 }
@@ -3879,7 +3894,7 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * root = environment.getCharacter().getRoot();
                     if (root == NULL){
-                        throw MugenException("No root");
+                        runtimeError("No root");
                     }
                     return RuntimeValue(environment.getCharacter().getX() - root->getY());
                 }
@@ -3894,7 +3909,8 @@ public:
 
         std::ostringstream out;
         out << "Unknown keyword '" << keyword.toString() << "'";
-        throw MugenException(out.str());
+        compileError(out.str());
+        return NULL;
     }
 
     virtual void onKeyword(const Ast::Keyword & keyword){
@@ -4030,7 +4046,7 @@ public:
                         int result_left = (int) left->evaluate(environment).toNumber();
                         int result_right = (int) right->evaluate(environment).toNumber();
                         if (result_right == 0){
-                            throw MugenException("mod by 0");
+                            runtimeError("mod by 0");
                         }
                         return RuntimeValue(result_left % result_right);
                     }
@@ -4039,7 +4055,8 @@ public:
                     }
                 }
 
-                throw MugenException("Can't get here");
+                runtimeError("Can't get here");
+                return RuntimeValue();
             }
         };
 
@@ -4047,7 +4064,7 @@ public:
 
         std::ostringstream out;
         out << "Unknown expression: " << expression.toString();
-        throw MugenException(out.str());
+        compileError(out.str());
     }
 
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
@@ -4099,13 +4116,13 @@ Value * compile(const Ast::Value * input){
     } catch (const MugenException & e){
         std::ostringstream out;
         out << e.getReason() << " while compiling expression '" << input->toString() << "'";
-        throw MugenException(out.str());
+        compileError(out.str());
     }
 
     if (compiler.compiled == NULL){
         std::ostringstream out;
         out << "Unable to compile expression '" << input->toString() << "'";
-        throw MugenException(out.str());
+        compileError(out.str());
     }
     return compiler.compiled;
 }

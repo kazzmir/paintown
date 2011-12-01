@@ -28,3 +28,25 @@ const std::string MugenException::getFullReason() const {
 	
 MugenException::~MugenException() throw() {
 }
+    
+MugenRuntimeException::MugenRuntimeException(){
+}
+
+MugenRuntimeException::MugenRuntimeException(const std::string & reason, const std::string & where, int line):
+MugenException(reason, where, line){
+}
+
+MugenNormalRuntimeException::MugenNormalRuntimeException(){
+}
+
+MugenNormalRuntimeException::MugenNormalRuntimeException(const std::string & reason, const std::string & where, int line):
+MugenRuntimeException(reason, where, line){
+}
+
+MugenFatalRuntimeException::MugenFatalRuntimeException(){
+}
+
+MugenFatalRuntimeException::MugenFatalRuntimeException(const std::string & reason, const std::string & where, int line):
+MugenRuntimeException(reason, where, line){
+}
+
