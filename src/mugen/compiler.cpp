@@ -2100,12 +2100,38 @@ public:
                         /* FIXME */
                         return compile(0);
 		    }
+                    
+                    if (identifier == "data.defence"){
+                        class Defence: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getDefence());
+                            }
+
+                            Value * copy() const {
+                                return new Defence();
+                            }
+                        };
+
+                        return new Defence();
+		    }
+
+                    if (identifier == "data.attack"){
+                        class Attack: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getAttack());
+                            }
+
+                            Value * copy() const {
+                                return new Attack();
+                            }
+                        };
+
+                        return new Attack();
+		    }
 
                     /* TODO implement rest 
-                    if (identifier == "data.attack"){
-		    }
-                    if (identifier == "data.defence"){
-		    }
                     if (identifier == "data.fall.defence_mul"){
 		    }
                     if (identifier == "data.airjuggle"){

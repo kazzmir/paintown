@@ -893,6 +893,14 @@ public:
             return gravity;
         }
 
+        virtual int getDefence() const {
+            return defence;
+        }
+
+        virtual int getAttack() const {
+            return attack;
+        }
+
         virtual void setLieDownTime(int x){
             lieDownTime = x;
         }
