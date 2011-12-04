@@ -1,7 +1,7 @@
 #include "character.h"
 #include "player-common.h"
 #include "util/load_exception.h"
-#include "globals.h"
+#include "alliance.h"
 
 namespace Paintown{
 

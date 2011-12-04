@@ -16,6 +16,7 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "util/debug.h"
+#include "globals.h"
 
 using namespace std;
 

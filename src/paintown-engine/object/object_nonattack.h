@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "object.h"
-#include "globals.h"
+#include "alliance.h"
 
 namespace Paintown{
 
@@ -13,7 +13,6 @@ class ObjectAttack;
 
 class ObjectNonAttack : public Object {
 public:
-
 	ObjectNonAttack( const int x, const int y, int alliance = ALLIANCE_NONE );
 	ObjectNonAttack( const ObjectNonAttack & obj );
 	

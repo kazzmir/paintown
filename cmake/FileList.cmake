@@ -61,6 +61,7 @@ src/paintown-engine/object/effect.cpp
 src/paintown-engine/object/enemy.cpp
 src/paintown-engine/object/gib.cpp
 src/paintown-engine/object/item.cpp
+src/paintown-engine/object/alliance.cpp
 src/paintown-engine/object/network_character.cpp
 src/paintown-engine/object/network_player.cpp
 src/paintown-engine/object/object.cpp

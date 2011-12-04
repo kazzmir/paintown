@@ -6,7 +6,7 @@
 #include "util/token_exception.h"
 #include "util/funcs.h"
 #include "../game/world.h"
-#include "globals.h"
+#include "alliance.h"
 #include "util/debug.h"
 #include "animation.h"
 #include <iostream>

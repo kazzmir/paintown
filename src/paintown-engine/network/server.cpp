@@ -16,6 +16,7 @@
 #include "util/loading.h"
 #include "util/music.h"
 #include "network_world.h"
+#include "../object/alliance.h"
 #include "../object/character.h"
 #include "../object/network_character.h"
 #include "../object/network_player.h"
@@ -255,12 +256,12 @@ static void sendToAll( const vector< Socket > & sockets, const Message & message
     }
 }
 
-static int allAlliance = ALLIANCE_FREE_FOR_ALL;
+static int allAlliance = Paintown::ALLIANCE_FREE_FOR_ALL;
 static int playerAlliance(){
     if (Configuration::getPlayMode() == Configuration::FreeForAll){
         return allAlliance++;
     } else {
-        return ALLIANCE_PLAYER;
+        return Paintown::ALLIANCE_PLAYER;
     }
 }
 
@@ -398,7 +399,7 @@ static void playGame(vector<Client*> & clients){
         Level::LevelInfo levelInfo = selectLevels();
 
         /* reset the alliance settings */
-        allAlliance = ALLIANCE_FREE_FOR_ALL;
+        allAlliance = Paintown::ALLIANCE_FREE_FOR_ALL;
 
         /* the server player is network id 1 */
         player->setId(1);

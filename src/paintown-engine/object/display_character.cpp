@@ -1,4 +1,3 @@
-#include "globals.h"
 #include "character.h"
 #include "display_character.h"
 #include "draw-effect.h"
@@ -10,6 +9,7 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "animation.h"
+#include "alliance.h"
 #include <string>
 #include <vector>
 #include <map>

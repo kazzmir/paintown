@@ -34,6 +34,7 @@ static const int GLOBAL_KEY_DELAY = 40;
 static const int GLOBAL_KEY_DELAY = 20;
 #endif
 static const unsigned int KEY_CACHE_SIZE = 100;
+static const int MIN_RELATIVE_DISTANCE = 10;
 
 using namespace std;
 

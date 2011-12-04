@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 
+#include "globals.h"
 #include "animation.h"
 #include "util/bitmap.h"
 #include "character.h"
@@ -9,7 +10,7 @@
 #include "util/font.h"
 #include "factory/font_render.h"
 #include "../game/nameplacer.h"
-#include "globals.h"
+#include "alliance.h"
 #include "util/debug.h"
 #include "heart.h"
 #include "../factory/heart_factory.h"

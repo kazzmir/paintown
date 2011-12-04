@@ -9,13 +9,6 @@ class Bitmap;
 class MessageQueue;
 
 /* put this in an enum */
-extern const int ALLIANCE_NONE;
-extern const int ALLIANCE_PLAYER;
-extern const int ALLIANCE_ENEMY;
-extern const int ALLIANCE_FREE_FOR_ALL;
-
-/* who uses this? it probably doesnt belong here */
-extern const int MIN_RELATIVE_DISTANCE;
 
 // extern const char * NAME_FONT;
 
