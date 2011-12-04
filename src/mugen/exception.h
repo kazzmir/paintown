@@ -1,7 +1,7 @@
 #ifndef mugen_exception_h
 #define mugen_exception_h
 
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include <string>
 
 /* FIXME: use a Mugen namespace here */

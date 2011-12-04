@@ -8,7 +8,7 @@
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/load_exception.h"
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include <vector>
 #include "util/init.h"
 #include "util/input/input-manager.h"

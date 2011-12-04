@@ -28,7 +28,7 @@
 #include "network_world_client.h"
 #include "../game/game.h"
 #include "../game/mod.h"
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include "util/loading.h"
 #include "chat_client.h"
 #include "util/network/network.h"

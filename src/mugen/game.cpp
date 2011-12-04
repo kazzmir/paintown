@@ -19,9 +19,9 @@
 #include "util/console.h"
 #include "util/message-queue.h"
 #include "factory/font_render.h"
-#include "exceptions/shutdown_exception.h"
+#include "util/exceptions/shutdown_exception.h"
+#include "util/exceptions/exception.h"
 #include "search.h"
-#include "exceptions/exception.h"
 #include "util/loading.h"
 
 #include "character.h"

@@ -10,7 +10,7 @@
 #include "font_factory.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include "util/load_exception.h"
 #include "util/ftalleg.h"
 

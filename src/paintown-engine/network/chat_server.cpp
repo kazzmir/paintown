@@ -12,7 +12,7 @@
 #include "util/font.h"
 #include "util/file-system.h"
 #include "util/load_exception.h"
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include "globals.h"
 #include "util/init.h"
 #include "util/input/input-source.h"

@@ -124,7 +124,7 @@ src/util/windows/funcs.cpp
 src/util/windows/system.cpp
 src/util/nacl/module.cpp
 src/util/nacl/network-system.cpp
-src/exceptions/exception.cpp
+src/util/exceptions/exception.cpp
 src/openbor/pack-reader.cpp
 src/openbor/animation.cpp
 src/openbor/display-character.cpp

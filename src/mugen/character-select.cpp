@@ -27,7 +27,6 @@
 #include "util/thread.h"
 #include "globals.h"
 #include "factory/font_render.h"
-#include "exceptions/shutdown_exception.h"
 
 #include "animation.h"
 #include "background.h"
@@ -47,7 +46,7 @@
 #include "util/input/input-manager.h"
 #include "util/input/input-source.h"
 
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 
 namespace PaintownUtil = ::Util;
 

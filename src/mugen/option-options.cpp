@@ -25,7 +25,7 @@
 #include "util/timedifference.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-source.h"
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 
 #include "util/gui/box.h"
 

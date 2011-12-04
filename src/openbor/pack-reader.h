@@ -6,7 +6,7 @@
 #include <vector>
 #include <stdint.h>
 #include <fstream>
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include "util/file-system.h"
 #include "util/thread.h"
 

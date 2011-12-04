@@ -22,7 +22,7 @@
 #include "../object/object.h"
 #include "../object/player.h"
 #include "../game/mod.h"
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include "util/menu/menu.h"
 #include "server.h"
 #include <sstream>
