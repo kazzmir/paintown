@@ -63,7 +63,7 @@ test/util/message-queue.cpp
 test/util/token.cpp
 test/util/tokenreader.cpp
 test/util/token_exception.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
 test/util/windows/system.cpp
@@ -177,7 +177,7 @@ test/util/token_exception.cpp
 test/paintown-engine/game/world.cpp
 test/util/console.cpp
 test/util/input/text-input.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 test/util/thread.cpp
 test/util/events.cpp
 test/factory/font_render.cpp
@@ -247,7 +247,7 @@ test/util/token_exception.cpp
 test/util/timedifference.cpp
 test/mugen/exception.cpp
 test/mugen/ast/ast.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 """)
 
 load_source = Split("""
@@ -256,7 +256,7 @@ load.cpp
 test/util/file-system.cpp
 test/util/bitmap.cpp
 test/util/debug.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 test/globals.cpp
 test/factory/font_factory.cpp
 test/factory/font_render.cpp
@@ -351,7 +351,7 @@ game.cpp
 test/util/file-system.cpp
 test/util/bitmap.cpp
 test/util/debug.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 test/globals.cpp
 test/factory/font_factory.cpp
 test/factory/font_render.cpp

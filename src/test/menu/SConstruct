@@ -24,7 +24,7 @@ test/util/menu/menu_option.cpp
 test/util/menu/menu_action.cpp
 test/util/menu/options.cpp
 test/globals.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 test/util/token.cpp
 test/util/tokenreader.cpp
 test/util/token_exception.cpp
@@ -93,6 +93,7 @@ test/paintown-engine/object/projectile.cpp
 test/paintown-engine/object/stimulation.cpp
 test/paintown-engine/object/versus_enemy.cpp
 test/paintown-engine/object/versus_player.cpp
+test/paintown-engine/object/alliance.cpp
 test/paintown-engine/game/nameplacer.cpp
 test/util/font.cpp
 test/util/network/network.cpp

@@ -3,6 +3,7 @@
 
 #include "object_nonattack.h"
 #include "util/network/network.h"
+#include "util/file-system.h"
 #include <vector>
 #include <string>
 

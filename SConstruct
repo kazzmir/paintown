@@ -1319,7 +1319,7 @@ rsx
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
             # cflags.append( ['-g3','-ggdb', '-Werror'])
-            cflags.extend(['-g3','-ggdb', '-Wfatal-errors'])
+            cflags.extend(['-g3', '-Wfatal-errors'])
         else:
             # -march=native
             if nativeCompile():

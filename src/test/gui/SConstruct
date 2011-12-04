@@ -9,7 +9,7 @@ common/init.cpp
 common/timer.cpp
 test/configuration.cpp
 test/globals.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 test/factory/font_factory.cpp
 test/factory/font_render.cpp
 test/util/audio.cpp
@@ -92,6 +92,7 @@ test/paintown-engine/object/object_nonattack.cpp
 test/paintown-engine/object/player.cpp
 test/paintown-engine/object/player-common.cpp
 test/paintown-engine/object/projectile.cpp
+test/paintown-engine/object/alliance.cpp
 test/paintown-engine/script/script.cpp
 """)
 
@@ -99,7 +100,7 @@ space_source = Split("""
 test/util/gui/coordinate.cpp
 test/util/load_exception.cpp
 test/util/debug.cpp
-test/exceptions/exception.cpp
+test/util/exceptions/exception.cpp
 space.cpp
 """)
 
