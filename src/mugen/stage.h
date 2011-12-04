@@ -207,6 +207,8 @@ public:
     virtual int getMaximumZ();
     virtual int getMinimumZ();
     static const std::string getStageName(const std::string &filename) throw (MugenException);
+    
+    bool isaPlayer(Object * o) const;
 
     virtual Character * getEnemy(const Character * who) const;
     virtual std::vector<Character *> getTargets(int id, const Character * from) const;
@@ -325,7 +327,7 @@ protected:
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
-
+    
 protected:
 
     void addSpark(int x, int y, int sparkNumber);
@@ -579,7 +581,6 @@ private:
     bool debugMode;
 
     void cleanup();
-    bool isaPlayer(Object * o) const;
 
     std::vector<Object*> objects;
 

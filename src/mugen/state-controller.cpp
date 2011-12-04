@@ -300,6 +300,29 @@ Compiler::Value * extractAttribute(Ast::Section * section, const string & name){
     return walker.value;
 }
 
+const Ast::AttributeSimple * findAttribute(Ast::Section * section, const string & name){
+    class Walker: public Ast::Walker {
+    public:
+        Walker(const string & name):
+        name(name),
+        attribute(NULL){
+        }
+
+        const string & name;
+        const Ast::AttributeSimple * attribute;
+
+        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            if (simple == name){
+                attribute = &simple;
+            }
+        }
+    };
+
+    Walker walker(name);
+    section->walk(walker);
+    return walker.attribute;
+}
+
 static void extractValue(Value & value, Ast::Section * section){
     value = extractAttribute(section, "value");
     /*
@@ -6590,6 +6613,59 @@ public:
     }
 };
 
+class ControllerBindToRoot: public StateController {
+public:
+    ControllerBindToRoot(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        time = extractAttribute(section, "time");
+        facing = extractAttribute(section, "facing");
+
+        const Ast::AttributeSimple * pos = findAttribute(section, "pos");
+        if (pos != NULL){
+            const Ast::Value * posX = NULL;
+            const Ast::Value * posY = NULL;
+            try{
+                pos->view() >> posX >> posY;
+            } catch (const Ast::Exception & ignore){
+            }
+
+            if (posX != NULL){
+                positionX = Compiler::compile(posX);
+            }
+            if (posY != NULL){
+                positionY = Compiler::compile(posY);
+            }
+        }
+    }
+
+    ControllerBindToRoot(const ControllerBindToRoot & you):
+    StateController(you),
+    time(copy(you.time)),
+    facing(copy(you.facing)),
+    positionX(copy(you.positionX)),
+    positionY(copy(you.positionY)){
+    }
+
+    Value time;
+    Value facing;
+    Value positionX, positionY;
+
+    StateController * deepCopy() const {
+        return new ControllerBindToRoot(*this);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        if (guy.isHelper()){
+            FullEnvironment environment(stage, guy, commands);
+            int time = (int) evaluateNumber(this->time, environment, 1);
+            int facing = (int) evaluateNumber(this->facing, environment, -1);
+            double x = evaluateNumber(this->positionX, environment, 0);
+            double y = evaluateNumber(this->positionY, environment, 0);
+            guy.bindTo(guy.getRoot(), time, facing, x, y);
+        }
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -6765,7 +6841,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::AppendToClipboard : return new ControllerAppendToClipboard(section, name, state);
         case StateController::ClearClipboard : return new ControllerClearClipboard(section, name, state);
         case StateController::MoveHitReset : return new ControllerMoveHitReset(section, name, state);
-        case StateController::BindToRoot :
+        case StateController::BindToRoot : return new ControllerBindToRoot(section, name, state);
         case StateController::BindToTarget :
         case StateController::ParentVarAdd :
         case StateController::SndPan :

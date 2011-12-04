@@ -649,6 +649,8 @@ public:
 
     virtual void reverseFacing();
 
+    virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
+
     /* absolute X coordinate of the back of the character */
     virtual int getBackX() const;
     /* same thing for the front */
@@ -946,6 +948,11 @@ public:
     
         virtual const Character * getRoot() const;
 
+        /* binds this character to 'bound' meaning this character's position
+         * will be the same as 'bound' and adjusted by the facing and offsets
+         */
+        virtual void bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY);
+
         virtual inline int getHeight() const {
             return height;
         }
@@ -1172,6 +1179,8 @@ protected:
     void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void stopGuarding(Mugen::Stage & stage, const std::vector<std::string> & inputs);
+
+    void maybeTurn(const std::vector<Object*> & objects, Stage & stage);
 
     /*
     internalCommand_t resetJump;
@@ -1668,6 +1677,35 @@ public:
 
         double max_health;
         double health;
+
+        /* keeps track of binds to other characters. Used for BindToRoot and
+         * BindToTarget
+         */
+        struct Bind{
+            Bind():
+            bound(NULL),
+            time(0),
+            facing(0),
+            offsetX(0),
+            offsetY(0){
+            }
+
+            Bind(const Bind & you):
+                bound(you.bound),
+                time(you.time),
+                facing(you.facing),
+                offsetX(you.offsetX),
+                offsetY(you.offsetY){
+                }
+
+            const Character * bound;
+            int time;
+            int facing;
+            double offsetX;
+            double offsetY;
+        };
+
+        Bind bind;
 };
 
 }

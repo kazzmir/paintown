@@ -75,6 +75,8 @@ public:
 
     virtual unsigned int getTicket() const;
     virtual void nextTicket();
+    
+    virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
 
     /* paused from an attack */
     virtual bool isPaused() = 0;

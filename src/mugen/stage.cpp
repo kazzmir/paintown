@@ -790,41 +790,7 @@ void Mugen::Stage::physics(Object * mugen){
         return;
     }
 
-    if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
-        /* gravity */
-        if (mugen->getY() > 0){
-            double gravity = mugen->getGravity();
-            mugen->setYVelocity(mugen->getYVelocity() + gravity);
-        } else if (mugen->getYVelocity() > 0){
-            /* change to the landing state */
-            // mugen->setXVelocity(0);
-            vector<string> inputs;
-            /* FIXME: replace 52 with a constant */
-            mugen->changeState(*this, 52, inputs);
-        }
-    } else if (mugen->getCurrentPhysics() == Mugen::Physics::Stand){
-        mugen->setY(0);
-    }
-
-    mugen->moveX(mugen->getXVelocity());
-    mugen->moveY(-mugen->getYVelocity());
-    /*
-    if (mugen->getY() < 0){
-        mugen->setY(0);
-    }
-    */
-
-    if (mugen->canTurn()){
-        for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-            Mugen::Object * enemy = *enem;
-            if (isaPlayer(enemy) && enemy->getAlliance() != mugen->getAlliance()){
-                if ((enemy->getX() > mugen->getX() && mugen->getFacing() != Mugen::FacingRight) ||
-                    (enemy->getX() < mugen->getX() && mugen->getFacing() != Mugen::FacingLeft)){
-		    mugen->doTurn(*this);
-                }
-            }
-        }
-    }
+    mugen->doMovement(objects, *this);
 
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
         mugen->getCurrentPhysics() == Mugen::Physics::Crouch){
@@ -1628,7 +1594,7 @@ void Mugen::Stage::cleanup(){
     }
 }
 
-bool Mugen::Stage::isaPlayer( Mugen::Object * o ) const {
+bool Mugen::Stage::isaPlayer(Mugen::Object * o) const {
     for (vector<Mugen::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( (*it) == o ){
             return true;

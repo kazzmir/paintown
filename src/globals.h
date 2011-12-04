@@ -8,12 +8,6 @@
 class Bitmap;
 class MessageQueue;
 
-/* put this in an enum */
-
-// extern const char * NAME_FONT;
-
-// #include "debug.h"
-
 namespace Global{
 	
 extern const unsigned int MagicId;

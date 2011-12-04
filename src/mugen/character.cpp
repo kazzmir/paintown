@@ -405,6 +405,9 @@ ticket(copy.ticket){
 Object::~Object(){
 }
     
+void Object::doMovement(const std::vector<Object*> & objects, Stage & stage){
+}
+    
 unsigned int Object::getTicket() const {
     return ticket;
 }
@@ -1881,7 +1884,15 @@ void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, Muge
         }
     }
 }
-        
+
+void Character::bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY){
+    bind.bound = bound;
+    bind.time = time;
+    bind.facing = facing;
+    bind.offsetX = offsetX;
+    bind.offsetY = offsetY;
+}
+
 bool Character::hasAnimation(int index) const {
     return getAnimation(index) != NULL;
 }
@@ -2514,7 +2525,61 @@ void Character::addCombo(int combo){
         hitCount = 0;
     }
 }
-        
+
+void Character::maybeTurn(const vector<Object*> & objects, Stage & stage){
+    if (canTurn()){
+        for (vector<Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Object * enemy = *enem;
+            if (stage.isaPlayer(enemy) && enemy->getAlliance() != getAlliance()){
+                if ((enemy->getX() > getX() && getFacing() != Mugen::FacingRight) ||
+                    (enemy->getX() < getX() && getFacing() != Mugen::FacingLeft)){
+                    doTurn(stage);
+                }
+            }
+        }
+    }
+}
+
+void Character::doMovement(const vector<Object*> & objects, Stage & stage){
+    if (bind.time > 0 && bind.bound != NULL){
+        bind.time -= 1;
+        setX(bind.bound->getX() + bind.offsetX);
+        setY(bind.bound->getY() + bind.offsetY);
+        switch (bind.facing){
+            case -1: setFacing(bind.bound->getOppositeFacing()); break;
+            case 0: maybeTurn(objects, stage); break;
+            case 1: setFacing(bind.bound->getFacing()); break;
+        }
+    } else {
+
+        if (getCurrentPhysics() == Mugen::Physics::Air){
+            /* gravity */
+            if (getY() > 0){
+                double gravity = getGravity();
+                setYVelocity(getYVelocity() + gravity);
+            } else if (getYVelocity() > 0){
+                /* change to the landing state */
+                // mugen->setXVelocity(0);
+                vector<string> inputs;
+                /* FIXME: replace 52 with a constant */
+                changeState(stage, 52, inputs);
+            }
+        } else if (getCurrentPhysics() == Mugen::Physics::Stand){
+            setY(0);
+        }
+
+        moveX(getXVelocity());
+        moveY(-getYVelocity());
+        /*
+           if (mugen->getY() < 0){
+           mugen->setY(0);
+           }
+           */
+
+        maybeTurn(objects, stage);
+    }
+}
+
 void Character::didHit(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().pause.player1;
     addPower(getHit().getPower.hit);
