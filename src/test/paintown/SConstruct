@@ -32,6 +32,7 @@ test/gui/rectarea.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
+test/object/alliance.cpp
 test/object/object.cpp
 test/object/object_attack.cpp
 test/util/sound.cpp
@@ -136,6 +137,7 @@ test/paintown-engine/object/animation_trail.cpp
 test/paintown-engine/object/animation.cpp
 test/paintown-engine/object/gib.cpp
 test/paintown-engine/object/cat.cpp
+test/paintown-engine/object/alliance.cpp
 test/paintown-engine/object/actor.cpp
 test/paintown-engine/object/object_nonattack.cpp
 test/paintown-engine/object/enemy.cpp
@@ -206,6 +208,7 @@ test/paintown-engine/object/animation_trail.cpp
 test/paintown-engine/object/animation.cpp
 test/paintown-engine/object/gib.cpp
 test/paintown-engine/object/cat.cpp
+test/paintown-engine/object/alliance.cpp
 test/paintown-engine/object/actor.cpp
 test/paintown-engine/object/object_nonattack.cpp
 test/paintown-engine/object/enemy.cpp
@@ -296,6 +299,7 @@ test/paintown-engine/object/network_character.cpp
 test/paintown-engine/object/actor.cpp
 test/paintown-engine/object/enemy.cpp
 test/paintown-engine/object/cat.cpp
+test/paintown-engine/object/alliance.cpp
 test/paintown-engine/object/heart.cpp
 test/util/resource.cpp
 test/paintown-engine/factory/object_factory.cpp
@@ -389,6 +393,7 @@ test/paintown-engine/object/item.cpp
 test/paintown-engine/object/network_player.cpp
 test/paintown-engine/object/network_character.cpp
 test/paintown-engine/object/actor.cpp
+test/paintown-engine/object/alliance.cpp
 test/paintown-engine/object/enemy.cpp
 test/paintown-engine/object/cat.cpp
 test/paintown-engine/object/heart.cpp

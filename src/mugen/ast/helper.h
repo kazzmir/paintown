@@ -15,9 +15,10 @@ namespace Ast{
 
 class Helper: public Value {
 public:
-    Helper(int line, int column, const std::string & name, Value * original):
+    Helper(int line, int column, const std::string & name, Value * expression, Value * original):
     Value(line, column),
     name(name),
+    expression(expression),
     original(original){
     }
 
@@ -26,7 +27,11 @@ public:
     }
     
     virtual Element * copy() const {
-        return new Helper(getLine(), getColumn(), name, (Value*) original->copy());
+        Value * expression = NULL;
+        if (this->expression != NULL){
+            expression = (Value*) this->expression->copy();
+        }
+        return new Helper(getLine(), getColumn(), name, expression, (Value*) original->copy());
     }
 
     static std::string downcase(std::string str){
@@ -37,6 +42,11 @@ public:
     virtual Value * getOriginal() const {
         return original;
     }
+
+    /* might be NULL */
+    virtual Value * getArgument() const {
+        return expression;
+    }
     
     virtual void walk(Walker & walker) const {
         walker.onHelper(*this);
@@ -45,15 +55,26 @@ public:
     Token * serialize() const {
         Token * token = new Token();
         *token << SERIAL_HELPER << getLine() << getColumn() << name << original->serialize();
+        *token << (expression != NULL);
+        if (expression != NULL){
+            *token << expression->serialize();
+        }
         return token;
     }
 
     static Helper * deserialize(const Token * token){
         std::string name;
         const Token * next;
+        const Token * expression = NULL;
         int line, column;
-        token->view() >> line >> column >> name >> next;
-        return new Helper(line, column, name, Value::deserialize(next));
+        bool hasExpression = false;
+        TokenView view = token->view();
+        view >> line >> column >> name >> next >> hasExpression;
+        if (hasExpression){
+            view >> expression;
+            return new Helper(line, column, name, Value::deserialize(expression), Value::deserialize(next));
+        }
+        return new Helper(line, column, name, NULL, Value::deserialize(next));
     }
 
     using Element::operator==;
@@ -63,7 +84,10 @@ public:
 
     bool operator==(const Helper & him) const {
         return name == him.name &&
-               *original == *him.original;
+               *original == *him.original &&
+               ((expression == NULL && him.expression == NULL) ||
+                ((expression != NULL && him.expression != NULL) &&
+                 (*expression == *him.expression)));
     }
 
     bool operator==(const std::string & str) const {
@@ -76,7 +100,11 @@ public:
 
     virtual std::string toString() const {
         std::ostringstream out;
-        out << name << ", " << original->toString();
+        out << name;
+        if (expression != NULL){
+            out << "(" << expression->toString() << ")";
+        }
+        out << ", " << original->toString();
         return Util::trim(out.str());
     }
 
@@ -124,14 +152,19 @@ public:
     virtual void mark(std::map<const void*, bool> & marks) const {
         marks[this] = true;
         original->mark(marks);
+        if (expression != NULL){
+            expression->mark(marks);
+        }
     }
 
     virtual ~Helper(){
         delete original;
+        delete expression;
     }
 
 protected:
     std::string name;
+    Value * expression;
     Value * original;
 };
 

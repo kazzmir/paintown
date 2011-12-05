@@ -461,11 +461,6 @@ public:
          * not allocating columns at all.
          */
         memset(memo, 0, sizeof(Column*) * memo_size);
-        /*
-        for (int i = 0; i < memo_size; i++){
-            memo[i] = new Column();
-        }
-        */
     }
 
     int length(){
@@ -505,12 +500,6 @@ public:
         // std::cout << "Read char '" << buffer[position] << "'" << std::endl;
 
         return buffer[position];
-        /*
-        char z;
-        stream.seekg(position, std::ios_base::beg);
-        stream >> z;
-        return z;
-        */
     }
 
     bool find(const char * str, const int position){
@@ -523,14 +512,16 @@ public:
     void growMemo(){
         int newSize = memo_size * 2;
         Column ** newMemo = new Column*[newSize];
+        /* Copy old memo table */
         memcpy(newMemo, memo, sizeof(Column*) * memo_size);
+
+        /* Zero out new entries */
         memset(&newMemo[memo_size], 0, sizeof(Column*) * (newSize - memo_size));
-        /*
-        for (int i = memo_size; i < newSize; i++){
-            newMemo[i] = new Column();
-        }
-        */
+
+        /* Delete old memo table */
         delete[] memo;
+
+        /* Set up new memo table */
         memo = newMemo;
         memo_size = newSize;
     }
@@ -944,9 +935,9 @@ Ast::Value * makeExpression(){
 }
 */
 
-Ast::Value * makeHelper(const Value & name, const Value & id){
+Ast::Value * makeHelper(const Value & name, const Value & expression, const Value & id){
     /* FIXME: fix line numbers here */
-    Ast::Value * helper = new Ast::Helper(-1, -1, std::string(as<const char*>(name)), as<Ast::Value*>(id));
+    Ast::Value * helper = new Ast::Helper(-1, -1, std::string(as<const char*>(name)), as<Ast::Value*>(expression), as<Ast::Value*>(id));
     GC::save(helper);
     return helper;
 }
@@ -17041,6 +17032,7 @@ Result rule_helper(Stream & stream, const int position){
     
     Value name;
         Value id;
+        Value to;
     Result result_peg_2(myposition);
         
         {
@@ -17243,6 +17235,7 @@ Result rule_helper(Stream & stream, const int position){
                     result_peg_2.setValue(Value((void*) 0));
                     
                 }
+                id = result_peg_2.getValues();
             
             
             
@@ -17369,13 +17362,13 @@ Result rule_helper(Stream & stream, const int position){
                 if (result_peg_2.error()){
                     goto out_peg_29;
                 }
-                id = result_peg_2.getValues();
+                to = result_peg_2.getValues();
             
             
             
             {
                     Value value((void*) 0);
-                    value = makeHelper(name, id);
+                    value = makeHelper(name, id, to);
                     result_peg_2.setValue(value);
                 }
             

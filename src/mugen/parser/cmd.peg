@@ -142,9 +142,9 @@ Ast::Value * makeExpression(){
 }
 */
 
-Ast::Value * makeHelper(const Value & name, const Value & id){
+Ast::Value * makeHelper(const Value & name, const Value & expression, const Value & id){
     /* FIXME: fix line numbers here */
-    Ast::Value * helper = new Ast::Helper(-1, -1, std::string(as<const char*>(name)), as<Ast::Value*>(id));
+    Ast::Value * helper = new Ast::Helper(-1, -1, std::string(as<const char*>(name)), as<Ast::Value*>(expression), as<Ast::Value*>(id));
     GC::save(helper);
     return helper;
 }
@@ -916,11 +916,11 @@ rules:
           | string
           | hitflag
         
-    helper = name:helper-name s helper-expression? s "," s id:helper-identifier {{
-        value = makeHelper(name, id);
+    helper = name:helper-name s id:helper-expression? s "," s to:helper-identifier {{
+        value = makeHelper(name, id, to);
     }}
 
-    helper-expression = "(" s expr_c s ")"
+    helper-expression = "(" s use:expr_c s ")" {{ value = use; }}
     helper-name = "parent"{case}
                 | "root"{case}
                 | "helper"{case}

@@ -5,7 +5,7 @@ semaphores.cpp
 ../../util/thread.cpp
 ../../util/token_exception.cpp
 ../../util/load_exception.cpp
-../../exceptions/exception.cpp
+../../util/exceptions/exception.cpp
 """)
 
 x = []

@@ -121,6 +121,13 @@ double evaluateNumber(const Value & value, const Environment & env, double defau
     return default_;
 }
 
+string evaluateString(const Value & value, const Environment & env, string default_){
+    if (value != NULL){
+        return value->evaluate(env).getStringValue();
+    }
+    return default_;
+}
+
 double evaluateBool(Compiler::Value * value, const Environment & env, double default_){
     if (value != NULL){
         return value->evaluate(env).toBool();
@@ -6666,6 +6673,62 @@ public:
     }
 };
 
+class ControllerBindToTarget: public StateController {
+public:
+    ControllerBindToTarget(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        time = extractAttribute(section, "time");
+        target = extractAttribute(section, "id");
+
+        const Ast::AttributeSimple * pos = findAttribute(section, "pos");
+        if (pos != NULL){
+            const Ast::Value * posX = NULL;
+            const Ast::Value * posY = NULL;
+            const Ast::Value * type = NULL;
+            try{
+                pos->view() >> posX >> posY >> type;
+            } catch (const Ast::Exception & ignore){
+            }
+
+            if (posX != NULL){
+                positionX = Compiler::compile(posX);
+            }
+            if (posY != NULL){
+                positionY = Compiler::compile(posY);
+            }
+            if (type != NULL){
+                positionType = Compiler::compile(type);
+            } 
+        }
+    }
+
+    ControllerBindToTarget(const ControllerBindToTarget & you):
+    StateController(you),
+    time(copy(you.time)),
+    target(copy(you.target)),
+    positionX(copy(you.positionX)),
+    positionY(copy(you.positionY)),
+    positionType(copy(you.positionType)){
+    }
+
+    Value time;
+    Value target;
+    Value positionX, positionY, positionType;
+
+    StateController * deepCopy() const {
+        return new ControllerBindToTarget(*this);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int id = (int) evaluateNumber(this->target, environment, -1);
+        int time = (int) evaluateNumber(this->time, environment, 1);
+        double x = evaluateNumber(this->positionX, environment, 0);
+        double y = evaluateNumber(this->positionY, environment, 0);
+        string where = evaluateString(this->positionType, environment, "foot");
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -6842,7 +6905,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::ClearClipboard : return new ControllerClearClipboard(section, name, state);
         case StateController::MoveHitReset : return new ControllerMoveHitReset(section, name, state);
         case StateController::BindToRoot : return new ControllerBindToRoot(section, name, state);
-        case StateController::BindToTarget :
+        case StateController::BindToTarget : return new ControllerBindToTarget(section, name, state);
         case StateController::ParentVarAdd :
         case StateController::SndPan :
         case StateController::TargetDrop :

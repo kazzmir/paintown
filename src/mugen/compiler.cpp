@@ -1704,14 +1704,20 @@ public:
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    const Character & guy = environment.getCharacter();
+                    const Character * parent = guy.getRoot();
+                    if (parent == NULL){
+                        runtimeError("object has no parent");
+                    }
+                    FullEnvironment parentEnvironment(environment.getStage(), *parent, environment.getCommands());
+                    return argument->evaluate(parentEnvironment);
                 }
             };
 
             return new Root(compile(helper.getOriginal()));
         }
         
+        /* FIXME: can take an argument */
         if (helper == "helper"){
             class Helper: public Value {
             public:
@@ -1738,6 +1744,7 @@ public:
             return new Helper(compile(helper.getOriginal()));
         }
 
+        /* FIXME: can take an argument */
         if (helper == "target"){
             class Target: public Value {
             public:
@@ -1790,6 +1797,7 @@ public:
             return new Partner(compile(helper.getOriginal()));
         }
 
+        /* FIXME: can take an argument */
         if (helper == "enemy"){
             class Enemy: public Value {
             public:
@@ -1842,6 +1850,7 @@ public:
             return new EnemyNear(compile(helper.getOriginal()));
         }
         
+        /* FIXME: can take an argument */
         if (helper == "playerid"){
             class PlayerID: public Value {
             public:

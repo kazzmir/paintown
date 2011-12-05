@@ -5,7 +5,7 @@ test.cpp
 ../../util/token.cpp
 ../../util/tokenreader.cpp
 ../../util/token_exception.cpp
-../../exceptions/exception.cpp
+../../util/exceptions/exception.cpp
 """)
 
 parse_source = Split("""
