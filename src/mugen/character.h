@@ -1114,6 +1114,9 @@ public:
         virtual inline int getAttackDistance() const {
 	    return this->attackdist;
 	}
+    
+        /* let go of a bound character (BindToRoot / BindToTarget */
+        virtual void unbind(Object * who);
 
         virtual void setDrawOffset(double x, double y);
 
@@ -1152,6 +1155,9 @@ public:
         ReversalData & getReversal();
 
         virtual void setTransOverride(TransType type, int alphaFrom, int alphaTo);
+
+        virtual Point getMidPosition() const;
+        virtual Point getHeadPosition() const;
 
 protected:
     void initialize();

@@ -1127,6 +1127,11 @@ Mugen::Point::Point():
 x(0),
 y(0){
 }
+        
+Mugen::Point::Point(const Mugen::Point & copy):
+x(copy.x),
+y(copy.y){
+}
 
 Mugen::Point::Point(int x, int y):
 x(x),

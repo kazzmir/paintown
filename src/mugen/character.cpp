@@ -2539,6 +2539,13 @@ void Character::maybeTurn(const vector<Object*> & objects, Stage & stage){
         }
     }
 }
+        
+void Character::unbind(Object * who){
+    if (bind.bound == who){
+        bind.bound = NULL;
+        bind.time = 0;
+    }
+}
 
 void Character::doMovement(const vector<Object*> & objects, Stage & stage){
     if (bind.time > 0 && bind.bound != NULL){
@@ -3392,6 +3399,14 @@ void Character::moveY(double y, bool force){
     if (force || !frozen){
         virtualy += y;
     }
+}
+        
+Point Character::getMidPosition() const {
+    return midPosition;
+}
+
+Point Character::getHeadPosition() const {
+    return headPosition;
 }
 
 void Character::setMaxHealth(double health){

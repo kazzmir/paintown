@@ -322,6 +322,8 @@ protected:
     void loadSectionReflection(Ast::Section * section);
     void loadSectionMusic(Ast::Section * section);
 
+    virtual void unbind(Object * what);
+
     void updatePlayer(Object *o);
     void physics(Object * o);
     bool doBlockingDetection(Object * obj1, Object * obj2);

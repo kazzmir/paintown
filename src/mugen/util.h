@@ -121,6 +121,7 @@ class Point{
 	int y;
 	Point();
 	Point(int x, int y);
+        Point(const Point & copy);
 	Point &operator=(const Point &p);
 	inline void set(int x, int y){
 	    this->x = x;

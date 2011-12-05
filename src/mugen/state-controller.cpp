@@ -6726,6 +6726,25 @@ public:
         double x = evaluateNumber(this->positionX, environment, 0);
         double y = evaluateNumber(this->positionY, environment, 0);
         string where = evaluateString(this->positionType, environment, "foot");
+        
+        vector<Character*> targets = stage.getTargets(id, &guy);
+        if (targets.size() > 0){
+            Character * target = targets[0];
+            double pointX = 0;
+            double pointY = 0;
+            if (PaintownUtil::lowerCaseAll(where) == "foot"){
+                /* bind point stays 0 */
+            } else if (PaintownUtil::lowerCaseAll(where) == "mid"){
+                Point position = guy.getMidPosition();
+                pointX = position.x;
+                pointY = position.y;
+            } else if (PaintownUtil::lowerCaseAll(where) == "head"){
+                Point position = guy.getHeadPosition();
+                pointX = position.x;
+                pointY = position.y;
+            }
+            guy.bindTo(target, time, 0, pointX + x, pointY + y);
+        }
     }
 };
 

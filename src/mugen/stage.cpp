@@ -934,6 +934,13 @@ vector<Mugen::Object*> Mugen::Stage::getOpponents(Mugen::Object * who){
     return out;
 }
 
+void Mugen::Stage::unbind(Mugen::Object * what){
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+        Mugen::Object * guy = *it;
+        guy->unbind(what);
+    }
+}
+
 void Mugen::Stage::logic( ){
     // Console::ConsoleEnd & cend = Console::Console::endl;
 
@@ -1026,6 +1033,7 @@ void Mugen::Stage::logic( ){
 
                     // Non players, objects, projectiles misc
                 } else if (!isaPlayer(player) && player->getHealth() <= 0){
+                    unbind(player);
                     delete player;
                     it = objects.erase(it);
                     next = false;
@@ -1338,6 +1346,7 @@ void Mugen::Stage::reset(){
 
         /* remove any non-player objects, like projectiles or helpers */
         if (!isaPlayer(player)){
+            unbind(player);
             delete player;
             it = objects.erase(it);
         } else {
@@ -1585,6 +1594,7 @@ void Mugen::Stage::cleanup(){
 
             /* remove any non-player objects, like projectiles or helpers */
             if (!isaPlayer(object)){
+                unbind(object);
                 delete object;
                 it = objects.erase(it);
             } else {

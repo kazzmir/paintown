@@ -55,6 +55,8 @@ public:
     virtual void moveRight(double y);
     virtual void moveLeftForce(double x);
     virtual void moveRightForce(double y);
+
+    virtual void unbind(Object * who) = 0;
     
     virtual double getHealth() const = 0;
         
