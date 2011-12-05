@@ -4230,7 +4230,15 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        /* FIXME */
+        FullEnvironment environment(stage, guy, commands);
+        vector<Character*> targets = stage.getTargets((int) evaluateNumber(this->id, environment, -1), &guy);
+        int time = (int) evaluateNumber(this->time, environment, 1);
+        double x = (double) evaluateNumber(this->posX, environment, 0);
+        double y = (double) evaluateNumber(this->posY, environment, 0);
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            target->bindTo(&guy, time, 0, x, y);
+        }
     }
 
     StateController * deepCopy() const {
