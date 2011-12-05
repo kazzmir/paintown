@@ -1159,6 +1159,14 @@ public:
         virtual Point getMidPosition() const;
         virtual Point getHeadPosition() const;
 
+        /* bind the enemy to the target id. used for target redirection
+         * and BindToTarget
+         */
+        virtual void setTargetId(int id, Object * enemy);
+
+        /* get a target for a given id */
+        virtual Object * getTargetId(int id) const;
+
 protected:
     void initialize();
 
@@ -1712,6 +1720,8 @@ public:
         };
 
         Bind bind;
+
+        std::map<int, Object *> targets;
 };
 
 }

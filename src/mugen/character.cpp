@@ -2545,6 +2545,16 @@ void Character::unbind(Object * who){
         bind.bound = NULL;
         bind.time = 0;
     }
+
+    for (map<int, Object*>::iterator it = targets.begin(); it != targets.end(); /**/){
+        if (it->second == who){
+            map<int, Object*>::iterator kill = it;
+            it++;
+            targets.erase(kill);
+        } else {
+            it++;
+        }
+    }
 }
 
 void Character::doMovement(const vector<Object*> & objects, Stage & stage){
@@ -2587,12 +2597,27 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
     }
 }
 
+void Character::setTargetId(int id, Object * enemy){
+    targets[id] = enemy;
+}
+        
+Object * Character::getTargetId(int id) const {
+    if (targets.find(id) != targets.end()){
+        return targets.find(id)->second;
+    }
+    return NULL;
+}
+
 void Character::didHit(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().pause.player1;
     addPower(getHit().getPower.hit);
 
     if (getState(getCurrentState())->powerChanged()){
         addPower(getState(getCurrentState())->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
+    }
+
+    if (getHit().id != 0){
+        setTargetId(getHit().id, enemy);
     }
 
     /* if he is already in a Hit state then increase combo */
