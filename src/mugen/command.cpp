@@ -243,6 +243,7 @@ public:
             const CompiledKey * fakeKey;
             if (key->pressed(keys, oldKeys, fake, holder, fakeKey)){
                 holdKey = time;
+            } else if (time == 0){
                 return true;
             }
             return false;
