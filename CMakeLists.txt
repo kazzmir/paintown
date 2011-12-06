@@ -160,7 +160,7 @@ else(USE_SDL)
     if(NOT ALLEGRO_FOUND)
 	    message(FATAL_ERROR "Couldn't find Allegro")
     endif(NOT ALLEGRO_FOUND)
-    add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lzw.c)
+    add_library(algif_module src/util/allegro/gif/algif.c src/util/allegro/gif/gif.c src/util/allegro/gif/lzw.c)
     set(GRAPHICS_LIBRARIES ${ALLEGRO_LIBRARIES} algif_module)
 endif(USE_SDL)
 
