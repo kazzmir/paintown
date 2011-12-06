@@ -94,9 +94,9 @@ util/sdl/stretch/sdlstretchcode.c
 def alGifLibrary(env):
     gif = env.Clone()
     source = Split("""
-util/gif/algif.c
-util/gif/gif.c
-util/gif/lzw.c
+util/allegro/gif/algif.c
+util/allegro/gif/gif.c
+util/allegro/gif/lzw.c
 """)
     return gif.StaticLibrary('algif', source)
 
