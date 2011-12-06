@@ -134,9 +134,9 @@ src/openbor/util.cpp
 src/openbor/data.cpp)
 
 set(LOADPNG_SRC
-src/util/loadpng/loadpng.c
-src/util/loadpng/regpng.c
-src/util/loadpng/savepng.c)
+src/util/allegro/loadpng/loadpng.c
+src/util/allegro/loadpng/regpng.c
+src/util/allegro/loadpng/savepng.c)
 
 set(MENU_SRC
 src/util/menu/actionfactory.cpp
