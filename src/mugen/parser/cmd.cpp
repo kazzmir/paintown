@@ -1087,7 +1087,7 @@ Ast::Value * makeResource(const Value & number, bool fight, bool own){
     /* get the actual integer value */
     realNumber->view() >> value;
     /* FIXME: line numbers */
-    Ast::Resource * resource = new Ast::Resource(-1, -1, value, false, true);
+    Ast::Resource * resource = new Ast::Resource(-1, -1, value, fight, own);
     GC::save(resource);
     return resource;
 }

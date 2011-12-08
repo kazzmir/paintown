@@ -20,6 +20,10 @@ namespace Mugen{
         
 typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
 
+void compileError(const std::string & fail){
+    throw MugenException(fail);
+}
+
 Value copy(const Value & value){
     if (value != NULL){
         return Value(value->copy());
@@ -354,6 +358,36 @@ static void extractValue(Value & value, Ast::Section * section){
     */
 }
 
+struct Resource{
+    bool own;
+    bool fight;
+    int value;
+};
+
+Resource extractResource(const Ast::Value * value){
+    class Walker: public Ast::Walker {
+    public:
+
+        virtual void onResource(const Ast::Resource & resource){
+            this->resource.own = resource.isOwn();
+            this->resource.fight = resource.isFight();
+            resource.view() >> this->resource.value;
+        }
+
+        virtual void onNumber(const Ast::Number & number){
+            resource.own = false;
+            resource.fight = false;
+            number.view() >> resource.value;
+        }
+
+        Resource resource;
+    };
+
+    Walker walker;
+    value->walk(walker);
+    return walker.resource;
+}
+
 /* 50% */
 class ControllerChangeAnim: public StateController {
 public:
@@ -494,19 +528,18 @@ class ControllerPlaySound: public StateController {
 public:
     ControllerPlaySound(Ast::Section * section, const string & name, int state):
         StateController(name, state, section),
-        group(-1),
         own(false){
             parse(section);
         }
 
     ControllerPlaySound(const ControllerPlaySound & you):
     StateController(you),
-    group(you.group),
+    group(copy(you.group)),
     own(you.own),
     item(copy(you.item)){
     }
 
-    int group;
+    Value group;
     bool own;
     Value item;
 
@@ -535,26 +568,29 @@ public:
 
     virtual void parseSound(const Ast::Value * value){
         try{
-            string group;
+            const Ast::Value * group;
             const Ast::Value * item;
-            value->view() >> group >> item;
-            group = PaintownUtil::lowerCaseAll(group);
-            if (PaintownUtil::matchRegex(group, "f[0-9]+")){
-                int realGroup = atoi(PaintownUtil::captureRegex(group, "f([0-9]+)", 0).c_str());
-                this->group = realGroup;
+            try{
+                value->view() >> group >> item;
+            } catch (const Ast::Exception & fail){
+            }
+
+            if (group == NULL){
+                compileError("No group given for value in PlaySnd");
+            }
+
+            Resource resource = extractResource(group);
+            this->own = resource.fight;
+            this->group = Compiler::compile(resource.value);
+
+            if (item != NULL){
                 this->item = Compiler::compile(item);
-                own = true;
-            } else if (PaintownUtil::matchRegex(group, "s?[0-9]+")){
-                int realGroup = atoi(PaintownUtil::captureRegex(group, "s?([0-9]+)", 0).c_str());
-                this->group = realGroup;
-                this->item = Compiler::compile(item);
-                own = false;
             } else {
-                Global::debug(0) << "Unable to parse group value for PlaySnd: " << group << endl;
+                this->item = Compiler::compile(0);
             }
         } catch (const MugenException & e){
             // Global::debug(0) << "Error with PlaySnd " << controller.name << ": " << e.getReason() << endl;
-            Global::debug(0) << "Error with PlaySnd :" << e.getReason() << endl;
+            Global::debug(0) << "Error with PlaySnd: " << e.getReason() << endl;
         }
 
     }
@@ -562,11 +598,12 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         MugenSound * sound = NULL;
         if (item != NULL){
+            int groupNumber = (int) group->evaluate(FullEnvironment(stage, guy)).toNumber();
             int itemNumber = (int) item->evaluate(FullEnvironment(stage, guy)).toNumber();
             if (own){
-                sound = guy.getCommonSound(group, itemNumber);
+                sound = guy.getCommonSound(groupNumber, itemNumber);
             } else {
-                sound = guy.getSound(group, itemNumber);
+                sound = guy.getSound(groupNumber, itemNumber);
             }
         }
 
@@ -1908,70 +1945,22 @@ public:
                         hit.sparkPosition.y = Compiler::compile(y);
                     } catch (const Ast::Exception & e){
                     }
-                } else if (simple == "hitsound-own"){
-                    const Ast::Value * item;
-                    const Ast::Value * group;
-                    simple.view() >> item >> group;
-                    hit.hitSound.own = true;
-                    hit.hitSound.item = Compiler::compile(item);
-                    hit.hitSound.group = Compiler::compile(group);
                 } else if (simple == "hitsound"){
                     const Ast::Value * item;
                     const Ast::Value * group;
-                    simple.view() >> item >> group;
-                    hit.hitSound.own = false;
+                    simple.view() >> group >> item;
+                    Resource resource = extractResource(group);
+                    hit.hitSound.own = resource.own;
                     hit.hitSound.item = Compiler::compile(item);
-                    hit.hitSound.group = Compiler::compile(group);
-#if 0
-                    string first;
-                    bool own = false;
-                    int group = 0;
-                    int item = 0;
-                    /* If not specified, assume item 0 */
-                    simple >> first;
-                    if (simple.getValue()->hasMultiple()){
-                        simple >> item;
-                    }
-                    if (first[0] == 'S'){
-                        own = true;
-                        group = atoi(first.substr(1).c_str());
-                    } else {
-                        group = atoi(first.c_str());
-                    }
-                    hit.hitSound.own = own;
-                    hit.hitSound.group = group;
-                    hit.hitSound.item = item;
-#endif
-                } else if (simple == "guardsound-own"){
-                    const Ast::Value * item;
-                    const Ast::Value * group;
-                    simple.view() >> item >> group;
-                    hit.guardHitSound.own = true;
-                    hit.guardHitSound.item = Compiler::compile(item);
-                    hit.guardHitSound.group = Compiler::compile(group);
+                    hit.hitSound.group = Compiler::compile(resource.value);
                 } else if (simple == "guardsound"){
                     const Ast::Value * item;
                     const Ast::Value * group;
-                    simple.view() >> item >> group;
-                    hit.guardHitSound.own = false;
+                    simple.view() >> group >> item;
+                    Resource resource = extractResource(group);
+                    hit.guardHitSound.own = resource.own;
                     hit.guardHitSound.item = Compiler::compile(item);
-                    hit.guardHitSound.group = Compiler::compile(group);
-                    /*
-                    string first;
-                    bool own = false;
-                    int group;
-                    int item;
-                    simple >> first >> item;
-                    if (tolower(first[0]) == 's'){
-                        own = true;
-                        group = atoi(first.substr(1).c_str());
-                    } else {
-                        group = atoi(first.c_str());
-                    }
-                    hit.guardHitSound.own = own;
-                    hit.guardHitSound.group = group;
-                    hit.guardHitSound.item = item;
-                    */
+                    hit.guardHitSound.group = Compiler::compile(resource.value);
                 } else if (simple == "ground.type"){
                     string type;
                     simple.view() >> type;
@@ -2356,12 +2345,11 @@ public:
 
     struct Sound{
         Sound():
-        group(-1),
         own(false){
         }
 
         Sound(const Sound & you):
-        group(you.group),
+        group(copy(you.group)),
         item(copy(you.item)),
         own(you.own){
         }
@@ -2369,7 +2357,7 @@ public:
         ~Sound(){
         }
 
-        int group;
+        Value group;
         Value item;
         bool own;
     };
@@ -2400,11 +2388,10 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
                     super.time = Compiler::compile(simple.getValue());
-                } else if (simple == "anim-own"){
-                    super.animation = Compiler::compile(simple.getValue());
-                    super.ownAnimation = true;
                 } else if (simple == "anim"){
-                    super.animation = Compiler::compile(simple.getValue());
+                    Resource resource = extractResource(simple.getValue());
+                    super.ownAnimation = resource.own; 
+                    super.animation = Compiler::compile(resource.value);
                 } else if (simple == "darken"){
                     super.darken = Compiler::compile(simple.getValue());
                 } else if (simple == "p2defmul"){
@@ -2414,21 +2401,25 @@ public:
                 } else if (simple == "unhittable"){
                     super.unhittable = Compiler::compile(simple.getValue());
                 } else if (simple == "sound"){
-                    if (simple.getValue()->hasMultiple()){
-                        string first;
-                        bool own = false;
-                        int group;
-                        const Ast::Value * item;
-                        simple.view() >> first >> item;
-                        if (tolower(first[0]) == 's'){
-                            own = true;
-                            group = atoi(first.substr(1).c_str());
-                        } else {
-                            group = atoi(first.c_str());
-                        }
-                        super.sound.own = own;
-                        super.sound.group = group;
+                    const Ast::Value * group = NULL;
+                    const Ast::Value * item = NULL;
+                    try{
+                        simple.view() >> group >> item;
+                    } catch (const Ast::Exception & fail){
+                    }
+
+                    if (group == NULL){
+                        compileError("No group given for 'sound'");
+                    }
+
+                    Resource resource = extractResource(group);
+                    super.sound.own = resource.own;
+                    super.sound.group = Compiler::compile(resource.value);
+
+                    if (item != NULL){
                         super.sound.item = Compiler::compile(item);
+                    } else {
+                        super.sound.item = Compiler::compile(0);
                     }
                 } else if (simple == "pos"){
                     if (simple.getValue()->hasMultiple()){
@@ -2465,11 +2456,12 @@ public:
     void playSound(Character & guy, const Environment & environment) const {
         MugenSound * sound = NULL;
         if (this->sound.item != NULL){
+            int groupNumber = (int) this->sound.group->evaluate(environment).toNumber();
             int itemNumber = (int) this->sound.item->evaluate(environment).toNumber();
             if (this->sound.own){
-                sound = guy.getCommonSound(this->sound.group, itemNumber);
+                sound = guy.getCommonSound(groupNumber, itemNumber);
             } else {
-                sound = guy.getSound(this->sound.group, itemNumber);
+                sound = guy.getSound(groupNumber, itemNumber);
             }
         }
 
@@ -6164,19 +6156,17 @@ public:
         struct HitSound{
             HitSound(const HitSound & you):
             own(you.own),
-            group(you.group),
-            item(you.item){
+            group(copy(you.group)),
+            item(copy(you.item)){
             }
 
             HitSound():
-                own(false),
-                group(-1),
-                item(-1){
+                own(false){
                 }
 
             bool own;
-            int group;
-            int item;
+            Value group;
+            Value item;
         } hitSound;
 
         Value player1State;
@@ -6215,25 +6205,26 @@ public:
                         hit.spark = atoi(what.c_str());
                     }
                 } else if (simple == "hitsound"){
-                    string first;
-                    bool own = false;
-                    int group = 0;
-                    int item = 0;
-                    /* If not specified, assume item 0 */
-                    Ast::View view = simple.view();
-                    view >> first;
-                    if (simple.getValue()->hasMultiple()){
-                        view >> item;
+                    const Ast::Value * group = NULL;
+                    const Ast::Value * item = NULL;
+                    try{
+                        simple.view() >> group >> item;
+                    } catch (const Ast::Exception & fail){
                     }
-                    if (tolower(first[0]) == 's'){
-                        own = true;
-                        group = atoi(first.substr(1).c_str());
+
+                    if (group == NULL){
+                        compileError("No group given for 'sound'");
+                    }
+
+                    Resource resource = extractResource(group);
+                    hit.hitSound.own = resource.own;
+                    hit.hitSound.group = Compiler::compile(resource.value);
+
+                    if (item != NULL){
+                        hit.hitSound.item = Compiler::compile(item);
                     } else {
-                        group = atoi(first.c_str());
+                        hit.hitSound.item = Compiler::compile(0);
                     }
-                    hit.hitSound.own = own;
-                    hit.hitSound.group = group;
-                    hit.hitSound.item = item;
                 } else if (simple == "p1stateno"){
                     hit.player1State = Compiler::compile(simple.getValue());
                 } else if (simple == "p2stateno"){
@@ -6304,8 +6295,8 @@ public:
         data.pause.player2 = (int) evaluateNumber(hit.pause.player2, environment, 0);
         data.spark = hit.spark;
         data.hitSound.own = hit.hitSound.own;
-        data.hitSound.group = hit.hitSound.group;
-        data.hitSound.item = hit.hitSound.item;
+        data.hitSound.group = (int) evaluateNumber(hit.hitSound.group, environment, 0);
+        data.hitSound.item = (int) evaluateNumber(hit.hitSound.item, environment, 0);
         data.player1State = (int) evaluateNumber(hit.player1State, environment, -1);
         data.player2State = (int) evaluateNumber(hit.player1State, environment, -1);
         data.standing = hit.standing;
