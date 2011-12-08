@@ -3631,13 +3631,30 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "anim"){
-                    /* FIXME: handle expressions after `f' */
-                    if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f[0-9]+")){
-                        controller.ownAnimation = false;
-                        controller.animation = Compiler::compile(atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.valueAsString()), "f([0-9]+)", 0).c_str()));
-                    } else {
-                        controller.animation = Compiler::compile(simple.getValue());
-                    }
+                    class ResourceWalker: public Ast::Walker {
+                    public:
+                        ResourceWalker(ControllerExplod & controller):
+                        controller(controller){
+                        }
+
+                        ControllerExplod & controller;
+
+                        virtual void onResource(const Ast::Resource & resource){
+                            if (resource.isFight()){
+                                controller.ownAnimation = false;
+                            }
+                            int number = 0;
+                            resource.view() >> number;
+                            controller.animation = Compiler::compile(number);
+                        }
+
+                        virtual void onNumber(const Ast::Number & number){
+                            controller.animation = Compiler::compile(number);
+                        }
+                    };
+
+                    ResourceWalker walker(controller);
+                    simple.getValue()->walk(walker);
                 } else if (simple == "id"){
                     controller.id = Compiler::compile(simple.getValue());
                 } else if (simple == "pos"){

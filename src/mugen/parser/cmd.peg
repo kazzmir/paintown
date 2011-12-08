@@ -286,6 +286,25 @@ Ast::Value * makeValueList2(const Value & first, const Value & second){
     return object;
 }
 
+Ast::Value * makeResource(const Value & number, bool fight, bool own){
+    int value = 0;
+    Ast::Number * realNumber = as<Ast::Number*>(number);
+    /* get the actual integer value */
+    realNumber->view() >> value;
+    /* FIXME: line numbers */
+    Ast::Resource * resource = new Ast::Resource(-1, -1, value, false, true);
+    GC::save(resource);
+    return resource;
+}
+
+Ast::Value * makeOwnResource(const Value & number){
+    return makeResource(number, false, true);
+}
+    
+Ast::Value * makeFightResource(const Value & number){
+    return makeResource(number, true, false);
+}
+
 Ast::Value * makeFunction(const Value & name, const Value & arg1){
     /* FIXME! fix line numbers here */
     Ast::Value * function = new Ast::Function(-1, -1, std::string(as<const char*>(name)), as<Ast::ValueList*>(arg1));
@@ -637,33 +656,6 @@ rules:
                       | !(s section_title) (!newline .)+ line_end
     section_title = "[" s name:(!"]" .)+ "]" {{ value = toString(name); }}
     assignment = "command"{case} s "=" s all:keys {{ value = makeAttribute("command", all); }}
-               | line:<line> "guardsound"{case} s "=" s own:"s"{case}? item:expr_c s "," s group:expr_c {{
-                    if (own.getValue() != 0){
-                        value = makeAttribute("guardsound-own", Value(makeValueList2(item, group)));
-                    } else {
-                        value = makeAttribute("guardsound", Value(makeValueList2(item, group)));
-                    }
-               }}
-               | line:<line> "sparkno"{case} s "=" s own:"s"{case}? exp:expr {{
-                   /* TODO: handle own */
-                   value = makeAttribute("sparkno", exp);
-               }}
-               | line:<line> "anim"{case} s "=" s own:"s"{case}? exp:expr {{
-                   const char * name = "anim";
-                   if (own.getValue() != 0){
-                       name = "anim-own";
-                   }
-                   /* TODO: add line number information */
-
-                   value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp);
-               }}
-               | line:<line> "hitsound"{case} s "=" s own:"s"{case}? exp1:expr_c s "," s exp2:expr {{
-                   const char * name = "hitsound";
-                   if (own.getValue() != 0){
-                       name = "hitsound-own";
-                   }
-                   value = makeAttribute(name, Value(makeValueList2(exp1, exp2)));
-               }}
                | line:<line> name:identifier s "=" s exp:expr {{ value = makeAttribute(getCurrentLine(line), getCurrentColumn(line), name, exp); }}
                | name:identifier s "!=" s exp:expr {{ value = makeAttribute(name, Value(negateExpression(exp))); }}
                | name:identifier s "=" whitespace &line_end {{ value = makeAttribute(name); }}
@@ -911,10 +903,14 @@ rules:
     value = float
           | integer
           | keyword
+          | resource
           | !keyword identifier
           | range
           | string
           | hitflag
+
+    resource = "s"{case} number:integer {{ value = makeOwnResource(number); }}
+             | "f"{case} number:integer {{ value = makeFightResource(number); }}
         
     helper = name:helper-name s id:helper-expression? s "," s to:helper-identifier {{
         value = makeHelper(name, id, to);

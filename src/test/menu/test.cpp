@@ -2,7 +2,6 @@
 #include <iostream>
 #include "util/token_exception.h"
 #include "util/file-system.h"
-#include "util/loadpng/loadpng.h"
 #include "util/bitmap.h"
 #include "paintown-engine/game/options.h"
 #include "factory/collector.h"

@@ -1,26 +1,15 @@
 #include <string>
 #include "util/token.h"
-#include "attribute.h"
-#include "attribute-simple.h"
-#include "attribute-array.h"
-#include "attribute-keyword.h"
-#include "helper.h"
-#include "function.h"
-#include "hitdef.h"
-#include "value-list.h"
-#include "value-attribute.h"
-#include "range.h"
-#include "string.h"
-#include "Section.h"
-#include "filename.h"
-#include "Expression.h"
-#include "number.h"
-#include "key.h"
+#include "all.h"
 
 using std::string;
 
 namespace Ast{
 
+/* These constants are used for serializing the tokens into as few bytes as possible,
+ * thus the single letter names. If two letter names are required thats ok, but try
+ * to choose unique single letter (any ascii value is ok) first.
+ */
 string Element::SERIAL_STRING = "a";
 string Element::SERIAL_FUNCTION = "b";
 string Element::SERIAL_RANGE = "c";
@@ -43,6 +32,7 @@ string Element::SERIAL_KEY_MODIFIER = "s";
 string Element::SERIAL_KEY_COMBINED = "t";
 string Element::SERIAL_KEY_LIST = "u";
 string Element::SERIAL_VALUE_ATTRIBUTE = "w";
+string Element::SERIAL_RESOURCE = "x";
     
 string Section::SERIAL_SECTION_ATTRIBUTE = "s1";
 string Section::SERIAL_SECTION_VALUE = "s2";
@@ -113,6 +103,9 @@ Attribute * Attribute::deserialize(const Token * token){
 }
     
 Value * Value::deserialize(const Token * token){
+    if (*token == SERIAL_RESOURCE){
+        return Resource::deserialize(token);
+    }
     if (*token == SERIAL_NUMBER){
         return Number::deserialize(token);
     }

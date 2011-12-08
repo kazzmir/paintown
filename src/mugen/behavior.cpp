@@ -92,7 +92,7 @@ vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Charac
     for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
         Command * command = *it;
         if (command->handle(input)){
-            Global::debug(2) << "command: " << command->getName() << endl;
+            Global::debug(1) << "command: " << command->getName() << endl;
             out.push_back(command->getName());
         }
     }

@@ -178,9 +178,9 @@ test/mugen/characterhud.cpp
 test/mugen/section.cpp
 test/mugen/menu.cpp
 test/mugen/option-options.cpp
-test/util/loadpng/loadpng.c
-test/util/loadpng/regpng.c
-test/util/loadpng/savepng.c
+test/util/allegro/loadpng/loadpng.c
+test/util/allegro/loadpng/regpng.c
+test/util/allegro/loadpng/savepng.c
 test/factory/collector.cpp
 """)
 

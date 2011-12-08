@@ -20,6 +20,7 @@
 #include "filename.h"
 #include "collectable.h"
 #include "walker.h"
+#include "resource.h"
 #include "range.h"
 #include "extra.h"
 #include "function.h"

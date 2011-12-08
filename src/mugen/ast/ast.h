@@ -26,6 +26,7 @@ class ValueAttribute;
 class HitDefAttribute;
 class HitDefAttackAttribute;
 class String;
+class Resource;
 class Range;
 class Helper;
 class Keyword;
@@ -59,6 +60,7 @@ public:
     static std::string SERIAL_ATTRIBUTE_KEYWORD;
     static std::string SERIAL_HELPER;
     static std::string SERIAL_NUMBER;
+    static std::string SERIAL_RESOURCE;
     static std::string SERIAL_FILENAME;
     static std::string SERIAL_KEY_SINGLE;
     static std::string SERIAL_KEY_MODIFIER;
@@ -70,7 +72,7 @@ public:
      * between the code and any existing serialized files then you *must*
      * increment this variable.
      */
-    static const int SERIAL_VERSION = 11;
+    static const int SERIAL_VERSION = 13;
 
     virtual void mark(std::map<const void*, bool> & marks) const = 0;
 
@@ -93,6 +95,7 @@ public:
     define_equals(HitDefAttackAttribute);
     define_equals(String);
     define_equals(Range);
+    define_equals(Resource);
     define_equals(Helper);
     define_equals(Keyword);
     define_equals(Key);
@@ -105,36 +108,6 @@ public:
 
 #undef define_equals
 
-    /*
-    virtual bool operator!=(const Element & him) const {
-        return !(*this == him);
-    }
-
-    virtual bool operator!=(const Section & him) const {
-        return !(*this == him);
-    }
-
-    virtual bool operator!=(const AttributeSimple & him) const {
-        return !(*this == him);
-    }
-
-    virtual bool operator==(const AttributeSimple & him) const {
-        return false;
-    }
-
-    virtual bool operator==(const Section & him) const {
-        return false;
-    }
-
-    virtual bool operator==(const Element & him) const {
-        if (this == &him){
-            return true;
-        }
-
-        return false;
-    }
-    */
-    
     virtual Token * serialize() const = 0;
 
     /* create a deep copy of this object */

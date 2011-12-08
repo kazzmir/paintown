@@ -941,7 +941,7 @@ void Mugen::Stage::unbind(Mugen::Object * what){
     }
 }
 
-void Mugen::Stage::logic( ){
+void Mugen::Stage::logic(){
     // Console::ConsoleEnd & cend = Console::Console::endl;
 
     /* cycles slow the stage down, like after ko */
@@ -982,28 +982,6 @@ void Mugen::Stage::logic( ){
 
         const double diffx = startx - camerax;
         const double diffy = starty - cameray;
-
-        // Clear console so we can see our debug
-        // console->clear();
-
-        /*
-        //zoffsetlink
-        const Mugen::Background *zlinkbackground = 0;
-
-        if (zoffsetlink != DEFAULT_BACKGROUND_ID){
-        / *
-        zlinkbackground = background->getBackground(zoffsetlink);
-        zoffset = zlinkbackground->y;
-         * /
-         vector<Mugen::BackgroundElement *> elements = background->getIDList(zoffsetlink);
-         if (elements.size() != 0){
-         Mugen::BackgroundElement * element = elements[0];
-         zoffset = element->getCurrentY();
-         }
-         }
-         */
-
-        // *console << "zoffsetlink ID: " << zoffsetlink << " | zoffset: " << zoffset << " | floortension: " << floortension << cend;
 
         if (superPause.time > 0){
             superPause.time -= 1;
@@ -1051,16 +1029,9 @@ void Mugen::Stage::logic( ){
     
     // Correct camera
     if ((verticalfollow > 0) && !inabove && (getCameraY() < 0)){
-	moveCamera( 0, verticalfollow * 3.2 );
+	moveCamera(0, verticalfollow * 3.2);
     }
     
-    /*
-    // Console
-    *console << "Camera X: " << getCameraX() << " Camera Y: " << getCameraY() << cend;
-    *console << "Frames: " << getTicks() << cend;
-    console->act();
-    */
-
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 #if 0
@@ -1835,9 +1806,6 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 
     double gameSpeed = 1.0;
     double runCounter = 0;
-    double mugenSpeed = 60;
-
-    unsigned int second_counter = Global::second_counter;
 
     // Put character in continue state
     std::vector<std::string> empty;
@@ -1989,107 +1957,6 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
     PaintownUtil::standardLoop(logic, draw);
 
     return logic.getAnswer();
-
-#if 0
-    while (!endMatch){
-        bool draw = false;
-
-        if (Global::speed_counter3 > 0){
-            runCounter += Util::gameTicks(Global::speed_counter3, gameSpeed);
-            if (runCounter > 10){
-                runCounter = 10;
-            }
-
-            while (runCounter > 1){
-                InputManager::poll();
-                
-                runCounter -= 1;
-                draw = true;
-
-                InputMap<Mugen::Keys>::Output out = InputManager::getMap(input);
-                if (out[Mugen::Left] || out[Mugen::Right]){
-                    selector = !selector;
-                }
-                if (out[Mugen::A] || out[Mugen::B] || out[Mugen::C] || out[Mugen::X] || out[Mugen::Y] || out[Mugen::Z]){
-                    if (selector){
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-                // If enter return true
-                if (out[Mugen::Esc]){
-                    return false;
-                }
-                std::vector<Paintown::Object *> add;
-                character->act(&add,this,&add);
-
-                if (gameSpeed < 0.1){
-                    gameSpeed = 0.1;
-                }
-            }
-            Global::speed_counter3 = 0;
-        }
-
-        if (second_counter != Global::second_counter){
-            int difference = Global::second_counter - second_counter;
-            /* unlikely, but just in case */
-            if (difference == 0){
-                difference = 1;
-            }
-            second_counter = Global::second_counter;
-        }
-
-        if (draw){
-            
-            // Render background
-            background->renderBackground(0, 0, *board);
-        
-            // do darkened background
-            // Bitmap::drawingMode(Bitmap::MODE_TRANS);
-            Graphics::Bitmap::transBlender(0,0,0,150);
-	    board->translucent().rectangleFill(0, 0, board->getWidth(), board->getHeight(), Graphics::makeColor(0,0,0));
-	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
-            
-            // Render character
-            if (reflectionIntensity > 0){
-                character->drawReflection(board, -(DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
-            }
-
-	    /* Shadow */
-	    character->drawShade(board, -(DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
-        
-            character->draw(board, -(DEFAULT_WIDTH / 2), (int) cameray); 
-            
-            // Render continue text
-            font.render(DEFAULT_WIDTH/2, 40, 0, 0, *board, "Continue?" );
-
-            // Render yes and no
-            if (selector){
-                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 4, *board, "Yes");
-                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 0, *board, "No");
-            } else {
-                font.render(DEFAULT_WIDTH/2 - 20, 50, 0, 0, *board, "Yes");
-                font.render(DEFAULT_WIDTH/2 + 20, 50, 0, 4, *board, "No");
-            }
-        
-            // Foreground
-            background->renderForeground(0, 0, *board);
-
-            board->Stretch(buffer);
-            buffer.BlitToScreen();
-        }
-
-        while (Global::speed_counter3 == 0){
-            PaintownUtil::rest(1);
-        }
-    }
-#endif
-
-    /* FIXME: what should we do here? I just added 'return false' to
-     * silence the compiler.
-     */
-    // return false;
 }
     
 Mugen::Character * Mugen::Stage::getEnemy(const Mugen::Character * who) const {

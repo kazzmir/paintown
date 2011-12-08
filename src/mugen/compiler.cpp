@@ -4161,6 +4161,10 @@ Value * compile(const Ast::Value * input){
     }
     return compiler.compiled;
 }
+
+Value * compile(const Ast::Value & input){
+    return compile(&input);
+}
     
 Value * compileAndDelete(const Ast::Value * input){
     Value * compiled = compile(input);

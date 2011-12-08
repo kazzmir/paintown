@@ -18,6 +18,7 @@ class KeyModifier;
 class KeyCombined;
 class ExpressionInfix;
 class ExpressionUnary;
+class Resource;
 class Helper;
 class Identifier;
 class String;
@@ -97,6 +98,9 @@ public:
     }
     
     virtual void onNumber(const Number & keyword){
+    }
+    
+    virtual void onResource(const Resource & keyword){
     }
 
     virtual ~Walker(){
