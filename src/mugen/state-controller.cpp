@@ -358,6 +358,38 @@ static void extractValue(Value & value, Ast::Section * section){
     */
 }
 
+/* reads at most 4 values from an attribute, if a value is missing then the resulting
+ * out parameter will just be null.
+ */
+void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & out3, Value & out4){
+    const Ast::Value * value1 = NULL;
+    const Ast::Value * value2 = NULL;
+    const Ast::Value * value3 = NULL;
+    const Ast::Value * value4 = NULL;
+    if (value->hasMultiple()){
+        try{
+            value->view() >> value1 >> value2 >> value3 >> value4;
+        } catch (const Ast::Exception & fail){
+            /* dont care I guess */
+        }
+    } else {
+        /* just one value */
+        value->view() >> value1;
+    }
+    if (value1 != NULL){
+        out1 = Compiler::compile(value1);
+    }
+    if (value2 != NULL){
+        out2 = Compiler::compile(value2);
+    }
+    if (value3 != NULL){
+        out3 = Compiler::compile(value3);
+    }
+    if (value4 != NULL){
+        out4 = Compiler::compile(value4);
+    }
+}
+
 struct Resource{
     bool own;
     bool fight;
@@ -568,11 +600,12 @@ public:
 
     virtual void parseSound(const Ast::Value * value){
         try{
-            const Ast::Value * group;
-            const Ast::Value * item;
-            try{
+            const Ast::Value * group = NULL;
+            const Ast::Value * item = NULL;
+            if (value->hasMultiple()){
                 value->view() >> group >> item;
-            } catch (const Ast::Exception & fail){
+            } else {
+                value->view() >> group;
             }
 
             if (group == NULL){
@@ -1946,21 +1979,39 @@ public:
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "hitsound"){
-                    const Ast::Value * item;
-                    const Ast::Value * group;
-                    simple.view() >> group >> item;
-                    Resource resource = extractResource(group);
-                    hit.hitSound.own = resource.own;
-                    hit.hitSound.item = Compiler::compile(item);
-                    hit.hitSound.group = Compiler::compile(resource.value);
+                    if (simple.getValue()->hasMultiple()){
+                        const Ast::Value * item;
+                        const Ast::Value * group;
+                        simple.view() >> group >> item;
+                        Resource resource = extractResource(group);
+                        hit.hitSound.own = resource.own;
+                        hit.hitSound.item = Compiler::compile(item);
+                        hit.hitSound.group = Compiler::compile(resource.value);
+                    } else {
+                        const Ast::Value * group;
+                        simple.view() >> group;
+                        Resource resource = extractResource(group);
+                        hit.hitSound.own = resource.own;
+                        hit.hitSound.item = Compiler::compile(0);
+                        hit.hitSound.group = Compiler::compile(resource.value);
+                    }
                 } else if (simple == "guardsound"){
-                    const Ast::Value * item;
-                    const Ast::Value * group;
-                    simple.view() >> group >> item;
-                    Resource resource = extractResource(group);
-                    hit.guardHitSound.own = resource.own;
-                    hit.guardHitSound.item = Compiler::compile(item);
-                    hit.guardHitSound.group = Compiler::compile(resource.value);
+                    if (simple.getValue()->hasMultiple()){
+                        const Ast::Value * item;
+                        const Ast::Value * group;
+                        simple.view() >> group >> item;
+                        Resource resource = extractResource(group);
+                        hit.guardHitSound.own = resource.own;
+                        hit.guardHitSound.item = Compiler::compile(item);
+                        hit.guardHitSound.group = Compiler::compile(resource.value);
+                    } else {
+                        const Ast::Value * group;
+                        simple.view() >> group;
+                        Resource resource = extractResource(group);
+                        hit.guardHitSound.own = resource.own;
+                        hit.guardHitSound.item = Compiler::compile(0);
+                        hit.guardHitSound.group = Compiler::compile(resource.value);
+                    }
                 } else if (simple == "ground.type"){
                     string type;
                     simple.view() >> type;
@@ -2403,9 +2454,10 @@ public:
                 } else if (simple == "sound"){
                     const Ast::Value * group = NULL;
                     const Ast::Value * item = NULL;
-                    try{
+                    if (simple.getValue()->hasMultiple()){
                         simple.view() >> group >> item;
-                    } catch (const Ast::Exception & fail){
+                    } else {
+                        simple.view() >> group;
                     }
 
                     if (group == NULL){
@@ -4533,13 +4585,7 @@ public:
 class ControllerPalFX: public StateController {
 public:
     ControllerPalFX(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    sinRed(0),
-    sinGreen(0),
-    sinBlue(0),
-    period(0),
-    invert(false),
-    color(256){
+    StateController(name, state, section){
         parse(section);
     }
 
@@ -4552,12 +4598,12 @@ public:
     multiplyRed(copy(you.multiplyRed)),
     multiplyGreen(copy(you.multiplyGreen)),
     multiplyBlue(copy(you.multiplyBlue)),
-    sinRed(you.sinRed),
-    sinGreen(you.sinGreen),
-    sinBlue(you.sinBlue),
-    period(you.period),
-    invert(you.invert),
-    color(you.color){
+    sinRed(copy(you.sinRed)),
+    sinGreen(copy(you.sinGreen)),
+    sinBlue(copy(you.sinBlue)),
+    period(copy(you.period)),
+    invert(copy(you.invert)),
+    color(copy(you.color)){
     }
 
     Value time;
@@ -4569,13 +4615,13 @@ public:
     Value multiplyGreen;
     Value multiplyBlue;
 
-    int sinRed;
-    int sinGreen;
-    int sinBlue;
-    int period;
+    Value sinRed;
+    Value sinGreen;
+    Value sinBlue;
+    Value period;
 
-    bool invert;
-    int color;
+    Value invert;
+    Value color;
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
@@ -4609,52 +4655,15 @@ public:
                     controller.multiplyGreen = Compiler::compile(green);
                     controller.multiplyBlue = Compiler::compile(blue);
                 } else if (simple == "sinadd"){
-                    try{
-                        Ast::View view = simple.view();
-                        view >> controller.sinRed;
-                        view >> controller.sinGreen;
-                        view >> controller.sinBlue;
-                        view >> controller.period;
-                    } catch (const Ast::Exception & fail){
-                        /* I guess we don't care about failures here */
-                    }
-                    /*
-                    try{
-                        simple >> controller.sinRed;
-                    } catch (const Ast::Exception & fail){
-                        ostringstream out;
-                        out << "Could not get the red component of sinadd. " << fail.getTrace();
-                        throw MugenException(out.str(), __FILE__, __LINE__);
-                    }
-                   
-                    try{
-                        simple >> controller.sinGreen;
-                    } catch (const Ast::Exception & fail){
-                        ostringstream out;
-                        out << "Could not get the green component of sinadd. " << fail.getTrace();
-                        throw MugenException(out.str(), __FILE__, __LINE__);
-                    }
-
-                    try{
-                        simple >> controller.sinBlue;
-                    } catch (const Ast::Exception & fail){
-                        ostringstream out;
-                        out << "Could not get the blue component of sinadd. " << fail.getTrace();
-                        throw MugenException(out.str(), __FILE__, __LINE__);
-                    }
-
-                    try{
-                        simple >> controller.period;
-                    } catch (const Ast::Exception & fail){
-                        ostringstream out;
-                        out << "Could not get the period component of sinadd. " << fail.getTrace();
-                        throw MugenException(out.str(), __FILE__, __LINE__);
-                    }
-                    */
+                    readValues(simple.getValue(), controller.sinRed, controller.sinGreen, controller.sinBlue, controller.period);
                 } else if (simple == "invertall"){
-                    simple.view() >> controller.invert;
+                    const Ast::Value * invert;
+                    simple.view() >> invert;
+                    controller.invert = Compiler::compile(invert);
                 } else if (simple == "color"){
-                    simple.view() >> controller.color;
+                    const Ast::Value * color;
+                    simple.view() >> color;
+                    controller.color = Compiler::compile(color);
                 }
             }
         };
@@ -4688,8 +4697,18 @@ public:
         int multiplyRed = (int) evaluateNumber(this->multiplyRed, environment, 256);
         int multiplyGreen = (int) evaluateNumber(this->multiplyGreen, environment, 256);
         int multiplyBlue = (int) evaluateNumber(this->multiplyBlue, environment, 256);
+        
+        int sinRed = (int) evaluateNumber(this->sinRed, environment, 0);
+        int sinGreen = (int) evaluateNumber(this->sinGreen, environment, 0);
+        int sinBlue = (int) evaluateNumber(this->sinBlue, environment, 0);
+        
+        int period = (int) evaluateNumber(this->period, environment, 0);
 
         int time = (int) evaluateNumber(this->time, environment, 0);
+        
+        int color = (int) evaluateNumber(this->color, environment, 256);
+
+        bool invert = evaluateBool(this->invert, environment, false);
 
         guy.setPaletteEffects(time, addRed, addGreen, addBlue,
                               multiplyRed, multiplyGreen, multiplyBlue,
@@ -4721,7 +4740,16 @@ public:
         int multiplyGreen = (int) evaluateNumber(this->multiplyGreen, environment, 256);
         int multiplyBlue = (int) evaluateNumber(this->multiplyBlue, environment, 256);
 
+        int sinRed = (int) evaluateNumber(this->sinRed, environment, 0);
+        int sinGreen = (int) evaluateNumber(this->sinGreen, environment, 0);
+        int sinBlue = (int) evaluateNumber(this->sinBlue, environment, 0);
+        
+        int period = (int) evaluateNumber(this->period, environment, 0);
+
         int time = (int) evaluateNumber(this->time, environment, 0);
+
+        int color = (int) evaluateNumber(this->color, environment, 256);
+        bool invert = evaluateBool(this->invert, environment, false);
 
         stage.setPaletteEffects(time, addRed, addGreen, addBlue,
                                 multiplyRed, multiplyGreen, multiplyBlue,
@@ -6207,9 +6235,10 @@ public:
                 } else if (simple == "hitsound"){
                     const Ast::Value * group = NULL;
                     const Ast::Value * item = NULL;
-                    try{
+                    if (simple.getValue()->hasMultiple()){
                         simple.view() >> group >> item;
-                    } catch (const Ast::Exception & fail){
+                    } else {
+                        simple.view() >> group;
                     }
 
                     if (group == NULL){
