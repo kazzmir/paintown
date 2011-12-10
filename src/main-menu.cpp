@@ -12,6 +12,7 @@
 #include "mugen/exception.h"
 #include "mugen/menu.h"
 #include "mugen/game.h"
+#include "mugen/options.h"
 #include "util/music.h"
 #include "util/menu/menu.h"
 #include "util/menu/menu-exception.h"
@@ -226,6 +227,7 @@ public:
 
     Paintown::OptionFactory paintownFactory;
     Platformer::OptionFactory platformerFactory;
+    Mugen::OptionFactory mugenFactory;
 
     virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const {
         MenuOption * get = paintownFactory.getOption(parent, token);
@@ -234,6 +236,11 @@ public:
         }
 
         get = platformerFactory.getOption(parent, token);
+        if (get != NULL){
+            return get;
+        }
+
+        get = mugenFactory.getOption(parent, token);
         if (get != NULL){
             return get;
         }

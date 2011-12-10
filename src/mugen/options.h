@@ -2,6 +2,7 @@
 #define _paintown_mugen_options_h
 
 #include "menu.h"
+#include "util/menu/optionfactory.h"
 
 #include <vector>
 #include <string>
@@ -69,6 +70,14 @@ private:
     std::vector<class Option *>::const_iterator selectedOption;
     
     // void doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap &);
+};
+
+/* For the top level paintown menu */
+class OptionFactory: public Menu::OptionFactory {
+public:
+    OptionFactory();
+    virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const;
+    virtual ~OptionFactory();
 };
 
 }
