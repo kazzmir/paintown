@@ -653,7 +653,7 @@ MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Toke
 #endif
     }
 
-    return Menu::OptionFactory::getOption(parent, token);
+    return NULL;
 }
 
 OptionFactory::~OptionFactory(){

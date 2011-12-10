@@ -21,6 +21,7 @@
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/network/client.h"
 #include "paintown-engine/network/server.h"
+#include "platformer/game/options.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/exceptions/exception.h"
 #include "util/timedifference.h"
@@ -224,12 +225,19 @@ public:
     }
 
     Paintown::OptionFactory paintownFactory;
+    Platformer::OptionFactory platformerFactory;
 
     virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const {
         MenuOption * get = paintownFactory.getOption(parent, token);
         if (get != NULL){
             return get;
         }
+
+        get = platformerFactory.getOption(parent, token);
+        if (get != NULL){
+            return get;
+        }
+
         return Menu::OptionFactory::getOption(parent, token);
     }
 };
