@@ -259,6 +259,7 @@ add_library(base_module ${BASE_SRC})
 add_library(level_module ${LEVEL_SRC})
 add_library(factory_module ${FACTORY_SRC})
 add_library(object_module ${OBJECT_SRC})
+add_library(asteroids_module ${ASTEROIDS_SRC})
 add_library(util_module ${UTIL_SRC})
 add_library(loadpng_module ${LOADPNG_SRC})
 add_library(menu_module ${MENU_SRC})
@@ -297,7 +298,7 @@ endif (USE_SDL)
 
 #paintown executable
 add_executable (paintown src/util/xmain.cpp)
-target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
+target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module asteroids_module util_module loadpng_module 
         menu_module env_module network_module gui_module script_module game_module mugen_module platformer_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)

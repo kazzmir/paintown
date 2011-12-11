@@ -3,6 +3,9 @@ src/configuration.cpp
 src/globals.cpp
 src/main-menu.cpp)
 
+set(ASTEROIDS_SRC
+src/asteroids/game.cpp)
+
 set(GAME_SRC
 src/paintown-engine/game/world.cpp
 src/paintown-engine/game/game.cpp
