@@ -192,7 +192,7 @@ public:
     // virtual void toggleConsole();
 
     // Render debug stuff like lines and crap
-    virtual void toggleDebug();
+    virtual void toggleDebug(int player);
 
     // Inherited world actions
     virtual void act();

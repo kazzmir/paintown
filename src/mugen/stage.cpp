@@ -1428,11 +1428,16 @@ void Mugen::Stage::toggleConsole(){
 }
 */
 
-void Mugen::Stage::toggleDebug(){
+void Mugen::Stage::toggleDebug(int choose){
     debugMode = !debugMode;
-    for ( vector<Mugen::Object *>::iterator it = players.begin(); it != players.end(); it++ ){
+    int count = 0;
+    for (vector<Mugen::Object *>::iterator it = players.begin(); it != players.end(); it++, count++){
         Mugen::Character *player = (Mugen::Character *)(*it);
-	player->toggleDebug();
+        if (choose == count){
+            player->enableDebug();
+        } else {
+            player->disableDebug();
+        }
     }
 }
 

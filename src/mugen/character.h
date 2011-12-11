@@ -931,8 +931,16 @@ public:
             
         virtual bool hasAnimation(int index) const;
 
-        virtual inline void toggleDebug(){
-            debug = !debug;
+        virtual void enableDebug(){
+            debug = true;
+        }
+
+        virtual void disableDebug(){
+            debug = false;
+        }
+
+        virtual void toggleDebug(){
+            debug = ! debug;
         }
 
         virtual HitDefinition & getHit(){

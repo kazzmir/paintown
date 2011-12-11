@@ -3,6 +3,7 @@
 #include "game.h"
 
 #include <ostream>
+#include <sstream>
 #include "util/font.h"
 #include "util/token.h"
 #include "configuration.h"
@@ -187,6 +188,26 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             }
         };
 
+        class CommandDebug: public Console::Command {
+        public:
+            CommandDebug(Mugen::Stage * stage):
+            stage(stage){
+            }
+
+            Mugen::Stage * stage;
+
+            string act(const string & line){
+                std::istringstream data(line);
+                int number = -1;
+                string ignore;
+                data >> ignore >> number;
+                stage->toggleDebug(number);
+                std::ostringstream out;
+                out << "Enabled debug for " << number;
+                return out.str();
+            }
+        };
+
         class CommandRecord: public Console::Command {
         public:
             CommandRecord(Mugen::Stage * stage):
@@ -211,6 +232,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         console.addCommand("help", PaintownUtil::ReferenceCount<Console::Command>(new CommandHelp()));
         console.addCommand("memory", PaintownUtil::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("record", PaintownUtil::ReferenceCount<Console::Command>(new CommandRecord(stage)));
+        console.addCommand("debug", PaintownUtil::ReferenceCount<Console::Command>(new CommandDebug(stage)));
     }
 
     bool show_fps = false;
@@ -284,7 +306,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                             break;
                         }
                         case ToggleDebug: {
-                            logic.stage->toggleDebug();
+                            logic.stage->toggleDebug(0);
                             break;
                         }
                         case QuitGame: {
@@ -370,6 +392,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             work.start();
             stage->render(&work);
             work.finish();
+            FontRender * render = FontRender::getInstance();
+            render->render(&screen);
             console.draw(screen);
             screen.BlitToScreen();
         }

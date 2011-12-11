@@ -3113,7 +3113,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     }
 
     if (debug){
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 18, 18);
+        const Font & font = Font::getFont(Global::DEFAULT_FONT, 16, 16);
         int x = 1;
         if (getAlliance() == Mugen::Stage::Player2Side){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;
