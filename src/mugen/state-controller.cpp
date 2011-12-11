@@ -2232,7 +2232,12 @@ public:
         his.airVelocity.y = evaluateNumberLocal(hit.airVelocity.y, 0);
         his.fall.fall = evaluateBoolLocal(hit.fall.fall, false);
         his.fall.yVelocity = evaluateNumberLocal(hit.fall.yVelocity, -4.5);
-        his.fall.xVelocity = evaluateNumberLocal(hit.fall.xVelocity, guy.getXVelocity());
+        if (hit.fall.xVelocity != NULL){
+            his.fall.changeXVelocity = true;
+            his.fall.xVelocity = evaluateNumberLocal(hit.fall.xVelocity, 0);
+        } else {
+            his.fall.changeXVelocity = false;
+        }
         his.fall.envShake.time = evaluateNumberLocal(hit.fall.envShake.time, 0);
         his.fall.damage = evaluateNumberLocal(hit.fall.damage, 0);
         his.fall.recover = evaluateBoolLocal(hit.fall.recover, true);
@@ -4477,7 +4482,9 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (isFalling(guy)){
-            guy.setXVelocity(guy.getHitState().fall.xVelocity);
+            if (guy.getHitState().fall.changeXVelocity){
+                guy.setXVelocity(guy.getHitState().fall.xVelocity);
+            }
             guy.setYVelocity(guy.getHitState().fall.yVelocity);
         }
     }
@@ -6793,6 +6800,22 @@ public:
     }
 };
 
+class ControllerDebug: public StateController {
+public:
+    ControllerDebug(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerDebug(*this);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        int x = 1;
+        x = x + 2;
+    }
+};
+
 static string toString(StateController::Type type){
     switch (type){
         case StateController::ChangeAnim : return "ChangeAnim";
@@ -6883,6 +6906,7 @@ static string toString(StateController::Type type){
         case StateController::VarRangeSet : return "VarRangeSet";
         case StateController::Width :  return "Width";
         case StateController::Unknown :  return "Unknown";
+        case StateController::Debug: return "Debug";
     }
     return "???";
 }
@@ -6970,6 +6994,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::MoveHitReset : return new ControllerMoveHitReset(section, name, state);
         case StateController::BindToRoot : return new ControllerBindToRoot(section, name, state);
         case StateController::BindToTarget : return new ControllerBindToTarget(section, name, state);
+        case StateController::Debug: return new ControllerDebug(section, name, state);
         case StateController::ParentVarAdd :
         case StateController::SndPan :
         case StateController::TargetDrop :

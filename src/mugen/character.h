@@ -331,6 +331,7 @@ struct HitDefinition{
         int fall;
         double xVelocity;
         double yVelocity;
+        bool changeXVelocity;
         bool recover;
         int recoverTime;
         int damage;
@@ -426,6 +427,7 @@ struct HitState{
             recoverTime(0),
             xVelocity(0),
             yVelocity(0),
+            changeXVelocity(false),
             damage(0){
             }
 
@@ -438,6 +440,7 @@ struct HitState{
         int recoverTime;
         double xVelocity;
         double yVelocity;
+        bool changeXVelocity;
         double damage;
     } fall;
 };

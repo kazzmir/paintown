@@ -336,6 +336,8 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
 
         fall.fall |= hit.fall.fall;
         fall.yVelocity = hit.fall.yVelocity;
+        fall.xVelocity = hit.fall.xVelocity;
+        fall.changeXVelocity = hit.fall.changeXVelocity;
         int groundSlideTime = 0;
         groundSlideTime = (int) hit.groundSlideTime;
         returnControlTime = hit.airGuardControlTime;
@@ -351,6 +353,8 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
         yVelocity = hit.groundVelocity.y;
         fall.fall = hit.fall.fall;
         fall.yVelocity = hit.fall.yVelocity;
+        fall.xVelocity = hit.fall.xVelocity;
+        fall.changeXVelocity = hit.fall.changeXVelocity;
     }
 
     fall.envShake.time = hit.fall.envShake.time;
@@ -1391,6 +1395,7 @@ StateController * Character::parseState(Ast::Section * section){
                 types["velmul"] = StateController::VelMul;
                 types["velset"] = StateController::VelSet;
                 types["width"] = StateController::Width;
+                types["debug"] = StateController::Debug;
             }
         }
 

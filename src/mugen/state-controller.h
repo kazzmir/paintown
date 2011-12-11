@@ -130,6 +130,8 @@ public:
         Width,
         /* Default type value. This value means the `type' attribute has not been set */
         Unknown,
+        /* Used as a point to break gdb in */
+        Debug
     };
     
     static StateController * compile(Ast::Section * section, const std::string & name, int state, Type type);
