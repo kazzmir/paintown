@@ -469,6 +469,11 @@ public class Animation implements Runnable {
 		}
 	}
 
+    /* runs through all the events again */
+    public void reset(){
+        applyEvents();
+    }
+
     public void applyEvents(){
         resetPosition();
         for (int event = 0; event <= eventIndex; event++){

@@ -780,7 +780,7 @@ class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
 class RelativeOffsetEvent extends AnimationEventNotifier with AnimationEvent {
   var x:Int = 0
   var y:Int = 0
-	
+
   def loadToken(token:Token){
     x = token.readInt(0)
     y = token.readInt(1)
@@ -792,7 +792,7 @@ class RelativeOffsetEvent extends AnimationEventNotifier with AnimationEvent {
      event.y = y
      event
   }
-	
+
    def interact(animation:Animation){
      animation.setOffsetX(x + animation.getOffsetX())
      animation.setOffsetY(y + animation.getOffsetY())
@@ -811,45 +811,51 @@ class RelativeOffsetEvent extends AnimationEventNotifier with AnimationEvent {
    def getY():Int = y
 
    def getName():String = getToken().toString()
-	
+
    def getEditor(animation:Animation, area:DrawArea):JPanel = {
-		val engine = new SwingEngine("animator/eventoffset.xml");
-		engine.getRootComponent().asInstanceOf[JPanel].setSize(200,100);
+     val engine = new SwingEngine("animator/eventoffset.xml");
+     engine.getRootComponent().asInstanceOf[JPanel].setSize(200,100);
 
         val self = this
-		
-		val xspin = engine.find("x").asInstanceOf[JSpinner];
-		xspin.setValue(new Integer(self.x));
-		xspin.addChangeListener(new ChangeListener(){
-            def stateChanged(changeEvent:ChangeEvent){
-				self.x = xspin.getValue().asInstanceOf[Integer].intValue();
-                updateListeners();
-				interact(animation);
-				animation.forceRedraw();
-			}
-		});
 
-		val yspin = engine.find("y").asInstanceOf[JSpinner];
-		yspin.setValue(new Integer(self.y));
-		yspin.addChangeListener(new ChangeListener(){
-            def stateChanged(changeEvent:ChangeEvent){
-				self.y = yspin.getValue().asInstanceOf[Integer].intValue();
+        val xspin = engine.find("x").asInstanceOf[JSpinner];
+        xspin.setValue(new Integer(self.x));
+        xspin.addChangeListener(new ChangeListener(){
+          def stateChanged(changeEvent:ChangeEvent){
+              self.x = xspin.getValue().asInstanceOf[Integer].intValue()
                 updateListeners();
-				interact(animation);
-				animation.forceRedraw();
-			}
-		});
-		return engine.getRootComponent().asInstanceOf[JPanel];
-	}
-	
+                /* reset the animation to the current event so the
+                 * current offset is correct
+                 */
+                animation.reset()
+                interact(animation)
+                animation.forceRedraw()
+         }
+       });
+
+        val yspin = engine.find("y").asInstanceOf[JSpinner];
+        yspin.setValue(new Integer(self.y));
+        yspin.addChangeListener(new ChangeListener(){
+            def stateChanged(changeEvent:ChangeEvent){
+              self.y = yspin.getValue().asInstanceOf[Integer].intValue()
+                updateListeners()
+                animation.reset()
+                interact(animation);
+                animation.forceRedraw()
+             }
+        });
+
+        return engine.getRootComponent().asInstanceOf[JPanel];
+    }
+
     def getToken():Token = {
-		val temp = new Token()
-		temp.addToken(new Token("relative-offset"))
-		temp.addToken(new Token(x.toString()))
-		temp.addToken(new Token(y.toString()))
-		
-        temp
-	}
+      val temp = new Token()
+      temp.addToken(new Token("relative-offset"))
+      temp.addToken(new Token(x.toString()))
+      temp.addToken(new Token(y.toString()))
+
+      temp
+   }
         
     def destroy(){
     }
