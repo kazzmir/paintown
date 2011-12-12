@@ -193,7 +193,13 @@ public:
         if (*head == "move-list"){
             return new OptionMoveList(parent, head, players);
         }
-        return Paintown::OptionFactory::getOption(parent, data);
+
+        MenuOption * get = Paintown::OptionFactory::getOption(parent, data);
+        if (get != NULL){
+            return get;
+        }
+
+        return Menu::OptionFactory::getOption(parent, data);
     }
 };
 
