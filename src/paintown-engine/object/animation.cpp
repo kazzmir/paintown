@@ -568,6 +568,10 @@ void Animation::createProjectile(int x, int y, Projectile * projectile){
     }
 }
 	
+int Animation::getRange() const {
+    return range * getScale();
+}
+	
 void Animation::nextTicket(){
     if (parent){
         parent->nextTicket();
@@ -769,7 +773,8 @@ vector<ECollide*> Animation::getCollide(int facing){
                     EQuad * ac = collide->getHead();
                     EQuad * adder = new EQuad(attack.getXLen() * scale, attack.getYLen() * scale, NULL);
                     if (facing == Object::FACING_LEFT){
-                        adder->setMinX((getWidth() - attack.getX2()) * scale);
+                        /* Width is already scaled */
+                        adder->setMinX(getWidth() - attack.getX2() * scale);
                         adder->setMinY(attack.getY1() * scale);
                     } else {
                         adder->setMinX(attack.getX1() * scale);

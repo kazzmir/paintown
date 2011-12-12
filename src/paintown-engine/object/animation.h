@@ -211,9 +211,7 @@ public:
 		commision = x;
 	}
 
-	inline int getRange() const {
-		return range;
-	}
+	virtual int getRange() const;
 
 	inline void setRange( const int x ) {
 		range = x;

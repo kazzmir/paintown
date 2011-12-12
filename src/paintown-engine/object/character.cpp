@@ -1769,6 +1769,11 @@ int Character::getInvincibility() const {
     return invincibility;
 }
 
+bool Character::showDebugging() const {
+    /* FIXME: make this a variable that can be changed in the console */
+    return false;
+}
+
 void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
 
     /* this makes a character blink when they die. death increases
@@ -1803,7 +1808,7 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
             effect->draw(rel_x, getCurrentRemap(), work);
         }
 
-        if (Global::getDebug() > 5){
+        if (showDebugging()){
             int x = (int)(getX() - rel_x);
             int y = (int) getRY();
             int x2 = x + animation_current->getRange();
@@ -1811,6 +1816,19 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
                 x2 = x - animation_current->getRange();
             }
             work->rectangle( x, y, x2, y + 1, Graphics::makeColor(255,255,255) );
+
+            work->circleFill(getX() - rel_x, getRY(), 2, Graphics::makeColor(255, 255, 255));
+            work->circleFill(getRX() - rel_x, getRY(), 2, Graphics::makeColor(0, 0, 255));
+
+            work->circleFill(getRX() - getWidth() / 2 - rel_x, getRY() - getHeight() - rel_y, 2, Graphics::makeColor(0, 255, 0));
+
+            vector<ECollide*> collides = getCollide();
+            for (vector<ECollide*>::iterator it = collides.begin(); it != collides.end(); it++){
+                ECollide * collide = *it;
+                int whereX = this->getRX() - getWidth() / 2;
+                int whereY = this->getRY() - getHeight();
+                collide->draw(*work, whereX - rel_x, whereY - rel_y, Graphics::makeColor(255, 0, 0), getFacing() != FACING_RIGHT);
+            }
         }
     }
 }

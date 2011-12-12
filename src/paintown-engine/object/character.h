@@ -432,6 +432,8 @@ public:
 
     virtual void addEffect(DrawEffect * effect);
 
+    virtual bool showDebugging() const;
+
 protected:
 
     virtual Network::Message jumpMessage( double x, double y );
