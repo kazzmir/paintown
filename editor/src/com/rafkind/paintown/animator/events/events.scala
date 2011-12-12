@@ -278,10 +278,14 @@ class AttackEvent extends AnimationEventNotifier with AnimationEvent {
         val toggle = engine.find("toggle").asInstanceOf[JButton];
         toggle.addActionListener(new AbstractAction(){
             var toggled:Boolean = false;
+
+            def calculateX(x:Integer) = (x / area.getScale() - area.getCenterX() - (animation.getX() + animation.getOffsetX() - animation.getWidth() / 2)).toInt
+            def calculateY(y:Integer) = (y / area.getScale() - area.getCenterY() - (animation.getY() + animation.getOffsetY() - animation.getHeight())).toInt
+      
             val listener = new MouseInputAdapter(){
                 override def mousePressed(e:MouseEvent){
-                    attack.x1 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX()).toInt
-                    attack.y1 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
+                    attack.x1 = calculateX(e.getX())
+                    attack.y1 = calculateY(e.getY())
                     x1spin.setValue(new Integer(attack.x1));
                     y1spin.setValue(new Integer(attack.y1));
                     updateListeners()
@@ -290,9 +294,8 @@ class AttackEvent extends AnimationEventNotifier with AnimationEvent {
                 }
 
                 override def mouseDragged(e:MouseEvent){
-                    attack.x2 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 -
-                    animation.getOffsetX()).toInt
-                    attack.y2 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
+                    attack.x2 = calculateX(e.getX())
+                    attack.y2 = calculateY(e.getY())
                     x2spin.setValue(new Integer(attack.x2));
                     y2spin.setValue(new Integer(attack.y2));
                     updateListeners()
@@ -728,10 +731,14 @@ class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
     val toggle =  engine.find("toggle").asInstanceOf[JButton]
     toggle.addActionListener(new AbstractAction(){
       var toggled = false
+
+      def calculateX(x:Integer) = (x / area.getScale() - area.getCenterX() - (animation.getX() + animation.getOffsetX() - animation.getWidth() / 2)).toInt
+      def calculateY(y:Integer) = (y / area.getScale() - area.getCenterY() - (animation.getY() + animation.getOffsetY() - animation.getHeight())).toInt
+
       val listener = new MouseInputAdapter(){
         override def mousePressed(e:MouseEvent){
-          defense.x1 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX()).toInt
-          defense.y1 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
+          defense.x1 = calculateX(e.getX())
+          defense.y1 = calculateY(e.getY())
           x1spin.setValue(new Integer(defense.x1));
           y1spin.setValue(new Integer(defense.y1));
           interact(animation);
@@ -740,8 +747,8 @@ class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
         }
 
         override def mouseDragged(e:MouseEvent){
-          defense.x2 = (e.getX() / area.getScale() - area.getCenterX() + animation.getWidth() / 2 - animation.getOffsetX()).toInt
-          defense.y2 = (e.getY() / area.getScale() - area.getCenterY() + animation.getHeight() - animation.getOffsetY()).toInt
+          defense.x2 = calculateX(e.getX())
+          defense.y2 = calculateY(e.getY())
           x2spin.setValue(new Integer(defense.x2));
           y2spin.setValue(new Integer(defense.y2));
           interact(animation);

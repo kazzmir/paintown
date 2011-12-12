@@ -405,7 +405,7 @@ public class Animation implements Runnable {
 		if (getRange() != 0){
 			Color old = g.getColor();
 			g.setColor(new Color(255, 255, 255));
-			g.fillRect(trueX - offsetX + getWidth() / 2, trueY + getHeight(), getRange(), 5);
+			g.fillRect(x + this.x, y + this.y, getRange(), 5);
 			g.setColor(old);
 		}
 
@@ -433,6 +433,14 @@ public class Animation implements Runnable {
 	public synchronized void moveY( int y ){
 		this.y += y;
 	}
+
+    public synchronized int getX(){
+        return x;
+    }
+
+    public synchronized int getY(){
+        return y;
+    }
 	
 	public synchronized void setOffsetX( int x ){
 		this.offsetX = x;
