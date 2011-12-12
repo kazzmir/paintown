@@ -901,70 +901,11 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
-    /*
-       if ( Global::globalDebug() ){
-       work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
-       }
-       */
-
-    /*
-       x += offset_x;
-       y += offset_y;
-       */
-
     frame.draw(x - w, y - h, remap, *work);
-
-    // cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
-
-    // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
-    /*
-    if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor(255, 255, 255));
-        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
-        // current_collide->draw( *work, x-w, y-h );
-        vector<ECollide*> collides = getCollide(Object::FACING_RIGHT);
-        for (vector<ECollide*>::iterator it = collides.begin(); it != collides.end(); it++){
-            ECollide * c = *it;
-            if (c != NULL){
-                c->draw(*work, x - w, y - h, Graphics::makeColor(255, 255, 255));
-            }
-        }
-    }
-    */
-
-    // work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
-    // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 
 void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){
-
-    doDraw( x, y, *current_frame, remap, work);
-
-#if 0
-    int w = current_frame->getWidth() / 2;
-    int h = current_frame->getHeight();
-
-    if ( global_debug ){
-        work->rectangle( x, y, x+range, y+1, Bitmap::makeColor(255,255,255) );
-    }
-
-    x += offset_x;
-    y += offset_y;
-
-    current_frame->draw( x-w, y-h, *work );
-
-    // cout<<"Animation: "<<this<<" X1: "<<attack_x1<< " X2: "<<attack_x2<< " Y1: "<<attack_y1<< " Y2: "<<attack_y2<<endl;
-
-    // work->rectangle( x+bbox_x1-w, y+bbox_y1-h, x+bbox_x2-w, y+bbox_y2-h, Bitmap::makeColor(255,255,0) );
-    if ( global_debug ){
-        work->rectangle( x+attack.getX1()-w, y+attack.getY1()-h, x+attack.getX2()-w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
-    }
-
-    // current_collide->draw( work, x-w, y-h );
-    // work->rectangle( bbox_x1, bbox_y1, bbox_x2, bbox_y2, Bitmap::makeColor(255,255,0) );
-    // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
-#endif
-
+    doDraw(x, y, *current_frame, remap, work);
 }
 
 void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
@@ -972,68 +913,11 @@ void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Rem
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
-    /*
-       if ( Global::globalDebug() ){
-       work->rectangle( x, y, x-range, y+1, Bitmap::makeColor(255,255,255) );
-    // work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
-    }
-    */
-
-    /*
-       x -= offset_x;
-       y += offset_y;
-       */
-
     frame.drawHFlip( x-w, y-h, remap, *work);
-
-    // work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
-    // work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
-    /*
-    if ( Global::getDebug() > 5 ){
-        work->rectangle( x - w, y - h, x + w, y, Graphics::makeColor( 255, 255, 255 ) );
-        work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Graphics::makeColor(255,0,0) );
-        // current_collide->draw( *work, x-w, y-h, true );
-        vector<ECollide*> collides = getCollide(Object::FACING_LEFT);
-        for (vector<ECollide*>::iterator it = collides.begin(); it != collides.end(); it++){
-            ECollide * c = *it;
-            if ( c != NULL ){
-                c->draw( *work, x - w, y - h, Graphics::makeColor( 255, 255, 255 ), true );
-            }
-        }
-    }
-    */
-
-    // cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
 }
 
 void Animation::DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
-
-	doDrawFlipped( x, y, *current_frame, remap, work);
-	
-#if 0
-	int w = current_frame->getWidth() / 2;
-	int h = current_frame->getHeight();
-
-	if ( global_debug ){
-		work->rectangle( x, y, x-range, y+1, Bitmap::makeColor(255,255,255) );
-		// work->printfNormal( x, y+2, Bitmap::makeColor(255,255,255), "%s", current_frame->getPath().c_str() );
-	}
-
-	x -= offset_x;
-	y += offset_y;
-
-	current_frame->drawHFlip( x-w, y-h, *work );
-
-	// work->rectangle( x-bbox_x1+w, y-bbox_y1+h, x-bbox_x2+w, y-bbox_y2+h, Bitmap::makeColor(255,255,0) );
-	// work->circleFill( x, y-h, 4, Bitmap::makeColor(255,255,255) );
-	if ( global_debug ){
-		work->rectangle( x-attack.getX1()+w, y+attack.getY1()-h, x-attack.getX2()+w, y+attack.getY2()-h, Bitmap::makeColor(255,0,0) );
-	}
-
-	// current_collide->draw( work, x-w, y-h, true );
-	// cout<<"BBox. X1: "<<bbox_x1<<" Y1:"<<bbox_y1<<" X2:"<<bbox_x2<<" Y2:"<<bbox_y2<<endl;
-
-#endif
+    doDrawFlipped(x, y, *current_frame, remap, work);
 }
 	
 /*
@@ -1052,10 +936,10 @@ void Animation::setOffsetY( const int y ){
  * own starting y velocity so the vy parameter is not really used.
  * maybe this should call parent->jump( vx, vy, vz ) instead..
  */
-void Animation::jump( double vx, double vy, double vz ){
-	if ( parent ){
-		parent->doJump( vx, vz );
-	}
+void Animation::jump(double vx, double vy, double vz){
+    if (parent){
+        parent->doJump(vx, vz);
+    }
 }
 
 void Animation::contacted(){
