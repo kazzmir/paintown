@@ -122,6 +122,7 @@ test/paintown-engine/game/options.cpp
 test/paintown-engine/game/move-list.cpp
 test/paintown-engine/game/mod.cpp
 test/util/fire.cpp
+test/asteroids/game.cpp
 test/paintown-engine/game/adventure_world.cpp
 test/util/console.cpp
 test/paintown-engine/game/game.cpp
