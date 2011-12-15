@@ -1,6 +1,101 @@
 import core
 from core import newResult, indent, gensym, special_char, newOut, Accessor
 
+result_code = """
+class Result{
+public:
+    Result():
+    position(-2)%(initialize-state)s{
+    }
+
+    Result(const int position):
+    position(position)%(initialize-state)s{
+    }
+
+    Result(const Result & r):
+    position(r.position),
+    value(r.value)%(copy-state-r)s{
+    }
+
+    Result & operator=(const Result & r){
+        position = r.position;
+        value = r.value;
+        %(assign-state-r)s
+        return *this;
+    }
+
+    void reset(){
+        value.reset();
+    }
+
+    void setPosition(int position){
+        this->position = position;
+    }
+
+    inline int getPosition() const {
+        return position;
+    }
+
+    inline bool error(){
+        return position == -1;
+    }
+
+    inline bool calculated(){
+        return position != -2;
+    }
+
+    %(get/set-state)s
+    inline void nextPosition(){
+        position += 1;
+    }
+
+    void setError(){
+        position = -1;
+    }
+
+    inline void setValue(const Value & value){
+        this->value = value;
+    }
+
+    /*
+    Value getLastValue() const {
+        if (value.isList()){
+            if (value.values.size() == 0){
+                std::cout << "[peg] No last value to get!" << std::endl;
+            }
+            return value.values[value.values.size()-1];
+        } else {
+            return value;
+        }
+    }
+    */
+
+    inline int matches() const {
+        if (value.isList()){
+            return this->value.values.size();
+        } else {
+            return 1;
+        }
+    }
+
+    inline const Value & getValues() const {
+        return this->value;
+    }
+
+    void addResult(const Result & result){
+        std::list<Value> & mine = this->value.values;
+        mine.push_back(result.getValues());
+        this->position = result.getPosition();
+        this->value.which = 1;
+    }
+
+private:
+    int position;
+    Value value;
+    %(state-id)s
+};
+"""
+
 start_cpp_code = """
 struct Value{
     typedef std::list<Value>::const_iterator iterator;
@@ -82,99 +177,9 @@ struct Value{
     std::list<Value> values;
 };
 
-class Result{
-public:
-    Result():
-    position(-2){
-    }
+%(result-class)s
 
-    Result(const int position):
-    position(position){
-    }
-
-    Result(const Result & r):
-    position(r.position),
-    value(r.value){
-    }
-
-    Result & operator=(const Result & r){
-        position = r.position;
-        value = r.value;
-        return *this;
-    }
-
-    void reset(){
-        value.reset();
-    }
-
-    void setPosition(int position){
-        this->position = position;
-    }
-
-    inline int getPosition() const {
-        return position;
-    }
-
-    inline bool error(){
-        return position == -1;
-    }
-
-    inline bool calculated(){
-        return position != -2;
-    }
-
-    inline void nextPosition(){
-        position += 1;
-    }
-
-    void setError(){
-        position = -1;
-    }
-
-    inline void setValue(const Value & value){
-        this->value = value;
-    }
-
-    /*
-    Value getLastValue() const {
-        if (value.isList()){
-            if (value.values.size() == 0){
-                std::cout << "[peg] No last value to get!" << std::endl;
-            }
-            return value.values[value.values.size()-1];
-        } else {
-            return value;
-        }
-    }
-    */
-
-    inline int matches() const {
-        if (value.isList()){
-            return this->value.values.size();
-        } else {
-            return 1;
-        }
-    }
-
-    inline const Value & getValues() const {
-        return this->value;
-    }
-
-    void addResult(const Result & result){
-        std::list<Value> & mine = this->value.values;
-        mine.push_back(result.getValues());
-        this->position = result.getPosition();
-        this->value.which = 1;
-    }
-
-private:
-    int position;
-    Value value;
-};
-
-%s
-
-%s
+%(chunks)s
 
 class ParseException: std::exception {
 public:
@@ -399,7 +404,7 @@ public:
                 column += 1;
             }
         }
-        int context = %d;
+        int context = %(error-size)d;
         int left = farthest - context;
         int right = farthest + context;
         if (left < 0){
@@ -551,8 +556,21 @@ state_stuff = """
  * an instance of that subclass.
  */
 class State{
+private:
+static unsigned int newId();
+
 public:
-    State(){
+    /* Each state gets a unique id */
+    State():
+    id(newId()){
+    }
+
+    bool operator==(const State & state) const {
+        return getId() == state.getId();
+    }
+
+    unsigned int getId() const {
+        return id;
     }
 
     /* must be defined by the user */
@@ -560,10 +578,29 @@ public:
 
     virtual ~State(){
     }
+private:
+    /* global id counter */
+    static unsigned int counter;
+    /* id for this state */
+    unsigned int id;
 };
+
+/* Start at one so that result's can use 0 meaning no id has been set yet */
+unsigned int State::counter = 1;
+unsigned int State::newId(){
+    unsigned int use = counter;
+    counter += 1;
+    return use;
+}
+
+/* global pointer to the current state */
+State * currentState;
+State * getCurrentState(){
+    return currentState;
+}
 """
 
-# all the self parameters are named me because the code was originally
+# all the self parameters are named 'me' because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
 # occur I have changed the name from 'self' to 'me'
 # that is, 'self' in the original code is now the parameter 'pattern'
@@ -990,23 +1027,23 @@ struct %s{
         data = """
 %s
 struct Column{
-Column():
+    Column():
     %s{
-}
+    }
 
-%s
-
-int hitCount(){
-    return %s;
-}
-
-int maxHits(){
-    return %s;
-}
-
-~Column(){
     %s
-}
+
+    int hitCount(){
+        return %s;
+    }
+
+    int maxHits(){
+        return %s;
+    }
+
+    ~Column(){
+        %s
+    }
 };
 """ % (pre, indent(indent("\n,".join(["%s(0)" % x.lower() for x in all]))), indent("\n".join(["%s * %s;" % (x, x.lower()) for x in all])), hit_count, len(rules), indent(indent("\n".join(["delete %s;" % x.lower() for x in all]))))
 
@@ -1028,9 +1065,55 @@ int maxHits(){
     if self.transactions:
         maybe_state_stuff = state_stuff
 
+    setup_state = ""
+    if self.transactions:
+        setup_state = indent("""currentState = State::createState();
+State * parent = currentState;""")
+
+    destroy_state = ""
+    if self.transactions:
+        destroy_state = indent("""delete parent;
+currentState = NULL;""")
+
+    maybe_state_id = ""
+    if self.transactions:
+        maybe_state_id = 'unsigned int stateId;';
+
+
     def singleFile():
+        result_strings = {'initialize-state': '',
+                          'copy-state-r': '',
+                          'assign-state-r': '',
+                          'get/set-state': '',
+                          'state-id': ''}
+        if self.transactions:
+            result_strings = {'initialize-state': ',\n    stateId(0)',
+                              'copy-state-r': ',\n    stateId(r.stateId)',
+                              'assign-state-r': 'stateId = r.stateId;',
+                              'get/set-state': indent("""int getStateId() const {
+    return stateId;
+}
+                              """),
+                              'state-id': maybe_state_id
+                             }
+
+        result_class = result_code % result_strings
+
+        strings = {'top-code': top_code,
+                   'namespace-start': namespace_start,
+                   'start-code': start_cpp_code % {'result-class': result_class,
+                                                   'chunks': chunks,
+                                                   'error-size': self.error_size},
+                   'rules': '\n'.join([prototype(rule) for rule in use_rules]),
+                   'more-code': more_code,
+                   'generated': '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]),
+                   'setup-state': setup_state,
+                   'start': self.start,
+                   'destroy-state': destroy_state,
+                   'namespace-end': namespace_end}
+
         data = """
-%s
+%(top-code)s
 
 #include <list>
 #include <string>
@@ -1041,58 +1124,60 @@ int maxHits(){
 #include <iostream>
 #include <string.h>
 
-%s
-%s
+%(namespace-start)s
+%(start-code)s
 
 std::string ParseException::getReason() const {
-return message;
+    return message;
 }
 
 int ParseException::getLine() const {
-return line;
+    return line;
 }
 
 int ParseException::getColumn() const {
-return column;
+    return column;
 }
 
 Result errorResult(-1);
 
-%s
+%(rules)s
 
-%s
+%(more-code)s
 
-%s
+%(generated)s
 
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
-errorResult.setError();
-Result done = rule_%s(stream, 0);
-if (done.error()){
-    stream.reportError(context);
-}
-if (stats){
-    stream.printStats();
-}
-return done.getValues().getValue();
+    %(setup-state)s
+    errorResult.setError();
+    Result done = rule_%(start)s(stream, 0);
+    %(destroy-state)s
+    if (done.error()){
+        stream.reportError(context);
+    }
+    if (stats){
+        stream.printStats();
+    }
+    return done.getValues().getValue();
 }
 
 const void * parse(const std::string & filename, bool stats = false){
-Stream stream(filename);
-return doParse(stream, stats, filename);
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
 }
 
 const void * parse(const char * in, bool stats = false){
-Stream stream(in);
-return doParse(stream, stats, "memory");
+    Stream stream(in);
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
-Stream stream(in, length);
-return doParse(stream, stats, "memory");
+    Stream stream(in, length);
+    return doParse(stream, stats, "memory");
 }
 
-%s
-    """ % (top_code, namespace_start, start_cpp_code % (maybe_state_stuff, chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, namespace_end)
+%(namespace-end)s
+    """ % strings
         return data
 
     def multipleFiles(name):
@@ -1138,6 +1223,17 @@ extern Result errorResult;
             header_file.write(header_data)
             header_file.close()
 
+        setup_state = ""
+        if self.transactions:
+            setup_state = """
+currentState = State::createState();
+State * parent = currentState;
+"""
+
+        destroy_state = ""
+        if self.transactions:
+            destroy_state = "delete parent;"
+
         data = """
 %s
 
@@ -1161,36 +1257,38 @@ return message;
 Result errorResult(-1);
 
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
-errorResult.setError();
-Result done = rule_%s(stream, 0);
-if (done.error()){
-    stream.reportError(context);
-}
-if (stats){
-    stream.printStats();
-}
-return done.getValues().getValue();
+    %s
+    errorResult.setError();
+    Result done = rule_%s(stream, 0);
+    %s
+    if (done.error()){
+        stream.reportError(context);
+    }
+    if (stats){
+        stream.printStats();
+    }
+    return done.getValues().getValue();
 }
 
 const void * parse(const std::string & filename, bool stats = false){
-Stream stream(filename);
-return doParse(stream, stats, filename);
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
 }
 
 const void * parse(const char * in, bool stats = false){
-Stream stream(in);
-return doParse(stream, stats, "memory");
+    Stream stream(in);
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
-Stream stream(in, length);
-return doParse(stream, stats, "memory");
+    Stream stream(in, length);
+    return doParse(stream, stats, "memory");
 }
 
 %s
 """
 
-        return data % (top_code, name, namespace_start, more_code, self.start, namespace_end)
+        return data % (top_code, name, namespace_start, more_code, self.start, setup_state, destroy_state, namespace_end)
 
     if separate == None:
         return singleFile()

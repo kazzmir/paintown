@@ -104,6 +104,7 @@ struct Value{
     std::list<Value> values;
 };
 
+
 class Result{
 public:
     Result():
@@ -122,6 +123,7 @@ public:
     Result & operator=(const Result & r){
         position = r.position;
         value = r.value;
+        
         return *this;
     }
 
@@ -145,6 +147,7 @@ public:
         return position != -2;
     }
 
+    
     inline void nextPosition(){
         position += 1;
     }
@@ -192,8 +195,8 @@ public:
 private:
     int position;
     Value value;
+    
 };
-
 
 
 
@@ -302,7 +305,7 @@ Result chunk_helper__identifier;
 };
 
 struct Column{
-Column():
+    Column():
     chunk0(0)
         ,chunk1(0)
         ,chunk2(0)
@@ -316,9 +319,9 @@ Column():
         ,chunk10(0)
         ,chunk11(0)
         ,chunk12(0){
-}
+    }
 
-Chunk0 * chunk0;
+    Chunk0 * chunk0;
     Chunk1 * chunk1;
     Chunk2 * chunk2;
     Chunk3 * chunk3;
@@ -332,16 +335,16 @@ Chunk0 * chunk0;
     Chunk11 * chunk11;
     Chunk12 * chunk12;
 
-int hitCount(){
-    return 0;
-}
+    int hitCount(){
+        return 0;
+    }
 
-int maxHits(){
-    return 64;
-}
+    int maxHits(){
+        return 64;
+    }
 
-~Column(){
-    delete chunk0;
+    ~Column(){
+        delete chunk0;
         delete chunk1;
         delete chunk2;
         delete chunk3;
@@ -354,7 +357,7 @@ int maxHits(){
         delete chunk10;
         delete chunk11;
         delete chunk12;
-}
+    }
 };
 
 
@@ -728,15 +731,15 @@ static inline bool compareCharCase(const char a, const char b){
 
 
 std::string ParseException::getReason() const {
-return message;
+    return message;
 }
 
 int ParseException::getLine() const {
-return line;
+    return line;
 }
 
 int ParseException::getColumn() const {
-return column;
+    return column;
 }
 
 Result errorResult(-1);
@@ -19410,30 +19413,32 @@ Result rule_keyword_real(Stream & stream, const int position){
         
 
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
-errorResult.setError();
-Result done = rule_start(stream, 0);
-if (done.error()){
-    stream.reportError(context);
-}
-if (stats){
-    stream.printStats();
-}
-return done.getValues().getValue();
+    
+    errorResult.setError();
+    Result done = rule_start(stream, 0);
+    
+    if (done.error()){
+        stream.reportError(context);
+    }
+    if (stats){
+        stream.printStats();
+    }
+    return done.getValues().getValue();
 }
 
 const void * parse(const std::string & filename, bool stats = false){
-Stream stream(filename);
-return doParse(stream, stats, filename);
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
 }
 
 const void * parse(const char * in, bool stats = false){
-Stream stream(in);
-return doParse(stream, stats, "memory");
+    Stream stream(in);
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
-Stream stream(in, length);
-return doParse(stream, stats, "memory");
+    Stream stream(in, length);
+    return doParse(stream, stats, "memory");
 }
 
 
