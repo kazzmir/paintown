@@ -3,7 +3,7 @@ Import('use')
 source = Split("""
 file-system.cpp
 ../../util/file-system.cpp
-../../exceptions/exception.cpp
+../../util/exceptions/exception.cpp
 ../../util/thread.cpp
 ../../util/debug.cpp
 ../../util/system.cpp
