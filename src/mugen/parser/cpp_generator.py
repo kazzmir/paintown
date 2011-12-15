@@ -174,6 +174,8 @@ private:
 
 %s
 
+%s
+
 class ParseException: std::exception {
 public:
     ParseException(const std::string & reason):
@@ -543,6 +545,23 @@ static inline bool compareCharCase(const char a, const char b){
 }
 """
 
+state_stuff = """
+/* Holds arbitrary global state as defined by the user. The user
+ * should create a subclass of State and make createState() return
+ * an instance of that subclass.
+ */
+class State{
+public:
+    State(){
+    }
+
+    /* must be defined by the user */
+    static State * createState();
+
+    virtual ~State(){
+    }
+};
+"""
 
 # all the self parameters are named me because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
@@ -937,7 +956,7 @@ def generate(self, parallel = False, separate = None, directory = '.', main = Fa
     def makeChunks(rules):
         import math
 
-        values_per_chunk = 5
+        values_per_chunk = self.chunks
         #values_per_chunk = int(math.sqrt(len(rules)))
         #if values_per_chunk < 5:
         #    values_per_chunk = 5
@@ -1005,6 +1024,10 @@ int maxHits(){
     namespace_start = self.cppNamespaceStart()
     namespace_end = self.cppNamespaceEnd()
 
+    maybe_state_stuff = ""
+    if self.transactions:
+        maybe_state_stuff = state_stuff
+
     def singleFile():
         data = """
 %s
@@ -1069,7 +1092,7 @@ return doParse(stream, stats, "memory");
 }
 
 %s
-    """ % (top_code, namespace_start, start_cpp_code % (chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, namespace_end)
+    """ % (top_code, namespace_start, start_cpp_code % (maybe_state_stuff, chunks, self.error_size), '\n'.join([prototype(rule) for rule in use_rules]), more_code, '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]), self.start, namespace_end)
         return data
 
     def multipleFiles(name):

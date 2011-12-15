@@ -1131,6 +1131,10 @@ Result rule_%s(Stream & stream, int position, Value ** arguments){
         rule_number = "RULE_%s" % self.name
         stream = "stream"
         position = "position"
+        stateVariable = ""
+        # Don't waste a gensym
+        if peg.transactions:
+            stateVariable = gensym('state')
         # tail_loop = [gensym("tail")]
         tail_loop = [False]
         debug = "debug1" in peg.options
@@ -1200,15 +1204,27 @@ goto %s;
                 if 'debug2' in peg.options:
                     debug_result = """std::cout << "Succeeded rule %s at position " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 do_memo = peg.memo and self.rules == None and self.parameters == None
+                start_transaction = ""
+                if peg.transactions:
+                    start_transaction = "%s = startTransaction();" % stateVariable
+                commit_transaction = ""
+                if peg.transactions:
+                    commit_transaction = "commitTransaction(%s);" % stateVariable
+                abort_transaction = ""
+                if peg.transactions:
+                    abort_transaction = "abortTransaction(%s);" % stateVariable
                 data = """
 Result %s(%s);
 %s
 %s
 %s
 %s
+%s
+%s
 return %s;
 %s
-            """ % (result, position, debugging, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar, do_memo), debug_result, result, label(out[0]))
+%s
+            """ % (result, position, debugging, start_transaction, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar, do_memo), debug_result, commit_transaction, result, label(out[0]), abort_transaction)
 
             return data
 
@@ -1257,15 +1273,20 @@ try{
 }
 """ % (body, self.fail)
 
+        declare_state = ""
+        if peg.transactions:
+            declare_state = "State * %s = NULL;" % stateVariable;
+
         data = """
 Result rule_%s(Stream & %s, const int %s%s%s){
+    %s
     %s
     RuleTrace %s(%s, "%s");
     int %s = %s;
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), gensym("trace"), stream, self.name, my_position, position, indent(body))
+        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), declare_state, gensym("trace"), stream, self.name, my_position, position, indent(body))
 
         return data
     
@@ -1279,12 +1300,18 @@ class Peg:
         self.options = options
         # Whether to memoize or not
         self.memo = True
+        # Default number of rules to store in a chunk struct
+        self.chunks = 5
+        # Whether to keep global state
+        self.transactions = False
         if options == None:
             self.options = []
         if self.module == None:
             self.module = ['Parser']
         if 'no-memo' in self.options:
             self.memo = False
+        if 'state' in self.options:
+            self.transactions = True
         # Default error length
         self.error_size = 15
         for option in self.options:
@@ -1293,6 +1320,11 @@ class Peg:
             match = length.match(option)
             if match:
                 self.error_size = int(match.group(1))
+
+            chunks = re.compile('chunks (\d+)')
+            match = chunks.match(option)
+            if match:
+                self.chunks = int(match.group(1)) + 1
 
         if self.getRule(self.start) == None:
             raise Exception("No start rule with the name '%s'" % self.start)
@@ -1531,8 +1563,20 @@ for option in ([option1] + option_rest):
 value = 'debug%s' % number
 """),
                 ]),
+            PatternVerbatim('state'),
             PatternVerbatim('no-memo'),
-            PatternRule('error_option')
+            PatternRule('error_option'),
+            PatternRule('chunks')
+            ]),
+        Rule('chunks', [
+            PatternSequence([
+                PatternVerbatim('chunks'),
+                PatternRule('whitespace'),
+                PatternBind('number', PatternRule("number")),
+                PatternCode("""
+value = 'chunks %s' % number
+""")
+                ]),
             ]),
         Rule('error_option', [
             PatternSequence([

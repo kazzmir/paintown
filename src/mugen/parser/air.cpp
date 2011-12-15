@@ -195,6 +195,8 @@ private:
 
 
 
+
+
 struct Chunk0{
 Result chunk_start;
     Result chunk_line;
@@ -801,6 +803,7 @@ Result rule_start(Stream & stream, const int position){
         return column_peg_1.chunk0->chunk_start;
     }
     
+    
     RuleTrace trace_peg_25(stream, "start");
     int myposition = position;
     
@@ -809,6 +812,7 @@ Result rule_start(Stream & stream, const int position){
     
     Value current;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -950,6 +954,7 @@ Result rule_start(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_5:
     
@@ -971,12 +976,14 @@ Result rule_start(Stream & stream, const int position){
 
 Result rule_line(Stream & stream, const int position, Value current){
     
+    
     RuleTrace trace_peg_63(stream, "line");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -1057,9 +1064,11 @@ Result rule_line(Stream & stream, const int position, Value current){
         }
         stream.update(result_peg_2.getPosition());
         
+        
         return result_peg_2;
         out_peg_31:
         Result result_peg_32(myposition);
+        
         
         {
         
@@ -1148,6 +1157,7 @@ Result rule_line(Stream & stream, const int position, Value current){
         }
         stream.update(result_peg_32.getPosition());
         
+        
         return result_peg_32;
         out_peg_61:
     stream.update(errorResult.getPosition());
@@ -1163,12 +1173,14 @@ Result rule_action(Stream & stream, const int position){
         return column_peg_1.chunk0->chunk_action;
     }
     
+    
     RuleTrace trace_peg_22(stream, "action");
     int myposition = position;
     
     
     Value ast;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -1291,6 +1303,7 @@ Result rule_action(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_4:
     
@@ -1307,6 +1320,7 @@ Result rule_action(Stream & stream, const int position){
 
 Result rule_action_line(Stream & stream, const int position, Value section){
     
+    
     RuleTrace trace_peg_250(stream, "action_line");
     int myposition = position;
     
@@ -1314,6 +1328,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
     Value data;
         Value line;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -1394,9 +1409,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_2.getPosition());
         
+        
         return result_peg_2;
         out_peg_31:
         Result result_peg_32(myposition);
+        
         
         {
         
@@ -1486,9 +1503,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_32.getPosition());
         
+        
         return result_peg_32;
         out_peg_61:
         Result result_peg_63(myposition);
+        
         
         {
         
@@ -1578,9 +1597,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_63.getPosition());
         
+        
         return result_peg_63;
         out_peg_92:
         Result result_peg_94(myposition);
+        
         
         {
         
@@ -1670,9 +1691,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_94.getPosition());
         
+        
         return result_peg_94;
         out_peg_123:
         Result result_peg_125(myposition);
+        
         
         {
         
@@ -1804,9 +1827,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_125.getPosition());
         
+        
         return result_peg_125;
         out_peg_154:
         Result result_peg_166(myposition);
+        
         
         {
         
@@ -1932,9 +1957,11 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_166.getPosition());
         
+        
         return result_peg_166;
         out_peg_178:
         Result result_peg_206(myposition);
+        
         
         {
         
@@ -2080,6 +2107,7 @@ Result rule_action_line(Stream & stream, const int position, Value section){
         }
         stream.update(result_peg_206.getPosition());
         
+        
         return result_peg_206;
         out_peg_240:
     stream.update(errorResult.getPosition());
@@ -2095,12 +2123,14 @@ Result rule_line_end(Stream & stream, const int position){
         return column_peg_1.chunk0->chunk_line_end;
     }
     
+    
     RuleTrace trace_peg_17(stream, "line_end");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         result_peg_2.reset();
         do{
@@ -2154,9 +2184,11 @@ Result rule_line_end(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_12:
         Result result_peg_13(myposition);
+        
         
         {
         
@@ -2182,6 +2214,7 @@ Result rule_line_end(Stream & stream, const int position){
         stream.update(result_peg_13.getPosition());
         
         
+        
         return result_peg_13;
         out_peg_16:
     
@@ -2203,12 +2236,14 @@ Result rule_whitespace(Stream & stream, const int position){
         return column_peg_1.chunk1->chunk_whitespace;
     }
     
+    
     RuleTrace trace_peg_5(stream, "whitespace");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         result_peg_2.reset();
         do{
@@ -2227,6 +2262,7 @@ Result rule_whitespace(Stream & stream, const int position){
         }
         column_peg_1.chunk1->chunk_whitespace = result_peg_2;
         stream.update(result_peg_2.getPosition());
+        
         
         
         return result_peg_2;
@@ -2249,12 +2285,14 @@ Result rule_sn(Stream & stream, const int position){
         return column_peg_1.chunk1->chunk_sn;
     }
     
+    
     RuleTrace trace_peg_5(stream, "sn");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         result_peg_2.reset();
         do{
@@ -2273,6 +2311,7 @@ Result rule_sn(Stream & stream, const int position){
         }
         column_peg_1.chunk1->chunk_sn = result_peg_2;
         stream.update(result_peg_2.getPosition());
+        
         
         
         return result_peg_2;
@@ -2295,12 +2334,14 @@ Result rule_space_newline(Stream & stream, const int position){
         return column_peg_1.chunk1->chunk_space_newline;
     }
     
+    
     RuleTrace trace_peg_23(stream, "space_newline");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
             int position_peg_5 = result_peg_2.getPosition();
@@ -2359,9 +2400,11 @@ Result rule_space_newline(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_13:
         Result result_peg_14(myposition);
+        
         
         {
             int position_peg_17 = result_peg_14.getPosition();
@@ -2406,6 +2449,7 @@ Result rule_space_newline(Stream & stream, const int position){
         stream.update(result_peg_14.getPosition());
         
         
+        
         return result_peg_14;
         out_peg_22:
     
@@ -2427,12 +2471,14 @@ Result rule_sw(Stream & stream, const int position){
         return column_peg_1.chunk1->chunk_sw;
     }
     
+    
     RuleTrace trace_peg_16(stream, "sw");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
             int position_peg_5 = result_peg_2.getPosition();
@@ -2491,9 +2537,11 @@ Result rule_sw(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_13:
         Result result_peg_14(myposition);
+        
         
         result_peg_14 = rule_comment(stream, result_peg_14.getPosition());
         if (result_peg_14.error()){
@@ -2505,6 +2553,7 @@ Result rule_sw(Stream & stream, const int position){
         }
         column_peg_1.chunk1->chunk_sw = result_peg_14;
         stream.update(result_peg_14.getPosition());
+        
         
         
         return result_peg_14;
@@ -2528,12 +2577,14 @@ Result rule_comment(Stream & stream, const int position){
         return column_peg_1.chunk1->chunk_comment;
     }
     
+    
     RuleTrace trace_peg_51(stream, "comment");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -2620,9 +2671,11 @@ Result rule_comment(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_4:
         Result result_peg_18(myposition);
+        
         
         {
         
@@ -2709,9 +2762,11 @@ Result rule_comment(Stream & stream, const int position){
         stream.update(result_peg_18.getPosition());
         
         
+        
         return result_peg_18;
         out_peg_20:
         Result result_peg_34(myposition);
+        
         
         {
         
@@ -2809,6 +2864,7 @@ Result rule_comment(Stream & stream, const int position){
         stream.update(result_peg_34.getPosition());
         
         
+        
         return result_peg_34;
         out_peg_36:
     
@@ -2830,12 +2886,14 @@ Result rule_collision_default(Stream & stream, const int position){
         return column_peg_1.chunk2->chunk_collision_default;
     }
     
+    
     RuleTrace trace_peg_134(stream, "collision_default");
     int myposition = position;
     
     
     Value num;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -2953,9 +3011,11 @@ Result rule_collision_default(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_4:
         Result result_peg_35(myposition);
+        
         
         {
         
@@ -3073,9 +3133,11 @@ Result rule_collision_default(Stream & stream, const int position){
         stream.update(result_peg_35.getPosition());
         
         
+        
         return result_peg_35;
         out_peg_37:
         Result result_peg_68(myposition);
+        
         
         {
         
@@ -3193,9 +3255,11 @@ Result rule_collision_default(Stream & stream, const int position){
         stream.update(result_peg_68.getPosition());
         
         
+        
         return result_peg_68;
         out_peg_70:
         Result result_peg_101(myposition);
+        
         
         {
         
@@ -3313,6 +3377,7 @@ Result rule_collision_default(Stream & stream, const int position){
         stream.update(result_peg_101.getPosition());
         
         
+        
         return result_peg_101;
         out_peg_103:
     
@@ -3334,6 +3399,7 @@ Result rule_collision(Stream & stream, const int position){
         return column_peg_1.chunk2->chunk_collision;
     }
     
+    
     RuleTrace trace_peg_646(stream, "collision");
     int myposition = position;
     
@@ -3345,6 +3411,7 @@ Result rule_collision(Stream & stream, const int position){
         Value n3;
         Value n4;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -4230,9 +4297,11 @@ Result rule_collision(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_4:
         Result result_peg_324(myposition);
+        
         
         {
         
@@ -5118,6 +5187,7 @@ Result rule_collision(Stream & stream, const int position){
         stream.update(result_peg_324.getPosition());
         
         
+        
         return result_peg_324;
         out_peg_326:
     
@@ -5139,6 +5209,7 @@ Result rule_action_start(Stream & stream, const int position){
         return column_peg_1.chunk2->chunk_action_start;
     }
     
+    
     RuleTrace trace_peg_128(stream, "action_start");
     int myposition = position;
     
@@ -5147,6 +5218,7 @@ Result rule_action_start(Stream & stream, const int position){
         Value action;
         Value num;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -5529,6 +5601,7 @@ Result rule_action_start(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_4:
     
@@ -5550,12 +5623,14 @@ Result rule_integer(Stream & stream, const int position){
         return column_peg_1.chunk2->chunk_integer;
     }
     
+    
     RuleTrace trace_peg_22(stream, "integer");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -5648,6 +5723,7 @@ Result rule_integer(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_21:
     
@@ -5669,12 +5745,14 @@ Result rule_valuelist(Stream & stream, const int position){
         return column_peg_1.chunk2->chunk_valuelist;
     }
     
+    
     RuleTrace trace_peg_66(stream, "valuelist");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -5872,6 +5950,7 @@ Result rule_valuelist(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_4:
     
@@ -5893,12 +5972,14 @@ Result rule_value(Stream & stream, const int position){
         return column_peg_1.chunk3->chunk_value;
     }
     
+    
     RuleTrace trace_peg_36(stream, "value");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         result_peg_2 = rule_integer(stream, result_peg_2.getPosition());
         if (result_peg_2.error()){
@@ -5912,9 +5993,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_2.getPosition());
         
         
+        
         return result_peg_2;
         out_peg_3:
         Result result_peg_4(myposition);
+        
         
         {
         
@@ -5970,9 +6053,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_4.getPosition());
         
         
+        
         return result_peg_4;
         out_peg_6:
         Result result_peg_10(myposition);
+        
         
         {
         
@@ -6010,9 +6095,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_10.getPosition());
         
         
+        
         return result_peg_10;
         out_peg_12:
         Result result_peg_14(myposition);
+        
         
         {
         
@@ -6043,9 +6130,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_14.getPosition());
         
         
+        
         return result_peg_14;
         out_peg_16:
         Result result_peg_17(myposition);
+        
         
         {
         
@@ -6083,9 +6172,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_17.getPosition());
         
         
+        
         return result_peg_17;
         out_peg_19:
         Result result_peg_21(myposition);
+        
         
         {
         
@@ -6116,9 +6207,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_21.getPosition());
         
         
+        
         return result_peg_21;
         out_peg_23:
         Result result_peg_24(myposition);
+        
         
         {
         
@@ -6149,9 +6242,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_24.getPosition());
         
         
+        
         return result_peg_24;
         out_peg_26:
         Result result_peg_27(myposition);
+        
         
         {
         
@@ -6182,9 +6277,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_27.getPosition());
         
         
+        
         return result_peg_27;
         out_peg_29:
         Result result_peg_30(myposition);
+        
         
         {
         
@@ -6215,9 +6312,11 @@ Result rule_value(Stream & stream, const int position){
         stream.update(result_peg_30.getPosition());
         
         
+        
         return result_peg_30;
         out_peg_32:
         Result result_peg_33(myposition);
+        
         
         {
         
@@ -6246,6 +6345,7 @@ Result rule_value(Stream & stream, const int position){
         }
         column_peg_1.chunk3->chunk_value = result_peg_33;
         stream.update(result_peg_33.getPosition());
+        
         
         
         return result_peg_33;
