@@ -892,13 +892,17 @@ int %s = %s.getPosition();
                 fail = failure
             data += """
 {
-Result %s(%s.getPosition());
-%s
-%s = %s;
+Result %(new-result)s(%(result)s.getPosition());
+%(code)s
+%(result)s = %(new-result)s;
 }
-goto %s;
-%s:
-""" % (my_result, result, pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(), result, my_result, success, out)
+goto %(success)s;
+%(out)s:
+""" % {'new-result': my_result,
+       'result': result,
+       'code': pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip(),
+       'success': success,
+       'out': out}
         data += "%s:\n" % success
         return data
 
@@ -906,27 +910,36 @@ goto %s;
         if pattern.pattern.isLineInfo():
             name = gensym("line_info");
             data = """
-Stream::LineInfo %s = %s.getLineInfo(%s.getPosition());
-%s = &%s;
-""" % (name, stream, result, pattern.variable, name)
+Stream::LineInfo %(name)s = %(stream)s.getLineInfo(%(result)s.getPosition());
+%(variable)s = &%(name)s;
+""" % {'name': name,
+       'stream': stream,
+       'result': result,
+       'variable': pattern.variable}
         else:
             data = """
-%s
-%s = %s.getValues();
-""" % (pattern.pattern.generate_cpp(peg, result, stream, failure, tail, peg_args).strip(), pattern.variable, result)
+%(code)s
+%(variable)s = %(result)s.getValues();
+""" % {'code': pattern.pattern.generate_cpp(peg, result, stream, failure, tail, peg_args).strip(),
+       'variable': pattern.variable,
+       'result': result}
         return data
 
     def generate_range(me, pattern, peg, result, stream, failure, tail, peg_args):
         letter = gensym("letter")
         data = """
-char %s = %s.get(%s.getPosition());
-if (%s != '\\0' && strchr("%s", %s) != NULL){
-    %s.nextPosition();
-    %s.setValue(Value((void*) (long) %s));
+char %(letter)s = %(stream)s.get(%(result)s.getPosition());
+if (%(letter)s != '\\0' && strchr("%(range)s", %(letter)s) != NULL){
+    %(result)s.nextPosition();
+    %(result)s.setValue(Value((void*) (long) %(letter)s));
 } else {
-    %s
+    %(failure)s
 }
-""" % (letter, stream, result, letter, pattern.range, letter, result, result, letter, indent(failure()))
+""" % {'letter': letter,
+       'stream': stream,
+       'result': result,
+       'range': pattern.range,
+       'failure': indent(failure())}
         return data
 
     def generate_verbatim(me, pattern, peg, result, stream, failure, tail, peg_args):
@@ -938,26 +951,35 @@ if (%s != '\\0' && strchr("%s", %s) != NULL){
             if pattern.options == "{case}":
                 comparison = "compareCharCase"
             data = """
-%s.setValue(Value((void*) "%s"));
-for (int i = 0; i < %d; i++){
-    if (%s("%s"[i], %s.get(%s.getPosition()))){
-        %s.nextPosition();
+%(result)s.setValue(Value((void*) "%(string)s"));
+for (int i = 0; i < %(length)d; i++){
+    if (%(compare)s("%(string)s"[i], %(stream)s.get(%(result)s.getPosition()))){
+        %(result)s.nextPosition();
     } else {
-        %s
+        %(failure)s
     }
 }
-    """ % (result, pattern.letters.replace('"', '\\"'), length, comparison, pattern.letters.replace('"', '\\"'), stream, result, result, indent(indent(failure())))
+    """ % {'result': result,
+           'string': pattern.letters.replace('"', '\\"'),
+           'length': length,
+           'compare': comparison,
+           'stream': stream,
+           'failure': indent(indent(failure()))}
+
             return data
         def doAscii():
             data = """
-%s.setValue(Value((void*) %s));
-if ((unsigned char) %s.get(%s.getPosition()) == (unsigned char) %s){
-    %s.nextPosition();
+%(result)s.setValue(Value((void*) %(string)s));
+if ((unsigned char) %(stream)s.get(%(result)s.getPosition()) == (unsigned char) %(string)s){
+    %(result)s.nextPosition();
 } else {
-    %s
+    %(failure)s
 }
 """
-            return data % (result, pattern.letters, stream, result, pattern.letters, result, indent(failure()))
+            return data % {'result': result,
+                           'string': pattern.letters,
+                           'stream': stream,
+                           'failure': indent(failure())}
 
         if type(pattern.letters) == type('x'):
             return doString()
@@ -1007,10 +1029,12 @@ def generate(self, parallel = False, separate = None, directory = '.', main = Fa
             chunk_accessors.extend([Accessor(".%s" % name.lower(), "->chunk_%s" % rule.name, name, rule) for rule in values])
 
             value_data = """
-struct %s{
-%s
+struct %(name)s{
+%(items)s
 };
-""" % (name, indent("\n".join(["Result chunk_%s;" % rule.name for rule in values])))
+""" % {'name': name,
+       'items': indent("\n".join(["Result chunk_%s;" % rule.name for rule in values]))}
+
             all.append(name)
             pre += value_data
 
@@ -1025,27 +1049,32 @@ struct %s{
         hit_count = "0"
 
         data = """
-%s
+%(pre)s
 struct Column{
     Column():
-    %s{
+    %(initializers)s{
     }
 
-    %s
+    %(members)s
 
     int hitCount(){
-        return %s;
+        return %(hit-count)s;
     }
 
     int maxHits(){
-        return %s;
+        return %(rules)s;
     }
 
     ~Column(){
-        %s
+        %(deletes)s
     }
 };
-""" % (pre, indent(indent("\n,".join(["%s(0)" % x.lower() for x in all]))), indent("\n".join(["%s * %s;" % (x, x.lower()) for x in all])), hit_count, len(rules), indent(indent("\n".join(["delete %s;" % x.lower() for x in all]))))
+""" % {'pre': pre,
+       'initializers': indent(indent("\n,".join(["%s(0)" % x.lower() for x in all]))),
+       'members': indent("\n".join(["%s * %s;" % (x, x.lower()) for x in all])),
+       'hit-count': hit_count,
+       'rules': len(rules),
+       'deletes': indent(indent("\n".join(["delete %s;" % x.lower() for x in all])))}
 
         return data
 
