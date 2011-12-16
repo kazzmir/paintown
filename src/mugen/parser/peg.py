@@ -1427,7 +1427,7 @@ value = (void *) 2;
     peg = Peg("Peg", "s", rules)
     print cpp_generator.generate(peg)
 
-def create_peg(peg):
+def create_peg(peg, kind = 'file'):
     # import imp
     # module = imp.new_module(peg.namespace)
     # exec peg.generate_python() in module.__dict__
@@ -1440,7 +1440,12 @@ def create_peg(peg):
     module = __import__(name, globals(), locals(), ['parse'])
     # print module
     # print dir(module)
-    return module.parseFile
+    if kind == 'file':
+        return module.parseFile
+    elif kind == 'string':
+        return module.parseString
+    else:
+        raise Exception("Unknown kind '%s'. Give 'file' or 'string'" % kind)
 
 def test2():
     start_code_abc = """

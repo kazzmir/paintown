@@ -387,6 +387,28 @@ rules:
     if str(out) != str(expected):
         raise TestException("Expected '%s' but got '%s'" % (expected, out))
 
+def performanceTest():
+    # FIXME: use something other than cmd.peg
+    setup = """
+def readAll(path):
+    file = open(path, 'r')
+    all = file.read()
+    file.close()
+    return all
+import peg
+parser = peg.create_peg(peg.peg_bnf('performance'), 'string')
+data = readAll('cmd.peg')
+    """
+
+    def test(times):
+        import timeit
+        print "Performance test %d" % times
+        time = timeit.timeit('parser(data)', setup, number = times)
+        print "Total %f. Single run %f" % (time, time / times)
+
+    for i in xrange(1, 4):
+        test(i)
+
 def run():
     tests = [test1, test2, test3, test4, test5, test6, test7]
     import sys
@@ -400,6 +422,8 @@ def run():
             except TestException as t:
                 failures += 1
                 print t
+            except IndexError:
+                print "No test for %s" % num
     else:
         for test in tests:
             try:
@@ -410,5 +434,6 @@ def run():
                 print t
     print
     print "Tests run %d. Failures %d" % (run, failures)
+    performanceTest()
 
 run()

@@ -616,21 +616,28 @@ class CppGenerator(core.CodeGenerator):
         my_result = newResult()
         my_fail = lambda : "goto %s;" % not_label
         data = """
-Result %s(%s);
-%s
-%s
-%s:
-%s.setValue(Value((void*)0));
-        """ % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, my_fail, None, peg_args).strip(), failure(), not_label, result)
+Result %(new-result)s(%(result)s);
+%(code)s
+%(fail)s
+%(not)s:
+%(result)s.setValue(Value((void*)0));
+        """ % {'new-result': my_result,
+               'result': result,
+               'code': pattern.next.generate_cpp(peg, my_result, stream, my_fail, None, peg_args).strip(),
+               'fail': failure(),
+               'not': not_label,
+               'result': result}
 
         return data
 
     def generate_ensure(me, pattern, peg, result, stream, failure, tail, peg_args):
         my_result = newResult()
         data = """
-Result %s(%s.getPosition());
-%s
-""" % (my_result, result, pattern.next.generate_cpp(peg, my_result, stream, failure, None, peg_args).strip())
+Result %(new-result)s(%(result)s.getPosition());
+%(code)s
+""" % {'new-result': my_result,
+       'result': result,
+       'code': pattern.next.generate_cpp(peg, my_result, stream, failure, None, peg_args).strip()}
         return data
 
     def generate_call_rule(me, pattern, peg, result, stream, failure, tail, peg_args):
@@ -655,24 +662,33 @@ Result %s(%s.getPosition());
         cast = "Result (*)(Stream &, const int%s%s)" % (argify('void *', pattern.rules), argify('Value', pattern.values))
 
         data = """
-%s = ((%s) %s)(%s, %s.getPosition()%s%s);
-if (%s.error()){
-    %s
+%(result)s = ((%(cast)s) %(name)s)(%(stream)s, %(result)s.getPosition()%(rule-parameters)s%(parameters)s);
+if (%(result)s.error()){
+    %(fail)s
 }
-""" % (result, cast, pattern.name, stream, result, rule_parameters, parameters, result, indent(failure()))
+""" % {'result': result,
+       'cast': cast,
+       'name': pattern.name,
+       'stream': stream,
+       'rule-parameters': rule_parameters,
+       'parameters': parameters,
+       'result': result,
+       'fail': indent(failure())}
 
         return data
 
     def generate_predicate(me, pattern, peg, result, stream, failure, tail, peg_args):
         data = """
 {
-    bool %s = true;
-    %s
-    if (!%s){
-        %s
+    bool %(variable)s = true;
+    %(code)s
+    if (!%(variable)s){
+        %(fail)s
     }
 }
-""" % (pattern.variable, me.fixup_cpp(indent(pattern.code.strip()), peg_args), pattern.variable, failure())
+""" % {'variable': pattern.variable,
+       'code': me.fixup_cpp(indent(pattern.code.strip()), peg_args),
+       'fail': failure()}
         return data
 
     def generate_rule(me, pattern, peg, result, stream, failure, tail, peg_args):
@@ -696,33 +712,29 @@ if (%s.error()){
                     return "%s.setPosition(%s);\ngoto %s;" % (result, previous_position, out[0])
                 pattern_result = pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip()
 
-                old_data = """
-{
-Result %s(%s.getPosition());
-%s
-%s = %s;
-}
-%s
-%s
-                """ % (my_result, result, pattern_result, result, my_result, success, label(out[0]))
-
                 data = """
 {
-    int %s = %s.getPosition();
-    %s
+    int %(previous)s = %(result)s.getPosition();
+    %(code)s
 }
-%s
-%s
-""" % (previous_position, result, indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)), success, label(out[0]))
+%(success)s
+%(label)s
+""" % {'previous': previous_position,
+       'result': result,
+       'code': indent(pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)),
+       'success': success,
+       'label': label(out[0])}
                 return data
 
             success_out = gensym('success')
             data = """
-%s
-%s
-%s:
+%(code)s
+%(fail)s
+%(success)s:
 ;
-""" % ('\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]), failure(), success_out)
+""" % {'code': '\n'.join([newPattern(pattern, stream, result, "goto %s;" % success_out).strip() for pattern in rule.patterns]),
+       'fail': failure(),
+       'success': success_out}
             return data
         else:
             # TODO: add rule parameters here
@@ -748,11 +760,16 @@ Result %s(%s.getPosition());
                     parameters = ", %s" % ", ".join([me.fixup_cpp(p, peg_args) for p in pattern.parameters])
                     # parameters = ", %s" % fix_param(pattern.parameters)
                 data = """
-%s = rule_%s(%s, %s.getPosition()%s%s);
-if (%s.error()){
-    %s
+%(result)s = rule_%(rule)s(%(stream)s, %(result)s.getPosition()%(rule-parameters)s%(parameters)s);
+if (%(result)s.error()){
+    %(fail)s
 }
-""" % (result, pattern.rule, stream, result, rule_parameters, parameters, result, indent(failure()))
+""" % {'result': result,
+       'rule': pattern.rule,
+       'stream': stream,
+       'rule-parameters': rule_parameters,
+       'parameters': parameters,
+       'fail': indent(failure())}
 
                 return data
 
@@ -761,13 +778,15 @@ if (%s.error()){
 
     def generate_eof(me, pattern, peg, result, stream, failure, tail, peg_args):
         data = """
-if ('\\0' == %s.get(%s.getPosition())){
-    %s.nextPosition();
-    %s.setValue(Value((void *) '\\0'));
+if ('\\0' == %(stream)s.get(%(result)s.getPosition())){
+    %(result)s.nextPosition();
+    %(result)s.setValue(Value((void *) '\\0'));
 } else {
-    %s
+    %(fail)s
 }
-""" % (stream, result, result, result, indent(failure()))
+""" % {'stream': stream,
+       'result': result,
+       'fail': indent(failure())}
         return data
 
     def generate_sequence(me, pattern, peg, result, stream, failure, tail, peg_args):
@@ -814,17 +833,21 @@ if ('\\0' == %s.get(%s.getPosition())){
         my_fail = lambda : "goto %s;" % loop_done
         my_result = newResult()
         data = """
-%s.reset();
+%(result)s.reset();
 do{
-    Result %s(%s.getPosition());
-    %s
-    %s.addResult(%s);
+    Result %(new-result)s(%(result)s.getPosition());
+    %(code)s
+    %(result)s.addResult(%(new-result)s);
 } while (true);
-%s:
-if (%s.matches() == 0){
-    %s
+%(loop-done)s:
+if (%(result)s.matches() == 0){
+    %(fail)s
 }
-""" % (result, my_result, result, indent(pattern.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done, result, indent(failure()))
+""" % {'result': result,
+       'new-result': my_result,
+       'code': indent(pattern.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()),
+       'loop-done': loop_done,
+       'fail': indent(failure())}
 
         return data
 
@@ -832,52 +855,62 @@ if (%s.matches() == 0){
         data = """
 {
     Value value((void*) 0);
-    %s
-    %s.setValue(value);
+    %(code)s
+    %(result)s.setValue(value);
 }
-        """ % (me.fixup_cpp(indent(pattern.code.strip()), peg_args), result)
+        """ % {'code': me.fixup_cpp(indent(pattern.code.strip()), peg_args),
+               'result': result}
 
         return data
 
     def generate_repeat_many(me, pattern, peg, result, stream, failure, tail, peg_args):
         loop_done = gensym("loop")
-        my_fail = lambda : "goto %s;" % loop_done
+        my_fail = lambda: "goto %s;" % loop_done
         my_result = newResult()
         data = """
-%s.reset();
+%(result)s.reset();
 do{
-    Result %s(%s.getPosition());
-    %s
-    %s.addResult(%s);
+    Result %(new-result)s(%(result)s.getPosition());
+    %(code)s
+    %(result)s.addResult(%(new-result)s);
 } while (true);
-%s:
+%(loop-done)s:
 ;
-        """ % (result, my_result, result, indent(pattern.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()), result, my_result, loop_done)
+        """ % {'result': result,
+               'new-result': my_result,
+               'code': indent(pattern.next.generate_cpp(peg, my_result, stream, my_fail, tail, peg_args).strip()),
+               'loop-done': loop_done}
         return data
 
     def generate_any(me, pattern, peg, result, stream, failure, tail, peg_args):
-        temp = gensym()
         data = """
-char %s = %s.get(%s.getPosition());
-if (%s != '\\0'){
-    %s.setValue(Value((void*) (long) %s));
-    %s.nextPosition();
+char %(temp)s = %(stream)s.get(%(result)s.getPosition());
+if (%(temp)s != '\\0'){
+    %(result)s.setValue(Value((void*) (long) %(temp)s));
+    %(result)s.nextPosition();
 } else {
-    %s
+    %(fail)s
 }
-""" % (temp, stream, result, temp, result, temp, result, indent(failure()))
+""" % {'temp': gensym(),
+       'stream': stream,
+       'result': result,
+       'fail': indent(failure())}
         return data
 
     def generate_maybe(me, pattern, peg, result, stream, failure, tail, peg_args):
         save = gensym("save")
-        fail = lambda : """
-%s = Result(%s);
-%s.setValue(Value((void*) 0));
-""" % (result, save, result)
+        fail = lambda: """
+%(result)s = Result(%(save)s);
+%(result)s.setValue(Value((void*) 0));
+""" % {'result': result,
+       'save': save}
+
         data = """
-int %s = %s.getPosition();
-%s
-""" % (save, result, pattern.pattern.generate_cpp(peg, result, stream, fail, tail, peg_args))
+int %(save)s = %(result)s.getPosition();
+%(code)s
+""" % {'save': save,
+       'result': result,
+       'code': pattern.pattern.generate_cpp(peg, result, stream, fail, tail, peg_args)}
         return data
 
     def generate_or(me, pattern, peg, result, stream, failure, tail, peg_args):
