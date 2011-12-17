@@ -3,14 +3,33 @@ Sat, 02 Oct 2010 13:36:54 -0600
 
 It was downloaded from: subversion source (http://paintown.sf.net)
 
-Upstream Author(s): Jon Rafkind <jon@rafkind.com>, Miguel Gavidia <juvinious@gmail.com>
+Upstream Authors: Jon Rafkind <jon@rafkind.com>,
+    Miguel Gavidia <juvinious@gmail.com>
 
 Copyright:
-        Copyright (C) 2006-2010 by Jon Rafkind <jon@rafkind.com> and Miguel Gavidia <juvinious@gmail.com>
+    2006-2010, Jon Rafkind <jon@rafkind.com>
+    2006-2010, Miguel Gavidia <juvinious@gmail.com>
+
+License: GPL-2
 
 License:
-        GPL-2
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-Packaging:
-        Copyright (C) Jon Rafkind <jon@rafkind.com>
-        released under GPL-2
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+On Debian systems, the complete text of the GNU General Public License
+can be found in the /usr/share/common-licenses/GPL-2 file.
+
+The Debian packaging is © 2010, Jon Rafkind <jon@rafkind.com> and 
+© 2011, Savvas Radevic <vicedar@gmail.com and is licensed under the GPL-2, see 
+above.

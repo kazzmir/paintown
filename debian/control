@@ -1,16 +1,42 @@
 Source: paintown
 Section: games
 Priority: optional
-Maintainer: Jon Rafkind <jon@rafkind.com>
-Build-Depends: libsdl-dev, scons (>= 1.1.0), dh-make, g++, libpng12-dev, libfreetype6-dev, make, zlib1g-dev
+Maintainer: Savvas Radevic <vicedar@gmail.com>
+Build-Depends: debhelper (>= 7), libsdl-dev, scons (>= 1.1.0), libpng12-dev, 
+ libfreetype6-dev, zlib1g-dev, libmad0-dev, python-dev, libvorbis-dev,
+ libogg-dev, libmpg123-dev
 Homepage: http://paintown.sf.net
+Standards-Version: 3.9.2
 
 Package: paintown
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Paintown is a 2-d fighting game similar to Streets of Rage
- and Teenage Mutant Ninja Turtles. Paintown comes with level and animation editors
- to help with the creation of new content. Paintown also implements the
- MUGEN engine. You must download the data files separately. Use this subversion
- URL to get the data
- https://paintown.svn.sourceforge.net/svnroot/paintown/data
+ and Teenage Mutant Ninja Turtles. Paintown comes with level and animation 
+ editors to help with the creation of new content. Paintown also implements the
+ MUGEN engine.
+ .
+ This package contains the arch dependent binary files.
+
+#Package: paintown
+#Architecture: any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, paintown-data (=${source:Version})
+#Description: Paintown is a 2-d fighting game similar to Streets of Rage
+# and Teenage Mutant Ninja Turtles. Paintown comes with level and animation 
+# editors to help with the creation of new content. Paintown also implements the
+# MUGEN engine.
+# .
+# This package contains the arch dependent binary files.
+#
+#Package: paintown-data
+#Architecture: all
+#Depends: ${misc:Depends}
+#Recommends: paintown
+#Description: A 2-d fighting game similar to Streets of Rage
+# and Teenage Mutant Ninja Turtles. Paintown comes with level and animation 
+# editors to help with the creation of new content. Paintown also implements the
+# MUGEN engine. You can download the data files from 
+# https://paintown.svn.sourceforge.net/svnroot/paintown/data
+# .
+# This package contains the arch independent data files.
+#

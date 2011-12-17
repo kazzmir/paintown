@@ -1,25 +1,44 @@
 #!/usr/bin/make -f
-# -*- makefile -*-
-
 # Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+export DH_VERBOSE=1
 
-paintown_version=3.5.0
+build: build-stamp
+build-stamp:
+	dh_testdir
+	@make -j `python misc/cores.py`
+	touch build-stamp
 
 clean:
-		echo "Not cleaning"
+	dh clean
+	find -name "*.pyc" -delete
+	rm -rf .sconf_temp .sconsign.dblite build misc/libpng.a misc/libfreetype.a config.log fail.log
 
-build:
-		@scons -j `python misc/cores.py` data=/usr/share/paintown
+install: build install-stamp
+install-stamp:
+	dh install --before dh_auto_configure
+	dh install --after dh_auto_test
+	touch install-stamp
+
+binary-pre:
+	#package paintown-data
+	#mv -v $(CURDIR)/debian/paintown-data/usr/share/paintown/ $(CURDIR)/debian/paintown-data/usr/share/paintown
+	#find $(CURDIR)/debian/paintown-data/usr/share/paintown/data/ -type f -exec chmod 644 "{}" \;
+	#package paintown
+	#mv -v $(CURDIR)/debian/paintown-data/usr/share/paintown/paintown-bin $(CURDIR)/debian/paintown/usr/games/paintown-bin
+	mkdir -p $(CURDIR)/debian/paintown/usr/share/paintown
+	cp $(CURDIR)/paintown $(CURDIR)/debian/paintown/usr/share/paintown/paintown-bin
+	mkdir -p $(CURDIR)/debian/paintown/usr/games
+	cp -av $(CURDIR)/debian/usr_games_paintown $(CURDIR)/debian/paintown/usr/games/paintown
+	dh_fixperms
+	#ls -lR $(CURDIR)/debian/
 
 binary-arch:
-		mkdir -p $(CURDIR)/debian/tmp/DEBIAN
-		mkdir -p $(CURDIR)/debian/tmp/DEBIAN/usr/games
-		mkdir -p $(CURDIR)/debian/tmp/DEBIAN/usr/share/paintown
-		cp paintown $(CURDIR)/debian/tmp/DEBIAN/usr/games
-		dpkg-gencontrol
-		dpkg-deb -b $(CURDIR)/debian/tmp ../paintown_$(paintown_version)_$(DEB_HOST_ARCH).deb
+	dh binary-arch
 
-binary-indp:
+binary-indep:
+	dh binary-indep
 
-binary: binary-arch binary-indp
+binary: install binary-pre binary-arch binary-indep
+
+.PHONY: binary binary-pre binary-arch binary-indep build clean install
+

@@ -1,3 +1,15 @@
+paintown (3.6.0.1) natty; urgency=low
+
+  * Latest packaging
+
+ -- Jon Rafkind <jon@rafkind.com>  Fri, 16 Dec 2011 15:29:30 -0700
+
+paintown (3.5.0-0ubuntu1~ppao1) oneiric; urgency=low
+
+  * Build for 11.10
+
+ -- Savvas Radevic <vicedar@gmail.com>  Sun, 20 Nov 2011 10:12:17 +0100
+
 paintown (3.5.0) karmic; urgency=low
 
   * New version
