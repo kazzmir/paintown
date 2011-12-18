@@ -55,7 +55,6 @@ def findDirectory(name):
         where = os.path.join(where, '..')
     raise Exception("Could not find the %s directory" % name)
 
-
 import sys
 sys.path.append(findDirectory("scons"))
 import helpers

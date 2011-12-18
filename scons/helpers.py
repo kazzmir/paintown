@@ -7,12 +7,30 @@ def read_cmake_list(name):
     modified and scons will automatically pick up the changes.
     """
     lists = {}
+    current = []
+    reading = False
     for line in open(name):
-        if line.startswith("set"):
-		current = []
-		name = line[4:].strip()
-		lists[name] = current
+        if line.startswith("set("):
+            current = []
+            name = line[4:].strip()
+            lists[name] = current
+            reading = True
         else:
-		w = line.strip("( )\t\r\n")
-		if w: current.append(w)
+            if reading:
+                # Stop reading files once we hit a line like 'file.cpp)'
+                if line.strip("\t\r\n").endswith(")"):
+                    reading = False
+                path = line.strip("( )\t\r\n")
+                if path:
+                    current.append(path)
     return lists
+
+def findDirectory(name):
+    import os.path
+    where = '.'
+    # just try 5 directories
+    for i in xrange(0, 5):
+        if os.path.exists("%s/%s" % (where, name)):
+            return "%s/%s" % (where, name)
+        where = os.path.join(where, '..')
+    raise Exception("Could not find the %s directory" % name)
