@@ -104,6 +104,7 @@ struct Value{
 };
 
 
+
 class Result{
 public:
     Result():
@@ -196,8 +197,6 @@ private:
     Value value;
     
 };
-
-
 
 
 struct Chunk0{
@@ -333,7 +332,7 @@ public:
 
         line_info[-1] = LineInfo(1, 1);
 
-        createMemo();
+        setup();
     }
 
     /* for null-terminated strings */
@@ -344,7 +343,7 @@ public:
     last_line_info(-1){
         max = strlen(buffer);
         line_info[-1] = LineInfo(1, 1);
-        createMemo();
+        setup();
     }
 
     /* user-defined length */
@@ -355,6 +354,11 @@ public:
     last_line_info(-1){
         max = length;
         line_info[-1] = LineInfo(1, 1);
+        setup();
+    }
+
+    void setup(){
+        
         createMemo();
     }
 
@@ -567,6 +571,8 @@ public:
         rule_backtrace.pop_back();
     }
 
+    
+
     ~Stream(){
         delete[] temp;
         for (int i = 0; i < memo_size; i++){
@@ -587,6 +593,7 @@ private:
     std::vector<std::string> last_trace;
     int last_line_info;
     std::map<int, LineInfo> line_info;
+    
 };
 
 static int getCurrentLine(const Value & value){
@@ -1419,8 +1426,8 @@ Result rule_start(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_208:
@@ -1660,8 +1667,8 @@ Result rule_line(Stream & stream, const int position, Value current){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_25:
@@ -1739,8 +1746,8 @@ Result rule_line(Stream & stream, const int position, Value current){
             
             
         }
-        stream.update(result_peg_70.getPosition());
         
+        stream.update(result_peg_70.getPosition());
         
         return result_peg_70;
         out_peg_93:
@@ -1791,8 +1798,8 @@ Result rule_line(Stream & stream, const int position, Value current){
         if (result_peg_95.matches() == 0){
             goto out_peg_105;
         }
-        stream.update(result_peg_95.getPosition());
         
+        stream.update(result_peg_95.getPosition());
         
         return result_peg_95;
         out_peg_105:
@@ -1857,8 +1864,8 @@ Result rule_line_end(Stream & stream, const int position){
         if (result_peg_2.matches() == 0){
             goto out_peg_12;
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_12:
@@ -1881,8 +1888,8 @@ Result rule_line_end(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_13.getPosition());
         
+        stream.update(result_peg_13.getPosition());
         
         return result_peg_13;
         out_peg_16:
@@ -2444,8 +2451,8 @@ Result rule_section(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_6:
@@ -2680,8 +2687,8 @@ Result rule_section_line(Stream & stream, const int position, Value section){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_25:
@@ -2760,8 +2767,8 @@ Result rule_section_line(Stream & stream, const int position, Value section){
             
             
         }
-        stream.update(result_peg_70.getPosition());
         
+        stream.update(result_peg_70.getPosition());
         
         return result_peg_70;
         out_peg_93:
@@ -2866,8 +2873,8 @@ Result rule_section_line(Stream & stream, const int position, Value section){
             
             
         }
-        stream.update(result_peg_95.getPosition());
         
+        stream.update(result_peg_95.getPosition());
         
         return result_peg_95;
         out_peg_118:
@@ -2946,8 +2953,8 @@ Result rule_section_line(Stream & stream, const int position, Value section){
             
             
         }
-        stream.update(result_peg_126.getPosition());
         
+        stream.update(result_peg_126.getPosition());
         
         return result_peg_126;
         out_peg_149:
@@ -3018,8 +3025,8 @@ Result rule_section_line(Stream & stream, const int position, Value section){
             
             
         }
-        stream.update(result_peg_151.getPosition());
         
+        stream.update(result_peg_151.getPosition());
         
         return result_peg_151;
         out_peg_162:
@@ -3220,8 +3227,8 @@ Result rule_section_start(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_4:
@@ -3338,8 +3345,8 @@ Result rule_name(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_10:
@@ -3364,8 +3371,8 @@ Result rule_line_end_or_comment(Stream & stream, const int position){
         if (result_peg_2.error()){
             goto out_peg_3;
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_3:
@@ -3527,8 +3534,8 @@ Result rule_line_end_or_comment(Stream & stream, const int position){
         goto out_peg_49;
         success_peg_5:
         ;
-        stream.update(result_peg_4.getPosition());
         
+        stream.update(result_peg_4.getPosition());
         
         return result_peg_4;
         out_peg_49:
@@ -3708,8 +3715,8 @@ Result rule_filename(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_8:
@@ -3883,8 +3890,8 @@ Result rule_attribute(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_6:
@@ -4041,8 +4048,8 @@ Result rule_attribute(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_54.getPosition());
         
+        stream.update(result_peg_54.getPosition());
         
         return result_peg_54;
         out_peg_58:
@@ -4199,8 +4206,8 @@ Result rule_attribute(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_105.getPosition());
         
+        stream.update(result_peg_105.getPosition());
         
         return result_peg_105;
         out_peg_109:
@@ -4544,8 +4551,8 @@ Result rule_attribute(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_156.getPosition());
         
+        stream.update(result_peg_156.getPosition());
         
         return result_peg_156;
         out_peg_158:
@@ -4712,8 +4719,8 @@ Result rule_attribute_simple(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_4:
@@ -4781,8 +4788,8 @@ Result rule_identifier(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_4:
@@ -4952,8 +4959,8 @@ Result rule_identifier_list(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_4:
@@ -5139,8 +5146,8 @@ Result rule_valuelist(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_6:
@@ -5256,8 +5263,8 @@ Result rule_value(Stream & stream, const int position){
         goto out_peg_31;
         success_peg_3:
         ;
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_31:
@@ -5268,8 +5275,8 @@ Result rule_value(Stream & stream, const int position){
         if (result_peg_32.error()){
             goto out_peg_33;
         }
-        stream.update(result_peg_32.getPosition());
         
+        stream.update(result_peg_32.getPosition());
         
         return result_peg_32;
         out_peg_33:
@@ -5333,8 +5340,8 @@ Result rule_value(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_34.getPosition());
         
+        stream.update(result_peg_34.getPosition());
         
         return result_peg_34;
         out_peg_36:
@@ -5358,8 +5365,8 @@ Result rule_value(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_49.getPosition());
         
+        stream.update(result_peg_49.getPosition());
         
         return result_peg_49;
         out_peg_51:
@@ -5540,8 +5547,8 @@ Result rule_value(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_52.getPosition());
         
+        stream.update(result_peg_52.getPosition());
         
         return result_peg_52;
         out_peg_73:
@@ -5706,8 +5713,8 @@ Result rule_value(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_108.getPosition());
         
+        stream.update(result_peg_108.getPosition());
         
         return result_peg_108;
         out_peg_110:
@@ -5872,8 +5879,8 @@ Result rule_value(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_159.getPosition());
         
+        stream.update(result_peg_159.getPosition());
         
         return result_peg_159;
         out_peg_161:
@@ -6035,8 +6042,8 @@ Result rule_value(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_210.getPosition());
         
+        stream.update(result_peg_210.getPosition());
         
         return result_peg_210;
         out_peg_212:
@@ -6047,8 +6054,8 @@ Result rule_value(Stream & stream, const int position){
         if (result_peg_260.error()){
             goto out_peg_261;
         }
-        stream.update(result_peg_260.getPosition());
         
+        stream.update(result_peg_260.getPosition());
         
         return result_peg_260;
         out_peg_261:
@@ -6191,8 +6198,8 @@ Result rule_date(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_12:
@@ -6321,8 +6328,8 @@ Result rule_date(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_33.getPosition());
         
+        stream.update(result_peg_33.getPosition());
         
         return result_peg_33;
         out_peg_43:
@@ -6403,8 +6410,8 @@ Result rule_number(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_13:
@@ -6507,8 +6514,8 @@ Result rule_float_or_integer(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_2.getPosition());
         
+        stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_13:
@@ -6570,8 +6577,8 @@ Result rule_float_or_integer(Stream & stream, const int position){
             
             
         }
-        stream.update(result_peg_23.getPosition());
         
+        stream.update(result_peg_23.getPosition());
         
         return result_peg_23;
         out_peg_33:
@@ -6582,10 +6589,8 @@ Result rule_float_or_integer(Stream & stream, const int position){
         
 
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
-    
     errorResult.setError();
     Result done = rule_start(stream, 0);
-    
     if (done.error()){
         stream.reportError(context);
     }

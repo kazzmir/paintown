@@ -218,6 +218,11 @@ def hawknlLibrary(env):
     #    env.Append(CPPDEFINES = 'MACOSX')
     return env.SConscript('util/network/hawknl/SConscript', exports = ['env'])
 
+def utilLibrary(env):
+    utilEnv = env.Clone()
+    env = utilEnv
+    return env.SConscript('util/SConscript', exports = ['env'])
+
 def main():
     return ['util/xmain.cpp']
     
@@ -247,6 +252,7 @@ if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
 elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use), stretchLibrary(use)])
+use.Prepend(LIBS = [utilLibrary(use)])
 
 def addObjects(objects):
     obj_files.extend(objects)

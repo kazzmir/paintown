@@ -1206,25 +1206,35 @@ goto %s;
                 do_memo = peg.memo and self.rules == None and self.parameters == None
                 start_transaction = ""
                 if peg.transactions:
-                    start_transaction = "%s = startTransaction();" % stateVariable
+                    start_transaction = "%(variable)s = %(stream)s.startTransaction();" % {'variable': stateVariable,
+                                         'stream': stream}
                 commit_transaction = ""
                 if peg.transactions:
-                    commit_transaction = "commitTransaction(%s);" % stateVariable
+                    commit_transaction = "%(result)s.setState(%(variable)s);" % {'variable': stateVariable, 'result': result}
                 abort_transaction = ""
                 if peg.transactions:
-                    abort_transaction = "abortTransaction(%s);" % stateVariable
+                    abort_transaction = "%(stream)s.abortTransaction(%(variable)s);" % {'variable': stateVariable, 'stream': stream}
                 data = """
-Result %s(%s);
-%s
-%s
-%s
-%s
-%s
-%s
-return %s;
-%s
-%s
-            """ % (result, position, debugging, start_transaction, pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(), updateChunk(result, columnVar, do_memo), debug_result, commit_transaction, result, label(out[0]), abort_transaction)
+Result %(result)s(%(position)s);
+%(debugging)s
+%(start-transaction)s
+%(code)s
+%(commit-transaction)s
+%(update-memo)s
+%(debug-result)s
+return %(result)s;
+%(out)s
+%(abort-transaction)s
+            """ % {'result': result,
+                   'position': position,
+                   'debugging': debugging,
+                   'start-transaction': start_transaction,
+                   'code': pattern.generate_cpp(peg, result, stream, failure, None, invalid_arg).strip(),
+                   'update-memo': updateChunk(result, columnVar, do_memo),
+                   'debug-result': debug_result,
+                   'commit-transaction': commit_transaction,
+                   'out': label(out[0]),
+                   'abort-transaction': abort_transaction}
 
             return data
 

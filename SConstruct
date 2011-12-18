@@ -118,7 +118,10 @@ def makeUseArgument(key, default):
 # If `makeUseEnvironment' is used instead then a shell variable should be set:
 # $ export prx=1
 # $ scons
-useGch = makeUseArgument('gch', True)
+# 12/18/2011 - disable gch for now because multiple environments try to
+# build the same files:
+# scons: warning: Two different environments were specified for target /home/jon/svn/paintown/build/sdl-debug/util/system.h.gch,
+useGch = makeUseArgument('gch', False)
 usePrx = makeUseEnvironment('prx', False)
 isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)

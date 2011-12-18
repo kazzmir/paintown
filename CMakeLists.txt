@@ -251,6 +251,9 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 #Dumb
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/dumb)
 
+#Util
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/util)
+
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/network/hawknl)
 
@@ -260,12 +263,13 @@ add_library(level_module ${LEVEL_SRC})
 add_library(factory_module ${FACTORY_SRC})
 add_library(object_module ${OBJECT_SRC})
 add_library(asteroids_module ${ASTEROIDS_SRC})
-add_library(util_module ${UTIL_SRC})
+add_library(openbor_module ${OPENBOR_SRC})
+# add_library(util_module ${UTIL_SRC})
 add_library(loadpng_module ${LOADPNG_SRC})
-add_library(menu_module ${MENU_SRC})
+# add_library(menu_module ${MENU_SRC})
 add_library(env_module ${ENV_SRC})
 add_library(network_module ${NETWORK_SRC})
-add_library(gui_module ${GUI_SRC})
+# add_library(gui_module ${GUI_SRC})
 # add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lzw.c)
 
 # GME Library
@@ -298,8 +302,8 @@ endif (USE_SDL)
 
 #paintown executable
 add_executable (paintown src/util/xmain.cpp)
-target_link_libraries(paintown ${GROUP_START} base_module level_module factory_module object_module asteroids_module util_module loadpng_module 
-        menu_module env_module network_module gui_module script_module game_module mugen_module platformer_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+target_link_libraries(paintown ${GROUP_START} base_module level_module openbor_module factory_module object_module asteroids_module loadpng_module 
+        env_module script_module network_module game_module mugen_module platformer_module trigger_module util_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})

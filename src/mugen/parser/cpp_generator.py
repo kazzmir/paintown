@@ -93,8 +93,7 @@ private:
     int position;
     Value value;
     %(state-id)s
-};
-"""
+};"""
 
 start_cpp_code = """
 struct Value{
@@ -177,8 +176,8 @@ struct Value{
     std::list<Value> values;
 };
 
+%(state-class)s
 %(result-class)s
-
 %(chunks)s
 
 class ParseException: std::exception {
@@ -254,7 +253,7 @@ public:
 
         line_info[-1] = LineInfo(1, 1);
 
-        createMemo();
+        setup();
     }
 
     /* for null-terminated strings */
@@ -265,7 +264,7 @@ public:
     last_line_info(-1){
         max = strlen(buffer);
         line_info[-1] = LineInfo(1, 1);
-        createMemo();
+        setup();
     }
 
     /* user-defined length */
@@ -276,6 +275,11 @@ public:
     last_line_info(-1){
         max = length;
         line_info[-1] = LineInfo(1, 1);
+        setup();
+    }
+
+    void setup(){
+        %(initialize-state-counter)s
         createMemo();
     }
 
@@ -488,6 +492,8 @@ public:
         rule_backtrace.pop_back();
     }
 
+    %(state-functions)s
+
     ~Stream(){
         delete[] temp;
         for (int i = 0; i < memo_size; i++){
@@ -508,6 +514,7 @@ private:
     std::vector<std::string> last_trace;
     int last_line_info;
     std::map<int, LineInfo> line_info;
+    %(current-state)s
 };
 
 static int getCurrentLine(const Value & value){
@@ -556,17 +563,20 @@ state_stuff = """
  * an instance of that subclass.
  */
 class State{
-private:
-static unsigned int newId();
-
 public:
     /* Each state gets a unique id */
-    State():
-    id(newId()){
+    State(unsigned int id, State * parent):
+    parent(parent),
+    child(NULL),
+    id(id){
     }
 
     bool operator==(const State & state) const {
         return getId() == state.getId();
+    }
+
+    void setNextState(State * state){
+        child = state;
     }
 
     unsigned int getId() const {
@@ -574,31 +584,17 @@ public:
     }
 
     /* must be defined by the user */
-    static State * createState();
+    static State * createState(State * parent);
 
     virtual ~State(){
     }
 private:
-    /* global id counter */
-    static unsigned int counter;
+    State * parent;
+    State * child;
+
     /* id for this state */
     unsigned int id;
-};
-
-/* Start at one so that result's can use 0 meaning no id has been set yet */
-unsigned int State::counter = 1;
-unsigned int State::newId(){
-    unsigned int use = counter;
-    counter += 1;
-    return use;
-}
-
-/* global pointer to the current state */
-State * currentState;
-State * getCurrentState(){
-    return currentState;
-}
-"""
+};"""
 
 # all the self parameters are named 'me' because the code was originally
 # copied from another class and to ensure that copy/paste errors don't
@@ -1127,20 +1123,9 @@ struct Column{
     if self.transactions:
         maybe_state_stuff = state_stuff
 
-    setup_state = ""
-    if self.transactions:
-        setup_state = indent("""currentState = State::createState();
-State * parent = currentState;""")
-
-    destroy_state = ""
-    if self.transactions:
-        destroy_state = indent("""delete parent;
-currentState = NULL;""")
-
     maybe_state_id = ""
     if self.transactions:
-        maybe_state_id = 'unsigned int stateId;';
-
+        maybe_state_id = 'State * state;';
 
     def singleFile():
         result_strings = {'initialize-state': '',
@@ -1152,8 +1137,12 @@ currentState = NULL;""")
             result_strings = {'initialize-state': ',\n    stateId(0)',
                               'copy-state-r': ',\n    stateId(r.stateId)',
                               'assign-state-r': 'stateId = r.stateId;',
-                              'get/set-state': indent("""int getStateId() const {
-    return stateId;
+                              'get/set-state': indent("""State * getState() const {
+    return state;
+}
+
+void setState(State * state){
+    this->state = state;
 }
                               """),
                               'state-id': maybe_state_id
@@ -1161,17 +1150,62 @@ currentState = NULL;""")
 
         result_class = result_code % result_strings
 
+        current_state = ''
+        if self.transactions:
+            current_state = indent("""State * currentState;
+unsigned int stateId;""")
+
+        state_functions = ''
+        if self.transactions:
+            state_functions = indent("""
+State * getCurrentState(){
+    return currentState;
+}
+
+State * startTransaction(){
+    State * newState = State::createState(current);
+    current->setNextState(newState);
+    return newState;
+}
+
+void abortTransaction(State * state){
+    State * parent = state->getParent();
+    /* The state should always have a parent because the top most state
+     * will never be aborted.
+     */
+    if (parent != NULL){
+        parent->setNextState(NULL);
+        currentState = parent;
+    }
+}
+
+void commitTransaction(State * state){
+}
+
+unsigned int newId(){
+    unsigned int use = counter;
+    counter += 1;
+    return use;
+}""")
+                                                   
+        maybe_initialize_state_counter = ''
+        if self.transactions:
+            maybe_initialize_state_counter = indent("""stateId = 0;
+    currentState = State::createState(NULL);""")
+
         strings = {'top-code': top_code,
                    'namespace-start': namespace_start,
                    'start-code': start_cpp_code % {'result-class': result_class,
                                                    'chunks': chunks,
+                                                   'initialize-state-counter': maybe_initialize_state_counter,
+                                                   'state-class': maybe_state_stuff,
+                                                   'state-functions': state_functions,
+                                                   'current-state': current_state,
                                                    'error-size': self.error_size},
                    'rules': '\n'.join([prototype(rule) for rule in use_rules]),
                    'more-code': more_code,
                    'generated': '\n'.join([rule.generate_cpp(self, findAccessor(rule)) for rule in use_rules]),
-                   'setup-state': setup_state,
                    'start': self.start,
-                   'destroy-state': destroy_state,
                    'namespace-end': namespace_end}
 
         data = """
@@ -1210,10 +1244,8 @@ Result errorResult(-1);
 %(generated)s
 
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
-    %(setup-state)s
     errorResult.setError();
     Result done = rule_%(start)s(stream, 0);
-    %(destroy-state)s
     if (done.error()){
         stream.reportError(context);
     }
@@ -1285,17 +1317,6 @@ extern Result errorResult;
             header_file.write(header_data)
             header_file.close()
 
-        setup_state = ""
-        if self.transactions:
-            setup_state = """
-currentState = State::createState();
-State * parent = currentState;
-"""
-
-        destroy_state = ""
-        if self.transactions:
-            destroy_state = "delete parent;"
-
         data = """
 %s
 
@@ -1319,10 +1340,8 @@ return message;
 Result errorResult(-1);
 
 static const void * doParse(Stream & stream, bool stats, const std::string & context){
-    %s
     errorResult.setError();
     Result done = rule_%s(stream, 0);
-    %s
     if (done.error()){
         stream.reportError(context);
     }
@@ -1350,7 +1369,7 @@ const void * parse(const char * in, int length, bool stats = false){
 %s
 """
 
-        return data % (top_code, name, namespace_start, more_code, self.start, setup_state, destroy_state, namespace_end)
+        return data % (top_code, name, namespace_start, more_code, self.start, namespace_end)
 
     if separate == None:
         return singleFile()
