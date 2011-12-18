@@ -9,52 +9,8 @@ common/init.cpp
 common/timer.cpp
 test/configuration.cpp
 test/globals.cpp
-test/util/exceptions/exception.cpp
 test/factory/font_factory.cpp
 test/factory/font_render.cpp
-test/util/audio.cpp
-test/util/bitmap.cpp
-test/util/debug.cpp
-test/util/events.cpp
-test/util/file-system.cpp
-test/util/font.cpp
-test/util/ftalleg.cpp
-test/util/funcs.cpp
-test/util/gradient.cpp
-test/util/language-string.cpp
-test/util/load_exception.cpp
-test/util/messages.cpp
-test/util/message-queue.cpp
-test/util/system.cpp
-test/util/resource.cpp
-test/util/sound.cpp
-test/util/thread.cpp
-test/util/token.cpp
-test/util/token_exception.cpp
-test/util/tokenreader.cpp
-test/util/gui/animation.cpp
-test/util/gui/box.cpp
-test/util/gui/container.cpp
-test/util/gui/context-box.cpp
-test/util/gui/coordinate.cpp
-test/util/gui/cutscene.cpp
-test/util/gui/fadetool.cpp
-test/util/gui/lineedit.cpp
-test/util/gui/rectarea.cpp
-test/util/gui/popup-box.cpp
-test/util/gui/scroll-list.cpp
-test/util/gui/select-list.cpp
-test/util/gui/tabbed-box.cpp
-test/util/gui/timer.cpp
-test/util/gui/widget.cpp
-test/util/input/keyboard.cpp
-test/util/input/joystick.cpp
-test/util/input/input-manager.cpp
-test/util/input/input-source.cpp
-test/util/input/input.cpp
-test/util/input/text-input.cpp
-test/util/input/sdl/joystick.cpp
-test/util/network/network.cpp
 """)
 
 test_source = Split("""
@@ -65,11 +21,6 @@ character_select_source = Split("""
 test/paintown-engine/game/character-select.cpp
 select-main.cpp
 test/mugen/exception.cpp
-test/util/ebox.cpp
-test/util/loading.cpp
-test/util/regex.cpp
-test/util/timedifference.cpp
-test/openbor/data.cpp
 test/openbor/mod.cpp
 test/openbor/pack-reader.cpp
 test/openbor/util.cpp
@@ -96,24 +47,16 @@ test/paintown-engine/object/alliance.cpp
 test/paintown-engine/script/script.cpp
 """)
 
-space_source = Split("""
-test/util/gui/coordinate.cpp
-test/util/load_exception.cpp
-test/util/debug.cpp
-test/util/exceptions/exception.cpp
-space.cpp
-""")
+space_source = Split("""space.cpp""")
 
-cutscene_source = Split("""
-cutscene.cpp
-""")
+cutscene_source = Split("""cutscene.cpp""")
 
 x = []
 # General widget/gui element tests
 gui_test = testEnv.Program('gui', source + test_source)
 x.append(gui_test)
 # Character select test
-character_select = testEnv.Program('character-select', source + character_select_source)
+character_select = testEnv.Program('character-select', source + character_select_source + testEnv.Peg('test/openbor/data.peg'))
 x.append(character_select)
 # spaces test
 # space = testEnv.Program('space', source + space_source)

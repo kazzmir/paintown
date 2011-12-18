@@ -28,49 +28,17 @@ test/mugen/item.cpp
 test/mugen/command.cpp
 test/mugen/background.cpp
 test/mugen/parse-cache.cpp
-test/util/gui/rectarea.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
-test/util/sound.cpp
-test/util/load_exception.cpp
-test/util/network/network.cpp
 test/mugen/ast/ast.cpp
-test/util/input/input-manager.cpp
-test/util/input/input-source.cpp
-test/util/input/keyboard.cpp
-test/util/input/joystick.cpp
-test/util/input/allegro/allegro-joystick.cpp
-test/util/input/sdl/joystick.cpp
 test/globals.cpp
-test/util/debug.cpp
-test/util/menu/font-info.cpp
 test/configuration.cpp
-test/util/events.cpp
-test/util/thread.cpp
-test/util/bitmap.cpp
-test/util/timedifference.cpp
-test/util/funcs.cpp
-test/util/font.cpp
-test/util/ftalleg.cpp
-test/util/regex.cpp
-test/util/system.cpp
-test/util/audio.cpp
-test/util/file-system.cpp
-test/util/message-queue.cpp
-test/util/token.cpp
-test/util/tokenreader.cpp
-test/util/token_exception.cpp
-test/util/exceptions/exception.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
-test/util/windows/system.cpp
-test/util/input/text-input.cpp
-test/util/console.cpp
 test/mugen/config.cpp
 test/mugen/characterhud.cpp
 test/mugen/behavior.cpp
-test/util/gui/fadetool.cpp
 test/mugen/font.cpp
 test/mugen/reader.cpp
 test/mugen/section.cpp
@@ -85,8 +53,6 @@ common/init.cpp
 stage_source = Split("""
 load-stage.cpp
 common/init.cpp
-test/util/gui/animation.cpp
-test/util/gui/coordinate.cpp
 test/mugen/stage.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
@@ -104,54 +70,16 @@ test/mugen/item-content.cpp
 test/mugen/item.cpp
 test/mugen/parse-cache.cpp
 test/mugen/characterhud.cpp
-test/util/gui/rectarea.cpp
-test/util/menu/font-info.cpp
-test/util/audio.cpp
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
-test/util/resource.cpp
-test/util/ebox.cpp
-test/util/gui/select-list.cpp
-test/util/loading.cpp
-test/util/messages.cpp
-test/util/gradient.cpp
-test/util/sound.cpp
 test/mugen/ast/ast.cpp
-test/util/load_exception.cpp
-test/util/network/network.cpp
-test/util/input/input-manager.cpp
-test/util/input/input-source.cpp
-test/util/input/keyboard.cpp
-test/util/input/joystick.cpp
-test/util/input/allegro/allegro-joystick.cpp
-test/util/input/sdl/joystick.cpp
 test/globals.cpp
-test/util/debug.cpp
 test/configuration.cpp
-test/util/bitmap.cpp
-test/util/timedifference.cpp
-test/util/funcs.cpp
-test/util/font.cpp
-test/util/ftalleg.cpp
-test/util/regex.cpp
-test/util/system.cpp
-test/util/file-system.cpp
-test/util/message-queue.cpp
-test/util/token.cpp
-test/util/tokenreader.cpp
-test/util/token_exception.cpp
-test/util/console.cpp
-test/util/input/text-input.cpp
-test/util/exceptions/exception.cpp
-test/util/thread.cpp
-test/util/events.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
-test/util/windows/system.cpp
 test/mugen/config.cpp
 test/mugen/behavior.cpp
-test/util/gui/fadetool.cpp
 test/mugen/reader.cpp
 test/mugen/command.cpp
 test/mugen/section.cpp
@@ -162,29 +90,14 @@ load-select.cpp
 common/init.cpp
 test/mugen/character-select.cpp
 test/mugen/search.cpp
-test/util/music.cpp
-test/util/music-player.cpp
-test/util/messages.cpp
-test/util/gradient.cpp
-test/util/loading.cpp
-test/util/resource.cpp
 """)
 
 ignore = """
-test/util/ebox.cpp
 """
 
 full_source = most_game_source + Split("""
 load-full.cpp
 common/init.cpp
-test/util/gui/animation.cpp
-test/util/gui/coordinate.cpp
-test/util/messages.cpp
-test/util/gradient.cpp
-test/util/loading.cpp
-test/util/gui/select-list.cpp
-test/util/resource.cpp
-test/util/ebox.cpp
 """)
 
 # stage_source.append(testEnv.Peg('test/openbor/data.peg'))
@@ -194,53 +107,17 @@ ast_source = Split("""
 test-parser/air.cpp
 test-parser/def.cpp
 test-parser/cmd.cpp
-test/util/token.cpp
-test/util/tokenreader.cpp
-test/util/debug.cpp
-test/util/system.cpp
-test/util/token_exception.cpp
-test/util/timedifference.cpp
 test/mugen/exception.cpp
 test/mugen/ast/ast.cpp
 test/mugen/parse-cache.cpp
-test/util/file-system.cpp
-test/util/thread.cpp
-test/util/exceptions/exception.cpp
 """)
 
 sffv2_source = Split("""
 sffv2.cpp
 sff.cpp
-test/util/debug.cpp
-test/util/file-system.cpp
-test/util/system.cpp
-test/util/exceptions/exception.cpp
-test/util/thread.cpp
-test/util/funcs.cpp
-test/util/bitmap.cpp
-test/util/font.cpp
 test/globals.cpp
 test/factory/font_factory.cpp
-test/util/ftalleg.cpp
-test/util/message-queue.cpp
-test/util/init.cpp
-test/util/music.cpp
-test/util/token.cpp
 test/configuration.cpp
-test/util/network/network.cpp
-test/util/token_exception.cpp
-test/util/input/keyboard.cpp
-test/util/tokenreader.cpp
-test/util/menu/font-info.cpp
-test/util/load_exception.cpp
-test/util/music-player.cpp
-test/util/audio.cpp
-test/util/sound.cpp
-test/util/input/input-manager.cpp
-test/util/input/input-source.cpp
-test/util/events.cpp
-test/util/input/joystick.cpp
-test/util/input/sdl/joystick.cpp
 """)
 
 parse_source = Split("""
@@ -249,41 +126,13 @@ test-parser/cmd.cpp
 test-parser/def.cpp
 test-parser/air.cpp
 test/mugen/ast/ast.cpp
-test/util/exceptions/exception.cpp
 test/mugen/exception.cpp
-test/util/token.cpp
-test/util/tokenreader.cpp
-test/util/token_exception.cpp
 """)
 
 match_source = Split("""
 run-match.cpp
-test/util/input/input-source.cpp
-test/util/gui/animation.cpp
-test/util/gui/coordinate.cpp
-test/util/init.cpp
-test/util/file-system.cpp
-test/util/bitmap.cpp
-test/util/network/network.cpp
-test/util/system.cpp
-test/util/debug.cpp
-test/util/exceptions/exception.cpp
-test/util/funcs.cpp
-test/util/thread.cpp
-test/util/font.cpp
 test/factory/font_factory.cpp
-test/util/message-queue.cpp
-test/util/ftalleg.cpp
 test/configuration.cpp
-test/util/token.cpp
-test/util/tokenreader.cpp
-test/util/token_exception.cpp
-test/util/load_exception.cpp
-test/util/input/keyboard.cpp
-test/util/sound.cpp
-test/util/music.cpp
-test/util/music-player.cpp
-test/util/audio.cpp
 test/globals.cpp
 test/mugen/character.cpp
 test/mugen/stage.cpp
@@ -301,27 +150,16 @@ test/mugen/animation.cpp
 test/mugen/sprite.cpp
 test/mugen/util.cpp
 test/mugen/config.cpp
-test/util/timedifference.cpp
 test/mugen/item-content.cpp
 test/mugen/item.cpp
 test/mugen/background.cpp
-test/util/gui/rectarea.cpp
-test/util/regex.cpp
 test/mugen/sound.cpp
-test/util/console.cpp
 test/mugen/parse-cache.cpp
-test/util/input/input-manager.cpp
-test/util/events.cpp
-test/util/input/joystick.cpp
-test/util/input/text-input.cpp
-test/util/input/sdl/joystick.cpp
-test/util/input/allegro/allegro-joystick.cpp
 test/mugen/font.cpp
 test/mugen/characterhud.cpp
 test/mugen/section.cpp
 test/mugen/state-controller.cpp
 test/factory/font_render.cpp
-test/util/gui/fadetool.cpp
 test/mugen/reader.cpp
 """)
 
@@ -341,5 +179,5 @@ makeTest('sffv2', sffv2_source)
 x.append(testEnv.Program('run-match', match_source))
 x.append(testEnv.Program('parse', parse_source))
 # x.append(testEnv.Program('load-stage', stage_source))
-x.append(testEnv.Program('palette', ['palette.cpp', 'test/util/debug.cpp']))
+x.append(testEnv.Program('palette', ['palette.cpp']))
 Return('x')

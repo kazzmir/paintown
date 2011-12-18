@@ -1,9 +1,6 @@
 Import('use')
 
-source = Split("""
-test.cpp
-../../util/regex.cpp
-""")
+source = Split("""test.cpp""")
 
 x = []
 test = use.Program('test', source)

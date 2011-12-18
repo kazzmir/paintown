@@ -1,6 +1,6 @@
 
 
-#include "../util/token.h"
+#include "util/token.h"
 #include <sstream>
 #include <iostream>
 
@@ -19,7 +19,6 @@ namespace Bor{
 
 
 
-
 struct Value{
     typedef std::list<Value>::const_iterator iterator;
 
@@ -28,8 +27,9 @@ struct Value{
         value(0){
     }
 
-    Value(const Value & him){
-        which = him.which;
+    Value(const Value & him):
+    which(him.which),
+    value(0){
         if (him.isData()){
             value = him.value;
         }
@@ -38,7 +38,7 @@ struct Value{
         }
     }
 
-    Value(const void * value):
+    explicit Value(const void * value):
         which(0),
         value(value){
     }
@@ -51,6 +51,11 @@ struct Value{
         if (him.isList()){
             values = him.values;
         }
+        return *this;
+    }
+
+    Value & operator=(const void * what){
+        this->value = what;
         return *this;
     }
 
@@ -94,6 +99,8 @@ struct Value{
     std::list<Value> values;
 };
 
+
+
 class Result{
 public:
     Result():
@@ -112,11 +119,16 @@ public:
     Result & operator=(const Result & r){
         position = r.position;
         value = r.value;
+        
         return *this;
     }
 
     void reset(){
         value.reset();
+    }
+
+    void setPosition(int position){
+        this->position = position;
     }
 
     inline int getPosition() const {
@@ -131,6 +143,7 @@ public:
         return position != -2;
     }
 
+    
     inline void nextPosition(){
         position += 1;
     }
@@ -178,12 +191,12 @@ public:
 private:
     int position;
     Value value;
+    
 };
 
 
-
 struct Chunk0{
-    Result chunk_start;
+Result chunk_start;
     Result chunk_line;
     Result chunk_comment;
     Result chunk_comment_stuff;
@@ -191,7 +204,7 @@ struct Chunk0{
 };
 
 struct Chunk1{
-    Result chunk_data;
+Result chunk_data;
     Result chunk_line_end;
     Result chunk_item;
     Result chunk_valid_letter;
@@ -200,7 +213,7 @@ struct Chunk1{
 
 struct Column{
     Column():
-        chunk0(0)
+    chunk0(0)
         ,chunk1(0){
     }
 
@@ -208,19 +221,7 @@ struct Column{
     Chunk1 * chunk1;
 
     int hitCount(){
-        return 
-(chunk1 != NULL ? ((chunk1->chunk_data.calculated() ? 1 : 0)
-+ (chunk1->chunk_line_end.calculated() ? 1 : 0)
-+ (chunk1->chunk_item.calculated() ? 1 : 0)
-+ (chunk1->chunk_valid_letter.calculated() ? 1 : 0)
-+ (chunk1->chunk_sw.calculated() ? 1 : 0)) : 0)
-+
-(chunk0 != NULL ? ((chunk0->chunk_start.calculated() ? 1 : 0)
-+ (chunk0->chunk_line.calculated() ? 1 : 0)
-+ (chunk0->chunk_comment.calculated() ? 1 : 0)
-+ (chunk0->chunk_comment_stuff.calculated() ? 1 : 0)
-+ (chunk0->chunk_empty__space.calculated() ? 1 : 0)) : 0)
-;
+        return 0;
     }
 
     int maxHits(){
@@ -238,15 +239,25 @@ class ParseException: std::exception {
 public:
     ParseException(const std::string & reason):
     std::exception(),
+    line(-1), column(-1),
+    message(reason){
+    }
+
+    ParseException(const std::string & reason, int line, int column):
+    std::exception(),
+    line(line), column(column),
     message(reason){
     }
 
     std::string getReason() const;
+    int getLine() const;
+    int getColumn() const;
 
     virtual ~ParseException() throw(){
     }
 
 protected:
+    int line, column;
     std::string message;
 };
 
@@ -297,7 +308,7 @@ public:
 
         line_info[-1] = LineInfo(1, 1);
 
-        createMemo();
+        setup();
     }
 
     /* for null-terminated strings */
@@ -308,7 +319,7 @@ public:
     last_line_info(-1){
         max = strlen(buffer);
         line_info[-1] = LineInfo(1, 1);
-        createMemo();
+        setup();
     }
 
     /* user-defined length */
@@ -319,15 +330,22 @@ public:
     last_line_info(-1){
         max = length;
         line_info[-1] = LineInfo(1, 1);
+        setup();
+    }
+
+    void setup(){
+        
         createMemo();
     }
 
     void createMemo(){
         memo_size = 1024 * 2;
         memo = new Column*[memo_size];
-        for (int i = 0; i < memo_size; i++){
-            memo[i] = new Column();
-        }
+        /* dont create column objects before they are needed because transient
+         * productions will never call for them so we can save some space by
+         * not allocating columns at all.
+         */
+        memset(memo, 0, sizeof(Column*) * memo_size);
     }
 
     int length(){
@@ -367,12 +385,6 @@ public:
         // std::cout << "Read char '" << buffer[position] << "'" << std::endl;
 
         return buffer[position];
-        /*
-        char z;
-        stream.seekg(position, std::ios_base::beg);
-        stream >> z;
-        return z;
-        */
     }
 
     bool find(const char * str, const int position){
@@ -385,11 +397,16 @@ public:
     void growMemo(){
         int newSize = memo_size * 2;
         Column ** newMemo = new Column*[newSize];
+        /* Copy old memo table */
         memcpy(newMemo, memo, sizeof(Column*) * memo_size);
-        for (int i = memo_size; i < newSize; i++){
-            newMemo[i] = new Column();
-        }
+
+        /* Zero out new entries */
+        memset(&newMemo[memo_size], 0, sizeof(Column*) * (newSize - memo_size));
+
+        /* Delete old memo table */
         delete[] memo;
+
+        /* Set up new memo table */
         memo = newMemo;
         memo_size = newSize;
     }
@@ -433,7 +450,8 @@ public:
         return line_info[position];
     }
 
-    std::string reportError(){
+    /* throws a ParseException */
+    void reportError(const std::string & parsingContext){
         std::ostringstream out;
         int line = 1;
         int column = 1;
@@ -454,7 +472,7 @@ public:
         if (right >= max){
             right = max;
         }
-        out << "Read up till line " << line << " column " << column << std::endl;
+        out << "Error while parsing " << parsingContext << ". Read up till line " << line << " column " << column << std::endl;
         std::ostringstream show;
         for (int i = left; i < right; i++){
             char c = buffer[i];
@@ -484,7 +502,7 @@ public:
         out << "^" << std::endl;
         out << "Last successful rule trace" << std::endl;
         out << makeBacktrace() << std::endl;
-        return out.str();
+        throw ParseException(out.str(), line, column);
     }
 
     std::string makeBacktrace(){
@@ -507,6 +525,10 @@ public:
         while (position >= memo_size){
             growMemo();
         }
+        /* create columns lazily because not every position will have a column. */
+        if (memo[position] == NULL){
+            memo[position] = new Column();
+        }
         return *(memo[position]);
     }
 
@@ -525,6 +547,8 @@ public:
         rule_backtrace.pop_back();
     }
 
+    
+
     ~Stream(){
         delete[] temp;
         for (int i = 0; i < memo_size; i++){
@@ -536,6 +560,7 @@ public:
 private:
     char * temp;
     const char * buffer;
+    /* an array is faster and uses less memory than std::map */
     Column ** memo;
     int memo_size;
     int max;
@@ -544,6 +569,7 @@ private:
     std::vector<std::string> last_trace;
     int last_line_info;
     std::map<int, LineInfo> line_info;
+    
 };
 
 static int getCurrentLine(const Value & value){
@@ -585,12 +611,20 @@ static inline bool compareCharCase(const char a, const char b){
     return lower(a) == lower(b);
 }
 
+
 std::string ParseException::getReason() const {
     return message;
 }
 
-Result errorResult(-1);
+int ParseException::getLine() const {
+    return line;
+}
 
+int ParseException::getColumn() const {
+    return column;
+}
+
+Result errorResult(-1);
 
 Result rule_start(Stream &, const int);
 Result rule_line(Stream &, const int, Value current);
@@ -644,12 +678,14 @@ void cleanup(){
 
 Result rule_start(Stream & stream, const int position){
     
+    
     RuleTrace trace_peg_10(stream, "start");
     int myposition = position;
     
     
     Value current;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -685,7 +721,7 @@ Result rule_start(Stream & stream, const int position){
             
             if ('\0' == stream.get(result_peg_2.getPosition())){
                     result_peg_2.nextPosition();
-                    result_peg_2.setValue((void *) '\0');
+                    result_peg_2.setValue(Value((void *) '\0'));
                 } else {
                     goto out_peg_8;
                 }
@@ -700,6 +736,7 @@ Result rule_start(Stream & stream, const int position){
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -712,6 +749,7 @@ Result rule_start(Stream & stream, const int position){
 
 Result rule_line(Stream & stream, const int position, Value current){
     
+    
     RuleTrace trace_peg_9(stream, "line");
     int myposition = position;
     
@@ -719,25 +757,30 @@ Result rule_line(Stream & stream, const int position, Value current){
     
     Result result_peg_2(myposition);
         
+        
         result_peg_2 = rule_comment(stream, result_peg_2.getPosition());
         if (result_peg_2.error()){
             goto out_peg_3;
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
         out_peg_3:
         Result result_peg_4(myposition);
         
+        
         result_peg_4 = rule_empty__space(stream, result_peg_4.getPosition());
         if (result_peg_4.error()){
             goto out_peg_5;
         }
+        
         stream.update(result_peg_4.getPosition());
         
         return result_peg_4;
         out_peg_5:
         Result result_peg_6(myposition);
+        
         
         {
         
@@ -756,6 +799,7 @@ Result rule_line(Stream & stream, const int position, Value current){
             
             
         }
+        
         stream.update(result_peg_6.getPosition());
         
         return result_peg_6;
@@ -768,12 +812,14 @@ Result rule_line(Stream & stream, const int position, Value current){
 
 Result rule_comment(Stream & stream, const int position){
     
+    
     RuleTrace trace_peg_6(stream, "comment");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -798,6 +844,7 @@ Result rule_comment(Stream & stream, const int position){
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -810,6 +857,7 @@ Result rule_comment(Stream & stream, const int position){
 
 Result rule_comment_stuff(Stream & stream, const int position){
     
+    
     RuleTrace trace_peg_11(stream, "comment_stuff");
     int myposition = position;
     
@@ -817,16 +865,17 @@ Result rule_comment_stuff(Stream & stream, const int position){
     
     Result result_peg_2(myposition);
         
+        
         {
         
-            for (int i = 0; i < 1; i++){
+            result_peg_2.setValue(Value((void*) "#"));
+                for (int i = 0; i < 1; i++){
                     if (compareChar("#"[i], stream.get(result_peg_2.getPosition()))){
                         result_peg_2.nextPosition();
                     } else {
                         goto out_peg_4;
                     }
                 }
-                result_peg_2.setValue((void*) "#");
             
             
             
@@ -842,13 +891,13 @@ Result rule_comment_stuff(Stream & stream, const int position){
                             }
                             goto loop_peg_5;
                             not_peg_8:
-                            result_peg_6.setValue((void*)0);
+                            result_peg_6.setValue(Value((void*)0));
                         
                         
                         
                         char temp_peg_10 = stream.get(result_peg_6.getPosition());
                             if (temp_peg_10 != '\0'){
-                                result_peg_6.setValue((void*) (long) temp_peg_10);
+                                result_peg_6.setValue(Value((void*) (long) temp_peg_10));
                                 result_peg_6.nextPosition();
                             } else {
                                 goto loop_peg_5;
@@ -863,6 +912,7 @@ Result rule_comment_stuff(Stream & stream, const int position){
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -875,12 +925,14 @@ Result rule_comment_stuff(Stream & stream, const int position){
 
 Result rule_empty__space(Stream & stream, const int position){
     
+    
     RuleTrace trace_peg_5(stream, "empty__space");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -898,6 +950,7 @@ Result rule_empty__space(Stream & stream, const int position){
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -910,12 +963,14 @@ Result rule_empty__space(Stream & stream, const int position){
 
 Result rule_data(Stream & stream, const int position){
     
+    
     RuleTrace trace_peg_13(stream, "data");
     int myposition = position;
     
     
     Value items;
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -969,7 +1024,7 @@ Result rule_data(Stream & stream, const int position){
                 if (result_peg_2.error()){
                     
                     result_peg_2 = Result(save_peg_11);
-                    result_peg_2.setValue((void*) 0);
+                    result_peg_2.setValue(Value((void*) 0));
                     
                 }
             
@@ -990,6 +1045,7 @@ Result rule_data(Stream & stream, const int position){
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -1002,44 +1058,50 @@ Result rule_data(Stream & stream, const int position){
 
 Result rule_line_end(Stream & stream, const int position){
     
-    RuleTrace trace_peg_11(stream, "line_end");
+    
+    RuleTrace trace_peg_13(stream, "line_end");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
         
+        
         result_peg_2.reset();
         do{
             Result result_peg_4(result_peg_2.getPosition());
             {
+                int position_peg_7 = result_peg_4.getPosition();
                 
+                result_peg_4.setValue(Value((void*) "\n"));
                 for (int i = 0; i < 1; i++){
                     if (compareChar("\n"[i], stream.get(result_peg_4.getPosition()))){
                         result_peg_4.nextPosition();
                     } else {
-                        goto out_peg_7;
+                        result_peg_4.setPosition(position_peg_7);
+                        goto out_peg_8;
                     }
                 }
-                result_peg_4.setValue((void*) "\n");
                     
             }
             goto success_peg_5;
-            out_peg_7:
+            out_peg_8:
             {
+                int position_peg_10 = result_peg_4.getPosition();
                 
+                result_peg_4.setValue(Value((void*) "\r"));
                 for (int i = 0; i < 1; i++){
                     if (compareChar("\r"[i], stream.get(result_peg_4.getPosition()))){
                         result_peg_4.nextPosition();
                     } else {
-                        goto out_peg_9;
+                        result_peg_4.setPosition(position_peg_10);
+                        goto out_peg_11;
                     }
                 }
-                result_peg_4.setValue((void*) "\r");
                     
             }
             goto success_peg_5;
-            out_peg_9:
+            out_peg_11:
             goto loop_peg_3;
             success_peg_5:
             ;
@@ -1047,12 +1109,13 @@ Result rule_line_end(Stream & stream, const int position){
         } while (true);
         loop_peg_3:
         if (result_peg_2.matches() == 0){
-            goto out_peg_10;
+            goto out_peg_12;
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
-        out_peg_10:
+        out_peg_12:
     stream.update(errorResult.getPosition());
     
     return errorResult;
@@ -1061,12 +1124,14 @@ Result rule_line_end(Stream & stream, const int position){
 
 Result rule_item(Stream & stream, const int position){
     
+    
     RuleTrace trace_peg_7(stream, "item");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
+        
         
         {
         
@@ -1094,6 +1159,7 @@ Result rule_item(Stream & stream, const int position){
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -1106,109 +1172,122 @@ Result rule_item(Stream & stream, const int position){
 
 Result rule_valid_letter(Stream & stream, const int position){
     
-    RuleTrace trace_peg_19(stream, "valid_letter");
+    
+    RuleTrace trace_peg_24(stream, "valid_letter");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
         
+        
         {
         
             Result result_peg_5(result_peg_2);
                 {
+                    int position_peg_8 = result_peg_5.getPosition();
                     
+                    result_peg_5.setValue(Value((void*) "\n"));
                     for (int i = 0; i < 1; i++){
                         if (compareChar("\n"[i], stream.get(result_peg_5.getPosition()))){
                             result_peg_5.nextPosition();
                         } else {
-                            goto out_peg_8;
+                            result_peg_5.setPosition(position_peg_8);
+                            goto out_peg_9;
                         }
                     }
-                    result_peg_5.setValue((void*) "\n");
                         
                 }
                 goto success_peg_6;
-                out_peg_8:
+                out_peg_9:
                 {
+                    int position_peg_11 = result_peg_5.getPosition();
                     
+                    result_peg_5.setValue(Value((void*) "\r"));
                     for (int i = 0; i < 1; i++){
                         if (compareChar("\r"[i], stream.get(result_peg_5.getPosition()))){
                             result_peg_5.nextPosition();
                         } else {
-                            goto out_peg_10;
-                        }
-                    }
-                    result_peg_5.setValue((void*) "\r");
-                        
-                }
-                goto success_peg_6;
-                out_peg_10:
-                {
-                    
-                    for (int i = 0; i < 1; i++){
-                        if (compareChar(" "[i], stream.get(result_peg_5.getPosition()))){
-                            result_peg_5.nextPosition();
-                        } else {
+                            result_peg_5.setPosition(position_peg_11);
                             goto out_peg_12;
                         }
                     }
-                    result_peg_5.setValue((void*) " ");
                         
                 }
                 goto success_peg_6;
                 out_peg_12:
                 {
+                    int position_peg_14 = result_peg_5.getPosition();
                     
+                    result_peg_5.setValue(Value((void*) " "));
+                    for (int i = 0; i < 1; i++){
+                        if (compareChar(" "[i], stream.get(result_peg_5.getPosition()))){
+                            result_peg_5.nextPosition();
+                        } else {
+                            result_peg_5.setPosition(position_peg_14);
+                            goto out_peg_15;
+                        }
+                    }
+                        
+                }
+                goto success_peg_6;
+                out_peg_15:
+                {
+                    int position_peg_17 = result_peg_5.getPosition();
+                    
+                    result_peg_5.setValue(Value((void*) "\t"));
                     for (int i = 0; i < 1; i++){
                         if (compareChar("\t"[i], stream.get(result_peg_5.getPosition()))){
                             result_peg_5.nextPosition();
                         } else {
-                            goto out_peg_14;
+                            result_peg_5.setPosition(position_peg_17);
+                            goto out_peg_18;
                         }
                     }
-                    result_peg_5.setValue((void*) "\t");
                         
                 }
                 goto success_peg_6;
-                out_peg_14:
+                out_peg_18:
                 {
+                    int position_peg_20 = result_peg_5.getPosition();
                     
+                    result_peg_5.setValue(Value((void*) "#"));
                     for (int i = 0; i < 1; i++){
                         if (compareChar("#"[i], stream.get(result_peg_5.getPosition()))){
                             result_peg_5.nextPosition();
                         } else {
-                            goto out_peg_16;
+                            result_peg_5.setPosition(position_peg_20);
+                            goto out_peg_21;
                         }
                     }
-                    result_peg_5.setValue((void*) "#");
                         
                 }
                 goto success_peg_6;
-                out_peg_16:
+                out_peg_21:
                 goto not_peg_4;
                 success_peg_6:
                 ;
-                goto out_peg_17;
+                goto out_peg_22;
                 not_peg_4:
-                result_peg_2.setValue((void*)0);
+                result_peg_2.setValue(Value((void*)0));
             
             
             
-            char temp_peg_18 = stream.get(result_peg_2.getPosition());
-                if (temp_peg_18 != '\0'){
-                    result_peg_2.setValue((void*) (long) temp_peg_18);
+            char temp_peg_23 = stream.get(result_peg_2.getPosition());
+                if (temp_peg_23 != '\0'){
+                    result_peg_2.setValue(Value((void*) (long) temp_peg_23));
                     result_peg_2.nextPosition();
                 } else {
-                    goto out_peg_17;
+                    goto out_peg_22;
                 }
             
             
         }
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
-        out_peg_17:
+        out_peg_22:
     stream.update(errorResult.getPosition());
     
     return errorResult;
@@ -1217,44 +1296,50 @@ Result rule_valid_letter(Stream & stream, const int position){
 
 Result rule_sw(Stream & stream, const int position){
     
-    RuleTrace trace_peg_10(stream, "sw");
+    
+    RuleTrace trace_peg_12(stream, "sw");
     int myposition = position;
     
     
     
     Result result_peg_2(myposition);
         
+        
         result_peg_2.reset();
         do{
             Result result_peg_4(result_peg_2.getPosition());
             {
+                int position_peg_7 = result_peg_4.getPosition();
                 
+                result_peg_4.setValue(Value((void*) " "));
                 for (int i = 0; i < 1; i++){
                     if (compareChar(" "[i], stream.get(result_peg_4.getPosition()))){
                         result_peg_4.nextPosition();
                     } else {
-                        goto out_peg_7;
+                        result_peg_4.setPosition(position_peg_7);
+                        goto out_peg_8;
                     }
                 }
-                result_peg_4.setValue((void*) " ");
                     
             }
             goto success_peg_5;
-            out_peg_7:
+            out_peg_8:
             {
+                int position_peg_10 = result_peg_4.getPosition();
                 
+                result_peg_4.setValue(Value((void*) "\t"));
                 for (int i = 0; i < 1; i++){
                     if (compareChar("\t"[i], stream.get(result_peg_4.getPosition()))){
                         result_peg_4.nextPosition();
                     } else {
-                        goto out_peg_9;
+                        result_peg_4.setPosition(position_peg_10);
+                        goto out_peg_11;
                     }
                 }
-                result_peg_4.setValue((void*) "\t");
                     
             }
             goto success_peg_5;
-            out_peg_9:
+            out_peg_11:
             goto loop_peg_3;
             success_peg_5:
             ;
@@ -1262,6 +1347,7 @@ Result rule_sw(Stream & stream, const int position){
         } while (true);
         loop_peg_3:
         ;
+        
         stream.update(result_peg_2.getPosition());
         
         return result_peg_2;
@@ -1271,51 +1357,35 @@ Result rule_sw(Stream & stream, const int position){
 }
         
 
-const void * parse(const std::string & filename, bool stats = false){
-    Stream stream(filename);
+static const void * doParse(Stream & stream, bool stats, const std::string & context){
     errorResult.setError();
     Result done = rule_start(stream, 0);
     if (done.error()){
-        std::ostringstream out;
-        out << "Error while parsing " << filename << " " << stream.reportError();
-        throw ParseException(out.str());
+        stream.reportError(context);
     }
     if (stats){
         stream.printStats();
     }
     return done.getValues().getValue();
+}
+
+const void * parse(const std::string & filename, bool stats = false){
+    Stream stream(filename);
+    return doParse(stream, stats, filename);
 }
 
 const void * parse(const char * in, bool stats = false){
     Stream stream(in);
-    errorResult.setError();
-    Result done = rule_start(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 const void * parse(const char * in, int length, bool stats = false){
     Stream stream(in, length);
-    errorResult.setError();
-    Result done = rule_start(stream, 0);
-    if (done.error()){
-        // std::cout << "Could not parse" << std::endl;
-        throw ParseException(stream.reportError());
-    }
-    if (stats){
-        stream.printStats();
-    }
-    return done.getValues().getValue();
+    return doParse(stream, stats, "memory");
 }
 
 
 
 } /* Bor */
 
-        
+    

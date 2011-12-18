@@ -240,6 +240,9 @@ def psp_prx(env):
 
 use.Depends(use.Peg('openbor/data.peg'), 'mugen/parser/peg.py')
 
+util = utilLibrary(use)
+
+use.Prepend(LIBS = [util])
 use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
@@ -251,7 +254,7 @@ if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
 elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use), stretchLibrary(use)])
-use.Prepend(LIBS = [utilLibrary(use)])
+use.Prepend(LIBS = [util])
 
 def addObjects(objects):
     obj_files.extend(objects)

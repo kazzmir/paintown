@@ -1,21 +1,8 @@
 Import('use')
 
-source = Split("""
-test.cpp
-../../util/token.cpp
-../../util/tokenreader.cpp
-../../util/token_exception.cpp
-../../util/exceptions/exception.cpp
-""")
+source = Split("""test.cpp""")
 
-parse_source = Split("""
-parse.cpp
-../../util/token.cpp
-../../util/tokenreader.cpp
-../../util/token_exception.cpp
-../../util/exceptions/exception.cpp
-../../util/debug.cpp
-""")
+parse_source = Split("""parse.cpp""")
 
 x = []
 token_test = use.Program('test', source)

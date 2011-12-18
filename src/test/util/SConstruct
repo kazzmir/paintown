@@ -1,13 +1,6 @@
 Import('use')
 
-source = Split("""
-file-system.cpp
-../../util/file-system.cpp
-../../util/exceptions/exception.cpp
-../../util/thread.cpp
-../../util/debug.cpp
-../../util/system.cpp
-""")
+source = Split("""file-system.cpp""")
 
 x = []
 test = use.Program('test', source)
