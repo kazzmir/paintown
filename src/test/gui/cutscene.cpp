@@ -23,9 +23,90 @@ enum Keys{
     Enter,
 };
 
+class CutSceneTool{
+public:
+    CutSceneTool(const std::string & file):
+    path(file),
+    state(Play){
+        reload();
+    }
+    ~CutSceneTool(){
+    }
+    
+    void reload(){
+        scenes.clear();
+        cutscene = CutScene(path);
+        while (cutscene.hasMore()){
+            scenes.push_back(cutscene.getCurrent());
+            cutscene.next();
+        }
+        current = 0;
+    }
+    
+    enum State {
+        Stopped=0,
+        Play,
+        Reverse,
+        Forward,
+        FastForward,
+        Rewind,
+    };
+    
+    void act(){
+        if (scenes.empty()){
+            return;
+        }
+        switch (state){
+            case Play:
+                scenes[current]->act();
+                if (scenes[current]->done()){
+                    scenes[current]->reset();
+                }
+                break;
+            case Reverse:
+            case Forward:
+            case FastForward:
+            case Rewind:
+            case Stopped:
+            default:
+                break;
+        }
+    }
+    
+    void render(const Graphics::Bitmap & work){
+        if (scenes.empty()){
+            return;
+        }
+        switch (state){
+            case Play:
+                scenes[current]->render(work);
+                break;
+            case Reverse:
+            case Forward:
+            case FastForward:
+            case Rewind:
+            case Stopped:
+            default:
+                break;
+        }
+    }
+    
+    void setState(const State & s){
+        state = s;
+    }
+    
+private:
+    const Filesystem::AbsolutePath path;
+    CutScene cutscene;
+    std::vector<Util::ReferenceCount<Scene> > scenes;
+    State state;
+    unsigned int current;
+};
+
+
 class Logic: public Util::Logic {
 public:
-    Logic(InputMap<Keys> & input, CutScene & cutscene):
+    Logic(InputMap<Keys> & input, CutSceneTool & cutscene):
     is_done(false),
     input(input),
     cutscene(cutscene),
@@ -34,7 +115,7 @@ public:
 
     bool is_done;
     InputMap<Keys> & input;
-    CutScene & cutscene;
+    CutSceneTool & cutscene;
     int ticker;
     
     bool done(){
@@ -61,6 +142,7 @@ public:
                 }
             }
         }
+        cutscene.act();
     }
 
     double ticks(double system){
@@ -70,15 +152,15 @@ public:
 
 class Draw: public Util::Draw {
 public:
-    Draw(CutScene & cutscene):
+    Draw(CutSceneTool & cutscene):
     cutscene(cutscene){
     }
     
-    CutScene & cutscene;
+    CutSceneTool & cutscene;
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
-        //select.draw(buffer);
+        cutscene.render(buffer);
         buffer.BlitToScreen();
     }
 };
@@ -107,12 +189,7 @@ int main(int argc, char ** argv){
        
         try {
             
-            Filesystem::AbsolutePath path(file);
-            CutScene cutscene(path);
-            /*while (cutscene.hasMore()){
-                cutscene.playScene();
-                cutscene.next();
-            }*/
+            CutSceneTool cutscene(file);
             
             Logic logic(input, cutscene);
             Draw draw(cutscene);
