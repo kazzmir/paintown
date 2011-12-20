@@ -1,6 +1,18 @@
-diff -r 33245988e8a2 src/file/SDL_rwops.c
---- a/src/file/SDL_rwops.c	Sun Sep 04 14:57:10 2011 -0700
-+++ b/src/file/SDL_rwops.c	Mon Sep 05 22:36:56 2011 -0600
+diff -r f3c34d321289 include/SDL_thread.h
+--- a/include/SDL_thread.h	Fri Dec 09 02:32:21 2011 -0500
++++ b/include/SDL_thread.h	Tue Dec 20 16:00:48 2011 -0700
+@@ -144,6 +144,8 @@
+ extern DECLSPEC SDL_Thread *SDLCALL
+ SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data);
+ 
++#define SDL_CreateThread(fn, data) SDL_CreateThread(fn, "SDL", data)
++
+ #endif
+ 
+ /**
+diff -r f3c34d321289 src/file/SDL_rwops.c
+--- a/src/file/SDL_rwops.c	Fri Dec 09 02:32:21 2011 -0500
++++ b/src/file/SDL_rwops.c	Tue Dec 20 16:00:48 2011 -0700
 @@ -445,7 +445,7 @@
          SDL_SetError("SDL_RWFromFile(): No file or no mode specified");
          return NULL;
@@ -10,9 +22,9 @@ diff -r 33245988e8a2 src/file/SDL_rwops.c
      rwops = SDL_AllocRW();
      if (!rwops)
          return NULL;            /* SDL_SetError already setup by SDL_AllocRW() */
-diff -r 33245988e8a2 src/joystick/SDL_joystick.c
---- a/src/joystick/SDL_joystick.c	Sun Sep 04 14:57:10 2011 -0700
-+++ b/src/joystick/SDL_joystick.c	Mon Sep 05 22:36:56 2011 -0600
+diff -r f3c34d321289 src/joystick/SDL_joystick.c
+--- a/src/joystick/SDL_joystick.c	Fri Dec 09 02:32:21 2011 -0500
++++ b/src/joystick/SDL_joystick.c	Tue Dec 20 16:00:48 2011 -0700
 @@ -26,7 +26,6 @@
  #include "SDL_sysjoystick.h"
  #include "SDL_joystick_c.h"
@@ -21,9 +33,9 @@ diff -r 33245988e8a2 src/joystick/SDL_joystick.c
  #if !SDL_EVENTS_DISABLED
  #include "../events/SDL_events_c.h"
  #endif
-diff -r 33245988e8a2 src/joystick/android/SDL_sysjoystick.c
---- a/src/joystick/android/SDL_sysjoystick.c	Sun Sep 04 14:57:10 2011 -0700
-+++ b/src/joystick/android/SDL_sysjoystick.c	Mon Sep 05 22:36:56 2011 -0600
+diff -r f3c34d321289 src/joystick/android/SDL_sysjoystick.c
+--- a/src/joystick/android/SDL_sysjoystick.c	Fri Dec 09 02:32:21 2011 -0500
++++ b/src/joystick/android/SDL_sysjoystick.c	Tue Dec 20 16:00:48 2011 -0700
 @@ -88,6 +88,7 @@
      int i;
      float values[3];
@@ -32,9 +44,9 @@ diff -r 33245988e8a2 src/joystick/android/SDL_sysjoystick.c
      Android_JNI_GetAccelerometerValues(values);
  
      for ( i = 0; i < 3; i++ ) {
-diff -r 33245988e8a2 src/render/SDL_render.c
---- a/src/render/SDL_render.c	Sun Sep 04 14:57:10 2011 -0700
-+++ b/src/render/SDL_render.c	Mon Sep 05 22:36:56 2011 -0600
+diff -r f3c34d321289 src/render/SDL_render.c
+--- a/src/render/SDL_render.c	Fri Dec 09 02:32:21 2011 -0500
++++ b/src/render/SDL_render.c	Tue Dec 20 16:00:48 2011 -0700
 @@ -52,12 +52,12 @@
  #if SDL_VIDEO_RENDER_OGL
      &GL_RenderDriver,
