@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "util/font.h"
 #include "util/gui/cutscene.h"
 #include "util/debug.h"
 #include "util/load_exception.h"
@@ -21,13 +22,20 @@ enum Keys{
     Right,
     Esc,
     Enter,
+    SpaceBar,
+    S,
+    P,
+    R,
+    Key1,
+    Key2,
 };
 
 class CutSceneTool{
 public:
     CutSceneTool(const std::string & file):
     path(file),
-    state(Play){
+    state(Play),
+    ticks(1){
         reload();
     }
     ~CutSceneTool(){
@@ -44,30 +52,20 @@ public:
     }
     
     enum State {
-        Stopped=0,
+        Stop=0,
         Play,
         Reverse,
-        Forward,
-        FastForward,
-        Rewind,
     };
     
     void act(){
-        if (scenes.empty()){
-            return;
-        }
         switch (state){
             case Play:
-                scenes[current]->act();
-                if (scenes[current]->done()){
-                    scenes[current]->reset();
-                }
+                forward(ticks);
                 break;
             case Reverse:
-            case Forward:
-            case FastForward:
-            case Rewind:
-            case Stopped:
+                reverse(ticks);
+                break;
+            case Stop:
             default:
                 break;
         }
@@ -77,22 +75,49 @@ public:
         if (scenes.empty()){
             return;
         }
-        switch (state){
-            case Play:
-                scenes[current]->render(work);
-                break;
-            case Reverse:
-            case Forward:
-            case FastForward:
-            case Rewind:
-            case Stopped:
-            default:
-                break;
+        scenes[current]->render(work);
+    }
+    
+    void forward(int tickCount = 1){
+        if (scenes.empty()){
+            return;
+        }
+        scenes[current]->forward(tickCount);
+        if (scenes[current]->done()){
+            scenes[current]->reset();
+        }
+    }
+    
+    void reverse(int tickCount = 1){
+        if (scenes.empty()){
+            return;
+        }
+        scenes[current]->reverse(tickCount);
+        if (scenes[current]->done()){
+            scenes[current]->setToEnd();
         }
     }
     
     void setState(const State & s){
         state = s;
+    }
+    
+    const State & getState() const{
+        return state;
+    }
+    
+    int getTicks() const {
+        return ticks;
+    }
+    
+    void increaseTicks(){
+        ticks++;
+    }
+    
+    void decreaseTicks(){
+        if (ticks > 0){
+            ticks--;
+        }
     }
     
 private:
@@ -101,6 +126,7 @@ private:
     std::vector<Util::ReferenceCount<Scene> > scenes;
     State state;
     unsigned int current;
+    int ticks;
 };
 
 
@@ -130,15 +156,31 @@ public:
                 if (event.out == Esc){
                     is_done = true;
                 }
-                if (event.out == Up){
+                if (event.out == P){
+                    cutscene.setState(CutSceneTool::Play);
                 }
-                if (event.out == Down){
+                if (event.out == R){
+                    cutscene.setState(CutSceneTool::Reverse);
                 }
                 if (event.out == Left){
+                    cutscene.setState(CutSceneTool::Stop);
+                    cutscene.reverse(1);
+                }
+                if (event.out == Down){
+                    cutscene.decreaseTicks();
                 }
                 if (event.out == Right){
+                    cutscene.setState(CutSceneTool::Stop);
+                    cutscene.forward(1);
                 }
-                if (event.out == Enter){
+                if (event.out == Up){
+                    cutscene.increaseTicks();
+                }
+                if (event.out == S || event.out == Enter || event.out == SpaceBar){
+                    cutscene.setState(CutSceneTool::Stop);
+                }
+                if (event.out == Key1){
+                    cutscene.reload();
                 }
             }
         }
@@ -161,6 +203,12 @@ public:
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
         cutscene.render(buffer);
+        Font::getDefaultFont().printf(10, 385, Graphics::makeColor(0, 255, 0), buffer, "Current tick Speed: %d", 0, cutscene.getTicks());
+        Font::getDefaultFont().printf(10, 400, Graphics::makeColor(255, 255, 255), buffer, "Controls:", 0);
+        Font::getDefaultFont().printf(10, 415, Graphics::makeColor(255, 255, 255), buffer, "P - Play/Forward     |     R - Reverse     |     S/Space/Enter - Stop", 0);
+        Font::getDefaultFont().printf(10, 430, Graphics::makeColor(255, 255, 255), buffer, "Up - Increase tick speed     |     Down - Decrease tick speed", 0);
+        Font::getDefaultFont().printf(10, 445, Graphics::makeColor(255, 255, 255), buffer, "Left - Step through in reverse     |     Left - Step through forward", 0);
+        Font::getDefaultFont().printf(10, 460, Graphics::makeColor(255, 0, 0), buffer, "1 - Reload file", 0);
         buffer.BlitToScreen();
     }
 };
@@ -186,6 +234,12 @@ int main(int argc, char ** argv){
         input.set(Keyboard::Key_DOWN, 0, true, Down);
         input.set(Keyboard::Key_LEFT, 0, true, Left);
         input.set(Keyboard::Key_RIGHT, 0, true, Right);
+        input.set(Keyboard::Key_S, 0, true, S);
+        input.set(Keyboard::Key_P, 0, true, P);
+        input.set(Keyboard::Key_R, 0, true, R);
+        input.set(Keyboard::Key_SPACE, 0, true, SpaceBar);
+        input.set(Keyboard::Key_1, 0, true, Key1);
+        input.set(Keyboard::Key_2, 0, true, Key2);
        
         try {
             
