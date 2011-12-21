@@ -28,6 +28,10 @@ enum Keys{
     R,
     Key1,
     Key2,
+    Key3,
+    Key4,
+    Key5,
+    Key6,
 };
 
 class CutSceneTool{
@@ -35,7 +39,9 @@ public:
     CutSceneTool(const std::string & file):
     path(file),
     state(Play),
-    ticks(1){
+    ticks(1),
+    currentId(0),
+    displayAnimationId(true){
         reload();
     }
     ~CutSceneTool(){
@@ -48,7 +54,10 @@ public:
             scenes.push_back(cutscene.getCurrent());
             cutscene.next();
         }
-        current = 0;
+        if (scenes.empty()){
+             throw LoadException(__FILE__, __LINE__, "No scenes found in cutscene context.");
+        }
+        current = currentId = 0;
     }
     
     enum State {
@@ -72,16 +81,10 @@ public:
     }
     
     void render(const Graphics::Bitmap & work){
-        if (scenes.empty()){
-            return;
-        }
         scenes[current]->render(work);
     }
     
     void forward(int tickCount = 1){
-        if (scenes.empty()){
-            return;
-        }
         scenes[current]->forward(tickCount);
         if (scenes[current]->done()){
             scenes[current]->reset();
@@ -89,21 +92,65 @@ public:
     }
     
     void reverse(int tickCount = 1){
-        if (scenes.empty()){
-            return;
-        }
         scenes[current]->reverse(tickCount);
         if (scenes[current]->done()){
             scenes[current]->setToEnd();
         }
     }
     
+    void nextScene(){
+        if (current < scenes.size()-1){
+            current++;
+            currentId = 0;
+        } else {
+            current = 0;
+            currentId = 0;
+        }
+    }
+    
+    void previousScene(){
+        if (current > 0){
+            current--;
+            currentId = 0;
+        } else {
+            current = scenes.size()-1;
+            currentId = 0;
+        }
+    }
+    
+    void nextAnimationId(){
+        if (currentId < scenes[current]->getManager().getIdList().size()-1){
+            currentId++;
+        } else {
+            currentId = 0;
+        }
+    }
+    
+    void previousAnimationId(){
+        if (currentId > 0){
+            currentId--;
+        } else {
+            currentId = scenes[current]->getManager().getIdList().size()-1;
+        }
+    }
+    
+    void toggleDisplayAnimationId(){
+        displayAnimationId = !displayAnimationId;
+    }
+     
     void setState(const State & s){
         state = s;
     }
     
     const State & getState() const{
         return state;
+    }
+    
+    const std::string getInfo(){
+        if (!displayAnimationId){
+            return "";
+        }
+        return scenes[current]->getManager().getInfo(scenes[current]->getManager().getIdList()[currentId]);
     }
     
     int getTicks() const {
@@ -127,6 +174,8 @@ private:
     State state;
     unsigned int current;
     int ticks;
+    unsigned int currentId;
+    bool displayAnimationId;
 };
 
 
@@ -180,7 +229,22 @@ public:
                     cutscene.setState(CutSceneTool::Stop);
                 }
                 if (event.out == Key1){
+                    cutscene.toggleDisplayAnimationId();
+                }
+                if (event.out == Key2){
                     cutscene.reload();
+                }
+                if (event.out == Key3){
+                    cutscene.previousScene();
+                }
+                if (event.out == Key4){
+                    cutscene.nextScene();
+                }
+                if (event.out == Key5){
+                    cutscene.previousAnimationId();
+                }
+                if (event.out == Key6){
+                    cutscene.nextAnimationId();
                 }
             }
         }
@@ -195,21 +259,32 @@ public:
 class Draw: public Util::Draw {
 public:
     Draw(CutSceneTool & cutscene):
-    cutscene(cutscene){
+    cutscene(cutscene),
+    infoTextY(355){
     }
     
     CutSceneTool & cutscene;
+    int infoTextY;
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
         cutscene.render(buffer);
-        Font::getDefaultFont().printf(10, 385, Graphics::makeColor(0, 255, 0), buffer, "Current tick Speed: %d", 0, cutscene.getTicks());
-        Font::getDefaultFont().printf(10, 400, Graphics::makeColor(255, 255, 255), buffer, "Controls:", 0);
-        Font::getDefaultFont().printf(10, 415, Graphics::makeColor(255, 255, 255), buffer, "P - Play/Forward     |     R - Reverse     |     S/Space/Enter - Stop", 0);
-        Font::getDefaultFont().printf(10, 430, Graphics::makeColor(255, 255, 255), buffer, "Up - Increase tick speed     |     Down - Decrease tick speed", 0);
-        Font::getDefaultFont().printf(10, 445, Graphics::makeColor(255, 255, 255), buffer, "Left - Step through in reverse     |     Left - Step through forward", 0);
-        Font::getDefaultFont().printf(10, 460, Graphics::makeColor(255, 0, 0), buffer, "1 - Reload file", 0);
+        Font::getDefaultFont(12,12).printfWrap(5, 5, Graphics::makeColor(255, 255, 255), buffer, 320, cutscene.getInfo(), 0);
+        infoTextY = 325;
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(0, 255, 0), buffer, "Current tick Speed: %d", 0, cutscene.getTicks());
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "Controls:", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "P - Play/Forward     |     R - Reverse     |     S/Space/Enter - Stop", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "Up - Increase tick speed     |     Down - Decrease tick speed", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "Left - Step through in reverse     |     Left - Step through forward", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "1 - Toggle Animation/Frame Display", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 0, 0), buffer, "2 - Reload file", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "3 - Previous Scene     |     4 - Next Scene", 0);
+        Font::getDefaultFont().printf(10, nextHeight(), Graphics::makeColor(255, 255, 255), buffer, "5 - Previous Animation ID     |     6 - Next Animation ID", 0);
         buffer.BlitToScreen();
+    }
+    
+    int nextHeight(){
+        return infoTextY+=15;
     }
 };
 
@@ -240,6 +315,10 @@ int main(int argc, char ** argv){
         input.set(Keyboard::Key_SPACE, 0, true, SpaceBar);
         input.set(Keyboard::Key_1, 0, true, Key1);
         input.set(Keyboard::Key_2, 0, true, Key2);
+        input.set(Keyboard::Key_3, 0, true, Key3);
+        input.set(Keyboard::Key_4, 0, true, Key4);
+        input.set(Keyboard::Key_5, 0, true, Key5);
+        input.set(Keyboard::Key_6, 0, true, Key6);
        
         try {
             
