@@ -196,14 +196,17 @@ public abstract class AnimationCanvas extends JPanel {
         final String chooseNone = "None";
         final String chooseBackground = "Background Color";
         final String chooseGrid = "Grid";
+        final String overlayAnimation = "Overlay Animation";
         tools.addItem(chooseNone);
         tools.addItem(chooseBackground);
         tools.addItem(chooseGrid);
+        tools.addItem(overlayAnimation);
 
         tools.addActionListener(new AbstractAction(){
             final JPanel toolNone = new JPanel();
             final JPanel toolBackground = makeBackgroundTool(object, area, animation);
             final JPanel toolGrid = makeGridTool(area, animation);
+            final JPanel toolOverlay = makeOverlayAnimation(object, area);
 
             private JPanel getTool(String name){
                 if (name.equals(chooseNone)){
@@ -211,6 +214,9 @@ public abstract class AnimationCanvas extends JPanel {
                 }
                 if (name.equals(chooseBackground)){
                     return toolBackground;
+                }
+                if (name.equals(overlayAnimation)){
+                    return toolOverlay;
                 }
                 if (name.equals(chooseGrid)){
                     return toolGrid;
@@ -292,6 +298,36 @@ public abstract class AnimationCanvas extends JPanel {
         area.animate(animation);
 
         return (JPanel) animEditor.getRootComponent();
+    }
+
+    private Animation findAnimation(Vector<Animation> animations, String name){
+        for (Animation animation: animations){
+            if (animation.getName().equals(name)){
+                return animation;
+            }
+        }
+        return null;
+    }
+    
+    private JPanel makeOverlayAnimation(final AnimatedObject object, final DrawArea area){
+        final SwingEngine context = new SwingEngine("animator/tool-overlay-animation.xml");
+        final JComboBox animations = (JComboBox) context.find("animations");
+        animations.addItem("None");
+        for (Animation animation: object.getAnimations()){
+            animations.addItem(animation.getName());
+        }
+
+        animations.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                String name = (String) animations.getSelectedItem();
+                if (name.equals("None")){
+                    area.setOverlay(null);
+                } else {
+                    area.setOverlay(findAnimation(object.getAnimations(), name));
+                }
+            }
+        });
+        return (JPanel) context.getRootComponent();
     }
 
     private JPanel makeGridTool(final DrawArea area, final Animation animation){

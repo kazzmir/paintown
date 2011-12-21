@@ -28,6 +28,7 @@ public final class DrawArea extends JComponent {
 
     private AnimationEvent currentEvent;
     private Animation currentAnimation;
+    private Animation overlayAnimation;
 
     public DrawArea(final Lambda0 loader){
         this(new DrawProperties(), loader);
@@ -262,6 +263,10 @@ public final class DrawArea extends JComponent {
         return backgroundColor;
     }
     */
+
+    public void setOverlay(Animation animation){
+        this.overlayAnimation = animation;
+    }
     
     public Color backgroundColor(){
         return drawProperties.getBackgroundColor();
@@ -297,6 +302,10 @@ public final class DrawArea extends JComponent {
         g.setColor(new Color(255, 255, 0));
         g.drawLine(0, y, (int) (getWidth() / getScale()), y);
         g.drawLine(x, 0, x, (int) (getHeight() / getScale()));
+
+        if (overlayAnimation != null){
+            overlayAnimation.draw(g, x, y);
+        }
 
         if (currentAnimation != null){
             currentAnimation.draw(g, x, y);

@@ -14,12 +14,11 @@ import com.rafkind.paintown.Lambda1;
 public abstract class AnimatedObject extends BasicObject {
 	
 	private Vector<Animation> animations = new Vector<Animation>();
-	private List updates;
+	private List updates = new ArrayList();
     private DrawProperties drawProperties = new DrawProperties();
 
 	public AnimatedObject(String name){
 		super(name);
-		updates = new ArrayList();
         this.drawProperties = drawProperties;
 	}
 
@@ -27,22 +26,22 @@ public abstract class AnimatedObject extends BasicObject {
         return drawProperties;
     }
 
-	public void addAnimationUpdate( Lambda1 update ){
+	public void addAnimationUpdate(Lambda1 update){
 		updates.add(update);
 	}
 	
-	public void removeAnimationUpdate( Lambda1 update ){
+	public void removeAnimationUpdate(Lambda1 update){
 		updates.remove(update);
 	}
 
-	public void removeAnimation( int index ){
+	public void removeAnimation(int index){
 		Animation temp = (Animation)animations.elementAt(index);
 		animations.removeElement(temp);
 		updateAnimationListeners();
 	}
 
 	public void updateAnimationListeners(){
-		for ( Iterator it = updates.iterator(); it.hasNext(); ){
+		for (Iterator it = updates.iterator(); it.hasNext(); /**/){
 			Lambda1 update = (Lambda1) it.next();
 			try{
 				update.invoke( this );
@@ -52,22 +51,22 @@ public abstract class AnimatedObject extends BasicObject {
 		}
 	}
 
-	abstract public void setMap( int map );
+	abstract public void setMap(int map);
 
 	public void removeAnimation(Animation anim){
-		removeAnimation( animations.indexOf( anim ) );
+		removeAnimation(animations.indexOf(anim));
 	}
 
-	public void addAnimation( Animation a ){
-		animations.add( a );
+	public void addAnimation(Animation a){
+		animations.add(a);
 	}
 
 	public Vector<Animation> getAnimations(){
 		return animations;
 	}
 
-	public Animation getAnimation( int i ){
-		return (Animation) getAnimations().get( i );
+	public Animation getAnimation(int i){
+		return (Animation) getAnimations().get(i);
 	}
 
 }

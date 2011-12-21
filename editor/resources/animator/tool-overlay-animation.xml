@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+    <vbox>
+        <hbox>
+            <label text="Animation" />
+            <combobox id="animations" />
+        </hbox>
+        <buttongroup>
+            <radiobutton id="front" selected="true" text="Show in front of current animation" />
+            <radiobutton id="back" selected="true" text="Show behind current animation" />
+        </buttongroup>
+        <hbox>
+            <button id="previous-frame" text="Previous Frame" />
+            <button id="play" icon="animator/play.png" />
+            <button id="stop" icon="animator/stop.png" />
+            <button id="next-frame" text="Next frame" />
+        </hbox>
+    </vbox>
+</panel>
