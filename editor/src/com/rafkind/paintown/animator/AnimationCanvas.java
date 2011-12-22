@@ -43,6 +43,9 @@ public abstract class AnimationCanvas extends JPanel {
         private Data obj;
     }
 
+    /* Functions that should be called when this object is being destroyed */ 
+    private List<Lambda0> cleanupFunctions = new ArrayList<Lambda0>();
+
     public AnimationCanvas(AnimatedObject object, Animation animation, Lambda2 changeName, final Detacher detacher){
         setLayout(new GridBagLayout());
 
@@ -58,6 +61,12 @@ public abstract class AnimationCanvas extends JPanel {
         this.add(createPane(object, animation, changeName, detacher), constraints);
     }
 
+    public void destroy(){
+        for (Lambda0 cleanup: cleanupFunctions){
+            cleanup.invoke_();
+        }
+    }
+
     private JPanel createPane(final AnimatedObject object, final Animation animation, final Lambda2 changeName, final Detacher detacher){
         final SwingEngine animEditor = new SwingEngine("animator/animation.xml");
 
@@ -65,15 +74,6 @@ public abstract class AnimationCanvas extends JPanel {
 
         final DrawArea area = new DrawArea(object.getDrawProperties(), new Lambda0(){
             public Object invoke(){
-                /*
-                   if ( eventList.getSelectedIndex() != -1 ){
-                   AnimationEvent event = (AnimationEvent) eventList.getSelectedValue();
-                   return event.getEditor(animation, );
-                   } else {
-                   return null;
-                   }
-                   */
-
                 return null;
             }
         });
@@ -191,26 +191,41 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        final JComboBox tools = (JComboBox) contextEditor.find("tools");
-        final JPanel toolPane = (JPanel) contextEditor.find("tool-area");
+        setupTools((JComboBox) contextEditor.find("tools"), (JPanel) contextEditor.find("tool-area"), object, area, animation);
+
+        area.animate(animation);
+
+        return (JPanel) animEditor.getRootComponent();
+    }
+
+    private void setupTools(final JComboBox tools, final JPanel toolPane, final AnimatedObject object, final DrawArea area, final Animation animation){
         final String chooseNone = "None";
         final String chooseBackground = "Background Color";
         final String chooseGrid = "Grid";
         final String overlayAnimation = "Overlay Animation";
+        final String speedAndScale = "Speed and Scale";
         tools.addItem(chooseNone);
+        tools.addItem(speedAndScale);
         tools.addItem(chooseBackground);
         tools.addItem(chooseGrid);
         tools.addItem(overlayAnimation);
 
         tools.addActionListener(new AbstractAction(){
+            /* TODO: If there are too many tools then create them lazily so we
+             * don't spend too much time creating the animation pane on startup.
+             */
             final JPanel toolNone = new JPanel();
             final JPanel toolBackground = makeBackgroundTool(object, area, animation);
             final JPanel toolGrid = makeGridTool(area, animation);
             final JPanel toolOverlay = makeOverlayAnimation(object, area);
+            final JPanel toolSpeedAndScale = makeSpeedAndScale(animation, area);
 
             private JPanel getTool(String name){
                 if (name.equals(chooseNone)){
                     return toolNone;
+                }
+                if (name.equals(speedAndScale)){
+                    return toolSpeedAndScale;
                 }
                 if (name.equals(chooseBackground)){
                     return toolBackground;
@@ -238,10 +253,22 @@ public abstract class AnimationCanvas extends JPanel {
                 toolPane.revalidate();
             }
         });
+    }
 
-        final JLabel animationSpeed = (JLabel) contextEditor.find("speed-num");
-        animationSpeed.setText( "Animation speed: " + animation.getAnimationSpeed() );
-        final JSlider speed = (JSlider) contextEditor.find("speed");
+    private Animation findAnimation(Vector<Animation> animations, String name){
+        for (Animation animation: animations){
+            if (animation.getName().equals(name)){
+                return animation;
+            }
+        }
+        return null;
+    }
+
+    private JPanel makeSpeedAndScale(final Animation animation, final DrawArea area){
+        final SwingEngine context = new SwingEngine("animator/tool-speed-scale.xml");
+        final JLabel animationSpeed = (JLabel) context.find("speed-num");
+        animationSpeed.setText("Animation speed: " + animation.getAnimationSpeed());
+        final JSlider speed = (JSlider) context.find("speed");
         final double speedNumerator = 20.0;
         speed.setValue( (int) (speedNumerator / animation.getAnimationSpeed()) );
         speed.addChangeListener( new ChangeListener(){
@@ -251,8 +278,8 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        final JButton speedIncrease = (JButton) contextEditor.find("speed:increase");
-        final JButton speedDecrease = (JButton) contextEditor.find("speed:decrease");
+        final JButton speedIncrease = (JButton) context.find("speed:increase");
+        final JButton speedDecrease = (JButton) context.find("speed:decrease");
 
         speedIncrease.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
@@ -269,9 +296,9 @@ public abstract class AnimationCanvas extends JPanel {
         // controls.add((JComponent)controlEditor.getRootComponent());
 
 
-        final JLabel scaleNum = (JLabel) animEditor.find( "scale-num" );
+        final JLabel scaleNum = (JLabel) context.find( "scale-num" );
         scaleNum.setText( "Scale: " + area.getScale() );
-        final JSlider scale = (JSlider) animEditor.find( "scale" );
+        final JSlider scale = (JSlider) context.find( "scale" );
         scale.setValue( (int)(area.getScale() * 5.0) );
         scale.addChangeListener( new ChangeListener(){
             public void stateChanged( ChangeEvent e ){
@@ -280,8 +307,8 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        final JButton scaleIncrease = (JButton) animEditor.find("scale:increase");
-        final JButton scaleDecrease = (JButton) animEditor.find("scale:decrease");
+        final JButton scaleIncrease = (JButton) context.find("scale:increase");
+        final JButton scaleDecrease = (JButton) context.find("scale:decrease");
 
         scaleIncrease.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
@@ -295,18 +322,7 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        area.animate(animation);
-
-        return (JPanel) animEditor.getRootComponent();
-    }
-
-    private Animation findAnimation(Vector<Animation> animations, String name){
-        for (Animation animation: animations){
-            if (animation.getName().equals(name)){
-                return animation;
-            }
-        }
-        return null;
+        return (JPanel) context.getRootComponent();
     }
     
     private JPanel makeOverlayAnimation(final AnimatedObject object, final DrawArea area){
@@ -318,14 +334,22 @@ public abstract class AnimationCanvas extends JPanel {
             animations.addItem(animation);
         }
 
-        /* How can we remove this update? */
-        object.addAnimationUpdate(new Lambda1(){
+        final Lambda1 updateAnimations = new Lambda1(){
             public Object invoke(Object objectSelf){
                 animations.removeAllItems();
                 animations.addItem(null);
                 for (Animation animation: object.getAnimations()){
                     animations.addItem(animation);
                 }
+                return null;
+            }
+        };
+
+        object.addAnimationUpdate(updateAnimations);
+
+        cleanupFunctions.add(new Lambda0(){
+            public Object invoke(){
+                object.removeAnimationUpdate(updateAnimations);
                 return null;
             }
         });

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+    <vbox>
+        <hbox>
+            <label id="speed-num" />
+            <glue />
+        </hbox>
+        <hbox>
+            <button id="speed:decrease" icon="animator/minus.png" />
+            <slider id="speed" minimum="1" maximum="50" />
+            <button id="speed:increase" icon="animator/plus.png" />
+        </hbox>
+        <glue size="1" />
+        <hbox>
+            <label id="scale-num" />
+            <glue />
+        </hbox>
+        <hbox>
+            <button id="scale:decrease" icon="animator/minus.png" />
+            <slider id="scale" minimum="1" maximum="20" />
+            <button id="scale:increase" icon="animator/plus.png" />
+        </hbox>
+        <glue size="1" />
+    </vbox>
+</panel>
