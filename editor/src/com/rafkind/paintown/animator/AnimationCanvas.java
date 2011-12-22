@@ -313,25 +313,33 @@ public abstract class AnimationCanvas extends JPanel {
         final SwingEngine context = new SwingEngine("animator/tool-overlay-animation.xml");
         final ObjectBox<Animation> current = new ObjectBox<Animation>();
         final JComboBox animations = (JComboBox) context.find("animations");
-        animations.addItem("None");
+        animations.addItem(null);
         for (Animation animation: object.getAnimations()){
-            animations.addItem(animation.getName());
+            animations.addItem(animation);
         }
+
+        /* How can we remove this update? */
+        object.addAnimationUpdate(new Lambda1(){
+            public Object invoke(Object objectSelf){
+                animations.removeAllItems();
+                animations.addItem(null);
+                for (Animation animation: object.getAnimations()){
+                    animations.addItem(animation);
+                }
+                return null;
+            }
+        });
 
         animations.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
-                String name = (String) animations.getSelectedItem();
+                Animation animation = (Animation) animations.getSelectedItem();
                 if (current.get() != null){
                     current.get().removeDrawable(area);
                 }
-                if (name.equals("None")){
-                    current.set(null);
-                    area.setOverlay(null);
-                } else {
-                    Animation found = findAnimation(object.getAnimations(), name);
-                    current.set(found);
-                    found.addDrawable(area);
-                    area.setOverlay(found);
+                current.set(animation);
+                area.setOverlay(animation);
+                if (animation != null){
+                    animation.addDrawable(area);
                 }
             }
         });

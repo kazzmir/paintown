@@ -14,7 +14,13 @@ import com.rafkind.paintown.Lambda1;
 public abstract class AnimatedObject extends BasicObject {
 	
 	private Vector<Animation> animations = new Vector<Animation>();
+
+    /* List of listeners that are notified when animations are
+     * added/removed from the animations vector.
+     */
 	private List updates = new ArrayList();
+
+    /* Shared properties for all animations, such as the background color */
     private DrawProperties drawProperties = new DrawProperties();
 
 	public AnimatedObject(String name){
@@ -35,7 +41,7 @@ public abstract class AnimatedObject extends BasicObject {
 	}
 
 	public void removeAnimation(int index){
-		Animation temp = (Animation)animations.elementAt(index);
+		Animation temp = (Animation) animations.elementAt(index);
 		animations.removeElement(temp);
 		updateAnimationListeners();
 	}
@@ -44,8 +50,8 @@ public abstract class AnimatedObject extends BasicObject {
 		for (Iterator it = updates.iterator(); it.hasNext(); /**/){
 			Lambda1 update = (Lambda1) it.next();
 			try{
-				update.invoke( this );
-			} catch ( Exception e ){
+				update.invoke(this);
+			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
@@ -57,8 +63,9 @@ public abstract class AnimatedObject extends BasicObject {
 		removeAnimation(animations.indexOf(anim));
 	}
 
-	public void addAnimation(Animation a){
-		animations.add(a);
+	public void addAnimation(Animation animation){
+		animations.add(animation);
+		updateAnimationListeners();
 	}
 
 	public Vector<Animation> getAnimations(){
