@@ -9,6 +9,8 @@
             <radiobutton id="front" text="Show in front of current animation" />
             <radiobutton id="back" selected="true" text="Show behind current animation" />
         </buttongroup>
+        <label id="alpha-text" text="Translucency" />
+        <slider id="alpha" minimum="1" maximum="100" />
         <hbox>
             <button id="previous-frame" text="Previous Frame" />
             <button id="play" icon="animator/play.png" />

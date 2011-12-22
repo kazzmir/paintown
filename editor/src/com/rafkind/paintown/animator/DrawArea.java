@@ -31,6 +31,7 @@ public final class DrawArea extends JComponent {
     private Animation overlayAnimation;
     /* true for behind, false for in front */
     private boolean overlayBehind = true;
+    private double overlayAlphaLevel = 1;
 
     public DrawArea(final Lambda0 loader){
         this(new DrawProperties(), loader);
@@ -274,6 +275,25 @@ public final class DrawArea extends JComponent {
         overlayBehind = false;
     }
 
+    /* set opaqueness of the overlay image.
+     * 1 - opaque
+     * 0 - translucent
+     * anything in between will be partially transparent
+     */
+    public void setOverlayAlpha(double alpha){
+        overlayAlphaLevel = alpha;
+        if (overlayAlphaLevel < 0){
+            overlayAlphaLevel = 0;
+        }
+        if (overlayAlphaLevel > 1){
+            overlayAlphaLevel = 1;
+        }
+    }
+
+    public double getOverlayAlpha(){
+        return overlayAlphaLevel;
+    }
+
     public void setOverlay(Animation animation){
         this.overlayAnimation = animation;
     }
@@ -301,6 +321,13 @@ public final class DrawArea extends JComponent {
         }
     }
 
+    private void drawOverlay(Graphics2D g, int x, int y){
+        Graphics2D translucent = (Graphics2D) g.create();
+        AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)overlayAlphaLevel);
+        translucent.setComposite(alpha);
+        overlayAnimation.draw(translucent, x, y);
+    }
+
     public void paintComponent(Graphics g){
 
         Graphics2D g2d = (Graphics2D) g;
@@ -314,7 +341,7 @@ public final class DrawArea extends JComponent {
         g.drawLine(x, 0, x, (int) (getHeight() / getScale()));
 
         if (overlayBehind && overlayAnimation != null){
-            overlayAnimation.draw(g, x, y);
+            drawOverlay(g2d, x, y);
         }
 
         if (currentAnimation != null){
@@ -322,7 +349,7 @@ public final class DrawArea extends JComponent {
         }
 
         if (! overlayBehind && overlayAnimation != null){
-            overlayAnimation.draw(g, x, y);
+            drawOverlay(g2d, x, y);
         }
     }
 

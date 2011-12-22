@@ -255,15 +255,6 @@ public abstract class AnimationCanvas extends JPanel {
         });
     }
 
-    private Animation findAnimation(Vector<Animation> animations, String name){
-        for (Animation animation: animations){
-            if (animation.getName().equals(name)){
-                return animation;
-            }
-        }
-        return null;
-    }
-
     private JPanel makeSpeedAndScale(final Animation animation, final DrawArea area){
         final SwingEngine context = new SwingEngine("animator/tool-speed-scale.xml");
         final JLabel animationSpeed = (JLabel) context.find("speed-num");
@@ -385,6 +376,19 @@ public abstract class AnimationCanvas extends JPanel {
                 if (animation != null){
                     animation.startRunning();
                 }
+            }
+        });
+
+        final JLabel alphaText = (JLabel) context.find("alpha-text");
+        final JSlider alpha = (JSlider) context.find("alpha");
+
+        alpha.setValue((int)(area.getOverlayAlpha() * alpha.getMaximum()));
+        alphaText.setText("Transparency " + area.getOverlayAlpha());
+        alpha.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent change){
+                area.setOverlayAlpha((double) alpha.getValue() / (double) alpha.getMaximum());
+                alphaText.setText("Transparency " + area.getOverlayAlpha());
+                area.repaint();
             }
         });
 
