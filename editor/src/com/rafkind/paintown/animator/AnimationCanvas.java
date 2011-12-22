@@ -36,11 +36,11 @@ public abstract class AnimationCanvas extends JPanel {
     
     protected abstract JComponent makeProperties(AnimatedObject object, Animation animation, Lambda2 changeName);
 
-    private class ObjectBox{
+    private class ObjectBox<Data>{
         public ObjectBox(){}
-        public synchronized void set( Object x ){ obj = x; }
-        public synchronized Object get(){ return obj; }
-        private Object obj;
+        public synchronized void set(Data x){ obj = x; }
+        public synchronized Data get(){ return obj; }
+        private Data obj;
     }
 
     public AnimationCanvas(AnimatedObject object, Animation animation, Lambda2 changeName, final Detacher detacher){
@@ -311,6 +311,7 @@ public abstract class AnimationCanvas extends JPanel {
     
     private JPanel makeOverlayAnimation(final AnimatedObject object, final DrawArea area){
         final SwingEngine context = new SwingEngine("animator/tool-overlay-animation.xml");
+        final ObjectBox<Animation> current = new ObjectBox<Animation>();
         final JComboBox animations = (JComboBox) context.find("animations");
         animations.addItem("None");
         for (Animation animation: object.getAnimations()){
@@ -320,13 +321,64 @@ public abstract class AnimationCanvas extends JPanel {
         animations.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 String name = (String) animations.getSelectedItem();
+                if (current.get() != null){
+                    current.get().removeDrawable(area);
+                }
                 if (name.equals("None")){
+                    current.set(null);
                     area.setOverlay(null);
                 } else {
-                    area.setOverlay(findAnimation(object.getAnimations(), name));
+                    Animation found = findAnimation(object.getAnimations(), name);
+                    current.set(found);
+                    found.addDrawable(area);
+                    area.setOverlay(found);
                 }
             }
         });
+
+        JButton stop = (JButton) context.find("stop");
+        stop.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                Animation animation = current.get();
+                if (animation != null){
+                    animation.stopRunning();
+                }
+            }
+        });
+
+        JButton play = (JButton) context.find("play");
+        play.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                Animation animation = current.get();
+                if (animation != null){
+                    animation.startRunning();
+                }
+            }
+        });
+
+        JButton nextFrame = (JButton) context.find("next-frame");
+        JButton previousFrame = (JButton) context.find("previous-frame");
+
+        previousFrame.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                Animation animation = current.get();
+                if (animation != null){
+                    animation.previousFrame();
+                    animation.forceRedraw();
+                }
+            }
+        });
+
+        nextFrame.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                Animation animation = current.get();
+                if (animation != null){
+                    animation.nextFrame();
+                    animation.forceRedraw();
+                }
+            }
+        });
+
         return (JPanel) context.getRootComponent();
     }
 
@@ -472,8 +524,8 @@ public abstract class AnimationCanvas extends JPanel {
         final ObjectBox currentEvent = new ObjectBox();
 
         animation.addEventNotifier(new Lambda1(){
-            public Object invoke(Object a){
-                currentEvent.set(a);
+            public Object invoke(Object event){
+                currentEvent.set(event);
                 eventList.repaint();
                 return null;
             }

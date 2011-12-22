@@ -470,10 +470,10 @@ public class Animation implements Runnable {
 		}
 	}
 
-	private void rest( int m ){
+	private void rest(int ms){
 		try{
-			Thread.sleep( m );
-		} catch ( Exception e ){
+			Thread.sleep(ms);
+		} catch (Exception e){
 		}
 	}
 
@@ -550,7 +550,7 @@ public class Animation implements Runnable {
 	
 	/* can be called to step foreward through the animation */
 	public void nextEvent(){
-		synchronized( events ){
+		synchronized (events){
 			if ( ! events.isEmpty() ){
 				eventIndex = next( eventIndex, events.size() );
 				if ( eventIndex == 0 ){
@@ -561,6 +561,10 @@ public class Animation implements Runnable {
 			}
 		}
 	}
+
+    public int getEventIndex(){
+        return eventIndex;
+    }
 
     private void checkIndex(){
         if (eventIndex < 0){
