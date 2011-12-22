@@ -29,6 +29,8 @@ public final class DrawArea extends JComponent {
     private AnimationEvent currentEvent;
     private Animation currentAnimation;
     private Animation overlayAnimation;
+    /* true for behind, false for in front */
+    private boolean overlayBehind = true;
 
     public DrawArea(final Lambda0 loader){
         this(new DrawProperties(), loader);
@@ -264,6 +266,14 @@ public final class DrawArea extends JComponent {
     }
     */
 
+    public void setOverlayBehind(){
+        overlayBehind = true;
+    }
+
+    public void setOverlayFront(){
+        overlayBehind = false;
+    }
+
     public void setOverlay(Animation animation){
         this.overlayAnimation = animation;
     }
@@ -303,12 +313,16 @@ public final class DrawArea extends JComponent {
         g.drawLine(0, y, (int) (getWidth() / getScale()), y);
         g.drawLine(x, 0, x, (int) (getHeight() / getScale()));
 
-        if (overlayAnimation != null){
+        if (overlayBehind && overlayAnimation != null){
             overlayAnimation.draw(g, x, y);
         }
 
         if (currentAnimation != null){
             currentAnimation.draw(g, x, y);
+        }
+
+        if (! overlayBehind && overlayAnimation != null){
+            overlayAnimation.draw(g, x, y);
         }
     }
 

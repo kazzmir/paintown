@@ -379,6 +379,25 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
+        final JRadioButton front = (JRadioButton) context.find("front");
+        final JRadioButton back = (JRadioButton) context.find("back");
+        front.setActionCommand("front");
+        back.setActionCommand("back");
+        
+        AbstractAction change = new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (event.getActionCommand().equals("front")){
+                    area.setOverlayFront();
+                } else {
+                    area.setOverlayBehind();
+                }
+                area.repaint();
+            }
+        };
+
+        front.addActionListener(change);
+        back.addActionListener(change);
+
         return (JPanel) context.getRootComponent();
     }
 

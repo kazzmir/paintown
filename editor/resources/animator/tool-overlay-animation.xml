@@ -6,7 +6,7 @@
             <combobox id="animations" />
         </hbox>
         <buttongroup>
-            <radiobutton id="front" selected="true" text="Show in front of current animation" />
+            <radiobutton id="front" text="Show in front of current animation" />
             <radiobutton id="back" selected="true" text="Show behind current animation" />
         </buttongroup>
         <hbox>
