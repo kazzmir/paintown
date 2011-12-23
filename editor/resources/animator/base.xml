@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel layout="GridBagLayout">
+    <!--
 	<splitpane id="split">
 		<gridbagconstraints
 			gridx="0"
@@ -10,28 +11,47 @@
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
-
-	<panel layout="GridBagLayout">
-		<gridbagconstraints
+            -->
+    <tabbedpane tabplacement="JTabbedPane.LEFT" id="all">
+        <gridbagconstraints
 			gridx="0"
 			gridy="0"
 			weightx="1"
 			weighty="1"
-			gridheight="3"
+			gridheight="1"
 			fill="GridBagConstraints.BOTH"
 			anchor="GridBagConstraints.NORTHWEST"
 			/>
-		<tabbedpane id="animations" border="MatteBorder(2,2,2,2,667A63)">
-			<gridbagconstraints
-				gridx="0"
-				gridy="1"
-				weightx="1"
-				weighty="0.9"
-				gridheight="1"
-				fill="GridBagConstraints.BOTH"
-				anchor="GridBagConstraints.NORTHWEST"
-				/>
-		</tabbedpane>
+
+	<panel layout="GridBagLayout" id="animation-pane">
+        <vbox>
+            <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="1"
+                weighty="1"
+                fill="GridBagConstraints.BOTH"
+                anchor="GridBagConstraints.NORTHWEST"
+                />
+            <hbox>
+                <button text="Add animation" id="add-animation" />
+                <glue size="1"/>
+                <button text="Remove animation" id="remove-animation" />
+                <glue />
+            </hbox>
+
+            <tabbedpane id="animations" border="MatteBorder(2,2,2,2,667A63)">
+                <gridbagconstraints
+                    gridx="0"
+                    gridy="1"
+                    weightx="1"
+                    weighty="0.9"
+                    gridheight="1"
+                    fill="GridBagConstraints.BOTH"
+                    anchor="GridBagConstraints.NORTHWEST"
+                    />
+            </tabbedpane>
+        </vbox>
 
 		<!--
 		<tabbedpane id="animations" border="MatteBorder(2,2,2,2,667A63)" layout="GridBagLayout">
@@ -58,56 +78,28 @@
 		<slider id="scale" minimum="1" maximum="20" />
 		-->
 	</panel>
-	<panel layout="GridBagLayout">
+	<panel layout="GridBagLayout" id="properties-pane">
 		<scrollpane layout="GridBagLayout">
 			<gridbagconstraints
-				gridx="1"
+				gridx="0"
 				gridy="0"
 				insets="1,1,1,1"
-				weightx="0.1"
-				weighty="0.9"
-				gridwidth="1"
+				weightx="1"
+				weighty="1"
 				fill="GridBagConstraints.BOTH"
-				anchor="GridBagConstraints.NORTH" />
-			<vbox>
-				<panel id="context" border="MatteBorder(2,2,2,2,667A63)">
-					<gridbagconstraints
-						gridx="0"
-						gridy="0"
-						insets="1,1,1,1"
-						weightx="0.1"
-						weighty="0.9"
-						gridwidth="1"
-						fill="GridBagConstraints.BOTH"
-						anchor="GridBagConstraints.NORTH" />
-				</panel>
-				<hbox>
-					<gridbagconstraints
-						gridx="0"
-						gridy="1"
-						weightx="1"
-						weighty="0.1"
-						gridheight="1"
-						fill="GridBagConstraints.HORIZONTAL"
-						anchor="GridBagConstraints.NORTHWEST"
-						/>
-					<button text="Add animation" id="add-animation" />
-					<glue size="1"/>
-					<button text="Remove animation" id="remove-animation" />
-					<glue />
-				</hbox>
-			</vbox>
-		</scrollpane>
-		<!--
-		<panel id="controls" border="MatteBorder(2,2,2,2,667A63)">
-			<gridbagconstraints
-				gridx="1"
-				gridy="1"
-				gridheight="10"
-				fill="GridBagConstraints.BOTH"
-				anchor="GridBagConstraints.WEST" />
-		</panel>
-		-->
+				anchor="GridBagConstraints.NORTHWEST" />
+            <panel layout="GridBagLayout" id="context" border="MatteBorder(2,2,2,2,667A63)">
+                <gridbagconstraints
+                    gridx="0"
+                    gridy="0"
+                    insets="1,1,1,1"
+                    weightx="1"
+                    weighty="1"
+                    fill="GridBagConstraints.BOTH"
+                    anchor="GridBagConstraints.NORTHWEST" />
+            </panel>
+
+        </scrollpane>
 	</panel>
-	</splitpane>
+	</tabbedpane>
 </panel>

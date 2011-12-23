@@ -29,24 +29,32 @@ public final class Player{
     public Player(final NewAnimator animator, final CharacterStats character){
         this.character = character;
 
-        playerEditor = new SwingEngine( "animator/base.xml" );
+        playerEditor = new SwingEngine("animator/base.xml");
 
         final SwingEngine contextEditor = new SwingEngine("animator/context.xml");
         final SwingEngine controlEditor = new SwingEngine("animator/controls.xml");
 
+        final JComponent animationPane = (JComponent) playerEditor.find("animation-pane");
+        final JComponent propertiesPane = (JComponent) playerEditor.find("properties-pane");
+
+        final JTabbedPane all = (JTabbedPane) playerEditor.find("all");
+        all.setTitleAt(all.indexOfComponent(animationPane), "Animations");
+        all.setTitleAt(all.indexOfComponent(propertiesPane), "Properties");
+
         //debugSwixml(playerEditor);
         //debugSwixml(contextEditor);
 
+        /*
         final JSplitPane split = (JSplitPane) playerEditor.find("split");
         SwingUtilities.invokeLater(new Runnable(){
             public void run(){
-                /*
+                / *
                 if ( split.getDividerLocation() != -1 ){
                     split.setDividerLocation(0.6);
                 } else {
                     SwingUtilities.invokeLater(this);
                 }
-                */
+                * /
                 if (split.getWidth() != 0){
                     split.setDividerLocation(0.6);
                 } else {
@@ -55,8 +63,9 @@ public final class Player{
             }
 
         });
+        */
 
-        final JPanel context = (JPanel) playerEditor.find( "context" );
+        final JPanel context = (JPanel) playerEditor.find("context");
         final JTabbedPane animations = (JTabbedPane) playerEditor.find("animations");
 
         final Lambda2 changeName = new Lambda2(){
@@ -539,7 +548,15 @@ public final class Player{
         controls.add((JComponent)controlEditor.getRootComponent());
         */
 
-        context.add((JComponent)contextEditor.getRootComponent());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+
+        context.add((JComponent) contextEditor.getRootComponent(), constraints);
     }
 
     private boolean okToRemoveAnimation(CharacterStats character){
