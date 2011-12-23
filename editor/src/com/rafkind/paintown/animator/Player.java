@@ -32,14 +32,16 @@ public final class Player{
         playerEditor = new SwingEngine("animator/base.xml");
 
         final SwingEngine contextEditor = new SwingEngine("animator/context.xml");
-        final SwingEngine controlEditor = new SwingEngine("animator/controls.xml");
+        // final SwingEngine controlEditor = new SwingEngine("animator/controls.xml");
 
         final JComponent animationPane = (JComponent) playerEditor.find("animation-pane");
         final JComponent propertiesPane = (JComponent) playerEditor.find("properties-pane");
+        final JComponent comboPane = (JComponent) playerEditor.find("combo-pane");
 
         final JTabbedPane all = (JTabbedPane) playerEditor.find("all");
         all.setTitleAt(all.indexOfComponent(animationPane), "Animations");
         all.setTitleAt(all.indexOfComponent(propertiesPane), "Properties");
+        all.setTitleAt(all.indexOfComponent(comboPane), "Combo Viewer");
 
         //debugSwixml(playerEditor);
         //debugSwixml(contextEditor);
@@ -138,7 +140,7 @@ public final class Player{
 
         for (Animation animation : character.getAnimations()){
             animations.add(animation.getName(), new CharacterAnimation(character, animation, changeName, detacher));
-	}
+        }
 
         /*
         // final JPanel canvas = (JPanel) playerEditor.find( "canvas" );
@@ -557,6 +559,21 @@ public final class Player{
         constraints.anchor = GridBagConstraints.NORTHWEST;
 
         context.add((JComponent) contextEditor.getRootComponent(), constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        comboPane.add(makeComboPane(), constraints);
+    }
+
+    private JPanel makeComboPane(){
+        final SwingEngine context = new SwingEngine("animator/combo.xml");
+
+        return (JPanel) context.getRootComponent();
     }
 
     private boolean okToRemoveAnimation(CharacterStats character){

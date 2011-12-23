@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel layout="GridBagLayout">
+    <panel layout="GridBagLayout" id="canvas">
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            fill="GridBagConstraints.BOTH"
+            anchor="GridBagConstraints.NORTHWEST"
+            />
+    </panel>
+    <vbox>
+        <gridbagconstraints
+            gridx="1"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            fill="GridBagConstraints.BOTH"
+            anchor="GridBagConstraints.NORTHWEST"
+            />
+        <scrollpane>
+            <list id="animations" />
+        </scrollpane>
+        <hbox>
+            <button id="add" text="Add" />
+            <button id="remove" text="remove" />
+        </hbox>
+    </vbox>
+</panel>
