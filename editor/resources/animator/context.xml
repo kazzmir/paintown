@@ -1,113 +1,92 @@
 <panel layout="GridBagLayout">
-	<vbox>
-		<gridbagconstraints
-			gridx="0"
-			gridy="0"
-			weightx="1"
-			weighty="1"
-			gridheight="1"
-			anchor="GridBagConstraints.NORTHWEST"
-			/>
-		<hbox>
-			<label text="Name" />
-			<textfield id="name" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Health" />
-			<spinner id="health" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Jump Speed" />
-			<panel id="jump-velocity" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Speed" />
-			<panel id="speed" />
-			<glue />
-		</hbox>
-        <hbox>
-			<label text="Scale" />
-            <spinner id="scale" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Shadow" />
-			<spinner id="shadow" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Death Sound: " />
-			<textfield id="die-sound" />
-			<button text="Change" id="change-die-sound" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Hit Sound: " />
-			<textfield id="hit-sound" />
-			<button text="Change" id="change-hit-sound" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Landing Sound: " />
-			<textfield id="land-sound" />
-			<button text="Change" id="change-land-sound" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Icon: " />
-			<textfield id="icon" />
-			<button text="Change" id="change-icon" />
-			<glue />
-		</hbox>
-        <hbox>
-            <label text="Intro: " />
-            <textfield id="intro" />
-            <button text="Change" id="change-intro" />
-            <glue />
-        </hbox>
-		<glue size="1" />
-		<hbox>
-			<label text="Map" />
-			<spinner id="remap" />
-			<glue />
-		</hbox>
-		<hbox>
-			<label text="Original Map: " />
-			<textfield id="original-map" />
-			<button text="Change" id="change-origmap" />
-			<glue />
-		</hbox>
-		<vbox>
-			<label text="Remaps" />
-			<scrollpane>
-				<list id="remaps" />
-			</scrollpane>
-			<hbox>
-				<button text="Add" id="add-remap" />
-				<glue size="1" />
-				<button text="Remove" id="remove-remap" />
-				<glue size="1" />
-			</hbox>
-		</vbox>
-		<!--
-		<glue size="1" />
-		<vbox>
-			<label text="Animations" />
-			<scrollpane>
-				<list id="anims" />
-			</scrollpane>
-			<hbox>
-				<button text="Add" id="add-anim" />
-				<glue size="1" />
-				<button text="Edit" id="edit-anim" />
-				<glue size="1" />
-				<button text="Remove" id="remove-anim" />
-				<glue size="1" />
-			</hbox>
-		</vbox>
-		-->
-	</vbox>
+    <hbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            />
+        <vbox>
+            <hbox>
+                <label text="Name" />
+                <textfield id="name" />
+            </hbox>
+            <hbox>
+                <label text="Health" />
+                <spinner id="health" />
+            </hbox>
+            <hbox>
+                <label text="Jump Speed" />
+                <panel id="jump-velocity" />
+            </hbox>
+            <hbox>
+                <label text="Speed" />
+                <panel id="speed" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Scale" />
+                <spinner id="scale" />
+            </hbox>
+            <hbox>
+                <label text="Shadow" />
+                <spinner id="shadow" />
+            </hbox>
+            <hbox>
+                <label text="Death Sound: " />
+                <textfield id="die-sound" />
+                <button text="Change" id="change-die-sound" />
+            </hbox>
+            <hbox>
+                <label text="Hit Sound: " />
+                <textfield id="hit-sound" />
+                <button text="Change" id="change-hit-sound" />
+            </hbox>
+            <hbox>
+                <label text="Landing Sound: " />
+                <textfield id="land-sound" />
+                <button text="Change" id="change-land-sound" />
+            </hbox>
+            <hbox>
+                <label text="Icon: " />
+                <textfield id="icon" />
+                <button text="Change" id="change-icon" />
+            </hbox>
+            <hbox>
+                <label text="Intro: " />
+                <textfield id="intro" />
+                <button text="Change" id="change-intro" />
+            </hbox>
+        </vbox>
+        <!-- Hack to put spaces between the columns. -->
+        <label text="     " />
+        <vbox>
+            <hbox>
+                <label text="Map" />
+                <spinner id="remap" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Original Map: " />
+                <textfield id="original-map" />
+                <button text="Change" id="change-origmap" />
+                <glue />
+            </hbox>
+            <vbox>
+                <label text="Remaps" />
+                <scrollpane>
+                    <list id="remaps" />
+                </scrollpane>
+                <hbox>
+                    <button text="Add" id="add-remap" />
+                    <glue size="1" />
+                    <button text="Remove" id="remove-remap" />
+                    <glue size="1" />
+                </hbox>
+            </vbox>
+        </vbox>
+        <glue />
+    </hbox>
 </panel>
