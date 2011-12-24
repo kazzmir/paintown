@@ -384,7 +384,7 @@ public final class DrawArea extends JComponent {
     }
 
     public void unanimate(){
-        if ( currentAnimation != null ){
+        if (currentAnimation != null){
             currentAnimation.removeDrawable(this);
         }
     }

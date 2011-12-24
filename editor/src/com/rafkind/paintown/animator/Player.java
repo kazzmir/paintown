@@ -481,25 +481,22 @@ public final class Player{
         final JButton addAnimation = (JButton) context.find("add");
         final JButton removeAnimation = (JButton) context.find("remove");
 
-        final ObjectBox<Iterator> animationIterator = new ObjectBox<Iterator>();
-        final ObjectBox<Animation> currentAnimation = new ObjectBox<Animation>();
+        final ObjectBox<Integer> currentAnimation = new ObjectBox<Integer>();
+        currentAnimation.set(0);
 
         final Lambda1 nextAnimation = new Lambda1(){
             public Object invoke(Object self){
-                if (!animationIterator.get().hasNext()){
-                    if (animationSequenceData.size() == 0){
-                        return null;
-                    }
-                    animationIterator.set(animationSequenceData.iterator());
+                int index = currentAnimation.get();
+                if (index < animationSequenceData.size()){
+                    animationSequenceData.get(index).stopRunning();
                 }
 
-                if (animationIterator.get().hasNext()){
-                    if (currentAnimation.get() != null){
-                        currentAnimation.get().stopRunning();
-                    }
-                    currentAnimation.set((Animation) animationIterator.get().next());
-                    currentAnimation.get().startRunning();
-                    area.animate(currentAnimation.get());
+                index = (index + 1 + animationSequenceData.size()) % animationSequenceData.size();
+                currentAnimation.set(index);
+                if (index < animationSequenceData.size()){
+                    Animation animation = animationSequenceData.get(index);
+                    animation.startRunning();
+                    area.animate(animation);
                 }
 
                 return null;
@@ -511,7 +508,6 @@ public final class Player{
                 Animation animation = (Animation) animations.getSelectedItem();
                 animationSequenceData.add(animation);
                 animationSequence.setListData(animationSequenceData);
-                animationIterator.set(animationSequenceData.iterator());
                 animation.addLoopNotifier(nextAnimation);
             }
         });
@@ -521,7 +517,6 @@ public final class Player{
                 if (animationSequence.getSelectedIndex() != -1){
                     animationSequenceData.remove(animationSequence.getSelectedIndex());
                     animationSequence.setListData(animationSequenceData);
-                    animationIterator.set(animationSequenceData.iterator());
                 }
             }
         });
@@ -531,10 +526,24 @@ public final class Player{
 
         play.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
-                if (animationSequenceData.size() > 0){
-                    Animation animation = animationSequenceData.get(0);
+                int index = currentAnimation.get();
+                if (index >= animationSequenceData.size()){
+                    index = 0;
+                }
+                if (index < animationSequenceData.size()){
+                    Animation animation = animationSequenceData.get(index);
                     animation.startRunning();
                     area.animate(animation);
+                }
+            }
+        });
+
+        stop.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                int index = currentAnimation.get();
+                if (index < animationSequenceData.size()){
+                    Animation animation = animationSequenceData.get(index);
+                    animation.stopRunning();
                 }
             }
         });
