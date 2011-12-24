@@ -646,6 +646,30 @@ public final class Player{
             }
         });
 
+        final JButton nextFrame = (JButton) context.find("next-frame");
+        final JButton previousFrame = (JButton) context.find("previous-frame");
+
+        nextFrame.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (currentAnimation.get() < animationSequenceData.size()){
+                    Animation animation = animationSequenceData.get(currentAnimation.get());
+                    animation.nextFrame();
+                    animation.forceRedraw();
+                }
+            }
+        });
+
+        previousFrame.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (currentAnimation.get() < animationSequenceData.size()){
+                    Animation animation = animationSequenceData.get(currentAnimation.get());
+                    animation.previousFrame();
+                    animation.forceRedraw();
+                }
+            }
+        });
+
+
         final JComboBox tools = (JComboBox) context.find("tools");
         final JPanel toolPane = (JPanel) context.find("tool-area");
         
