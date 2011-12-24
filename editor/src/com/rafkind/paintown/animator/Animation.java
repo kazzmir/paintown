@@ -45,6 +45,7 @@ public class Animation implements Runnable {
 	private double animationSpeed;
 	/* when something is changed in the animation 'listeners' are notified */
 	private List listeners;
+    private List<Lambda1> loopers = new ArrayList<Lambda1>();
     private boolean onionSkinning = false;
     private int onionSkins = 1;
     private boolean onionSkinFront = true;
@@ -200,13 +201,23 @@ public class Animation implements Runnable {
 	public String getName(){
 		return name;
 	}
+
+    public void addLoopNotifier(Lambda1 lambda){
+        if (!loopers.contains(lambda)){
+            loopers.add(lambda);
+        }
+    }
+    
+    public void removeLoopNotifier(Lambda1 lambda){
+        loopers.remove(lambda);
+    }
 	
 	public void addEventNotifier( Lambda1 lambda ){
-		notifiers.add( lambda );
+		notifiers.add(lambda);
 	}
 	
 	public void removeEventNotifier( Lambda1 lambda ){
-		notifiers.remove( lambda );
+		notifiers.remove(lambda);
 	}
 
 	public synchronized void setImage( BufferedImage image ){
@@ -267,32 +278,32 @@ public class Animation implements Runnable {
 		running = true;
 	}
 
-	public int addEvent( AnimationEvent e, int index ){
-		synchronized( events ){
-			events.add( index, e );
+	public int addEvent(AnimationEvent e, int index){
+		synchronized (events){
+			events.add(index, e);
 			return index;
 		}
 	}
 
-	public int addEvent( AnimationEvent e ){
-		synchronized( events ){
-			return addEvent( e, events.size() );
+	public int addEvent(AnimationEvent e){
+		synchronized (events){
+			return addEvent(e, events.size());
 		}
 	}
 
 	public void clearEvents(){
-		synchronized( events ){
+		synchronized(events){
 			events.clear();
 		}
 	}
 
 	/* swap position of e1 and e2 within event structure */
-	public void swapEvents( int e1, int e2 ){
+	public void swapEvents(int e1, int e2){
 		synchronized( events ){
-			Object a1 = events.get( e1 );
-			Object a2 = events.get( e2 );
-			events.set( e1, a2 );
-			events.set( e2, a1 );
+			Object a1 = events.get(e1);
+			Object a2 = events.get(e2);
+			events.set(e1, a2);
+			events.set(e2, a1);
 		}
 		
 	}
@@ -307,15 +318,15 @@ public class Animation implements Runnable {
 		}
 	}
 
-	public void removeEvent( AnimationEvent e ){
-		synchronized( events ){
-			events.remove( e );
+	public void removeEvent(AnimationEvent e){
+		synchronized (events){
+			events.remove(e);
 		}
 	}
 
-	public void removeEvent( int i ){
-		synchronized( events ){
-			events.remove( i );
+	public void removeEvent(int i){
+		synchronized (events){
+			events.remove(i);
 		}
 	}
 
@@ -450,7 +461,7 @@ public class Animation implements Runnable {
         return this.offsetX;
     }
 	
-	public synchronized void setOffsetY( int y ){
+	public synchronized void setOffsetY(int y){
 		this.offsetY = y;
 	}
         
@@ -518,7 +529,7 @@ public class Animation implements Runnable {
 		return last;
 	}
 
-	private int next( int index, int max ){
+	private int next(int index, int max){
 		int next = index + 1;
 		if (next >= max){
 			next = 0;
@@ -547,17 +558,25 @@ public class Animation implements Runnable {
 			}
 		}
 	}
+
+    /* Called when the animation loops */
+    private void notifyLoopers(){
+        for (Lambda1 loop: loopers){
+            loop.invoke_(this);
+        }
+    }
 	
 	/* can be called to step foreward through the animation */
 	public void nextEvent(){
 		synchronized (events){
 			if ( ! events.isEmpty() ){
-				eventIndex = next( eventIndex, events.size() );
-				if ( eventIndex == 0 ){
-					setImageX( 0 );
-					setImageY( 0 );
+				eventIndex = next(eventIndex, events.size());
+				if (eventIndex == 0){
+					setImageX(0);
+					setImageY(0);
+                    notifyLoopers();
 				}
-				updateEvent( (AnimationEvent) events.get( eventIndex ) );
+				updateEvent((AnimationEvent) events.get(eventIndex));
 			}
 		}
 	}

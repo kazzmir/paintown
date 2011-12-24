@@ -115,14 +115,14 @@ public final class DrawArea extends JComponent {
                 synchronized(box){
                     ok = box[0] == null;
                 }
-                if ( ok ){
+                if (ok){
                     /*
                        System.out.println("Pressed a key");
                        JButton button = new JButton("hello!");
                        button.setSize(100,100);
                        */
                     JComponent input = (JComponent) loader.invoke_();
-                    if ( input == null ){
+                    if (input == null){
                         return;
                     }
                     synchronized(box){
@@ -377,7 +377,7 @@ public final class DrawArea extends JComponent {
         this.canMove = false;
     }
 
-    public void animate( Animation animation ){
+    public void animate(Animation animation){
         unanimate();
         currentAnimation = animation;
         currentAnimation.addDrawable(this);

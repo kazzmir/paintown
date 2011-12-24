@@ -4,9 +4,8 @@
         <gridbagconstraints
             gridx="0"
             gridy="0"
-            weightx="1"
+            weightx="0.9"
             weighty="1"
-            gridheight="1"
             fill="GridBagConstraints.BOTH"
             anchor="GridBagConstraints.NORTHWEST"
             />
@@ -15,18 +14,28 @@
         <gridbagconstraints
             gridx="1"
             gridy="0"
-            weightx="1"
+            weightx="0.1"
             weighty="1"
-            gridheight="1"
-            fill="GridBagConstraints.BOTH"
             anchor="GridBagConstraints.NORTHWEST"
             />
+        <label text="Sequence of animations to display" />
         <scrollpane>
             <list id="animations" />
         </scrollpane>
+        <combobox id="select" />
         <hbox>
             <button id="add" text="Add" />
             <button id="remove" text="remove" />
+        </hbox>
+        <hbox>
+            <button id="previous-frame" text="Previous Frame" />
+            <glue size="1" />
+            <button id="play" icon="animator/play.png" />
+            <glue size="1" />
+            <button id="stop" icon="animator/stop.png" />
+            <glue size="1" />
+            <button id="next-frame" text="Next Frame" />
+            <glue />
         </hbox>
     </vbox>
 </panel>

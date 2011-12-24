@@ -20,7 +20,13 @@ public final class Player{
     private JTextField nameField;
     private SwingEngine playerEditor;
     private CharacterStats character;
-    private Animation currentAnimation;
+
+    private class ObjectBox<Data>{
+        public ObjectBox(){}
+        public synchronized void set(Data x){ obj = x; }
+        public synchronized Data get(){ return obj; }
+        private Data obj;
+    }
 
     public SpecialPanel getEditor(){
         return new SpecialPanel((JPanel)playerEditor.getRootComponent(), nameField, character );
@@ -431,125 +437,112 @@ public final class Player{
             }
         });
 
-        /*
-        final Lambda1 editAnimation = new Lambda1(){
-            public Object invoke( Object i ){
-                int index = ((Integer) i).intValue();
-                Animation temp = character.getAnimation( index );
-                CharacterAnimation edit = new CharacterAnimation(character, temp, changeName);
-                animator.addNewTab(edit.getEditor(), temp.getName());
+        context.add((JComponent) contextEditor.getRootComponent(), filledConstraints());
+
+        comboPane.add(makeComboPane(character), filledConstraints());
+    }
+
+    private JPanel makeComboPane(final AnimatedObject object){
+        final SwingEngine context = new SwingEngine("animator/combo.xml");
+
+        final DrawArea area = new DrawArea(object.getDrawProperties(), new Lambda0(){
+            public Object invoke(){
+                return null;
+            }
+        });
+
+        final JPanel canvas = (JPanel) context.find("canvas");
+        canvas.add(area, filledConstraints());
+
+        final JComboBox animations = (JComboBox) context.find("select");
+        for (Animation animation: object.getAnimations()){
+            animations.addItem(animation);
+        }
+
+        final Vector<Animation> animationSequenceData = new Vector();
+        final JList animationSequence = (JList) context.find("animations");
+
+        final Lambda1 updateAnimations = new Lambda1(){
+            public Object invoke(Object objectSelf){
+                /* TODO: should we remove animations from the sequence
+                 * that were removed from the object? probably yes..
+                 */
+                animations.removeAllItems();
+                animations.addItem(null);
+                for (Animation animation: object.getAnimations()){
+                    animations.addItem(animation);
+                }
                 return null;
             }
         };
-        */
 
-        /*
-        final JList animList = (JList) contextEditor.find( "anims");
-        animList.setListData( character.getAnimations() );
+        object.addAnimationUpdate(updateAnimations);
 
-        animList.addMouseListener( new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
-                    int index = animList.locationToIndex(e.getPoint());
-                    editAnimation.invoke_( new Integer( index ) );
-                }
-            }
-        });
+        final JButton addAnimation = (JButton) context.find("add");
+        final JButton removeAnimation = (JButton) context.find("remove");
 
-        animList.setCellRenderer(new DefaultListCellRenderer() {
-            public Component getListCellRendererComponent(
-                JList list,
-                Object value,
-                int index,
-                boolean isSelected,
-                boolean cellHasFocus){
+        final ObjectBox<Iterator> animationIterator = new ObjectBox<Iterator>();
+        final ObjectBox<Animation> currentAnimation = new ObjectBox<Animation>();
 
-                setText(((Animation)value).getName());
-                setBackground(isSelected ? Color.gray : Color.white);
-                setForeground(isSelected ? Color.white : Color.black);
-                return this;
-                }
-        });
-
-        final JButton addAnimButton = (JButton) contextEditor.find( "add-anim" );
-
-        addAnimButton.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                Animation ani = new Animation();
-                new Thread( ani ).start();
-                character.addAnimation( ani );
-                editAnimation.invoke_( new Integer( character.getAnimations().size() - 1 ) );
-
-                character.updateAnimationListeners();
-
-                animList.setListData( character.getAnimations() );
-
-                //System.out.println(getToken().toString());
-            }
-        });
-
-        final JButton editAnimButton = (JButton) contextEditor.find( "edit-anim" );
-
-        editAnimButton.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                editAnimation.invoke_( new Integer( animList.getSelectedIndex() ) );
-            }
-        });
-
-        final JButton removeAnimButton = (JButton) contextEditor.find( "remove-anim" );
-
-        removeAnimButton.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                character.removeAnimation( animList.getSelectedIndex() );
-                animList.setListData( character.getAnimations() );
-            }
-        });
-        */
-
-        /*
-        final JPanel controls = (JPanel) playerEditor.find( "controls" );
-
-        final JButton displayToken = (JButton) controlEditor.find( "token" );
-
-        displayToken.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                final JDialog tempDiag = new JDialog();
-                tempDiag.setSize(400,400);
-                final JTextArea tempText = new JTextArea();
-                final JScrollPane tempPane = new JScrollPane(tempText);
-                tempDiag.add(tempPane);
-                tempText.setText( character.getToken().toString() );
-                tempDiag.show();
-            }
-        });
-
-        final JButton stopAnim = (JButton) controlEditor.find( "stop" );
-        stopAnim.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                _drawArea.unanimate();
-                if ( currentAnimation != null ){
-                    currentAnimation.stopRunning();
-                }
-            }
-        });
-
-        final JButton playAnim = (JButton) controlEditor.find( "play" );
-        playAnim.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
-                if( animList.getSelectedValue() != null ){
-                    if ( currentAnimation != null ){
-                        currentAnimation.stopRunning();
+        final Lambda1 nextAnimation = new Lambda1(){
+            public Object invoke(Object self){
+                if (!animationIterator.get().hasNext()){
+                    if (animationSequenceData.size() == 0){
+                        return null;
                     }
-                    currentAnimation = (Animation) animList.getSelectedValue();
-                    _drawArea.animate( currentAnimation );
-                    currentAnimation.startRunning();
+                    animationIterator.set(animationSequenceData.iterator());
+                }
+
+                if (animationIterator.get().hasNext()){
+                    if (currentAnimation.get() != null){
+                        currentAnimation.get().stopRunning();
+                    }
+                    currentAnimation.set((Animation) animationIterator.get().next());
+                    currentAnimation.get().startRunning();
+                    area.animate(currentAnimation.get());
+                }
+
+                return null;
+            }
+        };
+
+        addAnimation.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                Animation animation = (Animation) animations.getSelectedItem();
+                animationSequenceData.add(animation);
+                animationSequence.setListData(animationSequenceData);
+                animationIterator.set(animationSequenceData.iterator());
+                animation.addLoopNotifier(nextAnimation);
+            }
+        });
+
+        removeAnimation.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (animationSequence.getSelectedIndex() != -1){
+                    animationSequenceData.remove(animationSequence.getSelectedIndex());
+                    animationSequence.setListData(animationSequenceData);
+                    animationIterator.set(animationSequenceData.iterator());
                 }
             }
         });
 
-        controls.add((JComponent)controlEditor.getRootComponent());
-        */
+        final JButton play = (JButton) context.find("play");
+        final JButton stop = (JButton) context.find("stop");
 
+        play.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                if (animationSequenceData.size() > 0){
+                    Animation animation = animationSequenceData.get(0);
+                    animation.startRunning();
+                    area.animate(animation);
+                }
+            }
+        });
+
+        return (JPanel) context.getRootComponent();
+    }
+
+    private GridBagConstraints filledConstraints(){
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -557,23 +550,7 @@ public final class Player{
         constraints.weighty = 1;
         constraints.fill = GridBagConstraints.BOTH;
         constraints.anchor = GridBagConstraints.NORTHWEST;
-
-        context.add((JComponent) contextEditor.getRootComponent(), constraints);
-
-        constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-        comboPane.add(makeComboPane(), constraints);
-    }
-
-    private JPanel makeComboPane(){
-        final SwingEngine context = new SwingEngine("animator/combo.xml");
-
-        return (JPanel) context.getRootComponent();
+        return constraints;
     }
 
     private boolean okToRemoveAnimation(CharacterStats character){
