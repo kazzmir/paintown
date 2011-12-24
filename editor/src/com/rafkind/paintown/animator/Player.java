@@ -49,33 +49,13 @@ public final class Player{
         final JComponent comboPane = (JComponent) playerEditor.find("combo-pane");
 
         final JTabbedPane all = (JTabbedPane) playerEditor.find("all");
+
         all.setTitleAt(all.indexOfComponent(animationPane), "Animations");
         all.setTitleAt(all.indexOfComponent(propertiesPane), "Properties");
         all.setTitleAt(all.indexOfComponent(comboPane), "Combo Viewer");
-
+        
         //debugSwixml(playerEditor);
         //debugSwixml(contextEditor);
-
-        /*
-        final JSplitPane split = (JSplitPane) playerEditor.find("split");
-        SwingUtilities.invokeLater(new Runnable(){
-            public void run(){
-                / *
-                if ( split.getDividerLocation() != -1 ){
-                    split.setDividerLocation(0.6);
-                } else {
-                    SwingUtilities.invokeLater(this);
-                }
-                * /
-                if (split.getWidth() != 0){
-                    split.setDividerLocation(0.6);
-                } else {
-                    SwingUtilities.invokeLater(this);
-                }
-            }
-
-        });
-        */
 
         final JPanel context = (JPanel) playerEditor.find("context");
         final JTabbedPane animations = (JTabbedPane) playerEditor.find("animations");
@@ -152,43 +132,8 @@ public final class Player{
             animations.add(animation.getName(), new CharacterAnimation(character, animation, changeName, detacher));
         }
 
-        /*
-        // final JPanel canvas = (JPanel) playerEditor.find( "canvas" );
-
-        final DrawArea _drawArea = new DrawArea(new Lambda0(){
-            public Object invoke(){
-                / * yes, this should be null unless something better
-                 * can be put in the popup place
-                 * /
-                return null;
-            }
-        });
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 1;
-        constraints.weighty = 1;
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.anchor = GridBagConstraints.NORTHWEST;
-
-        // canvas.add(_drawArea, constraints);
-
-        final JLabel scaleNum = (JLabel) playerEditor.find( "scale-num" );
-        scaleNum.setText( "Scale: " + _drawArea.getScale() );
-        final JSlider scale = (JSlider) playerEditor.find( "scale" );
-        scale.setValue( (int)(_drawArea.getScale() * 5.0) );
-        scale.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                _drawArea.setScale( scale.getValue() / 5.0 );
-                scaleNum.setText( "Scale: " + _drawArea.getScale() );
-            }
-        });
-        */
-
-        nameField = (JTextField) contextEditor.find( "name" );
-
-        nameField.setText( character.getName() );
+        nameField = (JTextField) contextEditor.find("name");
+        nameField.setText(character.getName());
 
         nameField.getDocument().addDocumentListener(new DocumentListener(){
             public void changedUpdate(DocumentEvent e){
@@ -472,7 +417,6 @@ public final class Player{
                  * that were removed from the object? probably yes..
                  */
                 animations.removeAllItems();
-                animations.addItem(null);
                 for (Animation animation: object.getAnimations()){
                     animations.addItem(animation);
                 }
