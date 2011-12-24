@@ -27,6 +27,21 @@
             <button id="add" text="Add" />
             <button id="remove" text="remove" />
         </hbox>
+        <vbox>
+            <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="0.1"
+                weighty="0.1"
+                gridheight="1"
+                gridwidth="1"
+                fill="GridBagConstraints.NONE"
+                anchor="GridBagConstraints.NORTHWEST"
+                />
+            <label text="Tools" />
+            <combobox id="tools" />
+            <panel id="tool-area" layout="GridBagLayout" />
+        </vbox>
         <hbox>
             <button id="previous-frame" text="Previous Frame" />
             <glue size="1" />

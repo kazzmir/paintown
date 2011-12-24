@@ -202,13 +202,13 @@ public abstract class AnimationCanvas extends JPanel {
         final String chooseNone = "None";
         final String chooseBackground = "Background Color";
         final String chooseGrid = "Grid";
-        final String overlayAnimation = "Overlay Animation";
-        final String speedAndScale = "Speed and Scale";
+        final String chooseOverlayAnimation = "Overlay Animation";
+        final String chooseSpeedAndScale = "Speed and Scale";
         tools.addItem(chooseNone);
-        tools.addItem(speedAndScale);
+        tools.addItem(chooseSpeedAndScale);
         tools.addItem(chooseBackground);
         tools.addItem(chooseGrid);
-        tools.addItem(overlayAnimation);
+        tools.addItem(chooseOverlayAnimation);
 
         tools.addActionListener(new AbstractAction(){
             /* TODO: If there are too many tools then create them lazily so we
@@ -224,13 +224,13 @@ public abstract class AnimationCanvas extends JPanel {
                 if (name.equals(chooseNone)){
                     return toolNone;
                 }
-                if (name.equals(speedAndScale)){
+                if (name.equals(chooseSpeedAndScale)){
                     return toolSpeedAndScale;
                 }
                 if (name.equals(chooseBackground)){
                     return toolBackground;
                 }
-                if (name.equals(overlayAnimation)){
+                if (name.equals(chooseOverlayAnimation)){
                     return toolOverlay;
                 }
                 if (name.equals(chooseGrid)){

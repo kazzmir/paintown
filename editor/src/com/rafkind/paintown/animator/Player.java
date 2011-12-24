@@ -548,6 +548,126 @@ public final class Player{
             }
         });
 
+        final JComboBox tools = (JComboBox) context.find("tools");
+        final JPanel toolPane = (JPanel) context.find("tool-area");
+        
+        final String chooseNone = "None";
+        final String chooseBackground = "Background Color";
+        final String chooseGrid = "Grid";
+        final String chooseSpeedAndScale = "Speed and Scale";
+
+        tools.addItem(chooseNone);
+        tools.addItem(chooseSpeedAndScale);
+        tools.addItem(chooseBackground);
+        tools.addItem(chooseGrid);
+
+        tools.addActionListener(new AbstractAction(){
+            /* TODO: If there are too many tools then create them lazily so we
+             * don't spend too much time creating the animation pane on startup.
+             */
+            final JPanel toolNone = new JPanel();
+            final JPanel toolBackground = Tools.makeBackgroundTool(object, area);
+            final JPanel toolGrid = Tools.makeGridTool(area);
+            final JPanel toolSpeedAndScale = makeSpeedAndScale(animationSequenceData, area);
+
+            private JPanel getTool(String name){
+                if (name.equals(chooseNone)){
+                    return toolNone;
+                }
+                if (name.equals(chooseSpeedAndScale)){
+                    return toolSpeedAndScale;
+                }
+                if (name.equals(chooseBackground)){
+                    return toolBackground;
+                }
+                if (name.equals(chooseGrid)){
+                    return toolGrid;
+                }
+
+                throw new RuntimeException("No such tool with name '" + name + "'");
+            }
+
+            public void actionPerformed(ActionEvent event){
+                toolPane.removeAll();
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = 0;
+                constraints.gridy = 0;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.fill = GridBagConstraints.NONE;
+                constraints.anchor = GridBagConstraints.NORTHWEST;
+                toolPane.add(getTool((String) tools.getSelectedItem()), constraints);
+                toolPane.revalidate();
+            }
+        });
+
+        return (JPanel) context.getRootComponent();
+    }
+            
+    private JPanel makeSpeedAndScale(final Vector<Animation> animations, final DrawArea area){
+        final SwingEngine context = new SwingEngine("animator/tool-speed-scale.xml");
+        final JLabel animationSpeed = (JLabel) context.find("speed-num");
+        final JSlider speed = (JSlider) context.find("speed");
+        final double speedNumerator = 20.0;
+        if (animations.size() > 0){
+            animationSpeed.setText("Animation speed: " + animations.get(0).getAnimationSpeed());
+            speed.setValue((int) (speedNumerator / animations.get(0).getAnimationSpeed()));
+        } else {
+            speed.setValue(20);
+            animationSpeed.setText("Animation speed: 1");
+        }
+        speed.addChangeListener( new ChangeListener(){
+            public void stateChanged(ChangeEvent e){
+                for (Animation animation: animations){
+                    animation.setAnimationSpeed(speedNumerator / speed.getValue());
+                }
+                animationSpeed.setText("Animation speed: " + speed.getValue() / speedNumerator);
+            }
+        });
+
+        final JButton speedIncrease = (JButton) context.find("speed:increase");
+        final JButton speedDecrease = (JButton) context.find("speed:decrease");
+
+        speedIncrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(speed, +1);
+            }
+        });
+
+        speedDecrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(speed, -1);
+            }
+        });
+
+        // controls.add((JComponent)controlEditor.getRootComponent());
+
+        final JLabel scaleNum = (JLabel) context.find( "scale-num" );
+        scaleNum.setText( "Scale: " + area.getScale() );
+        final JSlider scale = (JSlider) context.find( "scale" );
+        scale.setValue( (int)(area.getScale() * 5.0) );
+        scale.addChangeListener( new ChangeListener(){
+            public void stateChanged( ChangeEvent e ){
+                area.setScale( scale.getValue() / 5.0 );
+                scaleNum.setText( "Scale: " + area.getScale() );
+            }
+        });
+
+        final JButton scaleIncrease = (JButton) context.find("scale:increase");
+        final JButton scaleDecrease = (JButton) context.find("scale:decrease");
+
+        scaleIncrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(scale, +1);
+            }
+        });
+
+        scaleDecrease.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                adjustSlider(scale, -1);
+            }
+        });
+
         return (JPanel) context.getRootComponent();
     }
 
@@ -586,5 +706,10 @@ public final class Player{
             Map.Entry entry = (Map.Entry) it.next();
             System.out.println( "Id: " + entry.getKey() + " = " + entry.getValue() );
         }
+    }
+    
+    /* TODO: move this to a utility class */
+    private void adjustSlider(JSlider slider, int much){
+        slider.setValue(slider.getValue() + much);
     }
 }
