@@ -215,8 +215,8 @@ public abstract class AnimationCanvas extends JPanel {
              * don't spend too much time creating the animation pane on startup.
              */
             final JPanel toolNone = new JPanel();
-            final JPanel toolBackground = makeBackgroundTool(object, area);
-            final JPanel toolGrid = makeGridTool(area);
+            final JPanel toolBackground = Tools.makeBackgroundTool(object, area);
+            final JPanel toolGrid = Tools.makeGridTool(area);
             final JPanel toolOverlay = makeOverlayAnimation(object, area);
             final JPanel toolSpeedAndScale = makeSpeedAndScale(animation, area);
 
@@ -435,39 +435,6 @@ public abstract class AnimationCanvas extends JPanel {
         back.addActionListener(change);
 
         return (JPanel) context.getRootComponent();
-    }
-
-    private JPanel makeGridTool(final DrawArea area){
-        final SwingEngine context = new SwingEngine("animator/animation-tools.xml");
-        final JSlider guide = (JSlider) context.find("guide");
-        guide.setValue(area.getGuideSize());
-        guide.addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent change){
-                area.setGuideSize(guide.getValue());
-                area.repaint();
-            }
-        });
-        return (JPanel) context.find("grid");
-    }
-
-    private JPanel makeBackgroundTool(final AnimatedObject character, final DrawArea area){
-        JPanel panel = new JPanel();
-        final JColorChooser color = new JColorChooser(area.backgroundColor());
-        color.setPreviewPanel(new JPanel());
-        panel.add(color);
-        color.getSelectionModel().addChangeListener(new ChangeListener(){
-            public void stateChanged(ChangeEvent change){
-                character.getDrawProperties().setBackgroundColor(color.getSelectionModel().getSelectedColor());
-                area.repaint();
-            }
-        });
-        character.getDrawProperties().addListener(new DrawPropertiesListener(){
-            public void updateBackgroundColor(Color newColor){
-                color.setColor(newColor);
-                area.repaint();
-            }
-        });
-        return panel;
     }
 
     private JComponent makeEvents(final Animation animation, final DrawArea area){
