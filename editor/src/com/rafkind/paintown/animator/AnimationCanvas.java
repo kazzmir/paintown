@@ -593,44 +593,11 @@ public abstract class AnimationCanvas extends JPanel {
                     int index = eventList.locationToIndex(e.getPoint());
                     AnimationEvent event = (AnimationEvent) animation.getEvents().elementAt(index);
                     doEvent.invoke_(event);
-                    /*
-                       JPanel editor = event.getEditor(animation);
-                       JPanel work = (JPanel) contextEditor.find("event-work");
-                       work.removeAll();
-                       GridBagConstraints constraints = new GridBagConstraints();
-                       constraints.gridx = 0;
-                       constraints.gridy = 0;
-                       constraints.weightx = 1;
-                       constraints.weighty = 1;
-                       constraints.fill = GridBagConstraints.BOTH;
-                       constraints.anchor = GridBagConstraints.NORTHWEST;
-                       work.add(editor, constraints);
-                       work.revalidate();
-                       */
-
-                    /*
-                       if ( editor != null ){
-                       JDialog dialog = new JDialog();
-                       dialog.setSize(editor.getSize());
-                       Point here = animEditor.getRootComponent().getLocation();
-                       SwingUtilities.convertPointToScreen(here, animEditor.getRootComponent());
-                       here.setLocation(here.getX() + animEditor.getRootComponent().getWidth() / 2, here.getY() + animEditor.getRootComponent().getHeight() / 2);
-                       dialog.setLocation(here);
-                       dialog.getContentPane().add(editor);
-                       dialog.addWindowStateListener(new WindowStateListener(){
-                       public void windowStateChanged(WindowEvent e){
-                       / * should use a list update event here * /
-                       eventList.setListData( animation.getEvents() );
-                       }
-                       });
-                       dialog.show();
-                       }
-                       */
                 }
             }
         });
 
-        eventList.setCellRenderer(new DefaultListCellRenderer() {
+        eventList.setCellRenderer(new DefaultListCellRenderer(){
             public Component getListCellRendererComponent(
                 JList list,
                 Object value,
@@ -646,7 +613,7 @@ public abstract class AnimationCanvas extends JPanel {
                     setForeground(isSelected ? Color.white : Color.black);
                 }
                 return this;
-                }
+            }
         });
 
         // Need to add events to this combobox from event factory

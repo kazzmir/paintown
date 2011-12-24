@@ -7,6 +7,10 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import java.io.*;
 
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
+import javax.activation.DataHandler;
+
 import org.swixml.SwingEngine;
 import javax.swing.filechooser.FileFilter;
 
@@ -484,6 +488,27 @@ public final class Player{
         final ObjectBox<Integer> currentAnimation = new ObjectBox<Integer>();
         currentAnimation.set(0);
 
+        animationSequence.setCellRenderer(new DefaultListCellRenderer(){
+            public Component getListCellRendererComponent(
+                JList list,
+                Object value,
+                int index,
+                boolean isSelected,
+                boolean cellHasFocus){
+
+                setText(((Animation)value).getName());
+                setBackground(isSelected ? Color.gray : Color.white);
+                if (currentAnimation.get() == index){
+                    setForeground(Color.blue);
+                } else {
+                    // setForeground(isSelected ? Color.white : Color.black);
+                    setForeground(Color.black);
+                }
+                return this;
+            }
+        });
+
+
         final Lambda1 nextAnimation = new Lambda1(){
             public Object invoke(Object self){
                 int index = currentAnimation.get();
@@ -497,11 +522,84 @@ public final class Player{
                     Animation animation = animationSequenceData.get(index);
                     animation.startRunning();
                     area.animate(animation);
+                    animationSequence.repaint();
                 }
 
                 return null;
             }
         };
+
+        animationSequence.setDragEnabled(true);
+        animationSequence.setDropMode(DropMode.ON);
+        animationSequence.setTransferHandler(new TransferHandler(){
+            private int toRemove = -1;
+
+            public boolean canImport(TransferHandler.TransferSupport support){
+                return true;
+            }
+
+            protected void exportDone(JComponent source, Transferable data, int action){
+                if (action == TransferHandler.MOVE){
+                    animationSequenceData.remove(toRemove);
+                    animationSequence.setListData(animationSequenceData);
+                }
+            }
+
+            public int getSourceActions(JComponent component){
+                return TransferHandler.MOVE;
+            }
+
+            protected Transferable createTransferable(JComponent component){
+                return new Transferable(){
+                    final Object index = animationSequence.getSelectedValue();
+                    public Object getTransferData(DataFlavor flavor){
+                        return index;
+                    }
+
+                    public DataFlavor[] getTransferDataFlavors(){
+                        try{
+                            DataFlavor[] flavors = new DataFlavor[1];
+                            flavors[0] = new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType);
+                            return flavors;
+                        } catch (ClassNotFoundException ex){
+                            System.out.println(ex);
+                            return null;
+                        }
+                    }
+
+                    public boolean isDataFlavorSupported(DataFlavor flavor){
+                        return true;
+                    }
+                };
+            }
+
+            public boolean importData(TransferSupport transfer) {
+                if (!canImport(transfer)) {
+                    return false;
+                }
+
+                try{
+                    JList.DropLocation location = (JList.DropLocation) transfer.getDropLocation();
+                    toRemove = animationSequence.getSelectedIndex();
+                    int index = location.getIndex();
+                    if (index < toRemove){
+                        toRemove += 1;
+                    }
+                    Animation animation = (Animation) transfer.getTransferable().getTransferData(new DataFlavor(DataFlavor.javaJVMLocalObjectMimeType));
+                    animationSequenceData.add(index, animation);
+                    animationSequence.setSelectedIndex(index);
+                } catch (ClassNotFoundException exception){
+                    System.err.println(exception);
+                } catch (java.awt.datatransfer.UnsupportedFlavorException exception){
+                    System.err.println(exception);
+                } catch (IOException exception){
+                    System.err.println(exception);
+                }
+
+                return true;
+            }
+
+        });
 
         addAnimation.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
