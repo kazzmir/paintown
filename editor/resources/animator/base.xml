@@ -10,6 +10,29 @@
             fill="GridBagConstraints.BOTH"
             anchor="GridBagConstraints.NORTHWEST"
             />
+        <panel layout="GridBagLayout" id="properties-pane">
+            <scrollpane layout="GridBagLayout">
+                <gridbagconstraints
+                    gridx="0"
+                    gridy="0"
+                    insets="1,1,1,1"
+                    weightx="1"
+                    weighty="1"
+                    fill="GridBagConstraints.BOTH"
+                    anchor="GridBagConstraints.NORTHWEST" />
+                <panel layout="GridBagLayout" id="context" border="MatteBorder(2,2,2,2,667A63)">
+                    <gridbagconstraints
+                        gridx="0"
+                        gridy="0"
+                        insets="1,1,1,1"
+                        weightx="1"
+                        weighty="1"
+                        fill="GridBagConstraints.BOTH"
+                        anchor="GridBagConstraints.NORTHWEST" />
+                </panel>
+
+            </scrollpane>
+        </panel>
 
         <panel layout="GridBagLayout" id="animation-pane">
             <vbox>
@@ -40,29 +63,8 @@
                 </tabbedpane>
             </vbox>
         </panel>
-        <panel layout="GridBagLayout" id="properties-pane">
-            <scrollpane layout="GridBagLayout">
-                <gridbagconstraints
-                    gridx="0"
-                    gridy="0"
-                    insets="1,1,1,1"
-                    weightx="1"
-                    weighty="1"
-                    fill="GridBagConstraints.BOTH"
-                    anchor="GridBagConstraints.NORTHWEST" />
-                <panel layout="GridBagLayout" id="context" border="MatteBorder(2,2,2,2,667A63)">
-                    <gridbagconstraints
-                        gridx="0"
-                        gridy="0"
-                        insets="1,1,1,1"
-                        weightx="1"
-                        weighty="1"
-                        fill="GridBagConstraints.BOTH"
-                        anchor="GridBagConstraints.NORTHWEST" />
-                </panel>
 
-            </scrollpane>
-        </panel>
         <panel layout="GridBagLayout" id="combo-pane" />
+
     </tabbedpane>
 </panel>
