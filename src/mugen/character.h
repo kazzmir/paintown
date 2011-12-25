@@ -1321,9 +1321,9 @@ protected:
 	/* Section [Size] */
 	
 	// Horizontal Scaling Factor
-	int xscale;
+	double xscale;
 	//Vertical scaling factor.
-	int yscale;
+	double yscale;
 	//      ;Player width (back, ground)
 	int groundback;
 	//   ;Player width (front, ground)
