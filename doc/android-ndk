@@ -22,6 +22,8 @@
     - cd /opt/android
     - ./build/tools/make-standalone-toolchain.sh --install-dir=/opt/android/android-toolchain --platform=android-9
     - mkdir -p /opt/android/android-toolchain/user/armeabi /opt/android/android-toolchain/user/armeabi-v7a
+    # Also copy the gnu stdc++ implementation in
+    - cp /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libgnustl_static.a /opt/android/android-toolchain/arm-linux-androideabi/lib/
   
   3. Install and/or compile requisite libraries:
       - Get freetype:

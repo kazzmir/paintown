@@ -304,12 +304,17 @@ def checkSDLMain(context):
     tmp = context.env.Clone()
     env = context.env
 
-    ok = context.TryLink("""
+    ok = False
+    if useAndroid():
+        ok = True
+    else:
+        ok = context.TryLink("""
 #include <SDL.h>
 int SDL_main(int argc, char ** argv){
     return 0;
 }
 """, ".c")
+
     if not ok:
         context.sconf.env = tmp
     else:
@@ -1147,12 +1152,12 @@ rsx
         # flags = ['-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-fstack-protector',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
         flags = ['-shared', '-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64']
         # linkflags = flags + ['-Wl,--allow-shlib-undefined']
-        linkflags = flags
+        linkflags = flags + ['-Wl,--no-undefined']
         # libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
         # Copy the static stdc++ from gnu-libstdc++
         # gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
         # libs = Split("""freetype2-static png SDL m log c jnigraphics supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
-        libs = Split("""freetype2-static png SDL m log c jnigraphics EGL GLESv2 GLESv1_CM z""")
+        libs = Split("""freetype2-static png SDL m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
