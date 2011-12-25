@@ -25,7 +25,6 @@ public abstract class AnimatedObject extends BasicObject {
 
 	public AnimatedObject(String name){
 		super(name);
-        this.drawProperties = drawProperties;
 	}
 
     public DrawProperties getDrawProperties(){

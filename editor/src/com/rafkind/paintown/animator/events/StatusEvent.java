@@ -38,9 +38,9 @@ public class StatusEvent extends AnimationEventNotifier implements AnimationEven
 		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JComboBox statusbox = (JComboBox) engine.find( "status" );
-		statusbox.addItem(new String("ground"));
-		statusbox.addItem(new String("jump"));
-		statusbox.addItem(new String("grab"));
+		statusbox.addItem("ground");
+		statusbox.addItem("jump");
+		statusbox.addItem("grab");
 		
 		statusbox.addActionListener( new ActionListener()
 		{

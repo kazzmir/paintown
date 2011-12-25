@@ -25,7 +25,7 @@ public final class Player{
     private SwingEngine playerEditor;
     private CharacterStats character;
 
-    private class ObjectBox<Data>{
+    private static class ObjectBox<Data>{
         public ObjectBox(){}
         public synchronized void set(Data x){ obj = x; }
         public synchronized Data get(){ return obj; }

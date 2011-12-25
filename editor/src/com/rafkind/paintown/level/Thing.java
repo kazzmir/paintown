@@ -19,10 +19,9 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Thing{
-
+public abstract class Thing {
 	private int x, y;
-        private int id;
+    private int id;
 	private int width, height;
 	private String path;
 	private BufferedImage main;
@@ -32,39 +31,39 @@ public abstract class Thing{
 
 	private List listeners;
 
-	public Thing( Token token ) throws LoadException {
-		Token coords = token.findToken( "coords" );
-		if ( coords != null ){
-			x = coords.readInt( 0 );
-			y = coords.readInt( 1 );
-		}
+    public Thing( Token token ) throws LoadException {
+        Token coords = token.findToken( "coords" );
+        if ( coords != null ){
+            x = coords.readInt( 0 );
+            y = coords.readInt( 1 );
+        }
 
-                Token tid = token.findToken("id");
-                if (tid != null){
-                    id = tid.readInt(0);
-                    Level.checkId(id);
-                } else {
-                    id = Level.nextId();
-                }
+        Token tid = token.findToken("id");
+        if (tid != null){
+            id = tid.readInt(0);
+            Level.checkId(id);
+        } else {
+            id = Level.nextId();
+        }
 
-		Token tpath = token.findToken( "path" );
-		if ( tpath != null ){
-			setPath( tpath.readString( 0 ) );
-			main = loadImage( Editor.dataPath( getPath() ), this );
-		}
+        Token tpath = token.findToken( "path" );
+        if ( tpath != null ){
+            setPath( tpath.readString( 0 ) );
+            main = loadImage( Editor.dataPath( getPath() ), this );
+        }
 
-		listeners = new ArrayList();
-	}
+        listeners = new ArrayList();
+    }
 
-	public Thing( Thing copy ){
-		listeners = new ArrayList();
-		setX( copy.getX() );
-		setY( copy.getY() );
-                setId(copy.getId());
-		setMain( copy.getMain() );
-		setPath( copy.getPath() );
-		setName( copy.getName() );
-	}
+    public Thing( Thing copy ){
+        listeners = new ArrayList();
+        setX( copy.getX() );
+        setY( copy.getY() );
+        setId(copy.getId());
+        setMain( copy.getMain() );
+        setPath( copy.getPath() );
+        setName( copy.getName() );
+    }
 
 	private void setMain( BufferedImage image ){
 		main = image;
@@ -207,4 +206,8 @@ public abstract class Thing{
 	public boolean equals( Object t ){
 		return this == t;
 	}
+
+    public int hashCode(){
+        return toToken().toString().hashCode();
+    }
 }

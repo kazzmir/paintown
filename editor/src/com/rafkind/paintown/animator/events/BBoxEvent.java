@@ -14,7 +14,7 @@ import org.swixml.SwingEngine;
 import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
 
 public class BBoxEvent extends AnimationEventNotifier implements AnimationEvent {
-    private class Box{
+    private static class Box{
         public Box(int x1, int y1, int x2, int y2){
             this.x1 = x1;
             this.x2 = x2;

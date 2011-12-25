@@ -36,7 +36,7 @@ public abstract class AnimationCanvas extends JPanel {
     
     protected abstract JComponent makeProperties(AnimatedObject object, Animation animation, Lambda2 changeName);
 
-    private class ObjectBox<Data>{
+    private static class ObjectBox<Data>{
         public ObjectBox(){}
         public synchronized void set(Data x){ obj = x; }
         public synchronized Data get(){ return obj; }
@@ -143,8 +143,6 @@ public abstract class AnimationCanvas extends JPanel {
         final SwingEngine contextEditor = animEditor;
 
         SwingEngine controlEditor = new SwingEngine("animator/controls.xml");
-
-        JPanel controls = (JPanel) animEditor.find( "controls" );
 
         JButton displayToken = (JButton) controlEditor.find( "token" );
 
@@ -283,9 +281,6 @@ public abstract class AnimationCanvas extends JPanel {
                 adjustSlider(speed, -1);
             }
         });
-
-        // controls.add((JComponent)controlEditor.getRootComponent());
-
 
         final JLabel scaleNum = (JLabel) context.find( "scale-num" );
         scaleNum.setText( "Scale: " + area.getScale() );
@@ -439,7 +434,7 @@ public abstract class AnimationCanvas extends JPanel {
 
     private JComponent makeEvents(final Animation animation, final DrawArea area){
         final SwingEngine contextEditor = new SwingEngine("animator/animation-events.xml");
-        final JScrollPane eventScroll = (JScrollPane) contextEditor.find("event-scroll");
+        // final JScrollPane eventScroll = (JScrollPane) contextEditor.find("event-scroll");
         // eventScroll.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 
         final JList eventList = (JList) contextEditor.find("events");

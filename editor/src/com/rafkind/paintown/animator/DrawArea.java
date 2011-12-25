@@ -26,7 +26,6 @@ public final class DrawArea extends JComponent {
     /* start background as black */
     private DrawProperties drawProperties;
 
-    private AnimationEvent currentEvent;
     private Animation currentAnimation;
     private Animation overlayAnimation;
     /* true for behind, false for in front */
@@ -387,9 +386,5 @@ public final class DrawArea extends JComponent {
         if (currentAnimation != null){
             currentAnimation.removeDrawable(this);
         }
-    }
-
-    public AnimationEvent getCurrentEvent(){
-        return currentEvent;
     }
 }

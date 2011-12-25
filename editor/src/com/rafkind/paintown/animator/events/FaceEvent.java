@@ -38,7 +38,7 @@ public class FaceEvent extends AnimationEventNotifier implements AnimationEvent 
 		((JPanel)engine.getRootComponent()).setSize(200,50);
 		
 		final JComboBox facebox = (JComboBox) engine.find( "face" );
-		facebox.addItem(new String("reverse"));
+		facebox.addItem("reverse");
 		
 		facebox.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent actionEvent){

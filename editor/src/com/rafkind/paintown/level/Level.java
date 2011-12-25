@@ -70,7 +70,7 @@ public class Level{
         nextBlockId = 0;
     }
 
-    private class Panel{
+    private static class Panel{
         public String name;
         public Image image;
         public Panel( String name, Image i ){

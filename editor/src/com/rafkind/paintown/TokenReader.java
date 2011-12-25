@@ -12,7 +12,7 @@ public class TokenReader{
 	public TokenReader( File f ) throws LoadException {
 		try{
 			tokens = new ArrayList();
-			BufferedReader reader = new BufferedReader( new FileReader( f ) );
+			BufferedReader reader = new BufferedReader(new FileReader(f));
 	
 			Token current = null;
 			int line = 1;
@@ -177,6 +177,8 @@ public class TokenReader{
 			System.out.println( f1 );
 			System.out.println( f1.findToken( "background" ) );
 			*/
+
+            reader.close();
 
 		} catch ( IOException ie ){
 			throw new LoadException( "Could not read file", ie );
