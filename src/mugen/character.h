@@ -1002,7 +1002,7 @@ public:
         const std::vector<MugenArea> getDefenseBoxes() const;
 
         /* paused from an attack */
-        virtual bool isPaused();
+        virtual bool isPaused() const;
         /* time left in the hitpause */
         virtual int pauseTime() const;
 

@@ -37,6 +37,7 @@ name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
+ignoreHitPauseValue(false),
 state(state){
 }
 
@@ -46,6 +47,7 @@ name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
+ignoreHitPauseValue(false),
 state(state),
 spritePriority(0){
     class Walker: public Ast::Walker {
@@ -69,6 +71,8 @@ spritePriority(0){
                 controller.debug = true;
             } else if (simple == "sprpriority"){
                 controller.spritePriority = Compiler::compile(simple.getValue());
+            } else if (simple == "ignorehitpause"){
+                simple.view() >> controller.ignoreHitPauseValue;
             }
         }
     };
@@ -82,6 +86,7 @@ name(you.name),
 debug(you.debug),
 persistent(you.persistent),
 currentPersistent(you.currentPersistent),
+ignoreHitPauseValue(you.ignoreHitPauseValue),
 state(you.state),
 spritePriority(copy(you.spritePriority)){
     for (map<int, vector<Compiler::Value*> >::const_iterator it = you.triggers.begin(); it != you.triggers.end(); it++){
@@ -149,6 +154,10 @@ bool evaluateBool(const Value & value, const Environment & env, double default_)
    
 void StateController::resetPersistent(){
     currentPersistent = persistent;
+}
+    
+bool StateController::ignoreHitPause() const {
+    return ignoreHitPauseValue;
 }
 
 bool StateController::persistentOk(){
@@ -241,6 +250,11 @@ vector<int> StateController::sortTriggers() const {
 }
 
 bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const vector<string> & commands) const {
+
+    if (!ignoreHitPause() && character.isPaused()){
+        return false;
+    }
+
     if (triggers.find(-1) != triggers.end()){
         vector<Compiler::Value*> values = triggers.find(-1)->second;
         /* if the triggerall fails then no triggers will work */
@@ -3763,8 +3777,6 @@ public:
                 } else if (simple == "ownpal"){
                     /* TODO */
                 } else if (simple == "removeongethit"){
-                    /* TODO */
-                } else if (simple == "ignorehitpause"){
                     /* TODO */
                 } else if (simple == "trans"){
                     /* TODO */

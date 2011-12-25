@@ -81,7 +81,7 @@ public:
     virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
 
     /* paused from an attack */
-    virtual bool isPaused() = 0;
+    virtual bool isPaused() const = 0;
     virtual Physics::Type getCurrentPhysics() const = 0;
     virtual double getGravity() const = 0;
     virtual void setYVelocity(double y) = 0;

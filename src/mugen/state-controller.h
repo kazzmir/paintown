@@ -173,6 +173,8 @@ public:
     virtual void resetPersistent();
     virtual bool persistentOk();
 
+    virtual bool ignoreHitPause() const;
+
     virtual ~StateController();
 
 protected:
@@ -192,6 +194,8 @@ protected:
     int persistent;
     /* countdown of persistent level */
     int currentPersistent;
+
+    bool ignoreHitPauseValue;
 
     /* state number */
     int state;

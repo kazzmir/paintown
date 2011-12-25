@@ -2287,7 +2287,7 @@ vector<string> Character::doInput(const Mugen::Stage & stage){
     return behavior->currentCommands(stage, this, commands, getFacing() == FacingRight);
 }
 
-bool Character::isPaused(){
+bool Character::isPaused() const {
     return hitState.shakeTime > 0;
 }
 
@@ -2394,77 +2394,65 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
         }
     }
 
-    // if (hitState.shakeTime > 0 && moveType != Move::Hit){
-    if (hitState.shakeTime > 0){
-        hitState.shakeTime -= 1;
-        return;
-    }
-
-    /*
-    if (nextCombo > 0){
-        nextCombo -= 1;
-        if (nextCombo <= 0){
-            combo = 0;
-        }
-    }
-    */
-
-    MugenAnimation * animation = getCurrentAnimation();
-    if (animation != NULL){
-	/* Check debug state */
-	if (debug){
-	    if (!animation->showingDefense()){
-		animation->toggleDefense();
-	    }
-	    if (!animation->showingOffense()){
-		animation->toggleOffense();
-	    }
-	} else {
-	    if (animation->showingDefense()){
-		animation->toggleDefense();
-	    }
-	    if (animation->showingOffense()){
-		animation->toggleOffense();
-	    }
-	}
-        animation->logic();
-    }
-
-    if (hitState.hitTime > -1){
-        hitState.hitTime -= 1;
-    }
-
-    /* if shakeTime is non-zero should we update stateTime? */
-    stateTime += 1;
-    
     /* active is the current set of commands */
     vector<string> active = doInput(*stage);
 
     recordCommands(active);
 
-    /* always run through the negative states */
+    // if (hitState.shakeTime > 0 && moveType != Move::Hit){
+    if (hitState.shakeTime > 0){
+        hitState.shakeTime -= 1;
+    } else {
+        /* Stuff to skip if the player is shaking/paused */
+        MugenAnimation * animation = getCurrentAnimation();
+        if (animation != NULL){
+            /* Check debug state */
+            if (debug){
+                if (!animation->showingDefense()){
+                    animation->toggleDefense();
+                }
+                if (!animation->showingOffense()){
+                    animation->toggleOffense();
+                }
+            } else {
+                if (animation->showingDefense()){
+                    animation->toggleDefense();
+                }
+                if (animation->showingOffense()){
+                    animation->toggleOffense();
+                }
+            }
+            animation->logic();
+        }
 
-    blocking = holdingBlock(active);
+        if (hitState.hitTime > -1){
+            hitState.hitTime -= 1;
+        }
 
-    if (needToGuard){
-        needToGuard = false;
-        /* misnamed state, but this is the first guard state and will
-         * eventually transition to stand/crouch/air guard
-         */
-        guarding = true;
-        changeState(*stage, Mugen::StartGuardStand, active);
+        /* if shakeTime is non-zero should we update stateTime? */
+        stateTime += 1;
+
+        blocking = holdingBlock(active);
+
+        if (needToGuard){
+            needToGuard = false;
+            /* misnamed state, but this is the first guard state and will
+             * eventually transition to stand/crouch/air guard
+             */
+            guarding = true;
+            changeState(*stage, Mugen::StartGuardStand, active);
+        }
+
     }
 
+    /* Check the states even if we are paused. If a controller has 'ignorehitpause = 1'
+     * then it will might still activate.
+     */
+    /* always run through the negative states */
     doStates(*stage, active, -3);
     doStates(*stage, active, -2);
     doStates(*stage, active, -1);
     doStates(*stage, active, currentState);
-
-    /*
-    while (doStates(active, currentState)){
-        / * empty * /
-    }
-    */
 
     /*! do regeneration if set */
     if (regenerateHealth){
