@@ -2428,10 +2428,7 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
         animation->logic();
     }
 
-    /* redundant for now */
-    if (hitState.shakeTime > 0){
-        hitState.shakeTime -= 1;
-    } else if (hitState.hitTime > -1){
+    if (hitState.hitTime > -1){
         hitState.hitTime -= 1;
     }
 
@@ -2573,6 +2570,10 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
             case 1: setFacing(bind.bound->getFacing()); break;
         }
     } else {
+        /* TODO: ensure that if shaketime > 0 that binding should still happen */
+        if (hitState.shakeTime > 0){
+            return;
+        }
 
         if (getCurrentPhysics() == Mugen::Physics::Air){
             /* gravity */
@@ -2612,6 +2613,11 @@ Object * Character::getTargetId(int id) const {
     }
     return NULL;
 }
+        
+void Character::didHitGuarded(Object * enemy, Mugen::Stage & stage){
+    /* TODO */
+    hitState.shakeTime = getHit().guardPause.player1;
+}
 
 void Character::didHit(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().pause.player1;
@@ -2636,6 +2642,7 @@ void Character::didHit(Object * enemy, Mugen::Stage & stage){
 
     hitCount += 1;
 
+    /* Mainly used for AI so it can tell if a hit succeeded and thus learn which moves to do */
     if (behavior != NULL){
         behavior->hit(enemy);
     }
@@ -3097,6 +3104,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         int x = getX() - cameraX + drawOffset.x;
         int y = getRY() - cameraY + drawOffset.y;
 
+        /* shake, but only if we are the one being hit */
         if (isPaused() && moveType == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;
         }
@@ -3142,6 +3150,8 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", hit.isEnabled());
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Control %d", hasControl());
+        y += font.getHeight();
+        render->addMessage(font, x, y, color, backgroundColor, "Pause time %d", getHitState().shakeTime);
         y += font.getHeight();
         if (getMoveType() == Move::Hit){
             render->addMessage(font, x, y, color, backgroundColor, "HitShake %d HitTime %d", getHitState().shakeTime, getHitState().hitTime);
@@ -3321,6 +3331,7 @@ void Character::guarded(Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
     hitState.guarded = true;
     lastTicket = enemy->getTicket();
+    hitState.shakeTime = hit.guardPause.player2;
     enemy->addPower(hit.getPower.guarded);
     /* the character will transition to the guard state when he next acts */
     needToGuard = true;

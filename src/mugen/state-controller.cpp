@@ -1333,24 +1333,12 @@ public:
 
             Value player1;
             Value player2;
-        } pause;
+        } pause, guardPause;
 
         /* guard.pausetime = p1_pausetime, p2_shaketime (int, int)
          * Similar to the "pausetime" parameter, these are the times to pause each player if the hit was guarded. Defaults to the same values as the "pausetime" parameter if omitted.
          */
-        struct GuardPauseTime{
-            GuardPauseTime(){
-            }
-
-            GuardPauseTime(const GuardPauseTime & you):
-            player1(copy(you.player1)),
-            player2(copy(you.player2)){
-            }
-
-            Value player1;
-            Value player2;
-        } guardPause;
-
+        
         /* sparkno = action_no (int)
          * This is the action number of the spark to display if the hit is successful. To play a spark out of the player's .AIR file, precede the action number with an S, e.g. "sparkno = S10". Defaults to the value set in the player variables if omitted.
          */
@@ -2217,7 +2205,10 @@ public:
         /* set all the hitdef crap */
         FullEnvironment env(stage, guy, commands);
         HitDefinition & his = guy.getHit();
+        his.pause.player1 = evaluateNumberLocal(hit.pause.player1, 0);
         his.pause.player2 = evaluateNumberLocal(hit.pause.player2, 0);
+        his.guardPause.player1 = evaluateNumberLocal(hit.guardPause.player1, his.pause.player1);
+        his.guardPause.player2 = evaluateNumberLocal(hit.guardPause.player2, his.pause.player2);
         his.groundType = hit.groundType;
         his.airType = hit.airType;
 

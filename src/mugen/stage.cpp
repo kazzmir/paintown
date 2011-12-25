@@ -833,6 +833,7 @@ void Mugen::Stage::physics(Object * mugen){
                         addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
                         playSound(mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
+                    mugen->didHitGuarded(enemy, *this);
                     enemy->guarded(mugen, mugen->getHit());
                     /*
                        vector<string> empty;

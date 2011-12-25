@@ -217,12 +217,7 @@ struct HitDefinition{
             player1(0), player2(0){}
         int player1;
         int player2;
-    } pause;
-
-    struct GuardPauseTime{
-        int player1;
-        int player2;
-    } guardPause;
+    } pause, guardPause;
 
     int spark;
     int guardSpark;
@@ -974,6 +969,9 @@ public:
 
         /* `this' hit `enemy' */
         void didHit(Object * enemy, Mugen::Stage & stage);
+        
+        /* `this' object hit `enemy' but the enemy guarded it (so not really a hit) */
+        void didHitGuarded(Object * enemy, Mugen::Stage & stage);
 
         /* `enemy' hit `this' with hitdef `hit' */
         void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
