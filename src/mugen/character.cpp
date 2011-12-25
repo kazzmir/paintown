@@ -598,6 +598,8 @@ void Character::initialize(){
     defenseMultiplier = 1;
     attackMultiplier = 1;
     lieDownTime = 0;
+    xscale = 1;
+    yscale = 1;
     debug = false;
     has_control = true;
     airjumpnum = 0;
@@ -2259,7 +2261,7 @@ const MugenSprite * Character::getCurrentFrame() const {
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
     if (getCurrentAnimation() != NULL){
-        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work);
+        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work, xscale, yscale);
     }
 }
 

@@ -449,5 +449,5 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
 }
 
 void MugenSprite::draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
-    drawReal(bmp, xaxis, yaxis, this->x, this->y, where, effects);
+    drawReal(bmp, xaxis, yaxis, this->x * effects.scalex, this->y * effects.scaley, where, effects);
 }
