@@ -1,5 +1,9 @@
 #include "../common/init.h"
 #include "util/debug.h"
+#include "util/bitmap.h"
+#include "util/input/keyboard.h"
+#include "util/input/input-source.h"
+#include "util/input/input-manager.h"
 #include <stdlib.h>
 
 #include <string>
@@ -7,12 +11,32 @@
 using std::string;
 
 static void run(string path){
+    Graphics::Bitmap screen(Graphics::getScreenBuffer());
+    Graphics::Bitmap image(path);
+
+    screen.clear();
+
+    /* Plain unstretched image */
+    image.Blit(0, 0, screen);
+
+    /* Using normal stretch routines */
+    Graphics::Bitmap stretch1(screen, image.getWidth() + 50, 0, image.getWidth() * 2, image.getHeight() * 2);
+    image.Stretch(stretch1);
+
+    /* Using hq2x */
+    Graphics::Bitmap stretch2(screen, image.getWidth() + 50, stretch1.getHeight() + 20, image.getWidth() * 2, image.getHeight() * 2);
+    image.SmoothStretch(stretch2);
+
+    /* done */
+    screen.BlitToScreen();
+    InputManager::waitForKeys(Keyboard::Key_SPACE, Keyboard::Key_ESC, InputSource());
 }
 
 int main(int argc, char ** argv){
     Screen::realInit();
     atexit(Screen::realFinish);
     Global::setDebug(0);
+    InputManager input;
     if (argc > 1){
         run(argv[1]);
     } else {
