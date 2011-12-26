@@ -1,0 +1,22 @@
+Import('use')
+
+testEnv = use.Clone()
+testEnv.VariantDir('test', '../../')
+testEnv.VariantDir('common', '../common')
+
+source = Split("""
+common/init.cpp
+common/timer.cpp
+test/configuration.cpp
+test/globals.cpp
+test/factory/font_factory.cpp
+test/factory/font_render.cpp
+""")
+
+hq2x_source = Split("""
+hq2x.cpp
+""")
+
+x = []
+x.append(testEnv.Program('hq2x', hq2x_source + source))
+Return('x')
