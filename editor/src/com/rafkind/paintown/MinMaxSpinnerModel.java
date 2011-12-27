@@ -8,7 +8,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 
-class MinMaxSpinnerModel implements SpinnerModel {
+public class MinMaxSpinnerModel implements SpinnerModel {
 	List listeners = new ArrayList();
 	int value;
 	int min;

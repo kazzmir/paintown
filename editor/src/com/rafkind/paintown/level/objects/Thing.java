@@ -1,12 +1,12 @@
-package com.rafkind.paintown.level;
+package com.rafkind.paintown.level.objects;
 
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
-import com.rafkind.paintown.PropertyEditor;
+import com.rafkind.paintown.level.PropertyEditor;
 import com.rafkind.paintown.Lambda1;
-import com.rafkind.paintown.Editor;
+import com.rafkind.paintown.level.Editor;
 
 import java.io.*;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package com.rafkind.paintown.level;
+package com.rafkind.paintown.level.objects;
 
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;

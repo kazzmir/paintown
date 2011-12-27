@@ -1,4 +1,4 @@
-package com.rafkind.paintown;
+package com.rafkind.paintown.level;
 
 import java.awt.event.*;
 import javax.swing.*;
@@ -6,10 +6,13 @@ import javax.swing.event.*;
 
 import java.util.Iterator;
 
-import com.rafkind.paintown.level.Item;
-import com.rafkind.paintown.level.Level;
-import com.rafkind.paintown.level.Block;
-import com.rafkind.paintown.level.Stimulation;
+import com.rafkind.paintown.level.objects.Item;
+import com.rafkind.paintown.level.objects.Level;
+import com.rafkind.paintown.level.objects.Block;
+import com.rafkind.paintown.level.objects.Stimulation;
+import com.rafkind.paintown.Lambda0;
+import com.rafkind.paintown.Lambda1;
+import com.rafkind.paintown.MinMaxSpinnerModel;
 
 import org.swixml.SwingEngine;
 

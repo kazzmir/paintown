@@ -1,4 +1,4 @@
-package com.rafkind.paintown;
+package com.rafkind.paintown.level;
 
 import java.util.HashMap;
 import java.util.List;

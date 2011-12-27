@@ -1,4 +1,4 @@
-package com.rafkind.paintown.level;
+package com.rafkind.paintown.level.objects;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -11,11 +11,11 @@ import java.util.Iterator;
 
 import com.rafkind.paintown.exception.LoadException;
 import com.rafkind.paintown.Token;
-import com.rafkind.paintown.PropertyEditor;
-import com.rafkind.paintown.CatEditor;
+import com.rafkind.paintown.level.PropertyEditor;
+import com.rafkind.paintown.level.CatEditor;
 import com.rafkind.paintown.TokenReader;
 import com.rafkind.paintown.MaskedImage;
-import com.rafkind.paintown.Editor;
+import com.rafkind.paintown.level.Editor;
 
 public class Cat extends Thing {
 

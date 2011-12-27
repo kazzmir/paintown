@@ -125,7 +125,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 
     levelEditor.addActionListener(new swing.AbstractAction(){
       override def actionPerformed(event:awt.event.ActionEvent){
-        com.rafkind.paintown.Editor2.main(new Array[String](0));
+        com.rafkind.paintown.level.Editor2.main(new Array[String](0));
       }
     });
 

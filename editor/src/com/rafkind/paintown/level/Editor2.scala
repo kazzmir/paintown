@@ -1,7 +1,7 @@
-package com.rafkind.paintown;
+package com.rafkind.paintown.level
 
 import java.io._
-import java.util.HashMap;
+import java.util.HashMap
 import javax.swing._
 import java.awt._
 import java.awt.image._
@@ -13,11 +13,19 @@ import org.swixml.SwingEngine
 import scala.collection.immutable.List
 
 import com.rafkind.paintown.exception.LoadException
-import com.rafkind.paintown.level.Level
-import com.rafkind.paintown.level.Block
-import com.rafkind.paintown.level.Thing
-import com.rafkind.paintown.level.Character
-import com.rafkind.paintown.level.Item
+import com.rafkind.paintown.level.objects.Level
+import com.rafkind.paintown.level.objects.Block
+import com.rafkind.paintown.level.objects.Thing
+import com.rafkind.paintown.level.objects.Character
+import com.rafkind.paintown.level.objects.Item
+import com.rafkind.paintown.Closer
+import com.rafkind.paintown.Data
+import com.rafkind.paintown.Lambda0
+import com.rafkind.paintown.Lambda1
+import com.rafkind.paintown.Lambda2
+import com.rafkind.paintown.Token
+import com.rafkind.paintown.TokenReader
+import com.rafkind.paintown.RelativeFileChooser
 import javax.swing.filechooser.FileFilter
 
 class NewEditor extends JFrame("Paintown Editor"){
