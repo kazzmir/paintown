@@ -24,7 +24,7 @@ static void run(string path){
     image.Stretch(stretch1);
 
     /* Using hq2x */
-    Graphics::Bitmap stretch2(screen, image.getWidth() + 50, stretch1.getHeight() + 20, image.getWidth() * 2, image.getHeight() * 2);
+    Graphics::Bitmap stretch2(screen, image.getWidth() + 50 + stretch1.getWidth() + 50, 0, image.getWidth() * 2, image.getHeight() * 2);
     image.SmoothStretch(stretch2);
 
     /* done */
