@@ -63,6 +63,8 @@ public abstract class AnimatedObject extends BasicObject {
 	}
 
 	public void addAnimation(Animation animation){
+        /* Make the animation start at the frame so it shows something immediately */
+        animation.nextFrame();
 		animations.add(animation);
 		updateAnimationListeners();
 	}

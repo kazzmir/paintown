@@ -153,19 +153,19 @@ public abstract class AnimationCanvas extends JPanel {
                 final JTextArea tempText = new JTextArea();
                 final JScrollPane tempPane = new JScrollPane(tempText);
                 tempDiag.add(tempPane);
-                tempText.setText( animation.getToken().toString());
+                tempText.setText(animation.getToken().toString());
                 tempDiag.show();
             }
         });
 
-        JButton stopAnim = (JButton) animEditor.find( "stop" );
+        JButton stopAnim = (JButton) animEditor.find("stop");
         stopAnim.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
+            public void actionPerformed(ActionEvent event){
                 animation.stopRunning();
             }
         });
 
-        JButton playAnim = (JButton) animEditor.find( "play" );
+        JButton playAnim = (JButton) animEditor.find("play");
         playAnim.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
                 animation.startRunning();
