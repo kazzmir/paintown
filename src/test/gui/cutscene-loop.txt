@@ -1,0 +1,19 @@
+(cutscene 
+ ; Name of cutscene
+ (name "intro")
+ (scene
+  (fade 
+   (in (color 255 0 0) (time 50)) 
+   (out (color 0 0 0) (time 50)))
+  (anim
+   (depth background bottom)
+   (image 0 "menu/paintown.png")
+   (velocity 0 0)
+   (frame (alpha 255) (image 0) (time 50))
+   (loop 1
+     (frame (alpha 128) (image 0) (time 50))
+     (loop 1
+      (frame (alpha 64) (image 0) (time 50))
+      (frame (alpha 32) (image 0) (time 50))))
+   )
+   ))
