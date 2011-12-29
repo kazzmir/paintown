@@ -1,0 +1,28 @@
+(cutscene 
+ ; Name of cutscene
+ (name "intro")
+ (scene
+  ; Shows this current scene for 5000 ticks
+  ; (time 600)
+  (fade 
+   (in (color 0 0 0) (time 50)) 
+   (out (color 0 0 0) (time 50))
+  )
+  (anim
+   (depth background bottom)
+   (image 0 "menu/paintown.png")
+   (velocity -.001 0)
+   (frame (alpha 255) (image 0) (time 500))
+  )
+  (anim
+   (depth background middle)
+   (image 0 "menu/paintown.png")
+   (velocity -.001 -.001)
+   (frame (alpha 40) (image 0) (time 500))
+  )
+  (anim
+   (depth background top)
+   (image 0 "menu/paintown.png")
+   (velocity -.001 0.1)
+   (frame (alpha 40) (image 0) (time 500))
+  )))
