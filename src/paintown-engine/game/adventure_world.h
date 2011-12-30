@@ -77,6 +77,7 @@ public:
 	}
         
         virtual void begin();
+        virtual void end();
 
 	virtual void act();
 	virtual void draw( Graphics::Bitmap * work );

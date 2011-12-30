@@ -685,6 +685,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         Util::standardLoop(logic, drawer);
         if (!state.menu_quit){
             drawer.showScreenshots(getScreen());
+            world.end();
         }
     } catch (const LoseException & lose){
         fadeOut(getScreen(), "Game over");

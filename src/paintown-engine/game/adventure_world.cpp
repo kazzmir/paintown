@@ -181,7 +181,12 @@ Script::Engine * AdventureWorld::getEngine() const {
 }
 
 void AdventureWorld::begin(){
+    scene->playIntro();
     scene->startMusic();
+}
+
+void AdventureWorld::end(){
+    scene->playEnding();
 }
     
 void AdventureWorld::trackPlayer(Paintown::Player * player){

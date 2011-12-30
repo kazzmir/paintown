@@ -40,6 +40,11 @@ public:
          */
         virtual void begin() = 0;
 
+        /* Called when the level is done playing but only if the player beat the level.
+         * If they ran out of lives or died then it won't be called
+         */
+        virtual void end() = 0;
+
 	inline int getQuake() const {
 		return quake_time;
 	}

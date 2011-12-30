@@ -22,6 +22,7 @@
 #include "../trigger/trigger.h"
 #include "cacher.h"
 #include "util/exceptions/shutdown_exception.h"
+#include "util/gui/cutscene.h"
 
 using namespace std;
 
@@ -100,6 +101,14 @@ hasMusic(false){
                 string scriptPath;
                 tok->view() >> kind >> scriptPath;
                 Script::newEngine(kind, Filesystem::RelativePath(scriptPath));
+            } else if (*tok == "intro"){
+                string path;
+                tok->view() >> path;
+                intro = Filesystem::RelativePath(path);
+            } else if (*tok == "ending"){
+                string path;
+                tok->view() >> path;
+                ending = Filesystem::RelativePath(path);
             } else if ( *tok == "atmosphere" ){
                 TokenView atmosphereView = tok->view();
                 while (atmosphereView.hasMore()){
@@ -224,22 +233,44 @@ int Scene::getLimit(){
 }
 
 int Scene::getFinished() const {
-	int finished = current_block->getFinished();
-	if ( finished == -1 ){
-		return -1;
-	}
-	return block_length + current_block->getFinished();
+    int finished = current_block->getFinished();
+    if ( finished == -1 ){
+        return -1;
+    }
+    return block_length + current_block->getFinished();
 }
 
 void Scene::clearHearts(){
-	for ( vector< Heart * >::iterator it = hearts.begin(); it != hearts.end(); ){
-		Heart * h = *it;
-		if ( !h->getAlive() ){
-			// delete h;
-			it = hearts.erase( it );
-		} else
-			it++;
-	}
+    for (vector<Heart *>::iterator it = hearts.begin(); it != hearts.end(); ){
+        Heart * h = *it;
+        if (!h->getAlive()){
+            // delete h;
+            it = hearts.erase(it);
+        } else
+            it++;
+    }
+}
+
+void Scene::playIntro(){
+    try{
+        if (intro != Filesystem::RelativePath("")){
+            Gui::CutScene cutscene(Storage::instance().find(intro));
+            cutscene.playAll();
+        }
+    } catch (const Exception::Base & fail){
+        Global::debug(0) << "Could not play intro " << intro.path() << " because " << fail.getTrace() << std::endl;
+    }
+}
+
+void Scene::playEnding(){
+    try{
+        if (ending != Filesystem::RelativePath("")){
+            Gui::CutScene cutscene(Storage::instance().find(ending));
+            cutscene.playAll();
+        }
+    } catch (const Exception::Base & fail){
+        Global::debug(0) << "Could not play ending " << intro.path() << " because " << fail.getTrace() << std::endl;
+    }
 }
 
 void Scene::advanceBlocks( int n ){

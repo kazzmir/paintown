@@ -8,6 +8,7 @@
 #include "util/load_exception.h"
 #include "util/pointer.h"
 #include "block.h"
+#include "util/file-system.h"
 
 namespace Graphics{
 class Bitmap;
@@ -71,6 +72,9 @@ public:
     inline const std::vector<Atmosphere*> & getAtmospheres() const {
         return atmospheres;
     }
+
+    void playIntro();
+    void playEnding();
 
     int totalLength() const;
 
@@ -155,6 +159,10 @@ protected:
     std::vector<std::string> music;
     bool hasMusic;
     std::string description;
+
+    /* Paths to intro and ending cutscenes */
+    Filesystem::RelativePath intro;
+    Filesystem::RelativePath ending;
 };
 
 #endif
