@@ -25,7 +25,7 @@ static void run(string path){
 
     /* Using hq2x */
     Graphics::Bitmap stretch2(screen, image.getWidth() + 50 + stretch1.getWidth() + 50, 0, image.getWidth() * 2, image.getHeight() * 2);
-    image.SmoothStretch(stretch2);
+    image.StretchHqx(stretch2);
 
     /* done */
     screen.BlitToScreen();
