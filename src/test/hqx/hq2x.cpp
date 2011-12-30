@@ -11,7 +11,7 @@
 using std::string;
 
 static void run(string path){
-    Graphics::Bitmap screen(Graphics::getScreenBuffer());
+    Graphics::Bitmap screen(1024, 768);
     Graphics::Bitmap image(path);
 
     screen.clear();
@@ -27,13 +27,16 @@ static void run(string path){
     Graphics::Bitmap stretch2(screen, image.getWidth() + 50 + stretch1.getWidth() + 50, 0, image.getWidth() * 2, image.getHeight() * 2);
     image.StretchHqx(stretch2);
 
+    Graphics::Bitmap stretch4(screen, image.getWidth() + 50 + stretch1.getWidth() + 50 + stretch2.getWidth() + 50 , 0, image.getWidth() * 4, image.getHeight() * 4);
+    image.StretchHqx(stretch4);
+
     /* done */
     screen.BlitToScreen();
     InputManager::waitForKeys(Keyboard::Key_SPACE, Keyboard::Key_ESC, InputSource());
 }
 
 int main(int argc, char ** argv){
-    Screen::realInit();
+    Screen::realInit(1024, 768);
     atexit(Screen::realFinish);
     Global::setDebug(0);
     InputManager input;
