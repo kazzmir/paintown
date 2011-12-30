@@ -1,0 +1,32 @@
+(cutscene 
+ ; Name of cutscene
+ (name "intro")
+ (scene
+  (fade 
+   (in (color 0 0 0) (time 20)) 
+   (out (color 0 0 0) (time 20)))
+  (anim
+   (depth background bottom)
+   (velocity -.001 0)
+   (frame (alpha 255) (image "menu/paintown.png") (time 200)))
+  (anim
+   (depth background middle)
+   (loop 2
+   (random
+     (text (alpha 255) (message "Hello world!") (font "fonts/arial.ttf")
+         (color 255 0 0)
+         (offset 1 1)
+         (time 50))
+     (text (message "Hello world 2!") (font "fonts/arial.ttf" 30 30)
+           (gradient (low 0 64 0)
+                   (high 0 128 255)
+                   (size 20))
+         (time 50)
+         (offset 1 1.11))
+     (text (message "Hello world!") (font "fonts/arial.ttf")
+           (gradient (low 32 32 0)
+                   (high 255 128 32)
+                   (size 20))
+         (time 50)
+         (offset 1 1.11))))))
+   )
