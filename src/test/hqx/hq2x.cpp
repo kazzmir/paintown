@@ -27,6 +27,9 @@ static void run(string path){
     Graphics::Bitmap stretch2(screen, image.getWidth() + 50 + stretch1.getWidth() + 50, 0, image.getWidth() * 2, image.getHeight() * 2);
     image.StretchHqx(stretch2);
 
+    Graphics::Bitmap stretch3(screen, image.getWidth() + 50, stretch1.getHeight() + 50, image.getWidth() * 3, image.getHeight() * 3);
+    image.StretchHqx(stretch3);
+
     Graphics::Bitmap stretch4(screen, image.getWidth() + 50 + stretch1.getWidth() + 50 + stretch2.getWidth() + 50 , 0, image.getWidth() * 4, image.getHeight() * 4);
     image.StretchHqx(stretch4);
 
