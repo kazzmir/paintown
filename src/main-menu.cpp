@@ -341,6 +341,9 @@ static int startMain(bool just_network_server, const NetworkJoin & networkJoin, 
                 setMugenMotif(mainMenuPath());
                 runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
             } else {
+                /* Start the intro for the current mod before the game starts */
+                Paintown::Mod::getCurrentMod()->playIntro();
+
                 MainMenuOptionFactory factory;
                 Menu::Menu game(mainMenuPath(), factory);
                 game.run(Menu::Context());

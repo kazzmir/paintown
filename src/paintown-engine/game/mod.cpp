@@ -2,6 +2,7 @@
 #include <vector>
 #include "mod.h"
 #include "paintown-engine/level/utils.h"
+#include "util/gui/cutscene.h"
 #include "util/file-system.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
@@ -28,6 +29,11 @@ name(name){
         }
         token_menu->view() >> menu;
 
+        const Token * introToken = head->findToken("game/intro");
+        if (introToken != NULL){
+            introToken->view() >> intro;
+        }
+
         vector<const Token*> token_level = head->findTokens("game/level-set");
         Global::debug(1) << "Found " << token_level.size() << " level sets" << endl;
         for (vector<const Token*>::iterator it = token_level.begin(); it != token_level.end(); it++){
@@ -49,6 +55,17 @@ Graphics::Bitmap Mod::makeBitmap(const Filesystem::RelativePath & path){
     Graphics::Bitmap out(*what);
     delete what;
     return out;
+}
+    
+void Mod::playIntro(){
+    if (intro != ""){
+        try{
+            Gui::CutScene scene(Storage::instance().find(Filesystem::RelativePath(intro)));
+            scene.playAll();
+        } catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Could not play intro because " << fail.getTrace() << std::endl;
+        }
+    }
 }
     
 Mod::Mod(){

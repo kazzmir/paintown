@@ -31,6 +31,11 @@ public:
     /* use the stack */
     virtual Graphics::Bitmap makeBitmap(const Filesystem::RelativePath & path);
 
+    /* Play a cutscene when the mod starts up (either when the game starts or when
+     * the mod is selected for the first time)
+     */
+    virtual void playIntro();
+
     virtual std::vector<Level::LevelInfo> getLevels();
 
     virtual ~Mod();
@@ -55,6 +60,7 @@ protected:
     std::vector<Level::LevelInfo> levels;
     std::string menu;
     std::string name;
+    std::string intro;
 
     static Mod * currentMod;
 };
