@@ -286,13 +286,9 @@ Ast::Value * makeValueList2(const Value & first, const Value & second){
     return object;
 }
 
-Ast::Value * makeResource(const Value & number, bool fight, bool own){
-    int value = 0;
-    Ast::Number * realNumber = as<Ast::Number*>(number);
-    /* get the actual integer value */
-    realNumber->view() >> value;
+Ast::Value * makeResource(const Value & value, bool fight, bool own){
     /* FIXME: line numbers */
-    Ast::Resource * resource = new Ast::Resource(-1, -1, value, fight, own);
+    Ast::Resource * resource = new Ast::Resource(-1, -1, as<Ast::Value*>(value), fight, own);
     GC::save(resource);
     return resource;
 }
@@ -910,7 +906,9 @@ rules:
           | hitflag
 
     resource = "s"{case} number:integer {{ value = makeOwnResource(number); }}
+             | "s"{case} "(" s any:expr_c s ")" {{ value = makeOwnResource(any); }}
              | "f"{case} number:integer {{ value = makeFightResource(number); }}
+             | "f"{case} "(" s any:expr_c s ")" {{ value = makeFightResource(any); }}
         
     helper = name:helper-name s id:helper-expression? s "," s to:helper-identifier {{
         value = makeHelper(name, id, to);

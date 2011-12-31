@@ -17,7 +17,7 @@ namespace Ast{
 
 class Resource: public Value {
 public:
-    Resource(int line, int column, int value, bool fightfx, bool own):
+    Resource(int line, int column, const Value * value, bool fightfx, bool own):
     Value(line, column),
     value(value),
     fightfx(fightfx),
@@ -49,11 +49,6 @@ public:
             v = owner;
             return *this;
         }
-
-        virtual ResourceView & operator>>(int & x){
-            x = owner->value;
-            return *this;
-        }
     };
 
     using Value::view;
@@ -64,9 +59,13 @@ public:
     virtual void walk(Walker & walker) const {
         walker.onResource(*this);
     }
+
+    virtual const Value * getValue() const {
+        return value;
+    }
     
     virtual Element * copy() const {
-        return new Resource(getLine(), getColumn(), value, fightfx, own);
+        return new Resource(getLine(), getColumn(), (Value*) value->copy(), fightfx, own);
     }
 
     using Element::operator==;
@@ -75,22 +74,22 @@ public:
     }
 
     virtual bool operator==(const Resource & him) const {
-        return value == him.value &&
+        return *value == *him.value &&
                fightfx == him.fightfx &&
                own == him.own;
     }
    
     static Resource * deserialize(const Token * token){
-        double value;
+        const Token * value;
         int line, column;
         bool fightfx, own;
         token->view() >> line >> column >> value >> fightfx >> own;
-        return new Resource(line, column, value, fightfx, own);
+        return new Resource(line, column, Value::deserialize(value), fightfx, own);
     }
 
     Token * serialize() const {
         Token * token = new Token();
-        *token << SERIAL_RESOURCE << getLine() << getColumn() << value << fightfx << own;
+        *token << SERIAL_RESOURCE << getLine() << getColumn() << value->serialize() << fightfx << own;
         return token;
     }
 
@@ -108,6 +107,11 @@ public:
         return "resource";
     }
 
+    virtual void mark(std::map<const void*, bool> & marks) const {
+        marks[this] = true;
+        value->mark(marks);
+    }
+
     virtual std::string toString() const {
         std::ostringstream out;
         if (fightfx){
@@ -116,7 +120,7 @@ public:
         if (own){
             out << "s";
         }
-        out << value;
+        out << "(" << value->toString() << ")";
         return out.str();
     }
 
@@ -124,7 +128,7 @@ public:
     }
 
 protected:
-    int value;
+    const Value * value;
     bool fightfx;
     bool own;
 };

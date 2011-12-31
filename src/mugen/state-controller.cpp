@@ -460,9 +460,15 @@ static void readValues(const Ast::Value * value, Value & out1, Value & out2, Val
 }
 
 struct Resource{
+    Resource():
+        own(false),
+        fight(false),
+        value(NULL){
+        }
+
     bool own;
     bool fight;
-    int value;
+    const Ast::Value * value;
 };
 
 Resource extractResource(const Ast::Value * value){
@@ -472,7 +478,7 @@ Resource extractResource(const Ast::Value * value){
         virtual void onResource(const Ast::Resource & resource){
             this->resource.own = resource.isOwn();
             this->resource.fight = resource.isFight();
-            resource.view() >> this->resource.value;
+            this->resource.value = resource.getValue();
         }
 
         virtual void onNumber(const Ast::Number & number){
@@ -674,7 +680,7 @@ public:
             if (value->hasMultiple()){
                 value->view() >> group >> item;
             } else {
-                value->view() >> group;
+                group = value;
             }
 
             if (group == NULL){
@@ -2045,8 +2051,7 @@ public:
                         hit.hitSound.item = Compiler::compile(item);
                         hit.hitSound.group = Compiler::compile(resource.value);
                     } else {
-                        const Ast::Value * group;
-                        simple.view() >> group;
+                        const Ast::Value * group = simple.getValue();
                         Resource resource = extractResource(group);
                         hit.hitSound.own = resource.own;
                         hit.hitSound.item = Compiler::compile(0);
@@ -2062,8 +2067,7 @@ public:
                         hit.guardHitSound.item = Compiler::compile(item);
                         hit.guardHitSound.group = Compiler::compile(resource.value);
                     } else {
-                        const Ast::Value * group;
-                        simple.view() >> group;
+                        const Ast::Value * group = simple.getValue();
                         Resource resource = extractResource(group);
                         hit.guardHitSound.own = resource.own;
                         hit.guardHitSound.item = Compiler::compile(0);
@@ -2522,7 +2526,7 @@ public:
                     if (simple.getValue()->hasMultiple()){
                         simple.view() >> group >> item;
                     } else {
-                        simple.view() >> group;
+                        group = simple.getValue();
                     }
 
                     if (group == NULL){
@@ -3740,6 +3744,7 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "anim"){
+                    /*
                     class ResourceWalker: public Ast::Walker {
                     public:
                         ResourceWalker(ControllerExplod & controller):
@@ -3761,9 +3766,13 @@ public:
                             controller.animation = Compiler::compile(number);
                         }
                     };
+                    */
 
-                    ResourceWalker walker(controller);
-                    simple.getValue()->walk(walker);
+                    Resource resource = extractResource(simple.getValue());
+                    if (resource.fight){
+                        controller.ownAnimation = false;
+                    }
+                    controller.animation = Compiler::compile(resource.value);
                 } else if (simple == "id"){
                     controller.id = Compiler::compile(simple.getValue());
                 } else if (simple == "pos"){
@@ -6303,7 +6312,7 @@ public:
                     if (simple.getValue()->hasMultiple()){
                         simple.view() >> group >> item;
                     } else {
-                        simple.view() >> group;
+                        group = simple.getValue();
                     }
 
                     if (group == NULL){
