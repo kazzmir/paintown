@@ -6412,41 +6412,41 @@ public:
 
     ControllerProjectile(const ControllerProjectile & you):
     StateController(you),
-    id(copy(id)),
-    animation(copy(animation)),
-    hitAnimation(copy(hitAnimation)),
-    dieAnimation(copy(dieAnimation)),
-    cancelAnimation(copy(cancelAnimation)),
-    scaleX(copy(scaleX)),
-    scaleY(copy(scaleY)),
-    autoRemove(copy(autoRemove)),
-    removeTime(copy(removeTime)),
-    velocityX(copy(velocityX)),
-    velocityY(copy(velocityY)),
-    removeVelocityX(copy(removeVelocityX)),
-    removeVelocityY(copy(removeVelocityY)),
-    accelerateX(copy(accelerateX)),
-    accelerateY(copy(accelerateY)),
-    velocityXMultipler(copy(velocityXMultipler)),
-    velocityYMultipler(copy(velocityYMultipler)),
-    hits(copy(hits)),
-    missTime(copy(missTime)),
-    priority(copy(priority)),
-    spritePriority(copy(spritePriority)),
-    edge(copy(edge)),
-    stageDistance(copy(stageDistance)),
-    heightLow(copy(heightLow)),
-    heightHigh(copy(heightHigh)),
-    offsetX(copy(offsetX)),
-    offsetY(copy(offsetY)),
-    positionType(copy(positionType)),
-    shadowRed(copy(shadowRed)),
-    shadowGreen(copy(shadowGreen)),
-    shadowBlue(copy(shadowBlue)),
-    superPauseTime(copy(superPauseTime)),
-    pauseMoveTime(copy(pauseMoveTime)),
-    afterImageTime(copy(afterImageTime)),
-    afterImageLength(copy(afterImageLength)){
+    id(copy(you.id)),
+    animation(copy(you.animation)),
+    hitAnimation(copy(you.hitAnimation)),
+    dieAnimation(copy(you.dieAnimation)),
+    cancelAnimation(copy(you.cancelAnimation)),
+    scaleX(copy(you.scaleX)),
+    scaleY(copy(you.scaleY)),
+    autoRemove(copy(you.autoRemove)),
+    removeTime(copy(you.removeTime)),
+    velocityX(copy(you.velocityX)),
+    velocityY(copy(you.velocityY)),
+    removeVelocityX(copy(you.removeVelocityX)),
+    removeVelocityY(copy(you.removeVelocityY)),
+    accelerateX(copy(you.accelerateX)),
+    accelerateY(copy(you.accelerateY)),
+    velocityXMultipler(copy(you.velocityXMultipler)),
+    velocityYMultipler(copy(you.velocityYMultipler)),
+    hits(copy(you.hits)),
+    missTime(copy(you.missTime)),
+    priority(copy(you.priority)),
+    spritePriority(copy(you.spritePriority)),
+    edge(copy(you.edge)),
+    stageDistance(copy(you.stageDistance)),
+    heightLow(copy(you.heightLow)),
+    heightHigh(copy(you.heightHigh)),
+    offsetX(copy(you.offsetX)),
+    offsetY(copy(you.offsetY)),
+    positionType(you.positionType),
+    shadowRed(copy(you.shadowRed)),
+    shadowGreen(copy(you.shadowGreen)),
+    shadowBlue(copy(you.shadowBlue)),
+    superPauseTime(copy(you.superPauseTime)),
+    pauseMoveTime(copy(you.pauseMoveTime)),
+    afterImageTime(copy(you.afterImageTime)),
+    afterImageLength(copy(you.afterImageLength)){
     }
 
     Value id;
@@ -6476,7 +6476,7 @@ public:
     Value heightHigh;
     Value offsetX;
     Value offsetY;
-    Value positionType;
+    string positionType;
     Value shadowRed;
     Value shadowGreen;
     Value shadowBlue;
@@ -6536,7 +6536,7 @@ public:
                 } else if (simple == "offset"){
                     readValues(simple.getValue(), projectile.offsetX, projectile.offsetY);
                 } else if (simple == "postype"){
-                    readValues(simple.getValue(), projectile.positionType);
+                    simple.getValue()->view() >> projectile.positionType;
                 } else if (simple == "projshadow"){
                     readValues(simple.getValue(), projectile.shadowRed, projectile.shadowGreen, projectile.shadowBlue);
                 } else if (simple == "supermovetime"){
@@ -6556,7 +6556,45 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        /* TODO */
+        FullEnvironment environment(stage, guy, commands);
+        int id = (int) evaluateNumber(this->id, environment, 0);
+        int animation = (int) evaluateNumber(this->animation, environment, 0);
+        int hitAnimation = (int) evaluateNumber(this->hitAnimation, environment, -1);
+        int dieAnimation = (int) evaluateNumber(this->dieAnimation, environment, hitAnimation);
+        int cancelAnimation = (int) evaluateNumber(this->cancelAnimation, environment, dieAnimation);
+        double scaleX = evaluateNumber(this->scaleX, environment, 1);
+        double scaleY = evaluateNumber(this->scaleY, environment, 1);
+        bool autoRemove = evaluateBool(this->autoRemove, environment, true);
+        int removeTime = (int) evaluateNumber(this->removeTime, environment, -1);
+        double velocityX = evaluateNumber(this->velocityX, environment, 0);
+        double velocityY = evaluateNumber(this->velocityY, environment, 0);
+        double removeVelocityX = evaluateNumber(this->removeVelocityX, environment, 0);
+        double removeVelocityY = evaluateNumber(this->removeVelocityY, environment, 0);
+        double accelerateX = evaluateNumber(this->accelerateX, environment, 0);
+        double accelerateY = evaluateNumber(this->accelerateY, environment, 0);
+        double velocityXMultipler = evaluateNumber(this->velocityXMultipler, environment, 1);
+        double velocityYMultipler = evaluateNumber(this->velocityYMultipler, environment, 1);
+        int hits = (int) evaluateNumber(this->hits, environment, 1);
+        int missTime = (int) evaluateNumber(this->missTime, environment, 0);
+        int priority = (int) evaluateNumber(this->priority, environment, 1);
+        int spritePriority = (int) evaluateNumber(this->spritePriority, environment, 3);
+        /* 40 in 240p, 80 in 480p, 160 in 720p */
+        int edge = (int) evaluateNumber(this->edge, environment, 40);
+        /* 40 in 240p, 80 in 480p, 160 in 720p */
+        int stageDistance = (int) evaluateNumber(this->stageDistance, environment, 40);
+        /* -240 in 240p, -480 in 480p, -720 in 720p */
+        int lowBound = (int) evaluateNumber(this->heightLow, environment, -240);
+        /* 1 in 240p, 2 in 480p, 4 in 720p */
+        int highBound = (int) evaluateNumber(this->heightHigh, environment, 1);
+        int offsetX = (int) evaluateNumber(this->offsetX, environment, 0);
+        int offsetY = (int) evaluateNumber(this->offsetY, environment, 0);
+        int shadowRed = (int) evaluateNumber(this->shadowRed, environment, 0);
+        int shadowGreen = (int) evaluateNumber(this->shadowGreen, environment, 0);
+        int shadowBlue = (int) evaluateNumber(this->shadowBlue, environment, 0);
+        int superMoveTime = (int) evaluateNumber(this->superPauseTime, environment, 0);
+        int pauseMoveTime = (int) evaluateNumber(this->pauseMoveTime, environment, 0);
+        int afterImageTime = (int) evaluateNumber(this->afterImageTime, environment, 0);
+        int afterImageLength = (int) evaluateNumber(this->afterImageLength, environment, 0);
     }
 
     StateController * deepCopy() const {
@@ -6852,7 +6890,8 @@ public:
 class ControllerBindToTarget: public StateController {
 public:
     ControllerBindToTarget(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    positionType("foot"){
         time = extractAttribute(section, "time");
         target = extractAttribute(section, "id");
 
@@ -6860,9 +6899,8 @@ public:
         if (pos != NULL){
             const Ast::Value * posX = NULL;
             const Ast::Value * posY = NULL;
-            const Ast::Value * type = NULL;
             try{
-                pos->view() >> posX >> posY >> type;
+                pos->view() >> posX >> posY >> positionType;
             } catch (const Ast::Exception & ignore){
             }
 
@@ -6872,9 +6910,6 @@ public:
             if (posY != NULL){
                 positionY = Compiler::compile(posY);
             }
-            if (type != NULL){
-                positionType = Compiler::compile(type);
-            } 
         }
     }
 
@@ -6884,12 +6919,13 @@ public:
     target(copy(you.target)),
     positionX(copy(you.positionX)),
     positionY(copy(you.positionY)),
-    positionType(copy(you.positionType)){
+    positionType(you.positionType){
     }
 
     Value time;
     Value target;
-    Value positionX, positionY, positionType;
+    Value positionX, positionY;
+    string positionType;
 
     StateController * deepCopy() const {
         return new ControllerBindToTarget(*this);
@@ -6901,20 +6937,19 @@ public:
         int time = (int) evaluateNumber(this->time, environment, 1);
         double x = evaluateNumber(this->positionX, environment, 0);
         double y = evaluateNumber(this->positionY, environment, 0);
-        string where = evaluateString(this->positionType, environment, "foot");
         
         vector<Character*> targets = stage.getTargets(id, &guy);
         if (targets.size() > 0){
             Character * target = targets[0];
             double pointX = 0;
             double pointY = 0;
-            if (PaintownUtil::lowerCaseAll(where) == "foot"){
+            if (PaintownUtil::lowerCaseAll(positionType) == "foot"){
                 /* bind point stays 0 */
-            } else if (PaintownUtil::lowerCaseAll(where) == "mid"){
+            } else if (PaintownUtil::lowerCaseAll(positionType) == "mid"){
                 Point position = guy.getMidPosition();
                 pointX = position.x;
                 pointY = position.y;
-            } else if (PaintownUtil::lowerCaseAll(where) == "head"){
+            } else if (PaintownUtil::lowerCaseAll(positionType) == "head"){
                 Point position = guy.getHeadPosition();
                 pointX = position.x;
                 pointY = position.y;
