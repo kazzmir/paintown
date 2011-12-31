@@ -226,6 +226,7 @@ public:
     /* get an animation from fightfx.sff */
     virtual MugenAnimation * getFightAnimation(int id);
 
+    virtual void addProjectile(Projectile * projectile);
     virtual void addEffect(Effect * effect);
     virtual void removeEffects(const Character * owner, int id);
     virtual int countMyEffects(const Character * owner) const;
@@ -245,8 +246,12 @@ public:
         Player2Side
     };
 
+    /* Edges of the visible screen */
     int maximumRight() const;
     int maximumLeft() const;
+    /* Highest visible point on the screen */
+    int maximumUp() const;
+    int maximumDown() const;
 
     virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
 
@@ -585,7 +590,7 @@ private:
 
     void cleanup();
 
-    std::vector<Projectile*> projectils;
+    std::vector<Projectile*> projectiles;
 
     std::vector<Object*> objects;
 

@@ -5,6 +5,7 @@
 #include "character.h"
 #include "helper.h"
 #include "stage.h"
+#include "projectile.h"
 #include "sound.h"
 #include "util/debug.h"
 #include <sstream>
@@ -372,7 +373,7 @@ static void extractValue(Value & value, Ast::Section * section){
     */
 }
 
-void readValues(const Ast::Value * value, Value & out1){
+static void readValues(const Ast::Value * value, Value & out1){
     const Ast::Value * value1 = NULL;
     value->view() >> value1;
     if (value1 != NULL){
@@ -380,7 +381,7 @@ void readValues(const Ast::Value * value, Value & out1){
     }
 }
 
-void readValues(const Ast::Value * value, Value & out1, Value & out2){
+static void readValues(const Ast::Value * value, Value & out1, Value & out2){
     const Ast::Value * value1 = NULL;
     const Ast::Value * value2 = NULL;
     if (value->hasMultiple()){
@@ -401,7 +402,7 @@ void readValues(const Ast::Value * value, Value & out1, Value & out2){
     }
 }
 
-void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & out3){
+static void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & out3){
     const Ast::Value * value1 = NULL;
     const Ast::Value * value2 = NULL;
     const Ast::Value * value3 = NULL;
@@ -429,7 +430,7 @@ void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & ou
 /* reads at most 4 values from an attribute, if a value is missing then the resulting
  * out parameter will just be null.
  */
-void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & out3, Value & out4){
+static void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & out3, Value & out4){
     const Ast::Value * value1 = NULL;
     const Ast::Value * value2 = NULL;
     const Ast::Value * value3 = NULL;
@@ -6406,7 +6407,8 @@ public:
 class ControllerProjectile: public StateController {
 public:
     ControllerProjectile(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    positionType("p1"){
         parse(section);
     }
 
@@ -6555,7 +6557,7 @@ public:
         section->walk(walker);
     }
 
-    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+    virtual void activate(Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         int id = (int) evaluateNumber(this->id, environment, 0);
         int animation = (int) evaluateNumber(this->animation, environment, 0);
@@ -6595,6 +6597,49 @@ public:
         int pauseMoveTime = (int) evaluateNumber(this->pauseMoveTime, environment, 0);
         int afterImageTime = (int) evaluateNumber(this->afterImageTime, environment, 0);
         int afterImageLength = (int) evaluateNumber(this->afterImageLength, environment, 0);
+
+        double x = 0;
+        double y = 0;
+        string check = PaintownUtil::lowerCaseAll(positionType);
+        if (check == "p1"){
+            x = guy.forwardPoint(offsetX);
+            y = guy.getRY() + offsetY;
+        } else if (check == "p2"){
+            Character * enemy = stage.getEnemy(&guy);
+            if (enemy != NULL){
+                x = enemy->forwardPoint(offsetX);
+                y = enemy->getRY() + offsetY;
+            }
+        } else if (check == "front"){
+            if (guy.getFacing() == FacingRight){
+                x = stage.maximumRight() + offsetX;
+            } else {
+                x = stage.maximumLeft() - offsetX;
+            }
+            y = guy.getY() + offsetY;
+        } else if (check == "back"){
+            if (guy.getFacing() == FacingLeft){
+                x = stage.maximumRight() - offsetX;
+            } else {
+                x = stage.maximumLeft() + offsetX;
+            }
+            y = guy.getRY() + offsetY;
+        } else if (check == "left"){
+            x = stage.maximumLeft() + offsetX;
+            y = stage.maximumUp() + offsetY;
+        } else if (check == "right"){
+            x = stage.maximumRight() - offsetX;
+            y = stage.maximumUp() + offsetY;
+        }
+
+        stage.addProjectile(new Mugen::Projectile(x, y, id, animation, hitAnimation, dieAnimation,
+                                           cancelAnimation, scaleX, scaleY, autoRemove, removeTime, 
+                                           velocityX, velocityY, removeVelocityX, removeVelocityY,
+                                           accelerateX, accelerateY, velocityXMultipler, 
+                                           velocityYMultipler, hits, missTime, priority, spritePriority,
+                                           edge, stageDistance, lowBound, highBound, shadowRed,
+                                           shadowGreen, shadowBlue, superMoveTime, pauseMoveTime,
+                                           afterImageTime, afterImageLength));
     }
 
     StateController * deepCopy() const {

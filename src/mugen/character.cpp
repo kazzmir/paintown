@@ -3488,6 +3488,14 @@ ReversalData & Character::getReversal(){
     return reversal;
 }
         
+double Character::forwardPoint(double x) const {
+    if (getFacing() == FacingRight){
+        return getX() + x;
+    } else {
+        return getX() - x;
+    }
+}
+        
 void Character::disablePushCheck(){
     /* TODO */
 }

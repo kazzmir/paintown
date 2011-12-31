@@ -926,6 +926,12 @@ public:
         }
 
         virtual double getGroundFriction() const;
+
+        /* returns the point plus the characters current X position but taking into
+         * account the direction the character is facing. that is if the character
+         * is facing right then its x + getX(), if left then getX() - x
+         */
+        virtual double forwardPoint(double x) const;
             
         virtual bool hasAnimation(int index) const;
 

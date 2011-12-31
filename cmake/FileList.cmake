@@ -106,6 +106,7 @@ src/mugen/game.cpp
 src/mugen/command.cpp
 src/mugen/storyboard.cpp
 src/mugen/state.cpp
+src/mugen/projectile.cpp
 src/mugen/animation.cpp
 src/mugen/exception.cpp
 src/mugen/font.cpp

@@ -46,6 +46,7 @@
 #include "item.h"
 #include "item-content.h"
 #include "section.h"
+#include "projectile.h"
 #include "sound.h"
 #include "reader.h"
 #include "sprite.h"
@@ -1566,6 +1567,11 @@ void Mugen::Stage::cleanup(){
         }
         sounds.clear();
 
+        for (vector<Mugen::Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+            delete *it;
+        }
+        projectiles.clear();
+
         for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/){
             Mugen::Object * object = *it;
 
@@ -1596,6 +1602,18 @@ int Mugen::Stage::maximumRight() const {
 
 int Mugen::Stage::maximumLeft() const {
     return (int)(camerax - DEFAULT_WIDTH / 2);
+}
+    
+int Mugen::Stage::maximumUp() const {
+    return cameray + DEFAULT_HEIGHT;
+}
+
+int Mugen::Stage::maximumDown() const {
+    return cameray;
+}
+    
+void Mugen::Stage::addProjectile(Projectile * projectile){
+    projectiles.push_back(projectile);
 }
 
 void Mugen::Stage::updatePlayer(Mugen::Object * player){
