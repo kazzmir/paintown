@@ -19,6 +19,8 @@ import com.rafkind.paintown.level.Editor;
 public class Level{
 
     private String name;
+    private String intro = "";
+    private String ending = "";
     private Image background;
     private String backgroundFile;
     private int width;
@@ -147,6 +149,22 @@ public class Level{
 
     public void setMaxZ( int z ){
         maxZ = z;
+    }
+
+    public void setIntro(String intro){
+        this.intro = intro;
+    }
+
+    public String getIntro(){
+        return intro;
+    }
+
+    public void setEnding(String ending){
+        this.ending = ending;
+    }
+    
+    public String getEnding(){
+        return ending;
     }
 
     public void addFrontPanel( String s ) throws LoadException {
@@ -416,6 +434,16 @@ public class Level{
             setDescription(desc.readString(0));
         }
 
+        Token introToken = head.findToken("intro");
+        if (introToken != null){
+            setIntro(introToken.readString(0));
+        }
+
+        Token endingToken = head.findToken("ending");
+        if (endingToken != null){
+            setEnding(endingToken.readString(0));
+        }
+
         trigger = head.findToken("trigger");
 
         Token atm = head.findToken( "atmosphere" );
@@ -539,6 +567,14 @@ public class Level{
         }
         level.addToken( new String[]{ "background-parallax", String.valueOf( getBackgroundParallax() ) } );
         level.addToken( new String[]{ "foreground-parallax", String.valueOf( getForegroundParallax() ) } );
+
+        if (getIntro() != ""){
+            level.addToken(new String[]{"intro", getIntro()});
+        }
+        
+        if (getEnding() != ""){
+            level.addToken(new String[]{"ending", getEnding()});
+        }
 
         if ( backgroundFile != null ){
             level.addToken( new String[]{ "background", "\"" + backgroundFile.replaceAll( "\\\\", "/" ) + "\"" } );

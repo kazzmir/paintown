@@ -1309,6 +1309,48 @@ class NewEditor extends JFrame("Paintown Editor"){
             }
         });
 
+        val introText = levelEngine.find("intro").asInstanceOf[JTextField]
+        introText.setText(level.getIntro())
+        introText.addActionListener(new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            level.setIntro(introText.getText())
+          }
+        });
+
+        val introFile = levelEngine.find("intro-pick").asInstanceOf[JButton]
+        introFile.addActionListener(new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+            val ret = chooser.open();
+            if (ret == RelativeFileChooser.OK ){
+              val path = chooser.getPath();
+              level.setIntro(path);
+              introText.setText(path);
+            }
+          }
+        });
+
+        val endingText = levelEngine.find("ending").asInstanceOf[JTextField]
+        endingText.setText(level.getEnding())
+        endingText.addActionListener(new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            level.setEnding(endingText.getText())
+          }
+        });
+
+        val endingFile = levelEngine.find("ending-pick").asInstanceOf[JButton]
+        endingFile.addActionListener(new AbstractAction(){
+          override def actionPerformed(event:ActionEvent){
+            val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+            val ret = chooser.open();
+            if (ret == RelativeFileChooser.OK ){
+              val path = chooser.getPath();
+              level.setEnding(path);
+              endingText.setText(path);
+            }
+          }
+        });
+
         /* initialize all the other crap for a level */
         def loadLevelProperties(level:Level){
           levelMinZ.setValue( new Integer( level.getMinZ() ) );

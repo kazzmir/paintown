@@ -19,6 +19,16 @@
 			<spinner id="max-z" />
 			<glue />
 		</hbox>
+        <hbox>
+            <label text="Intro" />
+            <textfield id="intro" />
+            <button id="intro-pick" text="File" />
+        </hbox>
+        <hbox>
+            <label text="Ending" />
+            <textfield id="ending" />
+            <button id="ending-pick" text="File" />
+        </hbox>
 		<hbox>
 			<label text="Atmosphere" />
 			<combobox id="atmosphere" />
