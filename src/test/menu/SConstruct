@@ -21,6 +21,7 @@ test/openbor/pack-reader.cpp
 test/openbor/util.cpp
 test/openbor/mod.cpp
 test/configuration.cpp
+test/mugen/projectile.cpp
 test/paintown-engine/level/block.cpp
 test/paintown-engine/level/cacher.cpp
 test/paintown-engine/level/scene.cpp

@@ -21,6 +21,7 @@ test/mugen/stage.cpp
 test/mugen/sprite.cpp
 test/mugen/sound.cpp
 test/mugen/exception.cpp
+test/mugen/projectile.cpp
 test/mugen/util.cpp
 test/mugen/animation.cpp
 test/mugen/item-content.cpp
@@ -53,6 +54,7 @@ common/init.cpp
 stage_source = Split("""
 load-stage.cpp
 common/init.cpp
+test/mugen/projectile.cpp
 test/mugen/stage.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
@@ -131,6 +133,7 @@ test/mugen/exception.cpp
 
 match_source = Split("""
 run-match.cpp
+test/mugen/projectile.cpp
 test/factory/font_factory.cpp
 test/configuration.cpp
 test/globals.cpp
