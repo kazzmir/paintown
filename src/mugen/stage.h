@@ -19,6 +19,7 @@ namespace Console{
 
 namespace Mugen{
     class Character;
+    class Projectile;
     class Helper;
     class Object;
     class Background;
@@ -583,6 +584,8 @@ private:
     bool debugMode;
 
     void cleanup();
+
+    std::vector<Projectile*> projectils;
 
     std::vector<Object*> objects;
 

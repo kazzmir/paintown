@@ -372,6 +372,60 @@ static void extractValue(Value & value, Ast::Section * section){
     */
 }
 
+void readValues(const Ast::Value * value, Value & out1){
+    const Ast::Value * value1 = NULL;
+    value->view() >> value1;
+    if (value1 != NULL){
+        out1 = Compiler::compile(value1);
+    }
+}
+
+void readValues(const Ast::Value * value, Value & out1, Value & out2){
+    const Ast::Value * value1 = NULL;
+    const Ast::Value * value2 = NULL;
+    if (value->hasMultiple()){
+        try{
+            value->view() >> value1 >> value2;
+        } catch (const Ast::Exception & fail){
+            /* dont care I guess */
+        }
+    } else {
+        /* just one value */
+        value->view() >> value1;
+    }
+    if (value1 != NULL){
+        out1 = Compiler::compile(value1);
+    }
+    if (value2 != NULL){
+        out2 = Compiler::compile(value2);
+    }
+}
+
+void readValues(const Ast::Value * value, Value & out1, Value & out2, Value & out3){
+    const Ast::Value * value1 = NULL;
+    const Ast::Value * value2 = NULL;
+    const Ast::Value * value3 = NULL;
+    if (value->hasMultiple()){
+        try{
+            value->view() >> value1 >> value2 >> value3;
+        } catch (const Ast::Exception & fail){
+            /* dont care I guess */
+        }
+    } else {
+        /* just one value */
+        value->view() >> value1;
+    }
+    if (value1 != NULL){
+        out1 = Compiler::compile(value1);
+    }
+    if (value2 != NULL){
+        out2 = Compiler::compile(value2);
+    }
+    if (value3 != NULL){
+        out3 = Compiler::compile(value3);
+    }
+}
+
 /* reads at most 4 values from an attribute, if a value is missing then the resulting
  * out parameter will just be null.
  */
@@ -6357,81 +6411,148 @@ public:
     }
 
     ControllerProjectile(const ControllerProjectile & you):
-    StateController(you){
+    StateController(you),
+    id(copy(id)),
+    animation(copy(animation)),
+    hitAnimation(copy(hitAnimation)),
+    dieAnimation(copy(dieAnimation)),
+    cancelAnimation(copy(cancelAnimation)),
+    scaleX(copy(scaleX)),
+    scaleY(copy(scaleY)),
+    autoRemove(copy(autoRemove)),
+    removeTime(copy(removeTime)),
+    velocityX(copy(velocityX)),
+    velocityY(copy(velocityY)),
+    removeVelocityX(copy(removeVelocityX)),
+    removeVelocityY(copy(removeVelocityY)),
+    accelerateX(copy(accelerateX)),
+    accelerateY(copy(accelerateY)),
+    velocityXMultipler(copy(velocityXMultipler)),
+    velocityYMultipler(copy(velocityYMultipler)),
+    hits(copy(hits)),
+    missTime(copy(missTime)),
+    priority(copy(priority)),
+    spritePriority(copy(spritePriority)),
+    edge(copy(edge)),
+    stageDistance(copy(stageDistance)),
+    heightLow(copy(heightLow)),
+    heightHigh(copy(heightHigh)),
+    offsetX(copy(offsetX)),
+    offsetY(copy(offsetY)),
+    positionType(copy(positionType)),
+    shadowRed(copy(shadowRed)),
+    shadowGreen(copy(shadowGreen)),
+    shadowBlue(copy(shadowBlue)),
+    superPauseTime(copy(superPauseTime)),
+    pauseMoveTime(copy(pauseMoveTime)),
+    afterImageTime(copy(afterImageTime)),
+    afterImageLength(copy(afterImageLength)){
     }
 
+    Value id;
+    Value animation;
+    Value hitAnimation;
+    Value dieAnimation;
+    Value cancelAnimation;
+    Value scaleX;
+    Value scaleY;
+    Value autoRemove;
+    Value removeTime;
+    Value velocityX;
+    Value velocityY;
+    Value removeVelocityX;
+    Value removeVelocityY;
+    Value accelerateX;
+    Value accelerateY;
+    Value velocityXMultipler;
+    Value velocityYMultipler;
+    Value hits;
+    Value missTime;
+    Value priority;
+    Value spritePriority;
+    Value edge;
+    Value stageDistance;
+    Value heightLow;
+    Value heightHigh;
+    Value offsetX;
+    Value offsetY;
+    Value positionType;
+    Value shadowRed;
+    Value shadowGreen;
+    Value shadowBlue;
+    Value superPauseTime;
+    Value pauseMoveTime;
+    Value afterImageTime;
+    Value afterImageLength;
+
     void parse(Ast::Section * section){
-        /*
-         * ProjID = id_no (int)
-         * Specifies an ID number to refer to this projectile by. Should be positive, if specified.
-         * projanim = anim_no (int)
-         * Specifies the animation action number to use for the projectile's animation. Defaults to 0 if omitted.
-         * projhitanim = anim_no (int)
-         * Specifies the animation action number to play when the projectile hits the opponent. Defaults to -1 (no change in animation) if omitted.
-         * projremanim = anim_no (int)
-         * Specifies the animation action number to play when the projectile is removed (due to its time expiring or hitting the its removal boundaries, etc.) If omitted, projhitanim is used instead.
-         * projcancelanim = anim_no (int)
-         * Specifies the animation action number to play when the projectile is cancelled by hitting another projectile. If omitted, projremanim is used instead.
-         * projscale = x_scale, y_scale (float, float)
-         * Specifies the scale factor of the projectile. The final scale of the projectile is affected by both this parameter and the "proj.doscale" parameter in the [Size] group of p1's constants file. Defaults to 1,1 (normal size) if omitted.
-         * projremove = remove_flag (boolean)
-         * Set to a non-zero value to have the projectile be removed after it hits, or to 0 to disable this behavior. Defaults to 1.
-         * projremovetime = remove_time (int)
-         * Specifies the number of ticks after which the projectile should be removed from the screen. If -1, the projectile will not be removed. Defaults to -1.
-         * velocity = x_vel, y_vel (float, float)
-         * Specifies the initial x and y velocities for the projectile to travel at. Defaults to 0,0 if omitted.
-         * remvelocity = x_vel, y_vel (float, float)
-         * Specifies the x and y velocities at which the projectile should travel while being removed. Defaults to 0,0 if omitted.
-         * accel = x_accel, y_accel (float, float)
-         * Specifies the acceleration to apply to the projectile in the x and y directions. Defaults to 0,0 if omitted.
-         * velmul = x_mul, y_mul (float, float)
-         * Specifies x and y velocity multipliers. The projectile's velocity is multiplied by these multipliers on every tick. The multipliers default to 1 if omitted.
-         * projhits = num_hits (int)
-         * Specifies the number of hits that the projectile can impart on an opponent before it is removed. Defaults to 1.
-         * projmisstime = miss_time (int)
-         * If the projectile is configured for multiple hits, miss_time specifies the number of ticks after each hit before the projectile can hit again. Defaults to 0.
-         * projpriority = proj_priority (int)
-         * Specifies the projectile priority. If the projectile collides with another projectile of equal priority, they will cancel. If it collides with another of lower priority, it will cancel the lower- priority projectile, and the higher-priority one will have its priority decreased by 1. Defaults to 1.
-         * projsprpriority = priority (int)
-         * Specifies the sprite priority of the projectile. Higher-priority sprites are drawn on top of lower-priority sprites. Defaults to 3.
-         * projedgebound = value (int)
-         * Specifies the distance off the edge of the screen before the projectile is automatically removed. Units are in pixels. Defaults to 40 in 240p, 80 in 480p, 160 in 720p.
-         * projstagebound = value (int)
-         * Specifies the greatest distance the projectile can travel off the edge of the stage before being it is automatically removed. Defaults to 40 in 240p, 80 in 480p, 160 in 720p.
-         * projheightbound = lowbound, highbound (int, int)
-         * Specifies the least and greatest y values the projectile is allowed to reach. If the projectile leaves these boundaries, it is automatically removed. Note: since y values decrease with increasing height on the screen, lowbound actually specifies the greatest height the projectile can attain. lowbound defaults to -240 in 240p, -480 in 480p, -960 in 720p. highbound defaults to 1 in 240p, 2 in 480p, 4 in 720p.
-         * offset = off_x, off_y (int, int)
-         * Specifies the x and y offsets at which the projectile should be created. Both parameters default to 0 if omitted. The exact behavior of the offset parameters is dependent on the postype.
-         * postype = type_string (string)
-         * type_string specifies the postype -- how to interpret the pos parameters. In all cases, a positive y offset means a downward displacement. Valid values for postype are the following:
-         *
-         * p1
-         * Interprets offset relative to p1's axis. A positive x offset is toward the front of p1. This is the default value for postype.
-         * p2
-         * Interprets offset relative to p2's axis. A positive x offset is toward the front of p2.
-         * front
-         * Interprets off_x relative to the edge of the screen that p1 is facing toward, and ypos relative to p1's y axis. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center.
-         * back
-         * Interprets off_x relative to the edge of the screen that p1 is facing away from, and ypos relative to p1's y axis. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center.
-         * left
-         * Interprets off_x and off_y relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen.
-         * right
-         * Interprets off_x and off_y relative to the upper-right corner of the screen. A positive x offset is toward the right of the screen.
-         * projshadow = shad_r, shad_g, shad_b (int, int, int)
-         * Specifies the R, G, and B components of the projectile's shadow. These components should be integers between 0 and 255, inclusive. If shad_r evaluates to -1, then the stage's shadow color will be used. The higher a component value, the less of that color is displayed in the shadow. So a perfectly black shadow is 255,255,255. Defaults to 0,0,0 (no shadow).
-         * supermovetime = move_time (int)
-         * Specifies the number of ticks that the projectile will be unfrozen during a SuperPause. Defaults to 0.
-         * pausemovetime = move_time (int)
-         * Specifies the number of ticks that the projectile will be unfrozen during a Pause. Defaults to 0.
-         * afterimage.time = aftimg_time (int)
-         * See below.
-         * afterimage.length
-         * See below.
-         * afterimage....
-         * If included, these parameters add afterimage effects to the projectile. The parameters are the same as in the AfterImage controller, except these are all prepended with "afterimage."
-         * Notes:
-         */
-        /* TODO */
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerProjectile & projectile):
+            projectile(projectile){
+            }
+
+            ControllerProjectile & projectile;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "projid"){
+                    readValues(simple.getValue(), projectile.id);
+                } else if (simple == "projanim"){
+                    readValues(simple.getValue(), projectile.animation);
+                } else if (simple == "projhitanim"){
+                    readValues(simple.getValue(), projectile.hitAnimation);
+                } else if (simple == "projremanim"){
+                    readValues(simple.getValue(), projectile.dieAnimation);
+                } else if (simple == "projcancelanim"){
+                    readValues(simple.getValue(), projectile.cancelAnimation);
+                } else if (simple == "projscale"){
+                    readValues(simple.getValue(), projectile.scaleX, projectile.scaleY);
+                } else if (simple == "projremove"){
+                    readValues(simple.getValue(), projectile.autoRemove);
+                } else if (simple == "projremovetime"){
+                    readValues(simple.getValue(), projectile.removeTime);
+                } else if (simple == "velocity"){
+                    readValues(simple.getValue(), projectile.velocityX, projectile.velocityY);
+                } else if (simple == "remvelocity"){
+                    readValues(simple.getValue(), projectile.removeVelocityX, projectile.removeVelocityY);
+                } else if (simple == "accel"){
+                    readValues(simple.getValue(), projectile.accelerateX, projectile.accelerateY);
+                } else if (simple == "velmul"){
+                    readValues(simple.getValue(), projectile.velocityXMultipler, projectile.velocityYMultipler);
+                } else if (simple == "projhits"){
+                    readValues(simple.getValue(), projectile.hits);
+                } else if (simple == "projmisstime"){
+                    readValues(simple.getValue(), projectile.missTime);
+                } else if (simple == "projpriority"){
+                    readValues(simple.getValue(), projectile.priority);
+                } else if (simple == "projsprpriority"){
+                    readValues(simple.getValue(), projectile.spritePriority);
+                } else if (simple == "projedgebound"){
+                    readValues(simple.getValue(), projectile.edge);
+                } else if (simple == "projstagebound"){
+                    readValues(simple.getValue(), projectile.stageDistance);
+                } else if (simple == "projheightbound"){
+                    readValues(simple.getValue(), projectile.heightLow, projectile.heightHigh);
+                } else if (simple == "offset"){
+                    readValues(simple.getValue(), projectile.offsetX, projectile.offsetY);
+                } else if (simple == "postype"){
+                    readValues(simple.getValue(), projectile.positionType);
+                } else if (simple == "projshadow"){
+                    readValues(simple.getValue(), projectile.shadowRed, projectile.shadowGreen, projectile.shadowBlue);
+                } else if (simple == "supermovetime"){
+                    readValues(simple.getValue(), projectile.superPauseTime);
+                } else if (simple == "pausemovetime"){
+                    readValues(simple.getValue(), projectile.pauseMoveTime);
+                } else if (simple == "afterimage.time"){
+                    readValues(simple.getValue(), projectile.afterImageTime);
+                } else if (simple == "afterimage.length"){
+                    readValues(simple.getValue(), projectile.afterImageLength);
+                }
+            }
+        };
+        
+        Walker walker(*this);
+        section->walk(walker);
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
