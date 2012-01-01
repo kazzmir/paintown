@@ -651,6 +651,17 @@ private:
     } superPause;
 
     int quake_time;
+
+    struct EnvironmentColor{
+        EnvironmentColor():
+        time(0),
+        under(false){
+        }
+
+        Graphics::Color color;
+        int time;
+        bool under;
+    } environmentColor;
 };
 
 }

@@ -994,6 +994,10 @@ void Mugen::Stage::logic(){
         const double diffx = startx - camerax;
         const double diffy = starty - cameray;
 
+        if (environmentColor.time > 0){
+            environmentColor.time -= 1;
+        }
+
         if (superPause.time > 0){
             superPause.time -= 1;
         } else {
@@ -1195,13 +1199,17 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
 
 void Mugen::Stage::render(Graphics::Bitmap *work){
 
-    // Background
-    // background->renderBack( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
-    // background->renderBackground(camerax, cameray, xaxis, yaxis, board);
-    if (paletteEffects.time > 0){
-        drawBackgroundWithEffects((int) camerax, (int) cameray, *work);
-    } else {
-        background->renderBackground((int) camerax, (int) cameray, *work);
+    if (environmentColor.time == 0){
+        if (paletteEffects.time > 0){
+            drawBackgroundWithEffects((int) camerax, (int) cameray, *work);
+        } else {
+            background->renderBackground((int) camerax, (int) cameray, *work);
+        }
+    } else if (environmentColor.under){
+        /* FIXME: I'm not exactly sure where the environment color is supposed to go.
+         * After the super pause? After the background hud elements?
+         */
+        work->fill(environmentColor.color);
     }
 
     /* darken the background */
@@ -1235,15 +1243,19 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
         spark->draw(*work, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
+    if (environmentColor.time > 0 && !environmentColor.under){
+        work->fill(environmentColor.color);
+    }
+
     //! Render layer 1 HUD
     gameHUD->render(Mugen::Element::Foreground, *work);
 
-    // Foreground
-    // background->renderForeground( (xaxis + camerax) - DEFAULT_OBJECT_OFFSET, yaxis + cameray, (DEFAULT_WIDTH + (abs(boundleft) + boundright)), DEFAULT_HEIGHT + abs(boundhigh) + boundlow, board );
-    if (paletteEffects.time > 0){
-        drawForegroundWithEffects((int) camerax, (int) cameray, *work);
-    } else {
-        background->renderForeground((int) camerax, (int) cameray, *work);
+    if (environmentColor.time == 0){
+        if (paletteEffects.time > 0){
+            drawForegroundWithEffects((int) camerax, (int) cameray, *work);
+        } else {
+            background->renderForeground((int) camerax, (int) cameray, *work);
+        }
     }
     
     //! Render layer 2 HUD
@@ -1278,23 +1290,25 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 	work->vLine( 0, 320 - tension, 240, Graphics::makeColor( 0,255,0 ));
     }
     
+    /*
     // Life bars, will eventually be changed out with mugens interface
     for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
 	int p1Side = 5;
 	int p2Side = 5;
 	if (isaPlayer(*it)){
             Mugen::Character *character = (Mugen::Character*)*it;
-	    if ( character->getAlliance() == Player1Side ){
-                /* FIXME! */
+	    if (character->getAlliance() == Player1Side){
+                / * FIXME! * /
 		// character->drawLifeBar( 5, p1Side, work );
 		p1Side += 10;
-	    } else if ( character->getAlliance() == Player2Side ){
-                /* FIXME! */
+	    } else if (character->getAlliance() == Player2Side){
+                / * FIXME! * /
 		// character->drawLifeBar( 215, p2Side, work );
 		p2Side += 10;
 	    }
 	}
     }
+    */
     
     // Render console
     // console->draw(*work);
@@ -2074,7 +2088,9 @@ vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Charact
     
 /* Set the background to a solid color for some length of time */
 void Mugen::Stage::setEnvironmentColor(Graphics::Color color, int time, bool under){
-    /* TODO */
+    environmentColor.time = time;
+    environmentColor.under = under;
+    environmentColor.color = color;
 }
     
 void Mugen::Stage::removeHelper(Mugen::Character * who){
