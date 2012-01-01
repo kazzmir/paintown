@@ -591,6 +591,8 @@ void Character::initialize(){
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
+    /* FIXME: whats the default sprite priority? */
+    spritePriority = 0;
     juggleRemaining = 0;
     defenseMultiplier = 1;
     attackMultiplier = 1;
@@ -3455,7 +3457,11 @@ void Character::setHealth(double health){
 }
 
 void Character::setSpritePriority(int priority){
-    /* TODO */
+    spritePriority = priority;
+}
+        
+int Character::getSpritePriority() const {
+    return spritePriority;
 }
         
 void Character::setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){

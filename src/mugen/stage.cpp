@@ -71,7 +71,7 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y):
+Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, int spritePriority):
 owner(owner),
 /* Copy the animation here so that it can start from frame 0 and not accidentally
  * be shared with another Effect
@@ -79,7 +79,8 @@ owner(owner),
 animation(PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*animation))),
 id(id),
 x(x),
-y(y){
+y(y),
+spritePriority(spritePriority){
 }
     
 void Effect::draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
@@ -88,6 +89,10 @@ void Effect::draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
 
 void Effect::logic(){
     animation->logic();
+}
+    
+int Effect::getSpritePriority() const {
+    return spritePriority;
 }
 
 bool Effect::isDead(){
@@ -99,12 +104,12 @@ Effect::~Effect(){
 
 class Spark: public Effect {
 public:
-    Spark(int x, int y, PaintownUtil::ReferenceCount<MugenAnimation> animation);
+    Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<MugenAnimation> animation);
     virtual ~Spark();
 };
 
-Spark::Spark(int x, int y, PaintownUtil::ReferenceCount<MugenAnimation> animation):
-Effect(NULL, animation, -1, x, y){
+Spark::Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<MugenAnimation> animation):
+Effect(NULL, animation, -1, x, y, spritePriority){
 }
 
 Spark::~Spark(){
@@ -774,13 +779,15 @@ void Mugen::Stage::addSpark(int x, int y, int sparkNumber){
         Global::debug(0) << "No spark animation for " << sparkNumber << endl;
         return;
     }
-    Mugen::Spark * spark = new Mugen::Spark(x, y, PaintownUtil::ReferenceCount<MugenAnimation>(sparks[sparkNumber]));
+    /* FIXME: sprite priority */
+    Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<MugenAnimation>(sparks[sparkNumber]));
     showSparks.push_back(spark);
 }
 
 void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation){
     if (animation != NULL){
-        Mugen::Spark * spark = new Mugen::Spark(x, y, animation);
+        /* FIXME: sprite priority */
+        Mugen::Spark * spark = new Mugen::Spark(x, y, 0, animation);
         showSparks.push_back(spark);
     }
 }
@@ -1197,6 +1204,62 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
     drawBackgroundWithEffectsSide(x, y, board, &Background::renderForeground);
 }
 
+int Mugen::Stage::findMinimumSpritePriority(){
+    bool set = false;
+    int lowest = 0;
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Object * object = *it;
+        if (!set){
+            set = true;
+            lowest = object->getSpritePriority();
+        } else if (object->getSpritePriority() < lowest){
+            set = true;
+            lowest = object->getSpritePriority();
+        }
+    }
+        
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
+        Mugen::Effect * spark = *it;
+        if (!set){
+            set = true;
+            lowest = spark->getSpritePriority();
+        } else if (spark->getSpritePriority() < lowest){
+            set = true;
+            lowest = spark->getSpritePriority();
+        }
+    }
+
+    return lowest;
+}
+
+int Mugen::Stage::findMaximumSpritePriority(){
+    bool set = false;
+    int highest = 0;
+    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Object * object = *it;
+        if (!set){
+            set = true;
+            highest = object->getSpritePriority();
+        } else if (object->getSpritePriority() > highest){
+            set = true;
+            highest = object->getSpritePriority();
+        }
+    }
+        
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
+        Mugen::Effect * spark = *it;
+        if (!set){
+            set = true;
+            highest = spark->getSpritePriority();
+        } else if (spark->getSpritePriority() > highest){
+            set = true;
+            highest = spark->getSpritePriority();
+        }
+    }
+
+    return highest;
+}
+
 void Mugen::Stage::render(Graphics::Bitmap *work){
 
     if (environmentColor.time == 0){
@@ -1222,25 +1285,39 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     //! Render layer 0 HUD
     gameHUD->render(Mugen::Element::Background, *work);
 
-    // Players go in here
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Mugen::Object *obj = *it;
-	/* Reflection */
-        /* FIXME: reflection and shade need camerax/y */
-	if (reflectionIntensity > 0){
-            obj->drawReflection(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
+    /* FIXME: this is a hack to deal with sprite priorities. Really we should get all
+     * the drawable objects and sort them.
+     */
+    int minumumSpritePriority = findMinimumSpritePriority();
+    int maximumSpritePriority = findMaximumSpritePriority();
+
+    for (int spritePriority = minumumSpritePriority; spritePriority <= maximumSpritePriority; spritePriority++){
+        // Players go in here
+        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+            Mugen::Object *obj = *it;
+
+            if (obj->getSpritePriority() == spritePriority){
+                /* Reflection */
+                /* FIXME: reflection and shade need camerax/y */
+                if (reflectionIntensity > 0){
+                    obj->drawReflection(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
+                }
+
+                /* Shadow */
+                obj->drawMugenShade(work, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+
+                /* draw the player */
+                obj->draw(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
+            }
         }
 
-	/* Shadow */
-	obj->drawMugenShade(work, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
-        
-        /* draw the player */
-        obj->draw(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
-    }
+        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
+            Mugen::Effect * spark = *it;
+            if (spark->getSpritePriority() == spritePriority){
+                spark->draw(*work, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
+            }
+        }
 
-    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
-        Mugen::Effect * spark = *it;
-        spark->draw(*work, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
     }
 
     if (environmentColor.time > 0 && !environmentColor.under){

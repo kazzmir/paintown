@@ -3593,6 +3593,7 @@ public:
     accelerationY(copy(you.accelerationY)),
     removeTime(copy(you.removeTime)),
     bindTime(copy(you.bindTime)),
+    spritePriority(copy(you.spritePriority)),
     positionType(you.positionType){
     }
 
@@ -3607,12 +3608,14 @@ public:
     Value accelerationY;
     Value removeTime;
     Value bindTime;
+    Value spritePriority;
     PositionType positionType;
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY):
-            Effect(owner, animation, id, x, y),
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, int spritePriority):
+            Effect(owner, animation, id, x, y, spritePriority),
+            stage(stage),
             velocityX(velocityX),
             velocityY(velocityY),
             accelerationX(accelerationX),
@@ -3668,6 +3671,7 @@ public:
             return removeTime;
         }
 
+        const Mugen::Stage & stage;
         double velocityX;
         double velocityY;
         double accelerationX;
@@ -3695,6 +3699,34 @@ public:
                     case Player1: {
                         x = (int)(posX + owner->getX());
                         y = (int)(posY + owner->getRY());
+                        break;
+                    }
+                    case Front: {
+                        if (owner->getFacing() == FacingRight){
+                            x = stage.maximumRight() + posX;
+                        } else {
+                            x = stage.maximumLeft() - posX;
+                        }
+                        y = posY;
+                        break;
+                    }
+                    case Back: {
+                        if (owner->getFacing() == FacingLeft){
+                            x = stage.maximumRight() - posX;
+                        } else {
+                            x = stage.maximumLeft() + posX;
+                        }
+                        y = posY;
+                        break;
+                    }
+                    case Left: {
+                        x = stage.maximumLeft() + posX;
+                        y = stage.maximumUp() + posY;
+                        break;
+                    }
+                    case Right: {
+                        x = stage.maximumRight() - posX;
+                        y = stage.maximumUp() + posY;
                         break;
                     }
                     /* TODO: implement rest of cases */
@@ -3736,30 +3768,6 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "anim"){
-                    /*
-                    class ResourceWalker: public Ast::Walker {
-                    public:
-                        ResourceWalker(ControllerExplod & controller):
-                        controller(controller){
-                        }
-
-                        ControllerExplod & controller;
-
-                        virtual void onResource(const Ast::Resource & resource){
-                            if (resource.isFight()){
-                                controller.ownAnimation = false;
-                            }
-                            int number = 0;
-                            resource.view() >> number;
-                            controller.animation = Compiler::compile(number);
-                        }
-
-                        virtual void onNumber(const Ast::Number & number){
-                            controller.animation = Compiler::compile(number);
-                        }
-                    };
-                    */
-
                     Resource resource = extractResource(simple.getValue());
                     if (resource.fight){
                         controller.ownAnimation = false;
@@ -3825,7 +3833,7 @@ public:
                 } else if (simple == "scale"){
                     /* TODO */
                 } else if (simple == "sprpriority"){
-                    /* TODO */
+                    controller.spritePriority = Compiler::compile(simple.getValue());
                 } else if (simple == "ontop"){
                     /* TODO */
                 } else if (simple == "shadow"){
@@ -3858,6 +3866,7 @@ public:
         double accelerationY_value = evaluateNumber(accelerationY, 0);
         int removeTime_value = (int) evaluateNumber(removeTime, -2);
         int bindTime_value = (int) evaluateNumber(bindTime, 0);
+        int spritePriority_value = (int) evaluateNumber(spritePriority, 0);
 #undef evaluateNumber
 
         PaintownUtil::ReferenceCount<MugenAnimation> animation;
@@ -3877,7 +3886,7 @@ public:
          * FIXME: the initial x/y values are determined by the postype value
          * so instead of 'posX_value + guy.getRX()' it should be something else
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, animation, id_value, (int)(posX_value + guy.getX()), (int)(posY_value + guy.getRY()), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, (int)(posX_value + guy.getX()), (int)(posY_value + guy.getRY()), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, spritePriority_value);
         stage.addEffect(effect);
     }
 
@@ -3958,7 +3967,8 @@ public:
         class GameAnimation: public Effect {
         public:
             GameAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int x, int y):
-            Effect(NULL, animation, -1, x, y){
+            /* FIXME: sprite priority */
+            Effect(NULL, animation, -1, x, y, 0){
             }
         };
 

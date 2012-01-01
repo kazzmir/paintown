@@ -29,11 +29,12 @@ namespace Mugen{
 
 class Effect{
 public:
-    Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y);
+    Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, int spritePriority);
     
     virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
     virtual bool isDead();
+    virtual int getSpritePriority() const;
 
     virtual inline const Character * getOwner() const {
         return owner;
@@ -66,6 +67,7 @@ protected:
     int id;
     double x;
     double y;
+    int spritePriority;
 };
 
 }
@@ -341,6 +343,9 @@ protected:
     void addSpark(int x, int y, int sparkNumber);
     void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
     void playSound(int group, int item, bool own);
+
+    int findMaximumSpritePriority();
+    int findMinimumSpritePriority();
 
     std::vector<Object*> getOpponents(Object * who);
 

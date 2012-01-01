@@ -1156,6 +1156,7 @@ public:
         virtual void moveY(double y, bool force = false);
 
         virtual void setSpritePriority(int priority);
+        virtual int getSpritePriority() const;
         
         virtual void setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
 
@@ -1737,6 +1738,8 @@ public:
         Bind bind;
 
         std::map<int, Object *> targets;
+
+        int spritePriority;
 };
 
 }

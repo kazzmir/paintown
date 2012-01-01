@@ -80,6 +80,8 @@ public:
     
     virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
 
+    virtual int getSpritePriority() const = 0;
+
     /* paused from an attack */
     virtual bool isPaused() const = 0;
     virtual Physics::Type getCurrentPhysics() const = 0;
