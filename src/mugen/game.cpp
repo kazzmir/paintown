@@ -208,6 +208,36 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             }
         };
 
+        class CommandChangeState: public Console::Command {
+        public:
+            CommandChangeState(Mugen::Stage * stage):
+            stage(stage){
+            }
+
+            Mugen::Stage * stage;
+
+            string act(const string & line){
+                std::istringstream input(line);
+                string command;
+                int character = 0;
+                int state = 0;
+                input >> command >> character >> state;
+                std::vector<Object*> players = stage->getPlayers();
+                int count = 0;
+                if (character < players.size()){
+                    std::vector<string> inputs;
+                    Character * player = (Character*) players[character];
+                    player->changeState(*stage, state, inputs);
+                    std::ostringstream out;
+                    out << "Changed state for " << player->getDisplayName() << " to " << state;
+                    return out.str();
+                }
+                std::ostringstream out;
+                out << "No such player " << character;
+                return out.str();
+            }
+        };
+
         class CommandRecord: public Console::Command {
         public:
             CommandRecord(Mugen::Stage * stage):
@@ -233,6 +263,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         console.addCommand("memory", PaintownUtil::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("record", PaintownUtil::ReferenceCount<Console::Command>(new CommandRecord(stage)));
         console.addCommand("debug", PaintownUtil::ReferenceCount<Console::Command>(new CommandDebug(stage)));
+        console.addCommand("change-state", PaintownUtil::ReferenceCount<Console::Command>(new CommandChangeState(stage)));
     }
 
     bool show_fps = false;
