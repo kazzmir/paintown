@@ -376,11 +376,14 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             console.act();
             state.endMatch = stage->isMatchOver();
 
-            doInput();
-            try{
-                console.doInput();
-            } catch (Exception::Return & r){
-                throw QuitGameException();
+            if (console.isActive()){
+                try{
+                    console.doInput();
+                } catch (Exception::Return & r){
+                    throw QuitGameException();
+                }
+            } else {
+                doInput();
             }
         }
 
