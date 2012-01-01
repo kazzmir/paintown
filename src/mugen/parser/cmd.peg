@@ -861,6 +861,7 @@ rules:
                   | "projguarded"{case}
                   | "projcanceltime"{case}
                   | "projhittime"{case}
+                  | "projhit"{case}
                   | "projcontacttime"{case}
                   | "projcontact"{case}
                   | "numhelper"{case}
