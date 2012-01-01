@@ -905,10 +905,60 @@ rules:
           | string
           | hitflag
 
-    resource = "s"{case} number:integer {{ value = makeOwnResource(number); }}
-             | "s"{case} "(" s any:expr_c s ")" {{ value = makeOwnResource(any); }}
-             | "f"{case} number:integer {{ value = makeFightResource(number); }}
-             | "f"{case} "(" s any:expr_c s ")" {{ value = makeFightResource(any); }}
+    # Don't confuse resources with some identifiers
+    resource = !resource-s "s"{case} any:expr_c {{ value = makeOwnResource(any); }}
+             | !resource-f "f"{case} any:expr_c {{ value = makeFightResource(any); }}
+
+    # It sort of sucks to explicitly list these out here but the alternative is to
+    # define 'identifier' by explicitly listing every identifier we could possibly use
+    # which is a very long list and so theres more chance to screw that list up and slow
+    # down the parser than to just put a few special cases here.
+    resource-s = "stateno"{case}
+               | "statetime"{case}
+               | "statetype"{case}
+               | "selfstate"{case}
+               | "slidetime"{case}
+               | "statetypeset"{case}
+               | "superpause"{case}
+               | "screenbound"{case}
+               | "sprpriority"{case}
+               | "sndpan"{case}
+               | "stopsnd"{case}
+               | function_name
+               | keyword
+               | "size.xscale"{case}
+               | "size.yscale"{case}
+               | "size.ground.back"{case}
+               | "size.ground.front"{case}
+               | "size.air.back"{case}
+               | "size.air.front"{case}
+               | "size.height"{case}
+               | "size.attack.dist"{case}
+               | "size.proj.attack.dist"{case}
+               | "size.proj.doscale"{case}
+               | "size.head.pos.x"{case}
+               | "size.head.pos.y"{case}
+               | "size.mid.pos.x"{case}
+               | "size.mid.pos.y"{case}
+               | "size.shadowoffset"{case}
+               | "size.draw.offset.x"{case}
+               | "size.draw.offset.y"{case}
+
+    resource-f = "frontedgebodydist"{case}
+               | "frontedgedist"{case}
+               | "forcefeedback"{case}
+               | "fallenvshake"{case}
+               | "facing"{case}
+               | "fallcount"{case}
+               | "fall.damage"{case}
+               | "fall.xvel"{case}
+               | "fall.yvel"{case}
+               | "fall.recover"{case}
+               | "fall.time"{case}
+               | "fall.recovertime"{case}
+               | "fall"{case}
+               | function_name
+               | keyword
         
     helper = name:helper-name s id:helper-expression? s "," s to:helper-identifier {{
         value = makeHelper(name, id, to);

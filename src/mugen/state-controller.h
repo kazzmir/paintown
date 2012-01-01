@@ -17,6 +17,7 @@ namespace Compiler{
     class Value;
 }
 
+class Environment;
 class Character;
 class Stage;
 
@@ -173,7 +174,7 @@ public:
     virtual void resetPersistent();
     virtual bool persistentOk();
 
-    virtual bool ignoreHitPause() const;
+    virtual bool ignoreHitPause(const Environment & environment) const;
 
     virtual ~StateController();
 
@@ -195,7 +196,7 @@ protected:
     /* countdown of persistent level */
     int currentPersistent;
 
-    bool ignoreHitPauseValue;
+    ::Util::ClassPointer<Compiler::Value> ignoreHitPauseValue;
 
     /* state number */
     int state;

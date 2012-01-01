@@ -2153,8 +2153,6 @@ public:
 		    }
                     if (identifier == "data.intpersistindex"){
 		    }
-                    if (identifier == "data.attack"){
-		    }
 		    
                     if (identifier == "movement.airjump.num"){
 		    }

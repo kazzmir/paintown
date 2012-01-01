@@ -38,7 +38,6 @@ name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
-ignoreHitPauseValue(false),
 state(state){
 }
 
@@ -48,7 +47,6 @@ name(name),
 debug(false),
 persistent(1),
 currentPersistent(1),
-ignoreHitPauseValue(false),
 state(state),
 spritePriority(0){
     class Walker: public Ast::Walker {
@@ -73,7 +71,7 @@ spritePriority(0){
             } else if (simple == "sprpriority"){
                 controller.spritePriority = Compiler::compile(simple.getValue());
             } else if (simple == "ignorehitpause"){
-                simple.view() >> controller.ignoreHitPauseValue;
+                controller.ignoreHitPauseValue = Compiler::compile(simple.getValue());
             }
         }
     };
@@ -87,7 +85,7 @@ name(you.name),
 debug(you.debug),
 persistent(you.persistent),
 currentPersistent(you.currentPersistent),
-ignoreHitPauseValue(you.ignoreHitPauseValue),
+ignoreHitPauseValue(copy(you.ignoreHitPauseValue)),
 state(you.state),
 spritePriority(copy(you.spritePriority)){
     for (map<int, vector<Compiler::Value*> >::const_iterator it = you.triggers.begin(); it != you.triggers.end(); it++){
@@ -157,8 +155,8 @@ void StateController::resetPersistent(){
     currentPersistent = persistent;
 }
     
-bool StateController::ignoreHitPause() const {
-    return ignoreHitPauseValue;
+bool StateController::ignoreHitPause(const Environment & environment) const {
+    return evaluateBool(ignoreHitPauseValue, environment, false);
 }
 
 bool StateController::persistentOk(){
@@ -252,7 +250,8 @@ vector<int> StateController::sortTriggers() const {
 
 bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const vector<string> & commands) const {
 
-    if (!ignoreHitPause() && character.isPaused()){
+    FullEnvironment environment(stage, character, commands);
+    if (!ignoreHitPause(environment) && character.isPaused()){
         return false;
     }
 
@@ -471,20 +470,16 @@ struct Resource{
     const Ast::Value * value;
 };
 
+/* Either the value is a Resource in which case we should extract the underlying value
+ * or its just some value so use it directly.
+ */
 Resource extractResource(const Ast::Value * value){
     class Walker: public Ast::Walker {
     public:
-
         virtual void onResource(const Ast::Resource & resource){
             this->resource.own = resource.isOwn();
             this->resource.fight = resource.isFight();
             this->resource.value = resource.getValue();
-        }
-
-        virtual void onNumber(const Ast::Number & number){
-            resource.own = false;
-            resource.fight = false;
-            number.view() >> resource.value;
         }
 
         Resource resource;
@@ -492,6 +487,11 @@ Resource extractResource(const Ast::Value * value){
 
     Walker walker;
     value->walk(walker);
+    if (walker.resource.value == NULL){
+        walker.resource.own = false;
+        walker.resource.fight = false;
+        walker.resource.value = value;
+    }
     return walker.resource;
 }
 
