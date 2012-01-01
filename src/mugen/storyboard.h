@@ -52,7 +52,7 @@ class Layer{
             return this->startTime;
         }
 
-        virtual inline void setAnimation(MugenAnimation * animation){
+        virtual inline void setAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
             this->animation = animation;
         }
         //! Override
@@ -63,7 +63,7 @@ class Layer{
 	Mugen::Point offset;
 	int startTime;
         bool enabled;
-	MugenAnimation *animation;
+        PaintownUtil::ReferenceCount<MugenAnimation> animation;
 };
 
 class Scene {

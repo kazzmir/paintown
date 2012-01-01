@@ -595,11 +595,11 @@ public:
             return currentPalette;
         }
 
-        virtual inline const std::map<int, MugenAnimation*> & getAnimations() const {
+        virtual inline const std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > & getAnimations() const {
             return animations;
         }
 
-        virtual MugenAnimation * getAnimation(int id) const;
+        virtual PaintownUtil::ReferenceCount<MugenAnimation> getAnimation(int id) const;
 
         /*
         virtual inline void setInput(const InputMap<Mugen::Keys> & inputLeft, const InputMap<Mugen::Keys> & inputRight){
@@ -621,7 +621,7 @@ public:
         }
 
         virtual const MugenSprite * getCurrentFrame() const;
-        MugenAnimation * getCurrentAnimation() const;
+        PaintownUtil::ReferenceCount<MugenAnimation> getCurrentAnimation() const;
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 
@@ -1157,7 +1157,7 @@ public:
 
         virtual void setSpritePriority(int priority);
         
-        virtual void setTemporaryAnimation(MugenAnimation * animation);
+        virtual void setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
 
         virtual bool isHelper() const;
 
@@ -1406,7 +1406,7 @@ protected:
 	std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
-	std::map< int, MugenAnimation * > animations;
+	std::map< int, PaintownUtil::ReferenceCount<MugenAnimation> > animations;
 	
 	/* Sounds */
 	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
@@ -1702,7 +1702,7 @@ public:
         PaletteEffects paletteEffects;
 
         virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
-        void drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
+        void drawWithEffects(const PaintownUtil::ReferenceCount<MugenAnimation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
 
         double max_health;
         double health;

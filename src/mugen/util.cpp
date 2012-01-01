@@ -715,13 +715,13 @@ MugenSprite * Mugen::Util::getSprite(const Mugen::SpriteMap & sprites, int group
     return NULL;
 }
 
-MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites, bool mask){
-    MugenAnimation *animation = new MugenAnimation();
+PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites, bool mask){
+    PaintownUtil::ReferenceCount<MugenAnimation> animation(new MugenAnimation());
 
     /* see parser/air.peg */
     class Walker: public Ast::Walker{
     public:
-        Walker(MugenAnimation * animation, const Mugen::SpriteMap & sprites, bool mask):
+        Walker(PaintownUtil::ReferenceCount<MugenAnimation> animation, const Mugen::SpriteMap & sprites, bool mask):
         Ast::Walker(),
         animation(animation),
         sprites(sprites),
@@ -732,7 +732,7 @@ MugenAnimation *Mugen::Util::getAnimation(Ast::Section * section, const Mugen::S
         }
 
         /* data */
-        MugenAnimation * animation;
+        PaintownUtil::ReferenceCount<MugenAnimation> animation;
         const Mugen::SpriteMap & sprites;
         std::vector<MugenArea> clsn1Holder;
         std::vector<MugenArea> clsn2Holder;
@@ -974,11 +974,11 @@ PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseCmd(const string &
     }
 }
 
-std::map<int, MugenAnimation *> Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask){
+std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask){
     AstRef parsed(parseAir(filename.path()));
     // Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed->getSections()->size() << endl;
     
-    map<int, MugenAnimation*> animations;
+    map<int, PaintownUtil::ReferenceCount<MugenAnimation> > animations;
     for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();

@@ -71,9 +71,12 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-Effect::Effect(const Character * owner, MugenAnimation * animation, int id, int x, int y):
+Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y):
 owner(owner),
-animation(animation),
+/* Copy the animation here so that it can start from frame 0 and not accidentally
+ * be shared with another Effect
+ */
+animation(PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*animation))),
 id(id),
 x(x),
 y(y){
@@ -92,16 +95,15 @@ bool Effect::isDead(){
 }
 
 Effect::~Effect(){
-    delete animation;
 }
 
 class Spark: public Effect {
 public:
-    Spark(int x, int y, MugenAnimation * animation);
+    Spark(int x, int y, PaintownUtil::ReferenceCount<MugenAnimation> animation);
     virtual ~Spark();
 };
 
-Spark::Spark(int x, int y, MugenAnimation * animation):
+Spark::Spark(int x, int y, PaintownUtil::ReferenceCount<MugenAnimation> animation):
 Effect(NULL, animation, -1, x, y){
 }
 
@@ -752,7 +754,7 @@ bool Mugen::Stage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * ob
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-MugenAnimation * Mugen::Stage::getFightAnimation(int id){
+PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Stage::getFightAnimation(int id){
     if (sparks[id] == 0){
         ostringstream out;
         out << "No fightfx animation for " << id;
@@ -772,8 +774,15 @@ void Mugen::Stage::addSpark(int x, int y, int sparkNumber){
         Global::debug(0) << "No spark animation for " << sparkNumber << endl;
         return;
     }
-    Mugen::Spark * spark = new Mugen::Spark(x, y, new MugenAnimation(*sparks[sparkNumber]));
+    Mugen::Spark * spark = new Mugen::Spark(x, y, PaintownUtil::ReferenceCount<MugenAnimation>(sparks[sparkNumber]));
     showSparks.push_back(spark);
+}
+
+void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation){
+    if (animation != NULL){
+        Mugen::Spark * spark = new Mugen::Spark(x, y, animation);
+        showSparks.push_back(spark);
+    }
 }
 
 void Mugen::Stage::playSound(int group, int item, bool own){
@@ -1548,10 +1557,6 @@ void Mugen::Stage::cleanup(){
         }
         effects.clear();
 
-        for (map<int, MugenAnimation*>::iterator it = sparks.begin(); it != sparks.end(); it++){
-            MugenAnimation * animation = (*it).second;
-            delete animation;
-        }
         sparks.clear();
 
         for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
@@ -2001,10 +2006,17 @@ int Mugen::Stage::getGameTime() const {
     return 0;
 }
     
-void Mugen::Stage::doSuperPause(int time, int animation, int positionX, int positionY){
+void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY){
     superPause.time = time;
     if (animation != -1){
-        addSpark(positionX, positionY, animation);
+        if (ownAnimation){
+            PaintownUtil::ReferenceCount<MugenAnimation> use = guy.getAnimation(animation);
+            if (use != NULL){
+                addSpark(positionX, positionY, use);
+            }
+        } else {
+            addSpark(positionX, positionY, animation);
+        }
     }
 }
    

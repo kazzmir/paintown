@@ -711,7 +711,7 @@ public:
 
         if (function == "animelem"){
             unsigned int index = (unsigned int) toNumber(evaluate(function.getArg1()));
-            MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+            PaintownUtil::ReferenceCount<MugenAnimation> animation = environment.getCharacter().getCurrentAnimation();
             if (animation->getPosition() + 1 == index){
                 /* handle the second argument of animelem here */
                 return RuntimeValue(animation->getTicks() == 0);

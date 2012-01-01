@@ -2595,21 +2595,13 @@ public:
         FullEnvironment env(stage, guy);
         int x = computeX(guy, env);
         int y = computeY(guy, env);
-        /* 30 is the default */
-        int time = 30;
-        if (this->time != NULL){
-            time = (int) this->time->evaluate(env).toNumber();
-        }
-        int animation = 30;
-        if (this->animation != NULL){
-            animation = (int) this->animation->evaluate(env).toNumber();
-        }
+        int time = (int) evaluateNumber(this->time, env, 30);
+        int animation = (int) evaluateNumber(this->animation, env, 30);
 
         /* FIXME: handle darken, p2defmul, unhittable */
 
         playSound(guy, env);
-        /* TODO: handle ownAnimation */
-        stage.doSuperPause(time, animation, x, y);
+        stage.doSuperPause(time, guy, animation, ownAnimation, x, y);
     }
 
     StateController * deepCopy() const {
@@ -3619,7 +3611,7 @@ public:
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, MugenAnimation * animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY):
+        ExplodeEffect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY):
             Effect(owner, animation, id, x, y),
             velocityX(velocityX),
             velocityY(velocityY),
@@ -3868,7 +3860,7 @@ public:
         int bindTime_value = (int) evaluateNumber(bindTime, 0);
 #undef evaluateNumber
 
-        MugenAnimation * animation = NULL;
+        PaintownUtil::ReferenceCount<MugenAnimation> animation;
         if (ownAnimation){
             animation = guy.getAnimation(animation_value);
         } else {
@@ -3885,7 +3877,7 @@ public:
          * FIXME: the initial x/y values are determined by the postype value
          * so instead of 'posX_value + guy.getRX()' it should be something else
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, new MugenAnimation(*animation), id_value, (int)(posX_value + guy.getX()), (int)(posY_value + guy.getRY()), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, animation, id_value, (int)(posX_value + guy.getX()), (int)(posY_value + guy.getRY()), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value);
         stage.addEffect(effect);
     }
 
@@ -3955,7 +3947,7 @@ public:
         x += PaintownUtil::rnd(random) - random / 2;
         y += PaintownUtil::rnd(random) - random / 2;
 
-        MugenAnimation * animation = NULL;
+        PaintownUtil::ReferenceCount<MugenAnimation> animation;
         animation = stage.getFightAnimation(animation_value);
         if (animation == NULL){
             ostringstream out;
@@ -3965,12 +3957,12 @@ public:
 
         class GameAnimation: public Effect {
         public:
-            GameAnimation(MugenAnimation * animation, int x, int y):
+            GameAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int x, int y):
             Effect(NULL, animation, -1, x, y){
             }
         };
 
-        stage.addEffect(new GameAnimation(new MugenAnimation(*animation), x, y));
+        stage.addEffect(new GameAnimation(animation, x, y));
     }
 
     StateController * deepCopy() const {
@@ -5145,9 +5137,9 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int animation = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
-        MugenAnimation * show = guy.getAnimation(animation);
+        PaintownUtil::ReferenceCount<MugenAnimation> show = guy.getAnimation(animation);
         if (show != NULL){
-            stage.getEnemy(&guy)->setTemporaryAnimation(new MugenAnimation(*show));
+            stage.getEnemy(&guy)->setTemporaryAnimation(show);
         } else {
             ostringstream out;
             out << "No animation found for " << animation;

@@ -29,7 +29,7 @@ namespace Mugen{
 
 class Effect{
 public:
-    Effect(const Character * owner, MugenAnimation * animation, int id, int x, int y);
+    Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y);
     
     virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
@@ -62,7 +62,7 @@ public:
     virtual ~Effect();
 protected:
     const Character * owner;
-    MugenAnimation * animation;
+    PaintownUtil::ReferenceCount<MugenAnimation> animation;
     int id;
     double x;
     double y;
@@ -217,14 +217,14 @@ public:
     virtual int getGameTime() const;
 
     /* pause for dramatic effect */
-    virtual void doSuperPause(int time, int animation, int positionX, int positionY);
+    virtual void doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY);
     virtual void doPause(int time, int buffer, int moveAllowed, bool pauseBackground);
 
     /* make dust effects */
     virtual void createDust(int x, int y);
 
     /* get an animation from fightfx.sff */
-    virtual MugenAnimation * getFightAnimation(int id);
+    virtual PaintownUtil::ReferenceCount<MugenAnimation> getFightAnimation(int id);
 
     virtual void addProjectile(Projectile * projectile);
     virtual void addEffect(Effect * effect);
@@ -339,6 +339,7 @@ protected:
 protected:
 
     void addSpark(int x, int y, int sparkNumber);
+    void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
     void playSound(int group, int item, bool own);
 
     std::vector<Object*> getOpponents(Object * who);
@@ -628,7 +629,7 @@ private:
     void initializeName();
 
     SpriteMap effects;
-    std::map<int, MugenAnimation*> sparks;
+    std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > sparks;
     std::vector<Effect*> showSparks;
 
     // Character huds

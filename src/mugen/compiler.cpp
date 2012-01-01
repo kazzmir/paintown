@@ -1213,7 +1213,7 @@ public:
             class AnimTime: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    PaintownUtil::ReferenceCount<MugenAnimation> animation = environment.getCharacter().getCurrentAnimation();
                     if (animation == NULL){
                         std::ostringstream out;
                         out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
@@ -3442,7 +3442,7 @@ public:
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     int index = (int) this->index->evaluate(environment).toNumber();
-                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    PaintownUtil::ReferenceCount<MugenAnimation> animation = environment.getCharacter().getCurrentAnimation();
                     if (animation == NULL){
                         runtimeError("Current animation is NULL");
                     }

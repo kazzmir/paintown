@@ -44,9 +44,6 @@ animation(0){
 }
 
 Layer::~Layer(){
-    if (animation){
-	delete animation;
-    }
 }
 
 void Layer::act(int currentTime){
@@ -54,20 +51,20 @@ void Layer::act(int currentTime){
         enabled = true;
     }
 
-    if (enabled && animation){
+    if (enabled && animation != NULL){
         animation->logic();
     }
 }
 
 void Layer::render(int x, int y, const Graphics::Bitmap &bmp){
-    if (enabled && animation){
+    if (enabled && animation != NULL){
         animation->render(x + offset.x, y + offset.y, bmp);
     }
 }
 
 void Layer::reset(){
     enabled = false;
-    if (animation){
+    if (animation != NULL){
 	animation->reset();
     }
 }

@@ -17,11 +17,6 @@ name(owner->getName() + " (helper)"){
 }
 
 Helper::~Helper(){
-    for (map<int, MugenAnimation*>::iterator it = proxyAnimations.begin(); it != proxyAnimations.end(); it++){
-        MugenAnimation * animation = it->second;
-        delete animation;
-    }
-    
     for (map<int, State*>::iterator it = proxyStates.begin(); it != proxyStates.end(); it++){
         State * state = (*it).second;
         delete state;
@@ -73,19 +68,19 @@ bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, in
 }
 */
     
-MugenAnimation * Helper::getAnimation(int id) const {
-    map<int, MugenAnimation*>::const_iterator findIt = proxyAnimations.find(id);
+PaintownUtil::ReferenceCount<MugenAnimation> Helper::getAnimation(int id) const {
+    map<int, PaintownUtil::ReferenceCount<MugenAnimation> >::const_iterator findIt = proxyAnimations.find(id);
     if (findIt == proxyAnimations.end() && owner != NULL){
         if (owner->hasAnimation(id)){
-            MugenAnimation * dad = owner->getAnimation(id);
+            PaintownUtil::ReferenceCount<MugenAnimation> dad = owner->getAnimation(id);
             /* this is why proxyAnimations has to be mutable */
-            proxyAnimations[id] = new MugenAnimation(*dad);
+            proxyAnimations[id] = PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*dad));
             return proxyAnimations[id];
         }
     } else {
         return findIt->second;
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<MugenAnimation>(NULL);
 }
     
 bool Helper::isHelper() const {

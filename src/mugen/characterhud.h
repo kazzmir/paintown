@@ -65,7 +65,7 @@ class FightElement: public Element {
 	    return (type != IS_NOTSET);
 	}
 
-	virtual void setAction(MugenAnimation *);
+	virtual void setAction(PaintownUtil::ReferenceCount<MugenAnimation> );
         virtual inline void setSpriteData(int g, int s){
             this->spriteData.x = g;
             this->spriteData.y = s;
@@ -124,7 +124,7 @@ class FightElement: public Element {
 	
     private:
 	ElementType type;
-	MugenAnimation *action;
+        PaintownUtil::ReferenceCount<MugenAnimation> action;
         Mugen::Point spriteData;
 	MugenSprite *sprite;
 	MugenFont *font;
@@ -810,7 +810,7 @@ class GameInfo{
 	WinIcon winIconDisplay;
 	
 	Mugen::SpriteMap sprites;
-	std::map<int, MugenAnimation *> animations;
+	std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > animations;
 	std::vector<MugenFont *> fonts;
 	Mugen::SoundMap sounds;
 };

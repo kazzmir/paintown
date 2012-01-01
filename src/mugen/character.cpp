@@ -559,10 +559,7 @@ Character::~Character(){
       }
     }
     
-    // Get rid of animation lists;
-    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
-	if( i->second )delete i->second;
-    }
+    animations.clear();
     
     // Get rid of sounds
     for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
@@ -2265,7 +2262,7 @@ void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, in
     }
 }
 
-MugenAnimation * Character::getCurrentAnimation() const {
+PaintownUtil::ReferenceCount<MugenAnimation> Character::getCurrentAnimation() const {
     return getAnimation(currentAnimation);
     /*
     typedef std::map< int, MugenAnimation * > Animations;
@@ -2335,7 +2332,7 @@ void Character::processAfterImages(){
     if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
         // int life = 200;
         afterImage.currentTime += afterImage.timegap;
-        MugenAnimation * animation = getCurrentAnimation();
+        PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
             MugenFrame * currentSprite = animation->getCurrentFrame();
@@ -2404,7 +2401,7 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
         hitState.shakeTime -= 1;
     } else {
         /* Stuff to skip if the player is shaking/paused */
-        MugenAnimation * animation = getCurrentAnimation();
+        PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
         if (animation != NULL){
             /* Check debug state */
             if (debug){
@@ -2913,7 +2910,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     // frame.cache = Bitmap(fixed, true);
 }
 
-void Character::drawWithEffects(MugenAnimation * animation, int x, int y, unsigned int time, const Graphics::Bitmap & work){
+void Character::drawWithEffects(const PaintownUtil::ReferenceCount<MugenAnimation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work){
     class Effects: public Graphics::Bitmap::Filter {
     public:
         Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
@@ -3088,7 +3085,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         return;
     }
 
-    MugenAnimation * animation = getCurrentAnimation();
+    PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
     /* this should never be NULL... */
     if (animation != NULL){
         int x = getX() - cameraX + drawOffset.x;
@@ -3388,12 +3385,12 @@ void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, i
     widthOverride.playerBack = playerBack;
 }
         
-MugenAnimation * Character::getAnimation(int id) const {
-    std::map<int, MugenAnimation*>::const_iterator where = getAnimations().find(id);
+PaintownUtil::ReferenceCount<MugenAnimation> Character::getAnimation(int id) const {
+    std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> >::const_iterator where = getAnimations().find(id);
     if (where != getAnimations().end()){
         return where->second;
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<MugenAnimation>(NULL);
 }
         
 void Character::setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes){
@@ -3461,9 +3458,8 @@ void Character::setSpritePriority(int priority){
     /* TODO */
 }
         
-void Character::setTemporaryAnimation(MugenAnimation * animation){
+void Character::setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
     /* TODO */
-    delete animation;
 }
         
 bool Character::isHelper() const {

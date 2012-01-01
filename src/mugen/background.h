@@ -276,9 +276,9 @@ public:
     virtual ~AnimationElement();
     virtual void act();
     virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
-    virtual void setAnimation(MugenAnimation * animation);
+    virtual void setAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
 private:
-    PaintownUtil::ClassPointer<MugenAnimation> animation;
+    PaintownUtil::ReferenceCount<MugenAnimation> animation;
 };
 
 /*! Parallax Element */
