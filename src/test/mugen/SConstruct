@@ -166,6 +166,14 @@ test/factory/font_render.cpp
 test/mugen/reader.cpp
 """)
 
+character_select_source = Split("""
+common/init.cpp
+common/timer.cpp
+test/mugen/search.cpp
+select-main.cpp
+character-select.cpp
+""")
+
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
@@ -183,4 +191,8 @@ x.append(testEnv.Program('run-match', match_source))
 x.append(testEnv.Program('parse', parse_source))
 # x.append(testEnv.Program('load-stage', stage_source))
 x.append(testEnv.Program('palette', ['palette.cpp']))
+
+# Character Select test
+character_select = testEnv.Program('character-select', character_select_source + most_game_source)
+x.append(character_select)
 Return('x')
