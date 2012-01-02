@@ -29,7 +29,7 @@ namespace Mugen{
 
 class Effect{
 public:
-    Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, int spritePriority);
+    Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority);
     
     virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
@@ -67,6 +67,8 @@ protected:
     int id;
     double x;
     double y;
+    double scaleX;
+    double scaleY;
     int spritePriority;
 };
 
@@ -346,6 +348,7 @@ protected:
 
     int findMaximumSpritePriority();
     int findMinimumSpritePriority();
+    std::vector<int> allSpritePriorities();
 
     std::vector<Object*> getOpponents(Object * who);
 

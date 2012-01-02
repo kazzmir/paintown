@@ -71,7 +71,7 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, int spritePriority):
+Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority):
 owner(owner),
 /* Copy the animation here so that it can start from frame 0 and not accidentally
  * be shared with another Effect
@@ -80,11 +80,13 @@ animation(PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*anima
 id(id),
 x(x),
 y(y),
+scaleX(scaleX),
+scaleY(scaleY),
 spritePriority(spritePriority){
 }
     
 void Effect::draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-    animation->render((int)(x - cameraX), (int)(y - cameraY), work);
+    animation->render((int)(x - cameraX), (int)(y - cameraY), work, scaleX, scaleY);
 }
 
 void Effect::logic(){
@@ -108,8 +110,9 @@ public:
     virtual ~Spark();
 };
 
+/* FIXME: can sparks be scaled? */
 Spark::Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<MugenAnimation> animation):
-Effect(NULL, animation, -1, x, y, spritePriority){
+Effect(NULL, animation, -1, x, y, 1, 1, spritePriority){
 }
 
 Spark::~Spark(){
@@ -1204,60 +1207,42 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
     drawBackgroundWithEffectsSide(x, y, board, &Background::renderForeground);
 }
 
-int Mugen::Stage::findMinimumSpritePriority(){
-    bool set = false;
-    int lowest = 0;
+vector<int> Mugen::Stage::allSpritePriorities(){
+    vector<int> priorities;
+
     for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
         Mugen::Object * object = *it;
-        if (!set){
-            set = true;
-            lowest = object->getSpritePriority();
-        } else if (object->getSpritePriority() < lowest){
-            set = true;
-            lowest = object->getSpritePriority();
-        }
+        priorities.push_back(object->getSpritePriority());
     }
         
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
         Mugen::Effect * spark = *it;
-        if (!set){
-            set = true;
-            lowest = spark->getSpritePriority();
-        } else if (spark->getSpritePriority() < lowest){
-            set = true;
-            lowest = spark->getSpritePriority();
-        }
+        priorities.push_back(spark->getSpritePriority());
     }
 
-    return lowest;
+    return priorities;
+}
+
+int Mugen::Stage::findMinimumSpritePriority(){
+    vector<int> priorities = allSpritePriorities();
+    std::sort(priorities.begin(), priorities.end());
+
+    if (priorities.size() > 0){
+        return priorities[0];
+    }
+
+    return 0;
 }
 
 int Mugen::Stage::findMaximumSpritePriority(){
-    bool set = false;
-    int highest = 0;
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Mugen::Object * object = *it;
-        if (!set){
-            set = true;
-            highest = object->getSpritePriority();
-        } else if (object->getSpritePriority() > highest){
-            set = true;
-            highest = object->getSpritePriority();
-        }
-    }
-        
-    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
-        Mugen::Effect * spark = *it;
-        if (!set){
-            set = true;
-            highest = spark->getSpritePriority();
-        } else if (spark->getSpritePriority() > highest){
-            set = true;
-            highest = spark->getSpritePriority();
-        }
+    vector<int> priorities = allSpritePriorities();
+    std::sort(priorities.begin(), priorities.end());
+
+    if (priorities.size() > 0){
+        return priorities[priorities.size() - 1];
     }
 
-    return highest;
+    return 0;
 }
 
 void Mugen::Stage::render(Graphics::Bitmap *work){

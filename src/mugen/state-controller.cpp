@@ -3594,6 +3594,8 @@ public:
     removeTime(copy(you.removeTime)),
     bindTime(copy(you.bindTime)),
     spritePriority(copy(you.spritePriority)),
+    scaleX(copy(you.scaleX)),
+    scaleY(copy(you.scaleY)),
     positionType(you.positionType){
     }
 
@@ -3609,12 +3611,65 @@ public:
     Value removeTime;
     Value bindTime;
     Value spritePriority;
+    Value scaleX;
+    Value scaleY;
     PositionType positionType;
+
+    static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, double & x, double & y){
+        switch (positionType){
+            case Player1: {
+                x = posX + owner->getX();
+                y = posY + owner->getRY();
+                break;
+            }
+            case Player2: {
+                Character * enemy = stage.getEnemy(owner);
+                if (enemy != NULL){
+                    x = posX + enemy->getX();
+                    y = posX + enemy->getRY();
+                }
+                break;
+            }
+            case Front: {
+                if (owner->getFacing() == FacingRight){
+                    x = stage.maximumRight() + posX;
+                } else {
+                    x = stage.maximumLeft() - posX;
+                }
+                y = posY;
+                break;
+            }
+            case Back: {
+                if (owner->getFacing() == FacingLeft){
+                    x = stage.maximumRight() - posX;
+                } else {
+                    x = stage.maximumLeft() + posX;
+                }
+                y = posY;
+                break;
+            }
+            case Left: {
+                x = stage.maximumLeft() + posX;
+                y = stage.maximumUp() + posY;
+                break;
+            }
+            case Right: {
+                x = stage.maximumRight() - posX;
+                y = stage.maximumUp() + posY;
+                break;
+            }
+            default: {
+                x = posX;
+                y = posY;
+                break;
+            }
+        }
+    }
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, int spritePriority):
-            Effect(owner, animation, id, x, y, spritePriority),
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority):
+            Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
             stage(stage),
             velocityX(velocityX),
             velocityY(velocityY),
@@ -3695,47 +3750,7 @@ public:
                 if (bindTime > 0){
                     bindTime -= 1;
                 }
-                switch (positionType){
-                    case Player1: {
-                        x = (int)(posX + owner->getX());
-                        y = (int)(posY + owner->getRY());
-                        break;
-                    }
-                    case Front: {
-                        if (owner->getFacing() == FacingRight){
-                            x = stage.maximumRight() + posX;
-                        } else {
-                            x = stage.maximumLeft() - posX;
-                        }
-                        y = posY;
-                        break;
-                    }
-                    case Back: {
-                        if (owner->getFacing() == FacingLeft){
-                            x = stage.maximumRight() - posX;
-                        } else {
-                            x = stage.maximumLeft() + posX;
-                        }
-                        y = posY;
-                        break;
-                    }
-                    case Left: {
-                        x = stage.maximumLeft() + posX;
-                        y = stage.maximumUp() + posY;
-                        break;
-                    }
-                    case Right: {
-                        x = stage.maximumRight() - posX;
-                        y = stage.maximumUp() + posY;
-                        break;
-                    }
-                    /* TODO: implement rest of cases */
-                    default : {
-                        x = posX;
-                        y = posY;
-                        break;
-                    }
-                }
+                computePosition(posX, posY, owner, stage, positionType, x, y);
             }
 
             if (removeTime > 0){
@@ -3831,7 +3846,7 @@ public:
                 } else if (simple == "pausemovetime"){
                     /* TODO */
                 } else if (simple == "scale"){
-                    /* TODO */
+                    readValues(simple.getValue(), controller.scaleX, controller.scaleY);
                 } else if (simple == "sprpriority"){
                     controller.spritePriority = Compiler::compile(simple.getValue());
                 } else if (simple == "ontop"){
@@ -3869,6 +3884,9 @@ public:
         int spritePriority_value = (int) evaluateNumber(spritePriority, 0);
 #undef evaluateNumber
 
+        double scaleX = evaluateNumber(this->scaleX, env, 1);
+        double scaleY = evaluateNumber(this->scaleY, env, 1);
+
         PaintownUtil::ReferenceCount<MugenAnimation> animation;
         if (ownAnimation){
             animation = guy.getAnimation(animation_value);
@@ -3882,11 +3900,13 @@ public:
             throw MugenException(out.str());
         }
 
+        double x = 0;
+        double y = 0;
+        computePosition(posX_value, posY_value, &guy, stage, positionType, x, y);
+
         /* FIXME: handle rest of the explod parameters
-         * FIXME: the initial x/y values are determined by the postype value
-         * so instead of 'posX_value + guy.getRX()' it should be something else
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, (int)(posX_value + guy.getX()), (int)(posY_value + guy.getRY()), velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, spritePriority_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value);
         stage.addEffect(effect);
     }
 
@@ -3968,7 +3988,7 @@ public:
         public:
             GameAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int x, int y):
             /* FIXME: sprite priority */
-            Effect(NULL, animation, -1, x, y, 0){
+            Effect(NULL, animation, -1, x, y, 1, 1, 0){
             }
         };
 
