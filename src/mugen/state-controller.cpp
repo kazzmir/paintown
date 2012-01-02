@@ -3598,6 +3598,7 @@ public:
     scaleY(copy(you.scaleY)),
     superMove(copy(you.superMove)),
     superMoveTime(copy(you.superMoveTime)),
+    facing(copy(you.facing)),
     positionType(you.positionType){
     }
 
@@ -3617,9 +3618,70 @@ public:
     Value scaleY;
     Value superMove;
     Value superMoveTime;
+    Value facing;
     PositionType positionType;
 
-    static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, double & x, double & y){
+    /* Returns true if the sprite should flip */
+    static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType){
+        switch (positionType){
+            case Player1: {
+                if (facingPositive == 1){
+                    return guy.getFacing() == FacingLeft;
+                } else {
+                    return guy.getFacing() == FacingRight;
+                }
+                break;
+            }
+            case Player2: {
+                Character * enemy = stage.getEnemy(&guy);
+                if (enemy != NULL){
+                    if (facingPositive == 1){
+                        return enemy->getFacing() == FacingLeft;
+                    } else {
+                        return enemy->getFacing() == FacingRight;
+                    }
+                }
+                break;
+            }
+            case Front: {
+                if (facingPositive == -1){
+                    return guy.getFacing() == FacingLeft;
+                } else {
+                    return guy.getFacing() == FacingRight;
+                }
+                break;
+            }
+            case Back: {
+                if (facingPositive == 1){
+                    return guy.getFacing() == FacingLeft;
+                } else {
+                    return guy.getFacing() == FacingRight;
+                }
+                break;
+            }
+            case Left: {
+                if (facingPositive == 1){
+                    return false;
+                } else {
+                    return true;
+                }
+                break;
+            }
+            case Right: {
+                if (facingPositive == 1){
+                    return true;
+                } else {
+                    return false;
+                }
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, bool horizontalFlip, double & x, double & y){
+        posX *= horizontalFlip ? -1 : 1;
         switch (positionType){
             case Player1: {
                 x = posX + owner->getX();
@@ -3638,14 +3700,14 @@ public:
                 if (owner->getFacing() == FacingRight){
                     x = stage.maximumRight() + posX;
                 } else {
-                    x = stage.maximumLeft() - posX;
+                    x = stage.maximumLeft() + posX;
                 }
                 y = stage.maximumUp() + posY;
                 break;
             }
             case Back: {
                 if (owner->getFacing() == FacingLeft){
-                    x = stage.maximumRight() - posX;
+                    x = stage.maximumRight() + posX;
                 } else {
                     x = stage.maximumLeft() + posX;
                 }
@@ -3658,7 +3720,7 @@ public:
                 break;
             }
             case Right: {
-                x = stage.maximumRight() - posX;
+                x = stage.maximumRight() + posX;
                 y = stage.maximumUp() + posY;
                 break;
             }
@@ -3672,7 +3734,7 @@ public:
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime):
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip):
             Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
             stage(stage),
             velocityX(velocityX),
@@ -3686,7 +3748,8 @@ public:
             posY(posY),
             frozen(false),
             superMovePersist(superMove),
-            superMoveTime(superMoveTime){
+            superMoveTime(superMoveTime),
+            horizontalFlip(horizontalFlip){
             }
 
         void setVelocityX(double x){
@@ -3757,15 +3820,17 @@ public:
         bool frozen;
         bool superMovePersist;
         int superMoveTime;
+        bool horizontalFlip;
 
         virtual void logic(){
             if (!frozen){
                 Effect::logic();
 
                 if (bindTime == 0){
-                    x += velocityX;
+                    int reverse = horizontalFlip ? -1 : 1;
+                    x += velocityX * reverse;
                     y += velocityY;
-                    velocityX += accelerationX;
+                    velocityX += accelerationX * reverse;
                     velocityY += accelerationY;
                 } else {
                 }
@@ -3788,8 +3853,12 @@ public:
                 if (bindTime > 0){
                     bindTime -= 1;
                 }
-                computePosition(posX, posY, owner, stage, positionType, x, y);
+                computePosition(posX, posY, owner, stage, positionType, horizontalFlip, x, y);
             }
+        }
+	
+        virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
+            animation->render(horizontalFlip, false, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY);
         }
 
         virtual bool isDead(){
@@ -3850,25 +3919,15 @@ public:
                         Global::debug(0) << "Unknown position type '" << type << "'" << endl;
                     }
                 } else if (simple == "facing"){
-                    /* TODO */
+                    controller.facing = Compiler::compile(simple.getValue());
                 } else if (simple == "vfacing"){
                     /* TODO */
                 } else if (simple == "bindtime"){
-                    const Ast::Value * time;
-                    simple.view() >> time;
-                    controller.bindTime = Compiler::compile(time);
+                    controller.bindTime = Compiler::compile(simple.getValue());
                 } else if (simple == "velocity" || simple == "vel"){
-                    const Ast::Value * x;
-                    const Ast::Value * y;
-                    simple.view() >> x >> y;
-                    controller.velocityX = Compiler::compile(x);
-                    controller.velocityY = Compiler::compile(y);
+                    readValues(simple.getValue(), controller.velocityX, controller.velocityY);
                 } else if (simple == "accel"){
-                    const Ast::Value * x;
-                    const Ast::Value * y;
-                    simple.view() >> x >> y;
-                    controller.accelerationX = Compiler::compile(x);
-                    controller.accelerationY = Compiler::compile(y);
+                    readValues(simple.getValue(), controller.accelerationX, controller.accelerationY);
                 } else if (simple == "random"){
                     /* TODO */
                 } else if (simple == "removetime"){
@@ -3907,22 +3966,25 @@ public:
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
         int animation_value = (int) evaluateNumber(this->animation, -1);
         int id_value = (int) evaluateNumber(id, -1);
-        double posX_value = evaluateNumber(posX, 0) * facingLeft;
+        double posX_value = evaluateNumber(posX, 0);
         double posY_value = evaluateNumber(posY, 0);
-        double velocityX_value = evaluateNumber(velocityX, 0) * facingLeft;
+        double velocityX_value = evaluateNumber(velocityX, 0);
         double velocityY_value = evaluateNumber(velocityY, 0);
-        double accelerationX_value = evaluateNumber(accelerationX, 0) * facingLeft;
+        double accelerationX_value = evaluateNumber(accelerationX, 0);
         double accelerationY_value = evaluateNumber(accelerationY, 0);
         int removeTime_value = (int) evaluateNumber(removeTime, -2);
         int bindTime_value = (int) evaluateNumber(bindTime, 0);
         int spritePriority_value = (int) evaluateNumber(spritePriority, 0);
 #undef evaluateNumber
 
+        int facing = evaluateNumber(this->facing, env, 1);
         double scaleX = evaluateNumber(this->scaleX, env, 1);
         double scaleY = evaluateNumber(this->scaleY, env, 1);
         
         bool superMove = evaluateBool(this->superMove, env, false);
         int superMoveTime = evaluateBool(this->superMoveTime, env, 0);
+
+        bool horizontalFlip = computeFacing(facing, guy, stage, positionType);
 
         PaintownUtil::ReferenceCount<MugenAnimation> animation;
         if (ownAnimation){
@@ -3939,11 +4001,11 @@ public:
 
         double x = 0;
         double y = 0;
-        computePosition(posX_value, posY_value, &guy, stage, positionType, x, y);
+        computePosition(posX_value, posY_value, &guy, stage, positionType, horizontalFlip, x, y);
 
         /* FIXME: handle rest of the explod parameters
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime, horizontalFlip);
         stage.addEffect(effect);
     }
 
