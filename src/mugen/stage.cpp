@@ -92,6 +92,12 @@ void Effect::draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
 void Effect::logic(){
     animation->logic();
 }
+
+void Effect::superPauseStart(){
+}
+
+void Effect::superPauseEnd(){
+}
     
 int Effect::getSpritePriority() const {
     return spritePriority;
@@ -1010,6 +1016,12 @@ void Mugen::Stage::logic(){
 
         if (superPause.time > 0){
             superPause.time -= 1;
+            if (superPause.time == 0){
+                for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
+                    Mugen::Effect * effect = *it;
+                    effect->superPauseEnd();
+                }
+            }
         } else {
             background->act();
 
@@ -1686,11 +1698,11 @@ int Mugen::Stage::maximumLeft() const {
 }
     
 int Mugen::Stage::maximumUp() const {
-    return cameray + DEFAULT_HEIGHT;
+    return -cameray;
 }
 
 int Mugen::Stage::maximumDown() const {
-    return cameray;
+    return -cameray + DEFAULT_HEIGHT;
 }
     
 void Mugen::Stage::addProjectile(Projectile * projectile){
@@ -2084,6 +2096,12 @@ int Mugen::Stage::getGameTime() const {
     
 void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY){
     superPause.time = time;
+
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
+        Mugen::Effect * effect = *it;
+        effect->superPauseStart();
+    }
+
     if (animation != -1){
         if (ownAnimation){
             PaintownUtil::ReferenceCount<MugenAnimation> use = guy.getAnimation(animation);

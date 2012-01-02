@@ -3596,6 +3596,8 @@ public:
     spritePriority(copy(you.spritePriority)),
     scaleX(copy(you.scaleX)),
     scaleY(copy(you.scaleY)),
+    superMove(copy(you.superMove)),
+    superMoveTime(copy(you.superMoveTime)),
     positionType(you.positionType){
     }
 
@@ -3613,6 +3615,8 @@ public:
     Value spritePriority;
     Value scaleX;
     Value scaleY;
+    Value superMove;
+    Value superMoveTime;
     PositionType positionType;
 
     static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, double & x, double & y){
@@ -3636,7 +3640,7 @@ public:
                 } else {
                     x = stage.maximumLeft() - posX;
                 }
-                y = posY;
+                y = stage.maximumUp() + posY;
                 break;
             }
             case Back: {
@@ -3645,7 +3649,7 @@ public:
                 } else {
                     x = stage.maximumLeft() + posX;
                 }
-                y = posY;
+                y = stage.maximumUp() + posY;
                 break;
             }
             case Left: {
@@ -3668,7 +3672,7 @@ public:
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority):
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime):
             Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
             stage(stage),
             velocityX(velocityX),
@@ -3679,7 +3683,10 @@ public:
             bindTime(bindTime),
             positionType(positionType),
             posX(posX),
-            posY(posY){
+            posY(posY),
+            frozen(false),
+            superMovePersist(superMove),
+            superMoveTime(superMoveTime){
             }
 
         void setVelocityX(double x){
@@ -3725,6 +3732,17 @@ public:
         int getRemoveTime() const {
             return removeTime;
         }
+    
+        virtual void superPauseStart(){
+            if (!superMovePersist && superMoveTime == 0){
+                frozen = true;
+            }
+        }
+
+        virtual void superPauseEnd(){
+            /* Unfreeze no matter what */
+            frozen = false;
+        }
 
         const Mugen::Stage & stage;
         double velocityX;
@@ -3736,25 +3754,41 @@ public:
         PositionType positionType;
         int posX;
         int posY;
+        bool frozen;
+        bool superMovePersist;
+        int superMoveTime;
 
         virtual void logic(){
-            Effect::logic();
+            if (!frozen){
+                Effect::logic();
 
-            if (bindTime == 0){
-                x += velocityX;
-                y += velocityY;
-                velocityX += accelerationX;
-                velocityY += accelerationY;
+                if (bindTime == 0){
+                    x += velocityX;
+                    y += velocityY;
+                    velocityX += accelerationX;
+                    velocityY += accelerationY;
+                } else {
+                }
+
+                if (removeTime > 0){
+                    removeTime -= 1;
+                }
             } else {
+                if (superMoveTime > 0){
+                    superMoveTime -= 1;
+                    if (superMoveTime == 0){
+                        frozen = false;
+                    }
+                }
+            }
+
+            /* FIXME: should we do the bind even if we are frozen? */
+            if (bindTime != 0){
                 /* bindTime could be negative in which case its active forever */
                 if (bindTime > 0){
                     bindTime -= 1;
                 }
                 computePosition(posX, posY, owner, stage, positionType, x, y);
-            }
-
-            if (removeTime > 0){
-                removeTime -= 1;
             }
         }
 
@@ -3840,9 +3874,9 @@ public:
                 } else if (simple == "removetime"){
                     controller.removeTime = Compiler::compile(simple.getValue());
                 } else if (simple == "supermove"){
-                    /* TODO */
+                    controller.superMove = Compiler::compile(simple.getValue());
                 } else if (simple == "supermovetime"){
-                    /* TODO */
+                    controller.superMoveTime = Compiler::compile(simple.getValue());
                 } else if (simple == "pausemovetime"){
                     /* TODO */
                 } else if (simple == "scale"){
@@ -3886,6 +3920,9 @@ public:
 
         double scaleX = evaluateNumber(this->scaleX, env, 1);
         double scaleY = evaluateNumber(this->scaleY, env, 1);
+        
+        bool superMove = evaluateBool(this->superMove, env, false);
+        int superMoveTime = evaluateBool(this->superMoveTime, env, 0);
 
         PaintownUtil::ReferenceCount<MugenAnimation> animation;
         if (ownAnimation){
@@ -3906,7 +3943,7 @@ public:
 
         /* FIXME: handle rest of the explod parameters
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime);
         stage.addEffect(effect);
     }
 

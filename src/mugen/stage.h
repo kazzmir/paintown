@@ -40,6 +40,9 @@ public:
         return owner;
     }
 
+    virtual void superPauseStart();
+    virtual void superPauseEnd();
+
     virtual inline double getX() const {
         return x;
     }
