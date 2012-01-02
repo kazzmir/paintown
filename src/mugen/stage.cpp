@@ -1698,11 +1698,11 @@ int Mugen::Stage::maximumLeft() const {
 }
     
 int Mugen::Stage::maximumUp() const {
-    return -cameray;
+    return cameray;
 }
 
 int Mugen::Stage::maximumDown() const {
-    return -cameray + DEFAULT_HEIGHT;
+    return cameray + DEFAULT_HEIGHT;
 }
     
 void Mugen::Stage::addProjectile(Projectile * projectile){
