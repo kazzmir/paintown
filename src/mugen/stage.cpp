@@ -2178,7 +2178,12 @@ void Mugen::Stage::removeHelper(Mugen::Character * who){
     /* The character will ultimately be removed in the logic loop */
     who->setHealth(-1);
 
-    /* Remove any effects owned by this character/helper */
+    /* Remove any effects owned by this character/helper.
+     * Technically this isn't needed because when the helper is destroyed in the
+     * main logic loop it will call destroyed() which will eventually
+     * call stage.removeEffects(this), but theres no real harm in doing
+     * it here as well.
+     */
     removeEffects(who, -1);
 
     vector<Mugen::Helper*> children = findHelpers(who);

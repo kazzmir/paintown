@@ -2533,6 +2533,7 @@ void Character::maybeTurn(const vector<Object*> & objects, Stage & stage){
     
 void Character::destroyed(Stage & stage){
     stage.unbind(this);
+    stage.removeEffects(this, -1);
 }
 
 void Character::unbind(Object * who){
