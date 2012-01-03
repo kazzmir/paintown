@@ -261,6 +261,9 @@ public:
     int maximumDown() const;
 
     virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
+    
+    /* Remove references from this object to other objects, like through targetting */
+    virtual void unbind(Object * what);
 
 protected:
     struct cymk_holder{
@@ -334,8 +337,6 @@ protected:
     void loadSectionShadow(Ast::Section * section, cymk_holder & shadow);
     void loadSectionReflection(Ast::Section * section);
     void loadSectionMusic(Ast::Section * section);
-
-    virtual void unbind(Object * what);
 
     void updatePlayer(Object *o);
     void physics(Object * o);

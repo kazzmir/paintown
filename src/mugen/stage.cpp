@@ -894,10 +894,8 @@ void Mugen::Stage::physics(Object * mugen){
             // Do stuff for players
             if (isaPlayer(enemy)){
                 // He collides with another push him away
-                // if ( player->collision( (ObjectAttack*)enemy ) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 Mugen::Object * mplayer = (Mugen::Object *) mugen;
                 Mugen::Object * menemy = (Mugen::Object *) enemy;
-                // if (anyCollisions(mplayer->getDefenseBoxes(), mplayer->getX(), mplayer->getY(), menemy->getDefenseBoxes(), menemy->getX(), menemy->getY()) && centerCollision( ((Mugen::Character *)player), ((Mugen::Character *)enemy) ) ){
                 /* TODO: make this cleaner */
                 while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(mplayer, menemy) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
 
@@ -945,7 +943,7 @@ void Mugen::Stage::physics(Object * mugen){
                     }
                 }
             }
-            }
+        }
     }
 }
 
@@ -1048,7 +1046,8 @@ void Mugen::Stage::logic(){
 
                     // Non players, objects, projectiles misc
                 } else if (!isaPlayer(player) && player->getHealth() <= 0){
-                    unbind(player);
+                    player->destroyed(*this);
+                    // unbind(player);
                     delete player;
                     it = objects.erase(it);
                     next = false;
@@ -1416,7 +1415,8 @@ void Mugen::Stage::reset(){
 
         /* remove any non-player objects, like projectiles or helpers */
         if (!isaPlayer(player)){
-            unbind(player);
+            player->destroyed(*this);
+            // unbind(player);
             delete player;
             it = objects.erase(it);
         } else {
@@ -1670,7 +1670,8 @@ void Mugen::Stage::cleanup(){
 
             /* remove any non-player objects, like projectiles or helpers */
             if (!isaPlayer(object)){
-                unbind(object);
+                object->destroyed(*this);
+                // unbind(object);
                 delete object;
                 it = objects.erase(it);
             } else {
@@ -2172,10 +2173,14 @@ void Mugen::Stage::setEnvironmentColor(Graphics::Color color, int time, bool und
     environmentColor.under = under;
     environmentColor.color = color;
 }
-    
+
 void Mugen::Stage::removeHelper(Mugen::Character * who){
     /* The character will ultimately be removed in the logic loop */
     who->setHealth(-1);
+
+    /* Remove any effects owned by this character/helper */
+    removeEffects(who, -1);
+
     vector<Mugen::Helper*> children = findHelpers(who);
     for (vector<Mugen::Helper*>::iterator it = children.begin(); it != children.end(); it++){
         Mugen::Helper * helper = *it;
@@ -2183,7 +2188,7 @@ void Mugen::Stage::removeHelper(Mugen::Character * who){
         helper->reParent(NULL);
     }
 }
-    
+
 void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/ ){ 
         Mugen::Effect * effect = *it;

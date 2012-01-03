@@ -868,6 +868,8 @@ public:
             moveType = str;
         }
 
+        virtual void destroyed(Stage & stage);
+
         virtual void resetStateTime();
 
         virtual void setVariable(int index, const RuntimeValue & value);

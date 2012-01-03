@@ -23,6 +23,11 @@ Helper::~Helper(){
     }
 }
     
+void Helper::destroyed(Stage & stage){
+    Character::destroyed(stage);
+    stage.removeHelper(this);
+}
+    
 void Helper::reParent(Character * parent){
     this->owner = parent;
 }

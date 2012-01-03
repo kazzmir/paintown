@@ -13,6 +13,9 @@ public:
         return id;
     }
         
+    using Character::destroyed;
+    virtual void destroyed(Stage & stage);
+
     virtual bool isHelper() const;
     virtual const std::string getName() const;
     using Character::getAnimation;

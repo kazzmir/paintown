@@ -82,6 +82,11 @@ public:
 
     virtual int getSpritePriority() const = 0;
 
+    /* called when this object is about to be destroyed. clean up any
+     * lingering references into the stage
+     */
+    virtual void destroyed(Stage & stage) = 0;
+
     /* paused from an attack */
     virtual bool isPaused() const = 0;
     virtual Physics::Type getCurrentPhysics() const = 0;

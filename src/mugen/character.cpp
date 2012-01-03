@@ -2530,7 +2530,11 @@ void Character::maybeTurn(const vector<Object*> & objects, Stage & stage){
         }
     }
 }
-        
+    
+void Character::destroyed(Stage & stage){
+    stage.unbind(this);
+}
+
 void Character::unbind(Object * who){
     if (bind.bound == who){
         bind.bound = NULL;

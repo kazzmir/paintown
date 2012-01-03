@@ -27,9 +27,14 @@ void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/k
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath(stagePath)));
     stage.addPlayer1(&kfm1);
     stage.addPlayer2(&kfm2);
+    Global::debug(0) << "Loading stage" << std::endl;
     stage.load();
     stage.reset();
 
+    Global::debug(0) << "Run match" << std::endl;
+    /* Don't need the real timer here because we just invoke the logic portion of stage
+     * as fast as possible.
+     */
     TimeDifference diff;
     diff.startTime();
     while (!stage.isMatchOver()){

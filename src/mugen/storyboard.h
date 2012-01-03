@@ -10,6 +10,7 @@
 #include "util.h"
 #include "ast/extra.h"
 #include "util/pointer.h"
+#include "animation.h"
 
 #include "util/input/input-map.h"
 
