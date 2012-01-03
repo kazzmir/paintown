@@ -145,7 +145,7 @@ int main(int argc, char ** argv){
         input.set(Keyboard::Key_6, 0, true, Key6);
        
         try {
-            
+            Mugen::CharacterSelect select(Filesystem::AbsolutePath(file));
             /*Mugen::CharacterSelect select(Filesystem::AbsolutePath(file), Mugen::Player1, Mugen::Arcade);
             
             select.load();
