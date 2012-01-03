@@ -586,6 +586,7 @@ void Character::initialize(){
     currentState = Standing;
     currentPhysics = Physics::Stand;
     moveType = Move::Idle;
+    wasHitCounter = 0;
     frozen = false;
     reversalActive = false;
     previousState = currentState;
@@ -2669,6 +2670,7 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 }
 
 void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hisHit){
+    wasHitCounter += 1;
     hitState.update(stage, *this, getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
@@ -3542,6 +3544,10 @@ void Character::setPaletteEffects(int time, int addRed, int addGreen, int addBlu
     paletteEffects.invert = invert;
     paletteEffects.color = color;
     paletteEffects.counter = 0;
+}
+        
+unsigned int Character::getWasHitCount() const {
+    return wasHitCounter;
 }
         
 }

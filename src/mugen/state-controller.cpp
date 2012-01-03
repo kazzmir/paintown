@@ -3599,6 +3599,10 @@ public:
     superMove(copy(you.superMove)),
     superMoveTime(copy(you.superMoveTime)),
     facing(copy(you.facing)),
+    verticalFlip(copy(you.verticalFlip)),
+    randomX(copy(you.randomX)),
+    randomY(copy(you.randomY)),
+    removeOnHit(copy(you.removeOnHit)),
     positionType(you.positionType){
     }
 
@@ -3619,6 +3623,9 @@ public:
     Value superMove;
     Value superMoveTime;
     Value facing;
+    Value verticalFlip;
+    Value randomX, randomY;
+    Value removeOnHit;
     PositionType positionType;
 
     /* Returns true if the sprite should flip */
@@ -3734,7 +3741,7 @@ public:
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip):
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip, bool verticalFlip, bool removeOnHit):
             Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
             stage(stage),
             velocityX(velocityX),
@@ -3749,7 +3756,11 @@ public:
             frozen(false),
             superMovePersist(superMove),
             superMoveTime(superMoveTime),
-            horizontalFlip(horizontalFlip){
+            horizontalFlip(horizontalFlip),
+            removeOnHit(removeOnHit),
+            verticalFlip(verticalFlip),
+            hitCount(owner->getWasHitCount()),
+            shouldRemove(false){
             }
 
         void setVelocityX(double x){
@@ -3815,14 +3826,23 @@ public:
         int removeTime;
         int bindTime;
         PositionType positionType;
-        int posX;
-        int posY;
+        const int posX;
+        const int posY;
         bool frozen;
-        bool superMovePersist;
+        const bool superMovePersist;
         int superMoveTime;
-        bool horizontalFlip;
+        const bool horizontalFlip;
+        const bool verticalFlip;
+        const bool removeOnHit;
+        const unsigned int hitCount;
+        bool shouldRemove;
 
         virtual void logic(){
+
+            if (removeOnHit){
+                shouldRemove = owner->getWasHitCount() > hitCount;
+            }
+
             if (!frozen){
                 Effect::logic();
 
@@ -3858,10 +3878,14 @@ public:
         }
 	
         virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-            animation->render(horizontalFlip, false, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY);
+            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY);
         }
 
         virtual bool isDead(){
+            if (shouldRemove){
+                return true;
+            }
+
             switch (removeTime){
                 case -2: return Effect::isDead();
                 case -1: return false;
@@ -3921,7 +3945,7 @@ public:
                 } else if (simple == "facing"){
                     controller.facing = Compiler::compile(simple.getValue());
                 } else if (simple == "vfacing"){
-                    /* TODO */
+                    controller.verticalFlip = Compiler::compile(simple.getValue());
                 } else if (simple == "bindtime"){
                     controller.bindTime = Compiler::compile(simple.getValue());
                 } else if (simple == "velocity" || simple == "vel"){
@@ -3929,7 +3953,7 @@ public:
                 } else if (simple == "accel"){
                     readValues(simple.getValue(), controller.accelerationX, controller.accelerationY);
                 } else if (simple == "random"){
-                    /* TODO */
+                    readValues(simple.getValue(), controller.randomX, controller.randomY);
                 } else if (simple == "removetime"){
                     controller.removeTime = Compiler::compile(simple.getValue());
                 } else if (simple == "supermove"){
@@ -3949,7 +3973,7 @@ public:
                 } else if (simple == "ownpal"){
                     /* TODO */
                 } else if (simple == "removeongethit"){
-                    /* TODO */
+                    controller.removeOnHit = Compiler::compile(simple.getValue());
                 } else if (simple == "trans"){
                     /* TODO */
                 }
@@ -3963,11 +3987,15 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int facingLeft = guy.getFacing() == FacingLeft ? -1 : 1;
         FullEnvironment env(stage, guy);
+
+        double randomX = evaluateNumber(this->randomX, env, 0);
+        double randomY = evaluateNumber(this->randomX, env, 0);
+
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
         int animation_value = (int) evaluateNumber(this->animation, -1);
         int id_value = (int) evaluateNumber(id, -1);
-        double posX_value = evaluateNumber(posX, 0);
-        double posY_value = evaluateNumber(posY, 0);
+        double posX_value = evaluateNumber(posX, 0) + PaintownUtil::rnd(randomX) - randomX / 2;
+        double posY_value = evaluateNumber(posY, 0) + PaintownUtil::rnd(randomY) - randomY / 2;
         double velocityX_value = evaluateNumber(velocityX, 0);
         double velocityY_value = evaluateNumber(velocityY, 0);
         double accelerationX_value = evaluateNumber(accelerationX, 0);
@@ -3980,11 +4008,13 @@ public:
         int facing = evaluateNumber(this->facing, env, 1);
         double scaleX = evaluateNumber(this->scaleX, env, 1);
         double scaleY = evaluateNumber(this->scaleY, env, 1);
+        bool removeOnHit = evaluateBool(this->removeOnHit, env, false);
         
         bool superMove = evaluateBool(this->superMove, env, false);
         int superMoveTime = evaluateBool(this->superMoveTime, env, 0);
 
         bool horizontalFlip = computeFacing(facing, guy, stage, positionType);
+        bool verticalFlip = (int) evaluateNumber(this->verticalFlip, env, 1) == -1;
 
         PaintownUtil::ReferenceCount<MugenAnimation> animation;
         if (ownAnimation){
@@ -4005,7 +4035,7 @@ public:
 
         /* FIXME: handle rest of the explod parameters
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime, horizontalFlip);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime, horizontalFlip, verticalFlip, removeOnHit);
         stage.addEffect(effect);
     }
 

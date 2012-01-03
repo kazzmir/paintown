@@ -1076,6 +1076,9 @@ public:
             airjumpheight = f;
         }
 
+        /* number of times the character has been hit */
+        virtual unsigned int getWasHitCount() const;
+
         virtual int getCurrentCombo() const;
 
         virtual inline int getHitCount() const {
@@ -1742,6 +1745,9 @@ public:
         std::map<int, Object *> targets;
 
         int spritePriority;
+
+        /* number of times this character has been hit in total */
+        unsigned int wasHitCounter;
 };
 
 }
