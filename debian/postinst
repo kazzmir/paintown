@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo "You need to download the data manually from the Paintown website"
+echo "Get the latest data from here"
+echo
+echo "  http://paintown.org/index.php?page=download"
+echo
+echo "Do not worry about version incompatibilities."
+echo
+echo "Once you have the data, unzip it somewhere and run paintown from that same directory."
+echo " $ unzip data-3.5.0.zip"
+echo " $ paintown"
