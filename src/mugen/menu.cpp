@@ -359,9 +359,9 @@ void MugenMenu::loadData(){
                             simple.view() >> menu.fightFile;
                             Global::debug(1) << "Got Fight File: '" << menu.fightFile << "'" << endl;
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
+                            string temp;
+                            simple.view() >> temp;
                             try{
-                                string temp;
-                                simple.view() >> temp;
                                 Filesystem::AbsolutePath path = Mugen::Util::findFont(Filesystem::RelativePath(temp));
 
                                 if (true){
@@ -369,9 +369,9 @@ void MugenMenu::loadData(){
                                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                                 }
                             } catch (const Filesystem::NotFound & fail){
-                                Global::debug(0) << "Could not find font " << fail.getTrace() << endl;
+                                Global::debug(0) << "Could not find font '" << temp << "' " << fail.getTrace() << endl;
                             } catch (const LoadException & fail){
-                                Global::debug(0) << "Could not load font " << fail.getTrace() << endl;
+                                Global::debug(0) << "Could not load font '" << temp << "' " << fail.getTrace() << endl;
                             }
 
                         } else {
