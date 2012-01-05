@@ -17,7 +17,7 @@
          (time 500)))
   (anim
     (depth background top)
-    (text (message "Hello world!") (font "fonts/arial.ttf")
+    (text (message "Hello world!") 
          (gradient (low 32 32 0)
                    (high 255 128 32)
                    (size 20))
