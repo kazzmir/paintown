@@ -679,6 +679,7 @@ object NewAnimator extends swing.JFrame("Paintown Animator"){
 object Animator2{
   def main(args: Array[String]):Unit = {
     val editor = new NewAnimator()
+    System.out.println("Current working directory is " + System.getProperty("user.dir"))
     NewAnimator.animator = editor
     swing.SwingUtilities.invokeLater(new Runnable(){
       def run(){

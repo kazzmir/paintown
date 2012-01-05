@@ -1639,6 +1639,7 @@ class NewEditor extends JFrame("Paintown Editor"){
 
 object Editor2 {
   def main(args: Array[String]):Unit = {
+    System.out.println("Current working directory is " + System.getProperty("user.dir"))
     val editor = new NewEditor();
     SwingUtilities.invokeLater(new Runnable(){
         def run(){
