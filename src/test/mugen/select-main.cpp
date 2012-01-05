@@ -90,6 +90,7 @@ public:
                 }
             }
         }
+        select.act();
     }
 
     double ticks(double system){
@@ -107,6 +108,7 @@ public:
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
+        select.draw(buffer);
         //Font::getDefaultFont(12,12).printfWrap(5, 5, Graphics::makeColor(255, 255, 255), buffer, 320, cutscene.getInfo(), 0);
         buffer.BlitToScreen();
     }
@@ -122,7 +124,7 @@ int main(int argc, char ** argv){
         std::string file = argv[1];
         
         InputManager manager;
-        Graphics::Bitmap screen(Graphics::getScreenBuffer());
+        Graphics::Bitmap screen(320,240);//Graphics::getScreenBuffer());
         Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
         Keyboard::pushRepeatState(true);
         
@@ -145,17 +147,13 @@ int main(int argc, char ** argv){
         input.set(Keyboard::Key_6, 0, true, Key6);
        
         try {
-            Mugen::CharacterSelect select(Filesystem::AbsolutePath(file));
-            /*Mugen::CharacterSelect select(Filesystem::AbsolutePath(file), Mugen::Player1, Mugen::Arcade);
-            
-            select.load();
-            Mugen::Searcher searcher;
-            select.run("Test", searcher);
-            */
-            //Logic logic(input, cutscene);
-            //Draw draw(cutscene);
+            Filesystem::AbsolutePath path(file);
+            Mugen::CharacterSelect select(path);
+            select.init();
+            Logic logic(input, select);
+            Draw draw(select);
 
-            //Util::standardLoop(logic, draw);
+            Util::standardLoop(logic, draw);
             
         } catch (const MugenException & ex){
             Global::debug(0) << "Problem loading file [" << file << "]. Reason: " << ex.getTrace() << std::endl;

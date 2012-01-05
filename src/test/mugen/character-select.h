@@ -13,7 +13,7 @@ namespace Mugen{
     
 class Cell : public Gui::SelectItem {
 public:
-    Cell(unsigned int index, const ::Util::ReferenceCount<Gui::SelectListInterface> parent);
+    Cell(unsigned int index, const Gui::SelectListInterface *);
     virtual ~Cell();
     
     virtual void act();
@@ -26,15 +26,15 @@ public:
         return index;
     }
     
-    static void setBackground(::Util::ReferenceCount<MugenSprite> background);
-    static void setRandomIcon(::Util::ReferenceCount<MugenSprite> randomIcon);
+    static void setBackground(PaintownUtil::ReferenceCount<MugenSprite> background);
+    static void setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon);
     
 protected:
-    static ::Util::ReferenceCount<MugenSprite> background;
-    static ::Util::ReferenceCount<MugenSprite> randomIcon;
+    static PaintownUtil::ReferenceCount<MugenSprite> background;
+    static PaintownUtil::ReferenceCount<MugenSprite> randomIcon;
     
     unsigned int index;
-    const ::Util::ReferenceCount<Gui::SelectListInterface> parent;
+    const Gui::SelectListInterface * parent;
     bool empty;
     bool isRandom;
 };
@@ -44,17 +44,23 @@ public:
     CharacterSelect(const Filesystem::AbsolutePath &);
     virtual ~CharacterSelect();
     
+    virtual void init();
+    
     virtual void act();
     virtual void draw(const Graphics::Bitmap &);
 protected:
+    //! Path
+    const Filesystem::AbsolutePath & file;
     //! Grid
     Gui::GridSelect grid;
     //! Grid dimensions
     int gridX, gridY;
+    //! Grid draw point
+    int gridPositionX, gridPositionY;
     //! Starting positions
     int player1Start, player2Start;
     //! Cells
-    std::vector< ::Util::ReferenceCount<Cell> > cells;
+    std::vector< PaintownUtil::ReferenceCount<Cell> > cells;
     //! Sprites
     Mugen::SpriteMap sprites;
     //! Sounds
@@ -62,11 +68,11 @@ protected:
     //! Select file
     std::string selectFile;
     //! Fonts
-    std::vector< ::Util::ReferenceCount<MugenFont> > fonts;
+    std::vector< PaintownUtil::ReferenceCount<MugenFont> > fonts;
     //! Fade tool
     Gui::FadeTool fader;
     //! Select background
-    ::Util::ReferenceCount<Mugen::Background> background;
+    PaintownUtil::ReferenceCount<Mugen::Background> background;
 };
 
 }

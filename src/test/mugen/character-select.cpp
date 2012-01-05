@@ -7,10 +7,10 @@
 
 using namespace Mugen;
 
-::Util::ReferenceCount<MugenSprite> Cell::background = ::Util::ReferenceCount<MugenSprite>(NULL);
-::Util::ReferenceCount<MugenSprite> Cell::randomIcon = ::Util::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::background = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::randomIcon = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
 
-Cell::Cell(unsigned int index, const ::Util::ReferenceCount<Gui::SelectListInterface> parent):
+Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent):
 index(index),
 parent(parent),
 empty(true),
@@ -23,7 +23,10 @@ Cell::~Cell(){
 void Cell::act(){
 }
 
-void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const{
+void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & work, const Font & font) const{
+    if (background != NULL){
+        background->render(x, y, work);
+    }
 }
 
 bool Cell::isEmpty() const{
@@ -34,29 +37,37 @@ void Cell::setRandom(bool r){
     isRandom = r;
 }
 
-void Cell::setBackground(::Util::ReferenceCount<MugenSprite> background){
+void Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite> background){
     Cell::background = background;
 }
 
-void Cell::setRandomIcon(::Util::ReferenceCount<MugenSprite> randomIcon){
+void Cell::setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon){
     Cell::randomIcon = randomIcon;
 }
 
-CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
+CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
+file(file){
+    Global::debug(0) << "Got file: " << file.path() << std::endl;
+}
+
+CharacterSelect::~CharacterSelect(){
+}
+
+void CharacterSelect::init(){
     try{
-        Filesystem::AbsolutePath baseDir = path.getDirectory();
+        Filesystem::AbsolutePath baseDir = file.getDirectory();
 
         Global::debug(1) << baseDir.path() << std::endl;
 
-        if (path.isEmpty()){
-            throw MugenException( "Cannot locate character select definition file for: " + path.path());
+        if (file.isEmpty()){
+            throw MugenException( "Cannot locate character select definition file for: " + file.path());
         }
 
         TimeDifference diff;
         diff.startTime();
-        AstRef parsed(Util::parseDef(path.path()));
+        AstRef parsed(Util::parseDef(file.path()));
         diff.endTime();
-        Global::debug(1) << "Parsed mugen file " + path.path() + " in" + diff.printTime("") << std::endl;
+        Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << std::endl;
 
         for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
@@ -105,7 +116,7 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string fontPath;
                             simple.view() >> fontPath;
-                            select.fonts.push_back(::Util::ReferenceCount<MugenFont>(new MugenFont(Util::findFile(Filesystem::RelativePath(fontPath)))));
+                            select.fonts.push_back(PaintownUtil::ReferenceCount<MugenFont>(new MugenFont(Util::findFile(Filesystem::RelativePath(fontPath)))));
                             Global::debug(1) << "Got Font File: '" << fontPath << "'" << std::endl;
 
                         } else {
@@ -162,12 +173,12 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
                             }
                         } else if (simple == "rows"){
                             try{
-                                simple.view() >> self.gridX;
+                                simple.view() >> self.gridY;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "columns"){
                             try{
-                                simple.view() >> self.gridY;
+                                simple.view() >> self.gridX;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "wrapping"){
@@ -180,8 +191,7 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
                         } else if (simple == "pos"){
                             try{
                                 int x,y;
-                                simple.view() >> x >> y;
-                                //self.grid.setPosition(x,y);
+                                simple.view() >> self.gridPositionX >> self.gridPositionY;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "showemptyboxes"){
@@ -209,21 +219,21 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
                             try{
                                 int spacing;
                                 simple.view() >> spacing;
-                                self.grid.setCellSpacing(spacing, spacing);
+                                self.grid.setCellMargins(spacing, spacing);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.bg.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setBackground(::Util::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setRandomIcon(::Util::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.switchtime"){
@@ -512,7 +522,7 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
                 section->walk(walker);
             } else if (head == "selectbgdef"){ 
                 /* Background management */
-                background = ::Util::ReferenceCount<Mugen::Background>(new Mugen::Background(path, "selectbg"));
+                background = PaintownUtil::ReferenceCount<Mugen::Background>(new Mugen::Background(file, "selectbg"));
             } else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
             else if (head == "vs screen" ){
 #if 0
@@ -654,14 +664,15 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
                 // throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
                 std::ostringstream context;
                 context << __FILE__ << ":" << __LINE__;
-                Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + path.path() + "': " + head << std::endl;
+                Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
             }
         }
 
-        // Set up Grid
+        // Set up Grid set starting offset to 1 so it doesn't clip
+        grid.setStartingOffset(1, 1);
         grid.setGridSize(gridX, gridY);
         for (unsigned int i = 0; i < (unsigned int)(gridX * gridY); ++i){
-            ::Util::ReferenceCount<Cell> cell = ::Util::ReferenceCount<Cell>(new Cell(i, ::Util::ReferenceCount<Gui::SelectListInterface>(&grid)));
+            PaintownUtil::ReferenceCount<Cell> cell = PaintownUtil::ReferenceCount<Cell>(new Cell(i, &grid));
             cells.push_back(cell);
             grid.addItem(cell.convert<Gui::SelectItem>());
         }
@@ -673,11 +684,17 @@ CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & path){
     }
 }
 
-CharacterSelect::~CharacterSelect(){
-}
-
 void CharacterSelect::act(){
+    background->act();
+    grid.act();
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
+    background->renderBackground(0,0,work);
+    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
+    temp.clearToMask();
+    grid.render(temp, Font::getDefaultFont());
+    // Minus 1 since it's been offset
+    temp.draw(gridPositionX-1, gridPositionY-1, work);
+    background->renderForeground(0,0,work);
 }
