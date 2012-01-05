@@ -866,6 +866,8 @@ Filesystem::AbsolutePath Mod::selectPlayer(const string & message, const Level::
     try{
         CharacterSelect select(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("select.txt")));
         return doSelectPlayer2(select, message, remap, source);
+    } catch (const Exception::Return & ignore){
+        throw;
     } catch (...){
         TokenReader reader;
         CharacterSelect select(reader.readTokenFromString(defaultSelectData()));

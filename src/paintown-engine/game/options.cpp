@@ -270,27 +270,6 @@ public:
         } catch (const Exception::Return & fail){
             /* nothing */
         }
-
-        /*
-        Object * player = NULL;
-        try{
-            //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
-            Level::LevelInfo info = doLevelMenu("/levels", context);
-
-            Global::debug(1) << "Selecting players" << endl;
-            int remap = 0;
-            Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap);
-
-            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap);
-            vector<Util::Future<Object *> *> players;
-            players.push_back(&future);
-            Game::realGame(players, info);
-        } catch ( const LoadException & le ){
-            Global::debug(0) << "Error while loading: " << le.getTrace() << endl;
-        } catch (const Exception::Return & ignore){
-            throw Menu::Reload(__FILE__, __LINE__);
-        }
-        */
     }
 };
 
