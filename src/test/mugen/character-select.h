@@ -28,10 +28,27 @@ public:
     
     static void setBackground(PaintownUtil::ReferenceCount<MugenSprite> background);
     static void setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon);
+    static void setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static inline void setBlinkCursor(bool blink){
+        Cell::blinkCursor = blink;
+    }
     
 protected:
     static PaintownUtil::ReferenceCount<MugenSprite> background;
     static PaintownUtil::ReferenceCount<MugenSprite> randomIcon;
+    static PaintownUtil::ReferenceCount<MugenSprite> player1ActiveCursor;
+    static PaintownUtil::ReferenceCount<MugenSprite> player1DoneCursor;
+    static PaintownUtil::ReferenceCount<MugenSprite> player2ActiveCursor;
+    static PaintownUtil::ReferenceCount<MugenSprite> player2DoneCursor;
+    
+    static bool blinkCursor;
+    static int blinkTime;
+    
+    void drawPlayer1Cursor(int x, int y, const Graphics::Bitmap &) const;
+    void drawPlayer2Cursor(int x, int y, const Graphics::Bitmap &, bool blink=false) const;
     
     unsigned int index;
     const Gui::SelectListInterface * parent;
