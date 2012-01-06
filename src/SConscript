@@ -259,8 +259,8 @@ elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use), stretchLibrary(use)])
 
 # This is the second time the util library is linked in, noted above
-use.Prepend(LIBS = [util])
-use.Append(LIBS = [util])
+#use.Prepend(LIBS = [util])
+#use.Append(LIBS = [util])
 
 def addObjects(objects):
     obj_files.extend(objects)

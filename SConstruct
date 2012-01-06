@@ -955,7 +955,7 @@ def getEnvironment(debug):
         flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
-        env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CC $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
 # pthread-psp
         all = Split("""
@@ -1100,7 +1100,7 @@ rsx
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
         env.Append(CPPPATH = ['#src/wii'])
-        # env['LINKCOM'] = '$CC $SOURCES --start-group $_LIBDIRFLAGS $_LIBFLAGS --end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'iberty', 'bte', 'fat', 'ogc', 'm'])
         # os.environ['PATH'] = "%s:%s:%s" % (bin_path, ogc_bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
@@ -1151,6 +1151,7 @@ rsx
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
         env.Append(CPPPATH = ['#src/android'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         # Hack to put libstdc++ at the end
         # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a -o $TARGET'
         # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
@@ -1288,11 +1289,15 @@ rsx
         env.Append(LINKFLAGS = flags + ['-melf_nacl'])
         env.Append(LIBS = libs)
         return env
+    def gcc(env):
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        return env
     def llvm(env):
         #env['CC'] = 'llvm-gcc'
         #env['CXX'] = 'llvm-g++'
         env['CXX'] = 'clang++'
         env['CC'] = 'clang'
+        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
 
         # Speeds up compiles by not shelling out to 'as', but not mature yet
         # env.Append(CCFLAGS = ['-integrated-as'])
@@ -1369,7 +1374,7 @@ rsx
             elif useLLVM():
                 return llvm(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             else:
-                return Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags)
+                return gcc(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
     def add_peg(env):
         env['PEG_MAKE'] = 'Creating peg parser $TARGET'
         return env

@@ -6,10 +6,10 @@ testEnv.VariantDir('common', '../common')
 
 testEnv.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 
-source = Split("""test.cpp""")
+source = Split("""test.cpp test/factory/font_factory.cpp""")
 
 env = testEnv
-testEnv.Append(LIBS = [testEnv.SConscript('test/util/network/hawknl/SConscript', exports = ['env'])])
+# testEnv.Append(LIBS = [testEnv.SConscript('test/util/network/hawknl/SConscript', exports = ['env'])])
 
 x = []
 test = testEnv.Program('network', source)

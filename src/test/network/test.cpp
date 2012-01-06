@@ -5,10 +5,13 @@
 #include <string>
 #include <iostream>
 #include "util/network/network.h"
+#include "util/file-system.h"
 #include "util/thread.h"
+#include "globals.h"
 
 using std::string;
 
+#if 0
 namespace Util{
 /* sleep for `x' milliseconds */
 void rest(int x){
@@ -23,6 +26,15 @@ void rest(int x){
 #endif
 }
 
+}
+#endif
+
+namespace Global{
+    int getVersion(){
+        return 0;
+    }
+
+    const Filesystem::RelativePath DEFAULT_FONT = Filesystem::RelativePath("fonts/arial.ttf");
 }
 
 /* global shared port */
