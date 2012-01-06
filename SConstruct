@@ -832,6 +832,7 @@ def getEnvironment(debug):
         env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         env.Append(CPPDEFINES = ['DINGOO'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         # env.Append(CPPDEFINES = ['DINGOO', 'LINUX', 'MPU_JZ4740'])
         #env.Append(CPPPATH = [setup(dingoo_path, "/include"),
         #                      setup(dingoo_path, "/include/SDL"),
@@ -877,6 +878,7 @@ def getEnvironment(debug):
         env['LINKCOM'] = '$LD $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', '%s/bin' % dingoo_path)
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         return env
 
     def pandora(env):
@@ -891,6 +893,7 @@ def getEnvironment(debug):
         flags = ['-O3', '-pipe', '-march=armv7-a', '-mtune=cortex-a8', '-mfpu=neon', '-mfloat-abi=softfp', '-ftree-vectorize', '-ffast-math', '-fsingle-precision-constant']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         return env
 
     def nds(env):
@@ -914,6 +917,7 @@ def getEnvironment(debug):
 
         env.Append(LIBPATH = [setup(path, '/libnds/lib')])
         env.Append(CPPDEFINES = ['NDS'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.PrependENVPath('PATH', bin_path)
         # env.PrependENVPath('PATH', libexec_path)
         return env
@@ -1202,6 +1206,7 @@ rsx
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
         env.Append(CPPPATH = ['#src/ios'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         
         env.Append(LIBS = libs)
         env.Append(LIBPATH = [setup(path, '%s/usr/lib' % sdk),
@@ -1287,6 +1292,7 @@ rsx
         env.Append(CXXFLAGS = flags + compile_flags)
         env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
         env.Append(LINKFLAGS = flags + ['-melf_nacl'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LIBS = libs)
         return env
     def gcc(env):
