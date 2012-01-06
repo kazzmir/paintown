@@ -260,6 +260,7 @@ elif useMinpspw():
 
 # This is the second time the util library is linked in, noted above
 use.Prepend(LIBS = [util])
+use.Append(LIBS = [util])
 
 def addObjects(objects):
     obj_files.extend(objects)

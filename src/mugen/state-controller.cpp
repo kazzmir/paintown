@@ -3757,8 +3757,8 @@ public:
             superMovePersist(superMove),
             superMoveTime(superMoveTime),
             horizontalFlip(horizontalFlip),
-            removeOnHit(removeOnHit),
             verticalFlip(verticalFlip),
+            removeOnHit(removeOnHit),
             hitCount(owner->getWasHitCount()),
             shouldRemove(false){
             }

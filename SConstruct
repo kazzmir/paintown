@@ -358,6 +358,12 @@ OpenGL
     context.Result(colorResult(1))
     return 1
 
+def wrapSymbols(env):
+    wrapped_symbols = Split("""open read close lseek lstat access""")
+    def wrap(symbol):
+        return '-Wl,--wrap=%s' % symbol
+    env.Append(LINKFLAGS = map(wrap, wrapped_symbols))
+
 def checkAllegro(context):
     context.Message("Checking for Allegro... ")
 
@@ -460,23 +466,6 @@ def checkNativeOgg(context):
     ret = context.TryLink("""
         #include <vorbis/vorbisfile.h>
         #include <stdio.h>
-
-        /* nacl stuff. remove this once nacl gets its own scons file */
-        int __wrap_open(const char * path, int mode, int params){
-            return 0;
-        }
-
-        int __wrap_read(int fd, void * buf, int count){
-            return 0;
-        }
-
-        int __wrap_close(int fd){
-            return 0;
-        }
-
-        int __wrap_lseek(int fd, int offset, int whence){
-            return 0;
-        }
 
         int main(int argc, char ** argv){
           OggVorbis_File ovf;
@@ -1291,15 +1280,12 @@ rsx
 
         compile_flags = ['-fno-builtin', '-fno-stack-protector', '-fdiagnostics-show-option']
 
-        wrapped_symbols = ['open', 'read', 'close', 'lseek', 'lstat', 'access']
-        def wrap(symbol):
-            return '-Wl,--wrap=%s' % symbol
         env.Append(CPPDEFINES = ['NACL'])
         env.Append(CPPPATH = paths)
         env.Append(CCFLAGS = flags + compile_flags)
         env.Append(CXXFLAGS = flags + compile_flags)
         env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
-        env.Append(LINKFLAGS = flags + ['-melf_nacl'] + map(wrap, wrapped_symbols))
+        env.Append(LINKFLAGS = flags + ['-melf_nacl'])
         env.Append(LIBS = libs)
         return env
     def llvm(env):
@@ -1307,6 +1293,9 @@ rsx
         #env['CXX'] = 'llvm-g++'
         env['CXX'] = 'clang++'
         env['CC'] = 'clang'
+
+        # Speeds up compiles by not shelling out to 'as', but not mature yet
+        # env.Append(CCFLAGS = ['-integrated-as'])
 
         # <nicholas> ah. don't replace AR or LD or RANLIB.
         # <jonrafkind> dont use llvm-ar and llvm-ld?
@@ -1333,7 +1322,7 @@ rsx
             # for gcov:
             # ['-fprofile-arcs', '-ftest-coverage']
             # cflags.append( ['-g3','-ggdb', '-Werror'])
-            cflags.extend(['-g3', '-Wfatal-errors'])
+            cflags.extend(['-g3', '-O0', '-Wfatal-errors'])
         else:
             # -march=native
             if nativeCompile():
@@ -1915,6 +1904,9 @@ else:
 # if not isWindows():
 #    env.Append(CCFLAGS = ['-Werror'])
 # staticEnv.Append(CCFLAGS = ['-Werror'])
+
+wrapSymbols(env)
+wrapSymbols(staticEnv)
 
 env['PAINTOWN_BUILD_TESTS'] = True
 use = env
