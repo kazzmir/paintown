@@ -302,6 +302,9 @@ endif (USE_SDL)
 
 #paintown executable
 add_executable (paintown src/util/xmain.cpp)
+
+set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
+
 target_link_libraries(paintown ${GROUP_START} base_module level_module openbor_module factory_module object_module asteroids_module loadpng_module 
         env_module script_module network_module game_module mugen_module platformer_module trigger_module util_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
