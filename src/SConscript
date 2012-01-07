@@ -217,6 +217,9 @@ def hawknlLibrary(env):
     #    env.Append(CPPDEFINES = 'MACOSX')
     return env.SConscript('util/network/hawknl/SConscript', exports = ['env'])
 
+def minizipLibrary(env):
+    return env.SConscript('util/zip/SConscript', exports = ['env'])
+
 def utilLibrary(env):
     utilEnv = env.Clone()
     env = utilEnv
@@ -250,7 +253,7 @@ use.Prepend(LIBS = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(LIBS = [hawknlLibrary(use)])
 
-use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use)])
+use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use), minizipLibrary(use)])
 if not useSDL() and not useAllegro5():
     use.Prepend(LIBS = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():

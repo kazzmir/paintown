@@ -257,6 +257,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/util)
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/network/hawknl)
 
+#Minizip
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/zip)
+
 #Source modules
 add_library(base_module ${BASE_SRC})
 add_library(level_module ${LEVEL_SRC})
@@ -306,7 +309,7 @@ add_executable (paintown src/util/xmain.cpp)
 set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
 
 target_link_libraries(paintown ${GROUP_START} base_module level_module openbor_module factory_module object_module asteroids_module loadpng_module 
-        env_module script_module network_module game_module mugen_module platformer_module trigger_module util_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+        env_module script_module network_module game_module mugen_module platformer_module trigger_module util_module pcre_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
