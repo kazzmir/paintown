@@ -1297,7 +1297,10 @@ rsx
         wrapSymbols(env)
         return env
     def gcc(env):
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        if isOSX104():
+            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+        else:
+            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         return env
     def llvm(env):
         #env['CC'] = 'llvm-gcc'
