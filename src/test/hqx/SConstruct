@@ -14,9 +14,11 @@ test/factory/font_render.cpp
 """)
 
 hq2x_source = Split("""hq2x.cpp""")
+xbr_source = Split("""xbr.cpp""")
 performance_source = Split("""performance.cpp""")
 
 x = []
-x.append(testEnv.Program('hq2x', hq2x_source + source))
+x.append(testEnv.Program('hqx', hq2x_source + source))
+x.append(testEnv.Program('xbr', xbr_source + source))
 x.append(testEnv.Program('performance', performance_source + source))
 Return('x')
