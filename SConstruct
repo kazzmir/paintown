@@ -1294,6 +1294,7 @@ rsx
         env.Append(LINKFLAGS = flags + ['-melf_nacl'])
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LIBS = libs)
+        wrapSymbols(env)
         return env
     def gcc(env):
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
@@ -1916,8 +1917,8 @@ else:
 #    env.Append(CCFLAGS = ['-Werror'])
 # staticEnv.Append(CCFLAGS = ['-Werror'])
 
-wrapSymbols(env)
-wrapSymbols(staticEnv)
+# wrapSymbols(env)
+# wrapSymbols(staticEnv)
 
 env['PAINTOWN_BUILD_TESTS'] = True
 use = env
