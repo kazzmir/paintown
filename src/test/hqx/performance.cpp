@@ -9,8 +9,8 @@
 
 using std::string;
 
-static void test(Graphics::Bitmap input, string size, int increase){
-    Graphics::Bitmap output(input.getWidth() * increase, input.getWidth() * increase);
+static void testhqx(Graphics::Bitmap input, string size, int increase){
+    Graphics::Bitmap output(input.getWidth() * increase, input.getHeight() * increase);
     for (int i = 1; i < 4; i++){
         TimeDifference timer;
         int max = pow(10, i);
@@ -23,12 +23,30 @@ static void test(Graphics::Bitmap input, string size, int increase){
     }
 }
 
+static void testxbr(Graphics::Bitmap input, string size, int increase){
+    Graphics::Bitmap output(input.getWidth() * increase, input.getHeight() * increase);
+    for (int i = 1; i < 4; i++){
+        TimeDifference timer;
+        int max = pow(10, i);
+        timer.startTime();
+        for (int x = 0; x < max; x++){
+            input.StretchXbr(output);
+        }
+        timer.endTime();
+        Global::debug(0) << timer.printAverageTime(size, max) << std::endl;
+    }
+}
+
 static void run(string path){
     Graphics::Bitmap image(path);
 
-    test(image, "2x", 2);
-    test(image, "3x", 3);
-    test(image, "4x", 4);
+    testhqx(image, "hq2x", 2);
+    testhqx(image, "hq3x", 3);
+    testhqx(image, "hq4x", 4);
+    
+    testxbr(image, "2xbr", 2);
+    testxbr(image, "3xbr", 3);
+    testxbr(image, "4xbr", 4);
 }
 
 int main(int argc, char ** argv){
