@@ -65,6 +65,7 @@ define_config(screen_size, "screen-size");
 define_config(sound, "sound");
 define_config(music, "music");
 define_config(up, "up");
+define_config(quality_filter, "quality-filter");
 define_config(language, "language");
 define_config(mugen_motif, "mugen-motif");
 /* version of the game: 3.3, 3.4, 4.24 */
@@ -786,6 +787,10 @@ void Configuration::loadConfigurations(){
                 string motif;
                 n->view() >> motif;
                 setMugenMotif(motif);
+            } else if (*n == config_quality_filter){
+                string filter;
+                n->view() >> filter;
+                setQualityFilter(filter);
             } else if (*n == config_menu_font_width){
                 int x;
                 n->view() >> x;
@@ -954,6 +959,8 @@ void Configuration::saveConfiguration(){
 
     *(head.newToken()) << config_version << Global::getVersionString();
 
+    *(head.newToken()) << config_quality_filter << getQualityFilter();
+
     if (Configuration::getLanguage() != ""){
         *(head.newToken()) << config_language << Configuration::getLanguage();
     }
@@ -1051,6 +1058,7 @@ std::string Configuration::currentGameDir = "";
 std::map<std::string, std::string> Configuration::properties;
 std::string Configuration::language = "";
 std::string Configuration::mugenMotif = "default";
+std::string Configuration::qualityFilter = "none";
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
@@ -1176,4 +1184,12 @@ bool Configuration::isJoystickEnabled(){
 void Configuration::setJoystickEnabled(bool enabled){
     joystickEnabled = enabled;
     saveConfiguration();
+}
+    
+std::string Configuration::getQualityFilter(){
+    return qualityFilter;
+}
+
+void Configuration::setQualityFilter(const std::string & filter){
+    qualityFilter = filter;
 }

@@ -107,6 +107,9 @@ public:
     static std::string getMugenMotif();
     static void setMugenMotif(const std::string & motif);
 
+    static std::string getQualityFilter();
+    static void setQualityFilter(const std::string & filter);
+
     static Util::ReferenceCount<Menu::FontInfo> getMenuFont();
     static void setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & str);
     static bool hasMenuFont();
@@ -194,6 +197,8 @@ private:
 
     static int npc_buddies;
     static PlayMode play_mode;
+
+    static std::string qualityFilter;
 
     static int screen_width;
     static int screen_height;

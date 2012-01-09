@@ -597,10 +597,20 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             run(screen_buffer, state);
         }
 
+        Graphics::QualityFilter qualityFilter(const string & type){
+            if (type == "xbr"){
+                return Graphics::XbrFilter;
+            }
+            if (type == "hqx"){
+                return Graphics::HqxFilter;
+            }
+            return Graphics::NoFilter;
+        }
+
         void run(const Graphics::Bitmap & screen_buffer, GameState & state){
             Graphics::RestoreState graphicsState;
             /* FIXME: replace these constants */
-            Graphics::StretchedBitmap work(320, 240, screen_buffer);
+            Graphics::StretchedBitmap work(320, 240, screen_buffer, qualityFilter(Configuration::getQualityFilter()));
             Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
             // updateFrames();
 
