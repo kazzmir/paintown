@@ -282,14 +282,24 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        final JLabel scaleNum = (JLabel) context.find( "scale-num" );
-        scaleNum.setText( "Scale: " + area.getScale() );
+        final JLabel scaleNum = (JLabel) context.find("scale-num");
+        scaleNum.setText("Scale: " + area.getScale());
         final JSlider scale = (JSlider) context.find( "scale" );
-        scale.setValue( (int)(area.getScale() * 5.0) );
-        scale.addChangeListener( new ChangeListener(){
-            public void stateChanged( ChangeEvent e ){
-                area.setScale( scale.getValue() / 5.0 );
-                scaleNum.setText( "Scale: " + area.getScale() );
+        scale.setValue((int)(area.getScale() * 5.0));
+        scale.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent e){
+                area.setScale(scale.getValue() / 5.0);
+                scaleNum.setText("Scale: " + area.getScale());
+            }
+        });
+
+        area.addScaleListener(new Lambda0(){
+            public Object invoke(){
+                scale.setValue((int)(area.getScale() * 5.0));
+                scaleNum.setText("Scale: " + area.getScale());
+                scaleNum.repaint();
+                scale.repaint();
+                return null;
             }
         });
 

@@ -31,6 +31,9 @@ public final class DrawArea extends JComponent {
     /* true for behind, false for in front */
     private boolean overlayBehind = true;
     private double overlayAlphaLevel = 1;
+    private boolean resizedOnce = false;
+
+    private java.util.List<Lambda0> scaleListeners = new ArrayList<Lambda0>();
 
     public DrawArea(final Lambda0 loader){
         this(new DrawProperties(), loader);
@@ -42,6 +45,28 @@ public final class DrawArea extends JComponent {
         this.drawProperties = properties;
 
         scale = 1.0;
+
+        this.addComponentListener(new ComponentAdapter(){
+            public void componentResized(ComponentEvent event){
+                if (resizedOnce == false){
+                    resizedOnce = true;
+                    if (currentAnimation != null && currentAnimation.hasImage()){
+                        double width = currentAnimation.getWidth();
+                        double height = currentAnimation.getHeight();
+                        double myWidth = getWidth();
+                        double myHeight = getHeight();
+                        if (myWidth / width < myHeight / height){
+                            setScale(myWidth / width * 0.5);
+                        } else {
+                            setScale(myWidth / height * 0.5);
+                        }
+                        updateScaleListeners();
+                    }
+                    setCenterX((int)(getWidth() / 2.0 / getScale()));
+                    setCenterY((int)(getHeight() / 2.0 / getScale()) + 10);
+                }
+            }
+        });
 
         this.addMouseListener(new MouseListener(){
             public void mouseClicked(MouseEvent e){
@@ -199,6 +224,16 @@ public final class DrawArea extends JComponent {
            */
     }
 
+    private void updateScaleListeners(){
+        for (Lambda0 update: scaleListeners){
+            update.invoke_();
+        }
+    }
+
+    public void addScaleListener(Lambda0 update){
+        scaleListeners.add(update);
+    }
+
     private double getGuideRatio(){
         if (guideSize > 0){
             return 10 * getMaxGuideSize() / guideSize;
@@ -233,6 +268,12 @@ public final class DrawArea extends JComponent {
     }
 
     public void setScale(double x){
+        if (x < 0.1){
+            x = 0.1;
+        }
+        if (x > 4){
+            x = 4;
+        }
         scale = x;
         repaint();
     }

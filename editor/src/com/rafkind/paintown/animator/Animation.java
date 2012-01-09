@@ -126,13 +126,17 @@ public class Animation implements Runnable {
 		}
 		return 0;
 	}
-	
+
 	public int getWidth(){
 		if ( image != null ){
 			return image.getWidth( null );
 		}
 		return 0;
 	}
+
+    public boolean hasImage(){
+        return image != null;
+    }
 
 	public void setRange( int r ){
 		range = r;
