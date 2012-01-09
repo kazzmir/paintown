@@ -418,7 +418,7 @@ int paintown_main(int argc, char ** argv){
 
     System::startMemoryUsage();
 
-    Global::setDebug(1);
+    Global::setDebug(0);
     vector<const char *> all_args;
 
 #define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
