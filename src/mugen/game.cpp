@@ -422,7 +422,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 }
             }
 
-            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             work.start();
             stage->render(&work);
             work.finish();
