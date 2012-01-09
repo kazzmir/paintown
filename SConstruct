@@ -1356,7 +1356,7 @@ rsx
             SCons.Tool.zip.generate(env)
             return env
         elif useMingw():
-            return Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw', 'zip'])
+            return gcc(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw', 'zip']))
         else:
             if useIntel():
                 print "Using the intel compiler"
