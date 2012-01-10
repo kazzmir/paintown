@@ -1192,4 +1192,5 @@ std::string Configuration::getQualityFilter(){
 
 void Configuration::setQualityFilter(const std::string & filter){
     qualityFilter = filter;
+    saveConfiguration();
 }

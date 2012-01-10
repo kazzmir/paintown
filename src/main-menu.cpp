@@ -564,8 +564,8 @@ int paintown_main(int argc, char ** argv){
     diff.endTime();
     Global::debug(0) << diff.printTime("Init took") << endl;
 
-    Graphics::Bitmap screen(Graphics::getScreenBuffer());
-    Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
+    // Graphics::Bitmap screen(Graphics::getScreenBuffer());
+    Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());
 
     /* set the game mod. check in this order
      * 1. whatever is in the configuration under (current-game ...)

@@ -613,7 +613,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             FontRender * render = FontRender::getInstance();
             render->render(&screen);
 
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
 
             if (state.helpTime > 0){
                 int x = 100;

@@ -1,6 +1,7 @@
 #include "util/bitmap.h"
 #include "util/lit_bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "paintown-engine/object/object.h"
 #include "util/load_exception.h"
 #include "util/funcs.h"
@@ -791,7 +792,10 @@ class Selecter: public Util::Logic, public Util::Draw {
 
         void draw(const Graphics::Bitmap & buffer){
             buffer.clear();
-            select.draw(buffer);
+            Graphics::StretchedBitmap work(640, 480, buffer, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+            work.start();
+            select.draw(work);
+            work.finish();
             buffer.BlitToScreen();
         }
 };
