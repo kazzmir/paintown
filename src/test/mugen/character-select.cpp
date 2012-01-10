@@ -4,6 +4,7 @@
 
 #include "util/timedifference.h"
 #include "mugen/ast/all.h"
+#include "mugen/sound.h"
 
 using namespace Mugen;
 
@@ -363,21 +364,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.player1Cursor.setMoveSound(self.sounds[group][sound]);
+                                self.setSound(Player1Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.player1Cursor.setSelectSound(self.sounds[group][sound]);
+                                self.setSound(Player1Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.player1Cursor.setRandomSound(self.sounds[group][sound]);
+                                self.setSound(Player1Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.startcell"){
@@ -419,21 +420,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.player2Cursor.setMoveSound(self.sounds[group][sound]);
+                                self.setSound(Player2Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.player2Cursor.setSelectSound(self.sounds[group][sound]);
+                                self.setSound(Player2Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.player2Cursor.setRandomSound(self.sounds[group][sound]);
+                                self.setSound(Player2Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "random.move.snd.cancel"){
@@ -448,21 +449,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.grid.getStageHandler().setMoveSound(self.sounds[group][sound]);
+                                self.setSound(StageMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.grid.getStageHandler().setSelectSound(self.sounds[group][sound]);
+                                self.setSound(StageDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "cancel.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                //self.cancelSound = self.sounds[group][sound];
+                                self.setSound(Cancel, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "portrait.offset"){
@@ -783,7 +784,7 @@ void CharacterSelect::init(){
         grid.setCurrentIndex(0, player1Start);
         //grid.setCurrentState(0, Gui::SelectListInterface::Disabled);
         grid.setCurrentIndex(1, player2Start);
-        //grid.setCurrentState(1, Gui::SelectListInterface::Disabled);
+        grid.setCurrentState(1, Gui::SelectListInterface::Disabled);
 
     } catch (const Filesystem::NotFound & fail){
         std::ostringstream out;
@@ -805,4 +806,75 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
     background->renderForeground(0,0,work);
+}
+
+void CharacterSelect::up(unsigned int cursor){
+    if (grid.up(cursor)){
+        if (cursor == 0){
+            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
+            if (sound){
+                sound->play();
+            }
+        } else if (cursor == 1){
+            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
+            if (sound){
+                sound->play();
+            }
+        }
+    }
+}
+
+void CharacterSelect::down(unsigned int cursor){
+    if (grid.down(cursor)){
+        if (cursor == 0){
+            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
+            if (sound){
+                sound->play();
+            }
+        } else if (cursor == 1){
+            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
+            if (sound){
+                sound->play();
+            }
+        }
+    }
+}
+
+void CharacterSelect::left(unsigned int cursor){
+    if (grid.left(cursor)){
+        if (cursor == 0){
+            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
+            if (sound){
+                sound->play();
+            }
+        } else if (cursor == 1){
+            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
+            if (sound){
+                sound->play();
+            }
+        }
+    }
+}
+
+void CharacterSelect::right(unsigned int cursor){
+    if (grid.right(cursor)){
+        if (cursor == 0){
+            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
+            if (sound){
+                sound->play();
+            }
+        } else if (cursor == 1){
+            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
+            if (sound){
+                sound->play();
+            }
+        }
+    }
+}
+
+void CharacterSelect::setSound(const SoundType & type, int group, int sound){
+    IndexValue values;
+    values.group = group;
+    values.index = sound;
+    soundLookup[type] = values;
 }

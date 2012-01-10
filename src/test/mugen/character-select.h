@@ -56,6 +56,11 @@ protected:
     bool isRandom;
 };
 
+struct IndexValue{
+    int group;
+    int index;
+};
+
 class CharacterSelect{
 public:
     CharacterSelect(const Filesystem::AbsolutePath &);
@@ -65,6 +70,31 @@ public:
     
     virtual void act();
     virtual void draw(const Graphics::Bitmap &);
+    
+    virtual void up(unsigned int cursor);
+    virtual void down(unsigned int cursor);
+    virtual void left(unsigned int cursor);
+    virtual void right(unsigned int cursor);
+    
+    //! Sound types
+    enum SoundType{
+        Player1Move=0,
+        Player1Done,
+        Player1Random,
+        Player2Move,
+        Player2Done,
+        Player2Random,
+        Player1TeamMove,
+        Player1TeamValue,
+        Player1TeamDone,
+        Player2TeamMove,
+        Player2TeamValue,
+        Player2TeamDone,
+        StageMove,
+        StageDone,
+        Cancel,
+    };
+    virtual void setSound(const SoundType &, int group, int sound);
 protected:
     //! Path
     const Filesystem::AbsolutePath & file;
@@ -82,6 +112,8 @@ protected:
     Mugen::SpriteMap sprites;
     //! Sounds
     Mugen::SoundMap sounds;
+    //! Sound lookup
+    std::map<SoundType, IndexValue> soundLookup;
     //! Select file
     std::string selectFile;
     //! Fonts

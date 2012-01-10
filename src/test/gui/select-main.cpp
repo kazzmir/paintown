@@ -115,7 +115,7 @@ int main(int argc, char ** argv){
         Paintown::Mod::loadDefaultMod();
         
         InputManager manager;
-        Graphics::Bitmap screen(640,480);//(Graphics::getScreenBuffer());
+        Graphics::Bitmap screen(*Graphics::getScreenBuffer());
         Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
         Keyboard::pushRepeatState(true);
         

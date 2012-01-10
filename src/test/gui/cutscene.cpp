@@ -298,7 +298,7 @@ int main(int argc, char ** argv){
         std::string file = argv[1];
         
         InputManager manager;
-        Graphics::Bitmap screen(640,480);//(Graphics::getScreenBuffer());
+        Graphics::Bitmap screen(*Graphics::getScreenBuffer());
         Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
         Keyboard::pushRepeatState(true);
         

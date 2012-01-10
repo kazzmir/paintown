@@ -11,6 +11,7 @@
 #include "util/stretch-bitmap.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
+#include "util/sound.h"
 
 #include "mugen/util.h"
 #include "mugen/exception.h"
@@ -67,12 +68,16 @@ public:
                 if (event.out == R){
                 }
                 if (event.out == Left){
+                    select.left(0);
                 }
                 if (event.out == Down){
+                    select.down(0);
                 }
                 if (event.out == Right){
+                    select.right(0);
                 }
                 if (event.out == Up){
+                    select.up(0);
                 }
                 if (event.out == S || event.out == Enter || event.out == SpaceBar){
                 }
@@ -120,11 +125,13 @@ int main(int argc, char ** argv){
         atexit(Screen::realFinish);
         Common::startTimers();
         
+        Sound::initialize();
+        
         Global::setDebug(2);
         std::string file = argv[1];
         
         InputManager manager;
-        Graphics::Bitmap screen(320,240);//Graphics::getScreenBuffer());
+        Graphics::Bitmap screen(*Graphics::getScreenBuffer());
         Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
         Keyboard::pushRepeatState(true);
         
