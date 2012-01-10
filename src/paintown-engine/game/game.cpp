@@ -229,7 +229,8 @@ static bool doMenu(const Token * data, const vector<Paintown::Player *> & player
      * The width/height of screen_buffer in Allegro5 will be GFX_X, GFX_Y because
      * thats what it was created with.
      */
-    context.addBackground(Graphics::Bitmap(screen_buffer, true).scaleTo(screen_buffer.getWidth(), screen_buffer.getHeight()));
+    /* FIXME: scale it to the size of the menu */
+    context.addBackground(Graphics::Bitmap(screen_buffer, true).scaleTo(640, 480));
     try{
         menu.run(context);
         /* im pretty sure there is no way to get the menu to return normally,
