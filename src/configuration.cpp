@@ -66,6 +66,7 @@ define_config(sound, "sound");
 define_config(music, "music");
 define_config(up, "up");
 define_config(quality_filter, "quality-filter");
+define_config(fps, "frames-per-second");
 define_config(language, "language");
 define_config(mugen_motif, "mugen-motif");
 /* version of the game: 3.3, 3.4, 4.24 */
@@ -791,6 +792,10 @@ void Configuration::loadConfigurations(){
                 string filter;
                 n->view() >> filter;
                 setQualityFilter(filter);
+            } else if (*n == config_fps){
+                int fps = 40;
+                n->view() >> fps;
+                setFps(fps);
             } else if (*n == config_menu_font_width){
                 int x;
                 n->view() >> x;
@@ -961,6 +966,8 @@ void Configuration::saveConfiguration(){
 
     *(head.newToken()) << config_quality_filter << getQualityFilter();
 
+    *(head.newToken()) << config_fps << getFps();
+
     if (Configuration::getLanguage() != ""){
         *(head.newToken()) << config_language << Configuration::getLanguage();
     }
@@ -1059,6 +1066,8 @@ std::map<std::string, std::string> Configuration::properties;
 std::string Configuration::language = "";
 std::string Configuration::mugenMotif = "default";
 std::string Configuration::qualityFilter = "none";
+/* Original default was 40 */
+int Configuration::fps = 40;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
@@ -1192,5 +1201,14 @@ std::string Configuration::getQualityFilter(){
 
 void Configuration::setQualityFilter(const std::string & filter){
     qualityFilter = filter;
+    saveConfiguration();
+}
+    
+int Configuration::getFps(){
+    return fps;
+}
+
+void Configuration::setFps(int what){
+    fps = what;
     saveConfiguration();
 }
