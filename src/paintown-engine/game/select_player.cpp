@@ -348,7 +348,7 @@ static unsigned int choosePlayer(const PlayerVector & players, const string & me
         }
 
         double ticks(double system){
-            return system * Global::LOGIC_MULTIPLIER;
+            return system * Global::ticksPerSecond(90);
         }
 
     };
@@ -787,7 +787,7 @@ class Selecter: public Util::Logic, public Util::Draw {
         }
 
         double ticks(double system){
-            return system * Global::LOGIC_MULTIPLIER;
+            return system * Global::ticksPerSecond(90);
         }
 
         void draw(const Graphics::Bitmap & buffer){

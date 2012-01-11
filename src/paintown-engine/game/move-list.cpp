@@ -597,7 +597,7 @@ class Runner: public Util::Logic, public Util::Draw {
         }
 
         double ticks(double system){
-            return system * Global::LOGIC_MULTIPLIER;
+            return system * Global::ticksPerSecond(90);
         }
 };
 
