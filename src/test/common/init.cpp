@@ -15,6 +15,7 @@
 #include "util/bitmap.h"
 
 namespace Global{
+    /*
     volatile int speed_counter4;
     volatile int second_counter;
     int FULLSCREEN;
@@ -25,6 +26,9 @@ namespace Global{
 
     void close(){
     }
+    */
+    extern int FULLSCREEN;
+    extern int WINDOWED;
 }
 
 
