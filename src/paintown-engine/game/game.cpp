@@ -612,22 +612,22 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             work.finish();
             // work.Stretch(screen_buffer);
             FontRender * render = FontRender::getInstance();
-            render->render(&screen);
+            render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
 
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+            const Font & font = Font::getFont(Global::DEFAULT_FONT, (int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
 
             if (state.helpTime > 0){
-                int x = 100;
-                int y = screen.getHeight() / 5;
-                Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
+                int x = (int)(100 * work.getScaleWidth() / 2);
+                int y = (screen_buffer.getHeight() / 5 * work.getScaleHeight() / 2);
+                Graphics::Color color = Graphics::makeColor(255, 255, 255);
                 Graphics::Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
-                drawHelp( font, x, y, color, screen.translucent());
+                drawHelp(font, x, y, color, screen_buffer.translucent());
             }
 
             if (state.show_fps){
-                font.printf(screen.getWidth() - 120, 10, Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
+                font.printf((int)(screen_buffer.getWidth() - 120 * work.getScaleWidth() / 2), (int)(10 * work.getScaleHeight() / 2), Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
             }
-            console.draw(screen);
+            console.draw(screen_buffer);
 
             /* getX/Y move when the world is quaking */
             // screen_buffer.BlitToScreen(world.getX(), world.getY());

@@ -62,6 +62,12 @@ Font * FontFactory::getRealFont(const Filesystem::AbsolutePath & path, int x, in
     if (font == NULL){
         throw Exception::Base(__FILE__, __LINE__);
     }
+    if (x < 1){
+        x = 1;
+    }
+    if (y < 1){
+        y = 1;
+    }
     font->setSize(x, y);
 
     return font;

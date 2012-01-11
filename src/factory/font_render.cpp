@@ -50,24 +50,24 @@ void FontRender::destroy(){
 		delete my_render;
 }
 
-void FontRender::render(const Graphics::Bitmap * work ){
-	for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
-		const render_message & r = *it;
+void FontRender::render(const Graphics::Bitmap * work, double scaleWidth, double scaleHeight){
+    for ( vector<render_message>::iterator it = messages.begin(); it != messages.end(); it++ ){
+        const render_message & r = *it;
 
-                /* FIXME: replace with work->translucent() */
-                if (r.translucency != -1){
-                    Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
-                    work->drawingMode( Graphics::Bitmap::MODE_TRANS );
-                }
+        /* FIXME: replace with work->translucent() */
+        if (r.translucency != -1){
+            Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
+            work->drawingMode( Graphics::Bitmap::MODE_TRANS );
+        }
 
-		// work->printf( r.x, r.y, r.fg, r.r_font, r.str );
-		r.r_font.printf( r.x, r.y, r.sizeX, r.sizeY, r.fg, *work, r.str, 0 );
-		// work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
-                if (r.translucency != -1){
-                    work->drawingMode( Graphics::Bitmap::MODE_SOLID );
-                }
-	}
-	messages.clear();
+        // work->printf( r.x, r.y, r.fg, r.r_font, r.str );
+        r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, *work, r.str, 0);
+        // work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
+        if (r.translucency != -1){
+            work->drawingMode( Graphics::Bitmap::MODE_SOLID );
+        }
+    }
+    messages.clear();
 }
 
 void FontRender::addMessage( const Font & f, int x, int y, Graphics::Color fg, Graphics::Color bg, int translucency, const string & str ){
