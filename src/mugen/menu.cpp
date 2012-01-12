@@ -251,7 +251,7 @@ void MugenMenu::loadData(){
     Global::debug(1) << baseDir.path() << endl;
 
     if (ourDefFile.isEmpty()){
-        throw MugenException( "Cannot locate menu definition file for: " + location.path() );
+        throw MugenException( "Cannot locate menu definition file for: " + location.path(), __FILE__, __LINE__);
     }
 
     try{
@@ -609,15 +609,15 @@ void MugenMenu::loadData(){
     } catch (const Mugen::Def::ParseException & e){
         ostringstream out;
         out << "Error loading data " << ourDefFile.path() << ": " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     } catch (const Exception::Base & fail){
         ostringstream out;
         out << "Error loading data " << ourDefFile.path() << ": " << fail.getTrace();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     if (fonts.size() == 0){
-        throw MugenException("No fonts specified");
+        throw MugenException("No fonts specified", __FILE__, __LINE__);
     }
 }
 

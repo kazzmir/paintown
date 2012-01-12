@@ -744,14 +744,14 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                         if (name == ""){
                             ostringstream out;
                             out << "No name given for command at line " << section.getLine();
-                            throw MugenException(out.str());
+                            throw MugenException(out.str(), __FILE__, __LINE__);
                         }
 
                         if (key == NULL){
                             Global::debug(0) << section.toString() << std::endl;
                             ostringstream out;
                             out << "No 'command' attribute given for command '" << name << "' at line " << section.getLine();
-                            throw MugenException(out.str());
+                            throw MugenException(out.str(), __FILE__, __LINE__);
                         }
 
                         /* parser guarantees the key will be a KeyList */
@@ -810,8 +810,8 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         }
     } catch (const MugenException & fail){
         ostringstream out;
-        out << "Could not parse " << path.path() << ": " << fail.getReason();
-        throw MugenException(out.str());
+        out << "Could not parse " << path.path() << ": " << fail.getFullReason();
+        throw MugenException(out.str(), __FILE__, __LINE__);
     } catch (const Mugen::Cmd::ParseException & e){
         /*
         Global::debug(0) << "Could not parse " << path << endl;
@@ -819,7 +819,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         */
         ostringstream out;
         out << "Could not parse " << path.path() << ": " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
@@ -1186,11 +1186,11 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     } catch (const Mugen::Cmd::ParseException & e){
         ostringstream out;
         out << "Could not parse " << path.path() << ": " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     } catch (const Ast::Exception & e){
         ostringstream out;
         out << "Could not parse " << path.path() << ": " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
@@ -1228,7 +1228,7 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                     } else {
                         ostringstream out;
                         out << "Unknown statedef type: '" << type << "'";
-                        throw MugenException(out.str());
+                        throw MugenException(out.str(), __FILE__, __LINE__);
                     }
                 } else if (simple == "movetype"){
                     string type;
@@ -1611,7 +1611,7 @@ void Character::load(int useAct){
                                     self.palDefaults.push_back((*it) - 1);
                                 }
                                 // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
-                            } else throw MugenException("Unhandled option in Info Section: " + simple.toString());
+                            } else throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
                         }
                 };
 
@@ -1693,12 +1693,12 @@ void Character::load(int useAct){
                         loadStateFile(where.base, where.file);
                     } catch (const MugenException & e){
                         ostringstream out;
-                        out << "Problem loading state file " << where.file << ": " << e.getReason();
-                        throw MugenException(out.str());
+                        out << "Problem loading state file " << where.file << ": " << e.getFullReason();
+                        throw MugenException(out.str(), __FILE__, __LINE__);
                     } catch (const Mugen::Cmd::ParseException & e){
                         ostringstream out;
                         out << "Problem loading state file " << where.file << ": " << e.getReason();
-                        throw MugenException(out.str());
+                        throw MugenException(out.str(), __FILE__, __LINE__);
                     }
 
                 }
@@ -1788,7 +1788,7 @@ void Character::load(int useAct){
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else {
-                                throw MugenException("Unhandled option in Arcade Section: " + simple.toString());
+                                throw MugenException("Unhandled option in Arcade Section: " + simple.toString(), __FILE__, __LINE__);
                             }
                         }
                 };
@@ -1801,7 +1801,7 @@ void Character::load(int useAct){
     } catch (const Ast::Exception & e){
         ostringstream out;
         out << "Could not load " << location.path() << ": " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     /* Is this just for testing? */
@@ -1960,16 +1960,16 @@ static StateController * parseController(const string & input, const string & na
         if (sections.getSections()->size() == 0){
             ostringstream out;
             out << "Could not parse controller: " << input;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
         Ast::Section * first = sections.getSections()->front();
         return StateController::compile(first, name, state, type);
     } catch (const Ast::Exception & e){
-        throw MugenException(e.getReason());
+        throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Cmd::ParseException & e){
         ostringstream out;
         out << "Could not parse " << input << " because " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
@@ -2281,7 +2281,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Character::getCurrentAnimation() co
 /* returns all the commands that are currently active */
 vector<string> Character::doInput(const Mugen::Stage & stage){
     if (behavior == NULL){
-        throw MugenException("Internal error: No behavior specified");
+        throw MugenException("Internal error: No behavior specified", __FILE__, __LINE__);
     }
 
     return behavior->currentCommands(stage, this, commands, getFacing() == FacingRight);

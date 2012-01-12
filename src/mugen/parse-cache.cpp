@@ -39,11 +39,11 @@ static AstRef loadCached(const string & path){
     string converted = path;
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
     if (!Storage::instance().exists(Filesystem::AbsolutePath(path))){
-        throw MugenException("Original file does not exist");
+        throw MugenException("Original file does not exist", __FILE__, __LINE__);
     }
     Filesystem::AbsolutePath fullPath = Storage::instance().userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
     if (!newer(fullPath, Filesystem::AbsolutePath(path))){
-        throw MugenException("File is old");
+        throw MugenException("File is old", __FILE__, __LINE__);
     }
     TokenReader reader;
     Global::debug(1, "mugen-parse-cache") << "Loading from cache " << fullPath.path() << endl;

@@ -46,7 +46,7 @@ firstRun(){
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, configFile.getFilename().path());
     
     if (ourDefFile.isEmpty()){
-        throw MugenException("Cannot locate definition file for: " + configFile.path());
+        throw MugenException("Cannot locate definition file for: " + configFile.path(), __FILE__, __LINE__);
     }
     
     TimeDifference diff;

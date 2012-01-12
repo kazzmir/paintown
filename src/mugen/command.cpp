@@ -357,7 +357,8 @@ protected:
     CompiledKey * key;
 };
 
-Command::Exception::Exception(){
+Command::Exception::Exception():
+MugenException("Command", __FILE__, __LINE__){
 }
 
 Command::Exception::~Exception() throw () {

@@ -9,7 +9,8 @@ namespace Ast{
 class Exception: public MugenException {
 public:
     Exception(const std::string & str):
-        MugenException(str){
+        /* FIXME: __FILE__ and __LINE__ should be passed in */
+        MugenException(str, __FILE__, __LINE__){
     }
 
     virtual ~Exception() throw (){

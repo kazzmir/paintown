@@ -287,7 +287,7 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
         if (size == PALETTE_SIZE){
             file.read((char*) out, PALETTE_SIZE);
             if (file.gcount() != PALETTE_SIZE){
-                throw MugenException("Didn't read 768 bytes");
+                throw MugenException("Didn't read 768 bytes", __FILE__, __LINE__);
             }
             unsigned char save[3];
             /* in-memory palette reverse */
@@ -297,7 +297,7 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
                 memcpy(out + (256 - 1) * 3 - i * 3, save, 3);
             }
         } else if (size < PALETTE_SIZE){
-            throw MugenException("Not an ACT file or PCX file");
+            throw MugenException("Not an ACT file or PCX file", __FILE__, __LINE__);
         } else {
             pcx_header pcxhead;
             file.read((char*) &pcxhead, sizeof(pcx_header));
@@ -316,7 +316,7 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
                     file.read((char*) out, PALETTE_SIZE);
                 } else {
                     Global::debug(0) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
-                    throw MugenException("Failed");
+                    throw MugenException("Failed", __FILE__, __LINE__);
                 }
             }
         }
@@ -433,7 +433,7 @@ public:
         /* 16 skips the header stuff */
         sffStream.open(filename.path().c_str(), ios::binary);
         if (!sffStream){
-            throw MugenException("Could not open SFF file: '" + filename.path() + "'");
+            throw MugenException("Could not open SFF file: '" + filename.path() + "'", __FILE__, __LINE__);
         }
 
         filesize = computeFileSize(filename.path());
@@ -508,7 +508,7 @@ public:
                 if (!temp){
                     ostringstream out;
                     out << "Unknown linked sprite " << sprite->getPrevious() << endl;
-                    throw MugenException(out.str());
+                    throw MugenException(out.str(), __FILE__, __LINE__);
                 }
                 sprite->copyImage(temp);
             } else {
@@ -545,7 +545,7 @@ public:
     MugenSprite * readSprite(bool mask){
         bool islinked = false;
         if (location > filesize){
-            throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.");
+            throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.", __FILE__, __LINE__);
         }
 
         MugenSprite * sprite = new MugenSprite();
@@ -557,7 +557,7 @@ public:
             if (!temp){
                 ostringstream out;
                 out << "Unknown linked sprite " << sprite->getPrevious() << endl;
-                throw MugenException(out.str());
+                throw MugenException(out.str(), __FILE__, __LINE__);
             }
             sprite->copyImage(temp);
         } else {
@@ -625,7 +625,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
     ifstream ifile;
     ifile.open(filename.path().c_str(), ios::binary);
     if (!ifile){
-        throw MugenException("Could not open SND file: " + filename.path());
+        throw MugenException("Could not open SND file: " + filename.path(), __FILE__, __LINE__);
     }
     
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
@@ -763,7 +763,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Util::getAnimation(Ast::Sect
             } catch (const Ast::Exception & fail){
                 std::ostringstream out;
                 out << "Could not parse animation because " << fail.getReason();
-                throw MugenException(out.str());
+                throw MugenException(out.str(), __FILE__, __LINE__);
             }
             string flip;
             string blend;
@@ -938,17 +938,17 @@ static void parseException(const string & file, const string & error, int line, 
     safe.close();
     ostringstream out;
     out << "Could not parse " << file << ". Line " << line << " has an error around column " << column << "\n\n" << buffer << "\n\nParser error: " << error;
-    throw MugenException(out.str());
+    throw MugenException(out.str(), __FILE__, __LINE__);
 }
 
 PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseAir(const string & filename){
     try{
         return ParseCache::parseAir(filename);
     } catch (const Ast::Exception & e){
-        throw MugenException(e.getReason());
+        throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Air::ParseException & e){
         parseException(filename, e.getReason(), e.getLine(), e.getColumn());
-        throw MugenException("won't get here");
+        throw MugenException("won't get here", __FILE__, __LINE__);
     }
 }
 
@@ -956,10 +956,10 @@ PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseDef(const string &
     try{
         return ParseCache::parseDef(filename);
     } catch (const Ast::Exception & e){
-        throw MugenException(e.getReason());
+        throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Def::ParseException & e){
         parseException(filename, e.getReason(), e.getLine(), e.getColumn());
-        throw MugenException("won't get here");
+        throw MugenException("won't get here", __FILE__, __LINE__);
     }
 }
 
@@ -967,10 +967,10 @@ PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseCmd(const string &
     try{
         return ParseCache::parseCmd(filename);
     } catch (const Ast::Exception & e){
-        throw MugenException(e.getReason());
+        throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Cmd::ParseException & e){
         parseException(filename, e.getReason(), e.getLine(), e.getColumn());
-        throw MugenException("won't get here");
+        throw MugenException("won't get here", __FILE__, __LINE__);
     }
 }
 
@@ -1073,7 +1073,7 @@ const std::string Mugen::Util::probeDef(const AstRef & parsed, const std::string
     }
     // Couldn't find search item throw exception
     // throw MugenException("Couldn't find '" + search + "' in Section '" + section + "' in Definition file '" + file.path() + "'");
-    throw MugenException("Couldn't find '" + search + "' in section '" + section + "'");
+    throw MugenException("Couldn't find '" + search + "' in section '" + section + "'", __FILE__, __LINE__);
 }
 
 void Mugen::Util::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
@@ -1098,7 +1098,7 @@ MugenSprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int gro
     }
     ostringstream out;
     out << "Could not find sprite " << groupNumber << ", " << spriteNumber << " in " << file.path();
-    throw MugenException(out.str());
+    throw MugenException(out.str(), __FILE__, __LINE__);
 }
         
 void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, MugenSprite ** icon, MugenSprite ** portrait){
@@ -1119,7 +1119,7 @@ void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, c
         } else {
             out << "Could not find sprite " << 9000 << ", " << 1 << " in " << sffPath.path();
         }
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 

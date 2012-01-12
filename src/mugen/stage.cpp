@@ -336,7 +336,7 @@ void Mugen::Stage::loadSectionCamera(Ast::Section * section){
             } else if (*simple == "tension"){
                 simple->view() >> tension;
             } else {
-                throw MugenException( "Unhandled option in Camera Section: " + simple->toString());
+                throw MugenException( "Unhandled option in Camera Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -357,7 +357,7 @@ void Mugen::Stage::loadSectionInfo(Ast::Section * section){
                 simple->view() >> temp;
                 Global::debug(1) << "Made by this guy: '" << temp << "'" << endl;
             } else {
-                throw MugenException( "Unhandled option in Info Section: " + simple->toString());
+                throw MugenException( "Unhandled option in Info Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -393,7 +393,7 @@ void Mugen::Stage::loadSectionPlayerInfo(Ast::Section * section){
             } else if (*simple == "botbound"){
                 simple->view() >> botbound;
             } else {
-                throw MugenException("Unhandled option in PlayerInfo Section: " + simple->toString());
+                throw MugenException("Unhandled option in PlayerInfo Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -409,7 +409,7 @@ void Mugen::Stage::loadSectionBound(Ast::Section * section){
             } else if (*simple == "screenright"){
                 simple->view() >> screenright;
             } else {
-                throw MugenException("Unhandled option in Bound Section: " + simple->toString());
+                throw MugenException("Unhandled option in Bound Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -429,7 +429,7 @@ void Mugen::Stage::loadSectionStageInfo(Ast::Section * section){
             } else if (*simple == "resetbg"){
                 simple->view() >> resetBG;
             } else {
-                throw MugenException("Unhandled option in StageInfo Section: " + simple->toString());
+                throw MugenException("Unhandled option in StageInfo Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -459,7 +459,7 @@ void Mugen::Stage::loadSectionShadow(Ast::Section * section, cymk_holder & shado
             } else if (*simple == "fade.range"){
                 simple->view() >> shadowFadeRangeHigh >> shadowFadeRangeMid;
             } else {
-                throw MugenException("Unhandled option in Shadow Section: " + simple->toString());
+                throw MugenException("Unhandled option in Shadow Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -473,7 +473,7 @@ void Mugen::Stage::loadSectionReflection(Ast::Section * section){
             if (*simple == "intensity"){
                 simple->view() >> reflectionIntensity;
             } else {
-                throw MugenException("Unhandled option in Reflection Section: " + simple->toString());
+                throw MugenException("Unhandled option in Reflection Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -495,7 +495,7 @@ void Mugen::Stage::loadSectionMusic(Ast::Section * section){
 		} catch (const MugenException &ex){
 		}
 	    } else {
-                throw MugenException("Unhandled option in Music Section: " + simple->toString());
+                throw MugenException("Unhandled option in Music Section: " + simple->toString(), __FILE__, __LINE__);
             }
         }
     }
@@ -772,7 +772,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Stage::getFightAnimation(int
     if (sparks[id] == 0){
         ostringstream out;
         out << "No fightfx animation for " << id;
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     return sparks[id];
@@ -1457,11 +1457,11 @@ void Mugen::Stage::reset(){
     
     inleft = inright = onLeftSide = onRightSide = 0;
     if (players.size() < 2){
-        throw MugenException("Need at least 2 players");
+        throw MugenException("Need at least 2 players", __FILE__, __LINE__);
     }
 
     if (gameHUD == NULL){
-        throw MugenException("Internal error: Stage not loaded, call load()");
+        throw MugenException("Internal error: Stage not loaded, call load()", __FILE__, __LINE__);
     }
 
     gameHUD->reset(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
@@ -1596,7 +1596,7 @@ const std::string Mugen::Stage::getStageName(const std::string &filename) throw 
     const Filesystem::AbsolutePath defFile = Mugen::Util::fixFileName( dir, std::string(fullname) );
     
     if (defFile.isEmpty()){
-        throw MugenException( "Cannot locate stage definition file for: " + fullname );
+        throw MugenException( "Cannot locate stage definition file for: " + fullname, __FILE__, __LINE__);
     }
     
     std::string filesdir = "";
@@ -1612,7 +1612,7 @@ const std::string Mugen::Stage::getStageName(const std::string &filename) throw 
     AstRef parsed(Mugen::Util::parseDef(defFile.path()));
     return parsed->findSection("info")->findAttribute("name")->valueAsString();
         
-    throw MugenException( "Cannot locate stage definition file for: " + fullname );
+    throw MugenException( "Cannot locate stage definition file for: " + fullname, __FILE__, __LINE__);
     return "";
 }
 

@@ -21,8 +21,8 @@ namespace Mugen{
         
 typedef PaintownUtil::ClassPointer<Compiler::Value> Value;
 
-void compileError(const std::string & fail){
-    throw MugenException(fail);
+void compileError(const std::string & fail, const std::string & where, int line){
+    throw MugenException(fail, where, line);
 }
 
 Value copy(const Value & value){
@@ -204,16 +204,16 @@ bool StateController::canTrigger(const Mugen::Stage & stage, const Character & c
         return result.toBool();
     } catch (const MugenNormalRuntimeException e){
         ostringstream out;
-        out << "Expression `" << expression->toString() << "' " << e.getReason();
-        throw MugenNormalRuntimeException(out.str());
+        out << "Expression `" << expression->toString() << "' " << e.getFullReason();
+        throw MugenNormalRuntimeException(out.str(), __FILE__, __LINE__);
     } catch (const MugenFatalRuntimeException e){
         ostringstream out;
-        out << "Expression `" << expression->toString() << "' " << e.getReason();
-        throw MugenFatalRuntimeException(out.str());
+        out << "Expression `" << expression->toString() << "' " << e.getFullReason();
+        throw MugenFatalRuntimeException(out.str(), __FILE__, __LINE__);
     } catch (const MugenException & e){
         ostringstream out;
-        out << "Expression `" << expression->toString() << "' " << e.getReason();
-        throw MugenException(out.str());
+        out << "Expression `" << expression->toString() << "' " << e.getFullReason();
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
@@ -516,7 +516,7 @@ public:
         if (value == NULL){
             ostringstream out;
             out << "Expected the `value' attribute for state " << name;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
     }
 
@@ -574,7 +574,7 @@ public:
         if (value == NULL){
             ostringstream out;
             out << "Expected the `value' attribute for state " << name;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
     }
 
@@ -617,7 +617,7 @@ public:
         if (value == NULL){
             ostringstream out;
             out << "Expected the `value' attribute for state " << name;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
     }
 
@@ -684,7 +684,7 @@ public:
             }
 
             if (group == NULL){
-                compileError("No group given for value in PlaySnd");
+                compileError("No group given for value in PlaySnd", __FILE__, __LINE__);
             }
 
             Resource resource = extractResource(group);
@@ -1992,7 +1992,7 @@ public:
                     } catch (const Ast::Exception & e){
                         ostringstream out;
                         out << "Could not read `damage' from '" << simple.toString() << "': " << e.getReason();
-                        throw MugenException(out.str());
+                        throw MugenException(out.str(), __FILE__, __LINE__);
                     }
                 } else if (simple == "pausetime"){
                     try{
@@ -2530,7 +2530,7 @@ public:
                     }
 
                     if (group == NULL){
-                        compileError("No group given for 'sound'");
+                        compileError("No group given for 'sound'", __FILE__, __LINE__);
                     }
 
                     Resource resource = extractResource(group);
@@ -2849,7 +2849,7 @@ public:
         Walker walker(time);
         section->walk(walker);
         if (time == NULL){
-            throw MugenException("Time not specified for AfterImageTime");
+            throw MugenException("Time not specified for AfterImageTime", __FILE__, __LINE__);
         }
     }
 
@@ -2900,7 +2900,7 @@ public:
         Walker walker(value);
         section->walk(walker);
         if (value == NULL){
-            throw MugenException("`value' is a required attribute of AngleAdd");
+            throw MugenException("`value' is a required attribute of AngleAdd", __FILE__, __LINE__);
         }
     }
 
@@ -2950,7 +2950,7 @@ public:
         Walker walker(value);
         section->walk(walker);
         if (value == NULL){
-            throw MugenException("`value' is a required attribute of AngleMul");
+            throw MugenException("`value' is a required attribute of AngleMul", __FILE__, __LINE__);
         }
     }
 
@@ -3000,7 +3000,7 @@ public:
         Walker walker(value);
         section->walk(walker);
         if (value == NULL){
-            throw MugenException("`value' is a required attribute of AngleMul");
+            throw MugenException("`value' is a required attribute of AngleMul", __FILE__, __LINE__);
         }
     }
 
@@ -3180,7 +3180,7 @@ public:
     void parse(Ast::Section * section){
         extractValue(value, section);
         if (value == NULL){
-            throw MugenException("AttackDist must have a `value' attribute");
+            throw MugenException("AttackDist must have a `value' attribute", __FILE__, __LINE__);
         }
     }
 
@@ -3303,7 +3303,7 @@ public:
         Walker walker(integerIndex, floatIndex, sysIndex, value);
         section->walk(walker);
         if (value == NULL){
-            throw MugenException("Must set `value' for controller VarAdd " + name);
+            throw MugenException("Must set `value' for controller VarAdd " + name, __FILE__, __LINE__);
         }
     }
 
@@ -4026,7 +4026,7 @@ public:
         if (animation == NULL){
             ostringstream out;
             out << "Cannot find animation for " << animation_value << endl;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
 
         double x = 0;
@@ -4110,7 +4110,7 @@ public:
         if (animation == NULL){
             ostringstream out;
             out << "Cannot find animation for " << animation_value << endl;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
 
         class GameAnimation: public Effect {
@@ -4621,7 +4621,7 @@ public:
         Walker walker(*this);
         section->walk(walker);
         if (index == NULL){
-            throw MugenException("v not specified in the VarRandom controller");
+            throw MugenException("v not specified in the VarRandom controller", __FILE__, __LINE__);
         }
     }
 
@@ -5139,7 +5139,7 @@ public:
         Walker walker(*this);
         section->walk(walker);
         if (value == NULL){
-            throw MugenException("the `value' attribute must be provided for TargetFacing");
+            throw MugenException("the `value' attribute must be provided for TargetFacing", __FILE__, __LINE__);
         }
     }
 
@@ -5207,7 +5207,7 @@ public:
         Walker walker(*this);
         section->walk(walker);
         if (value == NULL){
-            throw MugenException("the `value' attribute must be specified for the TargetAddLife controller");
+            throw MugenException("the `value' attribute must be specified for the TargetAddLife controller", __FILE__, __LINE__);
         }
     }
 
@@ -5403,7 +5403,7 @@ public:
         section->walk(walker);
 
         if (value == NULL){
-            throw MugenException("`value' is a required attribute of PowerAdd");
+            throw MugenException("`value' is a required attribute of PowerAdd", __FILE__, __LINE__);
         }
     }
 
@@ -5566,7 +5566,7 @@ public:
         extractValue(value, section);
         // value = extractAttribute(section, "value");
         if (value == NULL){
-            throw MugenException("LifeSet controller must specify the `value' attribute");
+            throw MugenException("LifeSet controller must specify the `value' attribute", __FILE__, __LINE__);
         }
     }
 
@@ -5916,7 +5916,7 @@ public:
     StateController(name, state, section){
         extractValue(value, section);
         if (value == NULL){
-            throw MugenException("HitAdd requires a `value' attribute");
+            throw MugenException("HitAdd requires a `value' attribute", __FILE__, __LINE__);
         }
     }
 
@@ -5962,7 +5962,7 @@ public:
     StateController(name, state, section){
         extractValue(value, section);
         if (value == NULL){
-            throw MugenException("PlayerPush requires a `value' attribute");
+            throw MugenException("PlayerPush requires a `value' attribute", __FILE__, __LINE__);
         }
     }
 
@@ -6226,7 +6226,7 @@ public:
     StateController(name, state, section){
         extractValue(value, section);
         if (value == NULL){
-            throw MugenException("AttackMulSet requires the `value' attribute");
+            throw MugenException("AttackMulSet requires the `value' attribute", __FILE__, __LINE__);
         }
     }
 
@@ -6467,7 +6467,7 @@ public:
                     }
 
                     if (group == NULL){
-                        compileError("No group given for 'sound'");
+                        compileError("No group given for 'sound'", __FILE__, __LINE__);
                     }
 
                     Resource resource = extractResource(group);
@@ -7390,14 +7390,14 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Unknown : {
             ostringstream out;
             out << "Unknown state controller for " << state << " " << name;
-            throw MugenException(out.str());
+            throw MugenException(out.str(), __FILE__, __LINE__);
             break;
         }
     }
 
     ostringstream out;
     out << "Unknown state controller for " << state << " " << name << " type (" << type << ")";
-    throw MugenException(out.str());
+    throw MugenException(out.str(), __FILE__, __LINE__);
 }
 
 }

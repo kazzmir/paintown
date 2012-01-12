@@ -8,9 +8,11 @@
 
 /* Base mugen exception */
 class MugenException: public Exception::Base {
-public:
+protected:
     MugenException();
-    MugenException(const std::string & reason, const std::string & where = "?", int line = 0);
+public:
+    /* `where' should be __FILE__ and `line' should be __LINE__ */
+    MugenException(const std::string & reason, const std::string & where, int line);
 
     virtual ~MugenException() throw();
 
@@ -26,6 +28,14 @@ public:
         return reason;
     }
 
+    const std::string getWhere() const {
+        return where;
+    }
+
+    int getLine() const {
+        return line;
+    }
+
 protected:
     std::string reason;
     std::string where;
@@ -34,9 +44,10 @@ protected:
 
 /* thrown from the compiler/state-controller when mugen code screws up */
 class MugenRuntimeException: public MugenException {
-public:
+protected:
     MugenRuntimeException();
-    MugenRuntimeException(const std::string & reason, const std::string & where = "?", int line = 0);
+public:
+    MugenRuntimeException(const std::string & reason, const std::string & where, int line);
 
     virtual void throwSelf() const {
         throw *this;
@@ -45,8 +56,9 @@ public:
 
 /* For errors that we don't care a whole lot about */
 class MugenNormalRuntimeException: public MugenRuntimeException {
-public:
+protected:
     MugenNormalRuntimeException();
+public:
     MugenNormalRuntimeException(const std::string & reason, const std::string & where = "?", int line = 0);
 
     virtual void throwSelf() const {
@@ -56,9 +68,10 @@ public:
 
 /* For errors that are serious */
 class MugenFatalRuntimeException: public MugenRuntimeException {
-public:
+protected:
     MugenFatalRuntimeException();
-    MugenFatalRuntimeException(const std::string & reason, const std::string & where = "?", int line = 0);
+public:
+    MugenFatalRuntimeException(const std::string & reason, const std::string & where, int line);
 
     virtual void throwSelf() const {
         throw *this;

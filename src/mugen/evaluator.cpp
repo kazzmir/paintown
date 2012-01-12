@@ -40,7 +40,7 @@ namespace Mugen{
 static void raise(const RuntimeValue & value, const string & expected){
     ostringstream out;
     out << "Not a " << expected << " instead was " << value.canonicalName();
-    throw MugenException(out.str());
+    throw MugenException(out.str(), __FILE__, __LINE__);
 }
 
 string toString(const RuntimeValue & value){
@@ -113,7 +113,7 @@ int toRangeHigh(const RuntimeValue & value){
 bool RuntimeValue::operator==(const RuntimeValue & value2) const {
     const RuntimeValue & value1 = *this;
     if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
-        throw MugenException("invalid value");
+        throw MugenException("invalid value", __FILE__, __LINE__);
     }
     switch (value1.type){
         case RuntimeValue::ListOfString : {
@@ -229,7 +229,7 @@ public:
             case Ast::Range::LeftInclusiveRightExclusive : return RuntimeValue(low - 1, high);
             case Ast::Range::LeftExclusiveRightInclusive : return RuntimeValue(low, high + 1);
         }
-        throw MugenException("Unexpected range type");
+        throw MugenException("Unexpected range type", __FILE__, __LINE__);
     }
     
     virtual void onRange(const Ast::Range & range){
@@ -547,7 +547,7 @@ public:
 
         ostringstream out;
         out << "Unknown identifier '" << identifier.toString() << "'";
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     virtual void onIdentifier(const Ast::Identifier & identifier){
@@ -582,7 +582,7 @@ public:
 
         ostringstream out;
         out << "Unknown keyword '" << keyword.toString() << "'";
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     virtual void onKeyword(const Ast::Keyword & keyword){
@@ -626,7 +626,7 @@ public:
             }
             return evaluate(value);
 #endif
-            throw MugenException("Doesnt work anymore");
+            throw MugenException("Doesnt work anymore", __FILE__, __LINE__);
         }
 
         if (function == "numtarget"){
@@ -701,7 +701,7 @@ public:
             }
             return evaluate(value);
 #endif
-            throw MugenException("Doesn't work anymore");
+            throw MugenException("Doesn't work anymore", __FILE__, __LINE__);
         }
 
         if (function == "numexplod"){
@@ -754,7 +754,7 @@ public:
 
         ostringstream out;
         out << "Unknown function '" << function.toString() << "'";
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     virtual void onFunction(const Ast::Function & string){
@@ -845,7 +845,7 @@ public:
 
         ostringstream out;
         out << "Unknown expression: " << expression.toString();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
@@ -867,7 +867,7 @@ public:
 
         ostringstream out;
         out << "Unknown expression: " << expression.toString();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
     
     virtual void onExpressionUnary(const Ast::ExpressionUnary & expression){
@@ -883,20 +883,20 @@ RuntimeValue evaluate(const Ast::Value * value, const Environment & environment)
     } catch (const MugenException & e){
         ostringstream out;
         out << "Error while evaluating expression `" << value->toString() << "': " << e.getReason();
-        throw MugenException(out.str());
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
 const Character & EmptyEnvironment::getCharacter() const {
-    throw MugenException("Cannot get a character from an empty environment");
+    throw MugenException("Cannot get a character from an empty environment", __FILE__, __LINE__);
 }
 
 const Mugen::Stage & EmptyEnvironment::getStage() const {
-    throw MugenException("Cannot get a stage from an empty environment");
+    throw MugenException("Cannot get a stage from an empty environment", __FILE__, __LINE__);
 }
 
 const std::vector<std::string> EmptyEnvironment::getCommands() const {
-    throw MugenException("Cannot get commands from an empty environment");
+    throw MugenException("Cannot get commands from an empty environment", __FILE__, __LINE__);
 }
 
 }

@@ -213,12 +213,12 @@ namespace PaintownUtil = ::Util;
 namespace Mugen{
 namespace Compiler{
 
-void compileError(const std::string & fail){
-    throw MugenException(fail);
+void compileError(const std::string & fail, const std::string & where, int line){
+    throw MugenException(fail, where, line);
 }
 
-void runtimeError(const std::string & fail){
-    throw MugenNormalRuntimeException(fail);
+void runtimeError(const std::string & fail, const std::string & where, int line){
+    throw MugenNormalRuntimeException(fail, where, line);
 }
 
 namespace{
@@ -360,7 +360,7 @@ public:
                     types.push_back(AttackType::HyperProjectile);
                 }
             } else {
-                compileError(std::string("Invalid attack type '") + attack + "'");
+                compileError(std::string("Invalid attack type '") + attack + "'", __FILE__, __LINE__);
             }
         }
 
@@ -1217,7 +1217,7 @@ public:
                     if (animation == NULL){
                         std::ostringstream out;
                         out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
-                        runtimeError(out.str());
+                        runtimeError(out.str(), __FILE__, __LINE__);
                     }
                     return RuntimeValue(animation->animationTime());
                 }
@@ -1639,7 +1639,7 @@ public:
 
         std::ostringstream out;
         out << "Don't know how to compile identifier '" << identifier.toString() << "' on line " << identifier.getLine() << " at column " << identifier.getColumn();
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
         return NULL;
     }
 
@@ -1673,12 +1673,12 @@ public:
                         const Mugen::Helper & myhelper = *(const Mugen::Helper*)&guy;
                         Character * parent = myhelper.getParent();
                         if (parent == NULL){
-                            runtimeError("Helper has no parent");
+                            runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
                         FullEnvironment parentEnvironment(environment.getStage(), *parent, environment.getCommands());
                         return argument->evaluate(parentEnvironment);
                     }
-                    runtimeError("Cannot redirect to a parent from a non-helper");
+                    runtimeError("Cannot redirect to a parent from a non-helper", __FILE__, __LINE__);
                     return RuntimeValue();
                 }
             };
@@ -1707,7 +1707,7 @@ public:
                     const Character & guy = environment.getCharacter();
                     const Character * parent = guy.getRoot();
                     if (parent == NULL){
-                        runtimeError("object has no parent");
+                        runtimeError("object has no parent", __FILE__, __LINE__);
                     }
                     FullEnvironment parentEnvironment(environment.getStage(), *parent, environment.getCommands());
                     return argument->evaluate(parentEnvironment);
@@ -1879,7 +1879,7 @@ public:
 
         std::ostringstream out;
         out << "Don't know how to compile helper '" << helper.toString() << "'";
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
         return NULL;
     }
     
@@ -1921,7 +1921,7 @@ public:
                     case Ast::Range::AllExclusive : return RuntimeValue(low, high);
                     case Ast::Range::LeftInclusiveRightExclusive : return RuntimeValue(low - 1, high);
                     case Ast::Range::LeftExclusiveRightInclusive : return RuntimeValue(low, high + 1);
-                    default: compileError("Can't get here"); return RuntimeValue();
+                    default: compileError("Can't get here", __FILE__, __LINE__); return RuntimeValue();
                 }
             }
 
@@ -1944,7 +1944,7 @@ public:
             case Ast::Range::LeftExclusiveRightInclusive : {
                 break;
             }
-            default: compileError("Unexpected range type");
+            default: compileError("Unexpected range type", __FILE__, __LINE__);
         }
 
         Value * const  low = compile(range.getLow());
@@ -2549,7 +2549,7 @@ public:
             ConstWalker walker;
             function.getArg1()->walk(walker);
             if (walker.compiled == NULL){
-                compileError("Unknown const value " + function.getArg1()->toString());
+                compileError("Unknown const value " + function.getArg1()->toString(), __FILE__, __LINE__);
             }
             return walker.compiled;
         }
@@ -2606,7 +2606,7 @@ public:
                     if (num <= 0){
                         std::ostringstream out;
                         out << "Argument to ln must be positive but was " << num;
-                        runtimeError(out.str());
+                        runtimeError(out.str(), __FILE__, __LINE__);
 		    }
 
 		    const double value = log(num);
@@ -2643,11 +2643,11 @@ public:
                     if (base <= 0){
                         std::ostringstream out;
                         out << "Base of log must be positive but was " << base;
-                        runtimeError(out.str());
+                        runtimeError(out.str(), __FILE__, __LINE__);
 		    } else if (value <= 0){
                         std::ostringstream out;
                         out << "Value of log must be positive but was " << value;
-                        runtimeError(out.str());
+                        runtimeError(out.str(), __FILE__, __LINE__);
 		    }
 
 		    const double result = log(value) / log(base);
@@ -2802,7 +2802,7 @@ public:
             };
 
             if (function.getArg1() == 0){
-                compileError("No argument given to gethitvar");
+                compileError("No argument given to gethitvar", __FILE__, __LINE__);
             }
 
             std::string var = PaintownUtil::lowerCaseAll(function.getArg1()->toString());
@@ -2849,7 +2849,7 @@ public:
                         } else if (state(environment).hitType == AttackType::Trip){
                             return RuntimeValue(3);
                         }
-                        compileError("Invalid hit type");
+                        compileError("Invalid hit type", __FILE__, __LINE__);
                         return RuntimeValue();
                     }
 
@@ -3145,7 +3145,7 @@ public:
                 return new HitVarFallRecoverTime();
             }
 
-            compileError("Unknown gethitvar variable " + var);
+            compileError("Unknown gethitvar variable " + var, __FILE__, __LINE__);
         }
 
         if (function == "teammode!="){
@@ -3444,7 +3444,7 @@ public:
                     int index = (int) this->index->evaluate(environment).toNumber();
                     PaintownUtil::ReferenceCount<MugenAnimation> animation = environment.getCharacter().getCurrentAnimation();
                     if (animation == NULL){
-                        runtimeError("Current animation is NULL");
+                        runtimeError("Current animation is NULL", __FILE__, __LINE__);
                     }
                     return RuntimeValue(animation->animationElementElapsed(index));
                 }
@@ -3539,7 +3539,7 @@ public:
                     if (environment.getCharacter().getCurrentAnimation() == NULL){
                         std::ostringstream out;
                         out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
-                        runtimeError(out.str());
+                        runtimeError(out.str(), __FILE__, __LINE__);
                     }
                     /* FIXME */
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
@@ -3560,7 +3560,7 @@ public:
         if (function.getLine() != -1){
             out << " at line " << function.getLine() << " column " << function.getColumn();
         }
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
         return NULL;
     }
 
@@ -3604,7 +3604,7 @@ public:
                     case Ast::ExpressionUnary::Negation : {
                         return RuntimeValue(~(int)toNumber(expression->evaluate(environment)));
                     }
-                    default: compileError("Can't get here"); return RuntimeValue();
+                    default: compileError("Can't get here", __FILE__, __LINE__); return RuntimeValue();
                 }
             }
         };
@@ -3618,7 +3618,7 @@ public:
             default : {
                 std::ostringstream out;
                 out << "Unknown expression: " << expression.toString();
-                compileError(out.str());
+                compileError(out.str(), __FILE__, __LINE__);
             }
         }
 
@@ -3820,11 +3820,11 @@ public:
                         const Helper & realHelper = *(const Helper*) &helper;
                         const Character * parent = realHelper.getParent();
                         if (parent == NULL){
-                            runtimeError("Helper has no parent");
+                            runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
                         return parent->getX() - realHelper.getX();
                     }
-                    runtimeError("Cannot use 'parentdist x' on a non-helper");
+                    runtimeError("Cannot use 'parentdist x' on a non-helper", __FILE__, __LINE__);
                     return RuntimeValue();
                 }
 
@@ -3845,11 +3845,11 @@ public:
                         const Helper & realHelper = *(const Helper*) &helper;
                         const Character * parent = realHelper.getParent();
                         if (parent == NULL){
-                            runtimeError("Helper has no parent");
+                            runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
                         return realHelper.getY() - parent->getY();
                     }
-                    runtimeError("Cannot use 'parentdist x' on a non-helper");
+                    runtimeError("Cannot use 'parentdist x' on a non-helper", __FILE__, __LINE__);
                     return RuntimeValue();
                 }
 
@@ -3908,7 +3908,7 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * root = environment.getCharacter().getRoot();
                     if (root == NULL){
-                        runtimeError("No root");
+                        runtimeError("No root", __FILE__, __LINE__);
                     }
                     return RuntimeValue(root->getX() - environment.getCharacter().getX());
                 }
@@ -3927,7 +3927,7 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * root = environment.getCharacter().getRoot();
                     if (root == NULL){
-                        runtimeError("No root");
+                        runtimeError("No root", __FILE__, __LINE__);
                     }
                     return RuntimeValue(environment.getCharacter().getX() - root->getY());
                 }
@@ -3942,7 +3942,7 @@ public:
 
         std::ostringstream out;
         out << "Unknown keyword '" << keyword.toString() << "'";
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
         return NULL;
     }
 
@@ -4079,7 +4079,7 @@ public:
                         int result_left = (int) left->evaluate(environment).toNumber();
                         int result_right = (int) right->evaluate(environment).toNumber();
                         if (result_right == 0){
-                            runtimeError("mod by 0");
+                            runtimeError("mod by 0", __FILE__, __LINE__);
                         }
                         return RuntimeValue(result_left % result_right);
                     }
@@ -4088,7 +4088,7 @@ public:
                     }
                 }
 
-                runtimeError("Can't get here");
+                runtimeError("Can't get here", __FILE__, __LINE__);
                 return RuntimeValue();
             }
         };
@@ -4097,7 +4097,7 @@ public:
 
         std::ostringstream out;
         out << "Unknown expression: " << expression.toString();
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
     }
 
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){
@@ -4149,13 +4149,13 @@ Value * compile(const Ast::Value * input){
     } catch (const MugenException & e){
         std::ostringstream out;
         out << e.getReason() << " while compiling expression '" << input->toString() << "'";
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
     }
 
     if (compiler.compiled == NULL){
         std::ostringstream out;
         out << "Unable to compile expression '" << input->toString() << "'";
-        compileError(out.str());
+        compileError(out.str(), __FILE__, __LINE__);
     }
     return compiler.compiled;
 }

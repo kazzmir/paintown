@@ -364,7 +364,7 @@ void Bar::act(Mugen::Character & character){
 	    }
             currentHealth = character.getHealth();
             if (maxHealth == 0){
-                throw MugenException("Character max health is 0. It should have been set in the [Data] section of the constants file");
+                throw MugenException("Character max health is 0. It should have been set in the [Data] section of the constants file", __FILE__, __LINE__);
             }
             // Update damage counter if char has been damaged
             // x1 = current health, x2 = max health, y1 = place in the bar, y2 = maximum bar amount
@@ -1318,7 +1318,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, fightFile.getFilename().path());
     
     if (ourDefFile.isEmpty()){
-        throw MugenException( "Cannot locate fight definition file for: " + fightFile.path() );
+        throw MugenException("Cannot locate fight definition file for: " + fightFile.path(), __FILE__, __LINE__);
     }
     
     TimeDifference diff;

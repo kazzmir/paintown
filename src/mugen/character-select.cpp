@@ -189,7 +189,7 @@ character2(0){
         }
 
         if (actCollection.size() == 0){
-            throw MugenException("No pal files specified");
+            throw MugenException("No pal files specified", __FILE__, __LINE__);
         }
 
         // just a precaution
@@ -780,7 +780,7 @@ Cell * Grid::getCell(int row, int column){
     
     std::ostringstream out;
     out << "Could not find cell for row " << row << " and column " << column << std::endl;
-    throw MugenException(out.str());
+    throw MugenException(out.str(), __FILE__, __LINE__);
 }
 
 Cursor::Cursor():
@@ -1583,7 +1583,7 @@ void CharacterSelect::load(){
         Global::debug(1) << baseDir.path() << endl;
 
         if (systemFile.isEmpty()){
-            throw MugenException( "Cannot locate character select definition file for: " + systemFile.path());
+            throw MugenException("Cannot locate character select definition file for: " + systemFile.path(), __FILE__, __LINE__);
         }
 
         TimeDifference diff;
@@ -2554,7 +2554,7 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     }
 
     if (stageNames.size() == 0){
-        throw MugenException("No stages listed");
+        throw MugenException("No stages listed", __FILE__, __LINE__);
     }
 
     // Prepare stages

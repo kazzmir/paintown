@@ -113,7 +113,7 @@ void Game::run(Searcher & searcher){
 class QuitGameException: public MugenException {
 public:
     QuitGameException():
-        MugenException("Quit game"){
+        MugenException("Quit game", __FILE__, __LINE__){
         }
 
     virtual ~QuitGameException() throw (){
@@ -484,7 +484,7 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
                 all.erase(all.begin() + choice);
             }
         }
-        throw MugenException("No characters left to choose from!");
+        throw MugenException("No characters left to choose from!", __FILE__, __LINE__);
     } else {
         Filesystem::AbsolutePath path = Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
         return doLoad(path);
@@ -801,7 +801,7 @@ void Game::doArcade(Searcher & searcher){
 
     // Set initial oponent
     if (!select.setNextArcadeMatch()){
-        throw MugenException("Could not set up arcade match");
+        throw MugenException("Could not set up arcade match", __FILE__, __LINE__);
     }
     
     try{

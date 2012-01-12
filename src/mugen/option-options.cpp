@@ -348,7 +348,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Global::debug(1) << baseDir.path() << endl;
     
     if (systemFile.isEmpty()){
-        throw MugenException("Cannot locate character select definition file for: " + systemFile.path());
+        throw MugenException("Cannot locate character select definition file for: " + systemFile.path(), __FILE__, __LINE__);
     }
 
     TimeDifference diff;
@@ -439,7 +439,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     /* FIXME: do all other cleanup here too */
     if (background == NULL){
-        throw MugenException("OptionBGDef was not specified");
+        throw MugenException("OptionBGDef was not specified", __FILE__, __LINE__);
     }
     
     // Run options
