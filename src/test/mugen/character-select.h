@@ -33,6 +33,9 @@ class FontHandler{
     virtual ~FontHandler();
     
     void act();
+    //! Render with set text
+    void render(const Graphics::Bitmap &);
+    //! Override set text (For players names)
     void render(const std::string &, const Graphics::Bitmap &);
     
     enum State{
@@ -40,6 +43,14 @@ class FontHandler{
         Blink,
         Done
     };
+    
+    virtual inline void setText(const std::string & text){
+        this->text = text;
+    }
+    
+    virtual inline const std::string & getText() const {
+        return this->text;
+    }
     
     virtual inline void setLocation(int x, int y){
         this->x = x;
@@ -68,6 +79,8 @@ class FontHandler{
         this->done = font;
     }
 private:
+    //! Text
+    std::string text;
     //! Current state
     State state;
     //! Position
@@ -129,6 +142,62 @@ protected:
     bool isRandom;
 };
 
+/*! Team Menu */
+class TeamMenu{
+public:
+    //! Side 
+    enum Side{
+        Left,
+        Right
+    };
+    TeamMenu(const Side &);
+    virtual ~TeamMenu();
+    
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &, bool enemy = false);
+    
+    //! Up
+    void up();
+    //! Down
+    void down();
+    //! Left
+    void left();
+    //! Right
+    void right();
+    //! Fight types
+    enum FightType{
+        Single,
+        Simultaneous,
+        Turns2,
+        Turns3,
+        Turns4,
+    };
+    //! Get a return value for selected
+    const FightType & select();
+    
+    //! Fonts
+    FontHandler titleFont;
+    FontHandler enemyTitleFont;
+    FontHandler itemFont;
+    FontHandler itemCurrentFont;
+    
+    virtual inline void setPosition(int x, int y){
+        this->x = x;
+        this->y = y;
+    }
+    virtual inline void setEnemyPosition(int x, int y){
+        this->enemyX = x;
+        this->enemyY = y;
+    }
+protected:
+    //! Side this is on
+    Side side;
+    //! Current selection
+    FightType current;
+    int x, y;
+    int enemyX, enemyY;
+};
+
 struct IndexValue{
     int group;
     int index;
@@ -174,12 +243,10 @@ public:
     FontHandler player1Font;
     FontHandler player2Font;
     FontHandler stageFont;
-    FontHandler player1TeamTitle;
-    FontHandler player1TeamOpponentTitle;
-    FontHandler player1TeamItem;
-    FontHandler player2TeamTitle;
-    FontHandler player2TeamOpponentTitle;
-    FontHandler player2TeamItem;
+    
+    //! Team menu data
+    TeamMenu player1TeamMenu;
+    TeamMenu player2TeamMenu;
     
 protected:
     //! Get font

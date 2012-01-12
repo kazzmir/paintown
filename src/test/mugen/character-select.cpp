@@ -78,6 +78,10 @@ void FontHandler::act(){
     }
 }
 
+void FontHandler::render(const Graphics::Bitmap & work){
+    render(text, work);
+}
+
 void FontHandler::render(const std::string & text, const Graphics::Bitmap & work){
     switch(state){
         default:
@@ -215,7 +219,58 @@ void Cell::drawPlayer2Cursor(int x, int y, const Graphics::Bitmap & work, bool b
     }
 }
 
+
+TeamMenu::TeamMenu(const Side & side):
+side(side),
+current(Simultaneous){
+}
+
+TeamMenu::~TeamMenu(){
+}
+
+void TeamMenu::act(){
+}
+
+void TeamMenu::draw(const Graphics::Bitmap &, bool enemy){
+    if (!enemy){
+        switch (side){
+            case Left:
+                break;
+            case Right:
+            default:
+                break;
+        }
+    } else {
+        // Opposite side
+        switch (side){
+            case Left:
+                break;
+            case Right:
+            default:
+                break;
+        }
+    }
+}
+
+void TeamMenu::up(){
+}
+
+void TeamMenu::down(){
+}
+
+void TeamMenu::left(){
+}
+
+void TeamMenu::right(){
+}
+
+const TeamMenu::FightType & TeamMenu::select(){
+    return current;
+}
+
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
+player1TeamMenu(TeamMenu::Left),
+player2TeamMenu(TeamMenu::Right),
 file(file){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
@@ -230,7 +285,9 @@ void CharacterSelect::init(){
         Global::debug(1) << baseDir.path() << std::endl;
 
         if (file.isEmpty()){
-            throw MugenException( "Cannot locate character select definition file for: " + file.path());
+            std::ostringstream out;
+            out << "Cannot locate character select definition file for: " << file.path();
+            throw MugenException( out.str(), __FILE__, __LINE__);
         }
 
         TimeDifference diff;
@@ -677,6 +734,96 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                        } else if ( simple == "teammenu.move.wrapping"){
+                        } else if ( simple == "p1.teammenu.pos"){
+                        } else if ( simple == "p1.teammenu.spr"){
+                        } else if ( simple == "p1.teammenu.selftitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.selftitle.text"){
+                            std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player1TeamMenu.titleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.enemytitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.enemytitle.text"){
+                            std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player1TeamMenu.enemyTitleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.move.snd"){
+                        } else if ( simple == "p1.teammenu.value.snd"){
+                        } else if ( simple == "p1.teammenu.done.snd"){
+                        } else if ( simple == "p1.teammenu.item.offset"){
+                        } else if ( simple == "p1.teammenu.item.spacing"){
+                        } else if ( simple == "p1.teammenu.item.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.item.active.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.item.active2.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.item.cursor.offset"){
+                        } else if ( simple == "p1.teammenu.item.cursor.anim"){
+                        } else if ( simple == "p1.teammenu.value.icon.offset"){
+                        } else if ( simple == "p1.teammenu.value.icon.spr"){
+                        } else if ( simple == "p1.teammenu.value.empty.icon.offset"){
+                        } else if ( simple == "p1.teammenu.value.empty.icon.spr"){
+                        } else if ( simple == "p1.teammenu.value.spacing"){
+                        } else if ( simple == "p2.teammenu.pos"){
+                        } else if ( simple == "p2.teammenu.bg.spr"){
+                        } else if ( simple == "p2.teammenu.selftitle.font"){
+                        } else if ( simple == "p2.teammenu.selftitle.text"){
+                        } else if ( simple == "p2.teammenu.enemytitle.font"){
+                        } else if ( simple == "p2.teammenu.enemytitle.text"){
+                        } else if ( simple == "p2.teammenu.move.snd"){
+                        } else if ( simple == "p2.teammenu.value.snd"){
+                        } else if ( simple == "p2.teammenu.done.snd"){
+                        } else if ( simple == "p2.teammenu.item.offset"){
+                        } else if ( simple == "p2.teammenu.item.spacing"){
+                        } else if ( simple == "p2.teammenu.item.font"){
+                        } else if ( simple == "p2.teammenu.item.active.font"){
+                        } else if ( simple == "p2.teammenu.item.active2.font"){
+                        } else if ( simple == "p2.teammenu.item.cursor.offset"){
+                        } else if ( simple == "p2.teammenu.item.cursor.anim"){
+                        } else if ( simple == "p2.teammenu.value.icon.offset"){
+                        } else if ( simple == "p2.teammenu.value.icon.spr"){
+                        } else if ( simple == "p2.teammenu.value.empty.icon.offset"){
+                        } else if ( simple == "p2.teammenu.value.empty.icon.spr"){
+                        } else if ( simple == "p2.teammenu.value.spacing"){
                         }
                     }
                 };
