@@ -1,6 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/trans-bitmap.h"
 #include "util/parameter.h"
 #include "util/events.h"
@@ -120,13 +121,16 @@ static int getServerPort(){
 
         void draw(const Graphics::Bitmap & screen){
             if (need_draw){
-                background.Blit(screen);
-                Graphics::Bitmap work(screen, 100, drawY, 200, 25);
+                Graphics::StretchedBitmap buffer(640, 480, screen);
+                buffer.start();
+                background.Blit(buffer);
+                Graphics::Bitmap work(buffer, 100, drawY, 200, 25);
                 work.clear();
                 const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
                 font.printf(0, 0, Graphics::makeColor(255, 255, 255), work, input.getText(), 0);
                 // work.Blit(100, drawY, background);
                 // background.BlitToScreen();
+                buffer.finish();
                 screen.BlitToScreen();
             }
         }

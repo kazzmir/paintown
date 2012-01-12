@@ -2,6 +2,7 @@
 
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/network/network.h"
 #include "util/events.h"
 #include "chat_server.h"
@@ -677,7 +678,7 @@ void ChatServer::drawInputBox(int x, int y, const Graphics::Bitmap & work){
 */
 
 void ChatServer::drawBuddyList( int x, int y, const Graphics::Bitmap & work, const Font & font ){
-    Graphics::Bitmap buddyList( work, x, y, GFX_X - x - 5, 200 );
+    Graphics::Bitmap buddyList( work, x, y, work.getWidth() - x - 5, 200 );
     // buddyList.drawingMode( Bitmap::MODE_TRANS );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     buddyList.translucent().rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Graphics::makeColor( 0, 0, 0 ) );
@@ -915,10 +916,13 @@ void ChatServer::run(){
         ChatServer & server;
         Focus & focus;
 
-        void draw(const Graphics::Bitmap & work){
+        void draw(const Graphics::Bitmap & buffer){
             if (server.needToDraw()){
+                Graphics::StretchedBitmap work(640, 480, buffer);
+                work.start();
                 server.draw(work, lineEdit, focus);
-                work.BlitToScreen();
+                work.finish();
+                buffer.BlitToScreen();
             }
         }
     };

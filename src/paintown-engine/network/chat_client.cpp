@@ -1,6 +1,7 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/network/network.h"
 #include "util/trans-bitmap.h"
 #include "util/events.h"
@@ -355,7 +356,7 @@ void ChatClient::drawInputBox( int x, int y, const Graphics::Bitmap & work ){
 }
 
 void ChatClient::drawBuddies( const Graphics::Bitmap & area, int x, int y, const Font & font ){
-    Graphics::Bitmap buddyList( area, x, y, GFX_X - x - 5, 200 );
+    Graphics::Bitmap buddyList( area, x, y, area.getWidth() - x - 5, 200 );
     // buddyList.drawingMode( Graphics::Bitmap::MODE_TRANS );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     buddyList.translucent().rectangleFill( 0, 0, buddyList.getWidth(), buddyList.getHeight(), Graphics::makeColor( 0, 0, 0 ) );
@@ -481,7 +482,7 @@ void ChatClient::run(){
 
             while (! client.toSend.empty()){
                 if (! client.sendMessage(client.toSend.front())){
-                    popup(Graphics::Bitmap(GFX_X, GFX_Y), "Could not send message" );
+                    popup(*Graphics::screenParameter.current(), "Could not send message" );
                 }
                 client.toSend.pop();
             }
@@ -498,11 +499,14 @@ void ChatClient::run(){
 
         ChatClient & client;
 
-        void draw(const Graphics::Bitmap & work){
+        void draw(const Graphics::Bitmap & buffer){
             if (client.needToDraw()){
-                client.draw(work);
-                work.BlitToScreen();
+                Graphics::StretchedBitmap work(640, 480, buffer);
+                work.start();
                 work.clear();
+                client.draw(work);
+                work.finish();
+                buffer.BlitToScreen();
             }
         }
     };

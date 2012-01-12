@@ -388,7 +388,7 @@ static void popup(const Font & font, const string & message ){
     const Graphics::Bitmap & work = *Graphics::screenParameter.current();
     int length = font.textLength( message.c_str() ) + 20; 
     // Bitmap area( *Bitmap::Screen, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
-    Graphics::Bitmap area( work, GFX_X / 2 - length / 2, 220, length, font.getHeight() * 3 );
+    Graphics::Bitmap area( work, work.getWidth() / 2 - length / 2, 220, length, font.getHeight() * 3 );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     // area.drawingMode( Bitmap::MODE_TRANS );
     area.translucent().rectangleFill( 0, 0, area.getWidth(), area.getHeight(), Graphics::makeColor( 64, 0, 0 ) );

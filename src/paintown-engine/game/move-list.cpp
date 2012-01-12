@@ -19,6 +19,9 @@ using std::map;
 using std::vector;
 using std::string;
 
+static const int GFX_X = 640;
+static const int GFX_Y = 480;
+
 namespace Paintown{
 
 enum MoveListInput{
@@ -589,10 +592,13 @@ class Runner: public Util::Logic, public Util::Draw {
         }
 
         void draw(const Graphics::Bitmap & buffer){
+            Graphics::StretchedBitmap work(640, 480, buffer, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             const Font & font = Menu::menuFontParameter.current()->get();
-            background.Blit(buffer);
-            area.render(buffer, font);
-            main.draw(buffer, font);
+            work.start();
+            background.Blit(work);
+            area.render(work, font);
+            main.draw(work, font);
+            work.finish();
             buffer.BlitToScreen();
         }
 
