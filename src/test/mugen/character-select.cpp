@@ -8,6 +8,7 @@
 
 using namespace Mugen;
 
+// Cell static members
 PaintownUtil::ReferenceCount<MugenSprite> Cell::background = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
 PaintownUtil::ReferenceCount<MugenSprite> Cell::randomIcon = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
 PaintownUtil::ReferenceCount<MugenSprite> Cell::player1ActiveCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
@@ -16,6 +17,85 @@ PaintownUtil::ReferenceCount<MugenSprite> Cell::player2ActiveCursor = PaintownUt
 PaintownUtil::ReferenceCount<MugenSprite> Cell::player2DoneCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
 bool Cell::blinkCursor = false;
 int Cell::blinkTime = 0;
+
+SelectFont::SelectFont():
+font(PaintownUtil::ReferenceCount<MugenFont>(NULL)),
+bank(0),
+position(0){
+}
+
+SelectFont::SelectFont(PaintownUtil::ReferenceCount<MugenFont> font, int bank, int position):
+font(font),
+bank(bank),
+position(position){
+}
+
+SelectFont::SelectFont(const SelectFont & copy):
+font(copy.font),
+bank(copy.bank),
+position(copy.position){
+}
+
+SelectFont::~SelectFont(){
+}
+
+const SelectFont & SelectFont::operator=(const SelectFont & copy){
+    font = copy.font;
+    bank = copy.bank;
+    position = copy.position;
+    return * this;
+}
+
+void SelectFont::render(int x, int y, const std::string & text, const Graphics::Bitmap & work){
+    if (font != NULL){
+        font->render(x, y, position, bank, work, text);
+    }
+}
+
+FontHandler::FontHandler():
+state(Normal),
+x(0),
+y(0),
+ticker(0),
+blinkTime(10){
+}
+
+FontHandler::~FontHandler(){
+}
+
+void FontHandler::act(){
+    switch(state){
+        case Blink:
+            ticker++;
+            if (ticker >= (blinkTime*2)){
+                ticker = 0;
+            }
+            break;
+        case Normal:
+        case Done:
+        default:
+            break;
+    }
+}
+
+void FontHandler::render(const std::string & text, const Graphics::Bitmap & work){
+    switch(state){
+        default:
+        case Normal:
+            active.render(x, y, text, work);
+            break;
+        case Blink:
+            if (ticker < blinkTime){
+                active.render(x, y, text, work);
+            } else if (ticker >= blinkTime){
+                active2.render(x, y, text, work);
+            }
+            break;
+        case Done:
+            done.render(x, y, text, work);
+            break;
+    }
+}
 
 Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent):
 index(index),
@@ -441,8 +521,8 @@ void CharacterSelect::init(){
                             try{
                                 bool cancel;
                                 simple.view() >> cancel;
-                                //self.player1Cursor.setRandomCancel(cancel);
-                                //self.player2Cursor.setRandomCancel(cancel);
+                                //FIXME
+                                // Set cancel sound flag
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.move.snd"){
@@ -484,20 +564,16 @@ void CharacterSelect::init(){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                //self.titleFont.setLocation(x,y);
+                                self.titleFont.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "title.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
+                                self.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
-                            }
-                            /* -1 indicates no font */
-                            if (index != -1){
-                                /* should this be set even if the parse fails? */
-                                //self.titleFont.setPrimary(self.getFont(index), bank, position);
                             }
                         } else if ( simple == "p1.face.offset"){
                             try{
@@ -545,74 +621,61 @@ void CharacterSelect::init(){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                //self.player1Cursor.getFontHandler().setLocation(x,y);
+                                self.player1Font.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         }  else if ( simple == "p1.name.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
+                                self.player1Font.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
-                            }
-
-                            if (index > 0){
-                                //self.player1Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
                             }
                         } else if ( simple == "p2.name.offset"){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                //self.player2Cursor.getFontHandler().setLocation(x,y);
+                                self.player2Font.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.name.font"){
                             try{
                                 int index, bank, position;
                                 simple.view() >> index >> bank >> position;
-                                if (index > 0){
-                                    //self.player2Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
-                                }
+                                self.player2Font.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.pos"){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                //self.grid.getStageHandler().getFontHandler().setLocation(x,y);
+                                self.stageFont.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.active.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
+                                self.stageFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
-                            }
-
-                            if (index > 0){
-                                //self.grid.getStageHandler().getFontHandler().setPrimary(self.getFont(index),bank,position);
                             }
                         } else if ( simple == "stage.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
+                                self.stageFont.setActive2(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
-                            }
-
-                            if (index > 0){
-                                //self.grid.getStageHandler().getFontHandler().setBlink(self.getFont(index),bank,position);
                             }
                         } else if ( simple == "stage.done.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
+                                self.stageFont.setDone(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
-                            }
-                            if (index > 0){
-                                //self.grid.getStageHandler().getFontHandler().setDone(self.getFont(index),bank,position);
                             }
                         }
                     }
@@ -805,6 +868,8 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     grid.render(temp, Font::getDefaultFont());
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
+    // render title FIXME set title
+    titleFont.render("Test", work);
     background->renderForeground(0,0,work);
 }
 
@@ -877,4 +942,15 @@ void CharacterSelect::setSound(const SoundType & type, int group, int sound){
     values.group = group;
     values.index = sound;
     soundLookup[type] = values;
+}
+
+/* indexes start at 1 */
+PaintownUtil::ReferenceCount<MugenFont> CharacterSelect::getFont(int index) const {
+    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
+        return fonts[index - 1];
+    } else {
+        std::ostringstream out;
+        out << "No font for index " << index;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
 }

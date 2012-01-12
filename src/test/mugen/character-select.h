@@ -11,6 +11,79 @@
 
 namespace Mugen{
     
+/*! Font */
+class SelectFont{
+public:
+    SelectFont();
+    SelectFont(PaintownUtil::ReferenceCount<MugenFont> font, int bank, int position);
+    SelectFont(const SelectFont &);
+    ~SelectFont();
+    const SelectFont & operator=(const SelectFont &);
+    void render(int x, int y, const std::string &, const Graphics::Bitmap &);
+private:
+    PaintownUtil::ReferenceCount<MugenFont> font;
+    int bank;
+    int position;
+};
+    
+/*! Font Handling */
+class FontHandler{
+    public:
+    FontHandler();
+    virtual ~FontHandler();
+    
+    void act();
+    void render(const std::string &, const Graphics::Bitmap &);
+    
+    enum State{
+        Normal=0,
+        Blink,
+        Done
+    };
+    
+    virtual inline void setLocation(int x, int y){
+        this->x = x;
+        this->y = y;
+    }
+    
+    virtual inline void setState(const State & state){
+        this->state = state;
+    }
+    
+    virtual inline const State & getState() const {
+        return state;
+    }
+    
+    virtual inline void setBlinkTime(int time){
+        this->blinkTime = time;
+    }
+    
+    virtual inline void setActive(const SelectFont & font){
+        this->active = font;
+    }
+    virtual inline void setActive2(const SelectFont & font){
+        this->active2 = font;
+    }
+    virtual inline void setDone(const SelectFont & font){
+        this->done = font;
+    }
+private:
+    //! Current state
+    State state;
+    //! Position
+    int x, y;
+    //! active font
+    SelectFont active;
+    //! active font 2 for blinking
+    SelectFont active2;
+    //! done font for when completed
+    SelectFont done;
+    //! ticker for font switching when blinking
+    int ticker;
+    //! blink time defaults to 10
+    int blinkTime;
+};
+    
 class Cell : public Gui::SelectItem {
 public:
     Cell(unsigned int index, const Gui::SelectListInterface *);
@@ -95,7 +168,22 @@ public:
         Cancel,
     };
     virtual void setSound(const SoundType &, int group, int sound);
+    
+    //! Fonts
+    FontHandler titleFont;
+    FontHandler player1Font;
+    FontHandler player2Font;
+    FontHandler stageFont;
+    FontHandler player1TeamTitle;
+    FontHandler player1TeamOpponentTitle;
+    FontHandler player1TeamItem;
+    FontHandler player2TeamTitle;
+    FontHandler player2TeamOpponentTitle;
+    FontHandler player2TeamItem;
+    
 protected:
+    //! Get font
+    PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
