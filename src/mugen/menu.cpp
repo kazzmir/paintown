@@ -333,7 +333,7 @@ void MugenMenu::loadData(){
                                         menu.logo = new Mugen::Storyboard(Mugen::Util::findFile(Filesystem::RelativePath(menu.logoFile)), false);
                                         Global::debug(1) << "Got Logo Storyboard File: '" << menu.logoFile << "'" << endl;
                                     } catch (const MugenException &ex){
-                                        throw MugenException( "Error loading logo storyboard: " + ex.getReason(), __FILE__, __LINE__);
+                                        Global::debug(0) << "Error loading logo storyboard " << menu.logoFile << ": " << ex.getFullReason() << std::endl;
                                     }
                                 }
                             } catch (const Ast::Exception & e){
@@ -347,7 +347,8 @@ void MugenMenu::loadData(){
                                         menu.intro = new Mugen::Storyboard(Mugen::Util::findFile(Filesystem::RelativePath(menu.introFile)), true);
                                         Global::debug(1) << "Got Intro Storyboard File: '" << menu.introFile << "'" << endl;
                                     } catch (const MugenException &ex){
-                                        throw MugenException( "Error loading intro storyboard " + menu.introFile + ": " + ex.getReason(), __FILE__, __LINE__);
+                                        // throw MugenException("Error loading intro storyboard " + menu.introFile + ": " + ex.getFullReason(), __FILE__, __LINE__);
+                                        Global::debug(0) << "Error loading intro storyboard " << menu.introFile << ": " << ex.getFullReason() << std::endl;
                                     }
                                 }
                             } catch (const Ast::Exception & e){
