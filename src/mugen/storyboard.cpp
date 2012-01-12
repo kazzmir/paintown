@@ -317,82 +317,88 @@ startscene(0){
     bool clearColorSet = false;
     Graphics::Color clearColor = Graphics::makeColor(0, 0, 0);
     
-    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
-        Ast::Section * section = *section_it;
-	std::string head = section->getName();
-	
-	head = Util::fixCase(head);
-	
-        if (head == "info"){
-            class InfoWalk: public Ast::Walker{
-            public:
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "name"){
-                        string name;
-                        simple.view() >> name;
-                        Global::debug(1) << "Read name '" << name << "'" << endl;
-                    } else if (simple == "author"){
-                        string name;
-                        simple.view() >> name;
-                        Global::debug(1) << "Made by: '" << name << "'" << endl;
-                    } else {
-                        Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
+    try{
+        for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
+            Ast::Section * section = *section_it;
+            std::string head = section->getName();
+
+            head = Util::fixCase(head);
+
+            if (head == "info"){
+                class InfoWalk: public Ast::Walker{
+                public:
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "name"){
+                            string name;
+                            simple.view() >> name;
+                            Global::debug(1) << "Read name '" << name << "'" << endl;
+                        } else if (simple == "author"){
+                            string name;
+                            simple.view() >> name;
+                            Global::debug(1) << "Made by: '" << name << "'" << endl;
+                        } else {
+                            Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
+                        }
                     }
-                }
-            };
+                };
 
-            InfoWalk walk;
-            section->walk(walk);
+                InfoWalk walk;
+                section->walk(walk);
 
-        } else if (head == "scenedef"){
-            class SceneWalk: public Ast::Walker{
-            public:
-                SceneWalk(const Filesystem::AbsolutePath & baseDir, Storyboard & board, bool mask):
-                    baseDir(baseDir),
-                    board(board),
-                    mask(mask){
-                }
+            } else if (head == "scenedef"){
+                class SceneWalk: public Ast::Walker{
+                public:
+                    SceneWalk(const Filesystem::AbsolutePath & baseDir, Storyboard & board, bool mask):
+                        baseDir(baseDir),
+                        board(board),
+                        mask(mask){
+                        }
 
-                const Filesystem::AbsolutePath & baseDir;
-                Storyboard & board;
-                bool mask;
+                    const Filesystem::AbsolutePath & baseDir;
+                    Storyboard & board;
+                    bool mask;
 
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (simple == "spr"){
-                        std::string temp;
-                        simple.view() >> temp;
-                        Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
-                    } else if (simple == "startscene"){
-                        simple.view() >> board.startscene;
-                        Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;
-                    } else {
-                        Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
+                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                        if (simple == "spr"){
+                            std::string temp;
+                            simple.view() >> temp;
+                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(temp)), Filesystem::AbsolutePath(), board.sprites, mask);
+                        } else if (simple == "startscene"){
+                            simple.view() >> board.startscene;
+                            Global::debug(1) << "Starting storyboard at: '" << board.startscene << "'" << endl;
+                        } else {
+                            Global::debug(0) << "Warning: ignored attribute: " << simple.toString() << endl;
+                        }
                     }
-                }
-            };
+                };
 
-            SceneWalk walk(baseDir, *this, mask);
-            section->walk(walk);
-        } else if (PaintownUtil::matchRegex(head, "^scene")){
-	    Scene *scene = new Scene(section, ourDefFile, parsed, sprites);
-	    scenes.push_back(scene);
-	    // Check default position
-	    if (!scene->getDefaultPositionSet() && defaultPositionSet){
-		scene->setDefaultPosition(defaultPosition);
-	    }
-	    if (scene->getDefaultPositionSet()){
-		defaultPosition = scene->getDefaultPosition();
-		defaultPositionSet = true;
-	    }
-	    // Check default clear color
-	    if (!scene->getClearColorSet() && clearColorSet){
-		scene->setClearColor(clearColor);
-	    }
-	    if (scene->getClearColorSet()){
-		clearColor = scene->getClearColor();
-		clearColorSet = true;
-	    }
-	}
+                SceneWalk walk(baseDir, *this, mask);
+                section->walk(walk);
+            } else if (PaintownUtil::matchRegex(head, "^scene")){
+                Scene *scene = new Scene(section, ourDefFile, parsed, sprites);
+                scenes.push_back(scene);
+                // Check default position
+                if (!scene->getDefaultPositionSet() && defaultPositionSet){
+                    scene->setDefaultPosition(defaultPosition);
+                }
+                if (scene->getDefaultPositionSet()){
+                    defaultPosition = scene->getDefaultPosition();
+                    defaultPositionSet = true;
+                }
+                // Check default clear color
+                if (!scene->getClearColorSet() && clearColorSet){
+                    scene->setClearColor(clearColor);
+                }
+                if (scene->getClearColorSet()){
+                    clearColor = scene->getClearColor();
+                    clearColorSet = true;
+                }
+            }
+        }
+    } catch (const Filesystem::NotFound & fail){
+        ostringstream out;
+        out << "Error while reading storyboard for " << file.path() << ": " << fail.getTrace();
+        throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
