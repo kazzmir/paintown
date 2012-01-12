@@ -2690,10 +2690,20 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
 #endif
 }
 
+static Filesystem::AbsolutePath findSound(const Filesystem::RelativePath & music){
+    try{
+        /* First search by prepending sound to the path */
+        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("sound")).join(music));
+    } catch (const Filesystem::NotFound & fail){
+        /* Then search for the plain file */
+        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(music));
+    }
+}
+
 static void startMusic(const Filesystem::AbsolutePath & systemFile, const string & which){
     try {
 	string music = Mugen::Util::probeDef(systemFile, "music", which);
-	Music::loadSong(Storage::instance().find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + music)).path());
+	Music::loadSong(findSound(Filesystem::RelativePath(music)).path());
 	Music::pause();
 	Music::play();
     } catch (const MugenException & ex){
