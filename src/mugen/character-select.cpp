@@ -2545,9 +2545,11 @@ void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
     for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
         try{
             CharacterCollect & character = *i;
-            const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
-            addFile(def);
-            stageNames.push_back(character.stage);
+            if (character.name != ""){
+                const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
+                addFile(def);
+                stageNames.push_back(character.stage);
+            }
         } catch (const Filesystem::NotFound & fail){
             Global::debug(0) << "Error loading mugen character: " << fail.getTrace() << std::endl;
         }
