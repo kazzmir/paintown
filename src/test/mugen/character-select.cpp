@@ -18,6 +18,8 @@ PaintownUtil::ReferenceCount<MugenSprite> Cell::player2DoneCursor = PaintownUtil
 bool Cell::blinkCursor = false;
 int Cell::blinkTime = 0;
 
+bool TeamMenu::wrapping = false;
+
 SelectFont::SelectFont():
 font(PaintownUtil::ReferenceCount<MugenFont>(NULL)),
 bank(0),
@@ -46,7 +48,7 @@ const SelectFont & SelectFont::operator=(const SelectFont & copy){
     return * this;
 }
 
-void SelectFont::render(int x, int y, const std::string & text, const Graphics::Bitmap & work){
+void SelectFont::draw(int x, int y, const std::string & text, const Graphics::Bitmap & work){
     if (font != NULL){
         font->render(x, y, position, bank, work, text);
     }
@@ -78,25 +80,25 @@ void FontHandler::act(){
     }
 }
 
-void FontHandler::render(const Graphics::Bitmap & work){
-    render(text, work);
+void FontHandler::draw(const Graphics::Bitmap & work){
+    draw(text, work);
 }
 
-void FontHandler::render(const std::string & text, const Graphics::Bitmap & work){
+void FontHandler::draw(const std::string & text, const Graphics::Bitmap & work){
     switch(state){
         default:
         case Normal:
-            active.render(x, y, text, work);
+            active.draw(x, y, text, work);
             break;
         case Blink:
             if (ticker < blinkTime){
-                active.render(x, y, text, work);
+                active.draw(x, y, text, work);
             } else if (ticker >= blinkTime){
-                active2.render(x, y, text, work);
+                active2.draw(x, y, text, work);
             }
             break;
         case Done:
-            done.render(x, y, text, work);
+            done.draw(x, y, text, work);
             break;
     }
 }
@@ -220,48 +222,160 @@ void Cell::drawPlayer2Cursor(int x, int y, const Graphics::Bitmap & work, bool b
 }
 
 
-TeamMenu::TeamMenu(const Side & side):
-side(side),
-current(Simultaneous){
+TeamMenu::TeamMenu():
+current(Simultaneous),
+turns(Turns2),
+x(0),
+y(0),
+background(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+itemOffsetX(0),
+itemOffsetY(0),
+itemSpacingX(0),
+itemSpacingY(0),
+valueIconOffsetX(0),
+valueIconOffsetY(0),
+icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+emptyValueIconOffsetX(0),
+emptyValueIconOffsetY(0),
+emptyIcon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+valueSpacingX(0),
+valueSpacingY(0){
+    itemCurrentFont.setState(FontHandler::Blink);
 }
 
 TeamMenu::~TeamMenu(){
 }
 
 void TeamMenu::act(){
+    itemCurrentFont.act();
 }
 
-void TeamMenu::draw(const Graphics::Bitmap &, bool enemy){
+void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
+    // Set location
+    int currentX = x, currentY = y;
+    if (background != NULL){
+        background->render(currentX, currentY, work);
+    }
+    // Regular font or enemy ?
     if (!enemy){
-        switch (side){
-            case Left:
-                break;
-            case Right:
-            default:
-                break;
-        }
+        titleFont.setLocation(currentX, currentY);
+        titleFont.draw(work);
     } else {
-        // Opposite side
-        switch (side){
-            case Left:
+        enemyTitleFont.setLocation(currentX, currentY);
+        enemyTitleFont.draw(work);
+    }
+    
+    // First item (single)
+    currentX+=itemOffsetX;
+    currentY+=itemOffsetY;
+    if (current == Single){
+        itemCurrentFont.setLocation(currentX, currentY);
+        itemCurrentFont.draw("Single", work);
+    } else {
+        itemFont.setLocation(currentX, currentY);
+        itemFont.draw("Single", work);
+    }
+    
+    // Second item (simultaneous)
+    currentX+=itemSpacingX;
+    currentY+=itemSpacingY;
+    if (current == Simultaneous){
+        itemCurrentFont.setLocation(currentX, currentY);
+        itemCurrentFont.draw("Simul", work);
+    } else {
+        itemFont.setLocation(currentX, currentY);
+        itemFont.draw("Simul", work);
+    }
+    if (emptyIcon != NULL){
+        // Empty icons draw two
+        int emptyX = currentX + emptyValueIconOffsetX, emptyY = currentY + emptyValueIconOffsetY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+    }
+    if (icon != NULL){
+        // Icons draw two for Simul
+        int valueX = currentX + valueIconOffsetX, valueY = currentY + valueIconOffsetY;
+        icon->render(valueX, valueY, work);
+        valueX += valueSpacingX;
+        valueY += valueSpacingY;
+        icon->render(valueX, valueY, work);
+    }
+    // Third item (Turns)
+    currentX+=itemSpacingX;
+    currentY+=itemSpacingY;
+    switch (current){
+        case Turns2:
+        case Turns3:
+        case Turns4:
+            itemCurrentFont.setLocation(currentX, currentY);
+            itemCurrentFont.draw("Turns", work);
+            break;
+        case Single:
+        case Simultaneous:
+        default:
+            itemFont.setLocation(currentX, currentY);
+            itemFont.draw("Turns", work);
+            break;
+    }
+    if (emptyIcon != NULL){
+        // Empty icons draw four
+        int emptyX = currentX + emptyValueIconOffsetX, emptyY = currentY + emptyValueIconOffsetY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+    }
+    if (icon != NULL){
+        // Icons draw two by defualt
+        int valueX = currentX + valueIconOffsetX, valueY = currentY + valueIconOffsetY;
+        icon->render(valueX, valueY, work);
+        valueX += valueSpacingX;
+        valueY += valueSpacingY;
+        icon->render(valueX, valueY, work);
+        // Check which position it is on
+        switch (turns){
+            case Turns3:
+                valueX += valueSpacingX;
+                valueY += valueSpacingY;
+                icon->render(valueX, valueY, work);
                 break;
-            case Right:
+            case Turns4:
+                valueX += valueSpacingX;
+                valueY += valueSpacingY;
+                icon->render(valueX, valueY, work);
+                valueX += valueSpacingX;
+                valueY += valueSpacingY;
+                icon->render(valueX, valueY, work);
+                break;
+            case Turns2:
             default:
                 break;
         }
     }
 }
 
-void TeamMenu::up(){
+bool TeamMenu::up(){
+    return false;
 }
 
-void TeamMenu::down(){
+bool TeamMenu::down(){
+    return false;
 }
 
-void TeamMenu::left(){
+bool TeamMenu::left(){
+    return false;
 }
 
-void TeamMenu::right(){
+bool TeamMenu::right(){
+    return false;
 }
 
 const TeamMenu::FightType & TeamMenu::select(){
@@ -269,8 +383,6 @@ const TeamMenu::FightType & TeamMenu::select(){
 }
 
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
-player1TeamMenu(TeamMenu::Left),
-player2TeamMenu(TeamMenu::Right),
 file(file){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
@@ -735,8 +847,26 @@ void CharacterSelect::init(){
                                 //ignore for now
                             }
                         } else if ( simple == "teammenu.move.wrapping"){
+                            try {
+                                bool wrap;
+                                simple.view() >> wrap;
+                                TeamMenu::setWrapping(wrap);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.pos"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setPosition(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player1TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.selftitle.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -768,10 +898,40 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.move.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.setSound(Player1TeamMove, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.value.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.setSound(Player1TeamValue, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.done.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.setSound(Player1TeamDone, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.item.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setItemOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.item.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setItemSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.item.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -797,33 +957,186 @@ void CharacterSelect::init(){
                                 //ignore for now
                             }
                         } else if ( simple == "p1.teammenu.item.cursor.offset"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
                         } else if ( simple == "p1.teammenu.item.cursor.anim"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
                         } else if ( simple == "p1.teammenu.value.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.value.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player1TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.value.empty.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setEmptyValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.value.empty.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player1TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p1.teammenu.value.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setValueSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.pos"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setPosition(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.bg.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player2TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.selftitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player2TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
                         } else if ( simple == "p2.teammenu.selftitle.text"){
+                             std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player2TeamMenu.titleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.enemytitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player2TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
                         } else if ( simple == "p2.teammenu.enemytitle.text"){
+                             std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player2TeamMenu.enemyTitleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.move.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.setSound(Player2TeamMove, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.value.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.setSound(Player2TeamValue, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.done.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.setSound(Player2TeamDone, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.item.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setItemOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.item.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setItemSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.item.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player2TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
                         } else if ( simple == "p2.teammenu.item.active.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player2TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
                         } else if ( simple == "p2.teammenu.item.active2.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player2TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
                         } else if ( simple == "p2.teammenu.item.cursor.offset"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
                         } else if ( simple == "p2.teammenu.item.cursor.anim"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
                         } else if ( simple == "p2.teammenu.value.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.value.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player2TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.value.empty.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setEmptyValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.value.empty.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player2TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if ( simple == "p2.teammenu.value.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setValueSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
                         }
                     }
                 };
@@ -835,122 +1148,7 @@ void CharacterSelect::init(){
                 background = PaintownUtil::ReferenceCount<Mugen::Background>(new Mugen::Background(file, "selectbg"));
             } else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
             else if (head == "vs screen" ){
-#if 0
-                class VersusWalker: public Ast::Walker{
-                public:
-                    VersusWalker(VersusScreen & self, const CharacterSelect & select):
-                        self(self),
-                        select(select){
-                        }
-
-                    VersusScreen & self;
-                    const CharacterSelect & select;
-
-                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (simple == "time" ){
-                            try{
-                                int time;
-                                simple.view() >> time;
-                                self.setTime(time);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "fadein.time"){
-                            try{
-                                int time;
-                                simple.view() >> time;
-                                self.getFadeTool().setFadeInTime(time);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "fadeout.time"){
-                            try{
-                                int time;
-                                simple.view() >> time;
-                                self.getFadeTool().setFadeOutTime(time);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "p1.pos"){
-                            int x=0,y=0;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (Ast::Exception & e){
-                            }
-                            self.setPlayer1Position(Mugen::Point(x,y));
-                        } else if (simple == "p1.facing"){
-                            try{
-                                int face;
-                                simple.view() >> face;
-                                self.setPlayer1Facing(face);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "p1.scale"){
-                            double x,y;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setPlayer1Scale(x,y);
-                        } else if (simple == "p2.pos"){
-                            int x=0,y=0;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setPlayer2Position(Mugen::Point(x,y));
-                        } else if (simple == "p2.facing"){
-                            try{
-                                int face;
-                                simple.view() >> face;
-                                self.setPlayer2Facing(face);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "p2.scale"){
-                            double x,y;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setPlayer2Scale(x,y);
-                        } else if (simple == "p1.name.pos"){
-                            int x, y;
-                            try {
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.getPlayer1Font().setLocation(x,y);
-                        } else if (simple == "p1.name.font"){
-                            int index=0, bank=0, position=0;
-                            try {
-                                simple.view() >> index >> bank >> position;
-                            } catch (const Ast::Exception & e){
-                                //ignore for now
-                            }
-                            if (index > 0){
-                                self.getPlayer1Font().setPrimary(select.getFont(index),bank,position);
-                            }
-                        } else if (simple == "p2.name.pos"){
-                            int x, y;
-                            try {
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.getPlayer2Font().setLocation(x,y);
-                        } else if (simple == "p2.name.font"){
-                            int index=0, bank=0, position=0;
-                            try {
-                                simple.view() >> index >> bank >> position;
-                            } catch (const Ast::Exception & e){
-                                //ignore for now
-                            }
-                            if (index > 0){
-                                self.getPlayer2Font().setPrimary(select.getFont(index),bank,position);
-                            }
-                        }
-                    }
-                };
-
-                VersusWalker walker(versus, *this);
-                section->walk(walker);
-#endif
+                /* Don't handle versus here */
             }
             else if (head == "versusbgdef" ){
                 /* Background management */
@@ -1006,6 +1204,8 @@ void CharacterSelect::init(){
 void CharacterSelect::act(){
     background->act();
     grid.act();
+    player1TeamMenu.act();
+    player2TeamMenu.act();
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
@@ -1016,7 +1216,10 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
     // render title FIXME set title
-    titleFont.render("Test", work);
+    titleFont.draw("Test", work);
+    // FIXME remove and use properly, testing only now
+    player1TeamMenu.draw(work);
+    player2TeamMenu.draw(work);
     background->renderForeground(0,0,work);
 }
 

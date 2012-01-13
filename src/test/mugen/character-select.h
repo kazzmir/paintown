@@ -19,7 +19,7 @@ public:
     SelectFont(const SelectFont &);
     ~SelectFont();
     const SelectFont & operator=(const SelectFont &);
-    void render(int x, int y, const std::string &, const Graphics::Bitmap &);
+    void draw(int x, int y, const std::string &, const Graphics::Bitmap &);
 private:
     PaintownUtil::ReferenceCount<MugenFont> font;
     int bank;
@@ -34,9 +34,9 @@ class FontHandler{
     
     void act();
     //! Render with set text
-    void render(const Graphics::Bitmap &);
+    void draw(const Graphics::Bitmap &);
     //! Override set text (For players names)
-    void render(const std::string &, const Graphics::Bitmap &);
+    void draw(const std::string &, const Graphics::Bitmap &);
     
     enum State{
         Normal=0,
@@ -145,25 +145,20 @@ protected:
 /*! Team Menu */
 class TeamMenu{
 public:
-    //! Side 
-    enum Side{
-        Left,
-        Right
-    };
-    TeamMenu(const Side &);
+    TeamMenu();
     virtual ~TeamMenu();
     
     virtual void act();
     virtual void draw(const Graphics::Bitmap &, bool enemy = false);
     
     //! Up
-    void up();
+    bool up();
     //! Down
-    void down();
+    bool down();
     //! Left
-    void left();
+    bool left();
     //! Right
-    void right();
+    bool right();
     //! Fight types
     enum FightType{
         Single,
@@ -181,21 +176,67 @@ public:
     FontHandler itemFont;
     FontHandler itemCurrentFont;
     
+    static inline void setWrapping(bool wrap){
+        TeamMenu::wrapping = wrap;
+    }
     virtual inline void setPosition(int x, int y){
         this->x = x;
         this->y = y;
     }
-    virtual inline void setEnemyPosition(int x, int y){
-        this->enemyX = x;
-        this->enemyY = y;
+    virtual inline void setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite> sprite){
+        this->background = sprite;
+    }
+    virtual inline void setItemOffset(int x, int y){
+        this->itemOffsetX = x;
+        this->itemOffsetY = y;
+    }
+    virtual inline void setItemSpacing(int x, int y){
+        this->itemSpacingX = x;
+        this->itemSpacingY = y;
+    }
+    virtual inline void setValueIconOffset(int x, int y){
+        this->valueIconOffsetX = x;
+        this->valueIconOffsetY = y;
+    }
+    virtual inline void setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite> icon){
+        this->icon = icon;
+    }
+    virtual inline void setEmptyValueIconOffset(int x, int y){
+        this->emptyValueIconOffsetX = x;
+        this->emptyValueIconOffsetY = y;
+    }
+    virtual inline void setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite> icon){
+        this->emptyIcon = icon;
+    }
+    virtual inline void setValueSpacing(int x, int y){
+        this->valueSpacingX = x;
+        this->valueSpacingY = y;
     }
 protected:
-    //! Side this is on
-    Side side;
     //! Current selection
     FightType current;
+    //! Current turns
+    FightType turns;
+    //! Wrapping
+    static bool wrapping;
+    //! Position of menu
     int x, y;
-    int enemyX, enemyY;
+    //! Background sprite
+    PaintownUtil::ReferenceCount<MugenSprite> background;
+    //! Item starting offset
+    int itemOffsetX, itemOffsetY;
+    //! Item spacing offset
+    int itemSpacingX, itemSpacingY;
+    //! Value icon offset
+    int valueIconOffsetX, valueIconOffsetY;
+    //! Value icon sprite
+    PaintownUtil::ReferenceCount<MugenSprite> icon;
+    //! Empty Value icon offset
+    int emptyValueIconOffsetX, emptyValueIconOffsetY;
+    //! Empty Value icon sprite
+    PaintownUtil::ReferenceCount<MugenSprite> emptyIcon;
+    //! Value spacing
+    int valueSpacingX, valueSpacingY;
 };
 
 struct IndexValue{
