@@ -404,6 +404,11 @@ void MugenMenu::loadData(){
                                 simple.view() >> menu.selectMusic;
                             } catch (const Ast::Exception & fail){
                             }
+                        } else if (simple == "intro.bgm"){
+                            try{
+                                simple.view() >> menu.introMusic;
+                            } catch (const Ast::Exception & fail){
+                            }
                         } else if (simple == "select.bgm.loop"){
                         } else if (simple == "vs.bgm"){
                             try{
@@ -683,6 +688,27 @@ bool MugenMenu::doInput(InputMap<Mugen::Keys> & input, Mugen::PlayerType & chose
 }
 */
 
+static Filesystem::AbsolutePath findSound(const Filesystem::RelativePath & music){
+    try{
+        /* First search by prepending sound to the path */
+        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("sound")).join(music));
+    } catch (const Filesystem::NotFound & fail){
+        /* Then search for the plain file */
+        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(music));
+    }
+}
+
+static void changeMusic(const Filesystem::RelativePath & music){
+    try {
+	Music::loadSong(findSound(Filesystem::RelativePath(music)).path());
+	Music::pause();
+	Music::play();
+    } catch (const MugenException & ex){
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
+    }
+}
+
 void MugenMenu::run(){
     bool done = false;
     bool endGame = false;
@@ -732,6 +758,9 @@ void MugenMenu::run(){
 
     // Intro run it no repeat
     if (intro){
+        if (introMusic != ""){
+            changeMusic(Filesystem::RelativePath(introMusic));
+        }
         intro->setInput(player1Input);
 	intro->run(false);
     }

@@ -184,6 +184,7 @@ class MugenMenu {
 	std::string logoFile;
 	//intro.storyboard =        ;Intro storyboard definition (optional)
 	std::string introFile;
+        std::string introMusic;
 	//select = select.def       ;Character and stage selection list
 	std::string selectFile;
 	//fight = fight.def         ;Fight definition filename
