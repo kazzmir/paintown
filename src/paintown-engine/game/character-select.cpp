@@ -986,6 +986,7 @@ void CharacterSelect::load(const Token * token){
                     parseSimpleList(simpleList, cursorLocations, tok);
                     list = simpleList.convert<Gui::SelectListInterface>();
                 } else if (*tok == "grid-list"){
+                    Global::debug(0) << "Got a grid list" << std::endl;
                     Util::ReferenceCount<Gui::GridSelect> gridList(new Gui::GridSelect());
                     parseGridList(gridList, cursorLocations, tok);
                     list = gridList.convert<Gui::SelectListInterface>();
@@ -1115,6 +1116,7 @@ void CharacterSelect::load(const Token * token){
     for (PlayerVector::iterator i = players.begin(); i != players.end(); ++i){
         items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list, *i, cells)));
     }
+
     list->addItems(items);
     
     // Setup cursors
