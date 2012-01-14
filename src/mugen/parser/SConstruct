@@ -1,5 +1,4 @@
 Import('use')
-Import('addObjects')
 
 all = []
 def_peg = use.Peg('def.peg')
@@ -11,11 +10,6 @@ use.Depends(cmd_peg, air_peg)
 all.append(def_peg)
 all.append(air_peg)
 all.append(cmd_peg)
-# The cmake/FileList.cmake file already lists cmd.cpp so we don't need
-# to add it twice
-#more = use.PegMulti('cmd.peg')
-#addObjects(more[1:])
-#all.extend(more)
 
 for x in all:
     use.Depends(x, 'peg.py')

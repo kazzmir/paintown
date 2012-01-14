@@ -268,21 +268,13 @@ elif useMinpspw():
 def addObjects(objects):
     obj_files.extend(objects)
 
-SConscript('mugen/parser/SConstruct', exports = ['use', 'addObjects']);
+SConscript('test/SConstruct', exports = ['use'])
+
+paintownEnv = use.Clone()
+paintownEnv.Append(LIBS = SConscript('mugen/SConscript', exports = ['use']))
 
 x = []
 # FIXME: adding psp_prx here is ugly, find a better way
-x.append(use.Program('paintown', psp_prx(use) + obj_files + main() + icon() + androidSDLMain()))
-#x.append( use.Program( 'test', obj_files + ['test.cpp'] ) )
-#x.append( use.Program( 'menutest', obj_files + ['menu/menutest.cpp'] ) )
-
-# Uncomment these lines if you really want the test program, but it only
-# works with Allegro
-#if not useSDL():
-#    x.append(use.Program('mugentest', obj_files + ['mugen/test.cpp']))
-
-# x.append( use.Program( 'mugentest2', obj_files + ['mugen/test2.cpp'] ) )
-
-SConscript('test/SConstruct', exports = ['use'])
+x.append(paintownEnv.Program('paintown', psp_prx(use) + obj_files + main() + icon() + androidSDLMain()))
 
 Return('x')
