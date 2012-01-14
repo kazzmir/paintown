@@ -26,6 +26,14 @@ namespace Paintown{
 }
 
 struct Window{
+    Window():
+        x(0), y(0), width(0), height(0){
+        }
+
+    Window(int x, int y, int width, int height):
+        x(x), y(y), width(width), height(height){
+        }
+
     int x, y, width, height;
 };
 
@@ -169,6 +177,8 @@ public:
     }
     
 protected:
+    void initializeDefaults();
+
     /*! Load */
     void load(const Token *);
     

@@ -798,6 +798,7 @@ autoPopulate(false),
 fontWidth(15),
 fontHeight(15),
 currentMessages(0){
+    initializeDefaults();
 }
 
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & filename):
@@ -806,6 +807,7 @@ autoPopulate(false),
 fontWidth(15),
 fontHeight(15),
 currentMessages(0){
+    initializeDefaults();
     Global::debug(1) << "Loading Character Select Screen: " << filename.path() << std::endl;
     TokenReader tr;
     Token * token = tr.readTokenFromFile(filename.path());
@@ -818,10 +820,16 @@ autoPopulate(false),
 fontWidth(15),
 fontHeight(15),
 currentMessages(0){
+    initializeDefaults();
     load(token);
 }
 
 CharacterSelect::~CharacterSelect(){
+}
+
+void CharacterSelect::initializeDefaults(){
+    listWindow = Window(300, 0, 340, 480);
+    list = Util::ReferenceCount<Gui::SelectListInterface>(new Gui::SimpleSelect());
 }
 
 void CharacterSelect::act(){
@@ -986,7 +994,6 @@ void CharacterSelect::load(const Token * token){
                     parseSimpleList(simpleList, cursorLocations, tok);
                     list = simpleList.convert<Gui::SelectListInterface>();
                 } else if (*tok == "grid-list"){
-                    Global::debug(0) << "Got a grid list" << std::endl;
                     Util::ReferenceCount<Gui::GridSelect> gridList(new Gui::GridSelect());
                     parseGridList(gridList, cursorLocations, tok);
                     list = gridList.convert<Gui::SelectListInterface>();
