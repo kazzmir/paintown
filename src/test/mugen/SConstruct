@@ -14,7 +14,6 @@ SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], var
 most_game_source = Split("""
 test/mugen/character.cpp
 test/mugen/helper.cpp
-test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
 test/mugen/state-controller.cpp
 test/mugen/stage.cpp
@@ -58,7 +57,6 @@ test/mugen/projectile.cpp
 test/mugen/stage.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
-test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
 test/mugen/sprite.cpp
 test/mugen/state-controller.cpp
@@ -147,7 +145,6 @@ test-parser/def.cpp
 test-parser/cmd.cpp
 test/mugen/ast/ast.cpp
 test/mugen/exception.cpp
-test/mugen/evaluator.cpp
 test/mugen/helper.cpp
 test/mugen/animation.cpp
 test/mugen/sprite.cpp

@@ -106,7 +106,6 @@ test/mugen/character-select.cpp
 test/mugen/search.cpp
 test/mugen/character.cpp
 test/mugen/helper.cpp
-test/mugen/evaluator.cpp
 test/mugen/compiler.cpp
 test/mugen/state-controller.cpp
 test/mugen/parse-cache.cpp

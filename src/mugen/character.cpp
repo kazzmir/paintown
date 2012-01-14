@@ -36,7 +36,6 @@
 #include "stage.h"
 #include "globals.h"
 #include "state.h"
-#include "evaluator.h"
 #include "compiler.h"
 #include "command.h"
 #include "behavior.h"

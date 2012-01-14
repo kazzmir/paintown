@@ -1,4 +1,0 @@
-#ifndef _paintown_4e928a11be0e15dd1511a045d162c6c1
-#define _paintown_4e928a11be0e15dd1511a045d162c6c1
-
-#endif
