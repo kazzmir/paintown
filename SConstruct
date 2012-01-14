@@ -587,7 +587,7 @@ def checkPython(context):
     if libs != None:
         new_libs = libs
     old_libs = env['LIBS']
-    env.Replace(LIBS = new_libs)
+    env.Replace(LIBS = [new_libs])
     env.Append(CPPDEFINES = ['HAVE_PYTHON'])
     ret = context.TryLink("""
         #include <Python.h>

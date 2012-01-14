@@ -10,5 +10,4 @@ for module in modules:
 
 SConscript('parser/SConstruct', exports = ['use']);
 
-x = use.StaticLibrary('mugen', source)
-Return('x')
+use.Append(LIBS = use.StaticLibrary('mugen', source))

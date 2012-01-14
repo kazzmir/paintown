@@ -34,10 +34,9 @@ include_directories(${PY_INCLUDE})
 # -------------------------------------------------------
 # have to modify script src
 foreach(src_file ${SCRIPT_SRC})
-        string(REPLACE "src/paintown-engine/script/" "" src_file ${src_file})
+        string(REPLACE "script/" "" src_file ${src_file})
         list(APPEND SRC ${src_file})
 endforeach(src_file ${SCRIPT_SRC})
 add_library(script_module ${SRC})
 # target_link_libraries(script_module ${PY_LIBS} ${RUBY_LIBS})
 target_link_libraries(script_module ${PY_LIBS})
-

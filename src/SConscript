@@ -139,32 +139,28 @@ def gmeLibrary(env):
     use = env
     return SConscript('util/gme/SConscript', exports = ['use'])
 
-def unique(lst):
-    m = []
-    for item in lst:
-        if not item in m:
-            m.append(item)
-    return m
+#for i in filelist:
+#    # print "%s = %s" % (i, filelist[i])
+#    # meh, kind of a hack
+#    if i == 'SCRIPT_SRC':
+#        # call the python and ruby checks here
+#        env = use.Clone()
+#        # config = env.Configure()
+#        # Ugly way to pass the custom tests in
+#        config = env.Configure(custom_tests = env['PAINTOWN_TESTS'])
+#        # config.CheckRuby()
+#        config.CheckPython()
+#        env = config.Finish()
+#        use.Append(LIBS = env['LIBS'])
+#        use.Replace(LIBS = unique(use['LIBS']))
+#        files = filelist[i]
+#        # abstract this so we don't duplicate code
+#        obj_files.append(map(lambda x: env.StaticObject(x.replace('src/', '')), files))
+#    else:
+#        addFiles(filelist[i])
 
 for i in filelist:
-    # print "%s = %s" % (i, filelist[i])
-    # meh, kind of a hack
-    if i == 'SCRIPT_SRC':
-        # call the python and ruby checks here
-        env = use.Clone()
-        # config = env.Configure()
-        # Ugly way to pass the custom tests in
-        config = env.Configure(custom_tests = env['PAINTOWN_TESTS'])
-        # config.CheckRuby()
-        config.CheckPython()
-        env = config.Finish()
-        use.Append(LIBS = env['LIBS'])
-        use.Replace(LIBS = unique(use['LIBS']))
-        files = filelist[i]
-        # abstract this so we don't duplicate code
-        obj_files.append(map(lambda x: env.StaticObject(x.replace('src/', '')), files))
-    else:
-        addFiles(filelist[i])
+    addFiles(filelist[i])
 
 # FIXME: somehow get this information from the scons env
 def useSDL():
@@ -270,8 +266,13 @@ def addObjects(objects):
 
 SConscript('test/SConstruct', exports = ['use'])
 
+# Make this a function so we don't clobber the 'use' variable
+def stuff(use):
+    SConscript('mugen/SConscript', exports = ['use'])
+    SConscript('paintown-engine/SConscript', exports = ['use'])
+
 paintownEnv = use.Clone()
-paintownEnv.Append(LIBS = SConscript('mugen/SConscript', exports = ['use']))
+stuff(paintownEnv)
 
 x = []
 # FIXME: adding psp_prx here is ugly, find a better way

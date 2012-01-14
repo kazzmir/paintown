@@ -255,6 +255,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/dumb)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/mugen)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine)
 
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/network/hawknl)
@@ -264,16 +265,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/zip)
 
 #Source modules
 add_library(base_module ${BASE_SRC})
-add_library(level_module ${LEVEL_SRC})
 add_library(factory_module ${FACTORY_SRC})
-add_library(object_module ${OBJECT_SRC})
 add_library(asteroids_module ${ASTEROIDS_SRC})
 add_library(openbor_module ${OPENBOR_SRC})
 # add_library(util_module ${UTIL_SRC})
 add_library(loadpng_module ${LOADPNG_SRC})
 # add_library(menu_module ${MENU_SRC})
-add_library(env_module ${ENV_SRC})
-add_library(network_module ${NETWORK_SRC})
 # add_library(gui_module ${GUI_SRC})
 # add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lzw.c)
 
@@ -281,12 +278,10 @@ add_library(network_module ${NETWORK_SRC})
 add_library(gme_module src/util/gme/Ay_Apu.cpp src/util/gme/Ay_Cpu.cpp src/util/gme/Ay_Emu.cpp src/util/gme/Blip_Buffer.cpp src/util/gme/Classic_Emu.cpp src/util/gme/Data_Reader.cpp src/util/gme/Dual_Resampler.cpp src/util/gme/Effects_Buffer.cpp src/util/gme/Fir_Resampler.cpp src/util/gme/Gb_Apu.cpp src/util/gme/Gb_Cpu.cpp src/util/gme/Gb_Oscs.cpp src/util/gme/Gbs_Emu.cpp src/util/gme/gme.cpp src/util/gme/Gme_File.cpp src/util/gme/Gym_Emu.cpp src/util/gme/Hes_Apu.cpp src/util/gme/Hes_Cpu.cpp src/util/gme/Hes_Emu.cpp src/util/gme/Kss_Cpu.cpp src/util/gme/Kss_Emu.cpp src/util/gme/Kss_Scc_Apu.cpp src/util/gme/M3u_Playlist.cpp src/util/gme/Multi_Buffer.cpp src/util/gme/Music_Emu.cpp src/util/gme/Nes_Apu.cpp src/util/gme/Nes_Cpu.cpp src/util/gme/Nes_Fme7_Apu.cpp src/util/gme/Nes_Namco_Apu.cpp src/util/gme/Nes_Oscs.cpp src/util/gme/Nes_Vrc6_Apu.cpp src/util/gme/Nsfe_Emu.cpp src/util/gme/Nsf_Emu.cpp src/util/gme/Sap_Apu.cpp src/util/gme/Sap_Cpu.cpp src/util/gme/Sap_Emu.cpp src/util/gme/Sms_Apu.cpp src/util/gme/Snes_Spc.cpp src/util/gme/Spc_Cpu.cpp src/util/gme/Spc_Dsp.cpp src/util/gme/Spc_Emu.cpp src/util/gme/Vgm_Emu.cpp src/util/gme/Vgm_Emu_Impl.cpp src/util/gme/Ym2413_Emu.cpp src/util/gme/Ym2612_Emu.cpp)
 
 #Script directory
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine/script)
+# add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine/script)
 
-add_library(game_module ${GAME_SRC})
 # add_library(mugen_module ${MUGEN_SRC})
 add_library(platformer_module ${PLATFORMER_SRC})
-add_library(trigger_module ${TRIGGER_SRC})
 add_library(pcre_module src/util/pcre/pcre_chartables.c src/util/pcre/pcre_compile.c src/util/pcre/pcre_config.c src/util/pcre/pcre_dfa_exec.c src/util/pcre/pcre_exec.c src/util/pcre/pcre_fullinfo.c src/util/pcre/pcre_get.c src/util/pcre/pcre_globals.c src/util/pcre/pcre_info.c src/util/pcre/pcre_maketables.c src/util/pcre/pcre_newline.c src/util/pcre/pcre_ord2utf8.c src/util/pcre/pcreposix.c src/util/pcre/pcre_refcount.c src/util/pcre/pcre_study.c src/util/pcre/pcre_tables.c src/util/pcre/pcre_try_flipped.c src/util/pcre/pcre_ucd.c src/util/pcre/pcre_valid_utf8.c src/util/pcre/pcre_version.c src/util/pcre/pcre_xclass.c)
 
 if (USE_SDL)
@@ -310,8 +305,7 @@ add_executable (paintown src/util/xmain.cpp)
 
 # set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
 
-target_link_libraries(paintown ${GROUP_START} base_module level_module openbor_module factory_module object_module asteroids_module loadpng_module 
-        env_module script_module network_module game_module mugen_module platformer_module trigger_module util_module pcre_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module factory_module asteroids_module loadpng_module mugen_module platformer_module util_module pcre_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
