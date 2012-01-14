@@ -238,6 +238,45 @@ test-parser/cmd.cpp
 
 load_source.append(testEnv.Peg('test/openbor/data.peg'))
 
+source = Split("""
+common/init.cpp
+common/timer.cpp
+test/configuration.cpp
+test/globals.cpp
+test/factory/font_factory.cpp
+test/factory/font_render.cpp
+""")
+
+character_select_source = Split("""
+test/paintown-engine/game/character-select.cpp
+select-main.cpp
+test/mugen/exception.cpp
+test/openbor/mod.cpp
+test/openbor/pack-reader.cpp
+test/openbor/util.cpp
+test/paintown-engine/game/mod.cpp
+test/paintown-engine/game/nameplacer.cpp
+test/paintown-engine/game/select_player.cpp
+test/paintown-engine/level/utils.cpp
+test/paintown-engine/object/animation.cpp
+test/paintown-engine/object/animation_event.cpp
+test/paintown-engine/object/animation_trail.cpp
+test/paintown-engine/object/attack.cpp
+test/paintown-engine/object/character.cpp
+test/paintown-engine/object/display_character.cpp
+test/paintown-engine/object/draw-effect.cpp
+test/paintown-engine/object/effect.cpp
+test/paintown-engine/object/gib.cpp
+test/paintown-engine/object/object.cpp
+test/paintown-engine/object/object_attack.cpp
+test/paintown-engine/object/object_nonattack.cpp
+test/paintown-engine/object/player.cpp
+test/paintown-engine/object/player-common.cpp
+test/paintown-engine/object/projectile.cpp
+test/paintown-engine/object/alliance.cpp
+test/paintown-engine/script/script.cpp
+""")
+
 game_source = Split("""
 common/init.cpp
 game.cpp
@@ -316,6 +355,10 @@ def makeTest(name, files):
 
 makeTest('load', load_source)
 makeTest('game', game_source)
+
+# Character select test
+character_select = testEnv.Program('character-select', source + character_select_source + testEnv.Peg('test/openbor/data.peg'))
+x.append(character_select)
 
 # x.append(testEnv.Program('load', load_source + most_game_source))
 #makeTest('load-full', full_source)

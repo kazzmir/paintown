@@ -17,36 +17,6 @@ test_source = Split("""
 test.cpp
 """)
 
-character_select_source = Split("""
-test/paintown-engine/game/character-select.cpp
-select-main.cpp
-test/mugen/exception.cpp
-test/openbor/mod.cpp
-test/openbor/pack-reader.cpp
-test/openbor/util.cpp
-test/paintown-engine/game/mod.cpp
-test/paintown-engine/game/nameplacer.cpp
-test/paintown-engine/game/select_player.cpp
-test/paintown-engine/level/utils.cpp
-test/paintown-engine/object/animation.cpp
-test/paintown-engine/object/animation_event.cpp
-test/paintown-engine/object/animation_trail.cpp
-test/paintown-engine/object/attack.cpp
-test/paintown-engine/object/character.cpp
-test/paintown-engine/object/display_character.cpp
-test/paintown-engine/object/draw-effect.cpp
-test/paintown-engine/object/effect.cpp
-test/paintown-engine/object/gib.cpp
-test/paintown-engine/object/object.cpp
-test/paintown-engine/object/object_attack.cpp
-test/paintown-engine/object/object_nonattack.cpp
-test/paintown-engine/object/player.cpp
-test/paintown-engine/object/player-common.cpp
-test/paintown-engine/object/projectile.cpp
-test/paintown-engine/object/alliance.cpp
-test/paintown-engine/script/script.cpp
-""")
-
 space_source = Split("""space.cpp""")
 
 cutscene_source = Split("""cutscene.cpp""")
@@ -55,9 +25,6 @@ x = []
 # General widget/gui element tests
 gui_test = testEnv.Program('gui', source + test_source)
 x.append(gui_test)
-# Character select test
-character_select = testEnv.Program('character-select', source + character_select_source + testEnv.Peg('test/openbor/data.peg'))
-x.append(character_select)
 # spaces test
 # space = testEnv.Program('space', source + space_source)
 space = testEnv.Program('space', space_source)
