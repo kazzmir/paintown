@@ -190,6 +190,10 @@ Win
 #include "config.h"
 
 namespace PaintownUtil = ::Util;
+using std::string;
+using std::ostringstream;
+using std::vector;
+using std::map;
     
 /* This isn't so much a compiler as a partial evaluating interpreter (you can
  * tell its not a compiler because there are explicit calls to `evaluate' at runtime).
@@ -209,6 +213,190 @@ namespace PaintownUtil = ::Util;
  *  -- Joe Marshall 10/14/2010
  *  http://www.mail-archive.com/users@racket-lang.org/msg02358.html
  */
+
+namespace Mugen{
+
+static void raise(const RuntimeValue & value, const string & expected){
+    ostringstream out;
+    out << "Not a " << expected << " instead was " << value.canonicalName();
+    throw MugenException(out.str(), __FILE__, __LINE__);
+}
+
+string toString(const RuntimeValue & value){
+    if (value.isString()){
+        return value.getStringValue();
+    }
+    raise(value, "string");
+
+    return "";
+}
+
+double RuntimeValue::toNumber() const {
+    if (isDouble()){
+        return getDoubleValue();
+    }
+    if (isBool()){
+        if (getBoolValue()){
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
+    raise(*this, "number");
+
+    return 0;
+}
+
+bool RuntimeValue::toBool() const {
+    if (isBool()){
+        return getBoolValue();
+    }
+    if (isDouble()){
+        return getDoubleValue() != 0;
+    }
+    raise(*this, "bool");
+
+    return false;
+}
+
+bool toBool(const RuntimeValue & value){
+    return value.toBool();
+}
+
+double toNumber(const RuntimeValue & value){
+    return value.toNumber();
+}
+    
+RuntimeValue::RuntimeValue(Compiler::Value * value){
+}
+
+int toRangeLow(const RuntimeValue & value){
+    if (value.isRange()){
+        return value.getRangeLow();
+    }
+    raise(value, "range");
+
+    return 0;
+}
+
+int toRangeHigh(const RuntimeValue & value){
+    if (value.isRange()){
+        return value.getRangeHigh();
+    }
+    raise(value, "range");
+
+    return 0;
+}
+
+bool RuntimeValue::operator==(const RuntimeValue & value2) const {
+    const RuntimeValue & value1 = *this;
+    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+        throw MugenException("invalid value", __FILE__, __LINE__);
+    }
+    switch (value1.type){
+        case RuntimeValue::ListOfString : {
+            switch (value2.type){
+                case RuntimeValue::String : {
+                    const vector<string> & strings = value1.strings_value;
+                    for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
+                        const string & check = *it;
+                        if (check == value2.string_value){
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                default: return false;
+            }
+            break;
+        }
+        case RuntimeValue::String : {
+            switch (value2.type){
+                case RuntimeValue::ListOfString : {
+                    return value2 == value1;
+                }
+                case RuntimeValue::String : {
+                    return toString(value1) == toString(value2);
+                }
+                default: return false;
+            }
+            break;
+        }
+        case RuntimeValue::RangeType : {
+            switch (value2.type){
+                case RuntimeValue::Double : return value2 == value1;
+                default: return false;
+            }
+        }
+        case RuntimeValue::Double : {
+            switch (value2.type){
+                case RuntimeValue::Double : {
+                    double epsilon = 0.0000001;
+                    return fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon;
+                }
+                case RuntimeValue::RangeType : {
+                    return value1.toNumber() > toRangeLow(value2) &&
+                           value1.toNumber() < toRangeHigh(value2);
+                }
+                default: return false;
+            }
+            break;
+        }
+        /* true if the first value is a subset of the second value */
+        case RuntimeValue::StateType : {
+            switch (value2.type){
+                case RuntimeValue::StateType : {
+                    return (!value1.attribute.standing || (value1.attribute.standing && value2.attribute.standing)) &&
+                           (!value1.attribute.crouching || (value1.attribute.crouching && value2.attribute.crouching)) &&
+                           (!value1.attribute.lying || (value1.attribute.lying && value2.attribute.lying)) &&
+                           (!value1.attribute.aerial || (value1.attribute.aerial && value2.attribute.aerial));
+                }
+                default : return false;
+            }
+            break;
+        }
+        case RuntimeValue::AttackAttribute : {
+            switch (value2.type){
+                case RuntimeValue::AttackAttribute : {
+                    vector<AttackType::Attribute> setLeft = value1.attackAttributes;
+                    vector<AttackType::Attribute> setRight = value2.attackAttributes;
+                    map<AttackType::Attribute, bool> all;
+                    for (vector<AttackType::Attribute>::iterator it = setRight.begin(); it != setRight.end(); it++){
+                        all[*it] = true;
+                    }
+                    
+                    for (vector<AttackType::Attribute>::iterator it = setLeft.begin(); it != setLeft.end(); it++){
+                        if (!all[*it]){
+                            return false;
+                        }
+                    }
+
+                    return true;
+                }
+                default : return false;
+            }
+            break;
+        }
+        default: return false;
+    }
+
+    return false;
+}
+
+const Character & EmptyEnvironment::getCharacter() const {
+    throw MugenException("Cannot get a character from an empty environment", __FILE__, __LINE__);
+}
+
+const Mugen::Stage & EmptyEnvironment::getStage() const {
+    throw MugenException("Cannot get a stage from an empty environment", __FILE__, __LINE__);
+}
+
+const std::vector<std::string> EmptyEnvironment::getCommands() const {
+    throw MugenException("Cannot get commands from an empty environment", __FILE__, __LINE__);
+}
+
+}
 
 namespace Mugen{
 namespace Compiler{

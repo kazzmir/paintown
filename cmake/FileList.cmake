@@ -99,7 +99,6 @@ src/mugen/characterhud.cpp
 src/mugen/character.cpp
 src/mugen/character-select.cpp
 src/mugen/config.cpp
-src/mugen/evaluator.cpp
 src/mugen/compiler.cpp
 src/mugen/helper.cpp
 src/mugen/game.cpp
