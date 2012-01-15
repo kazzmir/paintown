@@ -889,7 +889,7 @@ void Mugen::Stage::physics(Object * mugen){
 
     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
         Projectile * projectile = *it;
-        if (projectile->getOwner() != mugen){
+        if (projectile->getOwner() != mugen && projectile->canCollide()){
             if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
                               projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
                 projectile->doCollision(mugen);

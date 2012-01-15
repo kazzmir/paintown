@@ -35,6 +35,9 @@ public:
     virtual double getX() const;
     virtual double getY() const;
 
+    /* False if the miss time is still active */
+    bool canCollide() const;
+
     virtual const Character * getOwner() const;
         
     const std::vector<MugenArea> getAttackBoxes() const;
@@ -53,10 +56,14 @@ protected:
     double velocityXMultipler, velocityYMultipler;
     double removeVelocityX, removeVelocityY;
     int removeTime;
-    int removeAnimation;
+    const int removeAnimation;
     bool shouldRemove;
     double scaleX, scaleY;
     Facing facing;
+    int hits;
+    const int missTime;
+    int activeMissTime;
+    const int hitAnimation;
 };
 
 }

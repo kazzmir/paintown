@@ -34,7 +34,11 @@ removeAnimation(dieAnimation),
 shouldRemove(false),
 scaleX(scaleX),
 scaleY(scaleY),
-facing(facing){
+facing(facing),
+hits(hits),
+missTime(missTime),
+activeMissTime(0),
+hitAnimation(hitAnimation){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -71,7 +75,19 @@ const std::vector<MugenArea> Projectile::getAttackBoxes() const {
 }
     
 void Projectile::doCollision(Object * mugen){
-    Global::debug(0) << "Collision with projectile" << std::endl;
+    hits -= 1;
+    if (hits <= 0){
+        PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(hitAnimation);
+        if (his != NULL){
+            this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+        }
+        shouldRemove = true;
+    }
+    activeMissTime = missTime;
+}
+
+bool Projectile::canCollide() const {
+    return activeMissTime == 0 && hits > 0;
 }
     
 void Projectile::logic(){
