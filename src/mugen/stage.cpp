@@ -126,7 +126,7 @@ Spark::~Spark(){
 
 }
 
-static bool centerCollision( Mugen::Object *p1, Mugen::Object *p2 ){
+static bool centerCollision(Mugen::Object *p1, Mugen::Object *p2){
     //p1->getCurrentMovement()->getCurrentFrame();
     /* FIXME! */
     /*
@@ -883,6 +883,16 @@ void Mugen::Stage::physics(Object * mugen){
                     enemy->wasHit(*this, mugen, mugen->getHit());
                     // enemy->changeState(5000);
                 }
+            }
+        }
+    }
+
+    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+        Projectile * projectile = *it;
+        if (projectile->getOwner() != mugen){
+            if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
+                              projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
+                projectile->doCollision(mugen);
             }
         }
     }

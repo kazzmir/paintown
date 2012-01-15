@@ -6776,7 +6776,7 @@ public:
             } else {
                 x = stage.maximumLeft() - offsetX;
             }
-            y = guy.getY() + offsetY;
+            y = guy.getRY() + offsetY;
         } else if (check == "back"){
             if (guy.getFacing() == FacingLeft){
                 x = stage.maximumRight() - offsetX;
@@ -6792,14 +6792,14 @@ public:
             y = stage.maximumUp() + offsetY;
         }
 
-        stage.addProjectile(new Mugen::Projectile(x, y, id, guy, animation, hitAnimation, dieAnimation,
+        stage.addProjectile(new Mugen::Projectile(x, y, id, guy.getRoot(), animation, hitAnimation, dieAnimation,
                                            cancelAnimation, scaleX, scaleY, autoRemove, removeTime, 
                                            velocityX, velocityY, removeVelocityX, removeVelocityY,
                                            accelerateX, accelerateY, velocityXMultipler, 
                                            velocityYMultipler, hits, missTime, priority, spritePriority,
                                            edge, stageDistance, lowBound, highBound, shadowRed,
                                            shadowGreen, shadowBlue, superMoveTime, pauseMoveTime,
-                                           afterImageTime, afterImageLength));
+                                           afterImageTime, afterImageLength, guy.getFacing()));
     }
 
     StateController * deepCopy() const {

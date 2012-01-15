@@ -3,18 +3,20 @@
 #include "character.h"
 #include "animation.h"
 
+using std::vector;
+
 namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 
-Projectile::Projectile(double x, double y, int id, const Character & owner, int animation, int hitAnimation, int dieAnimation,
+Projectile::Projectile(double x, double y, int id, const Character * owner, int animation, int hitAnimation, int dieAnimation,
                int cancelAnimation, double scaleX, double scaleY, bool autoRemove, int removeTime, 
                double velocityX, double velocityY, double removeVelocityX, double removeVelocityY,
                double accelerateX, double accelerateY, double velocityXMultipler, 
                double velocityYMultipler, int hits, int missTime, int priority, int spritePriority,
                int edge, int stageDistance, int lowBound, int highBound, int shadowRed,
                int shadowGreen, int shadowBlue, int superMoveTime, int pauseMoveTime,
-               int afterImageTime, int afterImageLength):
+               int afterImageTime, int afterImageLength, Facing facing):
 owner(owner),
 spritePriority(spritePriority),
 x(x),
@@ -29,8 +31,11 @@ removeVelocityX(removeVelocityX),
 removeVelocityY(removeVelocityY),
 removeTime(removeTime),
 removeAnimation(dieAnimation),
-shouldRemove(false){
-    PaintownUtil::ReferenceCount<MugenAnimation> his = owner.getAnimation(animation);
+shouldRemove(false),
+scaleX(scaleX),
+scaleY(scaleY),
+facing(facing){
+    PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
     }
@@ -38,11 +43,35 @@ shouldRemove(false){
 
 Projectile::~Projectile(){
 }
+
+const Character * Projectile::getOwner() const {
+    return owner;
+}
+    
+double Projectile::getX() const {
+    return x;
+}
+
+double Projectile::getY() const {
+    return y;
+}
     
 void Projectile::draw(const Graphics::Bitmap & work, double x, double y){
     if (animation != NULL){
-        animation->render((int)(this->x - x), (int)(this->y -  y), work);
+        /* FIXME: multiply by proj.doscale */
+        animation->render((int)(this->x - x), (int)(this->y -  y), work, scaleX, scaleY);
     }
+}
+    
+const std::vector<MugenArea> Projectile::getAttackBoxes() const {
+    if (!shouldRemove && animation != NULL){
+        return animation->getAttackBoxes(facing == FacingLeft);
+    }
+    return vector<MugenArea>();
+}
+    
+void Projectile::doCollision(Object * mugen){
+    Global::debug(0) << "Collision with projectile" << std::endl;
 }
     
 void Projectile::logic(){
@@ -60,7 +89,7 @@ void Projectile::logic(){
         removeTime -= 1;
 
         if (removeTime == 0){
-            PaintownUtil::ReferenceCount<MugenAnimation> his = owner.getAnimation(removeAnimation);
+            PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(removeAnimation);
             if (his != NULL){
                 this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
             }

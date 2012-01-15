@@ -845,6 +845,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Util::getAnimation(Ast::Sect
             MugenArea area;
             array.view() >> area.x1 >> area.y1 >> area.x2 >> area.y2;
             Global::debug(2) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
+            /* FIXME: get the proper source */
             string source = "some file";
             if (array == "clsn1"){
                 if (expected == clsn2){

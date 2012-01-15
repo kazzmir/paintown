@@ -1,6 +1,12 @@
 #ifndef _paintown_mugen_object_h
 #define _paintown_mugen_object_h
 
+#include "animation.h"
+
+namespace Graphics{
+    class Bitmap;
+}
+
 namespace Mugen{
 
 class Stage;

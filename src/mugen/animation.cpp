@@ -83,22 +83,26 @@ time(0){
     effects.mask = mask;
 }
 
-MugenFrame::MugenFrame( const MugenFrame &copy ){
+MugenFrame::MugenFrame(const MugenFrame &copy){
     this->loopstart = copy.loopstart;
     this->sprite = copy.sprite;
     this->xoffset = copy.xoffset;
     this->yoffset = copy.yoffset;
     this->time = copy.time;
     this->effects = copy.effects;
+    this->defenseCollision = copy.defenseCollision;
+    this->attackCollision = copy.attackCollision;
 }
 
-MugenFrame & MugenFrame::operator=( const MugenFrame &copy ){
+MugenFrame & MugenFrame::operator=(const MugenFrame &copy){
     this->loopstart = copy.loopstart;
     this->sprite = copy.sprite;
     this->xoffset = copy.xoffset;
     this->yoffset = copy.yoffset;
     this->time = copy.time;
     this->effects = copy.effects;
+    this->defenseCollision = copy.defenseCollision;
+    this->attackCollision = copy.attackCollision;
     
     return *this;
 }
