@@ -48,6 +48,7 @@ void Screen::fakeInit(int x, int y){
 }
 
 void Screen::fakeFinish(){
+    Graphics::Bitmap::shutdown();
 #ifdef USE_SDL
     SDL_Quit();
 #endif
@@ -68,7 +69,9 @@ void Screen::realInit(int x, int y){
     al_init_primitives_addon();
 #endif
 }
+
 void Screen::realFinish(){
+    Graphics::Bitmap::shutdown();
 #ifdef USE_SDL
     SDL_Quit();
 #endif

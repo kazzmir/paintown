@@ -590,6 +590,14 @@ protected:
     }
 }
 
+void Mugen::Util::destroySprites(const SpriteMap & sprites){
+    for (map<unsigned int, map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin(); i != sprites.end(); ++i){
+      for (map<unsigned int, MugenSprite *>::const_iterator j = i->second.begin() ; j != i->second.end(); ++j){
+          delete j->second;
+      }
+    }
+}
+
 void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool mask){
     SffReader reader(filename, palette);
     /* where replaced sprites go */

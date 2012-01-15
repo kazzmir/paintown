@@ -72,6 +72,9 @@ namespace Util{
     bool readPalette(const Filesystem::AbsolutePath &filename, unsigned char *pal);
     void readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool sprite);
     void readSounds(const Filesystem::AbsolutePath & filename, SoundMap & sounds);
+
+    void destroySprites(const SpriteMap & sprites);
+
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
     MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)

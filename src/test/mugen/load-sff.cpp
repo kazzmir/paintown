@@ -25,6 +25,7 @@ static int load(const char * path){
             Mugen::Util::readSprites(Filesystem::AbsolutePath(path), Filesystem::AbsolutePath(), sprites, false);
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
+            Mugen::Util::destroySprites(sprites);
         } catch (const MugenException & e){
             Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
             return 1;
@@ -38,9 +39,10 @@ static int load(const char * path){
 }
 
 int main(int argc, char ** argv){
+    Global::setDebug(1);
+    Global::debug(0) << "Initialize" << std::endl;
     Screen::fakeInit();
 
-    Global::setDebug(1);
 
     int die = 0;
     if (argc < 2){
