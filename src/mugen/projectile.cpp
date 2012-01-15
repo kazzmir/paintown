@@ -38,7 +38,8 @@ facing(facing),
 hits(hits),
 missTime(missTime),
 activeMissTime(0),
-hitAnimation(hitAnimation){
+hitAnimation(hitAnimation),
+id(id){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -52,6 +53,10 @@ const Character * Projectile::getOwner() const {
     return owner;
 }
     
+const int Projectile::getId() const {
+    return id;
+}
+
 double Projectile::getX() const {
     return x;
 }

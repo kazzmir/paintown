@@ -35,6 +35,8 @@ public:
     virtual double getX() const;
     virtual double getY() const;
 
+    virtual const int getId() const;
+
     /* False if the miss time is still active */
     bool canCollide() const;
 
@@ -64,6 +66,7 @@ protected:
     const int missTime;
     int activeMissTime;
     const int hitAnimation;
+    const int id;
 };
 
 }
