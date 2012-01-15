@@ -28,11 +28,20 @@ public:
     virtual void draw(const Graphics::Bitmap & work, double x, double y);
     virtual void logic();
 
+    virtual bool isDead() const;
+
 protected:
     const Character & owner;
     int spritePriority;
     ::Util::ReferenceCount<MugenAnimation> animation;
     double x, y;
+    double velocityX, velocityY;
+    double accelerateX, accelerateY;
+    double velocityXMultipler, velocityYMultipler;
+    double removeVelocityX, removeVelocityY;
+    int removeTime;
+    int removeAnimation;
+    bool shouldRemove;
 };
 
 }

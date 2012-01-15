@@ -991,9 +991,16 @@ void Mugen::Stage::runCycle(){
         }
     }
 
-    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); /**/){
         Projectile * projectile = *it;
         projectile->logic();
+
+        if (projectile->isDead()){
+            delete projectile;
+            it = projectiles.erase(it);
+        } else {
+            it++;
+        }
     }
 
     // implement some stuff before we actually begin the round then start the round

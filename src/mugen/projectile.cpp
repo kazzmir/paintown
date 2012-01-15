@@ -18,7 +18,18 @@ Projectile::Projectile(double x, double y, int id, const Character & owner, int 
 owner(owner),
 spritePriority(spritePriority),
 x(x),
-y(y){
+y(y),
+velocityX(velocityX),
+velocityY(velocityY),
+accelerateX(accelerateX),
+accelerateY(accelerateY),
+velocityXMultipler(velocityXMultipler),
+velocityYMultipler(velocityYMultipler),
+removeVelocityX(removeVelocityX),
+removeVelocityY(removeVelocityY),
+removeTime(removeTime),
+removeAnimation(dieAnimation),
+shouldRemove(false){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner.getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -38,6 +49,30 @@ void Projectile::logic(){
     if (animation != NULL){
         animation->logic();
     }
+
+    x += velocityX;
+    y += velocityY;
+    /* FIXME: not sure if this calculation is right */
+    velocityX = (velocityX + accelerateX) * velocityXMultipler;
+    velocityY = (velocityY + accelerateY) * velocityYMultipler;
+
+    if (removeTime > -1){
+        removeTime -= 1;
+
+        if (removeTime == 0){
+            PaintownUtil::ReferenceCount<MugenAnimation> his = owner.getAnimation(removeAnimation);
+            if (his != NULL){
+                this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+            }
+            velocityX = removeVelocityX;
+            velocityY = removeVelocityY;
+            shouldRemove = true;
+        }
+    }
+}
+
+bool Projectile::isDead() const {
+    return shouldRemove && (animation == NULL || animation->isDone() || animation->hasLooped());
 }
     
 int Projectile::getSpritePriority() const {
