@@ -4,45 +4,15 @@ testEnv = use.Clone()
 testEnv.VariantDir('test', '../../', duplicate = False)
 testEnv.VariantDir('common', '../common/', duplicate = False)
 
-more_source = []
-def addObjects(files):
-    more_source.extend(files)
-
 use = testEnv
-SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], variant_dir = 'test-parser')
+
+SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
 
 most_game_source = Split("""
-test/mugen/character.cpp
-test/mugen/helper.cpp
-test/mugen/compiler.cpp
-test/mugen/state-controller.cpp
-test/mugen/stage.cpp
-test/mugen/sprite.cpp
-test/mugen/sound.cpp
-test/mugen/exception.cpp
-test/mugen/projectile.cpp
-test/mugen/util.cpp
-test/mugen/animation.cpp
-test/mugen/item-content.cpp
-test/mugen/item.cpp
-test/mugen/command.cpp
-test/mugen/background.cpp
-test/mugen/parse-cache.cpp
-test-parser/air.cpp
-test-parser/def.cpp
-test-parser/cmd.cpp
-test/mugen/ast/ast.cpp
 test/globals.cpp
 test/configuration.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
-test/mugen/config.cpp
-test/mugen/characterhud.cpp
-test/mugen/behavior.cpp
-test/mugen/font.cpp
-test/mugen/reader.cpp
-test/mugen/section.cpp
-
 """)
 
 load_source = Split("""
@@ -53,43 +23,15 @@ common/init.cpp
 stage_source = Split("""
 load-stage.cpp
 common/init.cpp
-test/mugen/projectile.cpp
-test/mugen/stage.cpp
-test/mugen/character.cpp
-test/mugen/helper.cpp
-test/mugen/compiler.cpp
-test/mugen/sprite.cpp
-test/mugen/state-controller.cpp
-test/mugen/font.cpp
-test/mugen/sound.cpp
-test/mugen/exception.cpp
-test/mugen/util.cpp
-test/mugen/animation.cpp
-test/mugen/background.cpp
-test/mugen/item-content.cpp
-test/mugen/item.cpp
-test/mugen/parse-cache.cpp
-test/mugen/characterhud.cpp
-test-parser/air.cpp
-test-parser/def.cpp
-test-parser/cmd.cpp
-test/mugen/ast/ast.cpp
 test/globals.cpp
 test/configuration.cpp
 test/factory/font_render.cpp
 test/factory/font_factory.cpp
-test/mugen/config.cpp
-test/mugen/behavior.cpp
-test/mugen/reader.cpp
-test/mugen/command.cpp
-test/mugen/section.cpp
 """)
 
 select_source = most_game_source + Split("""
 load-select.cpp
 common/init.cpp
-test/mugen/character-select.cpp
-test/mugen/search.cpp
 """)
 
 ignore = """
@@ -98,18 +40,6 @@ ignore = """
 full_source = most_game_source + Split("""
 load-full.cpp
 common/init.cpp
-""")
-
-# stage_source.append(testEnv.Peg('test/openbor/data.peg'))
-# full_source.append(testEnv.Peg('test/openbor/data.peg'))
-
-ast_source = Split("""
-test-parser/air.cpp
-test-parser/def.cpp
-test-parser/cmd.cpp
-test/mugen/exception.cpp
-test/mugen/ast/ast.cpp
-test/mugen/parse-cache.cpp
 """)
 
 sffv2_source = Split("""
@@ -122,51 +52,21 @@ test/configuration.cpp
 
 parse_source = Split("""
 parse.cpp
-test-parser/cmd.cpp
-test-parser/def.cpp
-test-parser/air.cpp
 test/mugen/ast/ast.cpp
 test/mugen/exception.cpp
 """)
 
 match_source = Split("""
 run-match.cpp
-test/mugen/projectile.cpp
 test/factory/font_factory.cpp
 test/configuration.cpp
 test/globals.cpp
-test/mugen/character.cpp
-test/mugen/stage.cpp
-test/mugen/behavior.cpp
-test/mugen/compiler.cpp
-test/mugen/command.cpp
-test-parser/air.cpp
-test-parser/def.cpp
-test-parser/cmd.cpp
-test/mugen/ast/ast.cpp
-test/mugen/exception.cpp
-test/mugen/helper.cpp
-test/mugen/animation.cpp
-test/mugen/sprite.cpp
-test/mugen/util.cpp
-test/mugen/config.cpp
-test/mugen/item-content.cpp
-test/mugen/item.cpp
-test/mugen/background.cpp
-test/mugen/sound.cpp
-test/mugen/parse-cache.cpp
-test/mugen/font.cpp
-test/mugen/characterhud.cpp
-test/mugen/section.cpp
-test/mugen/state-controller.cpp
 test/factory/font_render.cpp
-test/mugen/reader.cpp
 """)
 
 character_select_source = Split("""
 common/init.cpp
 common/timer.cpp
-test/mugen/search.cpp
 select-main.cpp
 character-select.cpp
 """)
@@ -181,7 +81,7 @@ def makeTest(name, files):
 makeTest('load-full', full_source)
 makeTest('load-select', select_source)
 makeTest('load', load_source + most_game_source)
-makeTest('serialize', ['serialize.cpp'] + ast_source)
+makeTest('serialize', ['serialize.cpp'])
 makeTest('load-stage', stage_source)
 makeTest('sffv2', sffv2_source)
 x.append(testEnv.Program('run-match', match_source))

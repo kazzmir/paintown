@@ -5,12 +5,10 @@ testEnv = use.Clone()
 testEnv.VariantDir('test', '../../')
 testEnv.VariantDir('common', '../common')
 
-more_files = []
-def addObjects(files):
-    more_files.extend(files)
-
 use = testEnv
-SConscript('../../mugen/parser/SConstruct', exports = ['use', 'addObjects'], variant_dir = 'test-parser')
+
+SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
+SConscript('../../paintown-engine/SConscript', exports = ['use'], variant_dir = 'paintown')
 
 source = Split("""
 test.cpp
@@ -21,15 +19,6 @@ test/openbor/pack-reader.cpp
 test/openbor/util.cpp
 test/openbor/mod.cpp
 test/configuration.cpp
-test/mugen/projectile.cpp
-test/paintown-engine/level/block.cpp
-test/paintown-engine/level/cacher.cpp
-test/paintown-engine/level/scene.cpp
-test/paintown-engine/level/blockobject.cpp
-test/paintown-engine/level/random-scene.cpp
-test/paintown-engine/level/utils.cpp
-test/paintown-engine/factory/object_factory.cpp
-test/paintown-engine/environment/atmosphere.cpp
 test/platformer/game/world.cpp
 test/platformer/game/animation.cpp
 test/platformer/game/background.cpp
@@ -37,87 +26,9 @@ test/platformer/game/camera.cpp
 test/platformer/game/game.cpp
 test/platformer/game/tile.cpp
 test/platformer/script/script.cpp
-test/paintown-engine/object/actor.cpp
-test/paintown-engine/object/animation.cpp
-test/paintown-engine/object/animation_event.cpp
-test/paintown-engine/object/animation_trail.cpp
-test/paintown-engine/object/attack.cpp
-test/paintown-engine/object/buddy_player.cpp
-test/paintown-engine/object/cat.cpp
-test/paintown-engine/object/character.cpp
-test/paintown-engine/object/display_character.cpp
-test/paintown-engine/object/draw-effect.cpp
-test/paintown-engine/object/effect.cpp
-test/paintown-engine/object/enemy.cpp
-test/paintown-engine/object/gib.cpp
-test/paintown-engine/object/heart.cpp
-test/paintown-engine/object/item.cpp
-test/paintown-engine/object/network_character.cpp
-test/paintown-engine/object/network_player.cpp
-test/paintown-engine/object/object_attack.cpp
-test/paintown-engine/object/object.cpp
-test/paintown-engine/object/object_nonattack.cpp
-test/paintown-engine/object/player-common.cpp
-test/paintown-engine/object/player.cpp
-test/paintown-engine/object/projectile.cpp
-test/paintown-engine/object/stimulation.cpp
-test/paintown-engine/object/versus_enemy.cpp
-test/paintown-engine/object/versus_player.cpp
-test/paintown-engine/object/alliance.cpp
-test/paintown-engine/game/nameplacer.cpp
 test/factory/font_factory.cpp
 test/factory/font_render.cpp
-test/paintown-engine/script/script.cpp
-test/paintown-engine/factory/heart_factory.cpp
-test/paintown-engine/trigger/trigger.cpp
-test/paintown-engine/game/select_player.cpp
-test/paintown-engine/game/character-select.cpp
-test/paintown-engine/game/options.cpp
-test/paintown-engine/game/move-list.cpp
-test/paintown-engine/game/mod.cpp
 test/asteroids/game.cpp
-test/paintown-engine/game/adventure_world.cpp
-test/paintown-engine/game/game.cpp
-test/paintown-engine/game/world.cpp
-test/paintown-engine/factory/shadow.cpp
-test/mugen/config.cpp
-test/paintown-engine/network/server.cpp
-test/paintown-engine/network/client.cpp
-test/paintown-engine/network/chat_client.cpp
-test/paintown-engine/network/chat_server.cpp
-test/paintown-engine/network/network_world_client.cpp
-test/paintown-engine/network/network_world.cpp
-test/paintown-engine/network/chat-widget.cpp
-test/paintown-engine/network/cacher.cpp
-test/mugen/exception.cpp
-test-parser/air.cpp
-test-parser/def.cpp
-test-parser/cmd.cpp
-test/mugen/util.cpp
-test/mugen/animation.cpp
-test/mugen/sprite.cpp
-test/mugen/sound.cpp
-test/mugen/item.cpp
-test/mugen/item-content.cpp
-test/mugen/game.cpp
-test/mugen/behavior.cpp
-test/mugen/storyboard.cpp
-test/mugen/character-select.cpp
-test/mugen/search.cpp
-test/mugen/character.cpp
-test/mugen/helper.cpp
-test/mugen/compiler.cpp
-test/mugen/state-controller.cpp
-test/mugen/parse-cache.cpp
-test/mugen/command.cpp
-test/mugen/stage.cpp
-test/mugen/font.cpp
-test/mugen/background.cpp
-test/mugen/reader.cpp
-test/mugen/characterhud.cpp
-test/mugen/section.cpp
-test/mugen/menu.cpp
-test/mugen/option-options.cpp
 test/factory/collector.cpp
 """)
 
