@@ -6792,7 +6792,7 @@ public:
             y = stage.maximumUp() + offsetY;
         }
 
-        stage.addProjectile(new Mugen::Projectile(x, y, id, animation, hitAnimation, dieAnimation,
+        stage.addProjectile(new Mugen::Projectile(x, y, id, guy, animation, hitAnimation, dieAnimation,
                                            cancelAnimation, scaleX, scaleY, autoRemove, removeTime, 
                                            velocityX, velocityY, removeVelocityX, removeVelocityY,
                                            accelerateX, accelerateY, velocityXMultipler, 

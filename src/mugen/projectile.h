@@ -1,15 +1,19 @@
 #ifndef _paintown_mugen_projectile_h
 #define _paintown_mugen_projectile_h
 
+#include "util/pointer.h"
+
 namespace Graphics{
 class Bitmap;
 }
 
+class MugenAnimation;
 namespace Mugen{
 
+class Character;
 class Projectile{
 public:
-    Projectile(double x, double y, int id, int animation, int hitAnimation, int dieAnimation,
+    Projectile(double x, double y, int id, const Character & owner, int animation, int hitAnimation, int dieAnimation,
                int cancelAnimation, double scaleX, double scaleY, bool autoRemove, int removeTime, 
                double velocityX, double velocityY, double removeVelocityX, double removeVelocityY,
                double accelerateX, double accelerateY, double velocityXMultipler, 
@@ -25,7 +29,10 @@ public:
     virtual void logic();
 
 protected:
+    const Character & owner;
     int spritePriority;
+    ::Util::ReferenceCount<MugenAnimation> animation;
+    double x, y;
 };
 
 }

@@ -302,6 +302,10 @@ void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap & work,
     Mugen::Effects combined = frames[position]->effects + effects;
     renderFrame(frames[position], xaxis, yaxis, work, combined);
 }
+        
+MugenAnimation * MugenAnimation::copy() const {
+    return new MugenAnimation(*this);
+}
 
 void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley){
     if (position >= frames.size()){

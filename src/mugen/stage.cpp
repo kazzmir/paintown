@@ -1236,6 +1236,11 @@ vector<int> Mugen::Stage::allSpritePriorities(){
         Mugen::Object * object = *it;
         priorities.push_back(object->getSpritePriority());
     }
+
+    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+        Projectile * projectile = *it;
+        priorities.push_back(projectile->getSpritePriority());
+    }
         
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
         Mugen::Effect * spark = *it;

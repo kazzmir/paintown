@@ -110,6 +110,8 @@ class MugenAnimation{
                 this->started = false;
             }
         }
+
+        virtual MugenAnimation * copy() const;
 	
 	// Add a frame
 	void addFrame( MugenFrame * );
