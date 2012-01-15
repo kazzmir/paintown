@@ -966,6 +966,103 @@ void Mugen::Stage::unbind(Mugen::Object * what){
     }
 }
 
+/* A main cycle of the game */
+void Mugen::Stage::runCycle(){
+    if (paletteEffects.time > 0){
+        paletteEffects.time = 0;
+        paletteEffects.counter += 1;
+    }
+
+    // camera crap
+    if (quake_time > 0){
+        quake_time--;
+    }
+
+    for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/){ 
+        Mugen::Effect * spark = *it;
+        spark->logic();
+
+        /* if the spark looped then kill it */
+        if (spark->isDead()){
+            delete spark;
+            it = showSparks.erase(it);
+        } else {
+            it++;
+        }
+    }
+
+    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+        Projectile * projectile = *it;
+        projectile->logic();
+    }
+
+    // implement some stuff before we actually begin the round then start the round
+    if (!stageStart){
+        stageStart = true;
+    }
+
+    // Run our ticker on and on like energizer bunnies (tm)
+    ticker++;
+
+    const double diffx = startx - camerax;
+    const double diffy = starty - cameray;
+
+    if (environmentColor.time > 0){
+        environmentColor.time -= 1;
+    }
+
+    if (superPause.time > 0){
+        superPause.time -= 1;
+        if (superPause.time == 0){
+            for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
+                Mugen::Effect * effect = *it;
+                effect->superPauseEnd();
+            }
+        }
+    } else {
+        background->act();
+
+        // Players go in here
+        std::vector<Mugen::Object *> add;
+        addedObjects.clear();
+        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
+            bool next = true;
+            /* use local variables more often, iterators can be easily confused */
+            Mugen::Object * player = *it;
+            player->act(&objects, this, &add);
+            physics(player);
+
+            /* Debug crap put it on console */
+            // *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
+
+            if (isaPlayer(player)){
+                // Lets check their boundaries and camera whateva
+                updatePlayer(player);
+
+                // Update old position
+                playerInfo[player].oldx = player->getX();
+                playerInfo[player].oldy = player->getY();
+
+                // Non players, objects, projectiles misc
+            } else if (!isaPlayer(player) && player->getHealth() <= 0){
+                player->destroyed(*this);
+                // unbind(player);
+                delete player;
+                it = objects.erase(it);
+                next = false;
+            }
+
+            if (next){
+                it++;
+            }
+        }
+
+        objects.insert(objects.end(), add.begin(), add.end());
+        objects.insert(objects.end(), addedObjects.begin(), addedObjects.end());
+    }
+
+}
+
 void Mugen::Stage::logic(){
     // Console::ConsoleEnd & cend = Console::Console::endl;
 
@@ -973,98 +1070,12 @@ void Mugen::Stage::logic(){
     cycles += 1;
     if (cycles >= 1 / gameRate){
         cycles = 0;
-
-        if (paletteEffects.time > 0){
-            paletteEffects.time = 0;
-            paletteEffects.counter += 1;
-        }
-
-        // camera crap
-        if (quake_time > 0){
-            quake_time--;
-        }
-
-        for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/){ 
-            Mugen::Effect * spark = *it;
-            spark->logic();
-
-            /* if the spark looped then kill it */
-            if (spark->isDead()){
-                delete spark;
-                it = showSparks.erase(it);
-            } else {
-                it++;
-            }
-        }
-
-        // implement some stuff before we actually begin the round then start the round
-        if (!stageStart){
-            stageStart = true;
-        }
-
-        // Run our ticker on and on like energizer bunnies (tm)
-        ticker++;
-
-        const double diffx = startx - camerax;
-        const double diffy = starty - cameray;
-
-        if (environmentColor.time > 0){
-            environmentColor.time -= 1;
-        }
-
-        if (superPause.time > 0){
-            superPause.time -= 1;
-            if (superPause.time == 0){
-                for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
-                    Mugen::Effect * effect = *it;
-                    effect->superPauseEnd();
-                }
-            }
-        } else {
-            background->act();
-
-            // Players go in here
-            std::vector<Mugen::Object *> add;
-            addedObjects.clear();
-            for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
-                bool next = true;
-                /* use local variables more often, iterators can be easily confused */
-                Mugen::Object * player = *it;
-                player->act(&objects, this, &add);
-                physics(player);
-
-                /* Debug crap put it on console */
-                // *console << "Object: " << player << " x: " << player->getX() << " y: " << player->getY() << cend;
-
-                if (isaPlayer(player)){
-                    // Lets check their boundaries and camera whateva
-                    updatePlayer(player);
-
-                    // Update old position
-                    playerInfo[player].oldx = player->getX();
-                    playerInfo[player].oldy = player->getY();
-
-                    // Non players, objects, projectiles misc
-                } else if (!isaPlayer(player) && player->getHealth() <= 0){
-                    player->destroyed(*this);
-                    // unbind(player);
-                    delete player;
-                    it = objects.erase(it);
-                    next = false;
-                }
-
-                if (next){
-                    it++;
-                }
-            }
-
-            objects.insert(objects.end(), add.begin(), add.end());
-            objects.insert(objects.end(), addedObjects.begin(), addedObjects.end());
-        }
+        runCycle();
     }
     
     // Correct camera
     if ((verticalfollow > 0) && !inabove && (getCameraY() < 0)){
+        /* FIXME: where did 3.2 come from? */
 	moveCamera(0, verticalfollow * 3.2);
     }
     
@@ -1314,6 +1325,13 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
             }
         }
 
+        for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+            Projectile * projectile = *it;
+            if (projectile->getSpritePriority() == spritePriority){
+                projectile->draw(*work, camerax - DEFAULT_WIDTH / 2, cameray);
+            }
+        }
+
     }
 
     if (environmentColor.time > 0 && !environmentColor.under){
@@ -1538,10 +1556,6 @@ void Mugen::Stage::toggleDebug(int choose){
             player->disableDebug();
         }
     }
-}
-
-void Mugen::Stage::act(){
-    logic();
 }
 
 void Mugen::Stage::draw( Graphics::Bitmap * work ){

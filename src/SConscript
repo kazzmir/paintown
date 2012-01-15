@@ -241,8 +241,6 @@ use.Depends(use.Peg('openbor/data.peg'), 'mugen/parser/peg.py')
 
 util = utilLibrary(use)
 
-# There is a mutual dependancy between the util library and sdl/mixer so a hack
-# is to include the util library twice, once here
 use.Prepend(LIBS = [util])
 
 use.Prepend(LIBS = [dumbLibrary(use)])
@@ -256,10 +254,6 @@ if useSDL() and not useMinpspw():
     use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
 elif useMinpspw():
     use.Prepend(LIBS = [sprigLibrary(use), stretchLibrary(use)])
-
-# This is the second time the util library is linked in, noted above
-#use.Prepend(LIBS = [util])
-#use.Append(LIBS = [util])
 
 def addObjects(objects):
     obj_files.extend(objects)

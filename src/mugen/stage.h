@@ -148,8 +148,10 @@ public:
     // For now use view port, x and y screen size will be used to determine width/height
     void logic();
 
+    void runCycle();
+
     // Render the backgrounds appropriately
-    void render( Graphics::Bitmap *work );
+    void render(Graphics::Bitmap *work);
 
     // Reset scenario
     void reset();
@@ -203,8 +205,7 @@ public:
     virtual void toggleDebug(int player);
 
     // Inherited world actions
-    virtual void act();
-    virtual void draw( Graphics::Bitmap * work );
+    virtual void draw(Graphics::Bitmap * work);
     virtual void addObject(Object * o);
     virtual bool finished() const;
     virtual void reloadLevel() throw( LoadException );

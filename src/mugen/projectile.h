@@ -1,6 +1,10 @@
 #ifndef _paintown_mugen_projectile_h
 #define _paintown_mugen_projectile_h
 
+namespace Graphics{
+class Bitmap;
+}
+
 namespace Mugen{
 
 class Projectile{
@@ -15,6 +19,13 @@ public:
                int afterImageTime, int afterImageLength);
 
     virtual ~Projectile();
+
+    virtual int getSpritePriority() const;
+    virtual void draw(const Graphics::Bitmap & work, double x, double y);
+    virtual void logic();
+
+protected:
+    int spritePriority;
 };
 
 }
