@@ -9,7 +9,7 @@ namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 
-Projectile::Projectile(double x, double y, int id, const Character * owner, int animation, int hitAnimation, int dieAnimation,
+Projectile::Projectile(double x, double y, int id, Character * owner, int animation, int hitAnimation, int dieAnimation,
                int cancelAnimation, double scaleX, double scaleY, bool autoRemove, int removeTime, 
                double velocityX, double velocityY, double removeVelocityX, double removeVelocityY,
                double accelerateX, double accelerateY, double velocityXMultipler, 
@@ -50,7 +50,7 @@ hit(hit){
 Projectile::~Projectile(){
 }
 
-const Character * Projectile::getOwner() const {
+Character * Projectile::getOwner() const {
     return owner;
 }
     

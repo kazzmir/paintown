@@ -6778,7 +6778,8 @@ public:
             y = stage.maximumUp() + offsetY;
         }
 
-        stage.addProjectile(new Mugen::Projectile(x, y, id, guy.getRoot(), animation, hitAnimation, dieAnimation,
+        /* FIXME: we have to cast the root to a non-const Character* */
+        stage.addProjectile(new Mugen::Projectile(x, y, id, (Character*) guy.getRoot(), animation, hitAnimation, dieAnimation,
                                            cancelAnimation, scaleX, scaleY, autoRemove, removeTime, 
                                            velocityX, velocityY, removeVelocityX, removeVelocityY,
                                            accelerateX, accelerateY, velocityXMultipler, 

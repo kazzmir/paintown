@@ -893,6 +893,8 @@ void Mugen::Stage::physics(Object * mugen){
             if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
                               projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
                 projectile->doCollision(mugen);
+                Mugen::Character * enemy = (Mugen::Character*) mugen;
+                mugen->wasHit(*this, projectile->getOwner(), projectile->getHitDefinition());
             }
         }
     }

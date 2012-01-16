@@ -18,7 +18,7 @@ class Object;
 class Character;
 class Projectile{
 public:
-    Projectile(double x, double y, int id, const Character * owner, int animation, int hitAnimation, int dieAnimation,
+    Projectile(double x, double y, int id, Character * owner, int animation, int hitAnimation, int dieAnimation,
                int cancelAnimation, double scaleX, double scaleY, bool autoRemove, int removeTime, 
                double velocityX, double velocityY, double removeVelocityX, double removeVelocityY,
                double accelerateX, double accelerateY, double velocityXMultipler, 
@@ -41,7 +41,7 @@ public:
     /* False if the miss time is still active */
     bool canCollide() const;
 
-    virtual const Character * getOwner() const;
+    virtual Character * getOwner() const;
         
     const std::vector<MugenArea> getAttackBoxes() const;
 
@@ -49,8 +49,12 @@ public:
 
     virtual bool isDead() const;
 
+    virtual const HitDefinition & getHitDefinition() const {
+        return hit;
+    }
+
 protected:
-    const Character * owner;
+    Character * owner;
     int spritePriority;
     ::Util::ReferenceCount<MugenAnimation> animation;
     double x, y;
