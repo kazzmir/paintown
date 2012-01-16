@@ -308,15 +308,15 @@ ScriptedBehavior::ScriptedBehavior(const Filesystem::AbsolutePath & path){
         line[sizeof(line) - 1] = '\0';
         string whole(line);
         
-        if (PaintownUtil::matchRegex(whole, "\\d+\\s+")){
+        if (PaintownUtil::matchRegex(whole, "\\d+\\s*$")){
+            int ticks = atoi(PaintownUtil::captureRegex(whole, "(\\d+)", 0).c_str());
+            actions.push_back(Action(ticks, vector<string>()));
+        } else if (PaintownUtil::matchRegex(whole, "\\d+\\s+")){
             int ticks = atoi(PaintownUtil::captureRegex(whole, "(\\d+)", 0).c_str());
             string command = PaintownUtil::captureRegex(whole, "\\d+\\s+(.*)", 0);
             vector<string> commands = parseCommands(command);
             actions.push_back(Action(ticks, commands));
             // Global::debug(0) << "Added action " << PaintownUtil::join(commands, ", ") << " for " << ticks << std::endl;
-        } else if (PaintownUtil::matchRegex(whole, "\\d+\\s$")){
-            int ticks = atoi(PaintownUtil::captureRegex(whole, "(\\d+)", 0).c_str());
-            actions.push_back(Action(ticks, vector<string>()));
             // Global::debug(1) << "Added no action for " << ticks << std::endl;
         } else {
             string command = PaintownUtil::captureRegex(whole, "(\\w+)\\s*", 0);
@@ -342,6 +342,8 @@ std::vector<std::string> ScriptedBehavior::currentCommands(const Stage & stage, 
 
         if (action.ticks == 0){
             currentAction++;
+
+            // Global::debug(0) << "Next action " << PaintownUtil::join(action.commands, ", ") << std::endl;
         }
     }
 
