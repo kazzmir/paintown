@@ -349,7 +349,7 @@ protected:
 
     void addSpark(int x, int y, int sparkNumber);
     void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
-    void playSound(int group, int item, bool own);
+    void playSound(Character * owner, int group, int item, bool own);
 
     int findMaximumSpritePriority();
     int findMinimumSpritePriority();

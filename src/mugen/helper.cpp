@@ -60,6 +60,20 @@ State * Helper::getState(int id) const {
 const std::string Helper::getName() const {
     return name;
 }
+    
+MugenSound * Helper::getSound(int group, int item) const {
+    if (owner != NULL){
+        return owner->getSound(group, item);
+    }
+    return NULL;
+}
+
+MugenSound * Helper::getCommonSound(int group, int item) const {
+    if (owner != NULL){
+        return owner->getCommonSound(group, item);
+    }
+    return NULL;
+}
 
 /*
 bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, int stateNumber){

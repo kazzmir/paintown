@@ -2,7 +2,10 @@
 #include "character.h"
 #include "behavior.h"
 
+class MugenSound;
+
 namespace Mugen{
+
 /* copy all data from the parent somehow, maybe lazily. to speed things up */
 class Helper: public Character {
 public:
@@ -32,6 +35,9 @@ public:
     virtual const Character * getRoot() const {
         return root;
     }
+        
+    virtual MugenSound * getSound(int group, int item) const;
+    virtual MugenSound * getCommonSound(int group, int item) const;
 
 protected:
     /* the character that spawned this helper */

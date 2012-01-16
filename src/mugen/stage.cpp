@@ -801,10 +801,15 @@ void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<Mug
     }
 }
 
-void Mugen::Stage::playSound(int group, int item, bool own){
-    /* FIXME: handle own */
-    MugenSound * sound = sounds[group][item];
-    if (sound != 0){
+void Mugen::Stage::playSound(Character * owner, int group, int item, bool own){
+    MugenSound * sound = NULL;
+    if (own){
+        sound = owner->getSound(group, item);
+    } else {
+        sound = owner->getCommonSound(group, item);
+    }
+
+    if (sound != NULL){
         sound->play();
     }
 }
@@ -857,7 +862,7 @@ void Mugen::Stage::physics(Object * mugen){
                             spark = mugen->getDefaultGuardSpark();
                         }
                         addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
-                        playSound(mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
+                        playSound((Character*) mugen, mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
                     mugen->didHitGuarded(enemy, *this);
                     enemy->guarded(mugen, mugen->getHit());
@@ -874,7 +879,7 @@ void Mugen::Stage::physics(Object * mugen){
                         spark = mugen->getDefaultSpark();
                     }
                     addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
-                    playSound(mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
+                    playSound((Character*) mugen, mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
 
                     /* order matters here, the guy attacking needs to know that
                      * he hit enemy so the guy can update his combo stuff.
@@ -892,8 +897,15 @@ void Mugen::Stage::physics(Object * mugen){
         if (projectile->getOwner() != mugen && projectile->canCollide()){
             if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
                               projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
+                /* TODO: handle blocking */
                 projectile->doCollision(mugen);
-                Mugen::Character * enemy = (Mugen::Character*) mugen;
+
+                int spark = mugen->getHit().spark;
+                if (spark == -1){
+                    spark = mugen->getDefaultSpark();
+                }
+                addSpark((int)(projectile->getHitDefinition().sparkPosition.x + mugen->getX()), (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()), spark);
+                playSound(projectile->getOwner(), projectile->getHitDefinition().hitSound.group, projectile->getHitDefinition().hitSound.item, projectile->getHitDefinition().hitSound.own);
                 mugen->wasHit(*this, projectile->getOwner(), projectile->getHitDefinition());
             }
         }

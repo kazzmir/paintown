@@ -141,13 +141,18 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         } else {
             Music::loadSong(Storage::instance().find(Filesystem::RelativePath(Mugen::Data::getInstance().getDirectory().path() + "/sound/" + musicOverride)).path());
         }
+        Music::pause();
+        Music::play();
     } catch (const Filesystem::NotFound & fail){
         Global::debug(0) << "Could not load music because " << fail.getTrace() << std::endl;
+        Music::changeSong();
     }
     /* Ignore volume for now */
     //Music::setVolume(stage->getMusicVolume());
+    /*
     Music::pause();
     Music::play();
+    */
 
     Console::Console console(150);
     {
