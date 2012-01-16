@@ -814,6 +814,39 @@ void Mugen::Stage::playSound(Character * owner, int group, int item, bool own){
     }
 }
 
+void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mugen){
+    if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
+                      projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
+        projectile->doCollision(mugen);
+
+        Character * owner = projectile->getOwner();
+
+        bool block = mugen->isBlocking(projectile->getHitDefinition());
+
+        if (block){
+            /* add guard spark and play guard sound */
+            int spark = projectile->getHitDefinition().guardSpark;
+            if (spark == -1){
+                spark = owner->getDefaultGuardSpark();
+            }
+            addSpark((int)(projectile->getHitDefinition().sparkPosition.x + projectile->getX()),
+                     (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()), spark);
+
+            playSound(owner, projectile->getHitDefinition().guardHitSound.group, projectile->getHitDefinition().guardHitSound.item, projectile->getHitDefinition().guardHitSound.own);
+            mugen->didHitGuarded(owner, *this);
+        } else {
+            int spark = projectile->getHitDefinition().spark;
+            if (spark == -1){
+                spark = owner->getDefaultSpark();
+            }
+            addSpark((int)(projectile->getHitDefinition().sparkPosition.x + projectile->getX()),
+                     (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()), spark);
+            playSound(owner, projectile->getHitDefinition().hitSound.group, projectile->getHitDefinition().hitSound.item, projectile->getHitDefinition().hitSound.own);
+            mugen->wasHit(*this, owner, projectile->getHitDefinition());
+        }
+    }
+}
+
 /* for helpers and players */
 void Mugen::Stage::physics(Object * mugen){
     /* ignore physics while the player is paused */
@@ -855,13 +888,18 @@ void Mugen::Stage::physics(Object * mugen){
 
                 /* guarding */
                 if ((collision || blockingCollision) && enemy->isBlocking(mugen->getHit())){
+                    /* FIXME: why do we differentiate between blocking collision and a
+                     * regular collision?
+                     */
                     if (collision){
                         /* add guard spark and play guard sound */
                         int spark = mugen->getHit().guardSpark;
                         if (spark == -1){
                             spark = mugen->getDefaultGuardSpark();
                         }
-                        addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
+                        addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
+                                 (int)(mugen->getHit().sparkPosition.y + enemy->getRY()), spark);
+
                         playSound((Character*) mugen, mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
                     mugen->didHitGuarded(enemy, *this);
@@ -878,7 +916,9 @@ void Mugen::Stage::physics(Object * mugen){
                     if (spark == -1){
                         spark = mugen->getDefaultSpark();
                     }
-                    addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()), (int)(mugen->getHit().sparkPosition.y + mugen->getRY()), spark);
+                    addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
+                             (int)(mugen->getHit().sparkPosition.y + enemy->getRY()), spark);
+
                     playSound((Character*) mugen, mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
 
                     /* order matters here, the guy attacking needs to know that
@@ -895,19 +935,8 @@ void Mugen::Stage::physics(Object * mugen){
     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
         Projectile * projectile = *it;
         if (projectile->getOwner() != mugen && projectile->canCollide()){
-            if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
-                              projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
-                /* TODO: handle blocking */
-                projectile->doCollision(mugen);
-
-                int spark = mugen->getHit().spark;
-                if (spark == -1){
-                    spark = mugen->getDefaultSpark();
-                }
-                addSpark((int)(projectile->getHitDefinition().sparkPosition.x + mugen->getX()), (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()), spark);
-                playSound(projectile->getOwner(), projectile->getHitDefinition().hitSound.group, projectile->getHitDefinition().hitSound.item, projectile->getHitDefinition().hitSound.own);
-                mugen->wasHit(*this, projectile->getOwner(), projectile->getHitDefinition());
-            }
+            doProjectileCollision(projectile, (Character*) mugen);
+            
         }
     }
 
