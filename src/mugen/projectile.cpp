@@ -16,7 +16,7 @@ Projectile::Projectile(double x, double y, int id, const Character * owner, int 
                double velocityYMultipler, int hits, int missTime, int priority, int spritePriority,
                int edge, int stageDistance, int lowBound, int highBound, int shadowRed,
                int shadowGreen, int shadowBlue, int superMoveTime, int pauseMoveTime,
-               int afterImageTime, int afterImageLength, Facing facing):
+               int afterImageTime, int afterImageLength, Facing facing, const HitDefinition & hit):
 owner(owner),
 spritePriority(spritePriority),
 x(x),
@@ -39,7 +39,8 @@ hits(hits),
 missTime(missTime),
 activeMissTime(0),
 hitAnimation(hitAnimation),
-id(id){
+id(id),
+hit(hit){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -86,6 +87,8 @@ void Projectile::doCollision(Object * mugen){
         if (his != NULL){
             this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
         }
+        velocityX = removeVelocityX;
+        velocityY = removeVelocityY;
         shouldRemove = true;
     }
     activeMissTime = missTime;

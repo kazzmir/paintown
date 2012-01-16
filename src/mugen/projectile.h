@@ -4,6 +4,7 @@
 #include "util/pointer.h"
 #include "object.h"
 #include "animation.h"
+#include "common.h"
 #include <vector>
 
 namespace Graphics{
@@ -24,7 +25,7 @@ public:
                double velocityYMultipler, int hits, int missTime, int priority, int spritePriority,
                int edge, int stageDistance, int lowBound, int highBound, int shadowRed,
                int shadowGreen, int shadowBlue, int superMoveTime, int pauseMoveTime,
-               int afterImageTime, int afterImageLength, Facing facing);
+               int afterImageTime, int afterImageLength, Facing facing, const HitDefinition & hit);
 
     virtual ~Projectile();
 
@@ -67,6 +68,7 @@ protected:
     int activeMissTime;
     const int hitAnimation;
     const int id;
+    HitDefinition hit;
 };
 
 }
