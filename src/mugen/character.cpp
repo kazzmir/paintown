@@ -521,6 +521,7 @@ commonSounds(NULL){
     initialize();
 }
 
+/* FIXME: need to copy more attributes */
 Character::Character(const Character & copy):
 Object(copy),
 xscale(copy.xscale),
@@ -538,7 +539,8 @@ regenerateTime(copy.regenerateTime),
 needToGuard(false),
 frozen(false),
 max_health(copy.max_health),
-health(copy.health){
+health(copy.health),
+spritePriority(copy.spritePriority){
 }
 
 Character::~Character(){

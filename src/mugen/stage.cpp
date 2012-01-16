@@ -1246,6 +1246,7 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
     drawBackgroundWithEffectsSide(x, y, board, &Background::renderForeground);
 }
 
+/* Returns a sorted listed of sprite priorties */
 vector<int> Mugen::Stage::allSpritePriorities(){
     vector<int> priorities;
 
@@ -1263,6 +1264,9 @@ vector<int> Mugen::Stage::allSpritePriorities(){
         Mugen::Effect * spark = *it;
         priorities.push_back(spark->getSpritePriority());
     }
+
+    std::sort(priorities.begin(), priorities.end());
+    std::unique(priorities.begin(), priorities.end());
 
     return priorities;
 }
@@ -1317,15 +1321,18 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     /* FIXME: this is a hack to deal with sprite priorities. Really we should get all
      * the drawable objects and sort them.
      */
+    /*
     int minumumSpritePriority = findMinimumSpritePriority();
     int maximumSpritePriority = findMaximumSpritePriority();
+    */
 
-    for (int spritePriority = minumumSpritePriority; spritePriority <= maximumSpritePriority; spritePriority++){
+    vector<int> priorities = allSpritePriorities();
+    for (vector<int>::iterator spritePriority = priorities.begin(); spritePriority != priorities.end(); spritePriority++){
         // Players go in here
         for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
             Mugen::Object *obj = *it;
 
-            if (obj->getSpritePriority() == spritePriority){
+            if (obj->getSpritePriority() == *spritePriority){
                 /* Reflection */
                 /* FIXME: reflection and shade need camerax/y */
                 if (reflectionIntensity > 0){
@@ -1342,14 +1349,14 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 
         for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
             Mugen::Effect * spark = *it;
-            if (spark->getSpritePriority() == spritePriority){
+            if (spark->getSpritePriority() == *spritePriority){
                 spark->draw(*work, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
             }
         }
 
         for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
             Projectile * projectile = *it;
-            if (projectile->getSpritePriority() == spritePriority){
+            if (projectile->getSpritePriority() == *spritePriority){
                 projectile->draw(*work, camerax - DEFAULT_WIDTH / 2, cameray);
             }
         }
