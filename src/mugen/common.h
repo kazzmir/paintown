@@ -27,6 +27,18 @@ namespace AttackType{
     };
 }
 
+struct ResourceEffect{
+    ResourceEffect():
+        own(false),
+        group(-1),
+        item(-1){
+        }
+
+    bool own;
+    int group;
+    int item;
+};
+
 struct HitDefinition{
     HitDefinition():
     alive(false),
@@ -93,28 +105,15 @@ struct HitDefinition{
         int player1;
         int player2;
     } pause, guardPause;
-
-    struct Resource{
-        Resource():
-            own(false),
-            group(-1),
-            item(-1){
-            }
-
-        bool own;
-        int group;
-        int item;
-    };
-
-
-    Resource spark;
-    Resource guardSpark;
+    
+    ResourceEffect spark;
+    ResourceEffect guardSpark;
     
     struct SparkPosition{
         int x, y;
     } sparkPosition;
 
-    Resource hitSound;
+    ResourceEffect hitSound;
 
     struct GetPower{
         GetPower():
@@ -125,7 +124,7 @@ struct HitDefinition{
         int guarded;
     } getPower;
 
-    Resource guardHitSound;
+    ResourceEffect guardHitSound;
 
     AttackType::Ground groundType;
     AttackType::Ground airType;

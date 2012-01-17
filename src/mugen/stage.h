@@ -19,6 +19,7 @@ namespace Console{
 
 namespace Mugen{
     class Character;
+    struct ResourceEffect;
     class Projectile;
     class Helper;
     class Object;
@@ -348,7 +349,8 @@ protected:
 protected:
 
     void addSpark(int x, int y, int sparkNumber, bool own, Character * owner);
-    void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
+    // void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
+    void addSpark(int x, int y, const ResourceEffect & resource, int default_, Character * owner);
     void playSound(Character * owner, int group, int item, bool own);
     void doProjectileCollision(Projectile * projectile, Character * mugen);
 
