@@ -108,6 +108,8 @@ public:
     
     virtual void setRandom(bool r);
     
+    virtual void select();
+    
     virtual inline unsigned int getIndex() const {
         return index;
     }
@@ -140,6 +142,7 @@ protected:
     const Gui::SelectListInterface * parent;
     bool empty;
     bool isRandom;
+    int flash;
 };
 
 /*! Team Menu */
@@ -258,6 +261,7 @@ public:
     virtual void down(unsigned int cursor);
     virtual void left(unsigned int cursor);
     virtual void right(unsigned int cursor);
+    virtual void select(unsigned int cursor);
     
     //! Sound types
     enum SoundType{
@@ -292,6 +296,8 @@ public:
 protected:
     //! Get font
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
+    //! Parse select file
+    void parseSelect();
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
@@ -311,13 +317,20 @@ protected:
     //! Sound lookup
     std::map<SoundType, IndexValue> soundLookup;
     //! Select file
-    std::string selectFile;
+    Filesystem::AbsolutePath selectFile;
     //! Fonts
     std::vector< PaintownUtil::ReferenceCount<MugenFont> > fonts;
     //! Fade tool
     Gui::FadeTool fader;
     //! Select background
     PaintownUtil::ReferenceCount<Mugen::Background> background;
+    //! Characters
+    std::vector<Mugen::ArcadeData::CharacterInfo> characters;
+    //! Stages
+    std::vector<Filesystem::AbsolutePath> stages;
+    //! Arcade Matches
+    std::vector<int> arcadeOrder;
+    std::vector<int> teamArcadeOrder;
 };
 
 }

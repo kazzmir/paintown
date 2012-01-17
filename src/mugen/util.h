@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <queue>
 #include "exception.h"
 #include "configuration.h"
 #include "util/bitmap.h"
@@ -481,6 +482,94 @@ class Element {
 	std::string name;
 };
 
+/*! Arcade Matchup Data */
+namespace ArcadeData{
+
+/*! Information regarding a character */
+class CharacterInfo{
+public:
+    CharacterInfo(const Filesystem::AbsolutePath &);
+    CharacterInfo(const CharacterInfo &);
+    virtual ~CharacterInfo();
+    
+    const CharacterInfo & operator=(const CharacterInfo & copy);
+    
+    virtual inline const Filesystem::AbsolutePath & getDef() const {
+        return this->definition;
+    }
+    virtual inline void setStage(const Filesystem::AbsolutePath & stage){
+        this->stage = stage;
+    }
+    virtual inline const Filesystem::AbsolutePath & getStage() const {
+        return this->stage;
+    }
+    virtual inline void setMusic(const Filesystem::AbsolutePath & music){
+        this->stage = music;
+    }
+    virtual inline const Filesystem::AbsolutePath & getMusic() const {
+        return this->music;
+    }
+    virtual inline void setOrder(int order){
+        this->order = order;
+    }
+    virtual inline int getOrder() const {
+        return this->order;
+    }
+    virtual inline void setRandomStage(bool random){
+        this->randomStage = random;
+    }
+    virtual inline bool getRandomStage() const {
+        return this->randomStage;
+    }
+    virtual inline void setIncludeStage(bool include){
+        this->includeStage = include;
+    }
+    virtual inline bool getIncludeStage() const {
+        return this->includeStage;
+    }
+    virtual inline const std::string & getName() const {
+        return this->name;
+    }
+    virtual inline const std::string & getDisplayName() const {
+        return this->displayName;
+    }
+    
+protected:
+    //! Definition file
+    Filesystem::AbsolutePath definition;
+    //! Stage file
+    Filesystem::AbsolutePath stage;
+    //! Music file (overrides the BGM of the stage)
+    Filesystem::AbsolutePath music;
+    //! order
+    unsigned int order;
+    //! random stage?
+    bool randomStage;
+    //! Include stage in select stage collection?
+    bool includeStage;
+    //! Name
+    std::string name;
+    //! Display name
+    std::string displayName;
+    //! Icon
+    PaintownUtil::ReferenceCount<MugenSprite> icon;
+    //! Portrait
+    PaintownUtil::ReferenceCount<MugenSprite> portrait;
+};
+
+/*! Arcade Match Handling */
+class MatchPath{
+public:
+    MatchPath(std::vector<int> order, std::vector<CharacterInfo> characters, std::vector<Filesystem::AbsolutePath> stages);
+    virtual ~MatchPath();
+    virtual bool hasMore();
+    virtual CharacterInfo next();
+    
+protected:
+    std::queue<CharacterInfo> opponents;
+};
+
+}
 }
 
 #endif

@@ -80,6 +80,7 @@ public:
                     select.up(0);
                 }
                 if (event.out == S || event.out == Enter || event.out == SpaceBar){
+                    select.select(0);
                 }
                 if (event.out == Key1){
                 }

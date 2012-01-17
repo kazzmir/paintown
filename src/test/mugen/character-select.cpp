@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "util/timedifference.h"
+#include "util/trans-bitmap.h"
 #include "mugen/ast/all.h"
 #include "mugen/sound.h"
 
@@ -107,14 +108,17 @@ Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent):
 index(index),
 parent(parent),
 empty(true),
-isRandom(false){
+isRandom(false),
+flash(0){
 }
 
 Cell::~Cell(){
 }
 
 void Cell::act(){
-    
+    if (flash){
+        flash--;
+    }
 }
 
 void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & work, const Font & font) const{
@@ -149,6 +153,13 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     } else if (parent->getCurrentIndex(1) == index){
         drawPlayer2Cursor(x, y, work);
     }
+    
+    // Flash
+    if (flash){
+        // FIXME hot pink shows up after white
+        Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+        work.translucent().rectangleFill(x-1, y-1, x-1+width, y-1+height, Graphics::makeColor(255,255,255));
+    }
 }
 
 bool Cell::isEmpty() const{
@@ -157,6 +168,10 @@ bool Cell::isEmpty() const{
 
 void Cell::setRandom(bool r){
     isRandom = r;
+}
+
+void Cell::select(){
+    flash = 10;
 }
 
 void Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite> background){
@@ -448,8 +463,10 @@ void CharacterSelect::init(){
                         } else if (simple == "intro.storyboard"){
                             // Ignore
                         } else if (simple == "select"){
-                            simple.view() >> select.selectFile;
-                            Global::debug(1) << "Got Select File: '" << select.selectFile << "'" << std::endl;
+                            std::string file;
+                            simple.view() >> file;
+                            select.selectFile = Mugen::Util::fixFileName(baseDir, Mugen::Util::stripDir(file));
+                            Global::debug(1) << "Got Select File: '" << file << "'" << std::endl;
                         } else if (simple == "fight"){
                             // Ignore
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
@@ -1202,6 +1219,10 @@ void CharacterSelect::init(){
 }
 
 void CharacterSelect::act(){
+    for (std::vector< PaintownUtil::ReferenceCount<Cell> >::iterator i = cells.begin(); i != cells.end(); ++i){
+        PaintownUtil::ReferenceCount<Cell> cell = *i;
+        cell->act();
+    }
     background->act();
     grid.act();
     player1TeamMenu.act();
@@ -1287,6 +1308,10 @@ void CharacterSelect::right(unsigned int cursor){
     }
 }
 
+void CharacterSelect::select(unsigned int cursor){
+    cells[grid.getCurrentIndex(cursor)]->select();
+}
+
 void CharacterSelect::setSound(const SoundType & type, int group, int sound){
     IndexValue values;
     values.group = group;
@@ -1303,4 +1328,185 @@ PaintownUtil::ReferenceCount<MugenFont> CharacterSelect::getFont(int index) cons
         out << "No font for index " << index;
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
+}
+
+void CharacterSelect::parseSelect(){
+    const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
+    
+    TimeDifference diff;
+    diff.startTime();
+    AstRef parsed(Util::parseDef(file.path()));
+    diff.endTime();
+    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << std::endl;
+    
+    for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
+        Ast::Section * section = *section_it;
+        std::string head = section->getName();
+        
+        head = Mugen::Util::fixCase(head);
+
+        if (head == "characters"){
+            class CharacterWalker: public Ast::Walker{
+            public:
+                CharacterWalker(CharacterSelect & self, std::vector<Mugen::ArcadeData::CharacterInfo> & characters):
+                self(self),
+                characters(characters){}
+                virtual ~CharacterWalker(){}
+            
+                CharacterSelect & self;
+                std::vector<Mugen::ArcadeData::CharacterInfo> & characters;
+                
+                virtual void onValueList(const Ast::ValueList & list){
+                    // Grab Character
+                    std::string temp;
+                    Ast::View view = list.view();
+                    view >> temp;
+
+                    if (temp == "blank"){
+                        //character.blank = true;
+                    } else if (temp == "randomselect"){
+                        //character.random = true;
+                    } else {
+                        //character.name = temp;
+                        Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
+                        try{
+                            // Grab stage
+                            view >> temp;
+                            if (PaintownUtil::matchRegex(temp, "order = ")){
+                                temp.replace(0,std::string("order = ").size(),"");
+                                character.setOrder((int)atoi(temp.c_str()));
+                            } else if (temp == "random"){
+                                character.setRandomStage(true);
+                            } else {
+                                character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
+                            }
+                            // Grab options
+                            /* TODO: make the parser turn these into better AST nodes.
+                            * something like Assignment(Id(music), Filename(whatever))
+                            */
+                            while(true){
+                                view >> temp;
+                                if (PaintownUtil::matchRegex(temp,"includestage = ")){
+                                    temp.replace(0,std::string("includestage = ").size(),"");
+                                    character.setIncludeStage((bool)atoi(temp.c_str()));
+                                } else if (PaintownUtil::matchRegex(temp,"music = ")){
+                                    temp.replace(0,std::string("music = ").size(),"");
+                                    character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
+                                } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                    temp.replace(0,std::string("order = ").size(),"");
+                                    character.setOrder((int)atoi(temp.c_str()));
+                                }
+                            }
+                        } catch (const Ast::Exception & e){
+                        }
+                        characters.push_back(character);
+                    }
+                }
+            };
+
+            CharacterWalker walk(*this, characters);
+            section->walk(walk);
+        } else if (head == "extrastages"){
+            class StageWalker: public Ast::Walker{
+            public:
+                StageWalker(std::vector< std::string > &names):
+                names(names){
+                }
+
+                virtual ~StageWalker(){
+                }
+
+                std::vector< std::string > & names;
+
+                virtual void onValueList(const Ast::ValueList & list){
+                    // Get Stage info and save it
+                    try {
+                        std::string temp;
+                        list.view() >> temp;
+                        Global::debug(1) << "stage: " << temp << std::endl;
+                        names.push_back(temp);
+                    } catch (const Ast::Exception & e){
+                    }
+                }
+            };
+            //StageWalker walk(stageNames);
+            //section->walk(walk);
+        } else if (head == "options"){
+            class OptionWalker: public Ast::Walker{
+            public:
+                OptionWalker(std::vector<int> & arcade, std::vector<int> & team):
+                arcade(arcade),
+                team(team){
+                }
+                virtual ~OptionWalker(){}
+                std::vector<int> & arcade;
+                std::vector<int> & team;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "arcade.maxmatches"){
+                        Ast::View view = simple.view();
+                        // only 10 max matches
+                        for (int i = 0; i < 10; ++i){
+                            try{
+                                int matches;
+                                view >> matches;
+                                // No need to save the remaining of the matchup setup
+                                if (matches == 0){
+                                    break;
+                                }
+                                arcade.push_back(matches);
+                            } catch (const Ast::Exception & e){
+                                break;
+                            }
+                        }
+                    } else if (simple == "team.maxmatches"){
+                        Ast::View view = simple.view();
+                        // only 10 max matches
+                        for (int i = 0; i < 10; ++i){
+                            try{
+                                int matches;
+                                view >> matches;
+                                // No need to save the remaining of the matchup setup
+                                if (matches == 0){
+                                    break;
+                                }
+                                team.push_back(matches);
+                            } catch (const Ast::Exception & e){
+                                break;
+                            }
+                        }
+                    }
+                }
+            };
+            //OptionWalker walk(arcadeMaxMatches,teamMaxMatches);
+            //section->walk(walk);
+        } else {
+            // throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
+            std::ostringstream context;
+            context << __FILE__ << ":" << __LINE__;
+            Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
+        }
+    }
+#if 0
+    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
+        try{
+            CharacterCollect & character = *i;
+            if (character.name != ""){
+                const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
+                addFile(def);
+                stageNames.push_back(character.stage);
+            }
+        } catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Error loading mugen character: " << fail.getTrace() << std::endl;
+        }
+    }
+
+    if (stageNames.size() == 0){
+        throw MugenException("No stages listed", __FILE__, __LINE__);
+    }
+
+    // Prepare stages
+    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
+    grid.getStageHandler().addStage((*i));
+    }
+#endif
 }

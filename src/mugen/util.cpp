@@ -1217,3 +1217,68 @@ layer(Background){
 
 Mugen::Element::~Element(){
 }
+
+Mugen::ArcadeData::CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath & file):
+order(1),
+randomStage(true),
+includeStage(true),
+icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
+    try{
+        AstRef parsed(Util::parseDef(file.path()));
+
+        Filesystem::RelativePath spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
+        name = Util::probeDef(parsed, "info", "name");
+        displayName = Util::probeDef(parsed, "info", "displayname");
+
+        /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
+        std::vector<Filesystem::RelativePath> actCollection;
+        for (int i = 0; i < 12; ++i){
+            stringstream act;
+            act << "pal" << i;
+            try {
+                std::string actFile = Util::probeDef(parsed, "files", act.str());
+                actCollection.push_back(Filesystem::RelativePath(actFile));
+            } catch (const MugenException &me){
+                // Ran its course got what we needed
+            }
+        }
+
+        if (actCollection.size() == 0){
+            throw MugenException("No pal files specified", __FILE__, __LINE__);
+        }
+
+        // just a precaution
+        Filesystem::AbsolutePath realSpriteFile = Storage::instance().findInsensitive(Storage::instance().cleanse(file.getDirectory()).join(spriteFile));
+
+        /* pull out the icon and the portrait from the sff */
+        MugenSprite * iconCopy;
+        MugenSprite * portraitCopy;
+        Util::getIconAndPortrait(realSpriteFile, file.getDirectory().join(actCollection[0]), &iconCopy, &portraitCopy);
+        icon = PaintownUtil::ReferenceCount<MugenSprite>(iconCopy);
+        portrait = PaintownUtil::ReferenceCount<MugenSprite>(portraitCopy);
+    } catch (...){
+        /* barf! */
+        throw;
+    }
+}
+
+Mugen::ArcadeData::CharacterInfo::CharacterInfo(const CharacterInfo & copy):
+definition(copy.definition),
+stage(copy.stage),
+music(copy.music),
+order(copy.order),
+randomStage(copy.randomStage),
+includeStage(copy.includeStage),
+name(copy.name),
+displayName(copy.displayName),
+icon(copy.icon),
+portrait(copy.portrait){
+}
+
+Mugen::ArcadeData::CharacterInfo::~CharacterInfo(){
+}
+
+const Mugen::ArcadeData::CharacterInfo & Mugen::ArcadeData::CharacterInfo::operator=(const Mugen::ArcadeData::CharacterInfo & copy){
+    return *this;
+}
