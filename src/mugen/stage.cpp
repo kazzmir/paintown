@@ -778,8 +778,14 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Stage::getFightAnimation(int
     return sparks[id];
 }
 
-void Mugen::Stage::addSpark(int x, int y, int sparkNumber){
-    if (sparks[sparkNumber] == 0){
+void Mugen::Stage::addSpark(int x, int y, int sparkNumber, bool own, Character * owner){
+    PaintownUtil::ReferenceCount<MugenAnimation> sprite;
+    if (own && owner != NULL){
+        sprite = owner->getAnimation(sparkNumber);
+    } else {
+        sprite = sparks[sparkNumber];
+    }
+    if (sprite == NULL){
         /*
         ostringstream out;
         out << "No spark animation for " << sparkNumber;
@@ -789,14 +795,14 @@ void Mugen::Stage::addSpark(int x, int y, int sparkNumber){
         return;
     }
     /* FIXME: sprite priority */
-    Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<MugenAnimation>(sparks[sparkNumber]));
+    Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<MugenAnimation>(sprite->copy()));
     showSparks.push_back(spark);
 }
 
 void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation){
     if (animation != NULL){
         /* FIXME: sprite priority */
-        Mugen::Spark * spark = new Mugen::Spark(x, y, 0, animation);
+        Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<MugenAnimation>(animation->copy()));
         showSparks.push_back(spark);
     }
 }
@@ -825,22 +831,28 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
 
         if (block){
             /* add guard spark and play guard sound */
-            int spark = projectile->getHitDefinition().guardSpark;
+            int spark = projectile->getHitDefinition().guardSpark.group;
             if (spark == -1){
                 spark = owner->getDefaultGuardSpark();
             }
             addSpark((int)(projectile->getHitDefinition().sparkPosition.x + projectile->getX()),
-                     (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()), spark);
+                     (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()),
+                     spark,
+                     projectile->getHitDefinition().guardSpark.own,
+                     projectile->getOwner());
 
             playSound(owner, projectile->getHitDefinition().guardHitSound.group, projectile->getHitDefinition().guardHitSound.item, projectile->getHitDefinition().guardHitSound.own);
             mugen->didHitGuarded(owner, *this);
         } else {
-            int spark = projectile->getHitDefinition().spark;
+            int spark = projectile->getHitDefinition().spark.group;
             if (spark == -1){
                 spark = owner->getDefaultSpark();
             }
             addSpark((int)(projectile->getHitDefinition().sparkPosition.x + projectile->getX()),
-                     (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()), spark);
+                     (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()),
+                     spark,
+                     projectile->getHitDefinition().spark.own,
+                     projectile->getOwner());
             playSound(owner, projectile->getHitDefinition().hitSound.group, projectile->getHitDefinition().hitSound.item, projectile->getHitDefinition().hitSound.own);
             mugen->wasHit(*this, owner, projectile->getHitDefinition());
         }
@@ -864,8 +876,7 @@ void Mugen::Stage::physics(Object * mugen){
             if (mugen->getMoveType() == Mugen::Move::Hit && 
                 mugen->getXVelocity() < 0 &&
                 ticker % 5 == 0){
-                /* 120 is small dust */
-                addSpark((int)mugen->getX(), (int)(mugen->getRY()), 120);
+                createDust((int) mugen->getX(), (int) mugen->getRY());
             }
         }
     }
@@ -893,12 +904,13 @@ void Mugen::Stage::physics(Object * mugen){
                      */
                     if (collision){
                         /* add guard spark and play guard sound */
-                        int spark = mugen->getHit().guardSpark;
+                        int spark = mugen->getHit().guardSpark.group;
                         if (spark == -1){
                             spark = mugen->getDefaultGuardSpark();
                         }
                         addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
-                                 (int)(mugen->getHit().sparkPosition.y + enemy->getRY()), spark);
+                                 (int)(mugen->getHit().sparkPosition.y + enemy->getRY()),
+                                 spark, mugen->getHit().guardSpark.own, (Character*) mugen);
 
                         playSound((Character*) mugen, mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
@@ -912,12 +924,13 @@ void Mugen::Stage::physics(Object * mugen){
                     /* do hitdef stuff */
                     // Global::debug(0) << "Collision!" << endl;
                     /* the hit state */
-                    int spark = mugen->getHit().spark;
+                    int spark = mugen->getHit().spark.group;
                     if (spark == -1){
                         spark = mugen->getDefaultSpark();
                     }
                     addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
-                             (int)(mugen->getHit().sparkPosition.y + enemy->getRY()), spark);
+                             (int)(mugen->getHit().sparkPosition.y + enemy->getRY()),
+                             spark, mugen->getHit().spark.own, (Character*) mugen);
 
                     playSound((Character*) mugen, mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
 
@@ -2190,6 +2203,8 @@ void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool o
     }
 
     if (animation != -1){
+        addSpark(positionX, positionY, animation, ownAnimation, &guy);
+        /*
         if (ownAnimation){
             PaintownUtil::ReferenceCount<MugenAnimation> use = guy.getAnimation(animation);
             if (use != NULL){
@@ -2198,6 +2213,7 @@ void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool o
         } else {
             addSpark(positionX, positionY, animation);
         }
+        */
     }
 }
    
@@ -2206,7 +2222,7 @@ void Mugen::Stage::doPause(int time, int buffer, int moveAllowed, bool pauseBack
 }
     
 void Mugen::Stage::createDust(int x, int y){
-    addSpark(x, y, 120);
+    addSpark(x, y, 120, false, NULL);
 }
         
 void Mugen::Stage::addEffect(Mugen::Effect * effect){

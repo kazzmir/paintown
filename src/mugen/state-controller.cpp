@@ -1217,8 +1217,6 @@ struct HitDefinitionData{
         animationType(AttackType::Light),
         animationTypeAir(AttackType::NoAnimation),
         animationTypeFall(AttackType::NoAnimation),
-        spark(-1),
-        guardSpark(-1),
         groundType(AttackType::High),
         airType(AttackType::None){
         }
@@ -1402,15 +1400,31 @@ struct HitDefinitionData{
      * Similar to the "pausetime" parameter, these are the times to pause each player if the hit was guarded. Defaults to the same values as the "pausetime" parameter if omitted.
      */
 
+    struct Resource{
+        Resource():
+            own(false){
+            }
+
+        Resource(const Resource & you):
+            own(you.own),
+            group(copy(you.group)),
+            item(copy(you.item)){
+            }
+
+        bool own;
+        Value group;
+        Value item;
+    };
+
     /* sparkno = action_no (int)
      * This is the action number of the spark to display if the hit is successful. To play a spark out of the player's .AIR file, precede the action number with an S, e.g. "sparkno = S10". Defaults to the value set in the player variables if omitted.
      */
-    int spark;
+    Resource spark;
 
     /* guard.sparkno = action_no (int)
      * This is the action number of the spark to display if the hit was guarded. To play a spark out of the player's .AIR file, precede the action number with an S. Defaults to the value set in the player variables if omitted.
      */
-    int guardSpark;
+    Resource guardSpark;
 
     /* sparkxy = spark_x, spark_y (int, int)
      * This is where to make the hit/guard spark. spark_x is a coordinate relative to the front of P2. A negative value makes the spark deeper inside P2. "Front" refers to the x- position at P2's axis offset towards P1 by the corresponding width value in the [Size] group in P2's player variables. spark_y is relative to P1. A negative value makes a spark higher up. You can use a tool like AirView to determine this value by positioning the cursor at the "attack spot" and reading off the value of the y-position. Defaults to 0,0 if omitted.
@@ -1430,40 +1444,12 @@ struct HitDefinitionData{
     /* hitsound = snd_grp, snd_item (int, int)
      * This is the sound to play on hit (from common.snd). The included fight.snd lets you choose from 5,0 (light hit sound) through to 5,4 (painful whack). To play a sound from the player's own SND file, precede the first number with an "S". For example, "hitsound = S1,0". Defaults to the value set in the player variables if omitted.
      */
-    struct HitSound{
-        HitSound():
-            own(false){
-            }
-
-        HitSound(const HitSound & you):
-            own(you.own),
-            group(copy(you.group)),
-            item(copy(you.item)){
-            }
-
-        bool own;
-        Value group;
-        Value item;
-    } hitSound;
+    Resource hitSound;
 
     /* guardsound = snd_grp, snd_item (int, int)
      * This is the sound to play on guard (from common.snd). Only 6,0 is available at this time. To play a sound from the player's own SND file, precede the first number with an "S". There is no facility to play a sound from the opponent's SND file. Defaults to the value set in the player variables if omitted.
      */
-    struct GuardHitSound{
-        GuardHitSound():
-            own(false){
-            }
-
-        GuardHitSound(const GuardHitSound & you):
-            own(you.own),
-            group(copy(you.group)),
-            item(copy(you.item)){
-            }
-
-        bool own;
-        Value group;
-        Value item;
-    } guardHitSound;
+    Resource guardHitSound;
 
     /* ground.type = attack_type (string)
      * This is the kind of attack if P2 is on the ground. Choose from: - "High": for attacks that make P2's head snap backwards. - "Low": for attacks that hit P2 in the stomach. - "Trip": for low sweep attacks. If you use "Trip" type, the ground.velocity parameter should have a non-zero y-velocity, and the fall parameter should be set to 1. A tripped opponent does not bounce upon falling on the ground. - "None": for attacks that do nothing besides pause P1 and P2 for the duration in the pausetime parameter.
@@ -1974,18 +1960,36 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
                 } catch (const Ast::Exception & e){
                 }
             } else if (simple == "sparkno"){
-                string what;
-                simple.view() >> what;
-                /* FIXME: either S123 or 123 */
-                if (PaintownUtil::matchRegex(what, "[0-9]+")){
-                    hit.spark = atoi(what.c_str());
+                if (simple.getValue()->hasMultiple()){
+                    const Ast::Value * item;
+                    const Ast::Value * group;
+                    simple.view() >> group >> item;
+                    Resource resource = extractResource(group);
+                    hit.spark.own = resource.own;
+                    hit.spark.item = Compiler::compile(item);
+                    hit.spark.group = Compiler::compile(resource.value);
+                } else {
+                    const Ast::Value * group = simple.getValue();
+                    Resource resource = extractResource(group);
+                    hit.spark.own = resource.own;
+                    hit.spark.item = Compiler::compile(0);
+                    hit.spark.group = Compiler::compile(resource.value);
                 }
             } else if (simple == "guard.sparkno"){
-                string what;
-                simple.view() >> what;
-                /* FIXME: either S123 or 123 */
-                if (PaintownUtil::matchRegex(what, "[0-9]+")){
-                    hit.guardSpark = atoi(what.c_str());
+                if (simple.getValue()->hasMultiple()){
+                    const Ast::Value * item;
+                    const Ast::Value * group;
+                    simple.view() >> group >> item;
+                    Resource resource = extractResource(group);
+                    hit.guardSpark.own = resource.own;
+                    hit.guardSpark.item = Compiler::compile(item);
+                    hit.guardSpark.group = Compiler::compile(resource.value);
+                } else {
+                    const Ast::Value * group = simple.getValue();
+                    Resource resource = extractResource(group);
+                    hit.guardSpark.own = resource.own;
+                    hit.guardSpark.item = Compiler::compile(0);
+                    hit.guardSpark.group = Compiler::compile(resource.value);
                 }
             } else if (simple == "getpower"){
                 const Ast::Value * hit;
@@ -2282,8 +2286,12 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
     his.guardHitSound.item = evaluateNumberLocal(hit.guardHitSound.item, -1);
     his.sparkPosition.x = evaluateNumberLocal(hit.sparkPosition.x, 0);
     his.sparkPosition.y = evaluateNumberLocal(hit.sparkPosition.y, 0);
-    his.spark = hit.spark;
-    his.guardSpark = hit.guardSpark;
+    his.spark.own = hit.spark.own;
+    his.spark.group = evaluateNumberLocal(hit.spark.group, -1);
+    his.spark.item = evaluateNumberLocal(hit.spark.item, -1);
+    his.guardSpark.own = hit.guardSpark.own;
+    his.guardSpark.group = evaluateNumberLocal(hit.guardSpark.group, -1);
+    his.guardSpark.item = evaluateNumberLocal(hit.guardSpark.item, -1);
 
     his.getPower.hit = evaluateNumberLocal(hit.getPower.hit, his.damage.damage);
     his.getPower.guarded = evaluateNumberLocal(hit.getPower.guarded, his.getPower.hit / 2);

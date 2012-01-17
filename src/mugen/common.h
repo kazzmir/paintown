@@ -34,8 +34,6 @@ struct HitDefinition{
     animationType(AttackType::Light),
     animationTypeAir(AttackType::NoAnimation),
     animationTypeFall(AttackType::NoAnimation),
-    spark(-1),
-    guardSpark(-1),
     groundType(AttackType::None),
     airType(AttackType::None),
     groundHitTime(0),
@@ -96,18 +94,27 @@ struct HitDefinition{
         int player2;
     } pause, guardPause;
 
-    int spark;
-    int guardSpark;
+    struct Resource{
+        Resource():
+            own(false),
+            group(-1),
+            item(-1){
+            }
+
+        bool own;
+        int group;
+        int item;
+    };
+
+
+    Resource spark;
+    Resource guardSpark;
     
     struct SparkPosition{
         int x, y;
     } sparkPosition;
 
-    struct HitSound{
-        bool own;
-        int group;
-        int item;
-    } hitSound;
+    Resource hitSound;
 
     struct GetPower{
         GetPower():
@@ -118,17 +125,7 @@ struct HitDefinition{
         int guarded;
     } getPower;
 
-    struct GuardHitSound{
-        GuardHitSound():
-            own(false),
-            group(0),
-            item(0){
-            }
-
-        bool own;
-        int group;
-        int item;
-    } guardHitSound;
+    Resource guardHitSound;
 
     AttackType::Ground groundType;
     AttackType::Ground airType;
