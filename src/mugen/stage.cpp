@@ -800,12 +800,12 @@ void Mugen::Stage::addSpark(int x, int y, int sparkNumber, bool own, Character *
     showSparks.push_back(spark);
 }
 
-void Mugen::Stage::addSpark(int x, int y, const ResourceEffect & resource, int default_, Character * owner){
+void Mugen::Stage::addSpark(int x, int y, const ResourceEffect & resource, const ResourceEffect & default_, Character * owner){
     int spark = resource.group;
     bool own = resource.own;
     if (spark == -1){
-        spark = default_;
-        own = false;
+        spark = default_.group;
+        own = default_.own;
     }
 
     addSpark(x, y, spark, own, owner);

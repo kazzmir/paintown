@@ -609,9 +609,6 @@ void Character::initialize(){
     guarding = false;
     behavior = NULL;
 
-    sparkno = 0;
-    guardsparkno = 0;
-
     needToGuard = false;
 
     matchWins = 0;
@@ -1048,6 +1045,32 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                     
                     Character & self;
 
+                    ResourceEffect extractResource(const Ast::Value * value){
+                        class Walker: public Ast::Walker {
+                        public:
+                            Walker():
+                            found(false){
+                            }
+
+                            virtual void onResource(const Ast::Resource & resource){
+                                this->resource.own = resource.isOwn();
+                                resource.getValue()->view() >> this->resource.group;
+                                found = true;
+                            }
+
+                            ResourceEffect resource;
+                            bool found;
+                        };
+
+                        Walker walker;
+                        value->walk(walker);
+                        if (!walker.found){
+                            walker.resource.own = false;
+                            value->view() >> walker.resource.group;
+                        }
+                        return walker.resource;
+                    }
+
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "liedown.time"){
                             int x;
@@ -1063,23 +1086,9 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             self.setMaxHealth(x);
                             self.setHealth(x);
                         } else if (simple == "sparkno"){
-                            string spark;
-                            simple.view() >> spark;
-                            spark = PaintownUtil::lowerCaseAll(spark);
-                            if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
-                                /* FIXME: handle S */
-                            } else {
-                                self.setDefaultSpark(atoi(spark.c_str()));
-                            }
+                            self.setDefaultSpark(extractResource(simple.getValue()));
                         } else if (simple == "guard.sparkno"){
-                            string spark;
-                            simple.view() >> spark;
-                            spark = PaintownUtil::lowerCaseAll(spark);
-                            if (PaintownUtil::matchRegex(spark, "s[0-9]+")){
-                                /* FIXME: handle S */
-                            } else {
-                                self.setDefaultGuardSpark(atoi(spark.c_str()));
-                            }
+                            self.setDefaultGuardSpark(extractResource(simple.getValue()));
                         }
                     }
 

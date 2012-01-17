@@ -473,7 +473,7 @@ struct Resource{
 /* Either the value is a Resource in which case we should extract the underlying value
  * or its just some value so use it directly.
  */
-Resource extractResource(const Ast::Value * value){
+static Resource extractResource(const Ast::Value * value){
     class Walker: public Ast::Walker {
     public:
         virtual void onResource(const Ast::Resource & resource){

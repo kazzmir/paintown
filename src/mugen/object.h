@@ -2,6 +2,7 @@
 #define _paintown_mugen_object_h
 
 #include "animation.h"
+#include "common.h"
 
 namespace Graphics{
     class Bitmap;
@@ -111,8 +112,8 @@ public:
     virtual int getCurrentJuggle() const = 0;
     virtual const std::vector<MugenArea> getAttackBoxes() const = 0;
     virtual const std::vector<MugenArea> getDefenseBoxes() const = 0;
-    virtual int getDefaultSpark() const = 0;
-    virtual int getDefaultGuardSpark() const = 0;
+    virtual ResourceEffect getDefaultSpark() const = 0;
+    virtual ResourceEffect getDefaultGuardSpark() const = 0;
     virtual int getAttackDistance() const = 0;
     virtual void guarded(Object * enemy, const HitDefinition & hit) = 0;
     virtual void addPower(double d) = 0;

@@ -350,7 +350,7 @@ protected:
 
     void addSpark(int x, int y, int sparkNumber, bool own, Character * owner);
     // void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
-    void addSpark(int x, int y, const ResourceEffect & resource, int default_, Character * owner);
+    void addSpark(int x, int y, const ResourceEffect & resource, const ResourceEffect & default_, Character * owner);
     void playSound(Character * owner, int group, int item, bool own);
     void doProjectileCollision(Projectile * projectile, Character * mugen);
 

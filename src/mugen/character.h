@@ -904,20 +904,20 @@ public:
             return this->behavior;
         }
 
-        virtual inline void setDefaultSpark(int s){
-            sparkno = s;
+        virtual inline void setDefaultSpark(const ResourceEffect & effect){
+            spark = effect;
         }
 
-        virtual inline void setDefaultGuardSpark(int s){
-            guardsparkno = s;
+        virtual inline void setDefaultGuardSpark(const ResourceEffect & effect){
+            guardSpark = effect;
         }
 
-        virtual inline int getDefaultSpark() const {
-            return sparkno;
+        virtual inline ResourceEffect getDefaultSpark() const {
+            return spark;
         }
 
-        virtual inline int getDefaultGuardSpark() const {
-            return guardsparkno;
+        virtual inline ResourceEffect getDefaultGuardSpark() const {
+            return guardSpark;
         }
 
         virtual inline void setRegeneration(bool r){
@@ -1103,9 +1103,9 @@ protected:
         int currentJuggle;
 
 	// Default Hit Spark Number for hitdefs ???
-	int sparkno;
+	ResourceEffect spark;
 	// Default guard spark number
-	int guardsparkno;
+	ResourceEffect guardSpark;
 	// Echo on KO (I guess is for the death sound)
 	bool koecho;
 	// Volume offset on characters sounds
