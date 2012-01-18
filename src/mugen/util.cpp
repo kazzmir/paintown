@@ -1218,6 +1218,14 @@ layer(Background){
 Mugen::Element::~Element(){
 }
 
+Mugen::ArcadeData::CharacterInfo::CharacterInfo():
+order(0),
+randomStage(true),
+includeStage(true),
+icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
+}
+
 Mugen::ArcadeData::CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath & file):
 order(1),
 randomStage(true),
@@ -1280,5 +1288,27 @@ Mugen::ArcadeData::CharacterInfo::~CharacterInfo(){
 }
 
 const Mugen::ArcadeData::CharacterInfo & Mugen::ArcadeData::CharacterInfo::operator=(const Mugen::ArcadeData::CharacterInfo & copy){
+    definition = copy.definition;
+    stage = copy.stage;
+    music = copy.music;
+    order = copy.order;
+    randomStage = copy.randomStage;
+    includeStage = copy.includeStage;
+    name = copy.name;
+    displayName = copy.displayName;
+    icon = copy.icon;
+    portrait = copy.portrait;
     return *this;
+}
+
+void Mugen::ArcadeData::CharacterInfo::drawIcon(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
+    if (icon != NULL){
+        icon->render(x, y, work, effects);
+    }
+}
+
+void Mugen::ArcadeData::CharacterInfo::drawPortrait(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
+    if (portrait != NULL){
+        portrait->render(x, y, work, effects);
+    }
 }

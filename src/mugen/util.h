@@ -488,11 +488,15 @@ namespace ArcadeData{
 /*! Information regarding a character */
 class CharacterInfo{
 public:
+    CharacterInfo();
     CharacterInfo(const Filesystem::AbsolutePath &);
     CharacterInfo(const CharacterInfo &);
     virtual ~CharacterInfo();
     
-    const CharacterInfo & operator=(const CharacterInfo & copy);
+    const CharacterInfo & operator=(const CharacterInfo &);
+    
+    virtual void drawIcon(int x, int y, const Graphics::Bitmap &, const Mugen::Effects &) const;
+    virtual void drawPortrait(int x, int y, const Graphics::Bitmap &, const Mugen::Effects &) const;
     
     virtual inline const Filesystem::AbsolutePath & getDef() const {
         return this->definition;

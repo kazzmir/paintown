@@ -18,6 +18,9 @@ PaintownUtil::ReferenceCount<MugenSprite> Cell::player2ActiveCursor = PaintownUt
 PaintownUtil::ReferenceCount<MugenSprite> Cell::player2DoneCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
 bool Cell::blinkCursor = false;
 int Cell::blinkTime = 0;
+Mugen::Effects Cell::effects = Mugen::Effects();
+int Cell::offsetX = 0;
+int Cell::offsetY = 0;
 
 bool TeamMenu::wrapping = false;
 
@@ -129,8 +132,10 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     // If random draw random icon otherwise draw character image if available
     if (isRandom){
         if (randomIcon != NULL){
-            randomIcon->render(x, y, work);
+            randomIcon->render(x + offsetX, y + offsetY, work, effects);
         }
+    } else if (!empty) {
+        character.drawIcon(x + offsetX, y + offsetY, work, effects);
     }
     
     if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
@@ -167,7 +172,13 @@ bool Cell::isEmpty() const{
 }
 
 void Cell::setRandom(bool r){
+    empty = !r;
     isRandom = r;
+}
+
+void Cell::setCharacter(const Mugen::ArcadeData::CharacterInfo & character){
+    this->character = character;
+    empty = false;
 }
 
 void Cell::select(){
@@ -398,7 +409,23 @@ const TeamMenu::FightType & TeamMenu::select(){
 }
 
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
-file(file){
+file(file),
+gridX(0),
+gridY(0),
+gridPositionX(0),
+gridPositionY(0),
+player1Start(0),
+player2Start(0),
+portrait1OffsetX(0),
+portrait1OffsetY(0),
+portrait2OffsetX(0),
+portrait2OffsetY(0),
+randomSwitchTime(4),
+player1SwitchTime(0),
+player2SwitchTime(0),
+player1CurrentRandom(0),
+player2CurrentRandom(0),
+nextCell(0){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
 
@@ -596,7 +623,7 @@ void CharacterSelect::init(){
                             try{
                                 int time;
                                 simple.view() >> time;
-                                //self.grid.setCellRandomSwitchTime(time);
+                                self.randomSwitchTime = time;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.startcell"){
@@ -736,14 +763,14 @@ void CharacterSelect::init(){
                             try{
                                 int x,y;
                                 simple.view() >> x >> y;
-                                //self.grid.setPortraitOffset(x,y);
+                                Cell::setOffset(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "portrait.scale"){
                             try{
-                                double x,y;
-                                simple.view() >> x >> y;
-                                //self.grid.setPortraitScale(x,y);
+                                Mugen::Effects effects;
+                                simple.view() >> effects.scalex >> effects.scaley;
+                                Cell::setEffects(effects);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "title.offset"){
@@ -763,44 +790,32 @@ void CharacterSelect::init(){
                             }
                         } else if ( simple == "p1.face.offset"){
                             try{
-                                int x, y;
-                                simple.view() >> x >> y;
-                                //self.player1Cursor.setFaceOffset(x,y);
+                                simple.view() >> self.portrait1OffsetX >> self.portrait1OffsetY;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.face.scale"){
                             try{
-                                double x, y;
-                                simple.view() >> x >> y;
-                                //self.player1Cursor.setFaceScale(x,y);
+                                simple.view() >> self.portrait1Effects.scalex >> self.portrait1Effects.scaley;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.face.facing"){
                             try{
-                                int f;
-                                simple.view() >> f;
-                                //self.player1Cursor.setFacing(f);
+                                simple.view() >> self.portrait1Effects.facing;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.offset"){
                             try{
-                                int x, y;
-                                simple.view() >> x >> y;
-                                //self.player2Cursor.setFaceOffset(x,y);
+                                simple.view() >> self.portrait2OffsetX >> self.portrait2OffsetY;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.scale"){
                             try{
-                                double x, y;
-                                simple.view() >> x >> y;
-                                //self.player2Cursor.setFaceScale(x,y);
+                                simple.view() >> self.portrait2Effects.scalex >> self.portrait2Effects.scaley;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.facing"){
                             try{
-                                int f;
-                                simple.view() >> f;
-                                //self.player2Cursor.setFacing(f);
+                                simple.view() >> self.portrait2Effects.facing;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.name.offset"){
@@ -1216,6 +1231,8 @@ void CharacterSelect::init(){
         out << "Could not load select screen because " << fail.getTrace();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
+    
+    parseSelect();
 }
 
 void CharacterSelect::act(){
@@ -1225,22 +1242,70 @@ void CharacterSelect::act(){
     }
     background->act();
     grid.act();
+    // Player 1 random?
+    if (cells[grid.getCurrentIndex(0)]->getRandom()){
+        player1SwitchTime++;
+        if (player1SwitchTime >= randomSwitchTime){
+            player1SwitchTime = 0;
+            player1CurrentRandom = PaintownUtil::rnd(0,characters.size());
+        }
+    }
+    // Player 2 random?
+    if (cells[grid.getCurrentIndex(1)]->getRandom()){
+        player2SwitchTime++;
+        if (player2SwitchTime >= randomSwitchTime){
+            player2SwitchTime = 0;
+            player2CurrentRandom = PaintownUtil::rnd(0,characters.size());
+        }
+    }
     player1TeamMenu.act();
     player2TeamMenu.act();
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
+    // Render Background
     background->renderBackground(0,0,work);
+    
+    // Temporary bitmap for grid
     const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
     temp.clearToMask();
     grid.render(temp, Font::getDefaultFont());
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
+    
     // render title FIXME set title
     titleFont.draw("Test", work);
+    
+    // Draw portrait and name
+    if (grid.getCurrentState(0) != Gui::SelectListInterface::Disabled){
+        if (cells[grid.getCurrentIndex(0)]->getRandom()){
+            const Mugen::ArcadeData::CharacterInfo & character = characters[player1CurrentRandom];
+            character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
+            player1Font.draw(character.getName(), work);
+        } else {
+            const Mugen::ArcadeData::CharacterInfo & character = cells[grid.getCurrentIndex(0)]->getCharacter();
+            character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
+            player1Font.draw(character.getName(), work);
+        }
+    }
+    if (grid.getCurrentState(1) != Gui::SelectListInterface::Disabled){
+        if (cells[grid.getCurrentIndex(1)]->getRandom()){
+            const Mugen::ArcadeData::CharacterInfo & character = characters[player2CurrentRandom];
+            character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
+            player1Font.draw(character.getName(), work);
+        } else {
+            const Mugen::ArcadeData::CharacterInfo & character = cells[grid.getCurrentIndex(1)]->getCharacter();
+            character.drawPortrait(portrait2OffsetX, portrait2OffsetY, work, portrait2Effects);
+            player2Font.draw(character.getName(), work);
+        }
+    }
+    
+    
     // FIXME remove and use properly, testing only now
     player1TeamMenu.draw(work);
     player2TeamMenu.draw(work);
+    
+    
     background->renderForeground(0,0,work);
 }
 
@@ -1312,6 +1377,40 @@ void CharacterSelect::select(unsigned int cursor){
     cells[grid.getCurrentIndex(cursor)]->select();
 }
 
+void CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
+    // Add to list
+    characters.push_back(character);
+    // Include stage if required
+    if (character.getIncludeStage()){
+        addStage(character.getStage());
+    }
+    // Check if we don't exceed the cell count of the current grid
+    if (nextCell < cells.size()){
+        // Add to current cell
+        cells[nextCell]->setCharacter(character);
+        // Increment cell
+        nextCell++;
+    }
+}
+
+void CharacterSelect::addEmpty(){
+    if (nextCell < cells.size()){
+        cells[nextCell]->setEmpty(true);
+        nextCell++;
+    }
+}
+
+void CharacterSelect::addRandom(){
+    if (nextCell < cells.size()){
+        cells[nextCell]->setRandom(true);
+        nextCell++;
+    }
+}
+
+void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
+    stages.push_back(stage);
+}
+
 void CharacterSelect::setSound(const SoundType & type, int group, int sound){
     IndexValue values;
     values.group = group;
@@ -1348,13 +1447,11 @@ void CharacterSelect::parseSelect(){
         if (head == "characters"){
             class CharacterWalker: public Ast::Walker{
             public:
-                CharacterWalker(CharacterSelect & self, std::vector<Mugen::ArcadeData::CharacterInfo> & characters):
-                self(self),
-                characters(characters){}
+                CharacterWalker(CharacterSelect & self):
+                self(self){}
                 virtual ~CharacterWalker(){}
             
                 CharacterSelect & self;
-                std::vector<Mugen::ArcadeData::CharacterInfo> & characters;
                 
                 virtual void onValueList(const Ast::ValueList & list){
                     // Grab Character
@@ -1363,11 +1460,10 @@ void CharacterSelect::parseSelect(){
                     view >> temp;
 
                     if (temp == "blank"){
-                        //character.blank = true;
+                        self.addEmpty();
                     } else if (temp == "randomselect"){
-                        //character.random = true;
+                        self.addRandom();
                     } else {
-                        //character.name = temp;
                         Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
                         try{
                             // Grab stage
@@ -1399,24 +1495,24 @@ void CharacterSelect::parseSelect(){
                             }
                         } catch (const Ast::Exception & e){
                         }
-                        characters.push_back(character);
+                        self.addCharacter(character);
                     }
                 }
             };
 
-            CharacterWalker walk(*this, characters);
+            CharacterWalker walk(*this);
             section->walk(walk);
         } else if (head == "extrastages"){
             class StageWalker: public Ast::Walker{
             public:
-                StageWalker(std::vector< std::string > &names):
-                names(names){
+                StageWalker(CharacterSelect & self):
+                self(self){
                 }
 
                 virtual ~StageWalker(){
                 }
 
-                std::vector< std::string > & names;
+                CharacterSelect & self;
 
                 virtual void onValueList(const Ast::ValueList & list){
                     // Get Stage info and save it
@@ -1424,13 +1520,13 @@ void CharacterSelect::parseSelect(){
                         std::string temp;
                         list.view() >> temp;
                         Global::debug(1) << "stage: " << temp << std::endl;
-                        names.push_back(temp);
+                        self.addStage(Util::findFile(Filesystem::RelativePath(temp)));
                     } catch (const Ast::Exception & e){
                     }
                 }
             };
-            //StageWalker walk(stageNames);
-            //section->walk(walk);
+            StageWalker walk(*this);
+            section->walk(walk);
         } else if (head == "options"){
             class OptionWalker: public Ast::Walker{
             public:
@@ -1477,8 +1573,8 @@ void CharacterSelect::parseSelect(){
                     }
                 }
             };
-            //OptionWalker walk(arcadeMaxMatches,teamMaxMatches);
-            //section->walk(walk);
+            OptionWalker walk(arcadeOrder,teamArcadeOrder);
+            section->walk(walk);
         } else {
             // throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
             std::ostringstream context;

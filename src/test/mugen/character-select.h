@@ -106,12 +106,23 @@ public:
     virtual void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
     virtual bool isEmpty() const;
     
+    virtual void setCharacter(const Mugen::ArcadeData::CharacterInfo &);
+    
     virtual void setRandom(bool r);
     
     virtual void select();
     
     virtual inline unsigned int getIndex() const {
         return index;
+    }
+    virtual inline bool getRandom() const {
+        return this->isRandom;
+    }
+    virtual inline void setEmpty(bool empty){
+        this->empty = empty;
+    }
+    virtual inline const Mugen::ArcadeData::CharacterInfo & getCharacter() const {
+        return this->character;
     }
     
     static void setBackground(PaintownUtil::ReferenceCount<MugenSprite> background);
@@ -122,6 +133,13 @@ public:
     static void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
     static inline void setBlinkCursor(bool blink){
         Cell::blinkCursor = blink;
+    }
+    static inline void setEffects(const Mugen::Effects & effects){
+        Cell::effects = effects;
+    }
+    static inline void setOffset(int x, int y){
+        Cell::offsetX = x;
+        Cell::offsetY = y;
     }
     
 protected:
@@ -135,6 +153,9 @@ protected:
     static bool blinkCursor;
     static int blinkTime;
     
+    static Mugen::Effects effects;
+    static int offsetX, offsetY;
+    
     void drawPlayer1Cursor(int x, int y, const Graphics::Bitmap &) const;
     void drawPlayer2Cursor(int x, int y, const Graphics::Bitmap &, bool blink=false) const;
     
@@ -143,6 +164,9 @@ protected:
     bool empty;
     bool isRandom;
     int flash;
+    
+    //! Character
+    Mugen::ArcadeData::CharacterInfo character;
 };
 
 /*! Team Menu */
@@ -263,6 +287,11 @@ public:
     virtual void right(unsigned int cursor);
     virtual void select(unsigned int cursor);
     
+    virtual void addCharacter(const Mugen::ArcadeData::CharacterInfo &);
+    virtual void addEmpty();
+    virtual void addRandom();
+    virtual void addStage(const Filesystem::AbsolutePath &);
+    
     //! Sound types
     enum SoundType{
         Player1Move=0,
@@ -308,6 +337,14 @@ protected:
     int gridPositionX, gridPositionY;
     //! Starting positions
     int player1Start, player2Start;
+    //! Portrait offset
+    int portrait1OffsetX, portrait1OffsetY, portrait2OffsetX, portrait2OffsetY;
+    //! Portrait effects
+    Mugen::Effects portrait1Effects, portrait2Effects;
+    //! Random switch time
+    int randomSwitchTime, player1SwitchTime, player2SwitchTime;
+    //! Current Random
+    unsigned int player1CurrentRandom, player2CurrentRandom;
     //! Cells
     std::vector< PaintownUtil::ReferenceCount<Cell> > cells;
     //! Sprites
@@ -326,6 +363,8 @@ protected:
     PaintownUtil::ReferenceCount<Mugen::Background> background;
     //! Characters
     std::vector<Mugen::ArcadeData::CharacterInfo> characters;
+    //! Current add Cell
+    unsigned int nextCell;
     //! Stages
     std::vector<Filesystem::AbsolutePath> stages;
     //! Arcade Matches
