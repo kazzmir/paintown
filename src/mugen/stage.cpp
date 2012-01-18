@@ -852,7 +852,8 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
                      projectile->getOwner());
 
             playSound(owner, projectile->getHitDefinition().guardHitSound.group, projectile->getHitDefinition().guardHitSound.item, projectile->getHitDefinition().guardHitSound.own);
-            mugen->didHitGuarded(owner, *this);
+            mugen->guarded(owner, projectile->getHitDefinition());
+            /* TODO: Should we call didHitGuarded on owner? */
         } else {
             addSpark((int)(projectile->getHitDefinition().sparkPosition.x + projectile->getX()),
                      (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()),
@@ -862,6 +863,7 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
 
             playSound(owner, projectile->getHitDefinition().hitSound.group, projectile->getHitDefinition().hitSound.item, projectile->getHitDefinition().hitSound.own);
             mugen->wasHit(*this, owner, projectile->getHitDefinition());
+            /* TODO: Should we call didHit on owner? */
         }
     }
 }
