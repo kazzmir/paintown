@@ -2292,6 +2292,9 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
     his.guardSpark.own = hit.guardSpark.own;
     his.guardSpark.group = evaluateNumberLocal(hit.guardSpark.group, -1);
     his.guardSpark.item = evaluateNumberLocal(hit.guardSpark.item, -1);
+    
+    his.player1SpritePriority = evaluateNumberLocal(hit.player1SpritePriority, 1);
+    his.player2SpritePriority = evaluateNumberLocal(hit.player2SpritePriority, 0);
 
     his.getPower.hit = evaluateNumberLocal(hit.getPower.hit, his.damage.damage);
     his.getPower.guarded = evaluateNumberLocal(hit.getPower.guarded, his.getPower.hit / 2);

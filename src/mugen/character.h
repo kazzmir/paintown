@@ -184,7 +184,8 @@ struct HitState{
         xVelocity(0),
         guarded(false),
         damage(0),
-        chainId(-1){
+        chainId(-1),
+        spritePriority(0){
         }
 
     void update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
@@ -207,6 +208,7 @@ struct HitState{
     bool guarded;
     int damage;
     int chainId;
+    int spritePriority;
 
     struct Fall{
         Fall():

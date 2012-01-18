@@ -303,6 +303,8 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
 
     chainId = hit.id;
 
+    spritePriority = hit.player2SpritePriority;
+
     /* FIXME: set damage */
     
     /* if in the air */
@@ -2622,10 +2624,12 @@ Object * Character::getTargetId(int id) const {
 void Character::didHitGuarded(Object * enemy, Mugen::Stage & stage){
     /* TODO */
     hitState.shakeTime = getHit().guardPause.player1;
+    hitState.spritePriority = getHit().player1SpritePriority;
 }
 
 void Character::didHit(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().pause.player1;
+    hitState.spritePriority = getHit().player1SpritePriority;
     addPower(getHit().getPower.hit);
 
     if (getState(getCurrentState())->powerChanged()){
@@ -3338,6 +3342,7 @@ void Character::guarded(Object * enemy, const HitDefinition & hit){
     hitState.guarded = true;
     lastTicket = enemy->getTicket();
     hitState.shakeTime = hit.guardPause.player2;
+    hitState.spritePriority = hit.player2SpritePriority;
     enemy->addPower(hit.getPower.guarded);
     /* the character will transition to the guard state when he next acts */
     needToGuard = true;
@@ -3478,7 +3483,12 @@ void Character::setSpritePriority(int priority){
 }
         
 int Character::getSpritePriority() const {
-    return spritePriority;
+    /* FIXME: figure out how long the hitdef's sprite priority should take effect. */
+    if (hitState.shakeTime > 0){
+        return hitState.spritePriority;
+    } else {
+        return spritePriority;
+    }
 }
         
 void Character::setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
