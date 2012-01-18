@@ -3,6 +3,10 @@
 
 namespace Mugen{
 
+enum Facing{
+    FacingLeft, FacingRight
+};
+
 namespace AttackType{
     extern std::string Normal;
     extern std::string Special;

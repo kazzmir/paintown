@@ -6752,6 +6752,8 @@ public:
         HitDefinition hitDefinition;
         evaluateHitDefinition(this->hit, hitDefinition, environment);
 
+        Facing facing = guy.getFacing();
+
         double x = 0;
         double y = 0;
         string check = PaintownUtil::lowerCaseAll(positionType);
@@ -6763,6 +6765,8 @@ public:
             if (enemy != NULL){
                 x = enemy->forwardPoint(offsetX);
                 y = enemy->getRY() + offsetY;
+                /* FIXME: figure out if facing should change here */
+                facing = enemy->getFacing();
             }
         } else if (check == "front"){
             if (guy.getFacing() == FacingRight){
@@ -6781,9 +6785,13 @@ public:
         } else if (check == "left"){
             x = stage.maximumLeft() + offsetX;
             y = stage.maximumUp() + offsetY;
+            /* FIXME: figure out if facing should change here */
+            facing = FacingRight;
         } else if (check == "right"){
             x = stage.maximumRight() - offsetX;
             y = stage.maximumUp() + offsetY;
+            /* FIXME: figure out if facing should change here */
+            facing = FacingLeft;
         }
 
         /* FIXME: we have to cast the root to a non-const Character* */
@@ -6794,7 +6802,7 @@ public:
                                            velocityYMultipler, hits, missTime, priority, spritePriority,
                                            edge, stageDistance, lowBound, highBound, shadowRed,
                                            shadowGreen, shadowBlue, superMoveTime, pauseMoveTime,
-                                           afterImageTime, afterImageLength, guy.getFacing(), hitDefinition));
+                                           afterImageTime, afterImageLength, facing, hitDefinition));
     }
 
     StateController * deepCopy() const {

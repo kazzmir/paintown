@@ -69,7 +69,7 @@ double Projectile::getY() const {
 void Projectile::draw(const Graphics::Bitmap & work, double x, double y){
     if (animation != NULL){
         /* FIXME: multiply by proj.doscale */
-        animation->render((int)(this->x - x), (int)(this->y -  y), work, scaleX, scaleY);
+	animation->render(facing == FacingLeft, false, (int)(this->x - x), (int)(this->y -  y), work, scaleX, scaleY);
     }
 }
     
@@ -103,7 +103,7 @@ void Projectile::logic(){
         animation->logic();
     }
 
-    x += velocityX;
+    x += velocityX * (facing == FacingLeft ? -1 : 1);
     y += velocityY;
     /* FIXME: not sure if this calculation is right */
     velocityX = (velocityX + accelerateX) * velocityXMultipler;
