@@ -1312,3 +1312,10 @@ void Mugen::ArcadeData::CharacterInfo::drawPortrait(int x, int y, const Graphics
         portrait->render(x, y, work, effects);
     }
 }
+
+Mugen::ArcadeData::CharacterCollection::CharacterCollection(const Type & type):
+type(type){
+}
+
+Mugen::ArcadeData::CharacterCollection::~CharacterCollection(){
+}

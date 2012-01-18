@@ -114,8 +114,11 @@ public:
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
-        select.draw(buffer);
+        Graphics::StretchedBitmap work(320, 240, buffer);
+        work.start();
+        select.draw(work);
         //Font::getDefaultFont(12,12).printfWrap(5, 5, Graphics::makeColor(255, 255, 255), buffer, 320, cutscene.getInfo(), 0);
+        work.finish();
         buffer.BlitToScreen();
     }
 };

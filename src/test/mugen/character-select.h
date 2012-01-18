@@ -186,16 +186,8 @@ public:
     bool left();
     //! Right
     bool right();
-    //! Fight types
-    enum FightType{
-        Single,
-        Simultaneous,
-        Turns2,
-        Turns3,
-        Turns4,
-    };
     //! Get a return value for selected
-    const FightType & select();
+    const Mugen::ArcadeData::CharacterCollection::Type & select();
     
     //! Fonts
     FontHandler titleFont;
@@ -241,9 +233,9 @@ public:
     }
 protected:
     //! Current selection
-    FightType current;
+    Mugen::ArcadeData::CharacterCollection::Type current;
     //! Current turns
-    FightType turns;
+    Mugen::ArcadeData::CharacterCollection::Type turns;
     //! Wrapping
     static bool wrapping;
     //! Position of menu

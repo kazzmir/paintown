@@ -249,8 +249,8 @@ void Cell::drawPlayer2Cursor(int x, int y, const Graphics::Bitmap & work, bool b
 
 
 TeamMenu::TeamMenu():
-current(Simultaneous),
-turns(Turns2),
+current(Mugen::ArcadeData::CharacterCollection::Simultaneous),
+turns(Mugen::ArcadeData::CharacterCollection::Turns2),
 x(0),
 y(0),
 background(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
@@ -294,7 +294,7 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
     // First item (single)
     currentX+=itemOffsetX;
     currentY+=itemOffsetY;
-    if (current == Single){
+    if (current == Mugen::ArcadeData::CharacterCollection::Single){
         itemCurrentFont.setLocation(currentX, currentY);
         itemCurrentFont.draw("Single", work);
     } else {
@@ -305,7 +305,7 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
     // Second item (simultaneous)
     currentX+=itemSpacingX;
     currentY+=itemSpacingY;
-    if (current == Simultaneous){
+    if (current == Mugen::ArcadeData::CharacterCollection::Simultaneous){
         itemCurrentFont.setLocation(currentX, currentY);
         itemCurrentFont.draw("Simul", work);
     } else {
@@ -332,14 +332,14 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
     currentX+=itemSpacingX;
     currentY+=itemSpacingY;
     switch (current){
-        case Turns2:
-        case Turns3:
-        case Turns4:
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+        case Mugen::ArcadeData::CharacterCollection::Turns3:
+        case Mugen::ArcadeData::CharacterCollection::Turns4:
             itemCurrentFont.setLocation(currentX, currentY);
             itemCurrentFont.draw("Turns", work);
             break;
-        case Single:
-        case Simultaneous:
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
         default:
             itemFont.setLocation(currentX, currentY);
             itemFont.draw("Turns", work);
@@ -368,12 +368,12 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
         icon->render(valueX, valueY, work);
         // Check which position it is on
         switch (turns){
-            case Turns3:
+            case Mugen::ArcadeData::CharacterCollection::Turns3:
                 valueX += valueSpacingX;
                 valueY += valueSpacingY;
                 icon->render(valueX, valueY, work);
                 break;
-            case Turns4:
+            case Mugen::ArcadeData::CharacterCollection::Turns4:
                 valueX += valueSpacingX;
                 valueY += valueSpacingY;
                 icon->render(valueX, valueY, work);
@@ -381,7 +381,7 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
                 valueY += valueSpacingY;
                 icon->render(valueX, valueY, work);
                 break;
-            case Turns2:
+            case Mugen::ArcadeData::CharacterCollection::Turns2:
             default:
                 break;
         }
@@ -404,7 +404,7 @@ bool TeamMenu::right(){
     return false;
 }
 
-const TeamMenu::FightType & TeamMenu::select(){
+const Mugen::ArcadeData::CharacterCollection::Type & TeamMenu::select(){
     return current;
 }
 
@@ -1222,7 +1222,7 @@ void CharacterSelect::init(){
         Global::debug(0) << "Player 1 start: " << player1Start << std::endl;
         Global::debug(0) << "Player 2 start: " << player2Start << std::endl;
         grid.setCurrentIndex(0, player1Start);
-        //grid.setCurrentState(0, Gui::SelectListInterface::Disabled);
+        grid.setCurrentState(0, Gui::SelectListInterface::Disabled);
         grid.setCurrentIndex(1, player2Start);
         grid.setCurrentState(1, Gui::SelectListInterface::Disabled);
 
@@ -1582,27 +1582,4 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
-#if 0
-    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
-        try{
-            CharacterCollect & character = *i;
-            if (character.name != ""){
-                const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
-                addFile(def);
-                stageNames.push_back(character.stage);
-            }
-        } catch (const Filesystem::NotFound & fail){
-            Global::debug(0) << "Error loading mugen character: " << fail.getTrace() << std::endl;
-        }
-    }
-
-    if (stageNames.size() == 0){
-        throw MugenException("No stages listed", __FILE__, __LINE__);
-    }
-
-    // Prepare stages
-    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
-    grid.getStageHandler().addStage((*i));
-    }
-#endif
 }

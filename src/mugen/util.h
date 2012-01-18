@@ -561,16 +561,69 @@ protected:
     PaintownUtil::ReferenceCount<MugenSprite> portrait;
 };
 
+/*! Single, Simultaneous or Turns collection */
+class CharacterCollection{
+public:
+    enum Type{
+        Single,
+        Simultaneous,
+        Turns2,
+        Turns3,
+        Turns4,
+    };
+    
+    CharacterCollection(const Type &);
+    virtual ~CharacterCollection();
+    
+    virtual inline void setType(const Type & type){
+        this->type = type;
+    }
+    virtual inline const Type & getType() const {
+        return this->type;
+    }
+    virtual inline void setFirst(const CharacterInfo & character){
+        this->first = character;
+    }
+    virtual inline const CharacterInfo & getFirst() const {
+        return this->first;
+    }
+    virtual inline void setSecond(const CharacterInfo & character){
+        this->second = character;
+    }
+    virtual inline const CharacterInfo & getSecond() const {
+        return this->second;
+    }
+    virtual inline void setThird(const CharacterInfo & character){
+        this->third = character;
+    }
+    virtual inline const CharacterInfo & getThird() const {
+        return this->third;
+    }
+    virtual inline void setFourth(const CharacterInfo & character){
+        this->fourth = character;
+    }
+    virtual inline const CharacterInfo & getFourth() const {
+        return this->fourth;
+    }
+    
+protected:
+    Type type;
+    CharacterInfo first;
+    CharacterInfo second;
+    CharacterInfo third;
+    CharacterInfo fourth;
+};
+
 /*! Arcade Match Handling */
 class MatchPath{
 public:
     MatchPath(std::vector<int> order, std::vector<CharacterInfo> characters, std::vector<Filesystem::AbsolutePath> stages);
     virtual ~MatchPath();
     virtual bool hasMore();
-    virtual CharacterInfo next();
+    virtual CharacterCollection next();
     
 protected:
-    std::queue<CharacterInfo> opponents;
+    std::queue<CharacterCollection> opponents;
 };
 
 }
