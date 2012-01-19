@@ -1317,5 +1317,111 @@ Mugen::ArcadeData::CharacterCollection::CharacterCollection(const Type & type):
 type(type){
 }
 
+Mugen::ArcadeData::CharacterCollection::CharacterCollection(const Mugen::ArcadeData::CharacterCollection & copy):
+type(copy.type),
+first(copy.first),
+second(copy.second),
+third(copy.third),
+fourth(copy.fourth){
+}
+
 Mugen::ArcadeData::CharacterCollection::~CharacterCollection(){
+}
+
+const Mugen::ArcadeData::CharacterCollection & Mugen::ArcadeData::CharacterCollection::operator=(const Mugen::ArcadeData::CharacterCollection & copy){
+    type = copy.type;
+    first = copy.first;
+    second = copy.second;
+    third = copy.third;
+    fourth = copy.fourth;
+    return *this;
+}
+
+static std::vector<Mugen::ArcadeData::CharacterInfo> getCollectionByOrder(int order, const Mugen::ArcadeData::CharacterCollection::Type & type, const std::vector<Mugen::ArcadeData::CharacterInfo> & characters){
+    std::vector<Mugen::ArcadeData::CharacterInfo> collection(type);
+    for (std::vector<Mugen::ArcadeData::CharacterInfo>::const_iterator i = characters.begin(); i != characters.end(); ++i){
+        const Mugen::ArcadeData::CharacterInfo & character = *i;
+        if (character.getOrder() == order){
+            collection.push_back(character);
+        }
+    }
+    return collection;
+}
+
+Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, const std::vector<int> & order, const std::vector<CharacterInfo> & characters, const std::vector<Filesystem::AbsolutePath> & stages){
+    if (characters.size() == 1){
+        Mugen::ArcadeData::CharacterCollection collection(type);
+        collection.setFirst(characters[0]);
+        collection.setSecond(characters[0]);
+        collection.setThird(characters[0]);
+        collection.setFourth(characters[0]);
+        opponents.push(collection);
+    } else {
+        // Order type create matches
+        // Order 1 - 10
+        // matches per each order (vector<int>)
+        for (unsigned int i = 0; i < order.size(); ++i){
+            const int currentOrder = i+1;
+            const std::vector<Mugen::ArcadeData::CharacterInfo> & orderedCharacters = getCollectionByOrder(currentOrder, type, characters);
+            for (int j = 0; j < order[i]; ++j){
+                const int random1 = PaintownUtil::rnd(0, characters.size());
+                const int random2 = PaintownUtil::rnd(0, characters.size());
+                const int random3 = PaintownUtil::rnd(0, characters.size());
+                const int random4 = PaintownUtil::rnd(0, characters.size());
+                
+                Mugen::ArcadeData::CharacterInfo first = orderedCharacters[random1];
+                if (first.getRandomStage()){
+                    first.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
+                }
+                Mugen::ArcadeData::CharacterInfo second = orderedCharacters[random1];
+                if (second.getRandomStage()){
+                    second.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
+                }
+                Mugen::ArcadeData::CharacterInfo third = orderedCharacters[random1];
+                if (third.getRandomStage()){
+                    third.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
+                }
+                Mugen::ArcadeData::CharacterInfo fourth = orderedCharacters[random1];
+                if (fourth.getRandomStage()){
+                    fourth.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
+                }
+                
+                Mugen::ArcadeData::CharacterCollection collection(type);
+                collection.setFirst(first);
+                collection.setSecond(second);
+                collection.setThird(third);
+                collection.setFourth(fourth);
+                opponents.push(collection);
+                
+                /*switch (type){
+                    case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+                        break;
+                    case Mugen::ArcadeData::CharacterCollection::Turns2:
+                        break;
+                    case Mugen::ArcadeData::CharacterCollection::Turns3:
+                        break;
+                    case Mugen::ArcadeData::CharacterCollection::Turns4:
+                        break;
+                    case Mugen::ArcadeData::CharacterCollection::Single:
+                        Mugen::ArcadeData::CharacterInfo collection(type);
+                        
+                    default:
+                        break;
+                }*/
+            }
+        }
+    }
+}
+
+Mugen::ArcadeData::MatchPath::~MatchPath(){
+}
+
+bool Mugen::ArcadeData::MatchPath::hasMore(){
+    return !opponents.empty();
+}
+
+Mugen::ArcadeData::CharacterCollection Mugen::ArcadeData::MatchPath::next(){
+    CharacterCollection returnable = opponents.front();
+    opponents.pop();
+    return returnable;
 }

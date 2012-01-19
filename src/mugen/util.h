@@ -573,7 +573,10 @@ public:
     };
     
     CharacterCollection(const Type &);
+    CharacterCollection(const CharacterCollection &);
     virtual ~CharacterCollection();
+    
+    const CharacterCollection & operator=(const CharacterCollection &);
     
     virtual inline void setType(const Type & type){
         this->type = type;
@@ -617,7 +620,7 @@ protected:
 /*! Arcade Match Handling */
 class MatchPath{
 public:
-    MatchPath(std::vector<int> order, std::vector<CharacterInfo> characters, std::vector<Filesystem::AbsolutePath> stages);
+    MatchPath(const CharacterCollection::Type &, const std::vector<int> &, const std::vector<CharacterInfo> &, const std::vector<Filesystem::AbsolutePath> &);
     virtual ~MatchPath();
     virtual bool hasMore();
     virtual CharacterCollection next();
