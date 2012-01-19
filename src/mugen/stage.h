@@ -353,6 +353,7 @@ protected:
     void addSpark(int x, int y, const ResourceEffect & resource, const ResourceEffect & default_, Character * owner);
     void playSound(Character * owner, int group, int item, bool own);
     void doProjectileCollision(Projectile * projectile, Character * mugen);
+    void doProjectileToProjectileCollision(Projectile * mine, Projectile * his);
 
     int findMaximumSpritePriority();
     int findMinimumSpritePriority();

@@ -33,6 +33,14 @@ public:
     virtual void draw(const Graphics::Bitmap & work, double x, double y);
     virtual void logic();
 
+    /* Projectile priority. If this projectile has higher priority than another projectile
+     * then if the projectiles collide, the other projectile will cancel.
+     */
+    virtual int getPriority() const;
+
+    /* This projectile is being canceled by the higher priority projectile */
+    virtual void canceled(Projectile * higher);
+
     virtual double getX() const;
     virtual double getY() const;
 
@@ -44,6 +52,7 @@ public:
     virtual Character * getOwner() const;
         
     const std::vector<MugenArea> getAttackBoxes() const;
+    const std::vector<MugenArea> getDefenseBoxes() const;
 
     void doCollision(Object * mugen);
 
@@ -73,6 +82,8 @@ protected:
     const int hitAnimation;
     const int id;
     HitDefinition hit;
+    int priority;
+    int cancelAnimation;
 };
 
 }

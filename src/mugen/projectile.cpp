@@ -40,7 +40,9 @@ missTime(missTime),
 activeMissTime(0),
 hitAnimation(hitAnimation),
 id(id),
-hit(hit){
+hit(hit),
+priority(priority),
+cancelAnimation(cancelAnimation){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -80,6 +82,13 @@ const std::vector<MugenArea> Projectile::getAttackBoxes() const {
     return vector<MugenArea>();
 }
     
+const std::vector<MugenArea> Projectile::getDefenseBoxes() const {
+    if (!shouldRemove && animation != NULL){
+        return animation->getDefenseBoxes(facing == FacingLeft);
+    }
+    return vector<MugenArea>();
+}
+    
 void Projectile::doCollision(Object * mugen){
     hits -= 1;
     if (hits <= 0){
@@ -95,7 +104,21 @@ void Projectile::doCollision(Object * mugen){
 }
 
 bool Projectile::canCollide() const {
-    return activeMissTime == 0 && hits > 0;
+    return !shouldRemove && activeMissTime == 0 && hits > 0;
+}
+    
+int Projectile::getPriority() const {
+    return priority;
+}
+    
+void Projectile::canceled(Projectile * higher){
+    shouldRemove = true;
+    velocityX = removeVelocityX;
+    velocityY = removeVelocityY;
+    PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(cancelAnimation);
+    if (his != NULL){
+        this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+    }
 }
     
 void Projectile::logic(){

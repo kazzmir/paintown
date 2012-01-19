@@ -868,6 +868,21 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
     }
 }
 
+void Mugen::Stage::doProjectileToProjectileCollision(Projectile * mine, Projectile * his){
+    if (anyCollisions(mine->getDefenseBoxes(), (int) mine->getX(), (int) mine->getY(),
+                      his->getAttackBoxes(), (int) his->getX(), (int) his->getY())){
+        if (mine->getPriority() > his->getPriority()){
+            his->canceled(mine);
+        } else if (his->getPriority() > mine->getPriority()){
+            mine->canceled(his);
+        } else {
+            /* Both cancel if priorities are the same */
+            mine->canceled(his);
+            his->canceled(mine);
+        }
+    }
+}
+
 /* for helpers and players */
 void Mugen::Stage::physics(Object * mugen){
     /* ignore physics while the player is paused */
@@ -943,7 +958,17 @@ void Mugen::Stage::physics(Object * mugen){
         Projectile * projectile = *it;
         if (projectile->getOwner() != mugen && projectile->canCollide()){
             doProjectileCollision(projectile, (Character*) mugen);
-            
+        }
+
+        for (vector<Projectile*>::iterator it2 = projectiles.begin(); it2 != projectiles.end(); it2++){
+            Projectile * other = *it2;
+            /* I'm assuming that projectiles fired from the same character cant cancel each other */
+            /* FIXME: should we test to see if both projectiles can collide or will they
+             * cancel each other even if one has its miss time active?
+             */
+            if (other != projectile && other->getOwner() != projectile->getOwner()){
+                doProjectileToProjectileCollision(projectile, other);
+            }
         }
     }
 
