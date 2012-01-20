@@ -319,6 +319,10 @@ protected:
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Parse select file
     void parseSelect();
+    //! Previous stage
+    bool previousStage();
+    //! Next stage
+    bool nextStage();
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
@@ -359,6 +363,12 @@ protected:
     unsigned int nextCell;
     //! Stages
     std::vector<Filesystem::AbsolutePath> stages;
+    //! Stage Names
+    std::vector<std::string> stageNames;
+    //! Random Stage ?
+    bool randomStage;
+    //! Current Selected Stage
+    unsigned int currentStage;
     //! Arcade Matches
     std::vector<int> arcadeOrder;
     std::vector<int> teamArcadeOrder;

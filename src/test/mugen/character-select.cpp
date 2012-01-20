@@ -389,18 +389,99 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
 }
 
 bool TeamMenu::up(){
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Single:
+            if (wrapping){
+                current = Mugen::ArcadeData::CharacterCollection::Turns2;
+                return true;
+            }
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+            current = Mugen::ArcadeData::CharacterCollection::Single;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
+            return true;
+            break;
+        default:
+            break;
+    };
     return false;
 }
 
 bool TeamMenu::down(){
+    
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Single:
+            current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+            current = Mugen::ArcadeData::CharacterCollection::Turns2;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            if (wrapping){
+                current = Mugen::ArcadeData::CharacterCollection::Single;
+                return true;
+            }
+            break;
+        default:
+            break;
+    };
     return false;
 }
 
 bool TeamMenu::left(){
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            switch (turns){
+                case Mugen::ArcadeData::CharacterCollection::Turns4:
+                    turns = Mugen::ArcadeData::CharacterCollection::Turns3;
+                    return true;
+                    break;
+                case Mugen::ArcadeData::CharacterCollection::Turns3:
+                    turns = Mugen::ArcadeData::CharacterCollection::Turns2;
+                    return true;
+                    break;
+                case Mugen::ArcadeData::CharacterCollection::Turns2:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            return false;
+            break;
+    };
     return false;
 }
 
 bool TeamMenu::right(){
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            switch (turns){
+                case Mugen::ArcadeData::CharacterCollection::Turns2:
+                    turns = Mugen::ArcadeData::CharacterCollection::Turns3;
+                    return true;
+                    break;
+                case Mugen::ArcadeData::CharacterCollection::Turns3:
+                    turns = Mugen::ArcadeData::CharacterCollection::Turns4;
+                    return true;
+                    break;
+                case Mugen::ArcadeData::CharacterCollection::Turns4:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            return false;
+            break;
+    };
     return false;
 }
 
@@ -425,7 +506,9 @@ player1SwitchTime(0),
 player2SwitchTime(0),
 player1CurrentRandom(0),
 player2CurrentRandom(0),
-nextCell(0){
+nextCell(0),
+randomStage(true),
+currentStage(0){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
 
@@ -784,10 +867,10 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p1.face.offset"){
                             try{
                                 simple.view() >> self.portrait1OffsetX >> self.portrait1OffsetY;
@@ -829,10 +912,10 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player1Font.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player1Font.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.name.offset"){
                             try{
                                 int x, y;
@@ -841,12 +924,12 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.name.font"){
+                            int index=0, bank=0, position=0;
                             try{
-                                int index, bank, position;
                                 simple.view() >> index >> bank >> position;
-                                self.player2Font.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                             }
+                            self.player2Font.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.pos"){
                             try{
                                 int x, y;
@@ -858,18 +941,18 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.stageFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.stageFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.stageFont.setActive2(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.stageFont.setActive2(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.done.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -968,18 +1051,18 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player1TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player1TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p1.teammenu.item.active.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player1TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player1TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p1.teammenu.item.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -1045,10 +1128,10 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player2TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player2TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.teammenu.selftitle.text"){
                              std::string text;
                             try {
@@ -1060,10 +1143,10 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player2TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player2TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.teammenu.enemytitle.text"){
                              std::string text;
                             try {
@@ -1110,26 +1193,26 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player2TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player2TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.teammenu.item.active.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player2TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player2TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.teammenu.item.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player2TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.player2TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.teammenu.item.cursor.offset"){
                             // TODO Not sure what this is, doesn't seem to do anything in mugen
                         } else if ( simple == "p2.teammenu.item.cursor.anim"){
@@ -1232,6 +1315,9 @@ void CharacterSelect::init(){
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
     
+    // Set stage to blink
+    stageFont.setState(FontHandler::Blink);
+    
     parseSelect();
 }
 
@@ -1260,6 +1346,7 @@ void CharacterSelect::act(){
     }
     player1TeamMenu.act();
     player2TeamMenu.act();
+    stageFont.act();
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
@@ -1305,6 +1392,13 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     player1TeamMenu.draw(work);
     player2TeamMenu.draw(work);
     
+   
+    // Stage
+    if (randomStage){
+        stageFont.draw("Stage: Random", work);
+    } else {
+        stageFont.draw("Stage: " + stageNames[currentStage], work);
+    }
     
     background->renderForeground(0,0,work);
 }
@@ -1323,6 +1417,8 @@ void CharacterSelect::up(unsigned int cursor){
             }
         }
     }
+    player1TeamMenu.up();
+    player2TeamMenu.up();
 }
 
 void CharacterSelect::down(unsigned int cursor){
@@ -1339,6 +1435,8 @@ void CharacterSelect::down(unsigned int cursor){
             }
         }
     }
+    player1TeamMenu.down();
+    player2TeamMenu.down();
 }
 
 void CharacterSelect::left(unsigned int cursor){
@@ -1355,6 +1453,9 @@ void CharacterSelect::left(unsigned int cursor){
             }
         }
     }
+    player1TeamMenu.left();
+    player2TeamMenu.right();
+    previousStage();
 }
 
 void CharacterSelect::right(unsigned int cursor){
@@ -1371,6 +1472,9 @@ void CharacterSelect::right(unsigned int cursor){
             }
         }
     }
+    player1TeamMenu.right();
+    player2TeamMenu.left();
+    nextStage();
 }
 
 void CharacterSelect::select(unsigned int cursor){
@@ -1408,7 +1512,14 @@ void CharacterSelect::addRandom(){
 }
 
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
-    stages.push_back(stage);
+    try {
+        AstRef parsed(Util::parseDef(stage.path()));
+        const std::string & name = Util::probeDef(parsed, "info", "name");
+        stages.push_back(stage);
+        stageNames.push_back(name);
+    } catch (const MugenException & ex){
+        Global::debug(0) << "Warning! Tried to load file: '" << stage.path() << "'. Message: " << ex.getReason() << std::endl;
+    }
 }
 
 void CharacterSelect::setSound(const SoundType & type, int group, int sound){
@@ -1582,4 +1693,34 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
+}
+
+bool CharacterSelect::previousStage(){
+    if (stages.size() >= 1){
+        if (randomStage){
+            randomStage = false;
+            currentStage = stages.size()-1;
+        } else if (currentStage > 0){
+            currentStage--;
+        } else if (!randomStage){
+            randomStage = true;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool CharacterSelect::nextStage(){
+    if (stages.size() >= 1){
+        if (randomStage){
+            randomStage = false;
+            currentStage = 0;
+        } else if (currentStage < stages.size()-1){
+            currentStage++;
+        } else if (!randomStage){
+            randomStage = true;
+        }
+        return true;
+    }
+    return false;
 }
