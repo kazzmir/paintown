@@ -607,7 +607,7 @@ Ast::Value * makeProjectileExpression(const Value & line, const Value & name, co
         finalId = makeNumber(0);
     }
     
-    Ast::Value * get = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, arg1, finalId);
+    Ast::Value * get = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, finalId, arg1);
     /* check if the second form is used */
     if (compare.getValue() != NULL){
         typedef Ast::Value * (*compare_func)(const Value &, const Value &);
@@ -804,6 +804,7 @@ rules:
              # FIXME: handle hitdefattr with no attack-attributes listed
     
     projectile_trigger = "projhit"{case}
+                       | "projguarded"{case}
                        | "projcontact"{case} 
 
     compare_equal = "=" {{ value = (void*) makeExpressionEquals; }}

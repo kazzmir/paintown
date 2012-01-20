@@ -837,7 +837,7 @@ void Mugen::Stage::playSound(Character * owner, int group, int item, bool own){
 void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mugen){
     if (anyCollisions(mugen->getDefenseBoxes(), (int) mugen->getX(), (int) mugen->getRY(),
                       projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
-        projectile->doCollision(mugen);
+        projectile->doCollision(mugen, *this);
 
         Character * owner = projectile->getOwner();
 
@@ -2317,6 +2317,19 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
             it++;
         }
     }
+}
+    
+vector<Mugen::Projectile*> Mugen::Stage::findProjectile(int id, const Character * owner) const {
+    vector<Projectile*> found;
+
+    for (vector<Projectile*>::const_iterator it = projectiles.begin(); it != projectiles.end(); it++){
+        Projectile * projectile = *it;
+        if ((id == 0 || projectile->getId() == id) && projectile->getOwner() == owner){
+            found.push_back(projectile);
+        }
+    }
+
+    return found;
 }
 
 vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner, int id) const {

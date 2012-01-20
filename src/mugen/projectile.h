@@ -46,6 +46,8 @@ public:
 
     virtual const int getId() const;
 
+    virtual unsigned long int getLastHitTicks() const;
+
     /* False if the miss time is still active */
     bool canCollide() const;
 
@@ -54,7 +56,7 @@ public:
     const std::vector<MugenArea> getAttackBoxes() const;
     const std::vector<MugenArea> getDefenseBoxes() const;
 
-    void doCollision(Object * mugen);
+    void doCollision(Object * mugen, const Stage & stage);
 
     virtual bool isDead() const;
 
@@ -84,6 +86,7 @@ protected:
     HitDefinition hit;
     int priority;
     int cancelAnimation;
+    unsigned long int lastHitTicks;
 };
 
 }

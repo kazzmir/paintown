@@ -137,7 +137,7 @@ public:
     /* get position of the floor */
     int getFloor() const;
 
-    inline unsigned long int getTicks(){ return ticker; }
+    inline unsigned long int getTicks() const { return ticker; }
 
     void setCamera( const double x, const double y );
     void moveCamera( const double x, const double y );
@@ -240,6 +240,7 @@ public:
     virtual void removeEffects(const Character * owner, int id);
     virtual int countMyEffects(const Character * owner) const;
     virtual int countMyHelpers(const Character * owner) const;
+    virtual std::vector<Projectile*> findProjectile(int id, const Character * owner) const;
     virtual std::vector<Helper*> findHelpers(const Character * owner) const;
     virtual std::vector<Helper*> findHelpers(const Character * owner, int id) const;
     virtual Effect * findEffect(const Character * owner, int id);

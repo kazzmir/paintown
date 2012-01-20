@@ -2,6 +2,7 @@
 #include "util/bitmap.h"
 #include "character.h"
 #include "animation.h"
+#include "stage.h"
 
 using std::vector;
 
@@ -42,7 +43,8 @@ hitAnimation(hitAnimation),
 id(id),
 hit(hit),
 priority(priority),
-cancelAnimation(cancelAnimation){
+cancelAnimation(cancelAnimation),
+lastHitTicks(0){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -89,7 +91,7 @@ const std::vector<MugenArea> Projectile::getDefenseBoxes() const {
     return vector<MugenArea>();
 }
     
-void Projectile::doCollision(Object * mugen){
+void Projectile::doCollision(Object * mugen, const Stage & stage){
     hits -= 1;
     if (hits <= 0){
         PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(hitAnimation);
@@ -101,6 +103,11 @@ void Projectile::doCollision(Object * mugen){
         shouldRemove = true;
     }
     activeMissTime = missTime;
+    lastHitTicks = stage.getTicks();
+}
+    
+unsigned long int Projectile::getLastHitTicks() const {
+    return lastHitTicks;
 }
 
 bool Projectile::canCollide() const {

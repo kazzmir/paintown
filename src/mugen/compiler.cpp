@@ -188,6 +188,7 @@ Win
 #include <sstream>
 #include <string>
 #include "config.h"
+#include "projectile.h"
 
 namespace PaintownUtil = ::Util;
 using std::string;
@@ -715,20 +716,19 @@ public:
             return new Alive();
         }
 
+        /*
         if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(identifier.toString()), "projhit\\d*")){
-            /* FIXME */
             return compile(0);
         }
 
         if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(identifier.toString()), "projcontact\\d*")){
-            /* FIXME */
             return compile(0);
         }
 
         if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(identifier.toString()), "projguarded\\d*")){
-            /* FIXME */
             return compile(0);
         }
+        */
 
         if (identifier == "numproj"){
             /* FIXME */
@@ -1453,21 +1453,6 @@ public:
             return new MoveHit();
         }
 
-        if (identifier == "projhit"){
-            class ProjHit: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
-                }
-
-                Value * copy() const {
-                    return new ProjHit();
-                }
-            };
-
-            return new ProjHit();
-        }
 
         if (identifier == "numexplod"){
             class NumExplod: public Value {
@@ -2766,9 +2751,53 @@ public:
 	    return new MetaCircularArg1("exp", exp, compile(function.getArg1()));
 	}
 
+        /*
         if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(function.getName()), "projcontact\\d*")){
-            /* FIXME */
             return compile(0);
+        }
+        */
+
+        if (function == "projhit"){
+            class ProjHit: public Value {
+            public:
+                ProjHit(Value * id, Value * value):
+                id(id), value(value){
+                }
+
+                Value * id;
+                Value * value;
+
+                virtual ~ProjHit(){
+                    delete id;
+                    delete value;
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int id = (int) this->id->evaluate(environment).toNumber();
+                    int value = (int) this->value->evaluate(environment).toNumber();
+                    
+                    vector<Projectile*> projectiles = environment.getStage().findProjectile(id, &environment.getCharacter());
+                    bool found = false;
+                    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+                        Projectile * projectile = *it;
+                        /* For projectiles that never hit their lastHitTicks will be 0
+                         * so in theory there is an *ultra* small chance that this code
+                         * could run before the projectile hits anything and the stage
+                         * ticks is still really low such that this returns true. In practice
+                         * the characters will do their starting animation for a while
+                         * so a projectile won't really be fired until a few hundred ticks later.
+                         */
+                        found = found || (environment.getStage().getTicks() - projectile->getLastHitTicks() <= value);
+                    }
+                    return RuntimeValue(found);
+                }
+
+                Value * copy() const {
+                    return new ProjHit(Compiler::copy(id), Compiler::copy(value));
+                }
+            };
+
+            return new ProjHit(compile(function.getArg1()), compile(function.getArg2()));
         }
 	
         if (function == "ln"){
