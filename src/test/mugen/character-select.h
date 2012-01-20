@@ -232,6 +232,9 @@ public:
         this->valueSpacingY = y;
     }
 protected:
+    //! Handle values (depending on value spacing)
+    bool valueLess();
+    bool valueMore();
     //! Current selection
     Mugen::ArcadeData::CharacterCollection::Type current;
     //! Current turns

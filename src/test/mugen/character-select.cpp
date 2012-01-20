@@ -436,18 +436,10 @@ bool TeamMenu::down(){
 bool TeamMenu::left(){
     switch (current){
         case Mugen::ArcadeData::CharacterCollection::Turns2:
-            switch (turns){
-                case Mugen::ArcadeData::CharacterCollection::Turns4:
-                    turns = Mugen::ArcadeData::CharacterCollection::Turns3;
-                    return true;
-                    break;
-                case Mugen::ArcadeData::CharacterCollection::Turns3:
-                    turns = Mugen::ArcadeData::CharacterCollection::Turns2;
-                    return true;
-                    break;
-                case Mugen::ArcadeData::CharacterCollection::Turns2:
-                default:
-                    break;
+            if (valueSpacingX >= 0){
+                return valueLess();
+            } else if (valueSpacingX < 0){
+                return valueMore();
             }
             break;
         case Mugen::ArcadeData::CharacterCollection::Single:
@@ -462,18 +454,10 @@ bool TeamMenu::left(){
 bool TeamMenu::right(){
     switch (current){
         case Mugen::ArcadeData::CharacterCollection::Turns2:
-            switch (turns){
-                case Mugen::ArcadeData::CharacterCollection::Turns2:
-                    turns = Mugen::ArcadeData::CharacterCollection::Turns3;
-                    return true;
-                    break;
-                case Mugen::ArcadeData::CharacterCollection::Turns3:
-                    turns = Mugen::ArcadeData::CharacterCollection::Turns4;
-                    return true;
-                    break;
-                case Mugen::ArcadeData::CharacterCollection::Turns4:
-                default:
-                    break;
+            if (valueSpacingX >= 0){
+                return valueMore();
+            } else if (valueSpacingX < 0){
+                return valueLess();
             }
             break;
         case Mugen::ArcadeData::CharacterCollection::Single:
@@ -486,7 +470,50 @@ bool TeamMenu::right(){
 }
 
 const Mugen::ArcadeData::CharacterCollection::Type & TeamMenu::select(){
-    return current;
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            return turns;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            return current;
+            break;
+    }
+}
+
+bool TeamMenu::valueLess(){
+    switch (turns){
+        case Mugen::ArcadeData::CharacterCollection::Turns4:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns3;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns3:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns2;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+        default:
+            return false;
+            break;
+    }
+}
+
+bool TeamMenu::valueMore(){
+    switch (turns){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns3;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns3:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns4;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns4:
+        default:
+            return false;
+            break;
+    }
 }
 
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
@@ -1404,7 +1431,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
 }
 
 void CharacterSelect::up(unsigned int cursor){
-    if (grid.up(cursor)){
+    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.up(cursor)){
         if (cursor == 0){
             MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
             if (sound){
@@ -1422,7 +1449,7 @@ void CharacterSelect::up(unsigned int cursor){
 }
 
 void CharacterSelect::down(unsigned int cursor){
-    if (grid.down(cursor)){
+    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.down(cursor)){
         if (cursor == 0){
             MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
             if (sound){
@@ -1440,7 +1467,7 @@ void CharacterSelect::down(unsigned int cursor){
 }
 
 void CharacterSelect::left(unsigned int cursor){
-    if (grid.left(cursor)){
+    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.left(cursor)){
         if (cursor == 0){
             MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
             if (sound){
@@ -1454,12 +1481,12 @@ void CharacterSelect::left(unsigned int cursor){
         }
     }
     player1TeamMenu.left();
-    player2TeamMenu.right();
+    player2TeamMenu.left();
     previousStage();
 }
 
 void CharacterSelect::right(unsigned int cursor){
-    if (grid.right(cursor)){
+    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.right(cursor)){
         if (cursor == 0){
             MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
             if (sound){
@@ -1473,7 +1500,7 @@ void CharacterSelect::right(unsigned int cursor){
         }
     }
     player1TeamMenu.right();
-    player2TeamMenu.left();
+    player2TeamMenu.right();
     nextStage();
 }
 
