@@ -103,6 +103,8 @@ public:
     range(low, high){
     }
 
+    /* Copy constructor will copy all fields, which is the right thing to do */
+
     bool operator==(const RuntimeValue & other) const;
 
     inline bool isBool() const {
@@ -176,6 +178,8 @@ public:
     virtual const Mugen::Stage & getStage() const = 0;
     virtual const std::vector<std::string> getCommands() const = 0;
 
+    virtual RuntimeValue getArg1() const = 0;
+
     virtual ~Environment(){
     }
 };
@@ -191,6 +195,7 @@ public:
     virtual const Character & getCharacter() const;
     virtual const Mugen::Stage & getStage() const;
     virtual const std::vector<std::string> getCommands() const;
+    virtual RuntimeValue getArg1() const;
 };
 
 class FullEnvironment: public Environment {
@@ -201,18 +206,31 @@ public:
     commands(commands){
     }
 
+    FullEnvironment(const Mugen::Stage & stage, const Character & character, const std::vector<std::string> commands, const RuntimeValue & arg1):
+    stage(stage),
+    character(character),
+    commands(commands),
+    arg1(arg1){
+    }
+
     FullEnvironment(const Mugen::Stage & stage, const Character & character):
     stage(stage),
     character(character){
     }
 
+    /*
     FullEnvironment(const FullEnvironment & copy):
     stage(copy.stage),
     character(copy.character),
     commands(copy.commands){
     }
+    */
 
     virtual ~FullEnvironment(){
+    }
+    
+    virtual inline RuntimeValue getArg1() const {
+        return arg1;
     }
 
     virtual inline const Character & getCharacter() const {
@@ -231,6 +249,7 @@ protected:
     const Mugen::Stage & stage;
     const Character & character;
     std::vector<std::string> commands;
+    RuntimeValue arg1;
 };
 
 double toNumber(const RuntimeValue & value);

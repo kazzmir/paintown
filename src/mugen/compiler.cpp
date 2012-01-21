@@ -396,6 +396,10 @@ const Mugen::Stage & EmptyEnvironment::getStage() const {
 const std::vector<std::string> EmptyEnvironment::getCommands() const {
     throw MugenException("Cannot get commands from an empty environment", __FILE__, __LINE__);
 }
+    
+RuntimeValue EmptyEnvironment::getArg1() const {
+    throw MugenException("Cannot get arg1 from an empty environment", __FILE__, __LINE__);
+}
 
 }
 
@@ -2202,6 +2206,52 @@ public:
         compiled = compileNumber(number);
     }
 
+    static Value * compileArgument(const Ast::Argument & argument){
+        class Argument: public Value {
+        public:
+            Argument(int index):
+            index(index){
+                if (index > 0){
+                    std::stringstream out;
+                    out << "Indexes above 0 are not valid";
+                    compileError(out.str(), __FILE__, __LINE__);
+                }
+            }
+
+            Argument(const Argument & you):
+            index(you.index){
+            }
+
+            virtual std::string toString() const {
+                std::ostringstream out;
+                out << index;
+                return out.str();
+            }
+
+            Value * copy() const {
+                return new Argument(*this);
+            }
+
+            int index;
+
+            RuntimeValue evaluate(const Environment & environment) const {
+                switch (index){
+                    case 0: return environment.getArg1();
+                    default: runtimeError("BUG", __FILE__, __LINE__);
+                }
+                return RuntimeValue(0);
+            }
+        };
+
+        int index;
+        argument.view() >> index;
+        return new Argument(index);
+    }
+
+    virtual void onArgument(const Ast::Argument & argument){
+        compiled = compileArgument(argument);
+    }
+
     Value * compileFunction(const Ast::Function & function){
         /* For use when the function accepts one argument and passes it along
          * to some C level function.
@@ -2760,19 +2810,47 @@ public:
         if (function == "projhit"){
             class ProjHit: public Value {
             public:
-                ProjHit(Value * id, Value * value):
-                id(id), value(value){
+                ProjHit(Value * id, Value * value, Value * compare):
+                id(id), value(value), compare(compare){
                 }
 
                 Value * id;
                 Value * value;
+                Value * compare;
 
                 virtual ~ProjHit(){
                     delete id;
                     delete value;
+                    delete compare;
+                }
+                
+                /* It hit is true then we are putting the last hit in some relation (compare) and
+                 * getting the result, if hit is false then we are taking the negation of
+                 * that result.
+                 */
+                bool didHit(const Environment & environment, Projectile * projectile, bool hit) const {
+                    unsigned long ticks = environment.getStage().getTicks() - projectile->getLastHitTicks();
+
+                    /* The first argument of the comparison expression should be a compiled
+                     * Ast::Argument which expects to pull out arg1 from the environment. Here
+                     * we set up arg1 to be the difference between the current ticks and the
+                     * last time the projectile hit.
+                     *
+                     * We know the Ast::Argument expects arg1 because the parser sets it up
+                     * that way.
+                     */
+
+                    FullEnvironment use(environment.getStage(), environment.getCharacter(), environment.getCommands(), RuntimeValue((int) ticks));
+                    bool result = compare->evaluate(use).toBool();
+
+                    if (hit){
+                        return result;
+                    } else {
+                        return ! result;
+                    }
                 }
 
-                /* This isn't right. There should be 3 values passed to the function
+                /* 
                  * (define (projhit id hit? compare)
                  *   (if hit?
                  *     (compare (now - last))
@@ -2801,14 +2879,29 @@ public:
                      *   false
                      * projhit = 0, < 5
                      *   true
-                     *
-                     * hit = 0 then return time between now and last time we hit
-                     * hit = 1 then return time 
+                     * projhit = 0, = 10
+                     *   false
+                     * projhit = 0, = 9 ; this is a strange case, it asks whether the last time
+                     *                  ; we didn't hit is exactly equal to 9 ticks.
+                     *                  ; This is strange because we didn't at hit 0, 1, 2, 3, .. 9
+                     *                  ; The last time we did hit was at 10, so all other numbers
+                     *                  ; should register as a didn't hit.
+                     *                  ; Ultimately this is evaluating the 1st order statement:
+                     *                  ;  F -> F
+                     *                  ; Which is T
+                     *  true
                      *
                      * projhit = 1, < 20
                      *   true
                      * projhit = 1, < 5
                      *   false
+                     * projhit = 1, = 10
+                     *   true
+                     * projhit = 1, = 9
+                     *   false
+                     *
+                     * I'm pretty sure its the case that the result of the comparison operation
+                     * is opposite between projhit = 0 and projhit = 1.
                      */
 
                     vector<Projectile*> projectiles = environment.getStage().findProjectile(id, &environment.getCharacter());
@@ -2822,17 +2915,21 @@ public:
                          * the characters will do their starting animation for a while
                          * so a projectile won't really be fired until a few hundred ticks later.
                          */
-                        found = found || (environment.getStage().getTicks() - projectile->getLastHitTicks() <= hit);
+                        found = found || didHit(environment, projectile, hit);
                     }
                     return RuntimeValue(found);
                 }
 
                 Value * copy() const {
-                    return new ProjHit(Compiler::copy(id), Compiler::copy(value));
+                    return new ProjHit(Compiler::copy(id),
+                                       Compiler::copy(value),
+                                       Compiler::copy(compare));
                 }
             };
 
-            return new ProjHit(compile(function.getArg1()), compile(function.getArg2()));
+            return new ProjHit(compile(function.getArg1()),
+                               compile(function.getArg2()),
+                               compile(function.getArg3()));
         }
 	
         if (function == "ln"){

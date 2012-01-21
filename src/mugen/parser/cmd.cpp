@@ -1103,6 +1103,16 @@ Ast::Value * makeValueList2(const Value & first, const Value & second){
     return object;
 }
 
+Ast::Value * makeValueList3(const Value & first, const Value & second, const Value & third){
+    std::list<Ast::Value*> values;
+    values.push_back(as<Ast::Value*>(first));
+    values.push_back(as<Ast::Value*>(second));
+    values.push_back(as<Ast::Value*>(third));
+    Ast::ValueList * object = new Ast::ValueList(values);
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeResource(const Value & value, bool fight, bool own){
     /* FIXME: line numbers */
     Ast::Resource * resource = new Ast::Resource(-1, -1, as<Ast::Value*>(value), fight, own);
@@ -1148,6 +1158,10 @@ Ast::Value * makeFunction1(int line, int column, const Value & name, const Value
 
 Ast::Value * makeFunction2(int line, int column, const Value & name, const Value & arg1, const Value & arg2){
     return makeFunction(line, column, name, Value(makeValueList2(arg1, arg2)));
+}
+
+Ast::Value * makeFunction3(int line, int column, const Value & name, const Value & arg1, const Value & arg2, const Value & arg3){
+    return makeFunction(line, column, name, Value(makeValueList3(arg1, arg2, arg3)));
 }
 
 Ast::Value * makeFunction1(const std::string & name, const Value & arg1){
@@ -1416,6 +1430,12 @@ Ast::Value * makeAnimElem(const Value & line, const Value & arg1){
     return makeAnimElem(line, arg1, comparison, arg2);
 }
 
+Ast::Value * makeArgument(int line, int column, int index){
+  Ast::Value * argument = new Ast::Argument(line, column, index);
+  GC::save(argument);
+  return argument;
+}
+
 Ast::Value * makeProjectileExpression(const Value & line, const Value & name, const Value & id, const Value & arg1, const Value & compare, const Value & ticks){
     Value finalId;
     if (id.getValue() != NULL){
@@ -1423,18 +1443,29 @@ Ast::Value * makeProjectileExpression(const Value & line, const Value & name, co
     } else {
         finalId = makeNumber(0);
     }
-    
-    Ast::Value * get = makeFunction2(getCurrentLine(line), getCurrentColumn(line), name, finalId, arg1);
+
+    Ast::Value * comparison = NULL;
+
+    /* comparison will be an infix expression where the left node is an Argument ast class.
+     * The runtime evaluator will fill in the Environment with a value for arg0 so that
+     * when the Argument is evaluated it will pull out arg0.
+     *
+     * For example, for projhit arg0 will be projectile->lastHit - stage->ticks
+     */
+
     /* check if the second form is used */
     if (compare.getValue() != NULL){
         typedef Ast::Value * (*compare_func)(const Value &, const Value &);
-        Ast::Value * comparison = as<compare_func>(compare)(Value(get), ticks);
-        return comparison;
+        Ast::Value * argument = makeArgument(getCurrentLine(line), getCurrentColumn(line), 0);
+        comparison = as<compare_func>(compare)(Value(argument), ticks);
     } else {
         Ast::Value * one = makeNumber(1);
-        Ast::Value * comparison = makeExpressionLessThanEquals(Value(get), Value(one));
-        return comparison;
+        Ast::Value * argument = makeArgument(getCurrentLine(line), getCurrentColumn(line), 0);
+        comparison = makeExpressionLessThanEquals(Value(argument), Value(one));
     }
+    
+    Ast::Value * get = makeFunction3(getCurrentLine(line), getCurrentColumn(line), name, finalId, arg1, Value(comparison));
+    return get;
 }
 
 
