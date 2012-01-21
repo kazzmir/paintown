@@ -231,6 +231,12 @@ public:
         this->valueSpacingX = x;
         this->valueSpacingY = y;
     }
+    virtual inline void setEnabled(bool enabled){
+        this->enabled = enabled;
+    }
+    virtual inline bool getEnabled() const {
+        return this->enabled;
+    }
 protected:
     //! Handle values (depending on value spacing)
     bool valueLess();
@@ -259,6 +265,52 @@ protected:
     PaintownUtil::ReferenceCount<MugenSprite> emptyIcon;
     //! Value spacing
     int valueSpacingX, valueSpacingY;
+    //! Menu enabled?
+    bool enabled;
+};
+
+class StageMenu{
+public:
+    StageMenu();
+    virtual ~StageMenu();
+    
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &);
+    
+    //! Add stage
+    virtual void add(const Filesystem::AbsolutePath &);
+    
+    //! Up
+    bool up();
+    //! Down
+    bool down();
+    //! Left
+    bool left();
+    //! Right
+    bool right();
+    //! Get a return value for selected
+    const Filesystem::AbsolutePath & select();
+    //! Set enabled
+    virtual inline void setEnabled(bool enabled){
+        this->enabled = enabled;
+    }
+    //! Get enabled
+    virtual inline bool getEnabled() const {
+        return this->enabled;
+    }
+    //! Font
+    FontHandler font;
+protected:
+    //! Stages
+    std::vector<Filesystem::AbsolutePath> stages;
+    //! Stage Names
+    std::vector<std::string> names;
+    //! Random Stage ?
+    bool random;
+    //! Current Selected Stage
+    unsigned int current;
+    //! Is enabled
+    bool enabled;
 };
 
 struct IndexValue{
@@ -271,20 +323,39 @@ public:
     CharacterSelect(const Filesystem::AbsolutePath &);
     virtual ~CharacterSelect();
     
+    //! Initialize all data from select.def
     virtual void init();
     
+    //! Act
     virtual void act();
+    //! Draw
     virtual void draw(const Graphics::Bitmap &);
     
+    enum Players{
+        None,
+        Player1,
+        Player2,
+        Both,
+    };
+    //! Set Mode
+    virtual void setMode(const Mugen::GameType &, const Players &);
+    //! Move up
     virtual void up(unsigned int cursor);
+    //! Move down
     virtual void down(unsigned int cursor);
+    //! Move left
     virtual void left(unsigned int cursor);
+    //! Move right
     virtual void right(unsigned int cursor);
+    //! Make current selection
     virtual void select(unsigned int cursor);
-    
-    virtual void addCharacter(const Mugen::ArcadeData::CharacterInfo &);
+    //! Add Character
+    virtual bool addCharacter(const Mugen::ArcadeData::CharacterInfo &);
+    //! Add Empty slot
     virtual void addEmpty();
+    //! Make slot a random selector
     virtual void addRandom();
+    //! Add stage
     virtual void addStage(const Filesystem::AbsolutePath &);
     
     //! Sound types
@@ -305,27 +376,14 @@ public:
         StageDone,
         Cancel,
     };
+    //! Set sound
     virtual void setSound(const SoundType &, int group, int sound);
-    
-    //! Fonts
-    FontHandler titleFont;
-    FontHandler player1Font;
-    FontHandler player2Font;
-    FontHandler stageFont;
-    
-    //! Team menu data
-    TeamMenu player1TeamMenu;
-    TeamMenu player2TeamMenu;
     
 protected:
     //! Get font
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Parse select file
     void parseSelect();
-    //! Previous stage
-    bool previousStage();
-    //! Next stage
-    bool nextStage();
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
@@ -356,6 +414,16 @@ protected:
     Filesystem::AbsolutePath selectFile;
     //! Fonts
     std::vector< PaintownUtil::ReferenceCount<MugenFont> > fonts;
+    
+    //! Font Handlers
+    FontHandler titleFont;
+    FontHandler player1Font;
+    FontHandler player2Font;
+    
+    //! Font Handlers for Team menu data
+    TeamMenu player1TeamMenu;
+    TeamMenu player2TeamMenu;
+    
     //! Fade tool
     Gui::FadeTool fader;
     //! Select background
@@ -364,17 +432,27 @@ protected:
     std::vector<Mugen::ArcadeData::CharacterInfo> characters;
     //! Current add Cell
     unsigned int nextCell;
-    //! Stages
-    std::vector<Filesystem::AbsolutePath> stages;
-    //! Stage Names
-    std::vector<std::string> stageNames;
-    //! Random Stage ?
-    bool randomStage;
-    //! Current Selected Stage
-    unsigned int currentStage;
+    //! Stage menu
+    StageMenu stages;
     //! Arcade Matches
     std::vector<int> arcadeOrder;
     std::vector<int> teamArcadeOrder;
+    //! Current GameType
+    Mugen::GameType currentGameType;
+    //! Current players
+    Players currentPlayers;
+    enum SelectState{
+        NotStarted,
+        Team,
+        OpponentTeam,
+        Character,
+        Opponent,
+        Stage,
+        Finished,
+    };
+    //! Current State
+    SelectState player1SelectState;
+    SelectState player2SelectState;
 };
 
 }

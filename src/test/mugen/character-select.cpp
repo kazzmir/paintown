@@ -265,7 +265,8 @@ emptyValueIconOffsetX(0),
 emptyValueIconOffsetY(0),
 emptyIcon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
 valueSpacingX(0),
-valueSpacingY(0){
+valueSpacingY(0),
+enabled(false){
     itemCurrentFont.setState(FontHandler::Blink);
 }
 
@@ -273,10 +274,16 @@ TeamMenu::~TeamMenu(){
 }
 
 void TeamMenu::act(){
+    if (!enabled){
+        return;
+    }
     itemCurrentFont.act();
 }
 
 void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
+    if (!enabled){
+        return;
+    }
     // Set location
     int currentX = x, currentY = y;
     if (background != NULL){
@@ -389,6 +396,9 @@ void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
 }
 
 bool TeamMenu::up(){
+    if (!enabled){
+        return false;
+    }
     switch (current){
         case Mugen::ArcadeData::CharacterCollection::Single:
             if (wrapping){
@@ -411,7 +421,9 @@ bool TeamMenu::up(){
 }
 
 bool TeamMenu::down(){
-    
+    if (!enabled){
+        return false;
+    }
     switch (current){
         case Mugen::ArcadeData::CharacterCollection::Single:
             current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
@@ -434,6 +446,9 @@ bool TeamMenu::down(){
 }
 
 bool TeamMenu::left(){
+    if (!enabled){
+        return false;
+    }
     switch (current){
         case Mugen::ArcadeData::CharacterCollection::Turns2:
             if (valueSpacingX >= 0){
@@ -452,6 +467,9 @@ bool TeamMenu::left(){
 }
 
 bool TeamMenu::right(){
+    if (!enabled){
+        return false;
+    }
     switch (current){
         case Mugen::ArcadeData::CharacterCollection::Turns2:
             if (valueSpacingX >= 0){
@@ -516,6 +534,102 @@ bool TeamMenu::valueMore(){
     }
 }
 
+StageMenu::StageMenu():
+random(true),
+current(0),
+enabled(false){
+    font.setState(FontHandler::Blink);
+}
+StageMenu::~StageMenu(){
+}
+
+void StageMenu::act(){
+    if (!enabled){
+        return;
+    }
+    font.act();
+}
+
+void StageMenu::draw(const Graphics::Bitmap & work){
+    if (!enabled){
+        return;
+    }
+    // Stage
+    if (random){
+        font.draw("Stage: Random", work);
+    } else {
+        font.draw("Stage: " + names[current], work);
+    }
+}
+
+void StageMenu::add(const Filesystem::AbsolutePath & stage){
+    try {
+        for (std::vector<Filesystem::AbsolutePath>::iterator i = stages.begin(); i != stages.end(); ++i){
+            const Filesystem::AbsolutePath & check = *i;
+            if (stage == check){
+                return;
+            }
+        }
+        AstRef parsed(Util::parseDef(stage.path()));
+        const std::string & name = Util::probeDef(parsed, "info", "name");
+        stages.push_back(stage);
+        names.push_back(name);
+    } catch (const MugenException & ex){
+        Global::debug(0) << "Warning! Tried to load file: '" << stage.path() << "'. Message: " << ex.getReason() << std::endl;
+    }
+}
+
+bool StageMenu::up(){
+    return false;
+}
+
+bool StageMenu::down(){
+    return false;
+}
+
+bool StageMenu::left(){
+    if (!enabled){
+        return false;
+    }
+    if (stages.size() >= 1){
+        if (random){
+            random = false;
+            current = stages.size()-1;
+        } else if (current > 0){
+            current--;
+        } else if (!random){
+            random = true;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool StageMenu::right(){
+    if (!enabled){
+        return false;
+    }
+    if (stages.size() >= 1){
+        if (random){
+            random = false;
+            current = 0;
+        } else if (current < stages.size()-1){
+            current++;
+        } else if (!random){
+            random = true;
+        }
+        return true;
+    }
+    return false;
+}
+
+const Filesystem::AbsolutePath & StageMenu::select(){
+    if (random){
+        return stages[PaintownUtil::rnd(0, stages.size())];
+    }
+    return stages[current];
+}
+    
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
 file(file),
 gridX(0),
@@ -534,8 +648,10 @@ player2SwitchTime(0),
 player1CurrentRandom(0),
 player2CurrentRandom(0),
 nextCell(0),
-randomStage(true),
-currentStage(0){
+currentGameType(Undefined),
+currentPlayers(None),
+player1SelectState(NotStarted),
+player2SelectState(NotStarted){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
 
@@ -961,7 +1077,7 @@ void CharacterSelect::init(){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                self.stageFont.setLocation(x,y);
+                                self.stages.font.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.active.font"){
@@ -971,7 +1087,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.stageFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.stages.font.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -979,12 +1095,12 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.stageFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                            self.stages.font.setActive2(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.done.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.stageFont.setDone(SelectFont(self.getFont(index), bank, position));
+                                self.stages.font.setDone(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
@@ -1342,9 +1458,6 @@ void CharacterSelect::init(){
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
     
-    // Set stage to blink
-    stageFont.setState(FontHandler::Blink);
-    
     parseSelect();
 }
 
@@ -1373,7 +1486,43 @@ void CharacterSelect::act(){
     }
     player1TeamMenu.act();
     player2TeamMenu.act();
-    stageFont.act();
+    stages.act();
+}
+
+static std::string getGameType(const Mugen::GameType & game){
+    switch (game){
+        case Mugen::Arcade:
+            return "Arcade";
+            break;
+        case Mugen::Versus:
+            return "Versus Mode";
+            break;
+        case Mugen::TeamArcade:
+            return "Team Arcade";
+            break;
+        case Mugen::TeamVersus:
+            return "Team Versus";
+            break;
+        case Mugen::TeamCoop:
+            return "Team Cooperative";
+            break;
+        case Mugen::Survival:
+            return "Survival";
+            break;
+        case Mugen::SurvivalCoop:
+            return "Survival Cooperative";
+            break;
+        case Mugen::Training:
+            return "Training Mode";
+            break;
+        case Mugen::Watch:
+            return "Watch Mode";
+            break;
+        case Mugen::Undefined:
+        default:
+            return "Set GameType and Players";
+            break;
+    }
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
@@ -1387,15 +1536,17 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
     
-    // render title FIXME set title
-    titleFont.draw("Test", work);
+    // render title based on Mugen::GameType
+    titleFont.draw(getGameType(currentGameType), work);
     
     // Draw portrait and name
     if (grid.getCurrentState(0) != Gui::SelectListInterface::Disabled){
         if (cells[grid.getCurrentIndex(0)]->getRandom()){
             const Mugen::ArcadeData::CharacterInfo & character = characters[player1CurrentRandom];
             character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
-            player1Font.draw(character.getName(), work);
+            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
+            // player1Font.draw(character.getName(), work);
+            player1Font.draw("Random", work);
         } else {
             const Mugen::ArcadeData::CharacterInfo & character = cells[grid.getCurrentIndex(0)]->getCharacter();
             character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
@@ -1406,7 +1557,9 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
         if (cells[grid.getCurrentIndex(1)]->getRandom()){
             const Mugen::ArcadeData::CharacterInfo & character = characters[player2CurrentRandom];
             character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
-            player1Font.draw(character.getName(), work);
+            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
+            // player2Font.draw(character.getName(), work);
+            player2Font.draw("Random", work);
         } else {
             const Mugen::ArcadeData::CharacterInfo & character = cells[grid.getCurrentIndex(1)]->getCharacter();
             character.drawPortrait(portrait2OffsetX, portrait2OffsetY, work, portrait2Effects);
@@ -1419,15 +1572,94 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     player1TeamMenu.draw(work);
     player2TeamMenu.draw(work);
     
-   
-    // Stage
-    if (randomStage){
-        stageFont.draw("Stage: Random", work);
-    } else {
-        stageFont.draw("Stage: " + stageNames[currentStage], work);
-    }
+    // Stages
+    stages.draw(work);
     
     background->renderForeground(0,0,work);
+}
+
+void CharacterSelect::setMode(const Mugen::GameType & game, const Players & players){
+    if (game == Mugen::Undefined || players == None){
+        return;
+    }
+    currentGameType = game;
+    currentPlayers = players;
+    switch (game){
+        case Mugen::Arcade:
+            switch (players){
+                case Player1:
+                    player1SelectState = Character;
+                    break;
+                case Player2:
+                    player2SelectState = Character;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            player1SelectState = player2SelectState = Character;
+            break;
+        case Mugen::TeamArcade:
+            switch (players){
+                case Player1:
+                    player1SelectState = Team;
+                    break;
+                case Player2:
+                    player1SelectState = Team;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            player1SelectState = player2SelectState = Team;
+            break;
+        case Mugen::TeamCoop:
+            player1SelectState = Character;
+            break;
+        case Mugen::Survival:
+            switch (players){
+                case Player1:
+                    player1SelectState = Team;
+                    break;
+                case Player2:
+                    player2SelectState = Team;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            player1SelectState = Character;
+            break;
+        case Mugen::Training:
+            switch (players){
+                case Player1:
+                    player1SelectState = Character;
+                    break;
+                case Player2:
+                    player2SelectState = Character;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (players){
+                case Player1:
+                    player1SelectState = Team;
+                    break;
+                case Player2:
+                    player2SelectState = Team;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 void CharacterSelect::up(unsigned int cursor){
@@ -1482,7 +1714,7 @@ void CharacterSelect::left(unsigned int cursor){
     }
     player1TeamMenu.left();
     player2TeamMenu.left();
-    previousStage();
+    stages.left();
 }
 
 void CharacterSelect::right(unsigned int cursor){
@@ -1501,27 +1733,31 @@ void CharacterSelect::right(unsigned int cursor){
     }
     player1TeamMenu.right();
     player2TeamMenu.right();
-    nextStage();
+    stages.right();
 }
 
 void CharacterSelect::select(unsigned int cursor){
-    cells[grid.getCurrentIndex(cursor)]->select();
+    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled){
+        cells[grid.getCurrentIndex(cursor)]->select();
+    }
 }
 
-void CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
-    // Add to list
-    characters.push_back(character);
-    // Include stage if required
-    if (character.getIncludeStage()){
-        addStage(character.getStage());
-    }
+bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
     // Check if we don't exceed the cell count of the current grid
     if (nextCell < cells.size()){
+        // Add to list
+        characters.push_back(character);
+        // Include stage if required
+        if (character.getIncludeStage()){
+            addStage(character.getStage());
+        }
         // Add to current cell
         cells[nextCell]->setCharacter(character);
         // Increment cell
         nextCell++;
+        return true;
     }
+    return false;
 }
 
 void CharacterSelect::addEmpty(){
@@ -1539,20 +1775,7 @@ void CharacterSelect::addRandom(){
 }
 
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
-    try {
-        for (std::vector<Filesystem::AbsolutePath>::iterator i = stages.begin(); i != stages.end(); ++i){
-            const Filesystem::AbsolutePath & check = *i;
-            if (stage == check){
-                return;
-            }
-        }
-        AstRef parsed(Util::parseDef(stage.path()));
-        const std::string & name = Util::probeDef(parsed, "info", "name");
-        stages.push_back(stage);
-        stageNames.push_back(name);
-    } catch (const MugenException & ex){
-        Global::debug(0) << "Warning! Tried to load file: '" << stage.path() << "'. Message: " << ex.getReason() << std::endl;
-    }
+    stages.add(stage);
 }
 
 void CharacterSelect::setSound(const SoundType & type, int group, int sound){
@@ -1726,34 +1949,4 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
-}
-
-bool CharacterSelect::previousStage(){
-    if (stages.size() >= 1){
-        if (randomStage){
-            randomStage = false;
-            currentStage = stages.size()-1;
-        } else if (currentStage > 0){
-            currentStage--;
-        } else if (!randomStage){
-            randomStage = true;
-        }
-        return true;
-    }
-    return false;
-}
-
-bool CharacterSelect::nextStage(){
-    if (stages.size() >= 1){
-        if (randomStage){
-            randomStage = false;
-            currentStage = 0;
-        } else if (currentStage < stages.size()-1){
-            currentStage++;
-        } else if (!randomStage){
-            randomStage = true;
-        }
-        return true;
-    }
-    return false;
 }

@@ -217,7 +217,8 @@ enum GameType {
     Survival,
     SurvivalCoop,
     Training,
-    Watch
+    Watch,
+    Undefined,
 };
 
 /*! Key handler for keys for now change later*/
