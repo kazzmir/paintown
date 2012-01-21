@@ -106,6 +106,10 @@ public:
     /* Copy constructor will copy all fields, which is the right thing to do */
 
     bool operator==(const RuntimeValue & other) const;
+    bool operator<=(const RuntimeValue & other) const;
+    bool operator<(const RuntimeValue & other) const;
+    bool operator>(const RuntimeValue & other) const;
+    bool operator>=(const RuntimeValue & other) const;
 
     inline bool isBool() const {
         return type == Bool;

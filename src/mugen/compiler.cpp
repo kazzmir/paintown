@@ -293,7 +293,7 @@ int toRangeHigh(const RuntimeValue & value){
 bool RuntimeValue::operator==(const RuntimeValue & value2) const {
     const RuntimeValue & value1 = *this;
     if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
-        throw MugenException("invalid value", __FILE__, __LINE__);
+        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
     }
     switch (value1.type){
         case RuntimeValue::ListOfString : {
@@ -383,6 +383,83 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
     }
 
     return false;
+}
+
+bool RuntimeValue::operator<=(const RuntimeValue & value2) const {
+    const RuntimeValue & value1 = *this;
+    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
+    }
+    switch (value1.type){
+        case Double: {
+            switch (value2.type){
+                case Double: return value1.toNumber() <= value2.toNumber();
+                default: break;
+            }
+        }
+        default: break;
+    }
+    std::ostringstream out;
+    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
+    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+}
+
+bool RuntimeValue::operator<(const RuntimeValue & value2) const {
+    const RuntimeValue & value1 = *this;
+    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
+    }
+    switch (value1.type){
+        case Double: {
+            switch (value2.type){
+                case Double: return value1.toNumber() < value2.toNumber();
+                default: break;
+            }
+        }
+        default: break;
+    }
+    std::ostringstream out;
+    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
+    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+}
+
+bool RuntimeValue::operator>(const RuntimeValue & value2) const {
+    const RuntimeValue & value1 = *this;
+    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
+    }
+    switch (value1.type){
+        case Double: {
+            switch (value2.type){
+                case Double: return value1.toNumber() > value2.toNumber();
+                default: break;
+            }
+        }
+        default: break;
+    }
+    std::ostringstream out;
+    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
+    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+}
+
+bool RuntimeValue::operator>=(const RuntimeValue & value2) const {
+    const RuntimeValue & value1 = *this;
+    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
+        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
+    }
+    switch (value1.type){
+        case Double: {
+            switch (value2.type){
+                case Double: return value1.toNumber() >= value2.toNumber();
+                default: break;
+            }
+        }
+        default: break;
+    }
+    std::ostringstream out;
+    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
+    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+
 }
 
 const Character & EmptyEnvironment::getCharacter() const {
@@ -4397,19 +4474,19 @@ public:
                         break;
                     }
                     case ExpressionInfix::Unequals : {
-                        return RuntimeValue(!toBool(left->evaluate(environment) == right->evaluate(environment)));
+                        return RuntimeValue(!(left->evaluate(environment) == right->evaluate(environment)));
                     }
                     case ExpressionInfix::GreaterThanEquals : {
-                        return RuntimeValue(left->evaluate(environment).toNumber() >= right->evaluate(environment).toNumber());
+                        return RuntimeValue(left->evaluate(environment) >= right->evaluate(environment));
                     }
                     case ExpressionInfix::GreaterThan : {
-                        return RuntimeValue(left->evaluate(environment).toNumber() > right->evaluate(environment).toNumber());
+                        return RuntimeValue(left->evaluate(environment) > right->evaluate(environment));
                     }
                     case ExpressionInfix::LessThanEquals : {
-                        return RuntimeValue(left->evaluate(environment).toNumber() <= right->evaluate(environment).toNumber());
+                        return RuntimeValue(left->evaluate(environment) <= right->evaluate(environment));
                     }
                     case ExpressionInfix::LessThan : {
-                        return RuntimeValue(left->evaluate(environment).toNumber() < right->evaluate(environment).toNumber());
+                        return RuntimeValue(left->evaluate(environment) < right->evaluate(environment));
                     }
                     case ExpressionInfix::Add : {
                         return RuntimeValue(left->evaluate(environment).toNumber() + right->evaluate(environment).toNumber());
