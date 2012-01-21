@@ -1540,6 +1540,12 @@ void CharacterSelect::addRandom(){
 
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
     try {
+        for (std::vector<Filesystem::AbsolutePath>::iterator i = stages.begin(); i != stages.end(); ++i){
+            const Filesystem::AbsolutePath & check = *i;
+            if (stage == check){
+                return;
+            }
+        }
         AstRef parsed(Util::parseDef(stage.path()));
         const std::string & name = Util::probeDef(parsed, "info", "name");
         stages.push_back(stage);
