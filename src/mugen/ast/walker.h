@@ -17,6 +17,7 @@ class KeySingle;
 class KeyModifier;
 class KeyCombined;
 class ExpressionInfix;
+class Argument;
 class ExpressionUnary;
 class Resource;
 class Helper;
@@ -36,6 +37,9 @@ public:
     }
     
     virtual void onRange(const Range & range){
+    }
+    
+    virtual void onArgument(const Argument & argument){
     }
     
     virtual void onValueList(const ValueList & value){

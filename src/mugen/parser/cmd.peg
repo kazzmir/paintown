@@ -615,7 +615,7 @@ Ast::Value * makeProjectileExpression(const Value & line, const Value & name, co
         return comparison;
     } else {
         Ast::Value * one = makeNumber(1);
-        Ast::Value * comparison = makeExpressionLessThan(Value(get), Value(one));
+        Ast::Value * comparison = makeExpressionLessThanEquals(Value(get), Value(one));
         return comparison;
     }
 }

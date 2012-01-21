@@ -2772,10 +2772,45 @@ public:
                     delete value;
                 }
 
+                /* This isn't right. There should be 3 values passed to the function
+                 * (define (projhit id hit? compare)
+                 *   (if hit?
+                 *     (compare (now - last))
+                 *     (not (compare (now - last)))))
+                 * compare should be (lambda (x) (x compare value)) where compare and value are
+                 *   projhit = 1, compare value
+                 *
+                 * Environment should have an `arg1' field which is a Runtime value.
+                 * The compare function should be created with an Ast::Argument* type
+                 * that knows to pull out arg1 from the environment. arg1 will be set
+                 * to (now - last) when this function is invoked.
+                 */
                 RuntimeValue evaluate(const Environment & environment) const {
                     int id = (int) this->id->evaluate(environment).toNumber();
-                    int value = (int) this->value->evaluate(environment).toNumber();
+                    bool hit = (int) this->value->evaluate(environment).toBool();
                     
+
+                    /* projhit = 1
+                     *   check if the projectile hit something within the last tick
+                     * projhit = 0
+                     *   check if the projectile didn't hit something within the last tick
+                     *
+                     * ticks: 20
+                     * last hit: 10
+                     * projhit = 0, < 20
+                     *   false
+                     * projhit = 0, < 5
+                     *   true
+                     *
+                     * hit = 0 then return time between now and last time we hit
+                     * hit = 1 then return time 
+                     *
+                     * projhit = 1, < 20
+                     *   true
+                     * projhit = 1, < 5
+                     *   false
+                     */
+
                     vector<Projectile*> projectiles = environment.getStage().findProjectile(id, &environment.getCharacter());
                     bool found = false;
                     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
@@ -2787,7 +2822,7 @@ public:
                          * the characters will do their starting animation for a while
                          * so a projectile won't really be fired until a few hundred ticks later.
                          */
-                        found = found || (environment.getStage().getTicks() - projectile->getLastHitTicks() <= value);
+                        found = found || (environment.getStage().getTicks() - projectile->getLastHitTicks() <= hit);
                     }
                     return RuntimeValue(found);
                 }
@@ -4365,13 +4400,13 @@ Value * compile(const Ast::Value * input){
         input->walk(compiler);
     } catch (const MugenException & e){
         std::ostringstream out;
-        out << e.getReason() << " while compiling expression '" << input->toString() << "'";
+        out << e.getFullReason() << " while compiling expression '" << input->toString() << "'";
         compileError(out.str(), __FILE__, __LINE__);
     }
 
     if (compiler.compiled == NULL){
         std::ostringstream out;
-        out << "Unable to compile expression '" << input->toString() << "'";
+        out << "Unable to compile expression '" << input->toString() << "' at line " << input->getLine() << " column " << input->getColumn();
         compileError(out.str(), __FILE__, __LINE__);
     }
     return compiler.compiled;

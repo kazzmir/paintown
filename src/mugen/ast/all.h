@@ -17,6 +17,7 @@
 #include "number.h"
 #include "string.h"
 #include "keyword.h"
+#include "argument.h"
 #include "filename.h"
 #include "collectable.h"
 #include "walker.h"

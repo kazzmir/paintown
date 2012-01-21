@@ -9,9 +9,13 @@ namespace Ast{
 /* These constants are used for serializing the tokens into as few bytes as possible,
  * thus the single letter names. If two letter names are required thats ok, but try
  * to choose unique single letter (any ascii value is ok) first.
+ *
+ * Token will perform lowercase() on its arguments for operator== so do not re-use
+ * letters as upper case.
  */
 string Element::SERIAL_STRING = "a";
 string Element::SERIAL_FUNCTION = "b";
+string Element::SERIAL_ARGUMENT = "@";
 string Element::SERIAL_RANGE = "c";
 string Element::SERIAL_SECTION_LIST = "d";
 string Element::SERIAL_IDENTIFIER = "e";
@@ -108,6 +112,9 @@ Value * Value::deserialize(const Token * token){
     }
     if (*token == SERIAL_NUMBER){
         return Number::deserialize(token);
+    }
+    if (*token == SERIAL_ARGUMENT){
+        return Argument::deserialize(token);
     }
     if (*token == SERIAL_EXPRESSION_INFIX){
         return ExpressionInfix::deserialize(token);

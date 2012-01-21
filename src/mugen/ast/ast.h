@@ -9,6 +9,7 @@ class Token;
 namespace Ast{
 
 class Section;
+class Argument;
 class AttributeSimple;
 class AttributeArray;
 class AttributeKeyword;
@@ -46,6 +47,7 @@ public:
     static std::string SERIAL_STRING;
     static std::string SERIAL_FUNCTION;
     static std::string SERIAL_RANGE;
+    static std::string SERIAL_ARGUMENT;
     static std::string SERIAL_SECTION_LIST;
     static std::string SERIAL_IDENTIFIER;
     static std::string SERIAL_KEYWORD;
@@ -72,7 +74,7 @@ public:
      * between the code and any existing serialized files then you *must*
      * increment this variable.
      */
-    static const int SERIAL_VERSION = 18;
+    static const int SERIAL_VERSION = 19;
 
     virtual void mark(std::map<const void*, bool> & marks) const = 0;
 
@@ -81,6 +83,7 @@ public:
     define_equals(Element)
     define_equals(Section)
     define_equals(Attribute)
+    define_equals(Argument)
     define_equals(AttributeSimple)
     define_equals(AttributeArray)
     define_equals(AttributeKeyword)
