@@ -331,14 +331,13 @@ public:
     //! Draw
     virtual void draw(const Graphics::Bitmap &);
     
-    enum Players{
-        None,
+    enum Player{
         Player1,
         Player2,
         Both,
     };
     //! Set Mode
-    virtual void setMode(const Mugen::GameType &, const Players &);
+    virtual void setMode(const Mugen::GameType &, const Player & player = Player1);
     //! Move up
     virtual void up(unsigned int cursor);
     //! Move down
@@ -384,6 +383,10 @@ protected:
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Parse select file
     void parseSelect();
+    //! Player 1 next Selection 
+    void nextPlayer1Selection();
+    //! Player 2 next Selection
+    void nextPlayer2Selection();
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
@@ -440,7 +443,7 @@ protected:
     //! Current GameType
     Mugen::GameType currentGameType;
     //! Current players
-    Players currentPlayers;
+    Player currentPlayer;
     enum SelectState{
         NotStarted,
         Team,

@@ -161,6 +161,28 @@ int main(int argc, char ** argv){
             Filesystem::AbsolutePath path(file);
             Mugen::CharacterSelect select(path);
             select.init();
+            if (argc > 2){
+                const std::string & check = std::string(argv[2]);
+                if (check == "a"){
+                    select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+                } else if (check == "b"){
+                    select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
+                } else if (check == "c"){
+                    select.setMode(Mugen::TeamArcade, Mugen::CharacterSelect::Player1);
+                } else if (check == "d"){
+                    select.setMode(Mugen::TeamVersus, Mugen::CharacterSelect::Both);
+                } else if (check == "e"){
+                    select.setMode(Mugen::TeamCoop, Mugen::CharacterSelect::Player1);
+                } else if (check == "f"){
+                    select.setMode(Mugen::Survival, Mugen::CharacterSelect::Player1);
+                } else if (check == "g"){
+                    select.setMode(Mugen::SurvivalCoop, Mugen::CharacterSelect::Player1);
+                } else if (check == "h"){
+                    select.setMode(Mugen::Training, Mugen::CharacterSelect::Player1);
+                } else if (check == "i"){
+                    select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player1);
+                } 
+            }
             Logic logic(input, select);
             Draw draw(select);
 
@@ -175,7 +197,13 @@ int main(int argc, char ** argv){
         }
         
     } else {
-        std::cout << "Usage: ./" << argv[0] << " select.def" << std::endl;
+        std::cout << "Usage: ./" << argv[0] << " select.def [Mode]" << std::endl;
+        std::cout << "Modes (defaults to none):" << std::endl;
+        std::cout << "[a] - Arcade       | [b] - Versus" << std::endl;
+        std::cout << "[c] - TeamArcade   | [d] - TeamVersus" << std::endl;
+        std::cout << "[e] - TeamCoop     | [f] - Survival" << std::endl;
+        std::cout << "[g] - SurvivalCoop | [h] - Training" << std::endl;
+        std::cout << "[i] - Watch" << std::endl;
     }
     return 0;
 }

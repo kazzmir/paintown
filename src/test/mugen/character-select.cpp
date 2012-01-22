@@ -649,7 +649,7 @@ player1CurrentRandom(0),
 player2CurrentRandom(0),
 nextCell(0),
 currentGameType(Undefined),
-currentPlayers(None),
+currentPlayer(Player1),
 player1SelectState(NotStarted),
 player2SelectState(NotStarted){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
@@ -1578,84 +1578,22 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     background->renderForeground(0,0,work);
 }
 
-void CharacterSelect::setMode(const Mugen::GameType & game, const Players & players){
-    if (game == Mugen::Undefined || players == None){
+void CharacterSelect::setMode(const Mugen::GameType & game, const Player & player){
+    if (game == Mugen::Undefined){
         return;
     }
     currentGameType = game;
-    currentPlayers = players;
-    switch (game){
-        case Mugen::Arcade:
-            switch (players){
-                case Player1:
-                    player1SelectState = Character;
-                    break;
-                case Player2:
-                    player2SelectState = Character;
-                    break;
-                default:
-                    break;
-            }
+    currentPlayer = player;
+    switch (currentPlayer){
+        case Player1:
+            nextPlayer1Selection();
             break;
-        case Mugen::Versus:
-            player1SelectState = player2SelectState = Character;
+        case Player2:
+            nextPlayer2Selection();
             break;
-        case Mugen::TeamArcade:
-            switch (players){
-                case Player1:
-                    player1SelectState = Team;
-                    break;
-                case Player2:
-                    player1SelectState = Team;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamVersus:
-            player1SelectState = player2SelectState = Team;
-            break;
-        case Mugen::TeamCoop:
-            player1SelectState = Character;
-            break;
-        case Mugen::Survival:
-            switch (players){
-                case Player1:
-                    player1SelectState = Team;
-                    break;
-                case Player2:
-                    player2SelectState = Team;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::SurvivalCoop:
-            player1SelectState = Character;
-            break;
-        case Mugen::Training:
-            switch (players){
-                case Player1:
-                    player1SelectState = Character;
-                    break;
-                case Player2:
-                    player2SelectState = Character;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Watch:
-            switch (players){
-                case Player1:
-                    player1SelectState = Team;
-                    break;
-                case Player2:
-                    player2SelectState = Team;
-                    break;
-                default:
-                    break;
-            }
+        case Both:
+            nextPlayer1Selection();
+            nextPlayer2Selection();
             break;
         default:
             break;
@@ -1949,4 +1887,211 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
+}
+
+//! Player 1 next Selection 
+void CharacterSelect::nextPlayer1Selection(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Finished;
+                    grid.setCurrentState(1, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Stage;
+                    grid.setCurrentState(1, Gui::SelectListInterface::Done);
+                    stages.setEnabled(true);
+                    break;
+                case Stage:
+                    player1SelectState = Finished;
+                    stages.setEnabled(false);
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Team;
+                    player1TeamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    player1TeamMenu.setEnabled(false);
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Finished;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Team;
+                    player1TeamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    player1TeamMenu.setEnabled(false);
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Stage;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    stages.setEnabled(true);
+                    break;
+                case Stage:
+                    stages.setEnabled(false);
+                    player1SelectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Finished;
+                    grid.setCurrentState(1, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Team;
+                    player1TeamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    player1TeamMenu.setEnabled(false);
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = OpponentTeam;
+                    player2TeamMenu.setEnabled(true);
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    break;
+                case OpponentTeam:
+                    player1SelectState = Stage;
+                    player2TeamMenu.setEnabled(false);
+                    stages.setEnabled(true);
+                case Stage:
+                    player1SelectState = Finished;
+                    stages.setEnabled(false);
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Finished;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = Opponent;
+                    grid.setCurrentIndex(0, player2Start);
+                    break;
+                case Opponent:
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    player1SelectState = Stage;
+                    stages.setEnabled(true);
+                    break;
+                case Stage:
+                    stages.setEnabled(false);
+                    player1SelectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (player1SelectState){
+                case NotStarted:
+                    player1SelectState = Team;
+                    player1TeamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    player1TeamMenu.setEnabled(false);
+                    player1SelectState = Character;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player1Start);
+                    break;
+                case Character:
+                    player1SelectState = OpponentTeam;
+                    player2TeamMenu.setEnabled(true);
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    break;
+                case OpponentTeam:
+                    player1SelectState = Opponent;
+                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(0, player2Start);
+                    break;
+                case Opponent:
+                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    player1SelectState = Stage;
+                    stages.setEnabled(true);
+                    break;
+                case Stage:
+                    stages.setEnabled(false);
+                    player1SelectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+//! Player 2 next Selection
+void CharacterSelect::nextPlayer2Selection(){
 }
