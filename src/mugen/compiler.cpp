@@ -785,8 +785,18 @@ public:
         */
 
         if (identifier == "numproj"){
-            /* FIXME */
-            return compile(0);
+            class NumProj: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue((int) environment.getStage().findProjectile(0, &environment.getCharacter()).size());
+                }
+
+                Value * copy() const {
+                    return new NumProj();
+                }
+            };
+
+            return new NumProj();
         }
 
         if (identifier == "ishelper"){
@@ -1512,7 +1522,7 @@ public:
             class NumExplod: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().countMyEffects(&environment.getCharacter());
+                    return (int) environment.getStage().findExplode(0, (&environment.getCharacter())).size();
                 }
 
                 Value * copy() const {
@@ -3059,8 +3069,28 @@ public:
         }
 
         if (function == "numprojid"){
-            /* FIXME */
-            return compile(0);
+            class NumProjId: public Value {
+            public:
+                NumProjId(Value * id):
+                id(id){
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue((int) environment.getStage().findProjectile((int) id->evaluate(environment).toNumber(), &environment.getCharacter()).size());
+                }
+
+                virtual ~NumProjId(){
+                    delete id;
+                }
+
+                Value * id;
+
+                Value * copy() const {
+                    return new NumProjId(Compiler::copy(id));
+                }
+            };
+
+            return new NumProjId(compile(function.getArg1()));
         }
 
         if (function == "projhittime"){
@@ -4037,8 +4067,28 @@ public:
         */
 
         if (function == "numexplod"){
-            /* FIXME */
-            return compile(0);
+            class NumExplod: public Value{
+            public:
+                NumExplod(Value * id):
+                id(id){
+                }
+
+                Value * id;
+
+                virtual ~NumExplod(){
+                    delete id;
+                }
+
+                Value * copy() const {
+                    return new NumExplod(Compiler::copy(id));
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue((int) environment.getStage().findExplode((int) id->evaluate(environment).toNumber(), &environment.getCharacter()).size());
+                }
+            };
+
+            return new NumExplod(compile(function.getArg1()));
         }
 
         if (function == "animelemno"){

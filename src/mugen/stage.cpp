@@ -2239,18 +2239,7 @@ void Mugen::Stage::createDust(int x, int y){
 void Mugen::Stage::addEffect(Mugen::Effect * effect){
     showSparks.push_back(effect);
 }
-                    
-int Mugen::Stage::countMyEffects(const Mugen::Character * owner) const {
-    int total = 0;
-    for (vector<Mugen::Effect*>::const_iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
-        Mugen::Effect * effect = *it;
-        if (effect->getOwner() == owner){
-            total += 1;
-        }
-    }
-    return total;
-}
-    
+
 int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
     int count = 0;
     for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
@@ -2319,6 +2308,19 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
     }
 }
     
+std::vector<Mugen::Effect*> Mugen::Stage::findExplode(int id, const Character * owner) const {
+    vector<Effect*> found;
+
+    for (vector<Effect*>::const_iterator it = showSparks.begin(); it != showSparks.end(); it++){
+        Effect * effect = *it;
+        if ((id == 0 || effect->getId() == id) && effect->getOwner() == owner){
+            found.push_back(effect);
+        }
+    }
+
+    return found;
+}
+
 vector<Mugen::Projectile*> Mugen::Stage::findProjectile(int id, const Character * owner) const {
     vector<Projectile*> found;
 
