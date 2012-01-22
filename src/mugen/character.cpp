@@ -2240,7 +2240,8 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
         
 bool Character::canRecover() const {
     /* FIXME */
-    return true;
+    return false;
+    // return true;
     // return getY() == 0;
 }
 

@@ -385,15 +385,30 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
     return false;
 }
 
-bool RuntimeValue::operator<=(const RuntimeValue & value2) const {
-    const RuntimeValue & value1 = *this;
+static bool lessThanDouble(double a, double b){
+    return a < b;
+}
+
+static bool lessThanEqualsDouble(double a, double b){
+    return a <= b;
+}
+
+static bool greaterThanDouble(double a, double b){
+    return a > b;
+}
+
+static bool greaterThanEqualsDouble(double a, double b){
+    return a >= b;
+}
+
+static bool compareRuntimeValues(const RuntimeValue & value1, const RuntimeValue & value2, bool (*compareDoubles)(double a, double b)){
     if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
         throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
     }
     switch (value1.type){
-        case Double: {
+        case RuntimeValue::Double: {
             switch (value2.type){
-                case Double: return value1.toNumber() <= value2.toNumber();
+                case RuntimeValue::Double: return compareDoubles(value1.toNumber(), value2.toNumber());
                 default: break;
             }
         }
@@ -402,64 +417,22 @@ bool RuntimeValue::operator<=(const RuntimeValue & value2) const {
     std::ostringstream out;
     out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
     throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+}
+
+bool RuntimeValue::operator<=(const RuntimeValue & value2) const {
+    return compareRuntimeValues(*this, value2, lessThanEqualsDouble);
 }
 
 bool RuntimeValue::operator<(const RuntimeValue & value2) const {
-    const RuntimeValue & value1 = *this;
-    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
-        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
-    }
-    switch (value1.type){
-        case Double: {
-            switch (value2.type){
-                case Double: return value1.toNumber() < value2.toNumber();
-                default: break;
-            }
-        }
-        default: break;
-    }
-    std::ostringstream out;
-    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
-    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+    return compareRuntimeValues(*this, value2, lessThanDouble);
 }
 
 bool RuntimeValue::operator>(const RuntimeValue & value2) const {
-    const RuntimeValue & value1 = *this;
-    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
-        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
-    }
-    switch (value1.type){
-        case Double: {
-            switch (value2.type){
-                case Double: return value1.toNumber() > value2.toNumber();
-                default: break;
-            }
-        }
-        default: break;
-    }
-    std::ostringstream out;
-    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
-    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
+    return compareRuntimeValues(*this, value2, greaterThanDouble);
 }
 
 bool RuntimeValue::operator>=(const RuntimeValue & value2) const {
-    const RuntimeValue & value1 = *this;
-    if (value1.type == RuntimeValue::Invalid || value2.type == RuntimeValue::Invalid){
-        throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
-    }
-    switch (value1.type){
-        case Double: {
-            switch (value2.type){
-                case Double: return value1.toNumber() >= value2.toNumber();
-                default: break;
-            }
-        }
-        default: break;
-    }
-    std::ostringstream out;
-    out << "Don't know how to compare " << value1.canonicalName() << " with " << value2.canonicalName();
-    throw MugenRuntimeException(out.str(), __FILE__, __LINE__);
-
+    return compareRuntimeValues(*this, value2, greaterThanEqualsDouble);
 }
 
 const Character & EmptyEnvironment::getCharacter() const {
