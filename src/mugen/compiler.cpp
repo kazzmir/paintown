@@ -695,23 +695,23 @@ public:
                 return new JustString(value);
             }
         };
-	
-	if (identifier == "e"){
-	    return compile(exp(1.0));
-	}
-	
-	if (identifier == "id"){
-	    /* FIXME add ID's to character
-	    class ID : public Value{
-	    public:
-		RuntimeValue evaluate(const Environment & environment) const {
-		    return RuntimeValue(environment.getCharacter().getID());
-		}
-	    };
-	    
-	    return new ID(); */
-	    return compile(0);
-	}
+
+        if (identifier == "e"){
+            return compile(exp(1.0));
+        }
+
+        if (identifier == "id"){
+            /* FIXME add ID's to character
+               class ID : public Value{
+               public:
+               RuntimeValue evaluate(const Environment & environment) const {
+               return RuntimeValue(environment.getCharacter().getID());
+               }
+               };
+
+               return new ID(); */
+            return compile(0);
+        }
 
         if (identifier == "command"){
             class Command: public Value {
@@ -930,7 +930,7 @@ public:
             };
 
             return new Facing();
-	}
+        }
 
         if (identifier == "backedgebodydist" ||
             identifier == "backedgedist"){
@@ -1051,9 +1051,9 @@ public:
 
             return new LifeMax();
 
-	}
-	
-	if (identifier == "matchno"){
+        }
+
+        if (identifier == "matchno"){
             class Wins: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
@@ -1067,8 +1067,8 @@ public:
             };
 
             return new Wins();
-	}
-	
+        }
+
         if (identifier == "matchover"){
             class Over: public Value {
             public:
@@ -1400,9 +1400,9 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* FIXME 
-		     This trigger is valid only when the player is in an attack state. 
-		     MoveReversed gives a non-zero value if P1's attack has been reversed by P2. It gives 0 otherwise.
-		     */
+                       This trigger is valid only when the player is in an attack state. 
+                       MoveReversed gives a non-zero value if P1's attack has been reversed by P2. It gives 0 otherwise.
+                       */
                     return RuntimeValue(0);
                 }
 
@@ -1536,7 +1536,7 @@ public:
             };
 
             return new GameTime();
-	}
+        }
 
         if (identifier == "hitshakeover"){
             class HitShakeOver: public Value {
@@ -1785,9 +1785,9 @@ public:
         }
         
         if (identifier == "powermax"){
-	    /* TODO Findout if there is a setting somewhere in MUGEN that contains this info */
-	    return compile(3000);
-	}
+            /* TODO Findout if there is a setting somewhere in MUGEN that contains this info */
+            return compile(3000);
+        }
         
         if (identifier == "internal:extra-jumps"){
             class ExtraJumps: public Value {
@@ -1861,8 +1861,8 @@ public:
         }
         
         if (identifier == "tickspersecond"){
-	    return compile(Mugen::Data::getInstance().getGameSpeed());
-	}
+            return compile(Mugen::Data::getInstance().getGameSpeed());
+        }
 
         std::ostringstream out;
         out << "Don't know how to compile identifier '" << identifier.toString() << "' on line " << identifier.getLine() << " at column " << identifier.getColumn();
@@ -2337,8 +2337,8 @@ public:
                 return RuntimeValue(cFunction(result));
             }
         };
-	
-	if (function == "const"){
+
+        if (function == "const"){
             class ConstWalker: public Ast::Walker {
             public:
                 ConstWalker():
@@ -2348,7 +2348,7 @@ public:
                 Value * compiled;
 
                 Value * compileConst(const Ast::Identifier & identifier){
-		    if (identifier == "data.life"){
+                    if (identifier == "data.life"){
                         class DataLife: public Value {
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
@@ -2381,7 +2381,7 @@ public:
                     if (identifier == "data.liedown.time"){
                         /* FIXME */
                         return compile(0);
-		    }
+                    }
                     
                     if (identifier == "data.defence"){
                         class Defence: public Value {
@@ -2396,7 +2396,7 @@ public:
                         };
 
                         return new Defence();
-		    }
+                    }
 
                     if (identifier == "data.attack"){
                         class Attack: public Value {
@@ -2411,29 +2411,29 @@ public:
                         };
 
                         return new Attack();
-		    }
+                    }
 
                     /* TODO implement rest 
                     if (identifier == "data.fall.defence_mul"){
-		    }
+                    }
                     if (identifier == "data.airjuggle"){
-		    }
+                    }
                     if (identifier == "data.sparkno"){
-		    }
+                    }
                     if (identifier == "data.guard.sparkno"){
-		    }
+                    }
                     if (identifier == "data.ko.echo"){
-		    }
+                    }
                     if (identifier == "data.intpersistindex"){
-		    }
-		    
+                    }
+
                     if (identifier == "movement.airjump.num"){
-		    }
-		    
+                    }
+
                     if (identifier == "movement.airjump.height"){
-		    }
+                    }
                     */ 
-		    
+
                     if (identifier == "movement.yaccel"){
                         class MovementYAccel: public Value {
                         public:
@@ -2450,22 +2450,22 @@ public:
                     }
                     
                     /* FIXME others
-			movement.crouch.friction: Returns value of the "crouch.friction" parameter. (float)
-			movement.stand.friction.threshold: Returns value of the "stand.friction.threshold" parameter. (float)
-			movement.crouch.friction.threshold: Returns value of the "crouch.friction.threshold" parameter. (float)
-			movement.jump.changeanim.threshold: Returns value of the "jump.changeanim.threshold" parameter. (float)
-			movement.air.gethit.groundlevel: Returns value of the "air.gethit.groundlevel" parameter. (float)
-			movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
-			movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
-			movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
-			movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
-			movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
-			movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
-			movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
-			movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
-			movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
-			movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
-		    */
+                       movement.crouch.friction: Returns value of the "crouch.friction" parameter. (float)
+                       movement.stand.friction.threshold: Returns value of the "stand.friction.threshold" parameter. (float)
+                       movement.crouch.friction.threshold: Returns value of the "crouch.friction.threshold" parameter. (float)
+                       movement.jump.changeanim.threshold: Returns value of the "jump.changeanim.threshold" parameter. (float)
+                       movement.air.gethit.groundlevel: Returns value of the "air.gethit.groundlevel" parameter. (float)
+                       movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
+                       movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
+                       movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
+                       movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
+                       movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
+                       movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
+                       movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
+                       movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
+                       movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
+                       movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
+                       */
 
                     if (identifier == "movement.stand.friction"){
                         class StandFriction: public Value {
@@ -2740,42 +2740,42 @@ public:
                         /* FIXME */
                         return compile(0);
                     }
-		    
+
                     if (identifier == "size.ground.front"){
                         /* FIXME */
                         return compile(0);
                     }
-		    
+
                     if (identifier == "size.air.back"){
                         /* FIXME */
                         return compile(0);
                     }
-		    
+
                     if (identifier == "size.air.front"){
                         /* FIXME */
                         return compile(0);
                     }
-		    
+
                     if (identifier == "size.height"){
                         /* FIXME */
                         return compile(0);
                     }
-                    
+
                     if (identifier == "size.attack.dist"){
                         /* FIXME */
                         return compile(0);
                     }
-		    
+
                     if (identifier == "size.proj.attack.dist"){
                         /* FIXME */
                         return compile(0);
                     }
-                    
+
                     if (identifier == "size.proj.doscale"){
                         /* FIXME */
                         return compile(0);
                     }
-		    
+
                     if (identifier == "size.head.pos.x"){
                         /* FIXME */
                         return compile(0);
@@ -2827,7 +2827,7 @@ public:
             return walker.compiled;
         }
 
-	if (function == "asin"){
+        if (function == "asin"){
             return new MetaCircularArg1("asin", asin, compile(function.getArg1()));
         }
         
@@ -2848,8 +2848,8 @@ public:
         }
         
         if (function == "exp"){
-	    return new MetaCircularArg1("exp", exp, compile(function.getArg1()));
-	}
+            return new MetaCircularArg1("exp", exp, compile(function.getArg1()));
+        }
 
         /*
         if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(function.getName()), "projcontact\\d*")){
@@ -2981,82 +2981,82 @@ public:
                                compile(function.getArg2()),
                                compile(function.getArg3()));
         }
-	
+
         if (function == "ln"){
-	    class Ln: public Value {
-	    public: 
-		Ln(Value * argument):
-		argument(argument){
-		}
+            class Ln: public Value {
+            public: 
+                Ln(Value * argument):
+                    argument(argument){
+                    }
 
-		Value * argument;
+                Value * argument;
 
-		virtual ~Ln(){
-		    delete argument;
-		}
+                virtual ~Ln(){
+                    delete argument;
+                }
 
                 Value * copy() const {
                     return new Ln(Compiler::copy(argument));
                 }
-		
+
                 RuntimeValue evaluate(const Environment & environment) const {
-		    const double num = argument->evaluate(environment).toNumber();
+                    const double num = argument->evaluate(environment).toNumber();
 
                     if (num <= 0){
                         std::ostringstream out;
                         out << "Argument to ln must be positive but was " << num;
                         runtimeError(out.str(), __FILE__, __LINE__);
-		    }
+                    }
 
-		    const double value = log(num);
-		    
+                    const double value = log(num);
+
                     return RuntimeValue(value);
                 }
-	    };
-	    return new Ln(compile(function.getArg1()));
-	}
-	
-	if (function == "log"){
-	    class Log : public Value {
-	    public: 
-		Log(Value * arg1, Value * arg2):
-		arg1(arg1),
-		arg2(arg2){
-		}
+            };
+            return new Ln(compile(function.getArg1()));
+        }
 
-		Value * arg1;
-		Value * arg2;
+        if (function == "log"){
+            class Log : public Value {
+            public: 
+                Log(Value * arg1, Value * arg2):
+                    arg1(arg1),
+                    arg2(arg2){
+                    }
 
-		virtual ~Log(){
-		    delete arg1;
-		    delete arg2;
-		}
+                Value * arg1;
+                Value * arg2;
+
+                virtual ~Log(){
+                    delete arg1;
+                    delete arg2;
+                }
 
                 Value * copy() const {
                     return new Log(Compiler::copy(arg1), Compiler::copy(arg2));
                 }
-		
+
                 RuntimeValue evaluate(const Environment & environment) const {
-		    const double base = arg1->evaluate(environment).toNumber();
-		    const double value = arg2->evaluate(environment).toNumber();
+                    const double base = arg1->evaluate(environment).toNumber();
+                    const double value = arg2->evaluate(environment).toNumber();
                     if (base <= 0){
                         std::ostringstream out;
                         out << "Base of log must be positive but was " << base;
                         runtimeError(out.str(), __FILE__, __LINE__);
-		    } else if (value <= 0){
+                    } else if (value <= 0){
                         std::ostringstream out;
                         out << "Value of log must be positive but was " << value;
                         runtimeError(out.str(), __FILE__, __LINE__);
-		    }
+                    }
 
-		    const double result = log(value) / log(base);
-		    
+                    const double result = log(value) / log(base);
+
                     return RuntimeValue(result);
                 }
-	    };
+            };
 
-	    return new Log(compile(function.getArg1()),compile(function.getArg2()));
-	}
+            return new Log(compile(function.getArg1()),compile(function.getArg2()));
+        }
 
         if (function == "numprojid"){
             /* FIXME */
@@ -3064,8 +3064,70 @@ public:
         }
 
         if (function == "projhittime"){
-            /* FIXME */
-            return compile(-1);
+            class ProjHitTime: public Value {
+            public: 
+                ProjHitTime(Value * arg1):
+                    arg1(arg1){
+                    }
+
+                Value * arg1;
+
+                virtual ~ProjHitTime(){
+                    delete arg1;
+                }
+
+                Value * copy() const {
+                    return new ProjHitTime(Compiler::copy(arg1));
+                }
+
+                /* Basically this will return -1 if no projectiles hit yet. Then we
+                 * just need to handle cases when there is 1 projectile to check
+                 * and when there are multiple.
+                 * If there are multiple then return a vector of ints.
+                 */
+                RuntimeValue projHit(const vector<Projectile*> projectiles) const {
+                    if (projectiles.size() == 0){
+                        return RuntimeValue(-1);
+                    } else if (projectiles.size() == 1){
+                        Projectile * projectile = projectiles[0];
+                        if (projectile->getLastHitTicks() > 0){
+                            return RuntimeValue((int) projectile->getLastHitTicks());
+                        } else {
+                            return RuntimeValue(-1);
+                        }
+                    } else {
+                        vector<int> out;
+                        for (vector<Projectile*>::const_iterator it = projectiles.begin(); it != projectiles.end(); it++){
+                            Projectile * projectile = *it;
+                            if (projectile->getLastHitTicks() > 0){
+                                out.push_back(projectile->getLastHitTicks());
+                            }
+                        }
+
+                        /* Nothing hit, -1 */
+                        if (out.size() == 0){
+                            return RuntimeValue(-1);
+                        /* One thing hit, just return that */
+                        } else if (out.size() == 1){
+                            return RuntimeValue(out[0]);
+                        } else {
+                            /* Multiple things thit, return a vector */
+                            return RuntimeValue(out);
+                        }
+                    }
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int id = (int) arg1->evaluate(environment).toNumber();
+                    if (id <= 0){
+                        return projHit(environment.getStage().findProjectile(0, &environment.getCharacter()));
+                    } else {
+                        return projHit(environment.getStage().findProjectile(id, &environment.getCharacter()));
+                    }
+                }
+            };
+
+            return new ProjHitTime(compile(function.getArg1()));
         }
 
         if (function == "projhit"){
@@ -3553,8 +3615,8 @@ public:
         }
         
         if (function == "teammode"){
-	    /* FIXME compare if current mode is single, simul or turns return 1 otherwise return 0 */
-	    class TeamMode: public Value {
+            /* FIXME compare if current mode is single, simul or turns return 1 otherwise return 0 */
+            class TeamMode: public Value {
             public:
                 enum Mode{
                     Single,
@@ -3562,19 +3624,19 @@ public:
                     Simul
                 };
 
-		TeamMode(const std::string & type):
+                TeamMode(const std::string & type):
                 check(Single){
                     if (type == "single"){
-			check = Single;
-		    } else if (type == "turns"){
-			check = Turns;
-		    } else if (type == "simul"){
-			check = Simul;
-		    }
-		}
+                        check = Single;
+                    } else if (type == "turns"){
+                        check = Turns;
+                    } else if (type == "simul"){
+                        check = Simul;
+                    }
+                }
 
                 TeamMode(const TeamMode & you):
-                check(you.check){
+                    check(you.check){
                 }
 
                 Value * copy() const {
@@ -3594,13 +3656,13 @@ public:
                         case Turns : return RuntimeValue(false);
                         case Simul : return RuntimeValue(false);
                     } 
-		    
-		    return RuntimeValue(false);
+
+                    return RuntimeValue(false);
                 }
             };
-	    
-	    return new TeamMode(function.getArg1()->toString());
-	}
+
+            return new TeamMode(function.getArg1()->toString());
+        }
 
         /* it would be nice to combine var/fvar/sysvar */
         if (function == "var"){
@@ -3778,11 +3840,11 @@ public:
         
         if (function == "acos"){
             return new MetaCircularArg1("acos", acos, compile(function.getArg1()));
-	}
+        }
         
         if (function == "cos"){
             return new MetaCircularArg1("cos", cos, compile(function.getArg1()));
-	}
+        }
 
         if (function == "animexist"){
             class AnimExist: public Value {

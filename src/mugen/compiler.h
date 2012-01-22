@@ -43,6 +43,7 @@ public:
         RangeType,
         StateType,
         AttackAttribute,
+        ListOfInt
     };
 
     struct StateTypes{
@@ -96,6 +97,11 @@ public:
     RuntimeValue(const std::vector<std::string> & strings):
     type(ListOfString),
     strings_value(strings){
+    }
+
+    RuntimeValue(const std::vector<int> & values):
+    type(ListOfInt),
+    ints_value(values){
     }
 
     RuntimeValue(int low, int high):
@@ -170,6 +176,7 @@ public:
     double double_value;
     std::vector<std::string> strings_value;
     std::vector<AttackType::Attribute> attackAttributes;
+    std::vector<int> ints_value;
     Range range;
 };
 
