@@ -383,10 +383,20 @@ protected:
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Parse select file
     void parseSelect();
+    //! Player1 Up
+    void player1Up();
+    //! Player1 Down
+    void player1Down();
+    //! Player 1 Left
+    void player1Left();
+    //! Player 1 Right
+    void player1Right();
     //! Player 1 next Selection 
     void nextPlayer1Selection();
     //! Player 2 next Selection
     void nextPlayer2Selection();
+    //! Play sound
+    void playSound(const SoundType &);
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid

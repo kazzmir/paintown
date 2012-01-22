@@ -1889,7 +1889,326 @@ void CharacterSelect::parseSelect(){
     }
 }
 
-//! Player 1 next Selection 
+void CharacterSelect::player1Up(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.up()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.up()){
+                        playSound(Player2TeamMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.up()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.up()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.up()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.up()){
+                        playSound(Player2TeamMove);
+                    }
+                case Opponent:
+                    if (grid.up(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void CharacterSelect::player1Down(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.down()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.down()){
+                        playSound(Player2TeamMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.down()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.down()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.down()){
+                        playSound(Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.down()){
+                        playSound(Player2TeamMove);
+                    }
+                case Opponent:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void CharacterSelect::player1Left(){
+}
+
+void CharacterSelect::player1Right(){
+}
+ 
 void CharacterSelect::nextPlayer1Selection(){
     switch (currentGameType){
         case Mugen::Arcade:
@@ -2092,6 +2411,12 @@ void CharacterSelect::nextPlayer1Selection(){
     }
 }
 
-//! Player 2 next Selection
 void CharacterSelect::nextPlayer2Selection(){
+}
+
+void CharacterSelect::playSound(const SoundType & type){
+    MugenSound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
+    if (sound){
+        sound->play();
+    }
 }
