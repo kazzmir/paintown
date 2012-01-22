@@ -3085,13 +3085,13 @@ public:
                  * and when there are multiple.
                  * If there are multiple then return a vector of ints.
                  */
-                RuntimeValue projHit(const vector<Projectile*> projectiles) const {
+                RuntimeValue projHit(const Stage & stage, const vector<Projectile*> projectiles) const {
                     if (projectiles.size() == 0){
                         return RuntimeValue(-1);
                     } else if (projectiles.size() == 1){
                         Projectile * projectile = projectiles[0];
                         if (projectile->getLastHitTicks() > 0){
-                            return RuntimeValue((int) projectile->getLastHitTicks());
+                            return RuntimeValue((int) (stage.getTicks() - projectile->getLastHitTicks()));
                         } else {
                             return RuntimeValue(-1);
                         }
@@ -3100,7 +3100,7 @@ public:
                         for (vector<Projectile*>::const_iterator it = projectiles.begin(); it != projectiles.end(); it++){
                             Projectile * projectile = *it;
                             if (projectile->getLastHitTicks() > 0){
-                                out.push_back(projectile->getLastHitTicks());
+                                out.push_back(stage.getTicks() - projectile->getLastHitTicks());
                             }
                         }
 
@@ -3120,9 +3120,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int id = (int) arg1->evaluate(environment).toNumber();
                     if (id <= 0){
-                        return projHit(environment.getStage().findProjectile(0, &environment.getCharacter()));
+                        return projHit(environment.getStage(), environment.getStage().findProjectile(0, &environment.getCharacter()));
                     } else {
-                        return projHit(environment.getStage().findProjectile(id, &environment.getCharacter()));
+                        return projHit(environment.getStage(), environment.getStage().findProjectile(id, &environment.getCharacter()));
                     }
                 }
             };
@@ -3141,8 +3141,70 @@ public:
         }
         
         if (function == "projcanceltime"){
-            /* FIXME */
-            return compile(-1);
+            class ProjCancelTime: public Value {
+            public: 
+                ProjCancelTime(Value * arg1):
+                    arg1(arg1){
+                    }
+
+                Value * arg1;
+
+                virtual ~ProjCancelTime(){
+                    delete arg1;
+                }
+
+                Value * copy() const {
+                    return new ProjCancelTime(Compiler::copy(arg1));
+                }
+
+                /* Basically this will return -1 if no projectiles hit yet. Then we
+                 * just need to handle cases when there is 1 projectile to check
+                 * and when there are multiple.
+                 * If there are multiple then return a vector of ints.
+                 */
+                RuntimeValue projCancel(const Stage & stage, const vector<Projectile*> projectiles) const {
+                    if (projectiles.size() == 0){
+                        return RuntimeValue(-1);
+                    } else if (projectiles.size() == 1){
+                        Projectile * projectile = projectiles[0];
+                        if (projectile->getLastCancelTicks() > 0){
+                            return RuntimeValue((int) (stage.getTicks() - projectile->getLastCancelTicks()));
+                        } else {
+                            return RuntimeValue(-1);
+                        }
+                    } else {
+                        vector<int> out;
+                        for (vector<Projectile*>::const_iterator it = projectiles.begin(); it != projectiles.end(); it++){
+                            Projectile * projectile = *it;
+                            if (projectile->getLastCancelTicks() > 0){
+                                out.push_back(stage.getTicks() - projectile->getLastCancelTicks());
+                            }
+                        }
+
+                        /* Nothing hit, -1 */
+                        if (out.size() == 0){
+                            return RuntimeValue(-1);
+                        /* One thing hit, just return that */
+                        } else if (out.size() == 1){
+                            return RuntimeValue(out[0]);
+                        } else {
+                            /* Multiple things thit, return a vector */
+                            return RuntimeValue(out);
+                        }
+                    }
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int id = (int) arg1->evaluate(environment).toNumber();
+                    if (id <= 0){
+                        return projCancel(environment.getStage(), environment.getStage().findProjectile(0, &environment.getCharacter()));
+                    } else {
+                        return projCancel(environment.getStage(), environment.getStage().findProjectile(id, &environment.getCharacter()));
+                    }
+                }
+            };
+
+            return new ProjCancelTime(compile(function.getArg1()));
         }
        
         if (function == "projguardedtime"){

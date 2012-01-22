@@ -872,13 +872,13 @@ void Mugen::Stage::doProjectileToProjectileCollision(Projectile * mine, Projecti
     if (anyCollisions(mine->getDefenseBoxes(), (int) mine->getX(), (int) mine->getY(),
                       his->getAttackBoxes(), (int) his->getX(), (int) his->getY())){
         if (mine->getPriority() > his->getPriority()){
-            his->canceled(mine);
+            his->canceled(*this, mine);
         } else if (his->getPriority() > mine->getPriority()){
-            mine->canceled(his);
+            mine->canceled(*this, his);
         } else {
             /* Both cancel if priorities are the same */
-            mine->canceled(his);
-            his->canceled(mine);
+            mine->canceled(*this, his);
+            his->canceled(*this, mine);
         }
     }
 }

@@ -39,14 +39,18 @@ public:
     virtual int getPriority() const;
 
     /* This projectile is being canceled by the higher priority projectile */
-    virtual void canceled(Projectile * higher);
+    virtual void canceled(const Stage & stage, Projectile * higher);
 
     virtual double getX() const;
     virtual double getY() const;
 
     virtual const int getId() const;
 
+    /* Ticks since this projectile hit something */
     virtual unsigned long int getLastHitTicks() const;
+
+    /* Ticks since this projectile was canceled */
+    virtual int getLastCancelTicks() const;
 
     /* False if the miss time is still active */
     bool canCollide() const;
@@ -87,6 +91,7 @@ protected:
     int priority;
     int cancelAnimation;
     unsigned long int lastHitTicks;
+    int lastCanceled;
 };
 
 }

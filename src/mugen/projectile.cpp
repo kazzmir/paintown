@@ -44,7 +44,8 @@ id(id),
 hit(hit),
 priority(priority),
 cancelAnimation(cancelAnimation),
-lastHitTicks(0){
+lastHitTicks(0),
+lastCanceled(0){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
@@ -56,6 +57,10 @@ Projectile::~Projectile(){
 
 Character * Projectile::getOwner() const {
     return owner;
+}
+
+int Projectile::getLastCancelTicks() const {
+    return lastCanceled;
 }
     
 const int Projectile::getId() const {
@@ -118,10 +123,11 @@ int Projectile::getPriority() const {
     return priority;
 }
     
-void Projectile::canceled(Projectile * higher){
+void Projectile::canceled(const Stage & stage, Projectile * higher){
     shouldRemove = true;
     velocityX = removeVelocityX;
     velocityY = removeVelocityY;
+    lastCanceled = stage.getTicks();
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(cancelAnimation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
