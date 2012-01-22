@@ -112,7 +112,7 @@ static void showOptions(){
     Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
-    Global::debug(0) << " " << all(MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG)) << " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start watch game with the specified players and stage" << endl;
+    Global::debug(0) << " " << all(MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG)) << " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts" << endl;
     Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
     Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
     Global::debug(0) << " " << all(RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG)) << " : Don't rate limit the game to the default fps (40). This is only useful for benchmarking graphics capabilities." << endl;

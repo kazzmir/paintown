@@ -7,8 +7,9 @@ testEnv.VariantDir('common', '../common')
 
 use = testEnv
 
-SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
-SConscript('../../paintown-engine/SConscript', exports = ['use'], variant_dir = 'paintown')
+# SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
+# SConscript('../../paintown-engine/SConscript', exports = ['use'], variant_dir = 'paintown')
+use.Append(LIBS = ['mugen', 'paintown-engine'])
 
 source = Split("""
 test.cpp

@@ -9,10 +9,11 @@ def addObjects(files):
     more_source.extend(files)
 
 use = testEnv
-SConscript('../../paintown-engine/SConscript', exports = ['use'], variant_dir = 'paintown')
+# SConscript('../../paintown-engine/SConscript', exports = ['use'], variant_dir = 'paintown')
 
 # We only need mugen for the collector which is sort of dumb, try to get rid of this
-SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
+# SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
+use.Append(LIBS = ['paintown-engine', 'mugen'])
 
 load_source = Split("""
 common/init.cpp

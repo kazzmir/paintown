@@ -6,7 +6,8 @@ testEnv.VariantDir('common', '../common/', duplicate = False)
 
 use = testEnv
 
-SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
+use.Append(LIBS = ['mugen'])
+# SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
 
 most_game_source = Split("""
 test/globals.cpp

@@ -31,6 +31,11 @@ if use['PAINTOWN_BUILD_TESTS']:
         #    print "Deleting %s" % source[0].path
         #    Delete(source[0].path)
     use['PAINTOWN_TEST'] = Action(run_it, 'Test')
+
+    use = use.Clone()
+    use.Append(CPPPATH = ['#/src'])
+    use.Append(LIBPATH = ['../../mugen', '../../paintown-engine'])
+
     all = []
     all.extend(SConscript('token/SConstruct', exports = ['use']))
     all.extend(SConscript('regex/SConstruct', exports = ['use']))

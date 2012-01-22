@@ -258,8 +258,6 @@ elif useMinpspw():
 def addObjects(objects):
     obj_files.extend(objects)
 
-SConscript('test/SConstruct', exports = ['use'])
-
 # Make this a function so we don't clobber the 'use' variable
 def stuff(use):
     SConscript('mugen/SConscript', exports = ['use'])
@@ -267,6 +265,18 @@ def stuff(use):
 
 paintownEnv = use.Clone()
 stuff(paintownEnv)
+
+def test(env):
+    # Hack to replicate checking for python
+    use = env.Clone()
+    # Ugly way to pass the custom tests in
+    config = use.Configure(custom_tests = use['PAINTOWN_TESTS'])
+    # config.CheckRuby()
+    config.CheckPython()
+    use = config.Finish()
+    SConscript('test/SConstruct', exports = ['use'])
+
+test(use)
 
 x = []
 # FIXME: adding psp_prx here is ugly, find a better way
