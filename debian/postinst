@@ -1,5 +1,7 @@
 #!/bin/sh
 
+echo "Paintown has been installed to /usr/games/paintown"
+echo
 echo "You need to download the data manually from the Paintown website"
 echo "Get the latest data from here"
 echo
@@ -10,3 +12,6 @@ echo
 echo "Once you have the data, unzip it somewhere and run paintown from that same directory."
 echo " $ unzip data-3.5.0.zip"
 echo " $ paintown"
+echo 
+echo "Or if you don't have /usr/games in your PATH then use"
+echo " $ /usr/games/paintown"
