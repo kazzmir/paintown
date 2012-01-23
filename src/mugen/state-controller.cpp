@@ -257,8 +257,9 @@ bool StateController::canTrigger(const Environment & environment) const {
         return false;
     }
 
-    if (triggers.find(-1) != triggers.end()){
-        vector<Compiler::Value*> values = triggers.find(-1)->second;
+    map<int, vector<Compiler::Value*> >::const_iterator triggerAll = triggers.find(-1);
+    if (triggerAll != triggers.end()){
+        const vector<Compiler::Value*> & values = triggerAll->second;
         /* if the triggerall fails then no triggers will work */
         if (!canTrigger(values, environment)){
             return false;
@@ -267,7 +268,7 @@ bool StateController::canTrigger(const Environment & environment) const {
 
     vector<int> keys = sortTriggers();
     for (vector<int>::iterator it = keys.begin(); it != keys.end(); it++){
-        vector<Compiler::Value*> values = triggers.find(*it)->second;
+        const vector<Compiler::Value*> & values = triggers.find(*it)->second;
         /* if a trigger succeeds then stop processing and just return true */
         if (canTrigger(values, environment)){
             return true;
