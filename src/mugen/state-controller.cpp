@@ -192,12 +192,14 @@ void StateController::addTrigger(int number, Compiler::Value * trigger){
 }
 
 bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
-    /* this makes it easy to break in gdb */
     try{
+        /* this makes it easy to break in gdb */
+        /*
         if (debug){
             int x = 2;
             x += 1;
         }
+        */
         RuntimeValue result = expression->evaluate(FullEnvironment(stage, character, commands));
         return result.toBool();
     } catch (const MugenNormalRuntimeException e){
@@ -220,11 +222,15 @@ bool StateController::canTrigger(const Mugen::Stage & stage, const Character & c
         const Compiler::Value * value = *it;
         if (!canTrigger(stage, character, value, commands)){
             // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
-            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
+            if (getDebug() || Global::getDebug() >= 2){
+                Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
+            }
             return false;
         } else {
             // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
-            Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
+            if (getDebug() || Global::getDebug() >= 2){
+                Global::debug(2*!getDebug()) << "'" << value->toString() << "' did trigger" << endl;
+            }
         }
     }
     return true;
