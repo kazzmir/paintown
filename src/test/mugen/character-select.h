@@ -323,9 +323,136 @@ protected:
     bool finished;
 };
 
-struct IndexValue{
-    int group;
-    int index;
+class SoundSystem{
+public:
+    SoundSystem();
+    ~SoundSystem();
+    void init(const std::string &);
+    //! Sound types
+    enum Type{
+        Player1Move=0,
+        Player1Done,
+        Player1Random,
+        Player2Move,
+        Player2Done,
+        Player2Random,
+        Player1TeamMove,
+        Player1TeamValue,
+        Player1TeamDone,
+        Player2TeamMove,
+        Player2TeamValue,
+        Player2TeamDone,
+        StageMove,
+        StageDone,
+        Cancel,
+    };
+    void play(const Type &);
+    virtual void set(const Type &, int group, int sound);
+protected:
+    //! Sounds
+    Mugen::SoundMap sounds;
+    //! Sound lookup
+    struct IndexValue{
+        int group;
+        int index;
+    };
+    std::map<Type, IndexValue> soundLookup;
+};
+
+class Player{
+public:
+    Player(unsigned int cursor, Gui::GridSelect &, std::vector< PaintownUtil::ReferenceCount<Cell> > &, std::vector<Mugen::ArcadeData::CharacterInfo> &, TeamMenu &, TeamMenu &, StageMenu &, FontHandler &, FontHandler &, SoundSystem &);
+    virtual ~Player();
+    
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &);
+    
+    virtual void up();
+    virtual void down();
+    virtual void left();
+    virtual void right();
+    virtual void select();
+    
+    virtual void setPortraitEffects(const Mugen::Effects &, const Mugen::Effects &);
+    
+    void setCurrentGameType(const Mugen::GameType &);
+    
+    static inline void setRandomSwitchTime(int time){
+        Player::randomSwitchTime = time;
+    }
+    
+    inline void setCursorPosition(int x){
+        this->cursorPosition = x;
+    }
+    inline void setOpponentCursorPosition(int x){
+        this->opponentCursorPosition = x;
+    }
+    inline void setPortraitOffset(int x, int y){
+        this->portraitX = x;
+        this->portraitY = y;
+    }
+    inline void setOpponentPortraitOffset(int x, int y){
+        this->opponentPortraitX = x;
+        this->opponentPortraitY = y;
+    }
+    
+protected:
+    const unsigned int cursor;
+    Gui::GridSelect & grid;
+    std::vector< PaintownUtil::ReferenceCount<Cell> > & cells;
+    std::vector<Mugen::ArcadeData::CharacterInfo> & characters;
+    TeamMenu & teamMenu;
+    TeamMenu & opponentTeamMenu;
+    StageMenu & stageMenu;
+    FontHandler & font;
+    FontHandler & opponentFont;
+    SoundSystem & sounds;
+    
+    SoundSystem::Type moveSound, doneSound, randomSound, teamMoveSound, teamValueSound, teamDoneSound;
+    
+    //! Current GameType
+    Mugen::GameType currentGameType;
+    
+    //! Get current cell
+    const Mugen::ArcadeData::CharacterInfo & getCurrentCell();
+    
+    //! Next selection
+    void next();
+    
+    //! Start position
+    int cursorPosition, opponentCursorPosition;
+    
+    //! Portrait offset
+    int portraitX, portraitY, opponentPortraitX, opponentPortraitY;
+    
+    //! Portrait effects
+    Mugen::Effects portraitEffects, opponentPortraitEffects;
+    
+    //! Random switch
+    static int randomSwitchTime;
+    
+    //! switch time
+    int switchTime;
+    
+    //! Current random
+    unsigned int currentRandom;
+    
+    //! Player Collections
+    Mugen::ArcadeData::CharacterCollection collection;
+    Mugen::ArcadeData::CharacterCollection opponentCollection;
+    
+    enum SelectState{
+        NotStarted,
+        Team,
+        OpponentTeam,
+        Character,
+        Opponent,
+        Stage,
+        Finished,
+    };
+    //! Current State
+    SelectState selectState;
+    
 };
 
 class CharacterSelect{
@@ -341,13 +468,13 @@ public:
     //! Draw
     virtual void draw(const Graphics::Bitmap &);
     
-    enum Player{
+    enum PlayerType{
         Player1,
         Player2,
         Both,
     };
     //! Set Mode
-    virtual void setMode(const Mugen::GameType &, const Player & player = Player1);
+    virtual void setMode(const Mugen::GameType &, const PlayerType & player = Player1);
     //! Move up
     virtual void up(unsigned int cursor);
     //! Move down
@@ -367,27 +494,6 @@ public:
     //! Add stage
     virtual void addStage(const Filesystem::AbsolutePath &);
     
-    //! Sound types
-    enum SoundType{
-        Player1Move=0,
-        Player1Done,
-        Player1Random,
-        Player2Move,
-        Player2Done,
-        Player2Random,
-        Player1TeamMove,
-        Player1TeamValue,
-        Player1TeamDone,
-        Player2TeamMove,
-        Player2TeamValue,
-        Player2TeamDone,
-        StageMove,
-        StageDone,
-        Cancel,
-    };
-    //! Set sound
-    virtual void setSound(const SoundType &, int group, int sound);
-    
 protected:
     //! Get font
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
@@ -395,24 +501,6 @@ protected:
     void parseSelect();
     //! Get Current Cell
     const Mugen::ArcadeData::CharacterInfo & getCurrentCell(unsigned int cursor);
-    //! Player1 Up
-    void player1Up();
-    //! Player1 Down
-    void player1Down();
-    //! Player 1 Left
-    void player1Left();
-    //! Player 1 Right
-    void player1Right();
-    //! Player 1 Select
-    void player1Select();
-    //! Player 1 Draw
-    void player1Draw(const Graphics::Bitmap &);
-    //! Player 1 next Selection 
-    void nextPlayer1Selection();
-    //! Player 2 next Selection
-    void nextPlayer2Selection();
-    //! Play sound
-    void playSound(const SoundType &);
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
@@ -421,24 +509,12 @@ protected:
     int gridX, gridY;
     //! Grid draw point
     int gridPositionX, gridPositionY;
-    //! Starting positions
-    int player1Start, player2Start;
-    //! Portrait offset
-    int portrait1OffsetX, portrait1OffsetY, portrait2OffsetX, portrait2OffsetY;
-    //! Portrait effects
-    Mugen::Effects portrait1Effects, portrait2Effects;
-    //! Random switch time
-    int randomSwitchTime, player1SwitchTime, player2SwitchTime;
-    //! Current Random
-    unsigned int player1CurrentRandom, player2CurrentRandom;
     //! Cells
     std::vector< PaintownUtil::ReferenceCount<Cell> > cells;
     //! Sprites
     Mugen::SpriteMap sprites;
     //! Sounds
-    Mugen::SoundMap sounds;
-    //! Sound lookup
-    std::map<SoundType, IndexValue> soundLookup;
+    SoundSystem sounds;
     //! Select file
     Filesystem::AbsolutePath selectFile;
     //! Fonts
@@ -469,23 +545,9 @@ protected:
     //! Current GameType
     Mugen::GameType currentGameType;
     //! Current players
-    Player currentPlayer;
-    enum SelectState{
-        NotStarted,
-        Team,
-        OpponentTeam,
-        Character,
-        Opponent,
-        Stage,
-        Finished,
-    };
-    //! Current State
-    SelectState player1SelectState;
-    SelectState player2SelectState;
-    
-    //! Player Collections
-    Mugen::ArcadeData::CharacterCollection player1Collection;
-    Mugen::ArcadeData::CharacterCollection player2Collection;
+    PlayerType currentPlayer;
+    //! Players
+    Player player1, player2;
 };
 
 }

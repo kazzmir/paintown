@@ -24,6 +24,8 @@ int Cell::offsetY = 0;
 
 bool TeamMenu::wrapping = false;
 
+int Player::randomSwitchTime = 4;
+
 SelectFont::SelectFont():
 font(PaintownUtil::ReferenceCount<MugenFont>(NULL)),
 bank(0),
@@ -630,6 +632,1085 @@ const Filesystem::AbsolutePath & StageMenu::select(){
     }
     return stages[current];
 }
+
+SoundSystem::SoundSystem(){
+}
+
+SoundSystem::~SoundSystem(){
+}
+
+void SoundSystem::init(const std::string & file){
+    Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
+    Global::debug(1) << "Got Sound File: '" << file << "'" << std::endl;
+}
+
+void SoundSystem::play(const Type & type){
+    MugenSound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
+    if (sound){
+        sound->play();
+    }
+}
+
+void SoundSystem::set(const Type & type, int group, int sound){
+    IndexValue values;
+    values.group = group;
+    values.index = sound;
+    soundLookup[type] = values;
+}
+
+Player::Player(unsigned int cursor, Gui::GridSelect & grid, std::vector< PaintownUtil::ReferenceCount<Cell> > & cells, std::vector<Mugen::ArcadeData::CharacterInfo> & characters, TeamMenu & teamMenu, TeamMenu & opponentTeamMenu, StageMenu & stageMenu, FontHandler & font, FontHandler & opponentFont, SoundSystem & sounds):
+cursor(cursor),
+grid(grid),
+cells(cells),
+characters(characters),
+teamMenu(teamMenu),
+opponentTeamMenu(opponentTeamMenu),
+stageMenu(stageMenu),
+font(font),
+opponentFont(opponentFont),
+sounds(sounds),
+currentGameType(Mugen::Undefined),
+cursorPosition(0),
+opponentCursorPosition(0),
+portraitX(0), 
+portraitY(0),
+opponentPortraitX(0), 
+opponentPortraitY(0),
+switchTime(0),
+currentRandom(0),
+collection(Mugen::ArcadeData::CharacterCollection::Single),
+opponentCollection(Mugen::ArcadeData::CharacterCollection::Single),
+selectState(NotStarted){
+    if (cursor == 0){
+        moveSound = SoundSystem::Player1Move;
+        doneSound = SoundSystem::Player1Done;
+        randomSound = SoundSystem::Player1Random;
+        teamMoveSound = SoundSystem::Player1TeamMove;
+        teamValueSound = SoundSystem::Player1TeamValue;
+        teamDoneSound = SoundSystem::Player1TeamDone;
+    } else if (cursor == 1){
+        moveSound = SoundSystem::Player2Move;
+        doneSound = SoundSystem::Player2Done;
+        randomSound = SoundSystem::Player2Random;
+        teamMoveSound = SoundSystem::Player2TeamMove;
+        teamValueSound = SoundSystem::Player2TeamValue;
+        teamDoneSound = SoundSystem::Player2TeamDone;
+    }
+}
+
+Player::~Player(){
+}
+
+void Player::act(){
+    if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+        switchTime++;
+        if (switchTime >= randomSwitchTime){
+            switchTime = 0;
+            currentRandom = PaintownUtil::rnd(0,characters.size());
+            sounds.play(randomSound);
+        }
+    }
+}
+
+void Player::draw(const Graphics::Bitmap & work){
+    if (grid.getCurrentState(cursor) == Gui::SelectListInterface::Disabled){
+        return;
+    }
+    const Mugen::ArcadeData::CharacterCollection & currentCollection = selectState == Opponent ? opponentCollection : collection;
+    const Mugen::Effects & effects = selectState == Opponent ? opponentPortraitEffects : portraitEffects;
+    const int x = selectState == Opponent ? opponentPortraitX : portraitX, y = selectState == Opponent ? opponentPortraitY : portraitY;
+    FontHandler & currentFont = selectState == Opponent ? opponentFont : font;
+    
+    const Mugen::ArcadeData::CharacterInfo & character = currentCollection.checkSet() ? currentCollection.getLastSet() : getCurrentCell();
+    
+    character.drawPortrait(x, y, work, effects);
+    
+    int heightMod = 0;
+    if (currentCollection.getFirstSet()){
+        currentFont.draw(currentCollection.getFirst().getName(), work);
+        heightMod += 15;
+    }
+    if (currentCollection.getSecondSet()){
+        currentFont.draw(currentCollection.getSecond().getName(), work, heightMod);
+        heightMod += 15;
+    }
+    if (currentCollection.getThirdSet()){
+        currentFont.draw(currentCollection.getFirst().getName(), work, heightMod);
+        heightMod += 15;
+    }
+    if (currentCollection.getFourthSet()){
+        currentFont.draw(currentCollection.getFirst().getName(), work, heightMod);
+    }
+    
+    if (!currentCollection.checkSet()){
+        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
+            currentFont.draw("Random", work, heightMod);
+        } else {
+            currentFont.draw(character.getName(), work, heightMod);
+        }
+    }
+}
+
+void Player::up(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.up()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.up()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                case Opponent:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::down(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.down()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.down()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                case Opponent:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::left(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.left()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.left()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                case Opponent:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::right(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.right()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.right()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                case Opponent:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::select(){
+    switch (selectState){
+        case Team:
+            sounds.play(teamDoneSound);
+            next();
+            break;
+        case Character:
+            sounds.play(doneSound);
+            next();
+            break;
+        case Opponent:
+            sounds.play(doneSound);
+            next();
+            break;
+        case OpponentTeam:
+            sounds.play(teamDoneSound);
+            next();
+            break;
+        case Stage:
+            sounds.play(SoundSystem::StageDone);
+            next();
+            break;
+        case NotStarted:
+        case Finished:
+        default:
+            break;
+    }
+}
+
+void Player::setPortraitEffects(const Mugen::Effects & effects, const Mugen::Effects & opponentEffects){
+    portraitEffects = effects;
+    opponentPortraitEffects = opponentEffects;
+}
+
+void Player::setCurrentGameType(const Mugen::GameType & type){
+    currentGameType = type;
+    next();
+}
+
+void Player::next(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Stage;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    stageMenu.setEnabled(true);
+                    break;
+                case Stage:
+                    selectState = Finished;
+                    stageMenu.finish();
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = Finished;
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = Stage;
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                            stageMenu.setEnabled(true);
+                        }
+                    }
+                    break;
+                case Stage:
+                    stageMenu.finish();
+                    selectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = OpponentTeam;
+                            opponentTeamMenu.setEnabled(true);
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                case OpponentTeam:
+                    selectState = Stage;
+                    opponentTeamMenu.setEnabled(false);
+                    stageMenu.setEnabled(true);
+                case Stage:
+                    selectState = Finished;
+                    stageMenu.finish();
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Opponent;
+                    grid.setCurrentIndex(cursor, opponentCursorPosition);
+                    break;
+                case Opponent:
+                    opponentCollection.setFirst(getCurrentCell());
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    selectState = Stage;
+                    stageMenu.setEnabled(true);
+                    break;
+                case Stage:
+                    stageMenu.finish();
+                    selectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = OpponentTeam;
+                            opponentTeamMenu.setEnabled(true);
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                case OpponentTeam:
+                    opponentCollection.setType(opponentTeamMenu.select());
+                    selectState = Opponent;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, opponentCursorPosition);
+                    break;
+                case Opponent:
+                    if (!opponentCollection.checkSet()){
+                        opponentCollection.setNext(getCurrentCell());
+                        if (opponentCollection.checkSet()){
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                            selectState = Stage;
+                            stageMenu.setEnabled(true);
+                        }
+                    }
+                    break;
+                case Stage:
+                    stageMenu.finish();
+                    selectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+const Mugen::ArcadeData::CharacterInfo & Player::getCurrentCell(){
+    if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+        return characters[currentRandom];
+    } 
+    return cells[grid.getCurrentIndex(cursor)]->getCharacter();
+}
     
 CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
 file(file),
@@ -637,8 +1718,8 @@ gridX(0),
 gridY(0),
 gridPositionX(0),
 gridPositionY(0),
-player1Start(0),
-player2Start(0),
+/*cursorPosition(0),
+opponentCursorPosition(0),
 portrait1OffsetX(0),
 portrait1OffsetY(0),
 portrait2OffsetX(0),
@@ -647,14 +1728,17 @@ randomSwitchTime(4),
 player1SwitchTime(0),
 player2SwitchTime(0),
 player1CurrentRandom(0),
-player2CurrentRandom(0),
+player2CurrentRandom(0),*/
 nextCell(0),
 currentGameType(Undefined),
 currentPlayer(Player1),
-player1SelectState(NotStarted),
+/*
+selectState(NotStarted),
 player2SelectState(NotStarted),
-player1Collection(Mugen::ArcadeData::CharacterCollection::Single),
-player2Collection(Mugen::ArcadeData::CharacterCollection::Single){
+collection(Mugen::ArcadeData::CharacterCollection::Single),
+opponentCollection(Mugen::ArcadeData::CharacterCollection::Single),*/
+player1(0, grid, cells, characters, player1TeamMenu, player2TeamMenu, stages, player1Font, player2Font, sounds),
+player2(1, grid, cells, characters, player2TeamMenu, player1TeamMenu, stages, player2Font, player1Font, sounds){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
 
@@ -712,8 +1796,7 @@ void CharacterSelect::init(){
                         } else if (simple == "snd"){
                             std::string sndFile;
                             simple.view() >> sndFile;
-                            Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(sndFile)), select.sounds);
-                            Global::debug(1) << "Got Sound File: '" << sndFile << "'" << std::endl;
+                            select.sounds.init(sndFile);
                         } else if (simple == "logo.storyboard"){
                             // Ignore
                         } else if (simple == "intro.storyboard"){
@@ -753,6 +1836,9 @@ void CharacterSelect::init(){
 
                     CharacterSelect & self;
                     Mugen::SpriteMap & sprites;
+                    
+                    Mugen::Effects player1Effects;
+                    Mugen::Effects player2Effects;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "fadein.time" ){
@@ -852,7 +1938,7 @@ void CharacterSelect::init(){
                             try{
                                 int time;
                                 simple.view() >> time;
-                                self.randomSwitchTime = time;
+                                Player::setRandomSwitchTime(time);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.startcell"){
@@ -865,7 +1951,8 @@ void CharacterSelect::init(){
                                         index++;
                                     }
                                 }
-                                self.player1Start = index;
+                                self.player1.setCursorPosition(index);
+                                self.player2.setOpponentCursorPosition(index);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.active.spr"){
@@ -886,21 +1973,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player1Move, group, sound);
+                                self.sounds.set(SoundSystem::Player1Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player1Done, group, sound);
+                                self.sounds.set(SoundSystem::Player1Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player1Random, group, sound);
+                                self.sounds.set(SoundSystem::Player1Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.startcell"){
@@ -913,7 +2000,8 @@ void CharacterSelect::init(){
                                         index++;
                                     }
                                 }
-                                self.player2Start = index;
+                                self.player2.setCursorPosition(index);
+                                self.player1.setOpponentCursorPosition(index);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.active.spr"){
@@ -942,21 +2030,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player2Move, group, sound);
+                                self.sounds.set(SoundSystem::Player2Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player2Done, group, sound);
+                                self.sounds.set(SoundSystem::Player2Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player2Random, group, sound);
+                                self.sounds.set(SoundSystem::Player2Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "random.move.snd.cancel"){
@@ -971,21 +2059,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(StageMove, group, sound);
+                                self.sounds.set(SoundSystem::StageMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(StageDone, group, sound);
+                                self.sounds.set(SoundSystem::StageDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "cancel.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Cancel, group, sound);
+                                self.sounds.set(SoundSystem::Cancel, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "portrait.offset"){
@@ -1019,32 +2107,38 @@ void CharacterSelect::init(){
                             self.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p1.face.offset"){
                             try{
-                                simple.view() >> self.portrait1OffsetX >> self.portrait1OffsetY;
+                                int x = 0, y = 0;
+                                simple.view() >> x >> y;
+                                self.player1.setPortraitOffset(x, y);
+                                self.player2.setOpponentPortraitOffset(x, y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.face.scale"){
                             try{
-                                simple.view() >> self.portrait1Effects.scalex >> self.portrait1Effects.scaley;
+                                simple.view() >> player1Effects.scalex >> player1Effects.scaley;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.face.facing"){
                             try{
-                                simple.view() >> self.portrait1Effects.facing;
+                                simple.view() >> player1Effects.facing;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.offset"){
                             try{
-                                simple.view() >> self.portrait2OffsetX >> self.portrait2OffsetY;
+                                int x = 0, y = 0;
+                                simple.view() >> x >> y;
+                                self.player2.setPortraitOffset(x, y);
+                                self.player1.setOpponentPortraitOffset(x, y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.scale"){
                             try{
-                                simple.view() >> self.portrait2Effects.scalex >> self.portrait2Effects.scaley;
+                                simple.view() >> player2Effects.scalex >> player2Effects.scaley;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.facing"){
                             try{
-                                simple.view() >> self.portrait2Effects.facing;
+                                simple.view() >> player2Effects.facing;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.name.offset"){
@@ -1162,21 +2256,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player1TeamMove, group, sound);
+                                self.sounds.set(SoundSystem::Player1TeamMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.value.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player1TeamValue, group, sound);
+                                self.sounds.set(SoundSystem::Player1TeamValue, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player1TeamDone, group, sound);
+                                self.sounds.set(SoundSystem::Player1TeamDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.item.offset"){
@@ -1304,21 +2398,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player2TeamMove, group, sound);
+                                self.sounds.set(SoundSystem::Player2TeamMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.value.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player2TeamValue, group, sound);
+                                self.sounds.set(SoundSystem::Player2TeamValue, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.setSound(Player2TeamDone, group, sound);
+                                self.sounds.set(SoundSystem::Player2TeamDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.item.offset"){
@@ -1404,6 +2498,8 @@ void CharacterSelect::init(){
 
                 SelectInfoWalker walker(*this, sprites);
                 section->walk(walker);
+                player1.setPortraitEffects(walker.player1Effects, walker.player2Effects);
+                player2.setPortraitEffects(walker.player2Effects, walker.player1Effects);
             } else if (head == "selectbgdef"){ 
                 /* Background management */
                 background = PaintownUtil::ReferenceCount<Mugen::Background>(new Mugen::Background(file, "selectbg"));
@@ -1448,11 +2544,9 @@ void CharacterSelect::init(){
         }
         // Set up cursors
         grid.setCursors(2);
-        Global::debug(0) << "Player 1 start: " << player1Start << std::endl;
-        Global::debug(0) << "Player 2 start: " << player2Start << std::endl;
-        grid.setCurrentIndex(0, player1Start);
+        //grid.setCurrentIndex(0, cursorPosition);
         grid.setCurrentState(0, Gui::SelectListInterface::Disabled);
-        grid.setCurrentIndex(1, player2Start);
+        //grid.setCurrentIndex(1, opponentCursorPosition);
         grid.setCurrentState(1, Gui::SelectListInterface::Disabled);
 
     } catch (const Filesystem::NotFound & fail){
@@ -1471,8 +2565,10 @@ void CharacterSelect::act(){
     }
     background->act();
     grid.act();
+    player1.act();
+    player2.act();
     // Player 1 random?
-    if (cells[grid.getCurrentIndex(0)]->getRandom()){
+    /*if (cells[grid.getCurrentIndex(0)]->getRandom()){
         player1SwitchTime++;
         if (player1SwitchTime >= randomSwitchTime){
             player1SwitchTime = 0;
@@ -1486,7 +2582,7 @@ void CharacterSelect::act(){
             player2SwitchTime = 0;
             player2CurrentRandom = PaintownUtil::rnd(0,characters.size());
         }
-    }
+    }*/
     player1TeamMenu.act();
     player2TeamMenu.act();
     stages.act();
@@ -1543,8 +2639,10 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     titleFont.draw(getGameType(currentGameType), work);
     
     // Draw portrait and name
-    player1Draw(work);
-    
+    //player1Draw(work);
+    player1.draw(work);
+    player2.draw(work);
+    /*
     if (grid.getCurrentState(1) != Gui::SelectListInterface::Disabled){
         if (cells[grid.getCurrentIndex(1)]->getRandom()){
             const Mugen::ArcadeData::CharacterInfo & character = characters[player2CurrentRandom];
@@ -1557,7 +2655,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
             character.drawPortrait(portrait2OffsetX, portrait2OffsetY, work, portrait2Effects);
             player2Font.draw(character.getName(), work);
         }
-    }
+    }*/
     
     
     // FIXME remove and use properly, testing only now
@@ -1570,7 +2668,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     background->renderForeground(0,0,work);
 }
 
-void CharacterSelect::setMode(const Mugen::GameType & game, const Player & player){
+void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & player){
     if (game == Mugen::Undefined){
         return;
     }
@@ -1578,14 +2676,15 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const Player & playe
     currentPlayer = player;
     switch (currentPlayer){
         case Player1:
-            nextPlayer1Selection();
+            //nextPlayer1Selection();
+            player1.setCurrentGameType(currentGameType);
             break;
         case Player2:
-            nextPlayer2Selection();
+            player2.setCurrentGameType(currentGameType);
             break;
         case Both:
-            nextPlayer1Selection();
-            nextPlayer2Selection();
+            player1.setCurrentGameType(currentGameType);
+            player2.setCurrentGameType(currentGameType);
             break;
         default:
             break;
@@ -1594,41 +2693,41 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const Player & playe
 
 void CharacterSelect::up(unsigned int cursor){
     if (cursor == 0){
-        player1Up();
+        player1.up();
     } else if (cursor == 1){
-        
+        player2.up();
     }
 }
 
 void CharacterSelect::down(unsigned int cursor){
     if (cursor == 0){
-        player1Down();
+        player1.down();
     } else if (cursor == 1){
-        
+        player2.down();
     }
 }
 
 void CharacterSelect::left(unsigned int cursor){
     if (cursor == 0){
-        player1Left();
+        player1.left();
     } else if (cursor == 1){
-        
+        player2.left();
     }
 }
 
 void CharacterSelect::right(unsigned int cursor){
     if (cursor == 0){
-        player1Right();
+        player1.right();
     } else if (cursor == 1){
-        
+        player2.right();
     }
 }
 
 void CharacterSelect::select(unsigned int cursor){
     if (cursor == 0){
-        player1Select();
+        player1.select();
     } else if (cursor ==1){
-        
+        player2.select();
     }
 }
 
@@ -1666,13 +2765,6 @@ void CharacterSelect::addRandom(){
 
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
     stages.add(stage);
-}
-
-void CharacterSelect::setSound(const SoundType & type, int group, int sound){
-    IndexValue values;
-    values.group = group;
-    values.index = sound;
-    soundLookup[type] = values;
 }
 
 /* indexes start at 1 */
@@ -1838,1006 +2930,5 @@ void CharacterSelect::parseSelect(){
             context << __FILE__ << ":" << __LINE__;
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
-    }
-}
-
-const Mugen::ArcadeData::CharacterInfo & CharacterSelect::getCurrentCell(unsigned int cursor){
-    if (cursor == 0){
-        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
-            return characters[player1CurrentRandom];
-        }
-    } else if (cursor == 1){
-        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
-            return characters[player2CurrentRandom];
-        }
-    }
-    
-    return cells[grid.getCurrentIndex(cursor)]->getCharacter();
-}
-
-void CharacterSelect::player1Up(){
-    switch (currentGameType){
-        case Mugen::Arcade:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Versus:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamArcade:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.up()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.up()){
-                        playSound(Player2TeamMove);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamVersus:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.up()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                case Stage:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Survival:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.up()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                case Stage:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::SurvivalCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                case Stage:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Training:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Opponent:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Watch:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.up()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.up()){
-                        playSound(Player2TeamMove);
-                    }
-                case Opponent:
-                    if (grid.up(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void CharacterSelect::player1Down(){
-    switch (currentGameType){
-        case Mugen::Arcade:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Versus:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamArcade:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.down()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.down()){
-                        playSound(Player2TeamMove);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamVersus:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.down()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                case Stage:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Survival:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.down()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                case Stage:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::SurvivalCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                case Stage:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Training:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Opponent:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Watch:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.down()){
-                        playSound(Player1TeamMove);
-                    }
-                    break;
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.down()){
-                        playSound(Player2TeamMove);
-                    }
-                case Opponent:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void CharacterSelect::player1Left(){
-    switch (currentGameType){
-        case Mugen::Arcade:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Versus:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.left()){
-                        playSound(StageMove);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamArcade:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.left()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.left()){
-                        playSound(Player2TeamValue);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamVersus:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.left()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.left()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Survival:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.left()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.left()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::SurvivalCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.left()){
-                        playSound(StageMove);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Training:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Opponent:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.left()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Watch:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.left()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.left()){
-                        playSound(Player2TeamValue);
-                    }
-                case Opponent:
-                    if (grid.left(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.left()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void CharacterSelect::player1Right(){
-    switch (currentGameType){
-        case Mugen::Arcade:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Versus:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.right()){
-                        playSound(StageMove);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamArcade:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.right()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.right()){
-                        playSound(Player2TeamValue);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamVersus:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.right()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.right()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Survival:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.right()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.right()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::SurvivalCoop:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.down(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.right()){
-                        playSound(StageMove);
-                    }
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Training:
-            switch (player1SelectState){
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Opponent:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.right()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Watch:
-            switch (player1SelectState){
-                case Team:
-                    if (player1TeamMenu.right()){
-                        playSound(Player1TeamValue);
-                    }
-                    break;
-                case Character:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case OpponentTeam:
-                    if (player2TeamMenu.right()){
-                        playSound(Player2TeamValue);
-                    }
-                case Opponent:
-                    if (grid.right(0)){
-                        playSound(Player1Move);
-                    }
-                    break;
-                case Stage:
-                    if (stages.right()){
-                        playSound(StageMove);
-                    }
-                    break;
-                case NotStarted:
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-
-void CharacterSelect::player1Select(){
-    switch (player1SelectState){
-        case Team:
-            playSound(Player1TeamDone);
-            nextPlayer1Selection();
-            break;
-        case Character:
-            playSound(Player1Done);
-            nextPlayer1Selection();
-            break;
-        case Opponent:
-            playSound(Player1Done);
-            nextPlayer1Selection();
-            break;
-        case OpponentTeam:
-            playSound(Player2TeamDone);
-            nextPlayer1Selection();
-            break;
-        case Stage:
-            playSound(StageDone);
-            nextPlayer1Selection();
-            break;
-        case NotStarted:
-        case Finished:
-        default:
-            break;
-    }
-}
- 
-void CharacterSelect::nextPlayer1Selection(){
-    switch (currentGameType){
-        case Mugen::Arcade:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    player1Collection.setFirst(getCurrentCell(0));
-                    player1SelectState = Finished;
-                    grid.setCurrentState(1, Gui::SelectListInterface::Done);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Versus:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    player1Collection.setFirst(getCurrentCell(0));
-                    player1SelectState = Stage;
-                    grid.setCurrentState(1, Gui::SelectListInterface::Done);
-                    stages.setEnabled(true);
-                    break;
-                case Stage:
-                    player1SelectState = Finished;
-                    stages.finish();
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamArcade:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Team;
-                    player1TeamMenu.setEnabled(true);
-                    break;
-                case Team:
-                    player1Collection.setType(player1TeamMenu.select());
-                    player1TeamMenu.setEnabled(false);
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    if (!player1Collection.checkSet()){
-                        player1Collection.setNext(getCurrentCell(0));
-                        if (player1Collection.checkSet()){
-                            player1SelectState = Finished;
-                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamVersus:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Team;
-                    player1TeamMenu.setEnabled(true);
-                    break;
-                case Team:
-                    player1Collection.setType(player1TeamMenu.select());
-                    player1TeamMenu.setEnabled(false);
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    if (!player1Collection.checkSet()){
-                        player1Collection.setNext(getCurrentCell(0));
-                        if (player1Collection.checkSet()){
-                            player1SelectState = Stage;
-                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                            stages.setEnabled(true);
-                        }
-                    }
-                    break;
-                case Stage:
-                    stages.finish();
-                    player1SelectState = Finished;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::TeamCoop:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    player1Collection.setFirst(getCurrentCell(0));
-                    player1SelectState = Finished;
-                    grid.setCurrentState(1, Gui::SelectListInterface::Done);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Survival:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Team;
-                    player1TeamMenu.setEnabled(true);
-                    break;
-                case Team:
-                    player1Collection.setType(player1TeamMenu.select());
-                    player1TeamMenu.setEnabled(false);
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    if (!player1Collection.checkSet()){
-                        player1Collection.setNext(getCurrentCell(0));
-                        if (player1Collection.checkSet()){
-                            player1SelectState = OpponentTeam;
-                            player2TeamMenu.setEnabled(true);
-                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                        }
-                    }
-                    break;
-                case OpponentTeam:
-                    player1SelectState = Stage;
-                    player2TeamMenu.setEnabled(false);
-                    stages.setEnabled(true);
-                case Stage:
-                    player1SelectState = Finished;
-                    stages.finish();
-                default:
-                    break;
-            }
-            break;
-        case Mugen::SurvivalCoop:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    player1Collection.setFirst(getCurrentCell(0));
-                    player1SelectState = Finished;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Training:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    player1Collection.setFirst(getCurrentCell(0));
-                    player1SelectState = Opponent;
-                    grid.setCurrentIndex(0, player2Start);
-                    break;
-                case Opponent:
-                    player2Collection.setFirst(getCurrentCell(0));
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                    player1SelectState = Stage;
-                    stages.setEnabled(true);
-                    break;
-                case Stage:
-                    stages.finish();
-                    player1SelectState = Finished;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case Mugen::Watch:
-            switch (player1SelectState){
-                case NotStarted:
-                    player1SelectState = Team;
-                    player1TeamMenu.setEnabled(true);
-                    break;
-                case Team:
-                    player1Collection.setType(player1TeamMenu.select());
-                    player1TeamMenu.setEnabled(false);
-                    player1SelectState = Character;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player1Start);
-                    break;
-                case Character:
-                    if (!player1Collection.checkSet()){
-                        player1Collection.setNext(getCurrentCell(0));
-                        if (player1Collection.checkSet()){
-                            player1SelectState = OpponentTeam;
-                            player2TeamMenu.setEnabled(true);
-                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                        }
-                    }
-                    break;
-                case OpponentTeam:
-                    player2Collection.setType(player2TeamMenu.select());
-                    player1SelectState = Opponent;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Active);
-                    grid.setCurrentIndex(0, player2Start);
-                    break;
-                case Opponent:
-                    if (!player2Collection.checkSet()){
-                        player2Collection.setNext(getCurrentCell(0));
-                        if (player2Collection.checkSet()){
-                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                            player1SelectState = Stage;
-                            stages.setEnabled(true);
-                        }
-                    }
-                    break;
-                case Stage:
-                    stages.finish();
-                    player1SelectState = Finished;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-
-void CharacterSelect::player1Draw(const Graphics::Bitmap & work){
-    if (grid.getCurrentState(0) == Gui::SelectListInterface::Disabled){
-        return;
-    }
-    const Mugen::ArcadeData::CharacterInfo & character = player1Collection.checkSet() ? player1Collection.getLastSet() : getCurrentCell(0);
-    character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
-    int y = 0;
-    if (player1Collection.getFirstSet()){
-        player1Font.draw(player1Collection.getFirst().getName(), work);
-        y += 15;
-    }
-    if (player1Collection.getSecondSet()){
-        player1Font.draw(player1Collection.getSecond().getName(), work, y);
-        y += 15;
-    }
-    if (player1Collection.getThirdSet()){
-        player1Font.draw(player1Collection.getFirst().getName(), work, y);
-        y += 15;
-    }
-    if (player1Collection.getFourthSet()){
-        player1Font.draw(player1Collection.getFirst().getName(), work, y);
-    }
-    
-    if (!player1Collection.checkSet()){
-        if (cells[grid.getCurrentIndex(0)]->getRandom()){
-            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
-            player1Font.draw("Random", work, y);
-        } else {
-            player1Font.draw(character.getName(), work, y);
-        }
-    }
-}
-
-void CharacterSelect::nextPlayer2Selection(){
-}
-
-void CharacterSelect::playSound(const SoundType & type){
-    MugenSound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
-    if (sound){
-        sound->play();
     }
 }
