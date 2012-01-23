@@ -605,7 +605,7 @@ class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
     onDestroy()
   }
     
-  def getToken():Token = {
+  override def getToken():Token = {
     val temp = new Token()
     temp.addToken(new Token("defense"));
     for (defense <- boxes.filter(!isEmpty(_))){
@@ -620,7 +620,7 @@ class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
     temp
   }
     
-  def getName():String = getToken().toString()
+  override def getName():String = getToken().toString()
     
   def parse(token:Token):Defense = {
     val x1_token = token.findToken("x1");
@@ -652,7 +652,8 @@ class DefenseEvent extends AnimationEventNotifier with AnimationEvent {
 
   def isEmpty(defense:Defense):Boolean = {
     defense match {
-      case Defense(x1, y1, x2, y2) => x1 != 0 || x2 != 0 || y1 != 0 || y2 != 0
+      case Defense(0, 0, 0, 0) => true
+      case _ => false
     }
   }
 
