@@ -1718,25 +1718,9 @@ gridX(0),
 gridY(0),
 gridPositionX(0),
 gridPositionY(0),
-/*cursorPosition(0),
-opponentCursorPosition(0),
-portrait1OffsetX(0),
-portrait1OffsetY(0),
-portrait2OffsetX(0),
-portrait2OffsetY(0),
-randomSwitchTime(4),
-player1SwitchTime(0),
-player2SwitchTime(0),
-player1CurrentRandom(0),
-player2CurrentRandom(0),*/
 nextCell(0),
 currentGameType(Undefined),
 currentPlayer(Player1),
-/*
-selectState(NotStarted),
-player2SelectState(NotStarted),
-collection(Mugen::ArcadeData::CharacterCollection::Single),
-opponentCollection(Mugen::ArcadeData::CharacterCollection::Single),*/
 player1(0, grid, cells, characters, player1TeamMenu, player2TeamMenu, stages, player1Font, player2Font, sounds),
 player2(1, grid, cells, characters, player2TeamMenu, player1TeamMenu, stages, player2Font, player1Font, sounds){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
