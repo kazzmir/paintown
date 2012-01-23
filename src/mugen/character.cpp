@@ -301,6 +301,8 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
     airType = hit.airType;
     groundType = hit.groundType;
 
+    recoverTime = guy.getLieDownTime();
+
     chainId = hit.id;
 
     spritePriority = hit.player2SpritePriority;
@@ -1986,7 +1988,7 @@ static StateController * parseController(const string & input, const string & na
 }
 
 void Character::fixAssumptions(){
-    /* need a -1 state controller that changes to state 20 if holdfwd
+    /* TODO: need a -1 state controller that changes to state 20 if holdfwd
      * or holdback is pressed
      */
 
@@ -2411,6 +2413,10 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     vector<string> active = doInput(*stage);
 
     recordCommands(active);
+
+    if (hitState.recoverTime > 0){
+        hitState.recoverTime -= 1;
+    }
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){

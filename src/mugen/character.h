@@ -179,6 +179,7 @@ struct HitState{
         hits(0),
         slideTime(0),
         returnControlTime(0),
+        recoverTime(0),
         yAcceleration(0),
         yVelocity(0),
         xVelocity(0),
@@ -198,6 +199,7 @@ struct HitState{
     int hits;
     int slideTime;
     int returnControlTime;
+    int recoverTime;
     double yAcceleration;
     double yVelocity;
     double xVelocity;

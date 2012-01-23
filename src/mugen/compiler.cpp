@@ -3534,7 +3534,18 @@ public:
 
                 return new HitVarCtrlTime();
             } else if (var == "recovertime"){
-                /* TODO */
+                class HitVarRecoverTime: public HitVar {
+                public:
+                    RuntimeValue evaluate(const Environment & environment) const {
+                        return RuntimeValue(state(environment).recoverTime);
+                    }
+
+                    Value * copy() const {
+                        return new HitVarRecoverTime();
+                    }
+                };
+
+                return new HitVarRecoverTime();
             } else if (var == "isbound"){
                 /* isbound: True if the player is the subject of an
                  * attacker's TargetBind controller. Useful to prevent being stuck
