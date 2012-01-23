@@ -137,7 +137,8 @@ public:
     
     static StateController * compile(Ast::Section * section, const std::string & name, int state, Type type);
 
-    bool canTrigger(const Mugen::Stage & stage, const Character & character, const std::vector<std::string> & commands) const;
+    virtual bool canTrigger(const Environment & environment) const;
+
     virtual void activate(Mugen::Stage & stage, Character & who, const std::vector<std::string> & commands) const = 0;
 
     static bool handled(const Ast::AttributeSimple & simple);
@@ -180,8 +181,8 @@ public:
 
 protected:
 
-    bool canTrigger(const Mugen::Stage & stage, const Character & character, const std::vector<Compiler::Value*> & expressions, const std::vector<std::string> & commands) const;
-    bool canTrigger(const Mugen::Stage & stage, const Character & character, const Compiler::Value * expression, const std::vector<std::string> & commands) const;
+    bool canTrigger(const std::vector<Compiler::Value*> & expressions, const Environment & environment) const;
+    bool canTrigger(const Compiler::Value * expression, const Environment & environment) const;
     std::vector<int> sortTriggers() const;
 
 protected:

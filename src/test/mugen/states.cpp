@@ -38,8 +38,9 @@ void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/k
     vector<string> commands;
     TimeDifference diff;
     diff.startTime();
-    for (int i = 0; i < 4000; i++){
+    for (int i = 0; i < 20000; i++){
         kfm1.testStates(stage, commands, -1);
+        kfm1.testStates(stage, commands, -2);
     }
     diff.endTime();
     Global::debug(0, "test") << diff.printTime("Success! Took") << endl;

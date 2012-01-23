@@ -191,7 +191,7 @@ void StateController::addTrigger(int number, Compiler::Value * trigger){
     triggers[number].push_back(trigger);
 }
 
-bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
+bool StateController::canTrigger(const Compiler::Value * expression, const Environment & environment) const {
     try{
         /* this makes it easy to break in gdb */
         /*
@@ -200,7 +200,7 @@ bool StateController::canTrigger(const Mugen::Stage & stage, const Character & c
             x += 1;
         }
         */
-        RuntimeValue result = expression->evaluate(FullEnvironment(stage, character, commands));
+        RuntimeValue result = expression->evaluate(environment);
         return result.toBool();
     } catch (const MugenNormalRuntimeException e){
         ostringstream out;
@@ -217,10 +217,10 @@ bool StateController::canTrigger(const Mugen::Stage & stage, const Character & c
     }
 }
 
-bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const vector<Compiler::Value*> & expressions, const vector<string> & commands) const {
+bool StateController::canTrigger(const vector<Compiler::Value*> & expressions, const Environment & environment) const {
     for (vector<Compiler::Value*>::const_iterator it = expressions.begin(); it != expressions.end(); it++){
         const Compiler::Value * value = *it;
-        if (!canTrigger(stage, character, value, commands)){
+        if (!canTrigger(value, environment)){
             // Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
             if (getDebug() || Global::getDebug() >= 2){
                 Global::debug(2*!getDebug()) << "'" << value->toString() << "' did not trigger" << endl;
@@ -252,17 +252,15 @@ vector<int> StateController::sortTriggers() const {
     return out;
 }
 
-bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const vector<string> & commands) const {
-
-    FullEnvironment environment(stage, character, commands);
-    if (!ignoreHitPause(environment) && character.isPaused()){
+bool StateController::canTrigger(const Environment & environment) const {
+    if (!ignoreHitPause(environment) && environment.getCharacter().isPaused()){
         return false;
     }
 
     if (triggers.find(-1) != triggers.end()){
         vector<Compiler::Value*> values = triggers.find(-1)->second;
         /* if the triggerall fails then no triggers will work */
-        if (!canTrigger(stage, character, values, commands)){
+        if (!canTrigger(values, environment)){
             return false;
         }
     }
@@ -271,7 +269,7 @@ bool StateController::canTrigger(const Mugen::Stage & stage, const Character & c
     for (vector<int>::iterator it = keys.begin(); it != keys.end(); it++){
         vector<Compiler::Value*> values = triggers.find(*it)->second;
         /* if a trigger succeeds then stop processing and just return true */
-        if (canTrigger(stage, character, values, commands)){
+        if (canTrigger(values, environment)){
             return true;
         }
     }

@@ -2528,10 +2528,11 @@ void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> 
     if (getState(stateNumber) != 0){
         State * state = getState(stateNumber);
         const vector<StateController*> & controllers = state->getControllers();
+        FullEnvironment environment(stage, *this, active);
         for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
             StateController * controller = *it;
             try{
-                controller->canTrigger(stage, *this, active);
+                controller->canTrigger(environment);
             } catch (const MugenNormalRuntimeException & me){
                 Global::debug(1, getName()) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
             } catch (const MugenFatalRuntimeException & me){
@@ -2740,6 +2741,7 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
         State * state = getState(stateNumber);
         // Global::debug(0) << getDisplayName() << " evaluating state " << stateNumber << " states " << state->getControllers().size() << std::endl;
         const vector<StateController*> & controllers = state->getControllers();
+        FullEnvironment environment(stage, *this, active);
         for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
             StateController * controller = *it;
             Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
@@ -2764,7 +2766,7 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
 #endif
 
             try{
-                if (controller->canTrigger(stage, *this, active)){
+                if (controller->canTrigger(environment)){
                     /* check if the controller's persistent values allow it
                      * to be activated.
                      */
