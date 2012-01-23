@@ -65,6 +65,15 @@ test/globals.cpp
 test/factory/font_render.cpp
 """)
 
+states_source = Split("""
+states.cpp
+test/factory/font_factory.cpp
+test/configuration.cpp
+test/globals.cpp
+test/factory/font_render.cpp
+""")
+
+
 character_select_source = Split("""
 common/init.cpp
 common/timer.cpp
@@ -87,6 +96,7 @@ makeTest('load-stage', stage_source)
 makeTest('sffv2', sffv2_source)
 makeTest('load-sff', ['load-sff.cpp', 'common/init.cpp'] + most_game_source)
 x.append(testEnv.Program('run-match', match_source))
+x.append(testEnv.Program('states', states_source))
 x.append(testEnv.Program('parse', parse_source))
 # x.append(testEnv.Program('load-stage', stage_source))
 x.append(testEnv.Program('palette', ['palette.cpp']))

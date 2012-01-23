@@ -983,6 +983,11 @@ public:
         /* get a target for a given id */
         virtual Object * getTargetId(int id) const;
 
+        /* For testing only. Will run through all the state controllers and call the triggers
+         * on them, but won't change states or anything.
+         */
+        virtual void testStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
+
 protected:
     void initialize();
 

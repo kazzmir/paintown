@@ -360,14 +360,14 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
         case RuntimeValue::AttackAttribute : {
             switch (value2.type){
                 case RuntimeValue::AttackAttribute : {
-                    vector<AttackType::Attribute> setLeft = value1.attackAttributes;
-                    vector<AttackType::Attribute> setRight = value2.attackAttributes;
+                    const vector<AttackType::Attribute> & setLeft = value1.attackAttributes;
+                    const vector<AttackType::Attribute> & setRight = value2.attackAttributes;
                     map<AttackType::Attribute, bool> all;
-                    for (vector<AttackType::Attribute>::iterator it = setRight.begin(); it != setRight.end(); it++){
+                    for (vector<AttackType::Attribute>::const_iterator it = setRight.begin(); it != setRight.end(); it++){
                         all[*it] = true;
                     }
                     
-                    for (vector<AttackType::Attribute>::iterator it = setLeft.begin(); it != setLeft.end(); it++){
+                    for (vector<AttackType::Attribute>::const_iterator it = setLeft.begin(); it != setLeft.end(); it++){
                         if (!all[*it]){
                             return false;
                         }
@@ -4668,9 +4668,11 @@ public:
 
         return new Infix(compile(expression.getLeft()), compile(expression.getRight()), expression.getExpressionType());
 
+        /*
         std::ostringstream out;
         out << "Unknown expression: " << expression.toString();
         compileError(out.str(), __FILE__, __LINE__);
+        */
     }
 
     virtual void onExpressionInfix(const Ast::ExpressionInfix & expression){

@@ -2523,6 +2523,25 @@ void Character::addPower(double d){
         power = 0;
     }
 }
+        
+void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> & active, int stateNumber){
+    if (getState(stateNumber) != 0){
+        State * state = getState(stateNumber);
+        const vector<StateController*> & controllers = state->getControllers();
+        for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
+            StateController * controller = *it;
+            try{
+                controller->canTrigger(stage, *this, active);
+            } catch (const MugenNormalRuntimeException & me){
+                Global::debug(1, getName()) << "Error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
+            } catch (const MugenFatalRuntimeException & me){
+                Global::debug(0, getName()) << "Fatal error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
+            } catch (const MugenException & me){
+                Global::debug(0, getName()) << "Abnormal error while processing state " << stateNumber << ", " << controller->getName() << ". Error with trigger: " << me.getReason() << endl;
+            }
+        }
+    }
+}
 
 void Character::addCombo(int combo){
     hitCount += combo;
@@ -2719,7 +2738,9 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
     int oldState = getCurrentState();
     if (getState(stateNumber) != 0){
         State * state = getState(stateNumber);
-        for (vector<StateController*>::const_iterator it = state->getControllers().begin(); it != state->getControllers().end(); it++){
+        // Global::debug(0) << getDisplayName() << " evaluating state " << stateNumber << " states " << state->getControllers().size() << std::endl;
+        const vector<StateController*> & controllers = state->getControllers();
+        for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
             StateController * controller = *it;
             Global::debug(2 * !controller->getDebug()) << "State " << stateNumber << " check state controller " << controller->getName() << endl;
 

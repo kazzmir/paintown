@@ -194,12 +194,10 @@ void StateController::addTrigger(int number, Compiler::Value * trigger){
 bool StateController::canTrigger(const Mugen::Stage & stage, const Character & character, const Compiler::Value * expression, const vector<string> & commands) const {
     /* this makes it easy to break in gdb */
     try{
-        /*
         if (debug){
             int x = 2;
             x += 1;
         }
-        */
         RuntimeValue result = expression->evaluate(FullEnvironment(stage, character, commands));
         return result.toBool();
     } catch (const MugenNormalRuntimeException e){
