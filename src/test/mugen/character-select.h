@@ -34,9 +34,9 @@ class FontHandler{
     
     void act();
     //! Render with set text
-    void draw(const Graphics::Bitmap &);
+    void draw(const Graphics::Bitmap &, int offset = 0);
     //! Override set text (For players names)
-    void draw(const std::string &, const Graphics::Bitmap &);
+    void draw(const std::string &, const Graphics::Bitmap &, int offset = 0);
     
     enum State{
         Normal=0,
@@ -298,6 +298,14 @@ public:
     virtual inline bool getEnabled() const {
         return this->enabled;
     }
+    //! Finished
+    virtual inline void finish(){
+        this->finished = true;
+        this->font.setState(FontHandler::Done);
+    }
+    virtual inline bool getFinished() const {
+        return this->finished;
+    }
     //! Font
     FontHandler font;
 protected:
@@ -311,6 +319,8 @@ protected:
     unsigned int current;
     //! Is enabled
     bool enabled;
+    //! Is finished
+    bool finished;
 };
 
 struct IndexValue{
@@ -383,6 +393,8 @@ protected:
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Parse select file
     void parseSelect();
+    //! Get Current Cell
+    const Mugen::ArcadeData::CharacterInfo & getCurrentCell(unsigned int cursor);
     //! Player1 Up
     void player1Up();
     //! Player1 Down
@@ -391,6 +403,10 @@ protected:
     void player1Left();
     //! Player 1 Right
     void player1Right();
+    //! Player 1 Select
+    void player1Select();
+    //! Player 1 Draw
+    void player1Draw(const Graphics::Bitmap &);
     //! Player 1 next Selection 
     void nextPlayer1Selection();
     //! Player 2 next Selection
@@ -466,6 +482,10 @@ protected:
     //! Current State
     SelectState player1SelectState;
     SelectState player2SelectState;
+    
+    //! Player Collections
+    Mugen::ArcadeData::CharacterCollection player1Collection;
+    Mugen::ArcadeData::CharacterCollection player2Collection;
 };
 
 }

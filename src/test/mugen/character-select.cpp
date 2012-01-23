@@ -84,25 +84,25 @@ void FontHandler::act(){
     }
 }
 
-void FontHandler::draw(const Graphics::Bitmap & work){
-    draw(text, work);
+void FontHandler::draw(const Graphics::Bitmap & work, int offset){
+    draw(text, work, offset);
 }
 
-void FontHandler::draw(const std::string & text, const Graphics::Bitmap & work){
+void FontHandler::draw(const std::string & text, const Graphics::Bitmap & work, int offset){
     switch(state){
         default:
         case Normal:
-            active.draw(x, y, text, work);
+            active.draw(x, y + offset, text, work);
             break;
         case Blink:
             if (ticker < blinkTime){
-                active.draw(x, y, text, work);
+                active.draw(x, y + offset, text, work);
             } else if (ticker >= blinkTime){
-                active2.draw(x, y, text, work);
+                active2.draw(x, y + offset, text, work);
             }
             break;
         case Done:
-            done.draw(x, y, text, work);
+            done.draw(x, y + offset, text, work);
             break;
     }
 }
@@ -537,7 +537,8 @@ bool TeamMenu::valueMore(){
 StageMenu::StageMenu():
 random(true),
 current(0),
-enabled(false){
+enabled(false),
+finished(false){
     font.setState(FontHandler::Blink);
 }
 StageMenu::~StageMenu(){
@@ -588,7 +589,7 @@ bool StageMenu::down(){
 }
 
 bool StageMenu::left(){
-    if (!enabled){
+    if (!enabled || finished){
         return false;
     }
     if (stages.size() >= 1){
@@ -606,7 +607,7 @@ bool StageMenu::left(){
 }
 
 bool StageMenu::right(){
-    if (!enabled){
+    if (!enabled || finished){
         return false;
     }
     if (stages.size() >= 1){
@@ -651,7 +652,9 @@ nextCell(0),
 currentGameType(Undefined),
 currentPlayer(Player1),
 player1SelectState(NotStarted),
-player2SelectState(NotStarted){
+player2SelectState(NotStarted),
+player1Collection(Mugen::ArcadeData::CharacterCollection::Single),
+player2Collection(Mugen::ArcadeData::CharacterCollection::Single){
     Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
 
@@ -1100,10 +1103,10 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.stages.font.setDone(SelectFont(self.getFont(index), bank, position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.stages.font.setDone(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "teammenu.move.wrapping"){
                             try {
                                 bool wrap;
@@ -1540,19 +1543,8 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     titleFont.draw(getGameType(currentGameType), work);
     
     // Draw portrait and name
-    if (grid.getCurrentState(0) != Gui::SelectListInterface::Disabled){
-        if (cells[grid.getCurrentIndex(0)]->getRandom()){
-            const Mugen::ArcadeData::CharacterInfo & character = characters[player1CurrentRandom];
-            character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
-            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
-            // player1Font.draw(character.getName(), work);
-            player1Font.draw("Random", work);
-        } else {
-            const Mugen::ArcadeData::CharacterInfo & character = cells[grid.getCurrentIndex(0)]->getCharacter();
-            character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
-            player1Font.draw(character.getName(), work);
-        }
-    }
+    player1Draw(work);
+    
     if (grid.getCurrentState(1) != Gui::SelectListInterface::Disabled){
         if (cells[grid.getCurrentIndex(1)]->getRandom()){
             const Mugen::ArcadeData::CharacterInfo & character = characters[player2CurrentRandom];
@@ -1601,82 +1593,42 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const Player & playe
 }
 
 void CharacterSelect::up(unsigned int cursor){
-    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.up(cursor)){
-        if (cursor == 0){
-            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
-            if (sound){
-                sound->play();
-            }
-        } else if (cursor == 1){
-            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
-            if (sound){
-                sound->play();
-            }
-        }
+    if (cursor == 0){
+        player1Up();
+    } else if (cursor == 1){
+        
     }
-    player1TeamMenu.up();
-    player2TeamMenu.up();
 }
 
 void CharacterSelect::down(unsigned int cursor){
-    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.down(cursor)){
-        if (cursor == 0){
-            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
-            if (sound){
-                sound->play();
-            }
-        } else if (cursor == 1){
-            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
-            if (sound){
-                sound->play();
-            }
-        }
+    if (cursor == 0){
+        player1Down();
+    } else if (cursor == 1){
+        
     }
-    player1TeamMenu.down();
-    player2TeamMenu.down();
 }
 
 void CharacterSelect::left(unsigned int cursor){
-    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.left(cursor)){
-        if (cursor == 0){
-            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
-            if (sound){
-                sound->play();
-            }
-        } else if (cursor == 1){
-            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
-            if (sound){
-                sound->play();
-            }
-        }
+    if (cursor == 0){
+        player1Left();
+    } else if (cursor == 1){
+        
     }
-    player1TeamMenu.left();
-    player2TeamMenu.left();
-    stages.left();
 }
 
 void CharacterSelect::right(unsigned int cursor){
-    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled && grid.right(cursor)){
-        if (cursor == 0){
-            MugenSound * sound = sounds[soundLookup[Player1Move].group][soundLookup[Player1Move].index];
-            if (sound){
-                sound->play();
-            }
-        } else if (cursor == 1){
-            MugenSound * sound = sounds[soundLookup[Player2Move].group][soundLookup[Player2Move].index];
-            if (sound){
-                sound->play();
-            }
-        }
+    if (cursor == 0){
+        player1Right();
+    } else if (cursor == 1){
+        
     }
-    player1TeamMenu.right();
-    player2TeamMenu.right();
-    stages.right();
 }
 
 void CharacterSelect::select(unsigned int cursor){
-    if (grid.getCurrentState(cursor) != Gui::SelectListInterface::Disabled){
-        cells[grid.getCurrentIndex(cursor)]->select();
+    if (cursor == 0){
+        player1Select();
+    } else if (cursor ==1){
+        
     }
 }
 
@@ -1887,6 +1839,20 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
+}
+
+const Mugen::ArcadeData::CharacterInfo & CharacterSelect::getCurrentCell(unsigned int cursor){
+    if (cursor == 0){
+        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+            return characters[player1CurrentRandom];
+        }
+    } else if (cursor == 1){
+        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+            return characters[player2CurrentRandom];
+        }
+    }
+    
+    return cells[grid.getCurrentIndex(cursor)]->getCharacter();
 }
 
 void CharacterSelect::player1Up(){
@@ -2204,9 +2170,395 @@ void CharacterSelect::player1Down(){
 }
 
 void CharacterSelect::player1Left(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.left()){
+                        playSound(StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.left()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.left()){
+                        playSound(Player2TeamValue);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.left()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.left()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.left()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.left()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.left()){
+                        playSound(StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.left()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.left()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.left()){
+                        playSound(Player2TeamValue);
+                    }
+                case Opponent:
+                    if (grid.left(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.left()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 void CharacterSelect::player1Right(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.right()){
+                        playSound(StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.right()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.right()){
+                        playSound(Player2TeamValue);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.right()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.right()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.right()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.right()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.down(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.right()){
+                        playSound(StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (player1SelectState){
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.right()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (player1SelectState){
+                case Team:
+                    if (player1TeamMenu.right()){
+                        playSound(Player1TeamValue);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (player2TeamMenu.right()){
+                        playSound(Player2TeamValue);
+                    }
+                case Opponent:
+                    if (grid.right(0)){
+                        playSound(Player1Move);
+                    }
+                    break;
+                case Stage:
+                    if (stages.right()){
+                        playSound(StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+
+void CharacterSelect::player1Select(){
+    switch (player1SelectState){
+        case Team:
+            playSound(Player1TeamDone);
+            nextPlayer1Selection();
+            break;
+        case Character:
+            playSound(Player1Done);
+            nextPlayer1Selection();
+            break;
+        case Opponent:
+            playSound(Player1Done);
+            nextPlayer1Selection();
+            break;
+        case OpponentTeam:
+            playSound(Player2TeamDone);
+            nextPlayer1Selection();
+            break;
+        case Stage:
+            playSound(StageDone);
+            nextPlayer1Selection();
+            break;
+        case NotStarted:
+        case Finished:
+        default:
+            break;
+    }
 }
  
 void CharacterSelect::nextPlayer1Selection(){
@@ -2219,6 +2571,7 @@ void CharacterSelect::nextPlayer1Selection(){
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
+                    player1Collection.setFirst(getCurrentCell(0));
                     player1SelectState = Finished;
                     grid.setCurrentState(1, Gui::SelectListInterface::Done);
                     break;
@@ -2234,13 +2587,14 @@ void CharacterSelect::nextPlayer1Selection(){
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
+                    player1Collection.setFirst(getCurrentCell(0));
                     player1SelectState = Stage;
                     grid.setCurrentState(1, Gui::SelectListInterface::Done);
                     stages.setEnabled(true);
                     break;
                 case Stage:
                     player1SelectState = Finished;
-                    stages.setEnabled(false);
+                    stages.finish();
                 default:
                     break;
             }
@@ -2252,14 +2606,20 @@ void CharacterSelect::nextPlayer1Selection(){
                     player1TeamMenu.setEnabled(true);
                     break;
                 case Team:
+                    player1Collection.setType(player1TeamMenu.select());
                     player1TeamMenu.setEnabled(false);
                     player1SelectState = Character;
                     grid.setCurrentState(0, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
-                    player1SelectState = Finished;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    if (!player1Collection.checkSet()){
+                        player1Collection.setNext(getCurrentCell(0));
+                        if (player1Collection.checkSet()){
+                            player1SelectState = Finished;
+                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                        }
+                    }
                     break;
                 default:
                     break;
@@ -2272,18 +2632,24 @@ void CharacterSelect::nextPlayer1Selection(){
                     player1TeamMenu.setEnabled(true);
                     break;
                 case Team:
+                    player1Collection.setType(player1TeamMenu.select());
                     player1TeamMenu.setEnabled(false);
                     player1SelectState = Character;
                     grid.setCurrentState(0, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
-                    player1SelectState = Stage;
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                    stages.setEnabled(true);
+                    if (!player1Collection.checkSet()){
+                        player1Collection.setNext(getCurrentCell(0));
+                        if (player1Collection.checkSet()){
+                            player1SelectState = Stage;
+                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                            stages.setEnabled(true);
+                        }
+                    }
                     break;
                 case Stage:
-                    stages.setEnabled(false);
+                    stages.finish();
                     player1SelectState = Finished;
                     break;
                 default:
@@ -2298,6 +2664,7 @@ void CharacterSelect::nextPlayer1Selection(){
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
+                    player1Collection.setFirst(getCurrentCell(0));
                     player1SelectState = Finished;
                     grid.setCurrentState(1, Gui::SelectListInterface::Done);
                     break;
@@ -2312,15 +2679,21 @@ void CharacterSelect::nextPlayer1Selection(){
                     player1TeamMenu.setEnabled(true);
                     break;
                 case Team:
+                    player1Collection.setType(player1TeamMenu.select());
                     player1TeamMenu.setEnabled(false);
                     player1SelectState = Character;
                     grid.setCurrentState(0, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
-                    player1SelectState = OpponentTeam;
-                    player2TeamMenu.setEnabled(true);
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    if (!player1Collection.checkSet()){
+                        player1Collection.setNext(getCurrentCell(0));
+                        if (player1Collection.checkSet()){
+                            player1SelectState = OpponentTeam;
+                            player2TeamMenu.setEnabled(true);
+                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                        }
+                    }
                     break;
                 case OpponentTeam:
                     player1SelectState = Stage;
@@ -2328,7 +2701,7 @@ void CharacterSelect::nextPlayer1Selection(){
                     stages.setEnabled(true);
                 case Stage:
                     player1SelectState = Finished;
-                    stages.setEnabled(false);
+                    stages.finish();
                 default:
                     break;
             }
@@ -2341,6 +2714,7 @@ void CharacterSelect::nextPlayer1Selection(){
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
+                    player1Collection.setFirst(getCurrentCell(0));
                     player1SelectState = Finished;
                     grid.setCurrentState(0, Gui::SelectListInterface::Done);
                 default:
@@ -2355,16 +2729,18 @@ void CharacterSelect::nextPlayer1Selection(){
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
+                    player1Collection.setFirst(getCurrentCell(0));
                     player1SelectState = Opponent;
                     grid.setCurrentIndex(0, player2Start);
                     break;
                 case Opponent:
+                    player2Collection.setFirst(getCurrentCell(0));
                     grid.setCurrentState(0, Gui::SelectListInterface::Done);
                     player1SelectState = Stage;
                     stages.setEnabled(true);
                     break;
                 case Stage:
-                    stages.setEnabled(false);
+                    stages.finish();
                     player1SelectState = Finished;
                     break;
                 default:
@@ -2378,28 +2754,40 @@ void CharacterSelect::nextPlayer1Selection(){
                     player1TeamMenu.setEnabled(true);
                     break;
                 case Team:
+                    player1Collection.setType(player1TeamMenu.select());
                     player1TeamMenu.setEnabled(false);
                     player1SelectState = Character;
                     grid.setCurrentState(0, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(0, player1Start);
                     break;
                 case Character:
-                    player1SelectState = OpponentTeam;
-                    player2TeamMenu.setEnabled(true);
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                    if (!player1Collection.checkSet()){
+                        player1Collection.setNext(getCurrentCell(0));
+                        if (player1Collection.checkSet()){
+                            player1SelectState = OpponentTeam;
+                            player2TeamMenu.setEnabled(true);
+                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                        }
+                    }
                     break;
                 case OpponentTeam:
+                    player2Collection.setType(player2TeamMenu.select());
                     player1SelectState = Opponent;
                     grid.setCurrentState(0, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(0, player2Start);
                     break;
                 case Opponent:
-                    grid.setCurrentState(0, Gui::SelectListInterface::Done);
-                    player1SelectState = Stage;
-                    stages.setEnabled(true);
+                    if (!player2Collection.checkSet()){
+                        player2Collection.setNext(getCurrentCell(0));
+                        if (player2Collection.checkSet()){
+                            grid.setCurrentState(0, Gui::SelectListInterface::Done);
+                            player1SelectState = Stage;
+                            stages.setEnabled(true);
+                        }
+                    }
                     break;
                 case Stage:
-                    stages.setEnabled(false);
+                    stages.finish();
                     player1SelectState = Finished;
                     break;
                 default:
@@ -2408,6 +2796,39 @@ void CharacterSelect::nextPlayer1Selection(){
             break;
         default:
             break;
+    }
+}
+
+void CharacterSelect::player1Draw(const Graphics::Bitmap & work){
+    if (grid.getCurrentState(0) == Gui::SelectListInterface::Disabled){
+        return;
+    }
+    const Mugen::ArcadeData::CharacterInfo & character = player1Collection.checkSet() ? player1Collection.getLastSet() : getCurrentCell(0);
+    character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
+    int y = 0;
+    if (player1Collection.getFirstSet()){
+        player1Font.draw(player1Collection.getFirst().getName(), work);
+        y += 15;
+    }
+    if (player1Collection.getSecondSet()){
+        player1Font.draw(player1Collection.getSecond().getName(), work, y);
+        y += 15;
+    }
+    if (player1Collection.getThirdSet()){
+        player1Font.draw(player1Collection.getFirst().getName(), work, y);
+        y += 15;
+    }
+    if (player1Collection.getFourthSet()){
+        player1Font.draw(player1Collection.getFirst().getName(), work, y);
+    }
+    
+    if (!player1Collection.checkSet()){
+        if (cells[grid.getCurrentIndex(0)]->getRandom()){
+            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
+            player1Font.draw("Random", work, y);
+        } else {
+            player1Font.draw(character.getName(), work, y);
+        }
     }
 }
 

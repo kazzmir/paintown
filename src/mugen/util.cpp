@@ -1314,7 +1314,11 @@ void Mugen::ArcadeData::CharacterInfo::drawPortrait(int x, int y, const Graphics
 }
 
 Mugen::ArcadeData::CharacterCollection::CharacterCollection(const Type & type):
-type(type){
+type(type),
+firstSet(false),
+secondSet(false),
+thirdSet(false),
+fourthSet(false){
 }
 
 Mugen::ArcadeData::CharacterCollection::CharacterCollection(const Mugen::ArcadeData::CharacterCollection & copy):
@@ -1322,7 +1326,11 @@ type(copy.type),
 first(copy.first),
 second(copy.second),
 third(copy.third),
-fourth(copy.fourth){
+fourth(copy.fourth),
+firstSet(copy.firstSet),
+secondSet(copy.secondSet),
+thirdSet(copy.thirdSet),
+fourthSet(copy.fourthSet){
 }
 
 Mugen::ArcadeData::CharacterCollection::~CharacterCollection(){
@@ -1334,7 +1342,61 @@ const Mugen::ArcadeData::CharacterCollection & Mugen::ArcadeData::CharacterColle
     second = copy.second;
     third = copy.third;
     fourth = copy.fourth;
+    firstSet = copy.firstSet;
+    secondSet = copy.secondSet;
+    thirdSet = copy.thirdSet;
+    fourthSet = copy.fourthSet;
     return *this;
+}
+
+bool Mugen::ArcadeData::CharacterCollection::checkSet() const {
+    switch (type){
+        case Single:
+            return firstSet;
+            break;
+        case Simultaneous:
+        case Turns2:
+            return (firstSet && secondSet);
+            break;
+        case Turns3:
+            return (firstSet && secondSet && thirdSet);
+            break;
+        case Turns4:
+            return (firstSet && secondSet && thirdSet && fourthSet);
+            break;
+        default:
+            break;
+    }
+    return false;
+}
+
+void Mugen::ArcadeData::CharacterCollection::setNext(const CharacterInfo & character){
+    if (!firstSet){
+        first = character;
+        firstSet = true;
+    } else if (!secondSet){
+        second = character;
+        secondSet = true;
+    } else if (!thirdSet){
+        third = character;
+        thirdSet = true;
+    } else if (!fourthSet){
+        fourth = character;
+        fourthSet = true;
+    }
+}
+
+const Mugen::ArcadeData::CharacterInfo & Mugen::ArcadeData::CharacterCollection::getLastSet() const {
+    if (firstSet){
+        return first;
+    } else if (secondSet){
+        return second;
+    } else if (thirdSet){
+        return third;
+    } else if (fourthSet){
+        return fourth;
+    }
+    return first;
 }
 
 static std::vector<Mugen::ArcadeData::CharacterInfo> getCollectionByOrder(int order, const Mugen::ArcadeData::CharacterCollection::Type & type, const std::vector<Mugen::ArcadeData::CharacterInfo> & characters){

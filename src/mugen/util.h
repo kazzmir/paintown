@@ -579,6 +579,12 @@ public:
     
     const CharacterCollection & operator=(const CharacterCollection &);
     
+    virtual bool checkSet() const;
+    
+    virtual void setNext(const CharacterInfo &);
+    
+    virtual const CharacterInfo & getLastSet() const;
+    
     virtual inline void setType(const Type & type){
         this->type = type;
     }
@@ -587,27 +593,43 @@ public:
     }
     virtual inline void setFirst(const CharacterInfo & character){
         this->first = character;
+        this->firstSet = true;
     }
     virtual inline const CharacterInfo & getFirst() const {
         return this->first;
     }
     virtual inline void setSecond(const CharacterInfo & character){
         this->second = character;
+        this->secondSet = true;
     }
     virtual inline const CharacterInfo & getSecond() const {
         return this->second;
     }
     virtual inline void setThird(const CharacterInfo & character){
         this->third = character;
+        this->thirdSet = true;
     }
     virtual inline const CharacterInfo & getThird() const {
         return this->third;
     }
     virtual inline void setFourth(const CharacterInfo & character){
         this->fourth = character;
+        this->fourthSet = true;
     }
     virtual inline const CharacterInfo & getFourth() const {
         return this->fourth;
+    }
+    virtual inline bool getFirstSet() const {
+        return this->firstSet;
+    }
+    virtual inline bool getSecondSet() const {
+        return this->secondSet;
+    }
+    virtual inline bool getThirdSet() const {
+        return this->thirdSet;
+    }
+    virtual inline bool getFourthSet() const {
+        return this->fourthSet;
     }
     
 protected:
@@ -616,6 +638,10 @@ protected:
     CharacterInfo second;
     CharacterInfo third;
     CharacterInfo fourth;
+    bool firstSet;
+    bool secondSet;
+    bool thirdSet;
+    bool fourthSet;
 };
 
 /*! Arcade Match Handling */
