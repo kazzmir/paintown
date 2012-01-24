@@ -847,6 +847,9 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
 	    } else if (ticker == slowTime){
 		stage.setGameRate(1);
 	    }
+
+            /* FIXME: handle ko echo here */
+
 	    // Check KO State
 	    if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
 		if (ticker >= KODisplayTime){
@@ -1007,6 +1010,8 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
 		} else if (ticker >= overTime + fader.getFadeOutTime()) {
 		    currentRound++;
 		    stage.reset();
+                    player1.roundEnd();
+                    player2.roundEnd();
                     // Lets check draws
                     if (matchMaxDrawGames != -1){
                         // Exit match

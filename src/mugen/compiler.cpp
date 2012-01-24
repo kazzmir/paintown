@@ -2438,18 +2438,99 @@ public:
                         return new DefenseMul();
                     }
 
-                    /* TODO implement rest 
                     if (identifier == "data.airjuggle"){
-                    }
-                    if (identifier == "data.sparkno"){
-                    }
-                    if (identifier == "data.guard.sparkno"){
-                    }
-                    if (identifier == "data.ko.echo"){
-                    }
-                    if (identifier == "data.intpersistindex"){
+                        class AirJuggle: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return environment.getCharacter().getJugglePoints();
+                            }
+
+                            Value * copy() const {
+                                return new AirJuggle();
+                            }
+                        };
+
+                        return new AirJuggle();
                     }
 
+                    if (identifier == "data.sparkno"){
+                        class SparkNo: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                /* FIXME: what if the effect has 'own' set? */
+                                return environment.getCharacter().getDefaultSpark().group;
+                            }
+
+                            Value * copy() const {
+                                return new SparkNo();
+                            }
+                        };
+
+                        return new SparkNo();
+                    }
+
+                    if (identifier == "data.guard.sparkno"){
+                        class GuardSparkNo: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                /* FIXME: what if the effect has 'own' set? */
+                                return environment.getCharacter().getDefaultGuardSpark().group;
+                            }
+
+                            Value * copy() const {
+                                return new GuardSparkNo();
+                            }
+                        };
+
+                        return new GuardSparkNo();
+                    }
+
+                    if (identifier == "data.ko.echo"){
+                        class KoEcho: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return environment.getCharacter().getKoEcho();
+                            }
+
+                            Value * copy() const {
+                                return new KoEcho();
+                            }
+                        };
+
+                        return new KoEcho();
+                    }
+
+                    if (identifier == "data.intpersistindex"){
+                        class IntPersistIndex: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return environment.getCharacter().getIntPersistIndex();
+                            }
+
+                            Value * copy() const {
+                                return new IntPersistIndex();
+                            }
+                        };
+
+                        return new IntPersistIndex();
+                    }
+
+                    if (identifier == "data.floatpersistindex"){
+                        class FloatPersistIndex: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return environment.getCharacter().getFloatPersistIndex();
+                            }
+
+                            Value * copy() const {
+                                return new FloatPersistIndex();
+                            }
+                        };
+
+                        return new FloatPersistIndex();
+                    }
+
+                    /* TODO implement rest 
                     if (identifier == "movement.airjump.num"){
                     }
 

@@ -600,6 +600,7 @@ void Character::initialize(){
     /* FIXME: whats the default sprite priority? */
     spritePriority = 0;
     juggleRemaining = 0;
+    koecho = false;
     defense = 0;
     fallDefenseUp = 0;
     defenseMultiplier = 1;
@@ -614,6 +615,9 @@ void Character::initialize(){
     blocking = false;
     guarding = false;
     behavior = NULL;
+
+    intpersistindex = 0;
+    floatpersistindex = 0;
 
     needToGuard = false;
 
@@ -1103,6 +1107,18 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             int x;
                             simple.view() >> x;
                             self.setDefense(x);
+                        } else if (simple == "ko.echo"){
+                            bool what;
+                            simple.view() >> what;
+                            self.setKoEcho(what);
+                        } else if (simple == "intpersistindex"){
+                            int x;
+                            simple.view() >> x;
+                            self.setIntPersistIndex(x);
+                        } else if (simple == "floatpersistindex"){
+                            int x;
+                            simple.view() >> x;
+                            self.setFloatPersistIndex(x);
                         }
 
                         /* TODO: handle all the other parameters in [Data] */
@@ -3611,6 +3627,12 @@ void Character::setPaletteEffects(int time, int addRed, int addGreen, int addBlu
         
 unsigned int Character::getWasHitCount() const {
     return wasHitCounter;
+}
+        
+void Character::roundEnd(){
+    /* TODO: reset int and float arrays, use intpersist and floatpersist.
+     * maybe kill helpers or projectiles.
+     */
 }
         
 }

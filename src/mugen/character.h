@@ -919,6 +919,25 @@ public:
         virtual inline Behavior * getBehavior(){
             return this->behavior;
         }
+	
+        virtual int getIntPersistIndex() const {
+            return intpersistindex;
+        }
+
+        virtual void setIntPersistIndex(int index){
+            intpersistindex = index;
+        }
+
+	virtual int getFloatPersistIndex() const {
+            return floatpersistindex;
+        }
+
+        virtual void setFloatPersistIndex(int index){
+            floatpersistindex = index;
+        }
+
+        /* Called when the current round ended */
+        virtual void roundEnd();
 
         virtual inline void setDefaultSpark(const ResourceEffect & effect){
             spark = effect;
@@ -934,6 +953,14 @@ public:
 
         virtual inline ResourceEffect getDefaultGuardSpark() const {
             return guardSpark;
+        }
+	
+        virtual bool getKoEcho() const {
+            return koecho;
+        }
+
+        virtual void setKoEcho(bool x){
+            koecho = x;
         }
 
         virtual inline void setRegeneration(bool r){
