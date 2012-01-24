@@ -1,6 +1,7 @@
 #include "character-select.h"
 
 #include <iostream>
+#include <exception>
 
 #include "util/timedifference.h"
 #include "util/trans-bitmap.h"
@@ -671,6 +672,18 @@ void SoundSystem::set(const Type & type, int group, int sound){
     soundLookup[type] = values;
 }
 
+/*! Thrown in cooperative play once first player picks his character... 
+ *  CharacterSelect::select utilizes Player::setCooperativeData to setup the second player when caught
+ *  FIXME do not render profile
+ */
+class CooperativeException : public std::exception {
+public:
+    CooperativeException(){
+    }
+    virtual ~CooperativeException() throw(){
+    }
+};
+
 Player::Player(unsigned int cursor, Gui::GridSelect & grid, std::vector< PaintownUtil::ReferenceCount<Cell> > & cells, std::vector<Mugen::ArcadeData::CharacterInfo> & characters, TeamMenu & teamMenu, TeamMenu & opponentTeamMenu, StageMenu & stageMenu, FontHandler & font, FontHandler & opponentFont, SoundSystem & sounds):
 cursor(cursor),
 grid(grid),
@@ -743,13 +756,33 @@ void Player::draw(const Graphics::Bitmap & work){
             drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
             break;
         case TeamCoop:
-            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            switch (selectState){
+                case Character:
+                    drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+                    break;
+                case Opponent:
+                case Stage:
+                    drawPortrait(opponentCollection, opponentPortraitEffects, opponentPortraitX, opponentPortraitY, opponentFont, work);
+                    break;
+                default:
+                    break;
+            }
             break;
         case Survival:
             drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
             break;
         case SurvivalCoop:
-            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            switch (selectState){
+                case Character:
+                    drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+                    break;
+                case Opponent:
+                case Stage:
+                    drawPortrait(opponentCollection, opponentPortraitEffects, opponentPortraitX, opponentPortraitY, opponentFont, work);
+                    break;
+                default:
+                    break;
+            }
             break;
         case Training:
             drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
@@ -779,41 +812,6 @@ void Player::draw(const Graphics::Bitmap & work){
         default:
             break;
     }
-    /*
-    const Mugen::ArcadeData::CharacterCollection & currentCollection = selectState == Opponent ? opponentCollection : collection;
-    const Mugen::Effects & effects = selectState == Opponent ? opponentPortraitEffects : portraitEffects;
-    const int x = selectState == Opponent ? opponentPortraitX : portraitX, y = selectState == Opponent ? opponentPortraitY : portraitY;
-    FontHandler & currentFont = selectState == Opponent ? opponentFont : font;
-    
-    const Mugen::ArcadeData::CharacterInfo & character = currentCollection.checkSet() ? currentCollection.getLastSet() : getCurrentCell();
-    
-    character.drawPortrait(x, y, work, effects);
-    
-    int heightMod = 0;
-    if (currentCollection.getFirstSet()){
-        currentFont.draw(currentCollection.getFirst().getName(), work);
-        heightMod += 15;
-    }
-    if (currentCollection.getSecondSet()){
-        currentFont.draw(currentCollection.getSecond().getName(), work, heightMod);
-        heightMod += 15;
-    }
-    if (currentCollection.getThirdSet()){
-        currentFont.draw(currentCollection.getFirst().getName(), work, heightMod);
-        heightMod += 15;
-    }
-    if (currentCollection.getFourthSet()){
-        currentFont.draw(currentCollection.getFirst().getName(), work, heightMod);
-    }
-    
-    if (!currentCollection.checkSet()){
-        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
-            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
-            currentFont.draw("Random", work, heightMod);
-        } else {
-            currentFont.draw(character.getName(), work, heightMod);
-        }
-    }*/
 }
 
 void Player::up(){
@@ -1255,7 +1253,7 @@ void Player::left(){
         case Mugen::SurvivalCoop:
             switch (selectState){
                 case Character:
-                    if (grid.down(cursor)){
+                    if (grid.left(cursor)){
                         sounds.play(moveSound);
                     }
                     break;
@@ -1441,7 +1439,7 @@ void Player::right(){
         case Mugen::SurvivalCoop:
             switch (selectState){
                 case Character:
-                    if (grid.down(cursor)){
+                    if (grid.right(cursor)){
                         sounds.play(moveSound);
                     }
                     break;
@@ -1666,12 +1664,19 @@ void Player::next(){
         case Mugen::TeamCoop:
             switch (selectState){
                 case NotStarted:
+                    collection.setType(Mugen::ArcadeData::CharacterCollection::Simultaneous);
                     selectState = Character;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Character:
                     collection.setFirst(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    throw CooperativeException();
+                    break;
+                case Opponent:
+                    opponentCollection.setSecond(getCurrentCell());
                     selectState = Finished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     break;
@@ -1719,6 +1724,7 @@ void Player::next(){
         case Mugen::SurvivalCoop:
             switch (selectState){
                 case NotStarted:
+                    collection.setType(Mugen::ArcadeData::CharacterCollection::Simultaneous);
                     selectState = Character;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
                     grid.setCurrentIndex(cursor, cursorPosition);
@@ -1727,6 +1733,13 @@ void Player::next(){
                     collection.setFirst(getCurrentCell());
                     selectState = Finished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    throw CooperativeException();
+                    break;
+                case Opponent:
+                    opponentCollection.setSecond(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
                 default:
                     break;
             }
@@ -1853,6 +1866,15 @@ void Player::reset(){
     opponentTeamMenu.reset();
 }
 
+void Player::setCooperativeData(const Player & cooperativePlayer){
+    // Second player
+    currentGameType = cooperativePlayer.currentGameType;
+    selectState = Opponent;
+    opponentCollection = cooperativePlayer.collection;
+    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+    grid.setCurrentIndex(cursor, grid.getCurrentIndex(cooperativePlayer.cursor));   
+}
+
 const Mugen::ArcadeData::CharacterInfo & Player::getCurrentCell(){
     if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
         return characters[currentRandom];
@@ -1919,12 +1941,6 @@ void CharacterSelect::init(){
                             simple.view() >> sffFile;
                             Global::debug(1) << "Got Sprite File: '" << sffFile << "'" << std::endl;
                             Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(sffFile)), Filesystem::AbsolutePath(), select.sprites, true);
-                            /*for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
-                                // Load these sprites so they are ready to use
-                                for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-                                    if( j->second )j->second->load();
-                                }
-                            }*/
                         } else if (simple == "snd"){
                             std::string sndFile;
                             simple.view() >> sndFile;
@@ -2784,7 +2800,6 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & p
     player2.reset();
     switch (currentPlayer){
         case Player1:
-            //nextPlayer1Selection();
             player1.setCurrentGameType(currentGameType);
             break;
         case Player2:
@@ -2833,9 +2848,19 @@ void CharacterSelect::right(unsigned int cursor){
 
 void CharacterSelect::select(unsigned int cursor){
     if (cursor == 0){
-        player1.select();
+        try {
+            player1.select();
+        } catch (const CooperativeException & ex){
+            player2.reset();
+            player2.setCooperativeData(player1);
+        }
     } else if (cursor ==1){
-        player2.select();
+        try {
+            player2.select();
+        } catch (const CooperativeException & ex){
+            player1.reset();
+            player1.setCooperativeData(player2);
+        }
     }
 }
 

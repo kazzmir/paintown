@@ -385,6 +385,9 @@ public:
     //! Rest game state
     void reset();
     
+    //! Set cooperative positioning and information
+    void setCooperativeData(const Player &);
+    
     static inline void setRandomSwitchTime(int time){
         Player::randomSwitchTime = time;
     }
