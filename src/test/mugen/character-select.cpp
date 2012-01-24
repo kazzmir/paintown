@@ -2674,26 +2674,16 @@ void CharacterSelect::act(){
     }
     background->act();
     grid.act();
+    
+    // Player portraits
     player1.act();
     player2.act();
-    // Player 1 random?
-    /*if (cells[grid.getCurrentIndex(0)]->getRandom()){
-        player1SwitchTime++;
-        if (player1SwitchTime >= randomSwitchTime){
-            player1SwitchTime = 0;
-            player1CurrentRandom = PaintownUtil::rnd(0,characters.size());
-        }
-    }
-    // Player 2 random?
-    if (cells[grid.getCurrentIndex(1)]->getRandom()){
-        player2SwitchTime++;
-        if (player2SwitchTime >= randomSwitchTime){
-            player2SwitchTime = 0;
-            player2CurrentRandom = PaintownUtil::rnd(0,characters.size());
-        }
-    }*/
+    
+    // Team Menu
     player1TeamMenu.act();
     player2TeamMenu.act();
+    
+    // Stages
     stages.act();
 }
 
@@ -2748,26 +2738,10 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     titleFont.draw(getGameType(currentGameType), work);
     
     // Draw portrait and name
-    //player1Draw(work);
     player1.draw(work);
     player2.draw(work);
-    /*
-    if (grid.getCurrentState(1) != Gui::SelectListInterface::Disabled){
-        if (cells[grid.getCurrentIndex(1)]->getRandom()){
-            const Mugen::ArcadeData::CharacterInfo & character = characters[player2CurrentRandom];
-            character.drawPortrait(portrait1OffsetX, portrait1OffsetY, work, portrait1Effects);
-            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
-            // player2Font.draw(character.getName(), work);
-            player2Font.draw("Random", work);
-        } else {
-            const Mugen::ArcadeData::CharacterInfo & character = cells[grid.getCurrentIndex(1)]->getCharacter();
-            character.drawPortrait(portrait2OffsetX, portrait2OffsetY, work, portrait2Effects);
-            player2Font.draw(character.getName(), work);
-        }
-    }*/
     
-    
-    // FIXME remove and use properly, testing only now
+    // Team Menu
     player1TeamMenu.draw(work);
     player2TeamMenu.draw(work);
     
