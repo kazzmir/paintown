@@ -419,6 +419,9 @@ protected:
     //! Next selection
     void next();
     
+    //! Draw profile info
+    void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, FontHandler &, const Graphics::Bitmap &);    
+    
     //! Start position
     int cursorPosition, opponentCursorPosition;
     
