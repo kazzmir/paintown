@@ -67,7 +67,9 @@ public:
                 if (event.out == Esc){
                     if (!deinit){
                         deinit = true;
-                        select.deinit();
+                        select.cancel();
+                    } else if (deinit){
+                        is_done = true;
                     }
                 }
                 if (event.out == P){
@@ -91,35 +93,44 @@ public:
                 }
                 if (event.out == Key1){
                     select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
                 if (event.out == Key2){
                     select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
+                    deinit = false;
                 }
                 if (event.out == Key3){
                     select.setMode(Mugen::TeamArcade, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
                 if (event.out == Key4){
                     select.setMode(Mugen::TeamVersus, Mugen::CharacterSelect::Both);
+                    deinit = false;
                 }
                 if (event.out == Key5){
                     select.setMode(Mugen::TeamCoop, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
                 if (event.out == Key6){
                     select.setMode(Mugen::Survival, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
                 if (event.out == Key7){
                     select.setMode(Mugen::SurvivalCoop, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
                 if (event.out == Key8){
                     select.setMode(Mugen::Training, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
                 if (event.out == Key9){
                     select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player1);
+                    deinit = false;
                 }
             }
         }
         select.act();
-        is_done = select.isDone();
+        deinit = select.isDone();
     }
 
     double ticks(double system){
@@ -139,11 +150,15 @@ public:
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
-        Graphics::StretchedBitmap work(320, 240, buffer);
-        work.start();
-        select.draw(work);
-        Font::getDefaultFont(9,9).printfWrap(2, 210, Graphics::makeColor(255, 255, 255), work, 320, MENU, 0);
-        work.finish();
+        if (!select.isDone()){
+            Graphics::StretchedBitmap work(320, 240, buffer);
+            work.start();
+            select.draw(work);
+            work.finish();
+        } else {
+            Font::getDefaultFont(9,9).printf(10, 25, Graphics::makeColor(255, 255, 255), buffer, "PRESS ESC AGAIN TO EXIT", 0);
+        }
+        Font::getDefaultFont(9,9).printfWrap(2, 440, Graphics::makeColor(255, 255, 255), buffer, 320, MENU, 0);
         buffer.BlitToScreen();
     }
 };

@@ -406,6 +406,10 @@ public:
         Player::randomSwitchTime = time;
     }
     
+    inline bool isFinished() const {
+        return (selectState == Finished);
+    }
+    
     inline void setCursorPosition(int x){
         this->cursorPosition = x;
     }
@@ -476,6 +480,7 @@ protected:
         Character,
         Opponent,
         Stage,
+        WaitFinished,
         Finished,
     };
     //! Current State
@@ -491,8 +496,8 @@ public:
     //! Initialize all data from select.def
     virtual void init();
     
-    //! Fade out
-    virtual void deinit();
+    //! Cancel and fade out
+    virtual void cancel();
     
     //! Is done
     virtual bool isDone();
@@ -540,6 +545,11 @@ public:
     //! Get Player2
     const Player & getPlayer2() const {
         return this->player2;
+    }
+    
+    //! Get Selected stage
+    const Filesystem::AbsolutePath & getStage() {
+        return this->stages.select();
     }
     
 protected:

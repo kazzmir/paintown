@@ -961,6 +961,7 @@ void Player::up(){
                     if (opponentTeamMenu.up()){
                         sounds.play(SoundSystem::Player2TeamMove);
                     }
+                    break;
                 case Opponent:
                     if (grid.up(cursor)){
                         sounds.play(moveSound);
@@ -1123,6 +1124,7 @@ void Player::down(){
                     if (opponentTeamMenu.down()){
                         sounds.play(SoundSystem::Player2TeamMove);
                     }
+                    break;
                 case Opponent:
                     if (grid.down(cursor)){
                         sounds.play(moveSound);
@@ -1304,6 +1306,7 @@ void Player::left(){
                     if (opponentTeamMenu.left()){
                         sounds.play(SoundSystem::Player2TeamValue);
                     }
+                    break;
                 case Opponent:
                     if (grid.left(cursor)){
                         sounds.play(moveSound);
@@ -1491,6 +1494,7 @@ void Player::right(){
                     if (opponentTeamMenu.right()){
                         sounds.play(SoundSystem::Player2TeamValue);
                     }
+                    break;
                 case Opponent:
                     if (grid.right(cursor)){
                         sounds.play(moveSound);
@@ -1591,9 +1595,13 @@ void Player::next(){
                     break;
                 case Character:
                     collection.setFirst(getCurrentCell());
-                    selectState = Stage;
+                    if (!stageMenu.getFinished()){
+                        selectState = Stage;
+                        stageMenu.setEnabled(true);
+                    } else {
+                        selectState = Finished;
+                    }
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
-                    stageMenu.setEnabled(true);
                     break;
                 case Stage:
                     selectState = Finished;
@@ -1651,9 +1659,13 @@ void Player::next(){
                     if (!collection.checkSet()){
                         collection.setNext(getCurrentCell());
                         if (collection.checkSet()){
-                            selectState = Stage;
+                            if (!stageMenu.getFinished()){
+                                selectState = Stage;
+                                stageMenu.setEnabled(true);
+                            } else {
+                                selectState = Finished;
+                            }
                             grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
-                            stageMenu.setEnabled(true);
                         }
                     }
                     break;
@@ -1675,7 +1687,7 @@ void Player::next(){
                     break;
                 case Character:
                     collection.setFirst(getCurrentCell());
-                    selectState = Finished;
+                    selectState = WaitFinished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     throw CooperativeException();
                     break;
@@ -1735,14 +1747,25 @@ void Player::next(){
                     break;
                 case Character:
                     collection.setFirst(getCurrentCell());
-                    selectState = Finished;
+                    selectState = WaitFinished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     throw CooperativeException();
                     break;
                 case Opponent:
                     opponentCollection.setSecond(getCurrentCell());
-                    selectState = Finished;
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                case Team:
+                    selectState = Stage;
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    stageMenu.setEnabled(true);
+                    break;
+                case Stage:
+                    selectState = Finished;
+                    stageMenu.finish();
                     break;
                 default:
                     break;
@@ -2713,7 +2736,7 @@ void CharacterSelect::init(){
     parseSelect();
 }
 
-void CharacterSelect::deinit(){
+void CharacterSelect::cancel(){
     // Fade out
     fader.setState(Gui::FadeTool::FadeOut);
     sounds.play(SoundSystem::Cancel);
@@ -2744,6 +2767,32 @@ void CharacterSelect::act(){
     
     // Fader
     fader.act();
+    
+    switch (currentPlayer){
+        case Player1:
+            if (player1.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
+            break;
+        case Player2:
+            if (player2.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
+            break;
+        case Both:
+            if (player1.isFinished() && player2.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
+            break;
+        default:
+            break;
+    }   
 }
 
 static std::string getGameType(const Mugen::GameType & game){
@@ -2817,6 +2866,8 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & p
     if (game == Mugen::Undefined){
         return;
     }
+    // Set up fader
+    fader.setState(Gui::FadeTool::FadeIn);
     currentGameType = game;
     currentPlayer = player;
     player1.reset();
@@ -2876,6 +2927,7 @@ void CharacterSelect::select(unsigned int cursor){
         } catch (const CooperativeException & ex){
             player2.reset();
             player2.setCooperativeData(player1);
+            currentPlayer = Player2;
         }
     } else if (cursor ==1){
         try {
@@ -2883,6 +2935,7 @@ void CharacterSelect::select(unsigned int cursor){
         } catch (const CooperativeException & ex){
             player1.reset();
             player1.setCooperativeData(player2);
+            currentPlayer = Player1;
         }
     }
 }
