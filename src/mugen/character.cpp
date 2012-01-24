@@ -600,6 +600,8 @@ void Character::initialize(){
     /* FIXME: whats the default sprite priority? */
     spritePriority = 0;
     juggleRemaining = 0;
+    defense = 0;
+    fallDefenseUp = 0;
     defenseMultiplier = 1;
     attackMultiplier = 1;
     lieDownTime = 0;
@@ -1093,7 +1095,17 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             self.setDefaultSpark(extractResource(simple.getValue()));
                         } else if (simple == "guard.sparkno"){
                             self.setDefaultGuardSpark(extractResource(simple.getValue()));
+                        } else if (simple == "fall.defence_up"){
+                            int x;
+                            simple.view() >> x;
+                            self.setFallDefenseUp(x);
+                        } else if (simple == "defence"){
+                            int x;
+                            simple.view() >> x;
+                            self.setDefense(x);
                         }
+
+                        /* TODO: handle all the other parameters in [Data] */
                     }
 
                 };
@@ -2693,6 +2705,7 @@ void Character::hurt(double x){
 }
 
 void Character::takeDamage(Stage & world, Object * obj, double amount, bool kill, bool defense){
+    /* TODO: use getDefense() here somehow */
     if (defense){
         takeDamage(world, obj, amount / defenseMultiplier, 0.0, 0.0);
     } else {

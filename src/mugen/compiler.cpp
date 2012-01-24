@@ -2397,7 +2397,7 @@ public:
                         class Defence: public Value {
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getDefence());
+                                return RuntimeValue(environment.getCharacter().getDefense());
                             }
 
                             Value * copy() const {
@@ -2423,9 +2423,22 @@ public:
                         return new Attack();
                     }
 
-                    /* TODO implement rest 
                     if (identifier == "data.fall.defence_mul"){
+                        class DefenseMul: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(100 / (100.0 + environment.getCharacter().getFallDefenseUp()));
+                            }
+
+                            Value * copy() const {
+                                return new DefenseMul();
+                            }
+                        };
+
+                        return new DefenseMul();
                     }
+
+                    /* TODO implement rest 
                     if (identifier == "data.airjuggle"){
                     }
                     if (identifier == "data.sparkno"){

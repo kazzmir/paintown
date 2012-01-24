@@ -692,8 +692,20 @@ public:
             return gravity;
         }
 
-        virtual int getDefence() const {
-            return defence;
+        virtual int getDefense() const {
+            return defense;
+        }
+
+        virtual void setDefense(int x){
+            defense = x;
+        }
+	
+        virtual int getFallDefenseUp() const {
+            return fallDefenseUp;
+        }
+
+        virtual void setFallDefenseUp(int x){
+            fallDefenseUp = x;
         }
 
         virtual int getAttack() const {
@@ -1097,9 +1109,9 @@ protected:
 	// Attack
 	int attack;
 	// Defence
-	int defence;
+	int defense;
 	// How much to bring up defese on fall
-	int falldefenseup;
+	int fallDefenseUp;
 	// How long to lie down when fall
 	int lieDownTime;
         /* starting air juggle points */
