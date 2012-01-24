@@ -295,6 +295,10 @@ public:
     const Filesystem::AbsolutePath & select();
     //! Reset
     void reset();
+    //! Get stage collection
+    const std::vector<Filesystem::AbsolutePath> & getStages() const {
+        return this->stages;
+    }
     //! Set enabled
     virtual inline void setEnabled(bool enabled){
         this->enabled = enabled;
@@ -388,6 +392,16 @@ public:
     //! Set cooperative positioning and information
     void setCooperativeData(const Player &);
     
+    //! Get collection
+    const Mugen::ArcadeData::CharacterCollection & getCollection() const {
+        return this->collection;
+    }
+    
+    //! Get opponent collection
+    const Mugen::ArcadeData::CharacterCollection & getOpponentCollection() const {
+        return this->opponentCollection;
+    }
+    
     static inline void setRandomSwitchTime(int time){
         Player::randomSwitchTime = time;
     }
@@ -477,6 +491,12 @@ public:
     //! Initialize all data from select.def
     virtual void init();
     
+    //! Fade out
+    virtual void deinit();
+    
+    //! Is done
+    virtual bool isDone();
+    
     //! Act
     virtual void act();
     //! Draw
@@ -507,6 +527,20 @@ public:
     virtual void addRandom();
     //! Add stage
     virtual void addStage(const Filesystem::AbsolutePath &);
+    //! Get Arcade Match
+    virtual Mugen::ArcadeData::MatchPath getArcadePath();
+    //! Get Team Arcade Match
+    virtual Mugen::ArcadeData::MatchPath getTeamArcadePath();
+    
+    //! Get Player1
+    const Player & getPlayer1() const {
+        return this->player1;
+    }
+    
+    //! Get Player2
+    const Player & getPlayer2() const {
+        return this->player2;
+    }
     
 protected:
     //! Get font

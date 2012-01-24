@@ -1475,7 +1475,16 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
     }
 }
 
+Mugen::ArcadeData::MatchPath::MatchPath(const Mugen::ArcadeData::MatchPath & copy):
+opponents(copy.opponents){
+}
+
 Mugen::ArcadeData::MatchPath::~MatchPath(){
+}
+
+const Mugen::ArcadeData::MatchPath & Mugen::ArcadeData::MatchPath::operator=(const Mugen::ArcadeData::MatchPath & copy){
+    opponents = copy.opponents;
+    return *this;
 }
 
 bool Mugen::ArcadeData::MatchPath::hasMore(){

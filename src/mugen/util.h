@@ -648,7 +648,9 @@ protected:
 class MatchPath{
 public:
     MatchPath(const CharacterCollection::Type &, const std::vector<int> &, const std::vector<CharacterInfo> &, const std::vector<Filesystem::AbsolutePath> &);
+    MatchPath(const MatchPath &);
     virtual ~MatchPath();
+    const MatchPath & operator=(const MatchPath &);
     virtual bool hasMore();
     virtual CharacterCollection next();
     

@@ -43,13 +43,14 @@ enum Keys{
 class Logic: public Util::Logic {
 public:
     Logic(InputMap<Keys> & input, Mugen::CharacterSelect & select):
+    deinit(false),
     is_done(false),
     input(input),
     select(select),
     ticker(0){
     }
 
-    bool is_done;
+    bool deinit, is_done;
     InputMap<Keys> & input;
     Mugen::CharacterSelect & select;
     int ticker;
@@ -64,7 +65,10 @@ public:
             const InputMap<Keys>::InputEvent & event = *it;
             if (event.enabled){
                 if (event.out == Esc){
-                    is_done = true;
+                    if (!deinit){
+                        deinit = true;
+                        select.deinit();
+                    }
                 }
                 if (event.out == P){
                 }
@@ -115,6 +119,7 @@ public:
             }
         }
         select.act();
+        is_done = select.isDone();
     }
 
     double ticks(double system){

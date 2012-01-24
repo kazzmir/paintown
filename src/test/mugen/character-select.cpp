@@ -2696,6 +2696,9 @@ void CharacterSelect::init(){
         grid.setCurrentState(0, Gui::SelectListInterface::Disabled);
         //grid.setCurrentIndex(1, opponentCursorPosition);
         grid.setCurrentState(1, Gui::SelectListInterface::Disabled);
+        
+        // Set up fader
+        fader.setState(Gui::FadeTool::FadeIn);
 
     } catch (const Filesystem::NotFound & fail){
         std::ostringstream out;
@@ -2704,6 +2707,16 @@ void CharacterSelect::init(){
     }
     
     parseSelect();
+}
+
+void CharacterSelect::deinit(){
+    // Fade out
+    fader.setState(Gui::FadeTool::FadeOut);
+    sounds.play(SoundSystem::Cancel);
+}
+
+bool CharacterSelect::isDone() {
+    return (fader.getState() == Gui::FadeTool::EndFade);
 }
 
 void CharacterSelect::act(){
@@ -2724,6 +2737,9 @@ void CharacterSelect::act(){
     
     // Stages
     stages.act();
+    
+    // Fader
+    fader.act();
 }
 
 static std::string getGameType(const Mugen::GameType & game){
@@ -2788,6 +2804,9 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     stages.draw(work);
     
     background->renderForeground(0,0,work);
+    
+    // Fader
+    fader.draw(work);
 }
 
 void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & player){
@@ -2898,6 +2917,22 @@ void CharacterSelect::addRandom(){
 
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
     stages.add(stage);
+}
+
+Mugen::ArcadeData::MatchPath CharacterSelect::getArcadePath(){
+    if (currentPlayer == Player2){
+        return Mugen::ArcadeData::MatchPath(player2.getOpponentCollection().getType(), arcadeOrder, characters, stages.getStages());
+    }
+    
+    return Mugen::ArcadeData::MatchPath(player1.getOpponentCollection().getType(), arcadeOrder, characters, stages.getStages());
+}
+
+Mugen::ArcadeData::MatchPath CharacterSelect::getTeamArcadePath(){
+    if (currentPlayer == Player2){
+        return Mugen::ArcadeData::MatchPath(player2.getOpponentCollection().getType(), teamArcadeOrder, characters, stages.getStages());
+    }
+    
+    return Mugen::ArcadeData::MatchPath(player1.getOpponentCollection().getType(), teamArcadeOrder, characters, stages.getStages());
 }
 
 /* indexes start at 1 */
