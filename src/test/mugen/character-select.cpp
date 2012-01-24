@@ -1518,22 +1518,26 @@ void Player::select(){
             next();
             break;
         case Character:
-            sounds.play(doneSound);
-            if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
-                cells[currentRandom]->select();
-            } else {
-                cells[grid.getCurrentIndex(cursor)]->select();
+            if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
+                sounds.play(doneSound);
+                if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+                    cells[currentRandom]->select();
+                } else {
+                    cells[grid.getCurrentIndex(cursor)]->select();
+                }
+                next();
             }
-            next();
             break;
         case Opponent:
-            sounds.play(doneSound);
-            if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
-                cells[currentRandom]->select();
-            } else {
-                cells[grid.getCurrentIndex(cursor)]->select();
+            if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
+                sounds.play(doneSound);
+                if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+                    cells[currentRandom]->select();
+                } else {
+                    cells[grid.getCurrentIndex(cursor)]->select();
+                }
+                next();
             }
-            next();
             break;
         case OpponentTeam:
             sounds.play(teamDoneSound);
