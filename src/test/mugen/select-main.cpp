@@ -35,6 +35,9 @@ enum Keys{
     Key4,
     Key5,
     Key6,
+    Key7,
+    Key8,
+    Key9,
 };
 
 class Logic: public Util::Logic {
@@ -83,16 +86,31 @@ public:
                     select.select(0);
                 }
                 if (event.out == Key1){
+                    select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
                 }
                 if (event.out == Key2){
+                    select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
                 }
                 if (event.out == Key3){
+                    select.setMode(Mugen::TeamArcade, Mugen::CharacterSelect::Player1);
                 }
                 if (event.out == Key4){
+                    select.setMode(Mugen::TeamVersus, Mugen::CharacterSelect::Both);
                 }
                 if (event.out == Key5){
+                    select.setMode(Mugen::TeamCoop, Mugen::CharacterSelect::Player1);
                 }
                 if (event.out == Key6){
+                    select.setMode(Mugen::Survival, Mugen::CharacterSelect::Player1);
+                }
+                if (event.out == Key7){
+                    select.setMode(Mugen::SurvivalCoop, Mugen::CharacterSelect::Player1);
+                }
+                if (event.out == Key8){
+                    select.setMode(Mugen::Training, Mugen::CharacterSelect::Player1);
+                }
+                if (event.out == Key9){
+                    select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player1);
                 }
             }
         }
@@ -103,6 +121,8 @@ public:
         return system;
     }
 };
+
+static const std::string MENU = "[1]-Arcade [2]-Versus [3]-TeamArcade [4]-TeamVersus\n[5]-TeamCoop [6]-Survival [7]-SurvivalCoop [8]-Training [9]-Watch";
 
 class Draw: public Util::Draw {
 public:
@@ -117,7 +137,7 @@ public:
         Graphics::StretchedBitmap work(320, 240, buffer);
         work.start();
         select.draw(work);
-        //Font::getDefaultFont(12,12).printfWrap(5, 5, Graphics::makeColor(255, 255, 255), buffer, 320, cutscene.getInfo(), 0);
+        Font::getDefaultFont(9,9).printfWrap(2, 210, Graphics::makeColor(255, 255, 255), work, 320, MENU, 0);
         work.finish();
         buffer.BlitToScreen();
     }
@@ -156,6 +176,9 @@ int main(int argc, char ** argv){
         input.set(Keyboard::Key_4, 0, true, Key4);
         input.set(Keyboard::Key_5, 0, true, Key5);
         input.set(Keyboard::Key_6, 0, true, Key6);
+        input.set(Keyboard::Key_7, 0, true, Key7);
+        input.set(Keyboard::Key_8, 0, true, Key8);
+        input.set(Keyboard::Key_9, 0, true, Key9);
        
         try {
             Filesystem::AbsolutePath path(file);

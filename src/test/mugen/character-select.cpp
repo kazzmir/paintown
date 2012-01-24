@@ -502,6 +502,12 @@ const Mugen::ArcadeData::CharacterCollection::Type & TeamMenu::select(){
     }
 }
 
+void TeamMenu::reset(){
+    enabled = false;
+    current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
+    turns = Mugen::ArcadeData::CharacterCollection::Turns2;
+}
+
 bool TeamMenu::valueLess(){
     switch (turns){
         case Mugen::ArcadeData::CharacterCollection::Turns4:
@@ -624,6 +630,13 @@ bool StageMenu::right(){
         return true;
     }
     return false;
+}
+
+void StageMenu::reset(){
+    finished = enabled = false;
+    random = true;
+    current = 0;
+    this->font.setState(FontHandler::Blink);
 }
 
 const Filesystem::AbsolutePath & StageMenu::select(){
@@ -1830,6 +1843,16 @@ void Player::drawPortrait(const Mugen::ArcadeData::CharacterCollection & current
     }
 }
 
+void Player::reset(){
+    collection = Mugen::ArcadeData::CharacterCollection(Mugen::ArcadeData::CharacterCollection::Single);
+    opponentCollection = Mugen::ArcadeData::CharacterCollection(Mugen::ArcadeData::CharacterCollection::Single);
+    selectState = NotStarted;
+    grid.setCurrentState(cursor, Gui::SelectListInterface::Disabled);
+    stageMenu.reset();
+    teamMenu.reset();
+    opponentTeamMenu.reset();
+}
+
 const Mugen::ArcadeData::CharacterInfo & Player::getCurrentCell(){
     if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
         return characters[currentRandom];
@@ -2757,6 +2780,8 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & p
     }
     currentGameType = game;
     currentPlayer = player;
+    player1.reset();
+    player2.reset();
     switch (currentPlayer){
         case Player1:
             //nextPlayer1Selection();

@@ -189,6 +189,9 @@ public:
     //! Get a return value for selected
     const Mugen::ArcadeData::CharacterCollection::Type & select();
     
+    //! Reset
+    void reset();
+    
     //! Fonts
     FontHandler titleFont;
     FontHandler enemyTitleFont;
@@ -290,6 +293,8 @@ public:
     bool right();
     //! Get a return value for selected
     const Filesystem::AbsolutePath & select();
+    //! Reset
+    void reset();
     //! Set enabled
     virtual inline void setEnabled(bool enabled){
         this->enabled = enabled;
@@ -377,6 +382,9 @@ public:
     
     void setCurrentGameType(const Mugen::GameType &);
     
+    //! Rest game state
+    void reset();
+    
     static inline void setRandomSwitchTime(int time){
         Player::randomSwitchTime = time;
     }
@@ -420,7 +428,7 @@ protected:
     void next();
     
     //! Draw profile info
-    void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, FontHandler &, const Graphics::Bitmap &);    
+    void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, FontHandler &, const Graphics::Bitmap &);
     
     //! Start position
     int cursorPosition, opponentCursorPosition;
