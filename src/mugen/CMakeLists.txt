@@ -37,6 +37,7 @@ search.cpp
 state-controller.cpp
 option-options.cpp
 ast/ast.cpp
+versus.cpp
 parse-cache.cpp
 parser/parse-exception.cpp
 parser/def.cpp

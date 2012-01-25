@@ -81,6 +81,12 @@ select-main.cpp
 character-select.cpp
 """)
 
+versus_source = Split("""
+common/init.cpp
+common/timer.cpp
+versus.cpp
+""")
+
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
@@ -104,4 +110,9 @@ x.append(testEnv.Program('palette', ['palette.cpp']))
 # Character Select test
 character_select = testEnv.Program('character-select', character_select_source + most_game_source)
 x.append(character_select)
+
+# Versus Test
+versus = testEnv.Program('versus', versus_source + most_game_source)
+x.append(versus)
+
 Return('x')

@@ -1,3 +1,6 @@
+#ifndef mugen_character_select_h
+#define mugen_character_select_h
+
 #include <vector>
 
 #include "mugen/background.h"
@@ -557,8 +560,6 @@ protected:
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
     //! Parse select file
     void parseSelect();
-    //! Get Current Cell
-    const Mugen::ArcadeData::CharacterInfo & getCurrentCell(unsigned int cursor);
     //! Path
     const Filesystem::AbsolutePath & file;
     //! Grid
@@ -609,3 +610,4 @@ protected:
 };
 
 }
+#endif

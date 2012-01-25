@@ -240,7 +240,7 @@ int main(int argc, char ** argv){
         }
         
     } else {
-        std::cout << "Usage: ./" << argv[0] << " select.def [Mode]" << std::endl;
+        std::cout << "Usage: ./" << argv[0] << " system.def [Mode]" << std::endl;
         std::cout << "Modes (defaults to none):" << std::endl;
         std::cout << "[a] - Arcade       | [b] - Versus" << std::endl;
         std::cout << "[c] - TeamArcade   | [d] - TeamVersus" << std::endl;
