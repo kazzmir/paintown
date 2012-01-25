@@ -3173,25 +3173,9 @@ public:
     quitSearching(false),
     searchingCheck(quitSearching, searchingLock.getLock()),
     characterAddThread(PaintownUtil::Thread::uninitializedValue),
-    subscription(*this){
-        class WithSubscription{
-        public:
-            WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
-            search(search),
-            subscription(subscription){
-                search.subscribe(&subscription);
-            }
-
-            Searcher & search;
-            Searcher::Subscriber & subscription;
-
-            ~WithSubscription(){
-                search.unsubscribe(&subscription);
-            }
-        };
-        
+    subscription(*this),
+    withSubscription(search, subscription){
         search.start();
-        WithSubscription(search, subscription);
     }
 
     bool is_done, canceled;
@@ -3235,6 +3219,24 @@ public:
     };
 
     Subscriber subscription;
+    
+    class WithSubscription{
+    public:
+        WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
+        search(search),
+        subscription(subscription){
+            search.subscribe(&subscription);
+        }
+
+        Searcher & search;
+        Searcher::Subscriber & subscription;
+
+        ~WithSubscription(){
+            search.unsubscribe(&subscription);
+        }
+    };
+    
+    WithSubscription withSubscription;
     
     void addCharacter(const Filesystem::AbsolutePath & path){
         PaintownUtil::Thread::ScopedLock scoped(lock);
