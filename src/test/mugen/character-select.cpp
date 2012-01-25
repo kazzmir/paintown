@@ -3262,7 +3262,7 @@ public:
                 if (event.out == Esc){
                     if (!canceled){
                         select.cancel();
-                        canceled = true;
+                        quitSearching = canceled = true;
                     }
                 }
                 if (event.out == Left){
@@ -3289,7 +3289,7 @@ public:
                 if (event.out == Esc){
                     if (!canceled){
                         select.cancel();
-                        canceled = true;
+                        quitSearching = canceled = true;
                     }
                 }
                 if (event.out == Left){
@@ -3311,6 +3311,9 @@ public:
         }
         select.act();
         is_done = select.isDone();
+        if (is_done){
+            quitSearching = is_done;
+        }
     }
 
     double ticks(double system){
