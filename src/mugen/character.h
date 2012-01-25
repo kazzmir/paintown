@@ -728,12 +728,36 @@ public:
             crouchFriction = n;
         }
 
+        virtual double getCrouchingFrictionThreshold() const {
+            return crouchFrictionThreshold;
+        }
+
+        virtual void setCrouchingFrictionThreshold(double n){
+            crouchFrictionThreshold = n;
+        }
+                            
+        virtual void setJumpChangeAnimationThreshold(double n){
+            jumpChangeAnimationThreshold = n;
+        }
+
+        virtual double getJumpChangeAnimationThreshold() const {
+            return jumpChangeAnimationThreshold;
+        }
+
         virtual void setStandingFriction(double n){
             standFriction = n;
         }
 
         virtual double getStandingFriction() const {
             return standFriction;
+        }
+
+        virtual void setStandingFrictionThreshold(double n){
+            standFrictionThreshold = n;
+        }
+
+        virtual double getStandingFrictionThreshold() const {
+            return standFrictionThreshold;
         }
 
         virtual double getGroundFriction() const;
@@ -1246,6 +1270,8 @@ protected:
 	// double standfriction;
 	//  = .82 ;Friction coefficient when crouching
 	double crouchFriction;
+        /* TODO: use this variable for something */
+        double crouchFrictionThreshold;
 
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
@@ -1297,6 +1323,8 @@ protected:
 
         /* stand.friction */
         double standFriction;
+        /* TODO: use this variable for something */
+        double standFrictionThreshold;
 
         /* S (stand), C (crouch), A (air), L (lying down) */
         std::string stateType;
@@ -1589,6 +1617,9 @@ public:
 
         /* number of times this character has been hit in total */
         unsigned int wasHitCounter;
+
+        /* TODO: what is this for? */
+        double jumpChangeAnimationThreshold;
 };
 
 }

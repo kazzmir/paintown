@@ -2530,13 +2530,36 @@ public:
                         return new FloatPersistIndex();
                     }
 
-                    /* TODO implement rest 
                     if (identifier == "movement.airjump.num"){
+                        class AirJump: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return environment.getCharacter().getExtraJumps();
+                            }
+
+                            Value * copy() const {
+                                return new AirJump();
+                            }
+                        };
+
+                        return new AirJump();
                     }
 
                     if (identifier == "movement.airjump.height"){
+                        class AirJumpHeight: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return environment.getCharacter().getAirJumpHeight();
+                            }
+
+                            Value * copy() const {
+                                return new AirJumpHeight();
+                            }
+                        };
+
+                        return new AirJumpHeight();
+
                     }
-                    */ 
 
                     if (identifier == "movement.yaccel"){
                         class MovementYAccel: public Value {
@@ -2553,23 +2576,35 @@ public:
                         return new MovementYAccel();
                     }
                     
-                    /* FIXME others
-                       movement.crouch.friction: Returns value of the "crouch.friction" parameter. (float)
-                       movement.stand.friction.threshold: Returns value of the "stand.friction.threshold" parameter. (float)
-                       movement.crouch.friction.threshold: Returns value of the "crouch.friction.threshold" parameter. (float)
-                       movement.jump.changeanim.threshold: Returns value of the "jump.changeanim.threshold" parameter. (float)
-                       movement.air.gethit.groundlevel: Returns value of the "air.gethit.groundlevel" parameter. (float)
-                       movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
-                       movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
-                       movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
-                       movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
-                       movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
-                       movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
-                       movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
-                       movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
-                       movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
-                       movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
-                       */
+                    if (identifier == "movement.crouch.friction"){
+                        class MovementCrouchFriction: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getCrouchingFriction());
+                            }
+
+                            Value * copy() const {
+                                return new MovementCrouchFriction();
+                            }
+                        };
+
+                        return new MovementCrouchFriction();
+                    }
+
+                    if (identifier == "movement.crouch.friction.threshold"){
+                        class MovementCrouchFrictionThreshold: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getCrouchingFrictionThreshold());
+                            }
+
+                            Value * copy() const {
+                                return new MovementCrouchFrictionThreshold();
+                            }
+                        };
+
+                        return new MovementCrouchFrictionThreshold();
+                    }
 
                     if (identifier == "movement.stand.friction"){
                         class StandFriction: public Value {
@@ -2585,6 +2620,51 @@ public:
 
                         return new StandFriction();
                     }
+
+                    if (identifier == "movement.stand.friction.threshold"){
+                        class StandFrictionThreshold: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getStandingFrictionThreshold());
+                            }
+
+                            Value * copy() const {
+                                return new StandFrictionThreshold();
+                            }
+                        };
+
+                        return new StandFrictionThreshold();
+                    }
+
+                    if (identifier == "movement.jump.changeanim.threshold"){
+                        class JumpChangeThreshold: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getJumpChangeAnimationThreshold());
+                            }
+
+                            Value * copy() const {
+                                return new JumpChangeThreshold();
+                            }
+                        };
+
+                        return new JumpChangeThreshold();
+                    }
+
+                    /* FIXME others
+                       movement.air.gethit.groundlevel: Returns value of the "air.gethit.groundlevel" parameter. (float)
+                       movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
+                       movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
+                       movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
+                       movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
+                       movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
+                       movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
+                       movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
+                       movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
+                       movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
+                       movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
+                       */
+
 
                     if (identifier == "velocity.walk.back.x"){
                         class VelocityBackX: public Value {

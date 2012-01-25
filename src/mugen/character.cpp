@@ -1205,10 +1205,22 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             double n;
                             simple.view() >> n;
                             self.setCrouchingFriction(n);
+                        } else if (simple == "crouch.friction.threshold"){
+                            double n;
+                            simple.view() >> n;
+                            self.setCrouchingFrictionThreshold(n);
                         } else if (simple == "stand.friction"){
                             double n;
                             simple.view() >> n;
                             self.setStandingFriction(n);
+                        } else if (simple == "stand.friction.threshold"){
+                            double n;
+                            simple.view() >> n;
+                            self.setStandingFrictionThreshold(n);
+                        } else if (simple == "jump.changeanim.threshold"){
+                            double n;
+                            simple.view() >> n;
+                            self.setJumpChangeAnimationThreshold(n);
                         } else if (simple == "airjump.num"){
                             int x;
                             simple.view() >> x;
