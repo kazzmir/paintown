@@ -8,9 +8,12 @@
 #include "mugen/sprite.h"
 #include "mugen/font.h"
 
+#include "util/events.h"
 #include "util/pointer.h"
 #include "util/gui/select-list.h"
 #include "util/gui/fadetool.h"
+
+#include "util/input/input-map.h"
 
 namespace Mugen{
     
@@ -539,6 +542,12 @@ public:
     virtual Mugen::ArcadeData::MatchPath getArcadePath();
     //! Get Team Arcade Match
     virtual Mugen::ArcadeData::MatchPath getTeamArcadePath();
+    
+    //! Get Logic class
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> getLogic(InputMap<Mugen::Keys> &, InputMap<Mugen::Keys> &);
+    
+    //! Get Draw class
+    PaintownUtil::ReferenceCount<PaintownUtil::Draw> getDraw();
     
     //! Get Player1
     const Player & getPlayer1() const {

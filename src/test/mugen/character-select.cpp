@@ -5,8 +5,12 @@
 
 #include "util/timedifference.h"
 #include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "mugen/ast/all.h"
 #include "mugen/sound.h"
+
+#include "util/input/input.h"
+#include "util/input/input-manager.h"
 
 using namespace Mugen;
 
@@ -3156,4 +3160,107 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
+}
+
+class Logic: public PaintownUtil::Logic {
+public:
+    Logic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::CharacterSelect & select):
+    is_done(false),
+    input1(input1),
+    input2(input2),
+    select(select){
+    }
+
+    bool is_done;
+    InputMap<Mugen::Keys> & input1, & input2;
+    Mugen::CharacterSelect & select;
+    
+    bool done(){
+        return is_done;
+    }
+
+    void run(){
+        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Mugen::Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc){
+                    select.cancel();
+                }
+                if (event.out == Left){
+                    select.left(0);
+                }
+                if (event.out == Down){
+                    select.down(0);
+                }
+                if (event.out == Right){
+                    select.right(0);
+                }
+                if (event.out == Up){
+                    select.up(0);
+                }
+                if (event.out == Enter || event.out == Start){
+                    select.select(0);
+                }
+            }
+        }
+        out = InputManager::getEvents(input2, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Mugen::Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc){
+                    select.cancel();
+                }
+                if (event.out == Left){
+                    select.left(1);
+                }
+                if (event.out == Down){
+                    select.down(1);
+                }
+                if (event.out == Right){
+                    select.right(1);
+                }
+                if (event.out == Up){
+                    select.up(1);
+                }
+                if (event.out == Enter || event.out == Start){
+                    select.select(1);
+                }
+            }
+        }
+        select.act();
+        is_done = select.isDone();
+    }
+
+    double ticks(double system){
+        return system;
+    }
+};
+
+class SelectDraw: public PaintownUtil::Draw {
+public:
+    SelectDraw(Mugen::CharacterSelect & select):
+    select(select){
+    }
+    
+    Mugen::CharacterSelect & select;
+
+    void draw(const Graphics::Bitmap & buffer){
+        buffer.clear();
+        Graphics::StretchedBitmap work(320, 240, buffer);
+        work.start();
+        select.draw(work);
+        work.finish();
+        buffer.BlitToScreen();
+    }
+};
+
+PaintownUtil::ReferenceCount<PaintownUtil::Logic> CharacterSelect::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2){
+    PaintownUtil::ReferenceCount<Logic> logic = PaintownUtil::ReferenceCount<Logic>(new Logic(input1, input2, *this));
+    return logic.convert<PaintownUtil::Logic>();
+}
+
+PaintownUtil::ReferenceCount<PaintownUtil::Draw> CharacterSelect::getDraw(){
+    PaintownUtil::ReferenceCount<SelectDraw> draw = PaintownUtil::ReferenceCount<SelectDraw>(new SelectDraw(*this));
+    return draw.convert<PaintownUtil::Draw>();
 }

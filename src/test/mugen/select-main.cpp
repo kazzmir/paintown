@@ -230,6 +230,11 @@ int main(int argc, char ** argv){
             Draw draw(select);
 
             Util::standardLoop(logic, draw);
+            /*InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+            InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+            Util::ReferenceCount<Util::Logic> logic = select.getLogic(keys1, keys2);
+            Util::ReferenceCount<Util::Draw> draw = select.getDraw();
+            Util::standardLoop(*logic, *draw);*/
             
         } catch (const MugenException & ex){
             Global::debug(0) << "Problem loading file [" << file << "]. Reason: " << ex.getTrace() << std::endl;
