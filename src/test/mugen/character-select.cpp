@@ -3166,26 +3166,102 @@ class Logic: public PaintownUtil::Logic {
 public:
     Logic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::CharacterSelect & select):
     is_done(false),
+    canceled(false),
     input1(input1),
     input2(input2),
-    select(select){
+    select(select),
+    quitSearching(false),
+    searchingCheck(quitSearching, searchingLock.getLock()),
+    characterAddThread(PaintownUtil::Thread::uninitializedValue),
+    subscription(*this){
+        class WithSubscription{
+        public:
+            WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
+            search(search),
+            subscription(subscription){
+                search.subscribe(&subscription);
+            }
+
+            Searcher & search;
+            Searcher::Subscriber & subscription;
+
+            ~WithSubscription(){
+                search.unsubscribe(&subscription);
+            }
+        };
+        
+        search.start();
+        WithSubscription(search, subscription);
     }
 
-    bool is_done;
+    bool is_done, canceled;
     InputMap<Mugen::Keys> & input1, & input2;
     Mugen::CharacterSelect & select;
+    Searcher search;
+    
+    PaintownUtil::Thread::LockObject lock;
+    
+    PaintownUtil::Thread::LockObject searchingLock;
+    volatile bool quitSearching;
+    PaintownUtil::ThreadBoolean searchingCheck;
+
+    PaintownUtil::Thread::Id characterAddThread;
+    PaintownUtil::Thread::LockObject addCharacterLock;
+    std::deque<Filesystem::AbsolutePath> addCharacters;
+
+    class Subscriber: public Searcher::Subscriber {
+    public:
+        Subscriber(Logic & owner):
+        owner(owner){
+        }
+        virtual ~Subscriber(){
+        }
+    
+        virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
+            for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+                const Filesystem::AbsolutePath & path = *it;
+                owner.addCharacter(path);
+            }
+        }
+
+        virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths){
+            for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+                const Filesystem::AbsolutePath & path = *it;
+                owner.addStage(path);
+            }
+        }
+
+        Logic & owner;
+    };
+
+    Subscriber subscription;
+    
+    void addCharacter(const Filesystem::AbsolutePath & path){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        select.addCharacter(Mugen::ArcadeData::CharacterInfo(path));
+    }
+    
+    void addStage(const Filesystem::AbsolutePath & path){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        select.addStage(path);
+    }
     
     bool done(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
         return is_done;
     }
 
     void run(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
         std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
         for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
             const InputMap<Mugen::Keys>::InputEvent & event = *it;
             if (event.enabled){
                 if (event.out == Esc){
-                    select.cancel();
+                    if (!canceled){
+                        select.cancel();
+                        canceled = true;
+                    }
                 }
                 if (event.out == Left){
                     select.left(0);
@@ -3209,7 +3285,10 @@ public:
             const InputMap<Mugen::Keys>::InputEvent & event = *it;
             if (event.enabled){
                 if (event.out == Esc){
-                    select.cancel();
+                    if (!canceled){
+                        select.cancel();
+                        canceled = true;
+                    }
                 }
                 if (event.out == Left){
                     select.left(1);
@@ -3233,6 +3312,7 @@ public:
     }
 
     double ticks(double system){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
         return system;
     }
 };

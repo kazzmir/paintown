@@ -7,6 +7,7 @@
 #include "mugen/util.h"
 #include "mugen/sprite.h"
 #include "mugen/font.h"
+#include "mugen/search.h"
 
 #include "util/events.h"
 #include "util/pointer.h"
