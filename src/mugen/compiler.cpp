@@ -2651,8 +2651,22 @@ public:
                         return new JumpChangeThreshold();
                     }
 
+                    if (identifier == "movement.air.gethit.groundlevel"){
+                        class AirGetHitGroundLevel: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                return RuntimeValue(environment.getCharacter().getAirGetHitGroundLevel());
+                            }
+
+                            Value * copy() const {
+                                return new AirGetHitGroundLevel();
+                            }
+                        };
+
+                        return new AirGetHitGroundLevel();
+                    }
+
                     /* FIXME others
-                       movement.air.gethit.groundlevel: Returns value of the "air.gethit.groundlevel" parameter. (float)
                        movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
                        movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
                        movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)

@@ -747,6 +747,14 @@ public:
             return jumpChangeAnimationThreshold;
         }
 
+        virtual void setAirGetHitGroundLevel(double n){
+            airGetHitGroundLevel = n;
+        }
+
+        virtual double getAirGetHitGroundLevel() const {
+            return airGetHitGroundLevel;
+        }
+
         virtual void setStandingFriction(double n){
             standFriction = n;
         }
@@ -1623,6 +1631,9 @@ public:
 
         /* TODO: what is this for? */
         double jumpChangeAnimationThreshold;
+        
+        /* TODO: what is this for? */
+        double airGetHitGroundLevel;
 };
 
 }
