@@ -456,6 +456,9 @@ public:
     virtual void stopRecording();
 
     virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
+    /* If you just want to change to a state without any active inputs use this version */
+    virtual void changeState(Mugen::Stage & stage, int state);
+
     /* change back to states in the players own cns file */
     virtual void changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     

@@ -910,7 +910,12 @@ RuntimeValue Character::getSystemVariable(int index) const {
 void Character::resetStateTime(){
     stateTime = 0;
 }
-        
+    
+void Character::changeState(Mugen::Stage & stage, int state){
+    vector<string> empty;
+    changeState(stage, state, empty);
+}
+
 void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<string> & inputs){
     /* dont let after images carry over to the next state
      * UPDATE: mugen actually allows this

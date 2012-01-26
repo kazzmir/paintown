@@ -591,6 +591,9 @@ class Round{
             return this->roundEnd;
         }
 
+    protected:
+        void doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Character & loser);
+
     private:
 
         //! Get current stage element in use

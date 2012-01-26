@@ -787,6 +787,30 @@ Round::~Round(){
     }
 }
 
+void Round::doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Character & loser){
+    winner.changeState(stage, Mugen::Win);
+
+    WinGame::WinType winType;
+    if (overByKO){
+        winType = WinGame::Normal;
+    } else {
+        winType = WinGame::TimeOver;
+    }
+
+    // Add win to character
+    WinGame win;
+    win.type = winType;
+    win.perfect = winner.getHealth() == winner.getMaxHealth();
+    winner.addWin(win);
+
+    /* If the loser still has health then its a loss by time and they should go into
+     * their loss state.
+     */
+    if (loser.getHealth() > 0){
+        loser.changeState(stage, Mugen::Lose);
+    }
+}
+
 void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     switch (state){
 	case WaitForIntro:
@@ -832,10 +856,12 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
 	    // Evaluate players and then go to the appropriate finish
 	    break;
         case RoundOver:
+            /*
 	    // Set slow time
 	    if (ticker < 2){
 		// Set slow time
 	    }
+            */
 	    // Remove hittable state
 	    if (ticker >= overHitTime){
                 //player1.setUnHurtable();
@@ -892,124 +918,69 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
                 player2.setBehavior(&dummyBehavior);
             }
 	    break;
-        case DoWin:
+        case DoWin: {
             // Just a precaution
             player1.setBehavior(&dummyBehavior);
             player2.setBehavior(&dummyBehavior);
-		// Change into win state
-		if (ticker >= overWinTime){
-		    // Check ko / dko
-		    if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
-			if (ticker >= overWinTime + winDisplayTime){
-			    if (draw.notStarted()){
-				draw.play();
-				drawSound.play();
-                                // Increment draw for now, though I think this actually counts as win for both
-                                totalDraws++;
-			    }
-			}
-		    } else if (player1.getHealth() == player2.getHealth()){
-		        if (!winStateSet){
-			    winStateSet = true;
-                            std::vector<std::string> vec;
-			    player1.changeState(stage,Mugen::Draw,vec);
-			    player2.changeState(stage,Mugen::Draw,vec);
-		        }
-		        if (ticker >= overWinTime + winDisplayTime){
-			    if (draw.notStarted()){
-			        draw.play();
-			        drawSound.play();
-                                // Increment draw
-                                totalDraws++;
-			    }
-		        }
-		    } else {
-			// Set win state
-			if (player1.getHealth() > player2.getHealth() && !winStateSet){
-			    std::vector<std::string> vec;
-			    winStateSet = true;
-			    player1.changeState(stage,Mugen::Win,vec);
-			    // Add win to character
-			    if (overByKO){
-                                if (player1.getHealth() == player1.getMaxHealth()){
-                                    WinGame win;
-                                    win.type = WinGame::Normal;
-                                    win.perfect = true;
-                                    player1.addWin(win);
-                                } else {
-                                    WinGame win;
-                                    win.type = WinGame::Normal;
-                                    player1.addWin(win);
-                                }
-			    } else {
-				if (player1.getHealth() == player1.getMaxHealth()){
-                                    WinGame win;
-                                    win.type = WinGame::TimeOver;
-                                    win.perfect = true;
-                                    player1.addWin(win);
-                                } else {
-                                    WinGame win;
-                                    win.type = WinGame::TimeOver;
-                                    player1.addWin(win);
-                                }
-			    }
-                            if (player2.getHealth() > 0){
-                                player2.changeState(stage, Mugen::Lose, vec);
+            // Change into win state
+            if (ticker >= overWinTime){
+                // Check ko / dko
+                if (player1.getHealth() <= 0 && player2.getHealth() <= 0){
+                    if (ticker >= overWinTime + winDisplayTime){
+                        if (draw.notStarted()){
+                            draw.play();
+                            drawSound.play();
+                            // Increment draw for now, though I think this actually counts as win for both
+                            totalDraws++;
+                        }
+                    }
+                } else if (player1.getHealth() == player2.getHealth()){
+                    if (!winStateSet){
+                        winStateSet = true;
+                        std::vector<std::string> vec;
+                        player1.changeState(stage, Mugen::Draw, vec);
+                        player2.changeState(stage, Mugen::Draw, vec);
+                    }
+                    if (ticker >= overWinTime + winDisplayTime){
+                        if (draw.notStarted()){
+                            draw.play();
+                            drawSound.play();
+                            // Increment draw
+                            totalDraws++;
+                        }
+                    }
+                } else {
+                    // Set win state
+                    if (player1.getHealth() > player2.getHealth() && !winStateSet){
+                        winStateSet = true;
+                        doWin(stage, player1, player2);
+                    } else if (player2.getHealth() > player1.getHealth() && !winStateSet){
+                        winStateSet = true;
+                        doWin(stage, player2, player1);
+                    }
+
+                    if (ticker >= overWinTime + winDisplayTime){
+                        if (win.notStarted()){
+                            std::string temp;
+                            if (player1.getHealth() > player2.getHealth()){
+                                temp = replaceString("%s", player1.getDisplayName(), winText);
+                            } else if (player2.getHealth() > player1.getHealth()){
+                                temp = replaceString("%s", player2.getDisplayName(), winText);
                             }
-			} else if (player2.getHealth() > player1.getHealth() && !winStateSet){
-			    std::vector<std::string> vec;
-			    winStateSet = true;
-			    player2.changeState(stage,Mugen::Win,vec);
-			    // Add win to character
-			    if (overByKO){
-				if (player2.getHealth() == player2.getMaxHealth()){
-                                    WinGame win;
-                                    win.type = WinGame::Normal;
-                                    win.perfect = true;
-                                    player2.addWin(win);
-                                } else {
-                                    WinGame win;
-                                    win.type = WinGame::Normal;
-                                    player2.addWin(win);
-                                }
-			    } else {
-				if (player2.getHealth() == player2.getMaxHealth()){
-                                    WinGame win;
-                                    win.type = WinGame::TimeOver;
-                                    win.perfect = true;
-                                    player2.addWin(win);
-                                } else {
-                                    WinGame win;
-                                    win.type = WinGame::TimeOver;
-                                    player2.addWin(win);
-                                }
-			    }
-			    if (player1.getHealth() > 0){
-                                player1.changeState(stage, Mugen::Lose, vec);
-                            }
-			}
-			if (ticker >= overWinTime + winDisplayTime){
-			    if (win.notStarted()){
-				std::string temp;
-				if (player1.getHealth() > player2.getHealth()){
-				    temp = replaceString("%s",player1.getDisplayName(), winText);
-				} else if (player2.getHealth() > player1.getHealth()){
-				    temp = replaceString("%s",player2.getDisplayName(), winText);
-				}
-				win.setText(temp);
-				win.play();
-				winSound.play();
-			    }
-			}
-		    }
-		}
-	    // End round
-	    if (ticker >= overTime){
-		if (fader.getState() != Gui::FadeTool::FadeOut){
-		    fader.setState(Gui::FadeTool::FadeOut);
-		} else if (ticker >= overTime + fader.getFadeOutTime()) {
-		    currentRound++;
-		    stage.reset();
+                            win.setText(temp);
+                            win.play();
+                            winSound.play();
+                        }
+                    }
+                }
+            }
+            // End round
+            if (ticker >= overTime){
+                if (fader.getState() != Gui::FadeTool::FadeOut){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                } else if (ticker >= overTime + fader.getFadeOutTime()) {
+                    currentRound++;
+                    stage.reset();
                     player1.roundEnd();
                     player2.roundEnd();
                     // Lets check draws
@@ -1019,7 +990,9 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
                             stage.setMatchOver(true);
                         }
                         // Check current match and draws assign winner / loser info and exit match if needed
-                    } if (matchWins != -1){
+                    }
+                   
+                    if (matchWins != -1){
                         if (player1.getWins().size() >= (unsigned int)matchWins){
                             player1.addMatchWin();
                             // Later on add lose information to other player
@@ -1034,9 +1007,10 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
                             setState(MatchOver, stage, player1, player2);
                         }
                     }
-		}
+                }
             }
             break;
+        }
 	default:
 	    break;
     }
