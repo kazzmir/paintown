@@ -3164,24 +3164,24 @@ void CharacterSelect::parseSelect(){
 
 class Logic: public PaintownUtil::Logic {
 public:
-    Logic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::CharacterSelect & select):
+    Logic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::CharacterSelect & select, Searcher & search):
     is_done(false),
     canceled(false),
     input1(input1),
     input2(input2),
     select(select),
+    search(search),
     quitSearching(false),
     searchingCheck(quitSearching, searchingLock.getLock()),
     characterAddThread(PaintownUtil::Thread::uninitializedValue),
     subscription(*this),
     withSubscription(search, subscription){
-        search.start();
     }
 
     bool is_done, canceled;
     InputMap<Mugen::Keys> & input1, & input2;
     Mugen::CharacterSelect & select;
-    Searcher search;
+    Searcher & search;
     
     PaintownUtil::Thread::LockObject lock;
     
@@ -3340,8 +3340,8 @@ public:
     }
 };
 
-PaintownUtil::ReferenceCount<PaintownUtil::Logic> CharacterSelect::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2){
-    PaintownUtil::ReferenceCount<Logic> logic = PaintownUtil::ReferenceCount<Logic>(new Logic(input1, input2, *this));
+PaintownUtil::ReferenceCount<PaintownUtil::Logic> CharacterSelect::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Searcher & search){
+    PaintownUtil::ReferenceCount<Logic> logic = PaintownUtil::ReferenceCount<Logic>(new Logic(input1, input2, *this, search));
     return logic.convert<PaintownUtil::Logic>();
 }
 

@@ -14,6 +14,7 @@
 #include "util/sound.h"
 
 #include "mugen/util.h"
+#include "mugen/search.h"
 #include "mugen/exception.h"
 
 #include "character-select.h"
@@ -232,7 +233,9 @@ int main(int argc, char ** argv){
             Util::standardLoop(logic, draw);
             /*InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
             InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
-            Util::ReferenceCount<Util::Logic> logic = select.getLogic(keys1, keys2);
+            Searcher search;
+            search.start();
+            Util::ReferenceCount<Util::Logic> logic = select.getLogic(keys1, keys2, search);
             Util::ReferenceCount<Util::Draw> draw = select.getDraw();
             Util::standardLoop(*logic, *draw);*/
             

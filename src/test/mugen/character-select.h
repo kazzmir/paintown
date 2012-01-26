@@ -545,7 +545,7 @@ public:
     virtual Mugen::ArcadeData::MatchPath getTeamArcadePath();
     
     //! Get Logic class
-    PaintownUtil::ReferenceCount<PaintownUtil::Logic> getLogic(InputMap<Mugen::Keys> &, InputMap<Mugen::Keys> &);
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> getLogic(InputMap<Mugen::Keys> &, InputMap<Mugen::Keys> &, Searcher &);
     
     //! Get Draw class
     PaintownUtil::ReferenceCount<PaintownUtil::Draw> getDraw();
