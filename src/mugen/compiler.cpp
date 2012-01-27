@@ -1393,8 +1393,12 @@ public:
             class MoveContact: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    const Character & guy = environment.getCharacter();
+                    if (guy.isAttacking()){
+                        return guy.getHitState().moveContact;
+                    } else {
+                        return false;
+                    }
                 }
 
                 Value * copy() const {

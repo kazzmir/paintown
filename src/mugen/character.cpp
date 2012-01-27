@@ -306,6 +306,7 @@ void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, c
     chainId = hit.id;
 
     spritePriority = hit.player2SpritePriority;
+    moveContact = 0;
 
     /* FIXME: set damage */
     
@@ -926,6 +927,11 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
     if (stateNumber == GetUpFromLiedown){
         juggleRemaining = getJugglePoints();
     }
+
+    /* FIXME: handle movehitpersist
+     * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
+     */
+    hitState.moveContact = 0;
 
     /* reset hit count */
     hitCount = 0;
@@ -2497,6 +2503,10 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
             hitState.hitTime -= 1;
         }
 
+        if (isAttacking() && hitState.moveContact > 0){
+            hitState.moveContact += 1;
+        }
+
         /* if shakeTime is non-zero should we update stateTime? */
         stateTime += 1;
 
@@ -2701,11 +2711,13 @@ void Character::didHitGuarded(Object * enemy, Mugen::Stage & stage){
     /* TODO */
     hitState.shakeTime = getHit().guardPause.player1;
     hitState.spritePriority = getHit().player1SpritePriority;
+    hitState.moveContact = 1;
 }
 
 void Character::didHit(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().pause.player1;
     hitState.spritePriority = getHit().player1SpritePriority;
+    hitState.moveContact = 1;
     addPower(getHit().getPower.hit);
 
     if (getState(getCurrentState())->powerChanged()){
@@ -3654,6 +3666,10 @@ void Character::roundEnd(){
     /* TODO: reset int and float arrays, use intpersist and floatpersist.
      * maybe kill helpers or projectiles.
      */
+}
+
+bool Character::isAttacking() const { 
+    return getMoveType() == Move::Attack;
 }
         
 }

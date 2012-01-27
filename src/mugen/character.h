@@ -186,7 +186,8 @@ struct HitState{
         guarded(false),
         damage(0),
         chainId(-1),
-        spritePriority(0){
+        spritePriority(0),
+        moveContact(0){
         }
 
     void update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
@@ -235,6 +236,8 @@ struct HitState{
         bool changeXVelocity;
         double damage;
     } fall;
+
+    int moveContact;
 };
 
 class StateController;
@@ -450,6 +453,8 @@ public:
     virtual int getBackX() const;
     /* same thing for the front */
     virtual int getFrontX() const;
+    
+    virtual bool isAttacking() const;
 
     /* record moves */
     virtual void startRecording(int filename);
