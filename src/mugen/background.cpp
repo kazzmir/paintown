@@ -712,6 +712,8 @@ void AnimationElement::render(int cameraX, int cameraY, const Graphics::Bitmap &
 
     if (animation != NULL){
         Effects effects = getEffects();
+        /* Animation mask is always true */
+        effects.mask = true;
         while (tiler.hasMore()){
             Point where = tiler.nextPoint();
             animation->render(where.x, where.y, bmp, effects);
