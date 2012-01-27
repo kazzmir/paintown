@@ -1281,7 +1281,10 @@ protected:
 	// double standfriction;
 	//  = .82 ;Friction coefficient when crouching
 	double crouchFriction;
-        /* TODO: use this variable for something */
+
+        /* TODO: use this variable for something
+         * Mugen 1.0
+         */
         double crouchFrictionThreshold;
 
 	/* Sprites */
@@ -1334,7 +1337,10 @@ protected:
 
         /* stand.friction */
         double standFriction;
-        /* TODO: use this variable for something */
+
+        /* TODO: use this variable for something.
+         * Mugen 1.0 variable
+         */ 
         double standFrictionThreshold;
 
         /* S (stand), C (crouch), A (air), L (lying down) */
@@ -1629,10 +1635,14 @@ public:
         /* number of times this character has been hit in total */
         unsigned int wasHitCounter;
 
-        /* TODO: what is this for? */
+        /* TODO: what is this for?
+         * Mugen 1.0
+         */
         double jumpChangeAnimationThreshold;
         
-        /* TODO: what is this for? */
+        /* TODO: what is this for?
+         * Mugen 1.0
+         */
         double airGetHitGroundLevel;
 };
 

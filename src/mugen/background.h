@@ -105,13 +105,12 @@ class BackgroundElement: public Element {
 	    this->effects.mask = mask;
 	}
 	
+        /* If the trans type is not none then we always want the mask */
 	virtual inline bool getMask() const {
 	    return this->effects.mask;
 	}
 
-        virtual inline const Mugen::Effects & getEffects() const{
-            return this->effects;
-        }
+        virtual inline Mugen::Effects getEffects() const;
 	
 	virtual inline void setTile(const Mugen::Point &point){
 	    this->tile = point;

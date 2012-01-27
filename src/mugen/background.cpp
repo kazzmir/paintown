@@ -258,6 +258,12 @@ BackgroundElement::BackgroundElement(const BackgroundElement &copy){
 BackgroundElement::~BackgroundElement(){
 }
 
+Mugen::Effects BackgroundElement::getEffects() const {
+    Mugen::Effects effects = this->effects;
+    effects.mask = getMask() || (getTrans() != None);
+    return effects;
+}
+
 double BackgroundElement::getCurrentX() const {
     return getStart().x + getX() + getSinX().get();
 }
@@ -705,9 +711,10 @@ void AnimationElement::render(int cameraX, int cameraY, const Graphics::Bitmap &
     Tiler tiler(getTile(), currentX, currentY, addw, addh, 0, 0, 0, 0, bmp.getWidth(), bmp.getHeight());
 
     if (animation != NULL){
+        Effects effects = getEffects();
         while (tiler.hasMore()){
             Point where = tiler.nextPoint();
-            animation->render(where.x, where.y, bmp, getEffects());
+            animation->render(where.x, where.y, bmp, effects);
         }
     }
 
@@ -1809,7 +1816,7 @@ clearColor(Graphics::MaskColor()){
                             // self.spriteFile = Mugen::Util::stripDir(self.spriteFile);
                             Global::debug(1) << "Sprite File: " << self.spriteFile << endl;
                             // Util::readSprites(Filesystem::lookupInsensitive(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
-                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, true);
+                            Util::readSprites(Util::findFile(baseDir, Filesystem::RelativePath(self.spriteFile)), Filesystem::AbsolutePath(), sprites, false);
                         } 
                     }
                 };
