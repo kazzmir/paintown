@@ -984,7 +984,14 @@ void Mugen::Stage::physics(Object * mugen){
                 Mugen::Object * mplayer = (Mugen::Object *) mugen;
                 Mugen::Object * menemy = (Mugen::Object *) enemy;
                 /* TODO: make this cleaner */
-                while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(), menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) && centerCollision(mplayer, menemy) && enemy->getY() == 0 && mplayer->getY() < enemy->getHeight() && menemy->getMoveType() == Mugen::Move::Idle){
+                while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(),
+                                     menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
+                       centerCollision(mplayer, menemy) &&
+                       enemy->getY() == 0 &&
+                       mplayer->getY() < enemy->getHeight() &&
+                       enemy->getX() != maximumLeft() &&
+                       enemy->getX() != maximumRight() &&
+                       menemy->getMoveType() == Mugen::Move::Idle){
 
                     /* use move*Force to override pos freeze */
 

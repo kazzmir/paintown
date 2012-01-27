@@ -108,9 +108,11 @@ MugenFrame & MugenFrame::operator=(const MugenFrame &copy){
 }
 
 void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects){
-    const int placex = x + xoffset;
-    const int placey = y + yoffset;
-    sprite->render(placex, placey, work, effects);
+    if (sprite != NULL){
+        const int placex = x + xoffset;
+        const int placey = y + yoffset;
+        sprite->render(placex, placey, work, effects);
+    }
 }
 
 MugenFrame::~MugenFrame(){
@@ -299,10 +301,6 @@ void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap & work,
         return;
     }
 
-    if (frames[position]->sprite == 0){
-	return;
-    }
-
     Mugen::Effects combined = frames[position]->effects + effects;
     renderFrame(frames[position], xaxis, yaxis, work, combined);
 }
@@ -316,10 +314,6 @@ void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, 
         return;
     }
 
-    if (frames[position]->sprite == 0){
-	return;
-    }
-    
     Mugen::Effects effects = frames[position]->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
@@ -363,10 +357,6 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
         return;
     }
 
-    if (frames[position]->sprite == 0){
-	return;
-    }
-
     MugenFrame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
@@ -381,10 +371,6 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
 void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley){
     if (position >= frames.size()){
         return;
-    }
-
-    if (frames[position]->sprite == 0){
-	return;
     }
 
     MugenFrame * frame = frames[position];

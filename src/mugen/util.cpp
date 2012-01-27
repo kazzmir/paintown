@@ -828,6 +828,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Util::getAnimation(Ast::Sect
             if (frame->sprite == 0){
                 Global::debug(1) << "No sprite for group " << group << " number " << spriteNumber << endl;
             }
+
             // Add frame
             this->animation->addFrame(frame);
 
