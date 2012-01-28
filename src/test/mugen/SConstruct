@@ -81,6 +81,14 @@ select-main.cpp
 character-select.cpp
 """)
 
+view_source = Split("""
+view.cpp
+test/globals.cpp
+test/configuration.cpp
+test/factory/font_factory.cpp
+test/factory/font_render.cpp
+""")
+
 versus_source = Split("""
 common/init.cpp
 common/timer.cpp
@@ -106,6 +114,7 @@ x.append(testEnv.Program('states', states_source))
 x.append(testEnv.Program('parse', parse_source))
 # x.append(testEnv.Program('load-stage', stage_source))
 x.append(testEnv.Program('palette', ['palette.cpp']))
+x.append(testEnv.Program('view', view_source))
 
 # Character Select test
 character_select = testEnv.Program('character-select', character_select_source + most_game_source)

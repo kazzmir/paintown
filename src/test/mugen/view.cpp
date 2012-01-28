@@ -1,11 +1,3 @@
-#include <allegro.h>
-
-#ifdef _WIN32
-#define BITMAP dummyBITMAP
-#include <windows.h>
-#undef BITMAP
-#endif
-
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -16,55 +8,38 @@
 #include <map>
 
 #include "globals.h"
-#include "init.h"
+#include "util/init.h"
 #include "configuration.h"
-#include "music.h"
+#include "util/music.h"
 
-#include "exceptions/exception.h"
+#include "util/exceptions/exception.h"
 #include "mugen/config.h"
 #include "mugen/reader.h"
 #include "mugen/section.h"
 #include "mugen/item-content.h"
 #include "mugen/item.h"
-#include "character.h"
-#include "character-select.h"
+#include "mugen/character.h"
+#include "mugen/character-select.h"
 #include "mugen/animation.h"
 #include "mugen/sprite.h"
 #include "mugen/stage.h"
 #include "mugen/font.h"
 #include "mugen/storyboard.h"
-#include "state.h"
-#include "parser/parsers.h"
-#include "parser/parse-exception.h"
-
+#include "mugen/state.h"
+#include "mugen/parser/parsers.h"
+#include "mugen/parser/parse-exception.h"
 #include "mugen/background.h"
-
 #include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-
-#include "level/utils.h"
-
 #include "factory/font_render.h"
-
-#include "object/object.h"
-#include "object/player.h"
-#include "object/versus_player.h"
-#include "object/versus_enemy.h"
-#include "game.h"
-
-#include "dumb/include/dumb.h"
-#include "dumb/include/aldumb.h"
-#include "loadpng/loadpng.h"
-
-#include "ast/Configuration.h"
-#include "input/input-manager.h"
+#include "util/input/input-manager.h"
 
 namespace PaintownUtil = ::Util;
 
 using namespace std;
 
-static void showCollision( const std::vector< MugenArea > &vec, Bitmap &bmp, int x, int y, int color, int &start ){
+static void showCollision( const std::vector< MugenArea > &vec, Graphics::Bitmap &bmp, int x, int y, int color, int &start ){
     int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
@@ -153,13 +128,13 @@ void testPCX(){
     length = fread(data, sizeof(char), 1<<18, f);
     Global::debug(0) << "Size is " << length << endl;
     fclose(f);
-    Bitmap b = Bitmap::memoryPCX(data, length);
+    Graphics::Bitmap b = Graphics::Bitmap::memoryPCX(data, length);
     // Bitmap b("x.pcx");
     if (b.getError()){
         Global::debug(0) << "what the hell" << endl;
     }
-    Bitmap work(640, 480);
-    work.circleFill(40, 40, 100, Bitmap::makeColor(255, 0, 0));
+    Graphics::Bitmap work(640, 480);
+    work.circleFill(40, 40, 100, Graphics::makeColor(255, 0, 0));
     b.draw(0, 0, work);
     Global::debug(0) << "Width " << b.getWidth() << " Height " << b.getHeight() << endl;
     work.BlitToScreen();
@@ -168,9 +143,9 @@ void testPCX(){
 
 void showCharacter(const string & ourFile){
     /*set_color_depth(16);
-    Bitmap::setGfxModeWindowed(640, 480);*/
+      Bitmap::setGfxModeWindowed(640, 480);*/
     Global::debug(0) << "Trying to load character: " << ourFile << "..." << endl;
-    Mugen::Character character = Mugen::Character(Filesystem::AbsolutePath(ourFile));
+    Mugen::Character character = Mugen::Character(Filesystem::AbsolutePath(ourFile), 0);
     character.load();
     Global::debug(0) << "Loaded character: \"" << character.getName() << "\" successfully." << endl;
     bool quit = false;
@@ -178,107 +153,111 @@ void showCharacter(const string & ourFile){
     bool showClsn1 = false;
     bool showClsn2 = false;
     bool moveImage = false;
-   
-    map<int,MugenAnimation*>::const_iterator it = character.getAnimations().begin();
+
+    map<int,Util::ReferenceCount<MugenAnimation> >::const_iterator it = character.getAnimations().begin();
     unsigned int currentAnim = 0;
     unsigned int lastAnim = character.getAnimations().size() -1;
     unsigned int currentFrame = 0;
-    
+
     if (it->second->getFrames().size() == 0){
         Global::debug(0, __FILE__) << "No frames!" << endl;
         exit(0);
     }
 
-    Bitmap work( 640, 480 );
-    
+    Graphics::Bitmap work( 640, 480 );
+
     int xaxis = 260;
     int yaxis = 230;
 
-     double gameSpeed = .5;
+    double gameSpeed = .5;
     double runCounter = 0;
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
-	while( !quit ){
-	    bool draw = false;
-	    
-	    if ( Global::speed_counter > 0 ){
-		runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
-		while (runCounter > 1){
-		    if( animate ) it->second->logic();
-		    runCounter -= 1;
-		    draw = true;
-		    InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);
-		    if( out[LocalKeyboard::Up] ){
-			if( currentAnim < lastAnim ){
-			    currentAnim++;
-			    it++;
-			}
-			currentFrame = 0;
-		    }
-		    else if( out[LocalKeyboard::Down] ){
-			if( currentAnim > 0 ){
-			    currentAnim--;
-			    it--;
-			}
-			currentFrame = 0;
-		    }
-		    else if( out[LocalKeyboard::Left] && !animate){
-			it->second->forwardFrame();
-			currentFrame = it->second->getCurrentPosition();
-		    }
-		    else if( out[LocalKeyboard::Right] && !animate){
-			it->second->backFrame();
-			currentFrame = it->second->getCurrentPosition();
-		    }
-		    else if( out[LocalKeyboard::Space] ){
-			animate = !animate;
-		    }
-		    else if( out[LocalKeyboard::F1] ){
-			showClsn1 = !showClsn1;
-			it->second->toggleOffense();
-		    }
-		    else if( out[LocalKeyboard::F2] ){
-			showClsn2 = !showClsn2;
-			it->second->toggleDefense();
-		    }
-		    else if( out[LocalKeyboard::F3] ){
-			character.priorPalette();
-		    }
-		    else if( out[LocalKeyboard::F4] ){
-			character.nextPalette();
-		    }
-		    
-		    if( mouse_b & 1 )moveImage = true;
-		    else if( !(mouse_b & 1) )moveImage = false;
-		    
-		    quit |= out[LocalKeyboard::Esc];
-		    
-		    if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
-		}
-		Global::speed_counter = 0;
+    while( !quit ){
+        bool draw = false;
+
+        if ( Global::speed_counter4 > 0 ){
+            runCounter += Global::ticksPerSecond(60) * Global::speed_counter4 * gameSpeed;
+            while (runCounter > 1){
+                if( animate ) it->second->logic();
+                runCounter -= 1;
+                draw = true;
+
+                /* FIXME: events */
+                /*
+                InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);
+                if( out[LocalKeyboard::Up] ){
+                    if( currentAnim < lastAnim ){
+                        currentAnim++;
+                        it++;
+                    }
+                    currentFrame = 0;
+                }
+                else if( out[LocalKeyboard::Down] ){
+                    if( currentAnim > 0 ){
+                        currentAnim--;
+                        it--;
+                    }
+                    currentFrame = 0;
+                }
+                else if( out[LocalKeyboard::Left] && !animate){
+                    it->second->forwardFrame();
+                    currentFrame = it->second->getCurrentPosition();
+                }
+                else if( out[LocalKeyboard::Right] && !animate){
+                    it->second->backFrame();
+                    currentFrame = it->second->getCurrentPosition();
+                }
+                else if( out[LocalKeyboard::Space] ){
+                    animate = !animate;
+                }
+                else if( out[LocalKeyboard::F1] ){
+                    showClsn1 = !showClsn1;
+                    it->second->toggleOffense();
+                }
+                else if( out[LocalKeyboard::F2] ){
+                    showClsn2 = !showClsn2;
+                    it->second->toggleDefense();
+                }
+                else if( out[LocalKeyboard::F3] ){
+                    character.priorPalette();
+                }
+                else if( out[LocalKeyboard::F4] ){
+                    character.nextPalette();
+                }
+
+                if( mouse_b & 1 )moveImage = true;
+                else if( !(mouse_b & 1) )moveImage = false;
+
+                quit |= out[LocalKeyboard::Esc];
+
+                if( moveImage ){ xaxis=mouse_x; yaxis =mouse_y; }
+                */
+            }
+            Global::speed_counter4 = 0;
         }
 
         if (draw){
-		    work.clear();
-		    it->second->render( xaxis, yaxis, work );
-		    int start = 10;
-		    if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Bitmap::makeColor( 0,255,0 ), start  );
-		    if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Bitmap::makeColor( 255,0,0 ), start  );
-		    
-		    Font::getDefaultFont().printf( 15, 310, Bitmap::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
-		    Font::getDefaultFont().printf( 15, 320, Bitmap::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
-		    if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 330, Bitmap::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->getLength(), it->second->getCurrentFrame()->sprite->getX(), it->second->getCurrentFrame()->sprite->getY(), it->second->getCurrentFrame()->sprite->getGroupNumber(), it->second->getCurrentFrame()->sprite->getImageNumber());
-		    Font::getDefaultFont().printf( 15, 340, Bitmap::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight() );
-		    Font::getDefaultFont().printf( 15, 350, Bitmap::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
-		    Font::getDefaultFont().printf( 15, 360, Bitmap::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
-		    Font::getDefaultFont().printf( 15, 370, Bitmap::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
-		   
-		    show_mouse(work.getData().getBitmap());
+            work.clear();
+            it->second->render( xaxis, yaxis, work );
+            int start = 10;
+            if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor( 0,255,0 ), start  );
+            if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor( 255,0,0 ), start  );
 
-		    work.BlitToScreen();
-		    Util::rest(1);
-	}
-	
-        while (Global::speed_counter == 0){
+            Font::getDefaultFont().printf( 15, 310, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
+            Font::getDefaultFont().printf( 15, 320, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
+            if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 330, Graphics::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->getLength(), it->second->getCurrentFrame()->sprite->getX(), it->second->getCurrentFrame()->sprite->getY(), it->second->getCurrentFrame()->sprite->getGroupNumber(), it->second->getCurrentFrame()->sprite->getImageNumber());
+            Font::getDefaultFont().printf( 15, 340, Graphics::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight() );
+            Font::getDefaultFont().printf( 15, 350, Graphics::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
+            Font::getDefaultFont().printf( 15, 360, Graphics::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
+            Font::getDefaultFont().printf( 15, 370, Graphics::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+
+            // show_mouse(work.getData().getBitmap());
+
+            work.BlitToScreen();
+            Util::rest(1);
+        }
+
+        while (Global::speed_counter4 == 0){
             Util::rest(1);
             InputManager::poll();
         }
@@ -300,20 +279,20 @@ const int musicHits = sizeof(music) / sizeof(char*);
 void showStage(const string & ourFile, const string &p1_name, const string &p2_name){
     try{
 	std::string file = ourFile;
-	Global::debug(0) << "\"" << MugenStage::getStageName(file) << "\"" << endl;
+	Global::debug(0) << "\"" << Mugen::Stage::getStageName(file) << "\"" << endl;
     } catch (MugenException &ex){
 	Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 	exit(1);
     }
 
     Global::debug(0) << "Trying to load stage: " << ourFile << "..." << endl;
-    MugenStage stage = MugenStage(Filesystem::AbsolutePath(ourFile));
+    Mugen::Stage stage = Mugen::Stage(Filesystem::AbsolutePath(ourFile));
     //stage.load();
     Global::debug(0) << "Loaded stage: \"" << stage.getName() << "\" successfully." << endl;
     bool quit = false;
     
-    Bitmap work( 320, 240 );
-    Bitmap back( 640, 480 );
+    Graphics::Bitmap work( 320, 240 );
+    Graphics::Bitmap back( 640, 480 );
     
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
@@ -322,15 +301,16 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     try {
 	selector.load();
 	selector.setPlayer1Keys(Mugen::getPlayer1Keys(20));
-	selector.run("Test", Bitmap::temporaryBitmap(640,480));
+        /* FIXME: need a searcher */
+	// selector.run("Test", Graphics::Bitmap::temporaryBitmap(640,480));
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
     } catch (const Exception::Return &e){
 	return;
     }
     selector.setNextArcadeMatch();
-    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Def());
-    Mugen::Character *player2 = new Mugen::Character(selector.getPlayer2Def());
+    Mugen::Character *player1 = new Mugen::Character(selector.getPlayer1Def(), 0);
+    Mugen::Character *player2 = new Mugen::Character(selector.getPlayer2Def(), 1);
     player1->load();
     player2->load();
     stage.addPlayer1(player1);
@@ -342,7 +322,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     Music m(true);
     int track = rand() % (musicHits -1);
-    if(Music::loadSong( Filesystem::find(Filesystem::RelativePath(string("mugen/music/") + music[track])).path())){
+    if(Music::loadSong( Storage::instance().find(Filesystem::RelativePath(string("mugen/music/") + music[track])).path())){
         Music::pause();
         Music::play();
         Global::debug(0) << "Now playing track: " << music[track] << endl;
@@ -354,13 +334,15 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     while( !quit ){
         bool draw = false;
         
-        if ( Global::speed_counter > 0 ){
-            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+        if ( Global::speed_counter4 > 0 ){
+            runCounter += Global::speed_counter4 * gameSpeed * Global::ticksPerSecond(60);
             while (runCounter > 1){
 		InputManager::poll();
                 stage.logic();
-		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 runCounter -= 1;
+
+                /*
+		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 draw = true;
 
                 if( out[LocalKeyboard::F2] ){
@@ -387,8 +369,9 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 		}
 
                 quit |= out[LocalKeyboard::Esc] ;
+                */
             }
-            Global::speed_counter = 0;
+            Global::speed_counter4 = 0;
         }
 
         if (draw){
@@ -397,7 +380,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
             back.BlitToScreen();
         }
 
-        while (Global::speed_counter == 0){
+        while (Global::speed_counter4 == 0){
             Util::rest(1);
         }
     }
@@ -409,13 +392,13 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
 void showFont(const string & ourFile){
     Global::debug(0) << "Trying to load font: " << ourFile << "..." << endl;
-    MugenFont font( Filesystem::find(Filesystem::RelativePath(ourFile)));
+    MugenFont font( Storage::instance().find(Filesystem::RelativePath(ourFile)));
     Global::debug(0) << "Loaded font: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;
     
-    Bitmap work( 320, 240 );
-    Bitmap back( 640, 480 );
+    Graphics::Bitmap work( 320, 240 );
+    Graphics::Bitmap back( 640, 480 );
     
     double gameSpeed = 1.0;
     double runCounter = 0;
@@ -427,12 +410,14 @@ void showFont(const string & ourFile){
     while( !quit ){
         bool draw = false;
         
-        if ( Global::speed_counter > 0 ){
-            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+        if ( Global::speed_counter4 > 0 ){
+            runCounter += Global::speed_counter4 * gameSpeed * Global::ticksPerSecond(60);
             while (runCounter > 1){
                 InputManager::poll();
-		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 runCounter -= 1;
+
+                /*
+		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 draw = true;
 		if( out[LocalKeyboard::Down] ){
                    if (font.getCurrentBank() != 0){
@@ -447,8 +432,9 @@ void showFont(const string & ourFile){
 		   }
                 }
                 quit |= out[LocalKeyboard::Esc];
+                */
             }
-            Global::speed_counter = 0;
+            Global::speed_counter4 = 0;
         }
 
         if (draw){
@@ -461,7 +447,7 @@ void showFont(const string & ourFile){
             back.BlitToScreen();
         }
 
-        while (Global::speed_counter == 0){
+        while (Global::speed_counter4 == 0){
             Util::rest(1);
         }
     }
@@ -472,13 +458,13 @@ void showSFF(const string & ourFile, const std::string &actFile){
     int currentGroup = 0;
     int currentSprite = 0;
     Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
-    Mugen::Util::readSprites(Filesystem::AbsolutePath(ourFile), Filesystem::AbsolutePath(actFile), sprites);
+    Mugen::Util::readSprites(Filesystem::AbsolutePath(ourFile), Filesystem::AbsolutePath(actFile), sprites, false);
     Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;
     
     /*Bitmap work( 320, 240 );*/
-    Bitmap back( 640, 480 );
+    Graphics::Bitmap back( 640, 480 );
     
     double gameSpeed = 1.0;
     double runCounter = 0;
@@ -488,12 +474,14 @@ void showSFF(const string & ourFile, const std::string &actFile){
     while( !quit ){
         bool draw = false;
         
-        if ( Global::speed_counter > 0 ){
-            runCounter += Global::speed_counter * gameSpeed * Global::LOGIC_MULTIPLIER;
+        if ( Global::speed_counter4 > 0 ){
+            runCounter += Global::speed_counter4 * gameSpeed * Global::ticksPerSecond(60);
             while (runCounter > 1){
                 InputManager::poll();
-		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 runCounter -= 1;
+
+                /*
+		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 draw = true;
 		if( out[LocalKeyboard::Down] ){
                     int group = currentGroup;
@@ -572,8 +560,9 @@ void showSFF(const string & ourFile, const std::string &actFile){
 		   currentGroup-=500;
                 }
                 quit |= out[LocalKeyboard::Esc];
+                */
             }
-            Global::speed_counter = 0;
+            Global::speed_counter4 = 0;
         }
 
         if (draw){
@@ -582,15 +571,15 @@ void showSFF(const string & ourFile, const std::string &actFile){
 	    if (ourSprite){
 		Mugen::Effects effects;
 		ourSprite->render(320-(ourSprite->getWidth()/2),240-(ourSprite->getHeight()/2),back,effects);
-		Font::getDefaultFont().printf( 15, 470, Bitmap::makeColor( 0, 255, 0 ), back, "Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+		Font::getDefaultFont().printf( 15, 470, Graphics::makeColor( 0, 255, 0 ), back, "Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    } else {
-		Font::getDefaultFont().printf( 15, 470, Bitmap::makeColor( 0, 255, 0 ), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+		Font::getDefaultFont().printf( 15, 470, Graphics::makeColor( 0, 255, 0 ), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    }
 	    /*work.Stretch(back);*/
             back.BlitToScreen();
         }
 
-        while (Global::speed_counter == 0){
+        while (Global::speed_counter4 == 0){
             Util::rest(1);
         }
     }
@@ -602,8 +591,9 @@ void doSelectScreen(const std::string &file){
 	selector.load();
 	selector.setPlayer1Keys(Mugen::getPlayer1Keys());
 	selector.setPlayer2Keys(Mugen::getPlayer2Keys());
-	selector.run("Test", Bitmap::temporaryBitmap(640,480));
-	selector.renderVersusScreen(Bitmap::temporaryBitmap(640,480));
+        /* FIXME */
+	// selector.run("Test", Graphics::Bitmap::temporaryBitmap(640,480));
+	selector.renderVersusScreen();
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
     }
@@ -611,11 +601,11 @@ void doSelectScreen(const std::string &file){
 
 void doBackground(const std::string &file, const std::string &section){
     Mugen::Background background = Mugen::Background(Filesystem::AbsolutePath(file), section);
-    Bitmap workArea(320,240);
-    Bitmap screen(640,480);
+    Graphics::Bitmap workArea(320,240);
+    Graphics::Bitmap screen(640,480);
     
     double runCounter = 0;
-    Global::speed_counter = 0;
+    Global::speed_counter4 = 0;
     Global::second_counter = 0;
     int game_time = 100;
     
@@ -637,14 +627,15 @@ void doBackground(const std::string &file, const std::string &section){
     
 	bool draw = false;
 	
-	if ( Global::speed_counter > 0 ){
+	if ( Global::speed_counter4 > 0 ){
 	    draw = true;
-	    runCounter += Global::speed_counter * Global::LOGIC_MULTIPLIER;
+	    runCounter += Global::speed_counter4 * Global::ticksPerSecond(60);
 	    while ( runCounter >= 1.0 ){
 		runCounter -= 1;
 		// Key handler
 		InputManager::poll();
 		
+                /*
 		InputMap<int>::Output out = InputManager::getMap(gameInput);
 		if (out[0]){
 		    done = true;
@@ -671,12 +662,13 @@ void doBackground(const std::string &file, const std::string &section){
                     // Reset camera
                     camera.x = camera.y = 0;
                 }
+                */
 		
 		// Backgrounds
 		background.act();
 	    }
 	    
-	    Global::speed_counter = 0;
+	    Global::speed_counter4 = 0;
 	}
 		
 	while ( Global::second_counter > 0 ){
@@ -695,16 +687,16 @@ void doBackground(const std::string &file, const std::string &section){
 	    background.renderForeground(camera.x, camera.y, workArea);
 
             // This is a reminder of where the current 0,0 position is
-            workArea.vLine(0,160,240,Bitmap::makeColor(0,255,0));
-            Font::getDefaultFont().printf( 5, 0, Bitmap::makeColor(255,0,0), workArea, "Camera X: %i",0, camera.x );
-            Font::getDefaultFont().printf( 5, 10, Bitmap::makeColor(255,0,0), workArea, "Camera Y: %i",0, camera.y );
+            workArea.vLine(0,160,240,Graphics::makeColor(0,255,0));
+            Font::getDefaultFont().printf( 5, 0, Graphics::makeColor(255,0,0), workArea, "Camera X: %i",0, camera.x );
+            Font::getDefaultFont().printf( 5, 10, Graphics::makeColor(255,0,0), workArea, "Camera Y: %i",0, camera.y );
 	    
 	    // Finally render to screen
 	    workArea.Stretch(screen);
 	    screen.BlitToScreen();
 	}
 
-	while ( Global::speed_counter < 1 ){
+	while ( Global::speed_counter4 < 1 ){
 		PaintownUtil::rest( 1 );
 	}
     }
@@ -941,7 +933,7 @@ int main( int argc, char ** argv ){
 		}
 	}
 	
-        Global::init( GFX_AUTODETECT_WINDOWED );
+        Global::init(Global::WINDOWED);
 
         InputManager input;
 	
@@ -980,7 +972,7 @@ int main( int argc, char ** argv ){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
             } catch (const Filesystem::NotFound & found){
-                Global::debug(0) << "Could not find a file: " << found.getReason() << endl;
+                Global::debug(0) << "Could not find a file: " << found.getTrace() << endl;
                 return 1;
 	    } catch(...){
 		Global::debug(0) << "Unknown problem loading file" << endl;
@@ -1011,16 +1003,15 @@ int main( int argc, char ** argv ){
 	}
 	else if ( configLoaded == 4 ){
 	    try{
-                Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile));
+                Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile), true);
 		story.setInput(Mugen::getPlayer1Keys());
 		// run it and repeat
-		Bitmap screen(640, 480);
-		story.run(screen, true);
+		story.run(true);
             } catch (const MugenException & ex){
                 Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
 		return 1;
 	    } catch (const Filesystem::NotFound & found){
-                Global::debug(0) << "Could not find file: " << found.getReason() << endl;
+                Global::debug(0) << "Could not find file: " << found.getTrace() << endl;
             } catch (...){
 		Global::debug(0) << "Unknown problem loading file" << endl;
 		return 1;
@@ -1059,4 +1050,6 @@ int main( int argc, char ** argv ){
 	
 	return 0;
 }
+#ifdef ALLEGRO
 END_OF_MAIN()
+#endif
