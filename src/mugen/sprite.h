@@ -107,6 +107,7 @@ class MugenSprite{
 	char comments[12];
 	char * pcx;
         int maskColor;
+        char originalPalette[768];
 
         /* come straight from the pcx */
         int width, height;

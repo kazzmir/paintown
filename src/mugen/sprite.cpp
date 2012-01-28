@@ -46,6 +46,8 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
     this->height = copy.height;
     this->loaded = copy.loaded;
 
+    memcpy(this->originalPalette, copy.originalPalette, sizeof(originalPalette));
+
     if (copy.comments != 0){
         /* this line is right */
         memcpy(this->comments, copy.comments, sizeof(MugenSprite::comments));
@@ -83,6 +85,7 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->width = copy.width;
     this->height = copy.height;
     this->loaded = copy.loaded;
+    memcpy(this->originalPalette, copy.originalPalette, sizeof(originalPalette));
     if (copy.comments){
         memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
     }
@@ -118,6 +121,7 @@ void MugenSprite::copyImage(const MugenSprite * copy){
         memcpy(this->pcx, copy->pcx, this->reallength);
     }
 
+    memcpy(this->originalPalette, copy->originalPalette, sizeof(originalPalette));
     this->width = copy->width;
     this->height = copy->height;
     this->unmaskedBitmap = copy->unmaskedBitmap;
@@ -245,10 +249,21 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask, bool
     if (pcx){
         /* Handle the palette depending on ownPalette */
 
+        char oldPalette[768];
+        if (ownPalette){
+            memcpy(oldPalette, pcx + newlength - 768, 768);
+            memcpy(pcx + newlength - 768, originalPalette, 768);
+        }
+
         PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
         if (mask){
             bitmap->replaceColor(bitmap->get8BitMaskColor(), Graphics::MaskColor());
         }
+
+        if (ownPalette){
+            memcpy(pcx + newlength - 768, oldPalette, 768);
+        }
+
         return bitmap;
     }
 
@@ -307,10 +322,12 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask,
 
 /* deletes raw data */
 void MugenSprite::unloadRaw(){
+    /*
     if (pcx){
         delete[] pcx;
         pcx = NULL;
     }
+    */
 }
 
 int MugenSprite::getWidth() const {
@@ -351,10 +368,11 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
             Global::debug(0) << "Warning: could not read " << reallength << " bytes from pcx file, only read " << read << endl;
         }
     }
+    memcpy(originalPalette, pcx + newlength - 768, 768);
     if (!islinked){
 	if (!useact){
 	    if (samePalette){
-		memcpy( pcx + (reallength), palsave1, 768);
+		memcpy(pcx + (reallength), palsave1, 768);
 		Global::debug(2) << "Applying 1st palette to Sprite: " << imageNumber << " in Group: " << groupNumber << endl;
 	    } else {
 		memcpy(palsave1, pcx+(reallength)-768, 768);
