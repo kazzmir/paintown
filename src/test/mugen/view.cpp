@@ -11,6 +11,7 @@
 #include "util/init.h"
 #include "configuration.h"
 #include "util/music.h"
+#include "util/timedifference.h"
 
 #include "util/exceptions/exception.h"
 #include "mugen/config.h"
@@ -90,6 +91,7 @@ enum Keys {
     Space,
     PageUp,
     PageDown,
+    Action1
 };
 
 static InputMap<Keys> getKeys(){
@@ -115,6 +117,7 @@ static InputMap<Keys> getKeys(){
     input.set(Keyboard::Key_SPACE, 10, false, Space);
     input.set(Keyboard::Key_PGUP, 10, false, PageUp);
     input.set(Keyboard::Key_PGDN, 10, false, PageDown);
+    input.set(Keyboard::Key_M, Action1);
     
     return input;
 }
@@ -458,8 +461,11 @@ void showSFF(const string & ourFile, const std::string &actFile){
     int currentGroup = 0;
     int currentSprite = 0;
     Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
+    TimeDifference timer;
+    timer.startTime();
     Mugen::Util::readSprites(Filesystem::AbsolutePath(ourFile), Filesystem::AbsolutePath(actFile), sprites, false);
-    Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully." << endl;
+    timer.endTime();
+    Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully " << timer.printTime("in") << endl;
     
     bool quit = false;
     
@@ -468,6 +474,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
     
     double gameSpeed = 1.0;
     double runCounter = 0;
+    bool mask = false;
     
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
    
@@ -557,6 +564,8 @@ void showSFF(const string & ourFile, const std::string &actFile){
                             currentGroup -= 500;
                         } else if (event.out == LocalKeyboard::Esc){
                             quit = true;
+                        } else if (event.out == LocalKeyboard::Action1){
+                            mask = ! mask;
                         }
                     }
                 }
@@ -568,10 +577,17 @@ void showSFF(const string & ourFile, const std::string &actFile){
         if (draw){
 	    back.clear();
 	    MugenSprite *ourSprite = sprites[currentGroup][currentSprite];
+
+            back.rectangleFill(0, 0, back.getWidth(), back.getHeight() * 3 / 2, Graphics::makeColor(32, 32, 32));
+            back.line(0, back.getHeight() / 2, back.getWidth(), back.getHeight() / 2, Graphics::makeColor(255, 255, 255));
+            back.line(back.getWidth() / 2, 0, back.getWidth() / 2, back.getHeight(), Graphics::makeColor(255, 255, 255));
+
 	    if (ourSprite){
 		Mugen::Effects effects;
-		ourSprite->render(320-(ourSprite->getWidth()/2),240-(ourSprite->getHeight()/2),back,effects);
-		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+                effects.mask = mask;
+                
+		ourSprite->render(back.getWidth() / 2, back.getHeight() / 2, back, effects);
+		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off");
 	    } else {
 		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    }
