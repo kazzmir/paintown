@@ -464,104 +464,104 @@ void showSFF(const string & ourFile, const std::string &actFile){
     bool quit = false;
     
     /*Bitmap work( 320, 240 );*/
-    Graphics::Bitmap back( 640, 480 );
+    Graphics::Bitmap back(640, 480);
     
     double gameSpeed = 1.0;
     double runCounter = 0;
     
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
    
-    while( !quit ){
+    while (!quit){
         bool draw = false;
         
-        if ( Global::speed_counter4 > 0 ){
+        if (Global::speed_counter4 > 0){
             runCounter += Global::speed_counter4 * gameSpeed * Global::ticksPerSecond(60);
             while (runCounter > 1){
                 InputManager::poll();
                 runCounter -= 1;
-
-                /*
-		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 draw = true;
-		if( out[LocalKeyboard::Down] ){
-                    int group = currentGroup;
-                    bool found = false;
-                    currentSprite = 0;
-                    while (!found){
-                        group--;
-                        if (sprites[group][currentSprite]){
-                            found = true;
-                            currentGroup = group;
-                        }
-                        if (group < 0){
-                            group = 9999;
-                        }
-                        if (group == currentGroup){
-                            found = true;
+
+                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource());
+                for (vector<InputMap<LocalKeyboard::Keys>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                    const InputMap<LocalKeyboard::Keys>::InputEvent & event = *it;
+                    if (event.enabled){
+                        if (event.out == LocalKeyboard::Down){
+                            int group = currentGroup;
+                            bool found = false;
+                            currentSprite = 0;
+                            while (!found){
+                                group--;
+                                if (sprites[group][currentSprite]){
+                                    found = true;
+                                    currentGroup = group;
+                                }
+                                if (group < 0){
+                                    group = 9999;
+                                }
+                                if (group == currentGroup){
+                                    found = true;
+                                }
+                            }
+                        } else if (event.out == LocalKeyboard::Up){
+                            int group = currentGroup;
+                            bool found = false;
+                            currentSprite = 0;
+                            while (!found){
+                                group++;
+                                if (sprites[group][currentSprite]){
+                                    found = true;
+                                    currentGroup = group;
+                                }
+                                if (group > 9999){
+                                    group = 0;
+                                }
+                                if (group == currentGroup){
+                                    found = true;
+                                }
+                            }
+                        } else if (event.out == LocalKeyboard::Left){
+                            int sprite = currentSprite;
+                            bool found = false;
+                            while (!found){
+                                sprite--;
+                                if (sprites[currentGroup][sprite]){
+                                    found = true;
+                                    currentSprite = sprite;
+                                }
+                                if (sprite < 0){
+                                    sprite = 1000;
+                                }
+                                if (sprite == currentSprite){
+                                    found = true;
+                                }
+                            }
+                        } else if (event.out == LocalKeyboard::Right){
+                            int sprite = currentSprite;
+                            bool found = false;
+                            while (!found){
+                                sprite++;
+                                if (sprites[currentGroup][sprite]){
+                                    found = true;
+                                    currentSprite = sprite;
+                                }
+                                if (sprite > 1000){
+                                    sprite = 0;
+                                }
+                                if (sprite == currentSprite){
+                                    found = true;
+                                }
+                            }
+                        } else if (event.out == LocalKeyboard::PageUp){
+                            currentGroup += 500;
+                        } else if (event.out == LocalKeyboard::PageDown){
+                            currentGroup -= 500;
+                        } else if (event.out == LocalKeyboard::Esc){
+                            quit = true;
                         }
                     }
                 }
-                if( out[LocalKeyboard::Up] ){
-		    int group = currentGroup;
-                    bool found = false;
-                    currentSprite = 0;
-                    while (!found){
-                        group++;
-                        if (sprites[group][currentSprite]){
-                            found = true;
-                            currentGroup = group;
-                        }
-                        if (group > 9999){
-                            group = 0;
-                        }
-                        if (group == currentGroup){
-                            found = true;
-                        }
-                    }
-                }
-		if( out[LocalKeyboard::Left] ){
-                    int sprite = currentSprite;
-                    bool found = false;
-                    while (!found){
-                        sprite--;
-                        if (sprites[currentGroup][sprite]){
-                            found = true;
-                            currentSprite = sprite;
-                        }
-                        if (sprite < 0){
-                            sprite = 1000;
-                        }
-                        if (sprite == currentSprite){
-                            found = true;
-                        }
-                    }
-                }
-                if( out[LocalKeyboard::Right] ){
-                    int sprite = currentSprite;
-                    bool found = false;
-                    while (!found){
-                        sprite++;
-                        if (sprites[currentGroup][sprite]){
-                            found = true;
-                            currentSprite = sprite;
-                        }
-                        if (sprite > 1000){
-                            sprite = 0;
-                        }
-                        if (sprite == currentSprite){
-                            found = true;
-                        }
-                    }
-                }
-		if( out[LocalKeyboard::PageUp] ){
-                   currentGroup+=500;
-                }
-                if( out[LocalKeyboard::PageDown] ){
-		   currentGroup-=500;
-                }
-                quit |= out[LocalKeyboard::Esc];
-                */
             }
+
             Global::speed_counter4 = 0;
         }
 
@@ -571,9 +571,9 @@ void showSFF(const string & ourFile, const std::string &actFile){
 	    if (ourSprite){
 		Mugen::Effects effects;
 		ourSprite->render(320-(ourSprite->getWidth()/2),240-(ourSprite->getHeight()/2),back,effects);
-		Font::getDefaultFont().printf( 15, 470, Graphics::makeColor( 0, 255, 0 ), back, "Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    } else {
-		Font::getDefaultFont().printf( 15, 470, Graphics::makeColor( 0, 255, 0 ), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
+		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    }
 	    /*work.Stretch(back);*/
             back.BlitToScreen();
