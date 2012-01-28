@@ -388,8 +388,7 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
 
     switch (effects.trans){
 	case AddAlpha : {
-	    // Need to figure out blend correctly addalpha is given to two locations low and high ?
-            Graphics::Bitmap::transBlender(0, 0, 0, effects.alphalow);
+            Graphics::Bitmap::alphaBlender(effects.alphaSource, effects.alphaDest);
 	    break;
 	}
 	case Add : {
@@ -398,6 +397,10 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
             Graphics::Bitmap::addBlender(0, 0, 0, 255);
 	    break;
 	}
+        case Translucent: {
+            Graphics::Bitmap::transBlender(0, 0, 0, effects.alphaSource);
+            break;
+        }
 	case Add1 : {
 	    // 50%
             Graphics::Bitmap::addBlender(128, 128, 128, 255);

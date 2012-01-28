@@ -164,7 +164,7 @@ linkedElement(0){
                     simple.view() >> l >> h;
                 } catch (const Ast::Exception & e){
                 }
-		self.setAlpha(l,h);
+		self.setAlpha(l, h);
             } else if (simple == "mask"){
 		bool mask;
                 simple.view() >> mask;

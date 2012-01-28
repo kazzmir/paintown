@@ -13240,9 +13240,7 @@ Result rule_function(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = makeExpressionEquals(Value(makeExpressionModulo(Value(makeIdentifier(getCurrentLine(line), getCurrentColumn(line), "time")),
-                                                                                       mod)),
-                                                                  to);
+                    value = makeExpressionEquals(Value(makeExpressionModulo(Value(makeIdentifier(getCurrentLine(line), getCurrentColumn(line), "time")), mod)), to);
                     result_peg_450.setValue(value);
                 }
             

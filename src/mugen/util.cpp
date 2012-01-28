@@ -804,21 +804,23 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Util::getAnimation(Ast::Sect
                  * Dest_192". Also, "AS256D256" is equivalent to just "A". A shorthand
                  * for "AS256D128" is "A1".
                  */
-                int source = frame->effects.alphalow;
-                int dest = frame->effects.alphahigh;
+                int source = frame->effects.alphaSource;
+                int dest = frame->effects.alphaDest;
                 // string regex = "as\\([[:digit:]]\\+\\)d\\([[:digit:]]\\+\\)";
-                string regex = "as([[:digit:]]+)d([[:digit:]]+)";
+                string regex = "as(\\d+)d(\\d+)";
                 // string regex = "as[0-9]+d[0-9]+";
                 if (PaintownUtil::matchRegex(blend, regex)){
                     source = atoi(PaintownUtil::captureRegex(blend, regex, 0).c_str());
                     dest = atoi(PaintownUtil::captureRegex(blend, regex, 1).c_str());
+                    frame->effects.trans = AddAlpha;
                 } else if (blend == "a1"){
                     source = 256;
                     dest = 128;
+                    frame->effects.trans = AddAlpha;
                 }
                 Global::debug(2) << "Alpha source " << source << " destination " << dest << endl;
-                frame->effects.alphalow = source;
-                frame->effects.alphahigh = dest;
+                frame->effects.alphaSource = source;
+                frame->effects.alphaDest = dest;
             } else if (blend == "s"){
                 frame->effects.trans = Sub;
             }
@@ -1159,8 +1161,8 @@ Mugen::Point::~Point(){
 
 Mugen::Effects::Effects():
 trans(None),
-alphalow(255),
-alphahigh(255),
+alphaSource(255),
+alphaDest(255),
 mask(false),
 facing(1),
 vfacing(1),
@@ -1171,8 +1173,8 @@ filter(NULL){
 
 Mugen::Effects::Effects(const Mugen::Effects & copy){
     this->trans = copy.trans;
-    this->alphalow = copy.alphalow;
-    this->alphahigh = copy.alphahigh;
+    this->alphaSource = copy.alphaSource;
+    this->alphaDest = copy.alphaDest;
     this->mask = copy.mask;
     this->facing = copy.facing;
     this->vfacing = copy.vfacing;
@@ -1184,8 +1186,8 @@ Mugen::Effects::Effects(const Mugen::Effects & copy){
 
 const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->trans = e.trans;
-    this->alphalow = e.alphalow;
-    this->alphahigh = e.alphahigh;
+    this->alphaSource = e.alphaSource;
+    this->alphaDest = e.alphaDest;
     this->mask = e.mask;
     this->facing = e.facing;
     this->vfacing = e.vfacing;

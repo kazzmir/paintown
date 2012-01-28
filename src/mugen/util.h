@@ -144,6 +144,7 @@ enum TransType{
     Add1,
     Sub,
     AddAlpha,
+    Translucent,
     /* used by the Trans controller to specify the trans should not change */
     Default
 };
@@ -165,8 +166,8 @@ class Effects{
 	TransType trans;
 
         /* translucency values */
-	int alphalow;
-	int alphahigh;
+	int alphaSource;
+	int alphaDest;
 
         /* if the masking color should be shown or not, true is not shown */
 	bool mask;

@@ -62,6 +62,24 @@ Ast::Value * makeValueList(const Value & n1, const Value & n2, const Value & n3,
     return object;
 }
 
+Ast::Value * makeAlphaSourceDest(const Value & source, const Value & dest){
+    std::ostringstream out;
+    out << "as" << as<Ast::Value*>(source)->toString() << "d" << as<Ast::Value*>(dest)->toString();
+
+    Ast::Keyword * object = new Ast::Keyword(-1, -1, out.str());
+    GC::save(object);
+    return object;
+}
+	      
+Ast::Value * makeAlpha(const char * start, const Value & source){
+    std::ostringstream out;
+    out << start << as<Ast::Value*>(source)->toString();
+
+    Ast::Keyword * object = new Ast::Keyword(-1, -1, out.str());
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
@@ -199,10 +217,10 @@ rules:
     # FIXME: handle the integer values
 	value = integer
           # Are all these things part of .air files?
-	      | "as"{case} integer "d"{case} integer {{ value = makeKeyword($1); }}
-	      | "a"{case} integer {{ value = makeKeyword($1); }}
+	      | "as"{case} source:integer "d"{case} dest:integer {{ value = makeAlphaSourceDest(source, dest); }}
+	      | "a"{case} source:integer {{ value = makeAlpha("a", source); }}
 	      | "a"{case} {{ value = makeKeyword($1); }}
-	      | "s"{case} integer {{ value = makeKeyword($1); }}
+	      | "s"{case} source:integer {{ value = makeAlpha("s", source); }}
 	      | "s"{case} {{ value = makeKeyword($1); }}
 	      | "vh"{case} {{ value = makeKeyword($1); }}
 	      | "hv"{case} {{ value = makeKeyword($1); }}

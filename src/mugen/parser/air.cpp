@@ -720,6 +720,24 @@ Ast::Value * makeValueList(const Value & n1, const Value & n2, const Value & n3,
     return object;
 }
 
+Ast::Value * makeAlphaSourceDest(const Value & source, const Value & dest){
+    std::ostringstream out;
+    out << "as" << as<Ast::Value*>(source)->toString() << "d" << as<Ast::Value*>(dest)->toString();
+
+    Ast::Keyword * object = new Ast::Keyword(-1, -1, out.str());
+    GC::save(object);
+    return object;
+}
+	      
+Ast::Value * makeAlpha(const char * start, const Value & source){
+    std::ostringstream out;
+    out << start << as<Ast::Value*>(source)->toString();
+
+    Ast::Keyword * object = new Ast::Keyword(-1, -1, out.str());
+    GC::save(object);
+    return object;
+}
+
 Ast::Value * makeValueList(const Value & front, const Value & rest){
     std::list<Ast::Value*> values;
     values.push_back(as<Ast::Value*>(front));
@@ -5987,7 +6005,8 @@ Result rule_value(Stream & stream, const int position){
     int myposition = position;
     
     
-    
+    Value source;
+        Value dest;
     Result result_peg_2(myposition);
         
         
@@ -6020,12 +6039,13 @@ Result rule_value(Stream & stream, const int position){
                     }
                 }
             
-            Result result_peg_5 = result_peg_4;
+            
             
             result_peg_4 = rule_integer(stream, result_peg_4.getPosition());
                 if (result_peg_4.error()){
                     goto out_peg_6;
                 }
+                source = result_peg_4.getValues();
             
             
             
@@ -6044,12 +6064,13 @@ Result rule_value(Stream & stream, const int position){
                 if (result_peg_4.error()){
                     goto out_peg_6;
                 }
+                dest = result_peg_4.getValues();
             
             
             
             {
                     Value value((void*) 0);
-                    value = makeKeyword(result_peg_5.getValues());
+                    value = makeAlphaSourceDest(source, dest);
                     result_peg_4.setValue(value);
                 }
             
@@ -6080,18 +6101,19 @@ Result rule_value(Stream & stream, const int position){
                     }
                 }
             
-            Result result_peg_11 = result_peg_10;
+            
             
             result_peg_10 = rule_integer(stream, result_peg_10.getPosition());
                 if (result_peg_10.error()){
                     goto out_peg_12;
                 }
+                source = result_peg_10.getValues();
             
             
             
             {
                     Value value((void*) 0);
-                    value = makeKeyword(result_peg_11.getValues());
+                    value = makeAlpha("a", source);
                     result_peg_10.setValue(value);
                 }
             
@@ -6157,18 +6179,19 @@ Result rule_value(Stream & stream, const int position){
                     }
                 }
             
-            Result result_peg_18 = result_peg_17;
+            
             
             result_peg_17 = rule_integer(stream, result_peg_17.getPosition());
                 if (result_peg_17.error()){
                     goto out_peg_19;
                 }
+                source = result_peg_17.getValues();
             
             
             
             {
                     Value value((void*) 0);
-                    value = makeKeyword(result_peg_18.getValues());
+                    value = makeAlpha("s", source);
                     result_peg_17.setValue(value);
                 }
             

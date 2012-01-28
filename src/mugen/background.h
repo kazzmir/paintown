@@ -93,8 +93,8 @@ class BackgroundElement: public Element {
 	}
 	
 	virtual inline void setAlpha(int low, int high){
-	    this->effects.alphalow = low;
-	    this->effects.alphahigh = high;
+	    this->effects.alphaSource = low;
+	    this->effects.alphaDest = high;
 	}
 	
 	virtual inline const TransType & getTrans() const {

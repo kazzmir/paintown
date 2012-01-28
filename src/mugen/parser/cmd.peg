@@ -813,9 +813,7 @@ rules:
              # scripts write '= 5' explicitly as in
              # trigger1 = TimeMod = 3, = 0
              | line:<line> "timemod"{case} s compare:all_compare s mod:integer s "," s all_compare? s to:integer {{
-                 value = makeExpressionEquals(Value(makeExpressionModulo(Value(makeIdentifier(getCurrentLine(line), getCurrentColumn(line), "time")),
-                                                                   mod)),
-                                              to);
+                 value = makeExpressionEquals(Value(makeExpressionModulo(Value(makeIdentifier(getCurrentLine(line), getCurrentColumn(line), "time")), mod)), to);
              }}
              # FIXME: can any integer follow the = or just positive integers?
              | line:<line> name:projectile_trigger id:integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{

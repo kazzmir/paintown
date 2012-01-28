@@ -88,7 +88,7 @@ MugenFrame::MugenFrame(const MugenFrame &copy){
     this->sprite = copy.sprite;
     this->xoffset = copy.xoffset;
     this->yoffset = copy.yoffset;
-    this->time = copy.time;
+    this->time = 0;
     this->effects = copy.effects;
     this->defenseCollision = copy.defenseCollision;
     this->attackCollision = copy.attackCollision;
@@ -141,7 +141,7 @@ MugenAnimation::MugenAnimation(const MugenAnimation &copy):
 playOnce(copy.playOnce),
 looped(false){
     this->loopPosition = copy.loopPosition;
-    this->position = copy.position;
+    this->position = 0;
     this->type = copy.type;
     this->showDefense = copy.showDefense;
     this->showOffense = copy.showOffense;
@@ -149,9 +149,9 @@ looped(false){
         MugenFrame * old = *it;
         this->frames.push_back(new MugenFrame(*old));
     }
-    this->ticks = copy.ticks;
-    this->virtual_ticks = copy.virtual_ticks;
-    this->started = copy.started;
+    this->ticks = 0;
+    this->virtual_ticks = 0;
+    this->started = false;
 }
 
 MugenAnimation::~MugenAnimation(){
@@ -377,8 +377,8 @@ void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, cons
     Mugen::Effects effects = frame->effects;
     effects.facing = (facing ? -1 : 1);
     effects.vfacing = (vfacing ? -1 : 1);
-    effects.trans = Mugen::AddAlpha;
-    effects.alphalow = alpha;
+    effects.trans = Mugen::Translucent;
+    effects.alphaSource = alpha;
     effects.scalex = scalex;
     effects.scaley = scaley;
 
