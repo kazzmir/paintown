@@ -1617,8 +1617,10 @@ void CharacterSelect::load(){
                             Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(select.sffFile)), Filesystem::AbsolutePath(), select.sprites, true);
                             for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
                                 // Load these sprites so they are ready to use
-                                for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-                                    if( j->second )j->second->load();
+                                for (std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
+                                    if (j->second){
+                                        j->second->load(true, false);
+                                    }
                                 }
                             }
                         } else if (simple == "snd"){

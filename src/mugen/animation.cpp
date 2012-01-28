@@ -309,7 +309,7 @@ MugenAnimation * MugenAnimation::copy() const {
     return new MugenAnimation(*this);
 }
 
-void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley){
+void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley, bool ownPalette){
     if (position >= frames.size()){
         return;
     }
@@ -317,6 +317,7 @@ void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, 
     Mugen::Effects effects = frames[position]->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
+    effects.ownPalette = ownPalette;
 
     renderFrame(frames[position], xaxis, yaxis, work, effects);
 
@@ -352,7 +353,7 @@ Mugen::Effects MugenAnimation::getCurrentEffects(bool facing, bool vfacing, doub
     return effects;
 }
 
-void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley, Graphics::Bitmap::Filter * filter){
+void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley, Graphics::Bitmap::Filter * filter, bool ownPalette){
     if (position >= frames.size()){
         return;
     }
@@ -364,6 +365,7 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
     effects.facing = (facing ? -1 : 1);
     effects.vfacing = (vfacing ? -1 : 1);
     effects.filter = filter;
+    effects.ownPalette = ownPalette;
 
     renderFrame(frame, xaxis, yaxis, work, effects);
 }

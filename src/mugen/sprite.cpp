@@ -62,6 +62,8 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
 
     this->unmaskedBitmap = copy.unmaskedBitmap;
     this->maskedBitmap = copy.maskedBitmap;
+    this->unmaskedBitmapPalette = copy.unmaskedBitmapPalette;
+    this->maskedBitmapPalette = copy.maskedBitmapPalette;
 }
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
@@ -96,6 +98,8 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
 
     this->unmaskedBitmap = copy.unmaskedBitmap;
     this->maskedBitmap = copy.maskedBitmap;
+    this->unmaskedBitmapPalette = copy.unmaskedBitmapPalette;
+    this->maskedBitmapPalette = copy.maskedBitmapPalette;
     
     return *this;
 }
@@ -118,6 +122,8 @@ void MugenSprite::copyImage(const MugenSprite * copy){
     this->height = copy->height;
     this->unmaskedBitmap = copy->unmaskedBitmap;
     this->maskedBitmap = copy->maskedBitmap;
+    this->unmaskedBitmapPalette = copy->unmaskedBitmapPalette;
+    this->maskedBitmapPalette = copy->maskedBitmapPalette;
     this->loaded = copy->loaded;
 }
 
@@ -217,7 +223,10 @@ static bool isScaled(const Mugen::Effects & effects){
 }
 
 PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
-    PaintownUtil::ReferenceCount<Graphics::Bitmap> use = getBitmap(effects.mask);
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> use = getBitmap(effects.mask, effects.ownPalette);
+    if (use == NULL){
+        return use;
+    }
 
     PaintownUtil::ReferenceCount<Graphics::Bitmap> modImage = use;
     if (isScaled(effects)){
@@ -232,26 +241,53 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Graphics::Bitma
     draw(getFinalBitmap(effects), xaxis, yaxis, where, effects);
 }
 
-void MugenSprite::load(bool mask){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask, bool ownPalette){
     if (pcx){
+        /* Handle the palette depending on ownPalette */
+
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
         if (mask){
-            maskedBitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
-            maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
-        } else {
-            unmaskedBitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
+            bitmap->replaceColor(bitmap->get8BitMaskColor(), Graphics::MaskColor());
         }
+        return bitmap;
     }
+
+    return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
 }
 
 void MugenSprite::reload(bool mask){
     maskedBitmap = NULL;
     unmaskedBitmap = NULL;
 
-    load(mask);
+    if (mask){
+        maskedBitmap = load(mask, false);
+    } else {
+        unmaskedBitmap = load(mask, false);
+    }
 }
 
-PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask){
-    if (mask){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask, bool ownPalette){
+    if (ownPalette){
+        if (mask){
+            if (maskedBitmapPalette != NULL){
+                return maskedBitmapPalette;
+            }
+            if (unmaskedBitmapPalette != NULL){
+                maskedBitmapPalette = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*unmaskedBitmapPalette, true));
+                maskedBitmapPalette->replaceColor(maskedBitmapPalette->get8BitMaskColor(), Graphics::MaskColor());
+                return maskedBitmapPalette;
+            }
+
+            maskedBitmapPalette = load(true, true);
+            return maskedBitmapPalette;
+        } else {
+            if (unmaskedBitmapPalette != NULL){
+                return unmaskedBitmapPalette;
+            }
+            unmaskedBitmapPalette = load(false, true);
+            return unmaskedBitmapPalette;
+        }
+    } else if (mask){
         if (maskedBitmap != NULL){
             return maskedBitmap;
         }
@@ -347,7 +383,12 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 
     loaded = true;
 
-    load(mask);
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> sprite = load(mask, false);
+    if (mask){
+        maskedBitmap = sprite;
+    } else {
+        unmaskedBitmap = sprite;
+    }
 }
 
 void MugenSprite::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
@@ -357,6 +398,10 @@ void MugenSprite::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, 
 }
 
 static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+    if (bmp == NULL){
+        return;
+    }
+
     int startWidth = 0;
     int startHeight = 0;
     int width = bmp->getWidth();

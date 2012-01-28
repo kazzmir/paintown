@@ -3596,7 +3596,8 @@ public:
     randomX(copy(you.randomX)),
     randomY(copy(you.randomY)),
     removeOnHit(copy(you.removeOnHit)),
-    positionType(you.positionType){
+    positionType(you.positionType),
+    ownPalette(copy(you.ownPalette)){
     }
 
     Value animation;
@@ -3620,6 +3621,7 @@ public:
     Value randomX, randomY;
     Value removeOnHit;
     PositionType positionType;
+    Value ownPalette;
 
     /* Returns true if the sprite should flip */
     static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType){
@@ -3734,7 +3736,7 @@ public:
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip, bool verticalFlip, bool removeOnHit):
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip, bool verticalFlip, bool ownPalette, bool removeOnHit):
             Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
             stage(stage),
             velocityX(velocityX),
@@ -3751,6 +3753,7 @@ public:
             superMoveTime(superMoveTime),
             horizontalFlip(horizontalFlip),
             verticalFlip(verticalFlip),
+            ownPalette(ownPalette),
             removeOnHit(removeOnHit),
             hitCount(owner->getWasHitCount()),
             shouldRemove(false){
@@ -3826,6 +3829,7 @@ public:
         int superMoveTime;
         const bool horizontalFlip;
         const bool verticalFlip;
+        const bool ownPalette;
         const bool removeOnHit;
         const unsigned int hitCount;
         bool shouldRemove;
@@ -3871,7 +3875,7 @@ public:
         }
 	
         virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY);
+            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY, NULL, ownPalette);
         }
 
         virtual bool isDead(){
@@ -3964,7 +3968,7 @@ public:
                 } else if (simple == "shadow"){
                     /* TODO */
                 } else if (simple == "ownpal"){
-                    /* TODO */
+                    controller.ownPalette = Compiler::compile(simple.getValue());
                 } else if (simple == "removeongethit"){
                     controller.removeOnHit = Compiler::compile(simple.getValue());
                 } else if (simple == "trans"){
@@ -4009,6 +4013,8 @@ public:
         bool horizontalFlip = computeFacing(facing, guy, stage, positionType);
         bool verticalFlip = (int) evaluateNumber(this->verticalFlip, env, 1) == -1;
 
+        bool ownPalette = evaluateBool(this->ownPalette, env, false);
+
         PaintownUtil::ReferenceCount<MugenAnimation> animation;
         if (ownAnimation){
             animation = guy.getAnimation(animation_value);
@@ -4028,7 +4034,7 @@ public:
 
         /* FIXME: handle rest of the explod parameters
          */
-        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime, horizontalFlip, verticalFlip, removeOnHit);
+        ExplodeEffect * effect = new ExplodeEffect(&guy, stage, animation, id_value, x, y, velocityX_value, velocityY_value, accelerationX_value, accelerationY_value, removeTime_value, bindTime_value, positionType, posX_value, posY_value, scaleX, scaleY, spritePriority_value, superMove, superMoveTime, horizontalFlip, verticalFlip, ownPalette, removeOnHit);
         stage.addEffect(effect);
     }
 

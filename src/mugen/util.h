@@ -172,6 +172,9 @@ class Effects{
         /* if the masking color should be shown or not, true is not shown */
 	bool mask;
 
+        /* Use the palette from the pcx file */
+        bool ownPalette;
+
         /* horizontal flip */
 	int facing;
 
