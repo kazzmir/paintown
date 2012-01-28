@@ -88,7 +88,7 @@ MugenFrame::MugenFrame(const MugenFrame &copy){
     this->sprite = copy.sprite;
     this->xoffset = copy.xoffset;
     this->yoffset = copy.yoffset;
-    this->time = 0;
+    this->time = copy.time;
     this->effects = copy.effects;
     this->defenseCollision = copy.defenseCollision;
     this->attackCollision = copy.attackCollision;

@@ -468,7 +468,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
     Global::debug(0) << "Loaded SFF file: \"" << ourFile << "\" successfully " << timer.printTime("in") << endl;
     
     bool quit = false;
-    
+
     /*Bitmap work( 320, 240 );*/
     Graphics::Bitmap back(640, 480);
     
@@ -952,6 +952,8 @@ int main( int argc, char ** argv ){
         Global::init(Global::WINDOWED);
 
         InputManager input;
+    
+        Keyboard::pushRepeatState(true);
 	
 	if( configLoaded == 0 ){
 	    MugenReader reader( ourFile );
