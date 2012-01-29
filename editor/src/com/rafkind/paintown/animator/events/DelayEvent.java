@@ -88,6 +88,26 @@ public class DelayEvent extends AnimationEventNotifier implements AnimationEvent
                 updateListeners();
             }
         });
+
+        final JComboBox type = (JComboBox) engine.find("kind");
+        type.addItem("ticks");
+        type.addItem("ms");
+        type.addItem("s");
+
+        switch (delayType){
+            case Ticks: type.setSelectedItem("ticks"); break;
+            case Milliseconds: type.setSelectedItem("ms"); break;
+            case Seconds: type.setSelectedItem("s"); break;
+        }
+
+        type.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                String kind = (String) type.getSelectedItem();
+                delayType = parseType(kind);
+                updateListeners();
+            }
+        });
+
         return (JPanel)engine.getRootComponent();
     }
 
