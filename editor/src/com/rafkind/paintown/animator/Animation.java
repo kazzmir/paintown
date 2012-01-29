@@ -21,7 +21,6 @@ import java.awt.AlphaComposite;
 import javax.swing.JComponent;
 
 public class Animation implements Runnable {
-	
 	private String name;
 	private boolean alive = true;
 	private boolean running;
@@ -637,7 +636,7 @@ public class Animation implements Runnable {
 			if (isRunning() && ! events.isEmpty()){
 				nextEvent();
 				if (getDelayTime() != 0){
-					rest((int)(getDelayTime() * 1000.0 / 90.0));
+					rest((int)(getDelayTime() * 1000.0 / NewAnimator.getTicksPerSecond()));
 				}
 				setDelayTime(0);
 			} else {

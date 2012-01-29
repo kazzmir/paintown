@@ -1,0 +1,16 @@
+<panel layout="GridBagLayout">
+    <hbox>				
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="0"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.HORIZONTAL"
+            />
+
+        <label id="info" text="Ticks per second " />
+        <spinner id="speed" min="1" max="1000" />
+    </hbox>
+</panel>

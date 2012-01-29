@@ -64,64 +64,66 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 
     Closer.open()
 
-    val menuBar = new swing.JMenuBar();
-    val menuProgram = new swing.JMenu("Program");
-    val levelEditor = new swing.JMenuItem("Run the level editor");
-    val quit = new swing.JMenuItem("Quit");
-    val clearCache = new swing.JMenuItem("Clear image cache");
-    val data = new swing.JMenuItem("Data path");
-    val closeTab = new swing.JMenuItem("Close Tab");
-    menuProgram.add(levelEditor);
-    menuProgram.add(data);
-    menuProgram.add(clearCache);
-    menuProgram.add(closeTab);
-    menuProgram.add(quit);
-    menuBar.add(menuProgram);
+    val menuBar = new swing.JMenuBar()
+    val menuProgram = new swing.JMenu("Program")
+    val levelEditor = new swing.JMenuItem("Run the level editor")
+    val quit = new swing.JMenuItem("Quit")
+    val clearCache = new swing.JMenuItem("Clear image cache")
+    val data = new swing.JMenuItem("Data path")
+    val gameSpeed = new swing.JMenuItem("Game ticks")
+    val closeTab = new swing.JMenuItem("Close Tab")
+    menuProgram.add(levelEditor)
+    menuProgram.add(data)
+    menuProgram.add(gameSpeed)
+    menuProgram.add(clearCache)
+    menuProgram.add(closeTab)
+    menuProgram.add(quit)
+    menuBar.add(menuProgram)
 
-    val menuProjectile = new swing.JMenu("Projectile");
-    menuBar.add(menuProjectile);
+    val menuProjectile = new swing.JMenu("Projectile")
+    menuBar.add(menuProjectile)
 
-    val newProjectile = new swing.JMenuItem("New Projectile");
-    menuProjectile.add(newProjectile);
-    val openProjectile = new swing.JMenuItem("Open Projectile");
-    menuProjectile.add(openProjectile);
-    val saveProjectile = new swing.JMenuItem("Save Projectile");
-    menuProjectile.add(saveProjectile);
+    val newProjectile = new swing.JMenuItem("New Projectile")
+    menuProjectile.add(newProjectile)
+    val openProjectile = new swing.JMenuItem("Open Projectile")
+    menuProjectile.add(openProjectile)
+    val saveProjectile = new swing.JMenuItem("Save Projectile")
+    menuProjectile.add(saveProjectile)
 
-    val menuCharacter = new swing.JMenu("Character");
-    menuBar.add(menuCharacter);
+    val menuCharacter = new swing.JMenu("Character")
+    menuBar.add(menuCharacter)
 
-    val newCharacter = new swing.JMenuItem("New Character");
-    menuCharacter.add(newCharacter);
-    val loadCharacter = new swing.JMenuItem("Open Character");
-    menuCharacter.add(loadCharacter);
-    val saveCharacter = new swing.JMenuItem("Save Character");
-    menuCharacter.add(saveCharacter);
-    val saveCharacterAs = new swing.JMenuItem("Save Character As");
-    menuCharacter.add(saveCharacterAs);
+    val newCharacter = new swing.JMenuItem("New Character")
+    menuCharacter.add(newCharacter)
+    val loadCharacter = new swing.JMenuItem("Open Character")
+    menuCharacter.add(loadCharacter)
+    val saveCharacter = new swing.JMenuItem("Save Character")
+    menuCharacter.add(saveCharacter)
+    val saveCharacterAs = new swing.JMenuItem("Save Character As")
+    menuCharacter.add(saveCharacterAs)
 
-    menuProgram.setMnemonic(awt.event.KeyEvent.VK_P);
-    data.setMnemonic(awt.event.KeyEvent.VK_D);
-    closeTab.setMnemonic(awt.event.KeyEvent.VK_C);
-    closeTab.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_W, awt.Event.CTRL_MASK));
-    quit.setMnemonic(awt.event.KeyEvent.VK_Q);
-    quit.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_Q, awt.Event.CTRL_MASK));
-    newCharacter.setMnemonic(awt.event.KeyEvent.VK_N);
-    newCharacter.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_N, awt.Event.CTRL_MASK));
-    menuCharacter.setMnemonic(awt.event.KeyEvent.VK_H);
-    saveCharacter.setMnemonic(awt.event.KeyEvent.VK_S);
-    saveCharacter.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_S, awt.Event.CTRL_MASK));
-    saveCharacterAs.setMnemonic(awt.event.KeyEvent.VK_A);
-    saveCharacterAs.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_A, awt.Event.CTRL_MASK));
-    loadCharacter.setMnemonic(awt.event.KeyEvent.VK_O);
-    loadCharacter.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_O, awt.Event.CTRL_MASK));
+    menuProgram.setMnemonic(awt.event.KeyEvent.VK_P)
+    data.setMnemonic(awt.event.KeyEvent.VK_D)
+    closeTab.setMnemonic(awt.event.KeyEvent.VK_C)
+    closeTab.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_W, awt.Event.CTRL_MASK))
+    quit.setMnemonic(awt.event.KeyEvent.VK_Q)
+    quit.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_Q, awt.Event.CTRL_MASK))
+    newCharacter.setMnemonic(awt.event.KeyEvent.VK_N)
+    newCharacter.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_N, awt.Event.CTRL_MASK))
+    menuCharacter.setMnemonic(awt.event.KeyEvent.VK_H)
+    saveCharacter.setMnemonic(awt.event.KeyEvent.VK_S)
+    saveCharacter.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_S, awt.Event.CTRL_MASK))
+    saveCharacterAs.setMnemonic(awt.event.KeyEvent.VK_A)
+    saveCharacterAs.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_A, awt.Event.CTRL_MASK))
+    loadCharacter.setMnemonic(awt.event.KeyEvent.VK_O)
+    loadCharacter.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_O, awt.Event.CTRL_MASK))
 
-    this.setJMenuBar(menuBar);
+    this.setJMenuBar(menuBar)
     this.addWindowListener(new awt.event.WindowAdapter(){
       override def windowClosing(e:awt.event.WindowEvent){
         Closer.close();
       }
-    });
+    })
 
     levelEditor.addActionListener(new swing.AbstractAction(){
       override def actionPerformed(event:awt.event.ActionEvent){
@@ -238,22 +240,22 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       }
     }
 
-        val quickLoaderModel = new QuickCharacterLoaderModel();
+    val quickLoaderModel = new QuickCharacterLoaderModel();
 
-        val quickFilter = quickEngine.find("filter").asInstanceOf[swing.JTextField];
-        quickFilter.getDocument().addDocumentListener(new swing.event.DocumentListener(){
-            override def changedUpdate(event:swing.event.DocumentEvent){
-                quickLoaderModel.setFilter(quickFilter.getText());
-            }
+    val quickFilter = quickEngine.find("filter").asInstanceOf[swing.JTextField];
+    quickFilter.getDocument().addDocumentListener(new swing.event.DocumentListener(){
+      override def changedUpdate(event:swing.event.DocumentEvent){
+        quickLoaderModel.setFilter(quickFilter.getText());
+      }
 
-            override def insertUpdate(event:swing.event.DocumentEvent){
-                quickLoaderModel.setFilter(quickFilter.getText());
-            }
+      override def insertUpdate(event:swing.event.DocumentEvent){
+        quickLoaderModel.setFilter(quickFilter.getText());
+      }
 
-            override def removeUpdate(event:swing.event.DocumentEvent){
-                quickLoaderModel.setFilter(quickFilter.getText());
-            }
-        });
+      override def removeUpdate(event:swing.event.DocumentEvent){
+        quickLoaderModel.setFilter(quickFilter.getText());
+      }
+    });
 
         val quickLoader = quickEngine.find("list").asInstanceOf[swing.JList];
 
@@ -312,6 +314,25 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         pane.add("Quick character loader", quickLoaderPane)
 
         getContentPane().add(pane)
+
+        gameSpeed.addActionListener(new awt.event.ActionListener(){
+          override def actionPerformed(event:awt.event.ActionEvent){
+            val speed = new swing.JDialog(NewAnimator.this, "Change game speed");
+            speed.setSize(200, 100);
+            val engine = new SwingEngine("animator/game-speed.xml");
+            val spinner = engine.find("speed").asInstanceOf[swing.JSpinner]
+
+            spinner.setValue(new Integer(NewAnimator.getTicksPerSecond()));
+            spinner.addChangeListener(new swing.event.ChangeListener(){
+                override def stateChanged(event:swing.event.ChangeEvent){
+                  NewAnimator.setTicksPerSecond(spinner.getValue().asInstanceOf[Integer].intValue())
+                }
+            });
+
+            speed.getContentPane().add(engine.getRootComponent().asInstanceOf[swing.JPanel])
+            speed.setVisible(true)
+          }
+        })
 
         data.addActionListener(new awt.event.ActionListener(){
           override def actionPerformed(event:awt.event.ActionEvent){
@@ -645,10 +666,18 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 }
 
 object NewAnimator extends swing.JFrame("Paintown Animator"){
+  /* The paintown engine uses 90 ticks per second by default */
+  var ticksPerSecond = 90
   var animator:NewAnimator = null
   def dataPath(f:File):File = {
     new File(Data.getDataPath().getPath() + "/" + f.getPath());
   }
+
+  def setTicksPerSecond(ticks:Int){
+    ticksPerSecond = ticks
+  }
+
+  def getTicksPerSecond() = ticksPerSecond
 
   def getNewFileChooser():RelativeFileChooser = 
     new RelativeFileChooser(animator, Data.getDataPath())
