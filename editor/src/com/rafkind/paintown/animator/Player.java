@@ -676,18 +676,18 @@ public final class Player{
         final JSlider speed = (JSlider) context.find("speed");
         final double speedNumerator = 20.0;
         if (animations.size() > 0){
-            animationSpeed.setText("Animation speed: " + animations.get(0).getAnimationSpeed());
+            animationSpeed.setText("Animation speed: " + (int)(100 * animations.get(0).getAnimationSpeed()) + "%");
             speed.setValue((int) (speedNumerator / animations.get(0).getAnimationSpeed()));
         } else {
             speed.setValue(20);
-            animationSpeed.setText("Animation speed: 1");
+            animationSpeed.setText("Animation speed: 100%");
         }
         speed.addChangeListener( new ChangeListener(){
             public void stateChanged(ChangeEvent e){
                 for (Animation animation: animations){
                     animation.setAnimationSpeed(speedNumerator / speed.getValue());
                 }
-                animationSpeed.setText("Animation speed: " + speed.getValue() / speedNumerator);
+                animationSpeed.setText("Animation speed: " + (int)(100 * speed.getValue() / speedNumerator) + "%");
             }
         });
 
@@ -709,13 +709,13 @@ public final class Player{
         // controls.add((JComponent)controlEditor.getRootComponent());
 
         final JLabel scaleNum = (JLabel) context.find( "scale-num" );
-        scaleNum.setText( "Scale: " + area.getScale() );
+        scaleNum.setText("Scale: " + (int)(100 * area.getScale()) + "%");
         final JSlider scale = (JSlider) context.find( "scale" );
         scale.setValue( (int)(area.getScale() * 5.0) );
         scale.addChangeListener( new ChangeListener(){
             public void stateChanged( ChangeEvent e ){
-                area.setScale( scale.getValue() / 5.0 );
-                scaleNum.setText( "Scale: " + area.getScale() );
+                area.setScale(scale.getValue() / 5.0);
+                scaleNum.setText("Scale: " + (int)(100 * area.getScale()) + "%");
             }
         });
 

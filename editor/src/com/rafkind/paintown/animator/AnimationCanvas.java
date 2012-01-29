@@ -256,14 +256,14 @@ public abstract class AnimationCanvas extends JPanel {
     private JPanel makeSpeedAndScale(final Animation animation, final DrawArea area){
         final SwingEngine context = new SwingEngine("animator/tool-speed-scale.xml");
         final JLabel animationSpeed = (JLabel) context.find("speed-num");
-        animationSpeed.setText("Animation speed: " + animation.getAnimationSpeed());
+        animationSpeed.setText("Animation speed: " + (int) (animation.getAnimationSpeed() * 100) + "%");
         final JSlider speed = (JSlider) context.find("speed");
         final double speedNumerator = 20.0;
         speed.setValue( (int) (speedNumerator / animation.getAnimationSpeed()) );
         speed.addChangeListener( new ChangeListener(){
             public void stateChanged( ChangeEvent e ){
                 animation.setAnimationSpeed(speedNumerator / speed.getValue());
-                animationSpeed.setText("Animation speed: " + speed.getValue() / speedNumerator);
+                animationSpeed.setText("Animation speed: " + (int) (speed.getValue() / speedNumerator * 100) + "%");
             }
         });
 
@@ -283,20 +283,23 @@ public abstract class AnimationCanvas extends JPanel {
         });
 
         final JLabel scaleNum = (JLabel) context.find("scale-num");
-        scaleNum.setText("Scale: " + area.getScale());
+        /* FIXME: abstract out setting the scale test because its duplicated
+         * 3 times.
+         */
+        scaleNum.setText("Scale: " + (int)(area.getScale() * 100) + "%");
         final JSlider scale = (JSlider) context.find( "scale" );
         scale.setValue((int)(area.getScale() * 5.0));
         scale.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent e){
                 area.setScale(scale.getValue() / 5.0);
-                scaleNum.setText("Scale: " + area.getScale());
+                scaleNum.setText("Scale: " + (int)(100 * area.getScale()) + "%");
             }
         });
 
         area.addScaleListener(new Lambda0(){
             public Object invoke(){
                 scale.setValue((int)(area.getScale() * 5.0));
-                scaleNum.setText("Scale: " + area.getScale());
+                scaleNum.setText("Scale: " + (int)(100 * area.getScale()) + "%");
                 scaleNum.repaint();
                 scale.repaint();
                 return null;
