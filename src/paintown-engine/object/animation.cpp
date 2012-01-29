@@ -410,9 +410,9 @@ changedAttacks(false){
                 if (type == "ticks"){
                     /* default, do nothing */
                 } else if (type == "ms"){
-                    delay = delay / (1000.0 / Game::Ticks);
+                    delay = delay * Game::Ticks / 1000.0;
                 } else if (type == "s"){
-                    delay = delay / Game::Ticks;
+                    delay = delay * Game::Ticks;
                 }
 
                 AnimationEvent * ani = new AnimationEventDelay(delay);
