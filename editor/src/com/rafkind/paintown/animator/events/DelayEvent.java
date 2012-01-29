@@ -6,6 +6,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import com.rafkind.paintown.animator.Animation;
+import com.rafkind.paintown.animator.NewAnimator;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.animator.events.AnimationEvent;
@@ -14,14 +15,54 @@ import org.swixml.SwingEngine;
 import com.rafkind.paintown.animator.events.scala.AnimationEventNotifier;
 
 public class DelayEvent extends AnimationEventNotifier implements AnimationEvent {
-    private double _delay;
+    /* Measure time in either game ticks (Ticks), milliseconds, or seconds */
+    private final static int Ticks = 0;
+    private final static int Milliseconds = 1;
+    private final static int Seconds = 2;
+
+    private double delay;
+    private int delayType = Ticks;
 
     public void loadToken(Token token){
-        _delay = token.readDouble(0);
+        delay = token.readDouble(0);
+        if (token.hasIndex(1)){
+            String type = token.readString(1);
+            delayType = parseType(type.toLowerCase());
+        }
     }
 
-    public void interact( Animation animation ){
-        animation.setDelay( _delay );
+    private int parseType(String type){
+        if (type == "ticks"){
+            return Ticks;
+        } else if (type == "ms" || type == "milliseconds"){
+            return Milliseconds;
+        } else if (type == "s" || type == "sec" || type == "seconds"){
+            return Seconds;
+        }
+        return Ticks;
+    }
+
+    private String canonicalType(){
+        switch (delayType){
+            case Ticks: return "ticks";
+            case Milliseconds: return "ms";
+            case Seconds: return "s";
+        }
+        return "ticks";
+    }
+
+    /* Delay in milliseconds */
+    private double delayAmount(){
+        switch (delayType){
+            case Ticks: return 1000 * delay / NewAnimator.getTicksPerSecond();
+            case Milliseconds: return delay;
+            case Seconds: return delay * 1000;
+        }
+        return 0;
+    }
+
+    public void interact(Animation animation){
+        animation.setDelay(delayAmount());
     }
 
     public String getName(){
@@ -30,7 +71,8 @@ public class DelayEvent extends AnimationEventNotifier implements AnimationEvent
 
     public AnimationEvent copy(){
         DelayEvent event = new DelayEvent();
-        event._delay = _delay;
+        event.delay = delay;
+        event.delayType = delayType;
         return event;
     }
 
@@ -39,10 +81,10 @@ public class DelayEvent extends AnimationEventNotifier implements AnimationEvent
         ((JPanel)engine.getRootComponent()).setSize(200,100);
 
         final JSpinner delayspin = (JSpinner) engine.find("delay");
-        delayspin.setModel(new SpinnerNumberModel(_delay, 0, 99999, 1));
+        delayspin.setModel(new SpinnerNumberModel(delay, 0, 99999, 1));
         delayspin.addChangeListener(new ChangeListener(){
             public void stateChanged(ChangeEvent changeEvent){
-                _delay = ((Number) delayspin.getValue()).doubleValue();
+                delay = ((Number) delayspin.getValue()).doubleValue();
                 updateListeners();
             }
         });
@@ -52,7 +94,12 @@ public class DelayEvent extends AnimationEventNotifier implements AnimationEvent
     public Token getToken(){
         Token temp = new Token("delay");
         temp.addToken(new Token("delay"));
-        temp.addToken(new Token(Double.toString(_delay)));
+        temp.addToken(new Token(Double.toString(delay)));
+
+        /* ticks is default so leave it off */
+        if (delayType != Ticks){
+            temp.addToken(new Token(canonicalType()));
+        }
         return temp;
     }
 

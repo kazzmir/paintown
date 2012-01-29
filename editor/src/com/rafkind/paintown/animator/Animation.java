@@ -341,7 +341,7 @@ public class Animation implements Runnable {
 		baseDirectory = b;
 	}
 
-	public void setAnimationSpeed( double n ){
+	public void setAnimationSpeed(double n){
 		animationSpeed = n;
 	}
 
@@ -636,7 +636,7 @@ public class Animation implements Runnable {
 			if (isRunning() && ! events.isEmpty()){
 				nextEvent();
 				if (getDelayTime() != 0){
-					rest((int)(getDelayTime() * 1000.0 / NewAnimator.getTicksPerSecond()));
+					rest((int) getDelayTime());
 				}
 				setDelayTime(0);
 			} else {

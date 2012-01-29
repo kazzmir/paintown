@@ -130,28 +130,35 @@ public class Token{
 		return all;
 	}
 
-	private Token readIndex( int index ){
+    public boolean hasIndex(int index){
+        /* First token is the name, second and on are the children. We are interested
+         * in a child node so subtract 1 from the size to ignore the name.
+         */
+        return index < tokens.size() - 1;
+    }
+
+	private Token readIndex(int index){
 		Iterator it = this.iterator();
-		for ( int i = 0; i < index; i++ ){
+		for (int i = 0; i < index; i++){
 			it.next();
 		}
 		return (Token) it.next();
 	}
 
-	public int readInt( int index ){
-		return Integer.parseInt( readIndex( index ).toString() );
+	public int readInt(int index){
+		return Integer.parseInt(readIndex(index).toString());
 	}
 
     public boolean readBoolean(int index){
         return Boolean.parseBoolean(readIndex(index).toString());
     }
 
-	public double readDouble( int index ){
-		return Double.parseDouble( readIndex( index ).toString() );
+	public double readDouble(int index){
+		return Double.parseDouble(readIndex(index).toString());
 	}
 
-	public String readString( int index ){
-		return readIndex( index ).toString();
+	public String readString(int index){
+		return readIndex(index).toString();
 	}
 
 	public Token addToken( Token n ){
