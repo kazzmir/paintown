@@ -25,6 +25,8 @@ namespace Paintown{
 
 namespace Game{
 
+extern const int Ticks;
+
 /* play a single world */
 bool playLevel( World & world, const std::vector< Paintown::Object * > & players);
 /* do the required setup to play a single level */

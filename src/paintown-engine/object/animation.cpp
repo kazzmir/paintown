@@ -22,6 +22,7 @@
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "../game/mod.h"
+#include "../game/game.h"
 
 using namespace std;
 
@@ -395,9 +396,25 @@ changedAttacks(false){
                 int r;
                 current.view() >> r;
                 setRange(r);
-            } else if ( current == "delay" ){
+            } else if (current == "delay"){
                 double delay = 0;
-                current.view() >> delay;
+                TokenView view = current.view();
+                view >> delay;
+                string type = "ticks";
+                try{
+                    view >> type;
+                } catch (const TokenException & ignore){
+                }
+
+                /* Convert delay type to game ticks */
+                if (type == "ticks"){
+                    /* default, do nothing */
+                } else if (type == "ms"){
+                    delay = delay / (1000.0 / Game::Ticks);
+                } else if (type == "s"){
+                    delay = delay / Game::Ticks;
+                }
+
                 AnimationEvent * ani = new AnimationEventDelay(delay);
                 events.push_back( ani );
             } else if ( current == "frame" ){
