@@ -1397,8 +1397,12 @@ public:
                     if (guy.isAttacking()){
                         return guy.getHitState().moveContact;
                     } else {
-                        return false;
+                        return 0;
                     }
+                }
+                
+                virtual std::string toString() const {
+                    return "MoveContact";
                 }
 
                 Value * copy() const {
