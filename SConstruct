@@ -128,6 +128,7 @@ useIos = makeUseEnvironment('ios', False)
 usePs3 = makeUseEnvironment('ps3', False)
 useNDS = makeUseEnvironment('nds', False)
 useDingoo = makeUseEnvironment('dingoo', False)
+useXenon = makeUseEnvironment('xenon', False)
 usePandora = makeUseEnvironment('pandora', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
@@ -817,6 +818,29 @@ def getEnvironment(debug):
                                '-wd1599'])
         return env
 
+    def xenon(env):
+        print "Environment is Xenon"
+        xenon = "/usr/local/xenon"
+        prefix = "xenon-"
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+        env.Append(LIBS = Split("""xenon m"""))
+        env.Append(CCFLAGS = Split("""-m32 -mpowerpc64 -mhard-float -ffunction-sections -fdata-sections -maltivec -fno-pic"""))
+        env.Append(CPPDEFINES = ['XENON'])
+        env.Append(CPPPATH = ['%(xenon)s/usr/include' % {'xenon': xenon}])
+        env.Append(LIBPATH = ['%(xenon)s/xenon/lib/32' % {'xenon': xenon}])
+        env.Append(LIBPATH = ['%(xenon)s/usr/lib' % {'xenon': xenon}])
+        env.Append(LINKFLAGS = Split("""-m32 -maltivec -mpowerpc64 -mhard-float -fno-pic -n -T %(xenon)s/app.lds""" % {'xenon': xenon}))
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env.PrependENVPath('PATH', setup(xenon, '/bin'))
+        env.PrependENVPath('PATH', setup(xenon, '/usr/bin'))
+        return env
     def dingux(env):
         import os
         print "Environment is Dingux"
@@ -1367,6 +1391,8 @@ rsx
                 return nds(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useDingoo():
                 return dingux(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
+            elif useXenon():
+                return xenon(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useWii():
                 if isWindows():
                     return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
@@ -1552,7 +1578,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useMinpspw() and not useNDS() and not useDingoo() and not useNacl() and not useAndroid() and not useIos():
+if not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useIos():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1653,6 +1679,8 @@ def buildType(env):
         properties.append('allegro')
     if useDingoo():
         properties.append('dingoo')
+    if useXenon():
+        properties.append('xenon')
     if useAllegro5():
         properties.append('allegro5')
     if getDebug():
@@ -1704,6 +1732,8 @@ def display_build_properties(env):
         properties.append(colorize("NDS", color))
     if useMinpspw():
         properties.append(colorize("PSP", color))
+    if useXenon():
+        properties.append(colorize("Xenon", color))
     if useAndroid():
         properties.append(colorize("ANDROID", color))
     if useIos():
@@ -1791,7 +1821,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useNacl():
+    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useNacl() and not useXenon():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
