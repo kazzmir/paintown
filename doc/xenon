@@ -1,0 +1,31 @@
+have required stuff installed first or you waste alot of time :P
+
+mkdir /opt/free60-git
+cd /opt/free60-git
+(modify permissions to make directorys and build as non root user)
+git clone https://github.com/Free60Project/libxenon.git
+Build toolchain:
+./build-xenon-toolchain toolchain
+add to /home/user/.bashrc:
+export DEVKITXENON="/usr/local/xenon"
+export PATH="$PATH:$DEVKITXENON/bin:$DEVKITXENON/usr/bin"
+
+build libxenon and libs (zlib, libpng, freetype)
+./build-xenon-toolchain libxenon
+./build-xenon-toolchain libs
+
+build sdl:
+cd /opt/free60-git/
+git clone https://github.com/lantus/libSDLXenon.git
+make -f Makefile.xenon
+make -f Makefile.xenon install
+
+build ZLX:
+cd ../
+svn checkout http://zlx.googlecode.com/svn/trunk/ zlx-read-only
+cd zlx-read-only
+make -f Makefile_lib
+make -f Makefile_lib install
+
+# Also, comment out the size_t declaration in SDL_config_xenon.h
+# Create usr/bin/sdl-config and point it at xenon
