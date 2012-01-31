@@ -831,7 +831,7 @@ def getEnvironment(debug):
         env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         env.Append(LIBS = Split("""xenon m"""))
-        env.Append(CCFLAGS = Split("""-m32 -mpowerpc64 -mhard-float -ffunction-sections -fdata-sections -maltivec -fno-pic"""))
+        env.Append(CCFLAGS = Split("""-m32 -mcpu=cell -mtune=cell -mpowerpc64 -mhard-float -ffunction-sections -fdata-sections -maltivec -fno-pic"""))
         env.Append(CPPDEFINES = ['XENON'])
         env.Append(CPPPATH = ['%(xenon)s/usr/include' % {'xenon': xenon}])
         env.Append(LIBPATH = ['%(xenon)s/xenon/lib/32' % {'xenon': xenon}])
