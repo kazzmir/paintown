@@ -14,7 +14,7 @@ class Bitmap;
 
 class MugenSprite{
     public:
-	MugenSprite();
+	MugenSprite(bool defaultMask);
 	MugenSprite(const MugenSprite &copy);
 	virtual ~MugenSprite();
 	
@@ -89,10 +89,6 @@ class MugenSprite{
         Util::ReferenceCount<Graphics::Bitmap> getFinalBitmap(const Mugen::Effects & effects);
 	
     private:
-        /* FIXME: replace these types with explicitly sized types like
-         * unsigned long -> uint32
-         * short -> int16
-         */
 	uint32_t next;
 	uint32_t location;
 	uint32_t length;
@@ -112,6 +108,8 @@ class MugenSprite{
         /* come straight from the pcx */
         int width, height;
         bool loaded;
+
+        bool defaultMask;
 	
         /* Loaded with a palette that may not be our own */
         Util::ReferenceCount<Graphics::Bitmap> unmaskedBitmap;

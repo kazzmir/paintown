@@ -92,7 +92,11 @@ spritePriority(copy(you.spritePriority)){
         int number = it->first;
         const vector<Compiler::Value*> & all = it->second;
         for (vector<Compiler::Value*>::const_iterator all_it = all.begin(); all_it != all.end(); all_it++){
-            addTrigger(number, Compiler::copy(*all_it));
+            Compiler::Value * copied = Compiler::copy(*all_it);
+            if (copied == NULL){
+                throw MugenFatalRuntimeException("Trigger should not be null", __FILE__, __LINE__);
+            }
+            addTrigger(number, copied);
         }
     }
 }
@@ -5875,7 +5879,7 @@ public:
         FullEnvironment environment(stage, guy, commands);
         /* FIXME */
         Mugen::Helper * helper = new Mugen::Helper(&guy, guy.getRoot(), (int) evaluateNumber(id, environment, 0));
-        helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
+
         if (posType == Player1){
             double x = evaluateNumber(posX, environment, 0) + guy.getX();
             double y = evaluateNumber(posY, environment, 0) + guy.getRY();
@@ -5883,6 +5887,7 @@ public:
             helper->setY(y);
         }
         stage.addObject(helper);
+        helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
     }
 
     StateController * deepCopy() const {

@@ -21,6 +21,7 @@ public:
 
     virtual bool isHelper() const;
     virtual const std::string getName() const;
+    virtual const std::string getDisplayName() const;
     using Character::getAnimation;
     virtual PaintownUtil::ReferenceCount<MugenAnimation> getAnimation(int id) const;
     using Character::getState;

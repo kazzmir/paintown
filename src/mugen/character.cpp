@@ -104,6 +104,7 @@ changeVelocity(false),
 velocity_x(NULL),
 velocity_y(NULL),
 changePhysics(false),
+physics(Physics::None),
 changePower(false),
 powerAdd(NULL),
 moveType(Move::Idle),
@@ -122,6 +123,7 @@ State * State::deepCopy() const {
     state->changeVelocity = this->changeVelocity;
     state->velocity_x = Compiler::copy(this->velocity_x);
     state->velocity_y = Compiler::copy(this->velocity_y);
+    state->physics = this->physics;
     state->changePhysics = this->changePhysics;
     state->changePower = this->changePower;
     state->powerAdd = Compiler::copy(this->powerAdd);
@@ -375,6 +377,12 @@ hit(NULL){
     initialize();
 }
 */
+    
+Object::Object():
+virtualx(0),
+virtualy(0),
+virtualz(0){
+}
 
 Object::Object(int alliance):
 virtualx(0),
@@ -412,7 +420,7 @@ ticket(copy.ticket){
     
 Object::~Object(){
 }
-    
+
 void Object::doMovement(const std::vector<Object*> & objects, Stage & stage){
 }
     
@@ -442,6 +450,18 @@ void Object::setX(double what){
 
 void Object::setY(double what){
     virtualy = what;
+}
+
+double Object::getY() const {
+    return virtualy;
+}
+
+double Object::getX() const {
+    return virtualx;
+}
+
+double Object::getZ() const {
+    return virtualz;
 }
     
 double Object::getRY() const {
@@ -536,6 +556,8 @@ currentState(copy.currentState),
 previousState(copy.previousState),
 currentAnimation(copy.currentAnimation),
 debug(false),
+velocity_x(copy.velocity_x),
+velocity_y(copy.velocity_y),
 currentPhysics(copy.currentPhysics),
 lastTicket(copy.lastTicket),
 regenerateHealth(copy.regenerateHealth),
@@ -1545,12 +1567,16 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         if (PaintownUtil::matchRegex(head, "statedef")){
             currentState = parseStateDefinition(section, full);
         } else if (PaintownUtil::matchRegex(head, "state ")){
-            StateController * controller = parseState(section);
-            if (controller != NULL){
-                if (controller->getState() != currentState->getState()){
-                    Global::debug(1) << "Warning: controller '" << controller->getName() << "' specified state " << controller->getState() << " which does not match the most recent state definition " << currentState->getState() << " in file " << full.path() << endl;
+            if (currentState != NULL){
+                StateController * controller = parseState(section);
+                if (controller != NULL){
+                    if (controller->getState() != currentState->getState()){
+                        Global::debug(1) << "Warning: controller '" << controller->getName() << "' specified state " << controller->getState() << " which does not match the most recent state definition " << currentState->getState() << " in file " << full.path() << endl;
+                    }
+                    currentState->addController(controller);
                 }
-                currentState->addController(controller);
+            } else {
+                Global::debug(0) << "Warning: no statedef defined for " << head << std::endl;
             }
         }
     }
@@ -2839,6 +2865,7 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
                      * to be activated.
                      */
                     if (controller->persistentOk()){
+                        Global::debug(1, getDisplayName()) << "Activate controller " << controller->getName() << std::endl;
                         /* activate may modify the current state */
                         controller->activate(stage, *this, active);
 

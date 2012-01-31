@@ -26,6 +26,8 @@ enum Type{
 }
 
 class Object{
+private:
+    Object();
 public:
     Object(int alliance);
     Object(const int x, const int y, int alliance);
@@ -33,18 +35,9 @@ public:
 
     virtual ~Object();
 
-    inline double getY() const {
-        return virtualy;
-    }
-
-    inline double getX() const {
-        return virtualx;
-    }
-
-    inline double getZ() const {
-        return virtualz;
-    }
-
+    virtual double getY() const;
+    virtual double getX() const;
+    virtual double getZ() const;
     virtual void setZ(double what);
 
     /* get the actual y coordinate on screen */

@@ -491,9 +491,9 @@ public:
     }
 
     /* gets all the sprite headers without loading the pcx information */
-    void quickReadSprites(){
+    void quickReadSprites(bool mask){
         for (unsigned int index = 0; index < totalImages; index++){
-            MugenSprite * sprite = new MugenSprite();
+            MugenSprite * sprite = new MugenSprite(mask);
             sprite->read(sffStream, location);
             spriteIndex[index] = sprite;
             location = sprite->getNext();
@@ -521,7 +521,7 @@ public:
 
     MugenSprite * findSprite(int group, int item, bool mask){
         if (spriteIndex.size() == 0){
-            quickReadSprites();
+            quickReadSprites(mask);
         }
         for (map<int, MugenSprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
             MugenSprite * sprite = it->second;
@@ -548,7 +548,7 @@ public:
             throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.", __FILE__, __LINE__);
         }
 
-        MugenSprite * sprite = new MugenSprite();
+        MugenSprite * sprite = new MugenSprite(mask);
         sprite->read(sffStream, location);
         location = sprite->getNext();
 

@@ -1125,7 +1125,6 @@ void Mugen::Stage::runCycle(){
 
         // Players go in here
         std::vector<Mugen::Object *> add;
-        addedObjects.clear();
         for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
             bool next = true;
             /* use local variables more often, iterators can be easily confused */
@@ -1160,8 +1159,8 @@ void Mugen::Stage::runCycle(){
 
         objects.insert(objects.end(), add.begin(), add.end());
         objects.insert(objects.end(), addedObjects.begin(), addedObjects.end());
+        addedObjects.clear();
     }
-
 }
 
 void Mugen::Stage::logic(){
@@ -1182,6 +1181,7 @@ void Mugen::Stage::logic(){
     
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+
 #if 0
     if (!gameOver){
         for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); ++it){

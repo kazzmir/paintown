@@ -61,51 +61,68 @@ public:
     } attribute;
 
     RuntimeValue():
-    type(Invalid){
+    type(Invalid),
+    bool_value(false),
+    double_value(0){
     }
 
     RuntimeValue(bool b):
     type(Bool),
-    bool_value(b){
+    bool_value(b),
+    double_value(0){
     }
 
     RuntimeValue(double d):
     type(Double),
+    bool_value(false),
     double_value(d){
     }
 
     RuntimeValue(int i):
     type(Double),
+    bool_value(false),
     double_value(i){
     }
 
     RuntimeValue(const std::string & str):
     type(String),
-    string_value(str){
+    string_value(str),
+    bool_value(false),
+    double_value(0){
     }
 
     RuntimeValue(const StateTypes & attribute):
     attribute(attribute),
-    type(StateType){
+    type(StateType),
+    bool_value(false),
+    double_value(0){
     }
 
     RuntimeValue(const std::vector<AttackType::Attribute> & attributes):
     type(AttackAttribute),
+    bool_value(false),
+    double_value(0),
     attackAttributes(attributes){
     }
 
     RuntimeValue(const std::vector<std::string> & strings):
     type(ListOfString),
+    bool_value(false),
+    double_value(0),
     strings_value(strings){
     }
 
     RuntimeValue(const std::vector<int> & values):
     type(ListOfInt),
+    bool_value(false),
+    double_value(0),
     ints_value(values){
     }
 
     RuntimeValue(int low, int high):
     type(RangeType),
+    bool_value(false),
+    double_value(0),
     range(low, high){
     }
 

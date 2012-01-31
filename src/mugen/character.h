@@ -387,7 +387,7 @@ public:
             return author;
         }
 	
-	virtual inline const std::string & getDisplayName() const {
+	virtual inline const std::string getDisplayName() const {
             return displayName;
         }
 	

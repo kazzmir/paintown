@@ -61,6 +61,10 @@ const std::string Helper::getName() const {
     return name;
 }
     
+const std::string Helper::getDisplayName() const {
+    return name;
+}
+    
 MugenSound * Helper::getSound(int group, int item) const {
     if (owner != NULL){
         return owner->getSound(group, item);

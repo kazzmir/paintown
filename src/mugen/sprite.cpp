@@ -12,7 +12,7 @@ namespace PaintownUtil = ::Util;
 using namespace std;
 using namespace Mugen;
 
-MugenSprite::MugenSprite():
+MugenSprite::MugenSprite(bool mask):
 next(0),
 location(0),
 length(0),
@@ -27,7 +27,8 @@ samePalette(false),
 pcx(NULL),
 width(0),
 height(0),
-loaded(false){
+loaded(false),
+defaultMask(mask){
 }
 
 MugenSprite::MugenSprite(const MugenSprite &copy){
@@ -45,6 +46,7 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
     this->width = copy.width;
     this->height = copy.height;
     this->loaded = copy.loaded;
+    this->defaultMask = copy.defaultMask;
 
     memcpy(this->originalPalette, copy.originalPalette, sizeof(originalPalette));
 
@@ -85,6 +87,7 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->width = copy.width;
     this->height = copy.height;
     this->loaded = copy.loaded;
+    this->defaultMask = copy.defaultMask;
     memcpy(this->originalPalette, copy.originalPalette, sizeof(originalPalette));
     if (copy.comments){
         memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
@@ -129,6 +132,7 @@ void MugenSprite::copyImage(const MugenSprite * copy){
     this->unmaskedBitmapPalette = copy->unmaskedBitmapPalette;
     this->maskedBitmapPalette = copy->maskedBitmapPalette;
     this->loaded = copy->loaded;
+    this->defaultMask = copy->defaultMask;
 }
 
 bool MugenSprite::isLoaded() const {
@@ -150,6 +154,8 @@ void MugenSprite::cleanup(){
 
     unmaskedBitmap = NULL;
     maskedBitmap = NULL;
+    unmaskedBitmapPalette = NULL;
+    maskedBitmapPalette = NULL;
 }
 
 MugenSprite::~MugenSprite(){
@@ -311,11 +317,15 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask,
             maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
             return maskedBitmap;
         }
+
+        maskedBitmap = load(true, false);
+        return maskedBitmap;
     } else {
         if (unmaskedBitmap != NULL){
             return unmaskedBitmap;
         }
-        return maskedBitmap;
+        unmaskedBitmap = load(defaultMask, false);
+        return unmaskedBitmap;
     }
     return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
 }
@@ -401,12 +411,14 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
 
     loaded = true;
 
+    /*
     PaintownUtil::ReferenceCount<Graphics::Bitmap> sprite = load(mask, false);
     if (mask){
         maskedBitmap = sprite;
     } else {
         unmaskedBitmap = sprite;
     }
+    */
 }
 
 void MugenSprite::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
