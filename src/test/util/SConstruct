@@ -5,5 +5,5 @@ source = Split("""file-system.cpp""")
 x = []
 test = use.Program('test', source)
 use.AddPostAction(test, use['PAINTOWN_TEST'])
-x.append(test)
+x.extend(test)
 Return('x')

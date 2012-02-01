@@ -9,7 +9,7 @@ use = testEnv
 
 # SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
 # SConscript('../../paintown-engine/SConscript', exports = ['use'], variant_dir = 'paintown')
-use.Append(LIBS = ['mugen', 'paintown-engine'])
+# use.Append(LIBS = ['mugen', 'paintown-engine'])
 
 source = Split("""
 test.cpp
@@ -37,7 +37,7 @@ source.append(use.Peg('test/openbor/data.peg'))
 
 x = []
 menu_test = testEnv.Program('menu', source)
-x.append(menu_test)
+x.extend(menu_test)
 use.AddPostAction(menu_test, use['PAINTOWN_TEST'])
 # x.append(testEnv.Program('load-stage', stage_source))
 Return('x')

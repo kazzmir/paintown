@@ -13,7 +13,7 @@ use = testEnv
 
 # We only need mugen for the collector which is sort of dumb, try to get rid of this
 # SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
-use.Append(LIBS = ['paintown-engine', 'mugen'])
+# use.Append(LIBS = ['paintown-engine', 'mugen'])
 
 load_source = Split("""
 common/init.cpp
@@ -64,7 +64,7 @@ game_source.append(testEnv.Peg('test/openbor/data.peg'))
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
-    x.append(test)
+    x.extend(test)
     testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 makeTest('load', load_source)
@@ -72,7 +72,7 @@ makeTest('game', game_source)
 
 # Character select test
 character_select = testEnv.Program('character-select', source + character_select_source + testEnv.Peg('test/openbor/data.peg'))
-x.append(character_select)
+x.extend(character_select)
 
 # x.append(testEnv.Program('load', load_source + most_game_source))
 #makeTest('load-full', full_source)

@@ -41,7 +41,10 @@ if isLinux():
 
     program = env.Program('test', source)
     wav = env.Program('wav', wav_source)
-    all = [program, wav]
+    all = []
+    all.extend(program)
+    all.extend(wav)
+    # all = [program, wav]
     Return('all')
 else:
     all = []

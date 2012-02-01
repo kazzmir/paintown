@@ -6,7 +6,7 @@ testEnv.VariantDir('common', '../common/', duplicate = False)
 
 use = testEnv
 
-use.Append(LIBS = ['mugen'])
+# use.Append(LIBS = ['mugen'])
 # SConscript('../../mugen/SConscript', exports = ['use'], variant_dir = 'mugen')
 
 most_game_source = Split("""
@@ -98,7 +98,7 @@ versus.cpp
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
-    x.append(test)
+    x.extend(test)
     testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 # x.append(testEnv.Program('load', load_source + most_game_source))
@@ -109,19 +109,19 @@ makeTest('serialize', ['serialize.cpp'])
 makeTest('load-stage', stage_source)
 makeTest('sffv2', sffv2_source)
 makeTest('load-sff', ['load-sff.cpp', 'common/init.cpp'] + most_game_source)
-x.append(testEnv.Program('run-match', match_source))
-x.append(testEnv.Program('states', states_source))
-x.append(testEnv.Program('parse', parse_source))
+x.extend(testEnv.Program('run-match', match_source))
+x.extend(testEnv.Program('states', states_source))
+x.extend(testEnv.Program('parse', parse_source))
 # x.append(testEnv.Program('load-stage', stage_source))
-x.append(testEnv.Program('palette', ['palette.cpp']))
-x.append(testEnv.Program('view', view_source))
+x.extend(testEnv.Program('palette', ['palette.cpp']))
+x.extend(testEnv.Program('view', view_source))
 
 # Character Select test
 character_select = testEnv.Program('character-select', character_select_source + most_game_source)
-x.append(character_select)
+x.extend(character_select)
 
 # Versus Test
 versus = testEnv.Program('versus', versus_source + most_game_source)
-x.append(versus)
+x.extend(versus)
 
 Return('x')

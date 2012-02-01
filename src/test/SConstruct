@@ -34,7 +34,10 @@ if use['PAINTOWN_BUILD_TESTS']:
 
     use = use.Clone()
     use.Append(CPPPATH = ['#/src'])
-    use.Append(LIBPATH = ['../../mugen', '../../paintown-engine'])
+    # use.Append(LIBPATH = ['../../mugen', '../../paintown-engine'])
+
+    SConscript('../mugen/SConscript', exports = ['use'], variant_dir = 'core/mugen')
+    SConscript('../paintown-engine/SConscript', exports = ['use'], variant_dir = 'core/paintown')
 
     all = []
     all.extend(SConscript('token/SConstruct', exports = ['use']))
@@ -53,6 +56,11 @@ if use['PAINTOWN_BUILD_TESTS']:
     
     # The gui test is not run by default.
     all.extend(SConscript('gui/SConstruct', exports= ['use']))
+
+    # print all
+    for program in all:
+        # print program
+        use.Depends(program, use['ARCHIVES'])
 
     # Don't run with other tests because it has special requirements
     Alias('audio-test', audio)

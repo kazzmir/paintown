@@ -259,12 +259,12 @@ def addObjects(objects):
     obj_files.extend(objects)
 
 # Make this a function so we don't clobber the 'use' variable
-def stuff(use):
+def buildStuff(use):
     SConscript('mugen/SConscript', exports = ['use'])
     SConscript('paintown-engine/SConscript', exports = ['use'])
 
 paintownEnv = use.Clone()
-stuff(paintownEnv)
+# stuff(paintownEnv)
 
 def test(env):
     # Hack to replicate checking for python
@@ -278,8 +278,12 @@ def test(env):
 
 test(use)
 
+buildStuff(paintownEnv)
+paintownBinary = paintownEnv.Program('paintown', psp_prx(use) + obj_files + main() + icon() + androidSDLMain())
+paintownEnv.Depends(paintownBinary, paintownEnv['ARCHIVES'])
+
 x = []
 # FIXME: adding psp_prx here is ugly, find a better way
-x.append(paintownEnv.Program('paintown', psp_prx(use) + obj_files + main() + icon() + androidSDLMain()))
+x.append(paintownBinary)
 
 Return('x')

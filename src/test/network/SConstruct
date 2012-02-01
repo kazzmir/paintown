@@ -13,6 +13,6 @@ env = testEnv
 
 x = []
 test = testEnv.Program('network', source)
-x.append(test)
+x.extend(test)
 use.AddPostAction(test, use['PAINTOWN_TEST'])
 Return('x')

@@ -18,7 +18,7 @@ xbr_source = Split("""xbr.cpp""")
 performance_source = Split("""performance.cpp""")
 
 x = []
-x.append(testEnv.Program('hqx', hq2x_source + source))
-x.append(testEnv.Program('xbr', xbr_source + source))
-x.append(testEnv.Program('performance', performance_source + source))
+x.extend(testEnv.Program('hqx', hq2x_source + source))
+x.extend(testEnv.Program('xbr', xbr_source + source))
+x.extend(testEnv.Program('performance', performance_source + source))
 Return('x')
