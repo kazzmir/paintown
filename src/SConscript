@@ -241,19 +241,19 @@ use.Depends(use.Peg('openbor/data.peg'), 'mugen/parser/peg.py')
 
 util = utilLibrary(use)
 
-use.Prepend(LIBS = [util])
+use.Prepend(ARCHIVES = [util])
 
-use.Prepend(LIBS = [dumbLibrary(use)])
+use.Prepend(ARCHIVES = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
-    use.Prepend(LIBS = [hawknlLibrary(use)])
+    use.Prepend(ARCHIVES = [hawknlLibrary(use)])
 
-use.Prepend(LIBS = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use), minizipLibrary(use)])
+use.Prepend(ARCHIVES = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use), minizipLibrary(use)])
 if not useSDL() and not useAllegro5():
-    use.Prepend(LIBS = [alGifLibrary(use)])
+    use.Prepend(ARCHIVES = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
-    use.Prepend(LIBS = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
+    use.Prepend(ARCHIVES = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
 elif useMinpspw():
-    use.Prepend(LIBS = [sprigLibrary(use), stretchLibrary(use)])
+    use.Prepend(ARCHIVES = [sprigLibrary(use), stretchLibrary(use)])
 
 def addObjects(objects):
     obj_files.extend(objects)

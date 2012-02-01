@@ -837,7 +837,7 @@ def getEnvironment(debug):
         env.Append(LIBPATH = ['%(xenon)s/xenon/lib/32' % {'xenon': xenon}])
         env.Append(LIBPATH = ['%(xenon)s/usr/lib' % {'xenon': xenon}])
         env.Append(LINKFLAGS = Split("""-m32 -maltivec -mpowerpc64 -mhard-float -fno-pic -n -T %(xenon)s/app.lds""" % {'xenon': xenon}))
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.PrependENVPath('PATH', setup(xenon, '/bin'))
         env.PrependENVPath('PATH', setup(xenon, '/usr/bin'))
         return env
@@ -856,7 +856,7 @@ def getEnvironment(debug):
         env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         env.Append(CPPDEFINES = ['DINGOO'])
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         # env.Append(CPPDEFINES = ['DINGOO', 'LINUX', 'MPU_JZ4740'])
         #env.Append(CPPPATH = [setup(dingoo_path, "/include"),
         #                      setup(dingoo_path, "/include/SDL"),
@@ -899,10 +899,10 @@ def getEnvironment(debug):
         env.Append(LINKFLAGS = ['-nodefaultlibs', '%s/lib/dingoo.xn' % dingoo_path])
         # env.Append(LIBS = ['c', 'm', 'fgl', 'sml', 'jz4740', 'gcc'])
         env.Append(LIBS = ['SDL', 'jz4740', 'sml', 'fgl', 'c', 'gcc'])
-        env['LINKCOM'] = '$LD $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+        env['LINKCOM'] = '$LD $LINKFLAGS $SOURCES $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', '%s/bin' % dingoo_path)
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         return env
 
     def pandora(env):
@@ -917,7 +917,7 @@ def getEnvironment(debug):
         flags = ['-O3', '-pipe', '-march=armv7-a', '-mtune=cortex-a8', '-mfpu=neon', '-mfloat-abi=softfp', '-ftree-vectorize', '-ffast-math', '-fsingle-precision-constant']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         return env
 
     def nds(env):
@@ -941,7 +941,7 @@ def getEnvironment(debug):
 
         env.Append(LIBPATH = [setup(path, '/libnds/lib')])
         env.Append(CPPDEFINES = ['NDS'])
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.PrependENVPath('PATH', bin_path)
         # env.PrependENVPath('PATH', libexec_path)
         return env
@@ -983,7 +983,7 @@ def getEnvironment(debug):
         flags = ['-G0', '-fexceptions']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
-        env['LINKCOM'] = '$CC $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CC $LINKFLAGS -Wl,--start-group $ARCHIVES $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
 # pthread-psp
         all = Split("""
@@ -1071,7 +1071,7 @@ pspnet_inet
         flags = ['-mcpu=cell', '-mhard-float', '-fmodulo-sched', '-ffunction-sections', '-fdata-sections', '-maltivec', '-mminimal-toc']
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
-        env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CC $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LINKFLAGS = flags)
         # Removed reality and psl1ght
         all = Split("""
@@ -1128,7 +1128,7 @@ rsx
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = flags)
         env.Append(CPPPATH = ['#src/wii'])
-        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $ARCHIVES $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LIBS = ['wiiuse', 'wiikeyboard', 'iberty', 'bte', 'fat', 'ogc', 'm'])
         # os.environ['PATH'] = "%s:%s:%s" % (bin_path, ogc_bin_path, os.environ['PATH'])
         env.PrependENVPath('PATH', bin_path)
@@ -1179,7 +1179,7 @@ rsx
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
         env.Append(CPPPATH = ['#src/android'])
-        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         # Hack to put libstdc++ at the end
         # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a -o $TARGET'
         # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
@@ -1230,7 +1230,7 @@ rsx
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
         env.Append(CPPPATH = ['#src/ios'])
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         
         env.Append(LIBS = libs)
         env.Append(LIBPATH = [setup(path, '%s/usr/lib' % sdk),
@@ -1316,22 +1316,22 @@ rsx
         env.Append(CXXFLAGS = flags + compile_flags)
         env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
         env.Append(LINKFLAGS = flags + ['-melf_nacl'])
-        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LIBS = libs)
         wrapSymbols(env)
         return env
     def gcc(env):
         if isOSX104():
-            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
         else:
-            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES --Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         return env
     def llvm(env):
         #env['CC'] = 'llvm-gcc'
         #env['CXX'] = 'llvm-g++'
         env['CXX'] = 'clang++'
         env['CC'] = 'clang'
-        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
 
         # Speeds up compiles by not shelling out to 'as', but not mature yet
         # env.Append(CCFLAGS = ['-integrated-as'])
@@ -1546,6 +1546,7 @@ env = getEnvironment(getDebug())
 #env = unix.getEnvironment()
 #unix.configure(env)
 
+env['ARCHIVES'] = []
 if useSDL():
     env['PAINTOWN_BACKEND'] = 'sdl'
 elif useAllegro():

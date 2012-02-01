@@ -30,4 +30,4 @@ for module in modules:
     else:
         source.append(modules[module])
 
-use.Append(LIBS = use.StaticLibrary('paintown-engine', source))
+use.Append(ARCHIVES = use.StaticLibrary('paintown-engine', source))
