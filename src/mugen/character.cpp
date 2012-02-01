@@ -549,25 +549,143 @@ commonSounds(NULL){
 /* FIXME: need to copy more attributes */
 Character::Character(const Character & copy):
 Object(copy),
-xscale(copy.xscale),
-yscale(copy.yscale),
 commonSounds(NULL),
-currentState(copy.currentState),
-previousState(copy.previousState),
-currentAnimation(copy.currentAnimation),
 debug(false),
-velocity_x(copy.velocity_x),
-velocity_y(copy.velocity_y),
-currentPhysics(copy.currentPhysics),
-lastTicket(copy.lastTicket),
-regenerateHealth(copy.regenerateHealth),
-regenerating(copy.regenerating),
-regenerateTime(copy.regenerateTime),
 needToGuard(false),
-frozen(false),
-max_health(copy.max_health),
-health(copy.health),
-spritePriority(copy.spritePriority){
+frozen(false){
+    /* simple macro to copy fields */
+#define C(field) field = copy.field
+    C(xscale);
+    C(yscale);
+    C(currentState);
+    C(previousState);
+    C(currentAnimation);
+    C(velocity_x);
+    C(velocity_y);
+    C(currentPhysics);
+    C(lastTicket);
+    C(regenerateHealth);
+    C(regenerating);
+    C(regenerateTime);
+    C(max_health);
+    C(health);
+    C(spritePriority);
+    C(location);
+    C(baseDir);
+    C(name);
+    C(displayName);
+    C(versionDate);
+    C(mugenVersion);
+    C(author);
+    C(palDefaults);
+    C(currentPalette);
+    C(cmdFile);
+    C(constantsFile);
+    C(sffFile);
+    C(airFile);
+    C(sndFile);
+    C(palFile);
+    C(introFile);
+    C(endingFile);
+    C(life);
+    C(attack);
+    C(defense);
+    C(fallDefenseUp);
+    C(lieDownTime);
+    C(airjuggle);
+    C(juggleRemaining);
+    C(currentJuggle);
+    C(spark);
+    C(guardSpark);
+    C(koecho);
+    C(volumeoffset);
+    C(intpersistindex);
+    C(floatpersistindex);
+    C(xscale);
+    C(yscale);
+    C(groundback);
+    C(groundfront);
+    C(airback);
+    C(airfront);
+    C(height);
+    C(attackdist);
+    C(projattackdist);
+    C(projdoscale);
+    C(headPosition);
+    C(midPosition);
+    C(shadowoffset);
+    C(drawOffset);
+    C(walkfwd);
+    C(walkback);
+    C(runforwardx);
+    C(runforwardy);
+    C(runbackx);
+    C(runbacky);
+    C(jumpneux);
+    C(jumpneuy);
+    C(jumpback);
+    C(jumpfwd);
+    C(runjumpback);
+    C(runjumpfwd);
+    C(airjumpneux);
+    C(airjumpneuy);
+    C(airjumpback);
+    C(airjumpfwd);
+    C(power);
+    C(airjumpnum);
+    C(airjumpheight);
+    C(yaccel);
+    C(crouchFriction);
+    C(crouchFrictionThreshold);
+    C(constants);
+    C(currentState);
+    C(previousState);
+    C(currentAnimation);
+    C(debug);
+    C(velocity_x);
+    C(velocity_y);
+    C(has_control);
+    C(stateTime);
+    C(variables);
+    C(floatVariables);
+    C(systemVariables);
+    C(currentPhysics);
+    C(gravity);
+    C(standFriction);
+    C(standFrictionThreshold);
+    C(stateType);
+    C(moveType);
+    lastTicket = 0;
+    combo = 0;
+    hitCount = 0;
+    C(wins);
+    C(matchWins);
+    blocking = false;
+    C(regenerateHealth);
+    C(regenerating);
+    C(regenerateTime);
+    C(regenerateHealthDifference);
+    needToGuard = false;
+    guarding = false;
+    C(afterImage);
+    C(widthOverride);
+    // C(hitByOverride);
+    C(defenseMultiplier);
+    C(attackMultiplier);
+    C(frozen);
+    C(reversal);
+    C(reversalActive);
+    C(transOverride);
+    C(special);
+    C(paletteEffects);
+    C(max_health);
+    C(health);
+    C(targets);
+    C(spritePriority);
+    wasHitCounter = 0;
+    C(jumpChangeAnimationThreshold);
+    C(airGetHitGroundLevel);
+#undef C
 }
 
 Character::~Character(){

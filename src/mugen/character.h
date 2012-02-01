@@ -338,7 +338,7 @@ public:
 	Character(const Filesystem::AbsolutePath & s, int alliance);
 	// Character(const char * location );
 	Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance);
-	Character(const Character &copy );
+	Character(const Character &copy);
 
 	virtual ~Character();
 
