@@ -1324,7 +1324,7 @@ rsx
         if isOSX104():
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
         else:
-            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES --Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         return env
     def llvm(env):
         #env['CC'] = 'llvm-gcc'
