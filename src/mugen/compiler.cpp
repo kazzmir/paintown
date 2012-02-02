@@ -4556,11 +4556,7 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-                    /* FIXME: im not sure this is right, should it take into account
-                     * the facing direction?
-                     */
-                    return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
-
+                    return RuntimeValue(fabs(enemy->getFrontX() - environment.getCharacter().getFrontX()));
                 }
 
                 virtual std::string toString() const {

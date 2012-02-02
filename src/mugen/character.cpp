@@ -2887,6 +2887,12 @@ void Character::didHit(Object * enemy, Mugen::Stage & stage){
     if (behavior != NULL){
         behavior->hit(enemy);
     }
+
+    if (getHit().player1State != -1){
+        changeState(stage, getHit().player1State);
+    }
+
+    /* FIXME: handle player2State as well */
 }
 
 void Character::takeDamage(Stage & world, Object * obj, double amount, double forceX, double forceY){
@@ -3530,9 +3536,9 @@ int Character::getFrontX() const {
         width = widthOverride.edgeFront;
     }
     if (getFacing() == FacingLeft){
-        return getX() + width;
+        return getX() - width;
     }
-    return getX() - width;
+    return getX() + width;
 }
 
 int Character::getCurrentCombo() const {
