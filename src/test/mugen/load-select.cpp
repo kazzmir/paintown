@@ -40,8 +40,9 @@ static int load(const char * path){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Mugen::CharacterSelect select(Storage::instance().find(Filesystem::RelativePath(path)), Mugen::Player1, Mugen::Arcade);
-            select.load();
+            //Mugen::CharacterSelect select(Storage::instance().find(Filesystem::RelativePath(path)), Mugen::Player1, Mugen::Arcade);
+            Mugen::CharacterSelect select(Storage::instance().find(Filesystem::RelativePath(path)));
+            select.init();
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
             /*

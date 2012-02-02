@@ -300,6 +300,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
     const Filesystem::AbsolutePath motif =  Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+#if 0
     Mugen::CharacterSelect selector(motif, Mugen::Player1, Mugen::Arcade);
     try {
 	selector.load();
@@ -390,7 +391,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     delete player1;
     delete player2;
-
+#endif
 }
 
 void showFont(const string & ourFile){
@@ -602,6 +603,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
 }
 
 void doSelectScreen(const std::string &file){
+#if 0
     Mugen::CharacterSelect selector = Mugen::CharacterSelect(Filesystem::AbsolutePath(file), Mugen::Player1, Mugen::Versus);
     try {
 	selector.load();
@@ -613,6 +615,7 @@ void doSelectScreen(const std::string &file){
     } catch (const MugenException &me){
 	Global::debug(0) << "Error loading select screen. Reason: " << me.getReason() << endl;
     }
+#endif
 }
 
 void doBackground(const std::string &file, const std::string &section){

@@ -37,6 +37,8 @@
 #include "util/music.h"
 #include "config.h"
 
+#include "versus.h"
+
 namespace PaintownUtil = ::Util;
 
 using namespace Mugen;
@@ -617,6 +619,7 @@ void Game::startScript(const std::string & player1Name, const string & player1Sc
 }
 
 void Game::doTraining(Searcher & searcher){
+#if 0
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);
     try{
@@ -652,9 +655,64 @@ void Game::doTraining(Searcher & searcher){
     } catch (const Exception::Return & e){
     }
     Mugen::Data::getInstance().setTime(time);
+#endif
 }
 
 void Game::doWatch(Searcher & searcher){
+    while (true){
+        Mugen::CharacterSelect select(systemFile);
+        select.init();
+        if (playerType == Mugen::Player1){
+            select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player1);
+        } else {
+            select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player2);
+        }
+        InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+        InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+        LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
+        LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
+        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+        PaintownUtil::standardLoop(*logic, *draw);
+        
+        if (select.wasCanceled()){
+            return;
+        }
+        
+        //! FIXME Get first for now, later support team/turns
+        if (playerType == Mugen::Player1){
+            {
+                VersusMenu versus(systemFile);
+                versus.init(select.getPlayer1().getCollection(), select.getPlayer1().getOpponentCollection());
+                PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+                PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+                PaintownUtil::standardLoop(*logic, *draw);
+            }
+            Global::debug(0) << "Loading player1: " << select.getPlayer1().getCollection().getFirst().getDef().path() << std::endl;
+            Mugen::Character player1(select.getPlayer1().getCollection().getFirst().getDef(), Stage::Player1Side);
+            player1.load(1);
+            Global::debug(0) << "Loading player2" << std::endl;
+            Mugen::Character player2(select.getPlayer1().getOpponentCollection().getFirst().getDef(), Stage::Player2Side);
+            player2.load(1);
+            player1.setBehavior(&player1AIBehavior);
+            player2.setBehavior(&player2AIBehavior);
+            Mugen::Stage stage(select.getStage());
+            stage.addPlayer1(&player1);
+            stage.addPlayer2(&player2);
+            Global::debug(0) << "Loading Stage" << std::endl;
+            stage.load();
+            stage.reset();
+            try {
+                runMatch(&stage);
+            } catch (const Exception::Return & ex){
+            } catch (const QuitGameException & ex){
+            }
+        } else {
+            
+        }
+    }
+    
+#if 0
     /* Do watch screen */
     bool quit = false;
     while (!quit){
@@ -679,9 +737,11 @@ void Game::doWatch(Searcher & searcher){
 	} catch (const QuitGameException & e){
         }
     }
+#endif 
 }
 
 void Game::doArcade(Searcher & searcher){
+#if 0
     Mugen::CharacterSelect select(systemFile, playerType, gameType);
     select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
     select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
@@ -911,9 +971,11 @@ void Game::doArcade(Searcher & searcher){
             story.run();
         }
     }
+#endif
 }
 
 void Game::doVersus(Searcher & searcher){
+#if 0
     bool quit = false;
     while (!quit){
         Mugen::CharacterSelect select(systemFile, playerType, gameType);
@@ -939,4 +1001,5 @@ void Game::doVersus(Searcher & searcher){
         } catch (const QuitGameException & e){
         }
     }
+#endif
 }

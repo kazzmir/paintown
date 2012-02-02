@@ -78,7 +78,7 @@ character_select_source = Split("""
 common/init.cpp
 common/timer.cpp
 select-main.cpp
-character-select.cpp
+test/mugen/character-select.cpp
 """)
 
 view_source = Split("""

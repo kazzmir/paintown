@@ -17,7 +17,7 @@
 #include "mugen/search.h"
 #include "mugen/exception.h"
 
-#include "character-select.h"
+#include "mugen/character-select.h"
 
 enum Keys{
     Up=0,

@@ -28,6 +28,12 @@ public:
     
     virtual bool isDone();
     
+    //! Get Logic class
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> getLogic(InputMap<Mugen::Keys> &, InputMap<Mugen::Keys> &);
+    
+    //! Get Draw class
+    PaintownUtil::ReferenceCount<PaintownUtil::Draw> getDraw();
+    
 protected:
     //! Draw portrait
     void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, int fontx, int fonty, const Mugen::FontInfo &, const Graphics::Bitmap &);

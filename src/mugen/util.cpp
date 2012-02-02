@@ -1233,6 +1233,7 @@ portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
 }
 
 Mugen::ArcadeData::CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath & file):
+definition(file),
 order(1),
 randomStage(true),
 includeStage(true),

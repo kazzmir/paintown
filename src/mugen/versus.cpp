@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/timedifference.h"
 #include "util/trans-bitmap.h"
 #include "mugen/ast/all.h"
@@ -257,4 +258,86 @@ PaintownUtil::ReferenceCount<MugenFont> VersusMenu::getFont(int index) const {
         out << "No font for index " << index;
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
+}
+
+class VersusLogic: public PaintownUtil::Logic {
+public:
+    VersusLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::VersusMenu & versus):
+    is_done(false),
+    canceled(false),
+    input1(input1),
+    input2(input2),
+    versus(versus){
+    }
+
+    bool deinit, is_done, canceled;
+    InputMap<Mugen::Keys> & input1;
+    InputMap<Mugen::Keys> & input2;
+    Mugen::VersusMenu & versus;
+    
+    bool done(){
+        return is_done;
+    }
+
+    void run(){
+        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc || event.out == Enter){
+                    if (!canceled){
+                        canceled = true;
+                        versus.cancel();
+                    }
+                }
+            }
+        }
+        out = InputManager::getEvents(input2, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc || event.out == Enter){
+                    if (!canceled){
+                        canceled = true;
+                        versus.cancel();
+                    }
+                }
+            }
+        }
+        versus.act();
+        is_done = versus.isDone();
+    }
+
+    double ticks(double system){
+        return system;
+    }
+};
+
+class VersusDraw: public PaintownUtil::Draw {
+public:
+    VersusDraw(Mugen::VersusMenu & versus):
+    versus(versus){
+    }
+    
+    Mugen::VersusMenu & versus;
+
+    void draw(const Graphics::Bitmap & buffer){
+        buffer.clear();
+        Graphics::StretchedBitmap work(320, 240, buffer);
+        work.start();
+        versus.draw(work);
+        work.finish();
+        buffer.BlitToScreen();
+    }
+};
+
+
+PaintownUtil::ReferenceCount<PaintownUtil::Logic> VersusMenu::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2){
+    PaintownUtil::ReferenceCount<VersusLogic> logic = PaintownUtil::ReferenceCount<VersusLogic>(new VersusLogic(input1, input2, *this));
+    return logic.convert<PaintownUtil::Logic>();
+}
+
+PaintownUtil::ReferenceCount<PaintownUtil::Draw> VersusMenu::getDraw(){
+    PaintownUtil::ReferenceCount<VersusDraw> draw = PaintownUtil::ReferenceCount<VersusDraw>(new VersusDraw(*this));
+    return draw.convert<PaintownUtil::Draw>();
 }

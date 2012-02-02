@@ -1,1166 +1,630 @@
-#ifndef _mugen_character_select_h
-#define _mugen_character_select_h
+#ifndef mugen_character_select_h
+#define mugen_character_select_h
 
 #include <vector>
-#include <deque>
-#include <map>
-#include <queue>
 
-#include "exception.h"
+#include "mugen/background.h"
+#include "mugen/util.h"
+#include "mugen/sprite.h"
+#include "mugen/font.h"
+#include "mugen/search.h"
 
-#include "util/gui/fadetool.h"
-#include "util/input/input-map.h"
-#include "util/thread.h"
+#include "util/events.h"
 #include "util/pointer.h"
+#include "util/gui/select-list.h"
+#include "util/gui/fadetool.h"
 
-#include "util.h"
+#include "util/input/input-map.h"
 
-#include "ast/all.h"
-#include "search.h"
-
-namespace PaintownUtil = ::Util;
-
-/*
- * Character Select Screen
- */
-
-class MugenAnimation;
-class MugenFont;
-class MugenSprite;
-class MugenStoryboard;
-class MugenSection;
-
-namespace Ast{
-    class Section;
-}
-
-/* Encapsulate in Mugen namespace */
 namespace Mugen{
     
-class Background;
-class Character;
-class Stage;
-
+/*! Font */
+class SelectFont{
+public:
+    SelectFont();
+    SelectFont(PaintownUtil::ReferenceCount<MugenFont> font, int bank, int position);
+    SelectFont(const SelectFont &);
+    ~SelectFont();
+    const SelectFont & operator=(const SelectFont &);
+    void draw(int x, int y, const std::string &, const Graphics::Bitmap &);
+private:
+    PaintownUtil::ReferenceCount<MugenFont> font;
+    int bank;
+    int position;
+};
+    
 /*! Font Handling */
 class FontHandler{
     public:
-	FontHandler();
-	virtual ~FontHandler();
-	
-	void act();
-	void render(const std::string &text, const Graphics::Bitmap &);
-	
-	enum State{
-	    Normal,
-	    Blink,
-	    Done
-	};
-	
-	virtual inline void setLocation(int x, int y){
-	    location.x = x;
-	    location.y = y;
-	}
-	
-	virtual inline void setState(const State &state){
-	    this->state = state;
-	}
-	
-	virtual inline const State & getState() const {
-	    return state;
-	}
-	
-	virtual inline void setBlinkTime(int time){
-	    this->blinkTime = time;
-	}
-	
-	virtual inline void setPrimary(MugenFont *font, int bank, int position){
-	    this->font = font;
-	    this->bank = bank;
-	    this->position = position;
-	}
-	virtual inline void setBlink(MugenFont *font, int bank, int position){
-	    this->state = Blink;
-	    this->blinkFont = font;
-	    this->blinkBank = bank;
-	    this->blinkPosition = position;
-	}
-	virtual inline void setDone(MugenFont *font, int bank, int position){
-	    this->doneFont = font;
-	    this->doneBank = bank;
-	    this->donePosition = position;
-	}
-    private:
-	//! Current state
-	State state;
-	//! Position
-	Mugen::Point location;
-	//! primary font
-	MugenFont *font;
-	int bank;
-	int position;
-	//! secondary font for blinking
-	MugenFont *blinkFont;
-	int blinkBank;
-	int blinkPosition;
-	//! third font for when completed
-	MugenFont *doneFont;
-	int doneBank;
-	int donePosition;
-	//! ticker for font switching when blinking
-	int ticker;
-	//! blink time defaults to 10
-	int blinkTime;
-	//! Blink setting
-	State blinkState;
-};
-
-/* Forward declaration of Cell */
-class Cell;
-
-/* Character Info handler, portrait name and etc */
-class CharacterInfo {
-    public:
-        CharacterInfo(const Filesystem::AbsolutePath &definitionFile);
-        virtual ~CharacterInfo();
-	
-	virtual void loadPlayer1();
-	virtual void loadPlayer2();
-	
-	virtual inline bool operator==(CharacterInfo &character){
-	    return (this->definitionFile.path().compare(character.definitionFile.path()) == 0);
-	}
-	
-	virtual inline const Filesystem::AbsolutePath & getDefinitionFile(){
-	    return this->definitionFile;
-	}
-
-        virtual inline MugenSprite * getIcon() const{
-            return icon;
-        }
-
-        virtual inline MugenSprite * getPortrait() const{
-            return portrait;
-        }
-
-        virtual inline const std::string & getName() const{
-            return name;
-        }
-
-        virtual inline const std::string & getDisplayName() const{
-            return displayName;
-        }
-
-        virtual void setPlayer1Act(int index);
-
-        virtual inline int getPlayer1Act() const {
-            return this->currentPlayer1Act;
-        }
-
-        virtual void setPlayer2Act(int index);
-
-        virtual inline int getPlayer2Act() const {
-            return this->currentPlayer2Act;
-        }
-
-        virtual inline void setRandomStage(bool r){
-            randomStage = r;
-        }
-
-        virtual inline bool hasRandomStage() const{
-            return randomStage;
-        }
-
-        virtual inline void setStage(const Filesystem::RelativePath &str){
-            stageFile = str;
-        }
-
-        virtual inline const Filesystem::RelativePath &getStage() const{
-            return stageFile;
-        }
-
-        virtual inline void setMusic(const std::string &str){
-            music = str;
-        }
-
-        virtual inline const std::string &getMusic() const{
-            return music;
-        }
-
-        virtual inline void setOrder(int o){
-            order = o;
-        }
-
-        virtual inline int getOrder() const{
-            return order;
-        }
-	
-	virtual inline void setReferenceCell(Cell *cell){
-	    this->referenceCell = cell;
-	}
-	
-	virtual inline Cell * getReferenceCell() {
-	    return this->referenceCell;
-	}
-	
-	virtual inline Character *getPlayer1() {
-	    return this->character1;
-	}
-	
-	virtual inline Character *getPlayer2() {
-	    return this->character2;
-	}
-
-    private:
-        void cleanup();
-
-    private:
-        /* The characters definition File to pass on to stage or anything else */
-        const Filesystem::AbsolutePath definitionFile;
-        /* Character base directory */
-        const Filesystem::AbsolutePath baseDirectory;
-        /* Sprite File */
-        Filesystem::RelativePath spriteFile;
-        /* Characters Name */
-        std::string name;
-        /* Characters Display Name */
-        std::string displayName;
-        /* Current Act */
-        int currentPlayer1Act;
-        int currentPlayer2Act;
-        /* Act Collection */
-        std::vector<Filesystem::RelativePath> actCollection;
-        /* image 9000 */
-        MugenSprite *icon;
-        /* image 9001 */
-        MugenSprite *portrait;
-        /* Random Stage */
-        bool randomStage;
-        /* Stage File */
-        Filesystem::RelativePath stageFile;
-        /* Music for stage */
-        std::string music;
-        /* Order in which to be set during Arcade mode */
-        int order;
-	
-	//! Reference Cell mainly for random so that we can light it up when it selected
-	Cell *referenceCell;
-	
-	//! Actual character for player 1
-	Character *character1;
-	//! Actual character for player 2
-	Character *character2;
-};
-
-/*! Stage handler */
-class StageHandler{
-    public:
-	StageHandler();
-	virtual ~StageHandler();
-	
-	virtual void act();
-	virtual void render(const Graphics::Bitmap &);
-	
-	//! Get current selected stage
-	virtual const Filesystem::AbsolutePath &getStage();
-	
-	//! Get random stage
-	virtual const Filesystem::AbsolutePath &getRandomStage();
-	
-	//! Set Next Stage
-	virtual void next();
-	
-	//! Set Prev Stage
-	virtual void prev();
-	
-	//! Add stage to list
-	virtual void addStage(const std::string &stage);
-        virtual void addStage(const Filesystem::AbsolutePath & stage);
-	
-	//! Get font handler
-	virtual inline FontHandler & getFontHandler() {
-	    return this->font;
-	}
-	
-	virtual inline void setDisplay(bool display){
-	    this->display = display;
-	}
-	
-	//! Is Selecting?
-	virtual inline bool isSelecting(){
-	    return selecting;
-	}
-	
-	//! Set Selection
-	virtual void toggleSelecting();
-
-        //! Set move sound
-        virtual inline void setMoveSound(MugenSound * sound){
-            this->moveSound = sound;
-        }
-
-        //! Set select sound
-        virtual inline void setSelectSound(MugenSound * sound){
-            this->selectSound = sound;
-        }
-	
-    private:
-	//! Font handler
-	FontHandler font;
-	
-	//! Current stage
-	unsigned int currentStage;
-	
-	//! Stage list First stage is reserved for random
-	std::vector<Filesystem::AbsolutePath> stages;
-	
-	//! Actual Stage names first is reserved for random
-	std::vector<std::string> stageNames;
-	
-	//! Display
-	bool display;
-	
-	//! Selection still active?
-	bool selecting;
-
-        //! Move Sound
-        MugenSound *moveSound;
-
-        //! Select Sound
-        MugenSound *selectSound;
-
-        /* only allow a single thread in at a time */
-        PaintownUtil::Thread::LockObject lock;
-};
-
-/* Handle an individual cell which contains the data required to render itself */
-class Cell{
-    public:
-        Cell(int x, int y);
-        virtual ~Cell();
-
-        virtual void act();
-        virtual void randomize(std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > &characters);
-        virtual void render(const Graphics::Bitmap &);
-	
-	virtual inline bool operator==(const Cell &cell) const{
-	    return (this->location == cell.location);
-	}
-	
-	virtual inline const Mugen::Point &getLocation() const{
-	    return this->location;
-	}
-	
-	virtual inline void setBackground(MugenSprite *sprite){
-	    this->background = sprite;
-	}
-	
-	virtual inline void setCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
-	    this->empty = false;
-	    this->character = character;
-	}
-	
-	virtual inline PaintownUtil::ReferenceCount<CharacterInfo> getCharacter(){
-	    return this->character;
-	}
-	
-	virtual inline void setRandomSprite(MugenSprite *random){
-	    randomSprite = random;
-	}
-
-        virtual bool isBlank() const {
-            return blank;
-        }
-
-        virtual void setBlank(bool what){
-            empty = false;
-            blank = what;
-        }
-        
-        virtual inline void setPosition(int x, int y){
-            position.x = x;
-            position.y = y;
-        }
-	
-	virtual inline void setDimensions(int x, int y){
-	    dimensions.x = x;
-	    dimensions.y = y;
-	}
-	
-	virtual inline const Mugen::Point &getPosition() const {
-	    return this->position;
-	}
-	
-        virtual inline void setRandom(bool r){
-	    empty = false;
-            random = r;
-        }
-
-	virtual inline bool isRandom() const {
-	    return random;
-	}
-
-        virtual inline void setEmpty(bool e){
-            empty = e;
-        }
-
-	virtual inline bool isEmpty() const {
-	    return empty;
-	}
-
-	virtual inline void setCharacterOffset(int x, int y){
-	    this->characterOffset.x = x;
-	    this->characterOffset.y = y;
-	}
-
-	virtual inline void setCharacterScale(double x, double y){
-	    this->characterScaleX = x;
-	    this->characterScaleY = y;
-	}
-	
-	virtual inline void startFlash(){
-	    flash = 10;
-	}
-	
-	enum CursorState{
-	    None,
-	    One,
-	    Two,
-	};
-	
-	virtual inline void setCursorState(const CursorState &cursors){
-	    this->cursors = cursors;
-	}
-	
-	virtual inline void popCursor() {
-	    switch (cursors){
-		case One:
-		    cursors = None;
-		    break;
-		case Two:
-		    cursors = One;
-		    break;
-		case None:
-		default:
-		    break;
-	    }
-	}
-	
-	virtual inline void pushCursor() {
-	     switch (cursors){
-		case None:
-		    cursors = One;
-		    break;
-		case One:
-		    cursors = Two;
-		    break;
-		case Two:
-		default:
-		    break;
-	    }
-	}
-	
-	virtual inline const CursorState & getCursorState() const{
-	    return cursors;
-	}
-	
-    private:
-	//! Location on grid
-	const Mugen::Point location;
-	
-	//! Set sprite background
-	MugenSprite *background;
-	
-	//! Set Character
-        PaintownUtil::ReferenceCount<CharacterInfo> character;
-	
-	//! Set Random Sprite
-	MugenSprite *randomSprite;
-	
-	//! Position of this cell
-        Mugen::Point position;
-	
-	//! Width and height
-	Mugen::Point dimensions;
-	
-	//! Is this a random select cell
-        bool random;
-
-        bool blank;
-	
-	//! Is this cell empty
-        bool empty;
-	
-	//! Offset in which the portrait is placed in the cell
-	Mugen::Point characterOffset;
-	
-	//! Scale values of the portrait placed in the cell
-	double characterScaleX;
-	double characterScaleY;
-	
-	//! Flashes cell, when selected
-	int flash;
-	
-	//! Cursor state
-	CursorState cursors;
-
-};
-
-/* Cell map */
-typedef std::vector< std::vector< Cell * > > CellMap;
-
-/* forward declare Cursor */
-class Cursor;
-
-/* Handles the select screen grid */
-class Grid{
-    public:
-	Grid();
-	virtual ~Grid();
-	
-	virtual void initialize();
-
-        virtual void act(Cursor & player1, Cursor & player2);
-	
-	virtual void render(const Graphics::Bitmap &);
-	
-        virtual void addBlank();
-	virtual void addCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character, bool isRandom = false);
-	
-	virtual void setCursorPlayer1Start(Cursor &cursor);
-	
-	virtual void setCursorPlayer2Start(Cursor &cursor);
-	
-	virtual void setCursorStageSelect(Cursor &cursor);
-	
-        virtual void moveCursor(Cursor & cursor, int Point::* field, int wrap, int direction);
-	virtual void moveCursorLeft(Cursor & cursor);
-	virtual void moveCursorRight(Cursor & cursor);
-	virtual void moveCursorUp(Cursor & cursor);
-	virtual void moveCursorDown(Cursor & cursor);
-	virtual void selectCell(Cursor &cursor, const Mugen::Keys & key, bool modifier);
-	virtual void selectStage();
-        
-        virtual inline void setRows(int r){
-	    this->rows = r;
-        }
-        virtual inline void setColumns(int c){
-	    this->columns = c;
-        }
-        virtual inline void setWrapping(bool w){
-	    this->wrapping = w;
-        }
-        virtual inline void setPosition(int x, int y){
-	    this->position.x = x;
-	    this->position.y = y;
-        }
-        virtual inline void setShowEmptyBoxes(bool s){
-	    this->showEmptyBoxes = s;
-        }
-        virtual inline void setMoveOverEmptyBoxes(bool m){
-	    this->moveOverEmptyBoxes = m;
-        }
-        virtual inline void setCellSize(int x, int y){
-	    this->cellSize.x = x;
-	    this->cellSize.y = y;
-        }
-        virtual inline void setCellSpacing(int c){
-            this->cellSpacing = c;
-        }
-        virtual inline void setCellBackgroundSprite(MugenSprite *s){
-            this->cellBackgroundSprite = s;
-        }
-        virtual inline void setCellRandomSprite(MugenSprite *s){
-            this->cellRandomSprite = s;
-        }
-        virtual inline void setCellRandomSwitchTime(int t){
-            this->cellRandomSwitchTime = t;
-        }
-	
-	virtual inline void setPortraitOffset(int x, int y){
-	    portraitOffset.x = x;
-	    portraitOffset.y = y;
-	}
-	
-	virtual inline void setPortraitScale(double x, double y){
-	    this->portraitScaleX = x;
-	    this->portraitScaleY = y;
-	}
-	
-	virtual inline StageHandler & getStageHandler() {
-	    return stages;
-	}
-	
-	virtual inline void setGameType(const GameType &type){
-	    this->type = type;
-	}
-	
-	virtual inline void setPlayer1Start(int x, int y){
-	    this->player1Start.set(x, y);
-	}
-	
-	virtual inline void setPlayer2Start(int x, int y){
-	    this->player2Start.set(x, y);
-	}
-        
-        std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > getCharacters() const;
-
-        /* lock for safety. grab this if any changes will be made to the grid
-         * itself or any cells.
-         */
-        virtual void lock();
-        virtual void unlock();
-
-        /* add the characterinfo to the grid, can be called from another thread */
-        bool addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & character);
-        /* true if no grid cell has the same characterinfo */
-        bool isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character);
+    FontHandler();
+    virtual ~FontHandler();
     
-    private:
-	
-	Cell *getCell(int row, int column);
-	
-	//! Total rows
-	int rows;
-	
-	//! Total columns
-	int columns;
-	
-	//! Allow a cursor to wrap?
-	bool wrapping;
-	
-	//! Starting position of the grid
-	Mugen::Point position;
-	
-	//! Show empty boxes?
-	bool showEmptyBoxes;
-	
-	//! Allow cursor to move over empty boxes?
-	bool moveOverEmptyBoxes;
-	
-	//! Size of cell
-	Mugen::Point cellSize;
-	
-	//! Spacing between cells
-	int cellSpacing;
-	
-	//! The background of the cell
-	MugenSprite *cellBackgroundSprite;
-	
-	//! Random sprite portrait
-	MugenSprite *cellRandomSprite;
-	
-	//! Random sprite switch time
-	int cellRandomSwitchTime;
-
-        //! Random switch time ticker
-        int randomSwitchTimeTicker;
-	
-	//! Portrait offset for placement of the picture
-	Mugen::Point portraitOffset;
-	
-	//! portrait scale for resizing if need be
-	double portraitScaleX;
-	double portraitScaleY;
-
-        //! Character list 
-        std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > characters;
-	
-        //! Cells of the grid
-        CellMap cells;
-	
-	//! Stages
-	StageHandler stages;
-	
-	//! Game Type
-	GameType type;
-	
-	//! Player1 starting position
-	Mugen::Point player1Start;
-	
-	//! Player2 starting position
-	Mugen::Point player2Start;
-
-        /* traffic jam! */
-        PaintownUtil::Thread::LockObject gridLock;
+    void act();
+    //! Render with set text
+    void draw(const Graphics::Bitmap &, int offset = 0);
+    //! Override set text (For players names)
+    void draw(const std::string &, const Graphics::Bitmap &, int offset = 0);
+    
+    enum State{
+        Normal=0,
+        Blink,
+        Done
+    };
+    
+    virtual inline void setText(const std::string & text){
+        this->text = text;
+    }
+    
+    virtual inline const std::string & getText() const {
+        return this->text;
+    }
+    
+    virtual inline void setLocation(int x, int y){
+        this->x = x;
+        this->y = y;
+    }
+    
+    virtual inline void setState(const State & state){
+        this->state = state;
+    }
+    
+    virtual inline const State & getState() const {
+        return state;
+    }
+    
+    virtual inline void setBlinkTime(int time){
+        this->blinkTime = time;
+    }
+    
+    virtual inline void setActive(const SelectFont & font){
+        this->active = font;
+    }
+    virtual inline void setActive2(const SelectFont & font){
+        this->active2 = font;
+    }
+    virtual inline void setDone(const SelectFont & font){
+        this->done = font;
+    }
+private:
+    //! Text
+    std::string text;
+    //! Current state
+    State state;
+    //! Position
+    int x, y;
+    //! active font
+    SelectFont active;
+    //! active font 2 for blinking
+    SelectFont active2;
+    //! done font for when completed
+    SelectFont done;
+    //! ticker for font switching when blinking
+    int ticker;
+    //! blink time defaults to 10
+    int blinkTime;
+};
+    
+class Cell : public Gui::SelectItem {
+public:
+    Cell(unsigned int index, const Gui::SelectListInterface *);
+    virtual ~Cell();
+    
+    virtual void act();
+    virtual void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
+    virtual bool isEmpty() const;
+    
+    virtual void setCharacter(const Mugen::ArcadeData::CharacterInfo &);
+    
+    virtual void setRandom(bool r);
+    
+    virtual void select();
+    
+    virtual inline unsigned int getIndex() const {
+        return index;
+    }
+    virtual inline bool getRandom() const {
+        return this->isRandom;
+    }
+    virtual inline void setEmpty(bool empty){
+        this->empty = empty;
+    }
+    virtual inline const Mugen::ArcadeData::CharacterInfo & getCharacter() const {
+        return this->character;
+    }
+    
+    static void setBackground(PaintownUtil::ReferenceCount<MugenSprite> background);
+    static void setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon);
+    static void setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static inline void setBlinkCursor(bool blink){
+        Cell::blinkCursor = blink;
+    }
+    static inline void setEffects(const Mugen::Effects & effects){
+        Cell::effects = effects;
+    }
+    static inline void setOffset(int x, int y){
+        Cell::offsetX = x;
+        Cell::offsetY = y;
+    }
+    
+protected:
+    static PaintownUtil::ReferenceCount<MugenSprite> background;
+    static PaintownUtil::ReferenceCount<MugenSprite> randomIcon;
+    static PaintownUtil::ReferenceCount<MugenSprite> player1ActiveCursor;
+    static PaintownUtil::ReferenceCount<MugenSprite> player1DoneCursor;
+    static PaintownUtil::ReferenceCount<MugenSprite> player2ActiveCursor;
+    static PaintownUtil::ReferenceCount<MugenSprite> player2DoneCursor;
+    
+    static bool blinkCursor;
+    static int blinkTime;
+    
+    static Mugen::Effects effects;
+    static int offsetX, offsetY;
+    
+    void drawPlayer1Cursor(int x, int y, const Graphics::Bitmap &) const;
+    void drawPlayer2Cursor(int x, int y, const Graphics::Bitmap &, bool blink=false) const;
+    
+    unsigned int index;
+    const Gui::SelectListInterface * parent;
+    bool empty;
+    bool isRandom;
+    int flash;
+    
+    //! Character
+    Mugen::ArcadeData::CharacterInfo character;
 };
 
-/*! Handles Team Menu */
+/*! Team Menu */
 class TeamMenu{
-    public:
-	TeamMenu();
-	virtual ~TeamMenu();
-	
-	void act();
-	void render(const Graphics::Bitmap &);
-	
-    private:
-	/*! Allow cursor to wrap up and down the menu */
-	bool wrapping;
-	/*! Menu Position */
-	Mugen::Point position;
-	/*! Background Sprite */
-	MugenSprite *backgroundSprite;
-	/*! Self title Font */
-	FontHandler selfTitleFont;
-	/*! Self title text */
-	std::string selfTitleText;
-	/*! Enemy title Font */
-	FontHandler enemyTitleFont;
-	/*! Enemy title text */
-	std::string enemyTitleText;
-	/*! Move sound */
-	MugenSound *moveSound;
-	/*! Value Sound (left <-> right ?) */
-	MugenSound *valueSound;
-	/*! Done Sound */
-	MugenSound *doneSound;
-	/*! Item offset */
-	Mugen::Point itemOffset;
-	/*! Item spacing */
-	Mugen::Point itemSpacing;
-	/*! itemFont */
-	FontHandler itemFont;
-	/* *TODO figure this out
-	p1.teammenu.item.cursor.offset = -10, 0
-	p1.teammenu.item.cursor.anim = 180
-	*/ 
-	/*! value Icon offset */
-	Mugen::Point valueIconOffset;
-	/*! value Icon Sprite */
-	MugenSprite *valueIconSprite;
-	/*! value empty Icon offset */
-	Mugen::Point valueEmptyIconOffset;
-	/*! value empty Icon sprite */
-	MugenSprite *valueEmptyIconSprite;
-	/*! value Icon spacing */
-	Mugen::Point valueIconSpacing;
+public:
+    TeamMenu();
+    virtual ~TeamMenu();
+    
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &, bool enemy = false);
+    
+    //! Up
+    bool up();
+    //! Down
+    bool down();
+    //! Left
+    bool left();
+    //! Right
+    bool right();
+    //! Get a return value for selected
+    const Mugen::ArcadeData::CharacterCollection::Type & select();
+    
+    //! Reset
+    void reset();
+    
+    //! Fonts
+    FontHandler titleFont;
+    FontHandler enemyTitleFont;
+    FontHandler itemFont;
+    FontHandler itemCurrentFont;
+    
+    static inline void setWrapping(bool wrap){
+        TeamMenu::wrapping = wrap;
+    }
+    virtual inline void setPosition(int x, int y){
+        this->x = x;
+        this->y = y;
+    }
+    virtual inline void setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite> sprite){
+        this->background = sprite;
+    }
+    virtual inline void setItemOffset(int x, int y){
+        this->itemOffsetX = x;
+        this->itemOffsetY = y;
+    }
+    virtual inline void setItemSpacing(int x, int y){
+        this->itemSpacingX = x;
+        this->itemSpacingY = y;
+    }
+    virtual inline void setValueIconOffset(int x, int y){
+        this->valueIconOffsetX = x;
+        this->valueIconOffsetY = y;
+    }
+    virtual inline void setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite> icon){
+        this->icon = icon;
+    }
+    virtual inline void setEmptyValueIconOffset(int x, int y){
+        this->emptyValueIconOffsetX = x;
+        this->emptyValueIconOffsetY = y;
+    }
+    virtual inline void setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite> icon){
+        this->emptyIcon = icon;
+    }
+    virtual inline void setValueSpacing(int x, int y){
+        this->valueSpacingX = x;
+        this->valueSpacingY = y;
+    }
+    virtual inline void setEnabled(bool enabled){
+        this->enabled = enabled;
+    }
+    virtual inline bool getEnabled() const {
+        return this->enabled;
+    }
+protected:
+    //! Handle values (depending on value spacing)
+    bool valueLess();
+    bool valueMore();
+    //! Current selection
+    Mugen::ArcadeData::CharacterCollection::Type current;
+    //! Current turns
+    Mugen::ArcadeData::CharacterCollection::Type turns;
+    //! Wrapping
+    static bool wrapping;
+    //! Position of menu
+    int x, y;
+    //! Background sprite
+    PaintownUtil::ReferenceCount<MugenSprite> background;
+    //! Item starting offset
+    int itemOffsetX, itemOffsetY;
+    //! Item spacing offset
+    int itemSpacingX, itemSpacingY;
+    //! Value icon offset
+    int valueIconOffsetX, valueIconOffsetY;
+    //! Value icon sprite
+    PaintownUtil::ReferenceCount<MugenSprite> icon;
+    //! Empty Value icon offset
+    int emptyValueIconOffsetX, emptyValueIconOffsetY;
+    //! Empty Value icon sprite
+    PaintownUtil::ReferenceCount<MugenSprite> emptyIcon;
+    //! Value spacing
+    int valueSpacingX, valueSpacingY;
+    //! Menu enabled?
+    bool enabled;
 };
 
-/*! Handles player cursors */
-class Cursor{
-    public:
-	Cursor();
-	virtual ~Cursor();
-	
-	virtual void act(Grid &grid);
-	
-	virtual void render(Grid &grid, const Graphics::Bitmap &);
-	
-	virtual inline void setInput(const InputMap<Mugen::Keys> & input){
-	    this->input = input;
-	}
-	
-	virtual inline void setCurrentCell(Cell *cell){
-	    this->currentCell = cell;
-	}
-	
-	virtual Cell *getCurrentCell(){
-	    return this->currentCell;
-	}
-	
-	virtual inline void setActiveSprite(MugenSprite *spr){
-	    this->activeSprite = spr;
-	}
-	
-	virtual inline void setDoneSprite(MugenSprite *spr){
-	    this->doneSprite = spr;
-	}
-	
-	virtual inline void setBlink(bool b){
-	    this->blink = b;
-	}
-	
-	virtual inline void setBlinkRate(int b){
-	    this->blinkRate = b;
-	}
-	
-	virtual inline void setFaceOffset(int x, int y){
-	    this->faceOffset.x = x;
-	    this->faceOffset.y = y;
-	}
-	
-	virtual inline void setFaceScale(double x, double y){
-	    this->faceScaleX = x;
-	    this->faceScaleY = y;
-	}
-	
-	virtual inline void setFacing(int f){
-	    this->facing = f;
-	}
-	
-	virtual inline FontHandler & getFontHandler(){
-	    return this->font;
-	}
-	
-	enum State{
-	    NotActive,
-	    TeamSelect,
-	    CharacterSelect,
-	    StageSelect,
-	    Done
-	};
-	
-	virtual inline void setState(const State &state){
-	    this->state = state;
-	}
-	
-	virtual inline const State & getState() const {
-	    return state;
-	}
-
-        virtual inline void setMoveSound(MugenSound * sound){
-            this->moveSound = sound;
-        }
-
-        virtual void playMoveSound();
-
-        virtual inline void setSelectSound(MugenSound * sound){
-            this->selectSound = sound;
-        }
-
-        virtual void playSelectSound();
-
-        virtual inline void setRandomSound(MugenSound * sound){
-            this->randomSound = sound;
-        }
-
-        virtual void playRandomSound();
-        
-        virtual inline void setRandomCancel(bool cancel){
-            this->cancelRandom = cancel;
-        }
-
-        virtual inline void setActSelection(const Mugen::Keys & key, bool modifier = false){
-            this->actSelection = key;
-            this->actModifier = modifier;
-        }
-
-        virtual int getActSelection();
-	
-    private:
-	
-	void renderPortrait(const Graphics::Bitmap &);
-	
-	InputMap<Mugen::Keys> input;
-	
-	//! Cell
-	Cell *currentCell;
-	
-	//! Sprite to display while selecting
-	MugenSprite *activeSprite;
-	
-	//! Sprite to display when selected
-	MugenSprite *doneSprite;
-	
-	//! Blink when overlapping player1 ?
-	bool blink;
-	
-	//! Our blink rate at 10
-	int blinkRate;
-	
-	//! Blink counter
-	int blinkCounter;
-	
-	//! is it Time to show
-	bool hideForBlink;
-	
-	//! the placement of the portrait
-	Mugen::Point faceOffset;
-	
-	//! Scale data of the portrait
-	double faceScaleX;
-	double faceScaleY;
-	
-	//! Which direction facing
-	int facing;
-	
-	//! Font
-	FontHandler font;
-	
-	//! Current state for proper handling of selection
-	State state;
-
-        //! Move Sound
-        MugenSound *moveSound;
-
-        //! Select Sound
-        MugenSound *selectSound;
-
-        //! Random Sound
-        MugenSound *randomSound;
-
-        //! Cancel Random
-        bool cancelRandom;
-
-        //! Character Key selection for determing act
-        Mugen::Keys actSelection;
-
-        //! Use modifier for selection
-        bool actModifier;
+class StageMenu{
+public:
+    StageMenu();
+    virtual ~StageMenu();
+    
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &);
+    
+    //! Add stage
+    virtual void add(const Filesystem::AbsolutePath &);
+    
+    //! Up
+    bool up();
+    //! Down
+    bool down();
+    //! Left
+    bool left();
+    //! Right
+    bool right();
+    //! Get a return value for selected
+    const Filesystem::AbsolutePath & select();
+    //! Reset
+    void reset();
+    //! Get stage collection
+    const std::vector<Filesystem::AbsolutePath> & getStages() const {
+        return this->stages;
+    }
+    //! Set enabled
+    virtual inline void setEnabled(bool enabled){
+        this->enabled = enabled;
+    }
+    //! Get enabled
+    virtual inline bool getEnabled() const {
+        return this->enabled;
+    }
+    //! Finished
+    virtual inline void finish(){
+        this->finished = true;
+        this->font.setState(FontHandler::Done);
+    }
+    virtual inline bool getFinished() const {
+        return this->finished;
+    }
+    //! Font
+    FontHandler font;
+protected:
+    //! Stages
+    std::vector<Filesystem::AbsolutePath> stages;
+    //! Stage Names
+    std::vector<std::string> names;
+    //! Random Stage ?
+    bool random;
+    //! Current Selected Stage
+    unsigned int current;
+    //! Is enabled
+    bool enabled;
+    //! Is finished
+    bool finished;
 };
 
-/* Displays the two selected characters with some overlayed text right before
- * the battle begins. Players are loaded in the background while the animation
- * is playing.
- */
-class VersusScreen {
-    public:
-	VersusScreen();
-	virtual ~VersusScreen();
-	
-	//! Renders the versus screen as well as loads the characters and stage
-	virtual void render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage);
-	
-	virtual inline void setBackground(Background * background){
-	    this->background = background;
-	}
-	
-	virtual inline void setTime(int time){
-	    this->time = time;
-	}
-	
-	virtual inline Gui::FadeTool & getFadeTool(){
-	    return this->fader;
-	}
-	
-	virtual inline void setPlayer1Position(const Mugen::Point & point){
-	    this->player1Position = point;
-	}
-	
-	virtual inline void setPlayer2Position(const Mugen::Point & point){
-	    this->player2Position = point;
-	}
-	
-	virtual inline void setPlayer1Facing(int facing){
-	    this->player1Effects.facing = facing;
-	}
-	
-	virtual inline void setPlayer2Facing(int facing){
-	    this->player2Effects.facing = facing;
-	}
-	
-	virtual inline void setPlayer1Scale(double x, double y){
-	    this->player1Effects.scalex = x;
-	    this->player1Effects.scaley = y;
-	}
-	
-	virtual inline void setPlayer2Scale(double x, double y){
-	    this->player2Effects.scalex = x;
-	    this->player2Effects.scaley = y;
-	}
-	
-	virtual inline FontHandler & getPlayer1Font(){
-	    return this->player1Font;
-	}
-	
-	virtual inline FontHandler & getPlayer2Font(){
-	    return this->player2Font;
-	}
-    private:
-	//! Background
-	Background *background;
-	//! Time to display
-	int time;
-	//! Fade tool
-        Gui::FadeTool fader;
-	//! Player 1 portrait
-	Mugen::Point player1Position;
-	//! Player 1 effects (facing, scale)
-	Mugen::Effects player1Effects;
-	//! Player 2 portrait
-	Mugen::Point player2Position;
-	//! Player 2 effects (facing, scale)
-	Mugen::Effects player2Effects;
-	//! Player 1 font
-	FontHandler player1Font;
-	//! Player 2 font
-	FontHandler player2Font;
+class SoundSystem{
+public:
+    SoundSystem();
+    ~SoundSystem();
+    void init(const std::string &);
+    //! Sound types
+    enum Type{
+        Player1Move=0,
+        Player1Done,
+        Player1Random,
+        Player2Move,
+        Player2Done,
+        Player2Random,
+        Player1TeamMove,
+        Player1TeamValue,
+        Player1TeamDone,
+        Player2TeamMove,
+        Player2TeamValue,
+        Player2TeamDone,
+        StageMove,
+        StageDone,
+        Cancel,
+    };
+    void play(const Type &);
+    virtual void set(const Type &, int group, int sound);
+protected:
+    //! Sounds
+    Mugen::SoundMap sounds;
+    //! Sound lookup
+    struct IndexValue{
+        int group;
+        int index;
+    };
+    std::map<Type, IndexValue> soundLookup;
 };
 
-/* runs the whole character selection process */
-class CharacterSelect {
-    public:
-        CharacterSelect(const Filesystem::AbsolutePath & file, const PlayerType &, const GameType &);
-        virtual ~CharacterSelect();
-	
-	virtual void load();
-	
-	virtual void run(const std::string & title, Searcher & search);
+class Player{
+public:
+    Player(unsigned int cursor, Gui::GridSelect &, std::vector< PaintownUtil::ReferenceCount<Cell> > &, std::vector<Mugen::ArcadeData::CharacterInfo> &, TeamMenu &, TeamMenu &, StageMenu &, FontHandler &, FontHandler &, SoundSystem &);
+    virtual ~Player();
+    
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &);
+    
+    virtual void up();
+    virtual void down();
+    virtual void left();
+    virtual void right();
+    virtual void select();
+    
+    virtual void setPortraitEffects(const Mugen::Effects &, const Mugen::Effects &);
+    
+    void setCurrentGameType(const Mugen::GameType &);
+    
+    //! Rest game state
+    void reset();
+    
+    //! Set cooperative positioning and information
+    void setCooperativeData(const Player &);
+    
+    //! Get collection
+    const Mugen::ArcadeData::CharacterCollection & getCollection() const {
+        return this->collection;
+    }
+    
+    //! Get opponent collection
+    const Mugen::ArcadeData::CharacterCollection & getOpponentCollection() const {
+        return this->opponentCollection;
+    }
+    
+    static inline void setRandomSwitchTime(int time){
+        Player::randomSwitchTime = time;
+    }
+    
+    inline bool isFinished() const {
+        return (selectState == Finished);
+    }
+    
+    inline void setCursorPosition(int x){
+        this->cursorPosition = x;
+    }
+    inline void setOpponentCursorPosition(int x){
+        this->opponentCursorPosition = x;
+    }
+    inline void setPortraitOffset(int x, int y){
+        this->portraitX = x;
+        this->portraitY = y;
+    }
+    inline void setOpponentPortraitOffset(int x, int y){
+        this->opponentPortraitX = x;
+        this->opponentPortraitY = y;
+    }
+    
+protected:
+    const unsigned int cursor;
+    Gui::GridSelect & grid;
+    std::vector< PaintownUtil::ReferenceCount<Cell> > & cells;
+    std::vector<Mugen::ArcadeData::CharacterInfo> & characters;
+    TeamMenu & teamMenu;
+    TeamMenu & opponentTeamMenu;
+    StageMenu & stageMenu;
+    FontHandler & font;
+    FontHandler & opponentFont;
+    SoundSystem & sounds;
+    
+    SoundSystem::Type moveSound, doneSound, randomSound, teamMoveSound, teamValueSound, teamDoneSound;
+    
+    //! Current GameType
+    Mugen::GameType currentGameType;
+    
+    //! Get current cell
+    const Mugen::ArcadeData::CharacterInfo & getCurrentCell();
+    
+    //! Next selection
+    void next();
+    
+    //! Draw profile info
+    void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, FontHandler &, const Graphics::Bitmap &);
+    
+    //! Start position
+    int cursorPosition, opponentCursorPosition;
+    
+    //! Portrait offset
+    int portraitX, portraitY, opponentPortraitX, opponentPortraitY;
+    
+    //! Portrait effects
+    Mugen::Effects portraitEffects, opponentPortraitEffects;
+    
+    //! Random switch
+    static int randomSwitchTime;
+    
+    //! switch time
+    int switchTime;
+    
+    //! Current random
+    unsigned int currentRandom;
+    
+    //! Player Collections
+    Mugen::ArcadeData::CharacterCollection collection;
+    Mugen::ArcadeData::CharacterCollection opponentCollection;
+    
+    enum SelectState{
+        NotStarted,
+        Team,
+        OpponentTeam,
+        Character,
+        Opponent,
+        Stage,
+        WaitFinished,
+        Finished,
+    };
+    //! Current State
+    SelectState selectState;
+    
+};
 
-        virtual void reset();
-	
-	//! This will load the character and stage so that you can retrieve them when setting up
-	virtual void renderVersusScreen();
-	
-	//! Get next arcade match character returns false if there are no more characters
-	virtual bool setNextArcadeMatch();
-	
-	//! Get next team match character returns false if there are no more characters
-	virtual bool setNextTeamMatch();
-	
-	virtual inline void setPlayer1Keys(const InputMap<Mugen::Keys> &input){
-	    player1Cursor.setInput(input);
-	}
-	
-	virtual inline void setPlayer2Keys(const InputMap<Mugen::Keys> &input){
-	    player2Cursor.setInput(input);
-	}
-	
-	virtual inline Character * getPlayer1(){
-	    return this->currentPlayer1->getPlayer1();
-	}
-	
-	virtual inline const std::string & getPlayer1Music(){
-	    return this->currentPlayer1->getMusic();
-	}
-	
-	virtual inline Character * getPlayer2(){
-	    return this->currentPlayer2->getPlayer2();
-	}
-	
-	virtual inline const std::string & getPlayer2Music(){
-	    return this->currentPlayer1->getMusic();
-	}
-	
-	virtual inline Mugen::Stage * getStage(){
-	    return this->currentStage;
-	}
-	
-	virtual inline const Filesystem::AbsolutePath & getPlayer1Def(){
-	    return currentPlayer1->getDefinitionFile();
-	}
-
-	virtual inline const Filesystem::AbsolutePath & getPlayer2Def(){
-	    return currentPlayer2->getDefinitionFile();
-	}
-	
-	/*! **FIXME These are temporary until a method is 
-	    figured to handling teams and multiple players elegantly */
-	virtual inline const Filesystem::AbsolutePath &getStageOld(){
-	    return grid.getStageHandler().getStage();
-	}
-
-        virtual MugenFont * getFont(int index) const;
-	
-    private:
-        /* searches the filesystem for more characters: arg is this */
-        static void * searchForCharacters(void * arg);
-        /* loads character info data and adds them to the grid: arg is this */
-        static void * doAddCharacters(void * arg);
-        /* returns false if no more characters can be added */
-        bool maybeAddCharacter(const Filesystem::AbsolutePath & path);
-
-        static void * searchStages(void * arg);
-
-        /* helper */
-        void startAddThread();
-
-        /* add all the files to the character add list */
-        void addFiles(const std::vector<Filesystem::AbsolutePath> & files);
-        void addFile(const Filesystem::AbsolutePath & file);
-
-        bool addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & info);
-        bool isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character);
-	
-	/*! Temporary to accomodate above above condition */
-	bool checkPlayerData();
-	
-	//! Get group of characters by order number
-	std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > getCharacterGroup(int orderNumber);
-	
-	//! Parse select file to get characters and stages
-	void parseSelect(const Filesystem::AbsolutePath &selectFile);
-	
-	//! Location of file
-	const Filesystem::AbsolutePath systemFile;
-	
-	//! sprite file
-	std::string sffFile;
-	
-	//! music
-	std::string sndFile;
-	
-	//! Select file
-	std::string selectFile;
-	
-	//! Game Type
-	GameType gameType;
-	
-	//! Fonts
-	std::vector<MugenFont *>fonts;
-	
-	//! Fade tool
-        Gui::FadeTool fader;
-	
-	//! Grid (Cell container)
-	Grid grid;
-	
-	//!Player 1 Cursor
-	Cursor player1Cursor;
-	
-	//!Player 2 Cursor
-	Cursor player2Cursor;
-	
-	//! Title font handler
-	FontHandler titleFont;
-	
-	//! Characters
-	std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > characters;
-	
-	//! Sprites
-	Mugen::SpriteMap sprites;
-
-        //! Sounds
-        Mugen::SoundMap sounds;
-
-        //! Cancel sound
-        MugenSound *cancelSound;
-	
-	//! Select background
-	Mugen::Background *background;
-	
-	//! Versus Screen
-	VersusScreen versus;
-	
-	//! Arcade matches
-	std::queue< std::queue<PaintownUtil::ReferenceCount<CharacterInfo> > > arcadeMatches;
-	
-	//! Team matches
-	std::queue< std::queue<PaintownUtil::ReferenceCount<CharacterInfo> > > teamMatches;
-	
-	//! Current set Player 1
-        PaintownUtil::ReferenceCount<CharacterInfo> currentPlayer1;
-	//! Current set Player 2
-        PaintownUtil::ReferenceCount<CharacterInfo> currentPlayer2;
-	//! Current set Stage
-	Mugen::Stage *currentStage;
-	
-	//! PlayerType
-	Mugen::PlayerType playerType;
-
-        PaintownUtil::Thread::LockObject searchingLock;
-        volatile bool quitSearching;
-        PaintownUtil::ThreadBoolean searchingCheck;
-
-        PaintownUtil::Thread::Id characterAddThread;
-        PaintownUtil::Thread::LockObject addCharacterLock;
-        std::deque<Filesystem::AbsolutePath> addCharacters;
-
-        class Subscriber: public Searcher::Subscriber {
-        public:
-            Subscriber(CharacterSelect & owner);
-            virtual ~Subscriber();
-        
-            virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths);
-
-            virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths);
-
-            CharacterSelect & owner;
-        };
-
-        Subscriber subscription;
+class CharacterSelect{
+public:
+    CharacterSelect(const Filesystem::AbsolutePath &);
+    virtual ~CharacterSelect();
+    
+    //! Initialize all data from select.def
+    virtual void init();
+    
+    //! Cancel and fade out
+    virtual void cancel();
+    
+    //! Is done
+    virtual bool isDone();
+    
+    //! Act
+    virtual void act();
+    //! Draw
+    virtual void draw(const Graphics::Bitmap &);
+    
+    enum PlayerType{
+        Player1,
+        Player2,
+        Both,
+    };
+    //! Set Mode
+    virtual void setMode(const Mugen::GameType &, const PlayerType & player = Player1);
+    //! Move up
+    virtual void up(unsigned int cursor);
+    //! Move down
+    virtual void down(unsigned int cursor);
+    //! Move left
+    virtual void left(unsigned int cursor);
+    //! Move right
+    virtual void right(unsigned int cursor);
+    //! Make current selection
+    virtual void select(unsigned int cursor);
+    //! Add Character
+    virtual bool addCharacter(const Mugen::ArcadeData::CharacterInfo &);
+    //! Add Empty slot
+    virtual void addEmpty();
+    //! Make slot a random selector
+    virtual void addRandom();
+    //! Add stage
+    virtual void addStage(const Filesystem::AbsolutePath &);
+    //! Get Arcade Match
+    virtual Mugen::ArcadeData::MatchPath getArcadePath();
+    //! Get Team Arcade Match
+    virtual Mugen::ArcadeData::MatchPath getTeamArcadePath();
+    
+    //! Get Logic class
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> getLogic(InputMap<Mugen::Keys> &, InputMap<Mugen::Keys> &, Searcher &);
+    
+    //! Get Draw class
+    PaintownUtil::ReferenceCount<PaintownUtil::Draw> getDraw();
+    
+    //! Get Player1
+    inline const Player & getPlayer1() const {
+        return this->player1;
+    }
+    
+    //! Get Player2
+    inline const Player & getPlayer2() const {
+        return this->player2;
+    }
+    
+    //! Get Selected stage
+    inline const Filesystem::AbsolutePath & getStage() {
+        return this->stages.select();
+    }
+    
+    //! Was canceled
+    inline bool wasCanceled() const {
+        return this->canceled;
+    }
+    
+protected:
+    //! Get font
+    PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
+    //! Parse select file
+    void parseSelect();
+    //! Path
+    const Filesystem::AbsolutePath & file;
+    //! Grid
+    Gui::GridSelect grid;
+    //! Grid dimensions
+    int gridX, gridY;
+    //! Grid draw point
+    int gridPositionX, gridPositionY;
+    //! Cells
+    std::vector< PaintownUtil::ReferenceCount<Cell> > cells;
+    //! Sprites
+    Mugen::SpriteMap sprites;
+    //! Sounds
+    SoundSystem sounds;
+    //! Select file
+    Filesystem::AbsolutePath selectFile;
+    //! Fonts
+    std::vector< PaintownUtil::ReferenceCount<MugenFont> > fonts;
+    
+    //! Font Handlers
+    FontHandler titleFont;
+    FontHandler player1Font;
+    FontHandler player2Font;
+    
+    //! Font Handlers for Team menu data
+    TeamMenu player1TeamMenu;
+    TeamMenu player2TeamMenu;
+    
+    //! Fade tool
+    Gui::FadeTool fader;
+    //! Select background
+    PaintownUtil::ReferenceCount<Mugen::Background> background;
+    //! Characters
+    std::vector<Mugen::ArcadeData::CharacterInfo> characters;
+    //! Current add Cell
+    unsigned int nextCell;
+    //! Stage menu
+    StageMenu stages;
+    //! Arcade Matches
+    std::vector<int> arcadeOrder;
+    std::vector<int> teamArcadeOrder;
+    //! Current GameType
+    Mugen::GameType currentGameType;
+    //! Current players
+    PlayerType currentPlayer;
+    //! Players
+    Player player1, player2;
+    //! Canceled?
+    bool canceled;
 };
 
 }
-
 #endif

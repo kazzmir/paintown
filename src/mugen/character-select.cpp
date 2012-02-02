@@ -1,109 +1,76 @@
-#include "util/bitmap.h"
-#include "util/trans-bitmap.h"
-#include "util/stretch-bitmap.h"
 #include "character-select.h"
 
-#include <fstream>
 #include <iostream>
-#include <algorithm>
-#include <cctype>
-#include <string>
-#include <cstring>
-#include <vector>
-#include <ostream>
-#include <sstream>
-#include <iostream>
+#include <exception>
 
-#include "stage.h"
-
-#include "util/init.h"
-#include "util/events.h"
-#include "util/parameter.h"
-#include "util/resource.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
-#include "util/music.h"
 #include "util/timedifference.h"
-#include "util/thread.h"
-#include "globals.h"
-#include "factory/font_render.h"
+#include "util/trans-bitmap.h"
+#include "util/stretch-bitmap.h"
+#include "mugen/ast/all.h"
+#include "mugen/sound.h"
 
-#include "animation.h"
-#include "background.h"
-#include "character.h"
-#include "sound.h"
-#include "reader.h"
-#include "config.h"
-#include "sprite.h"
-#include "util.h"
-#include "font.h"
-
-#include "ast/all.h"
-#include "parser/all.h"
-
-#include "util/loading.h"
-
+#include "util/input/input.h"
 #include "util/input/input-manager.h"
-#include "util/input/input-source.h"
 
-#include "util/exceptions/exception.h"
-
-namespace PaintownUtil = ::Util;
-
-#ifdef WII
-extern "C" void __sfp_lock_acquire();
-extern "C" void __sfp_lock_release();
-#endif
-
-using namespace std;
 using namespace Mugen;
 
-static const int DEFAULT_WIDTH = 320;
-static const int DEFAULT_HEIGHT = 240;
-static const int DEFAULT_SCREEN_X_AXIS = 160;
-static const int DEFAULT_SCREEN_Y_AXIS = 0;
+// Cell static members
+PaintownUtil::ReferenceCount<MugenSprite> Cell::background = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::randomIcon = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::player1ActiveCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::player1DoneCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::player2ActiveCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<MugenSprite> Cell::player2DoneCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+bool Cell::blinkCursor = false;
+int Cell::blinkTime = 0;
+Mugen::Effects Cell::effects = Mugen::Effects();
+int Cell::offsetX = 0;
+int Cell::offsetY = 0;
 
-#if 0
-static const Filesystem::AbsolutePath fixStageName(const std::string &stage){
-    /* FIXME not a good solution to get file
-     * jon: why isn't it good?
-     */
-    std::string defFile = stage;
-    /* strip 'stage' from the def file if its already there */
-    if (defFile.find("stages/") == 0){
-        defFile = string("./") + defFile.substr(strlen("stages/"));
-    }
+bool TeamMenu::wrapping = false;
 
-    // Filesystem::AbsolutePath baseDir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
+int Player::randomSwitchTime = 4;
 
-    if (defFile.find(".def") == std::string::npos){
-	defFile += ".def";
-    }
-
-    return Filesystem::findInsensitive(Filesystem::RelativePath("mugen/stages/").join(Filesystem::RelativePath(defFile)));
-
-    /*
-    // Get correct directory
-    baseDir = Filesystem::AbsolutePath(Mugen::Util::getFileDir(baseDir.path() + ourDefFile));
-    return Mugen::Util::getCorrectFileLocation(baseDir, Filesystem::RelativePath(ourDefFile).getFilename().path());
-    */
+SelectFont::SelectFont():
+font(PaintownUtil::ReferenceCount<MugenFont>(NULL)),
+bank(0),
+position(0){
 }
-#endif
+
+SelectFont::SelectFont(PaintownUtil::ReferenceCount<MugenFont> font, int bank, int position):
+font(font),
+bank(bank),
+position(position){
+}
+
+SelectFont::SelectFont(const SelectFont & copy):
+font(copy.font),
+bank(copy.bank),
+position(copy.position){
+}
+
+SelectFont::~SelectFont(){
+}
+
+const SelectFont & SelectFont::operator=(const SelectFont & copy){
+    font = copy.font;
+    bank = copy.bank;
+    position = copy.position;
+    return * this;
+}
+
+void SelectFont::draw(int x, int y, const std::string & text, const Graphics::Bitmap & work){
+    if (font != NULL){
+        font->render(x, y, position, bank, work, text);
+    }
+}
 
 FontHandler::FontHandler():
 state(Normal),
-font(0),
-bank(0),
-position(0),
-blinkFont(0),
-blinkBank(0),
-blinkPosition(0),
-doneFont(0),
-doneBank(0),
-donePosition(0),
+x(0),
+y(0),
 ticker(0),
-blinkTime(10),
-blinkState(Normal){
+blinkTime(10){
 }
 
 FontHandler::~FontHandler(){
@@ -111,275 +78,48 @@ FontHandler::~FontHandler(){
 
 void FontHandler::act(){
     switch(state){
-	case Blink:
-	    ticker++;
-	    if (ticker == blinkTime){
-		ticker = 0;
-		if (blinkState == Normal){
-		    blinkState = Blink;
-		} else if (blinkState == Blink){
-		    blinkState = Normal;
-		}
-	    }
-	    break;
-	case Normal:
-	case Done:
-	default:
-	    break;
+        case Blink:
+            ticker++;
+            if (ticker >= (blinkTime*2)){
+                ticker = 0;
+            }
+            break;
+        case Normal:
+        case Done:
+        default:
+            break;
     }
 }
 
-void FontHandler::render(const std::string &text, const Graphics::Bitmap &bmp){
+void FontHandler::draw(const Graphics::Bitmap & work, int offset){
+    draw(text, work, offset);
+}
+
+void FontHandler::draw(const std::string & text, const Graphics::Bitmap & work, int offset){
     switch(state){
-	default:
-	case Normal:
-            if (font){
-                font->render(location.x, location.y, position, bank, bmp, text);
+        default:
+        case Normal:
+            active.draw(x, y + offset, text, work);
+            break;
+        case Blink:
+            if (ticker < blinkTime){
+                active.draw(x, y + offset, text, work);
+            } else if (ticker >= blinkTime){
+                active2.draw(x, y + offset, text, work);
             }
-	    break;
-	case Blink:
-	    if (blinkState == Normal){
-                if (font){
-                    font->render(location.x, location.y, position, bank, bmp, text);
-                }
-	    } else if (blinkState == Blink){
-                if (blinkFont){
-                    blinkFont->render(location.x, location.y, blinkPosition, blinkBank, bmp, text);
-                }
-	    }
-	    break;
-	case Done: {
-            if (doneFont){
-                doneFont->render(location.x, location.y, donePosition, doneBank, bmp, text);
-            }
-	    break;
-        }
+            break;
+        case Done:
+            done.draw(x, y + offset, text, work);
+            break;
     }
 }
 
-CharacterInfo::CharacterInfo(const Filesystem::AbsolutePath &definitionFile):
-definitionFile(definitionFile),
-baseDirectory(definitionFile.getDirectory()),
-currentPlayer1Act(1),
-currentPlayer2Act(1),
-icon(0),
-portrait(0),
-randomStage(false),
-order(1),
-referenceCell(0),
-character1(0),
-character2(0){
-    try{
-        AstRef parsed(Util::parseDef(definitionFile.path()));
-
-        spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
-        name = Util::probeDef(parsed, "info", "name");
-        displayName = Util::probeDef(parsed, "info", "displayname");
-
-        /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
-        for (int i = 0; i < 12; ++i){
-            stringstream act;
-            act << "pal" << i;
-            try {
-                std::string actFile = Util::probeDef(parsed, "files", act.str());
-                actCollection.push_back(Filesystem::RelativePath(actFile));
-            } catch (const MugenException &me){
-                // Ran its course got what we needed
-            }
-        }
-
-        if (actCollection.size() == 0){
-            throw MugenException("No pal files specified", __FILE__, __LINE__);
-        }
-
-        // just a precaution
-        // spriteFile = Util::removeSpaces(spriteFile);
-        Filesystem::AbsolutePath realSpriteFile = Storage::instance().findInsensitive(Storage::instance().cleanse(baseDirectory).join(spriteFile));
-
-        /* pull out the icon and the portrait from the sff */
-        Util::getIconAndPortrait(realSpriteFile, baseDirectory.join(actCollection[0]), &icon, &portrait);
-    } catch (...){
-        /* barf! */
-        cleanup();
-        throw;
-    }
-}
-
-void CharacterInfo::cleanup(){
-    if (icon){
-        delete icon;
-        icon = NULL;
-    }
-    if (portrait){
-        delete portrait;
-        portrait = NULL;
-    }
-    if (character1){
-	delete character1;
-        character1 = NULL;
-    }
-    if (character2){
-	delete character2;
-        character2 = NULL;
-    }
-}
-
-CharacterInfo::~CharacterInfo(){
-    cleanup();
-}
-
-void CharacterInfo::loadPlayer1(){
-    if (character1){
-	return;
-    }
-    character1 = new Mugen::Character(definitionFile, Stage::Player1Side);
-    character1->load(currentPlayer1Act);
-}
-
-void CharacterInfo::loadPlayer2(){
-    if (character2){
-	return;
-    }
-    character2 = new Mugen::Character(definitionFile, Stage::Player2Side);
-    character2->load(currentPlayer2Act);
-}
-
-void CharacterInfo::setPlayer1Act(int number){
-    currentPlayer1Act = number;
-}
-
-void CharacterInfo::setPlayer2Act(int number){
-    currentPlayer2Act = number;
-}
-
-// Stage selector
-StageHandler::StageHandler():
-currentStage(0),
-display(false),
-selecting(true),
-moveSound(0),
-selectSound(0){
-    stages.push_back(Filesystem::AbsolutePath()); // "Random"
-    stageNames.push_back("Stage: Random");
-}
-
-StageHandler::~StageHandler(){
-}
-
-void StageHandler::act(){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    font.act();
-}
-
-void StageHandler::render(const Graphics::Bitmap &bmp){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    if (display){
-	font.render(stageNames[currentStage],bmp);
-    }
-}
-	
-//! Get current selected stage
-const Filesystem::AbsolutePath & StageHandler::getStage(){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    // check if random first;
-    if (currentStage == 0){
-	return getRandomStage();
-    }
-    return stages[currentStage];
-}
-
-//! Get random stage
-const Filesystem::AbsolutePath & StageHandler::getRandomStage(){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    return stages[PaintownUtil::rnd(1,stages.size())];
-}
-
-//! Set Next Stage
-void StageHandler::next(){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    if (!selecting){
-	return;
-    }
-    if (currentStage < stages.size()-1){
-	currentStage++;
-    } else {
-	currentStage = 0;
-    }
-    if (stages.size() > 1){
-        if (moveSound){
-            moveSound->play();
-        }
-    }
-}
-
-//! Set Prev Stage
-void StageHandler::prev(){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    if (!selecting){
-	return;
-    }
-    if (currentStage > 0){
-	currentStage--;
-    } else {
-	currentStage = stages.size()-1;
-    }
-    if (stages.size() > 1){
-        if (moveSound){
-            moveSound->play();
-        }
-    }
-}
-
-void StageHandler::toggleSelecting(){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    selecting = !selecting;
-    if (!selecting) {
-	font.setState(font.Done);
-        if (selectSound){
-            selectSound->play();
-        }
-    }
-}
-
-void StageHandler::addStage(const Filesystem::AbsolutePath & stage){
-    PaintownUtil::Thread::ScopedLock scoped(lock);
-    try{
-        if (std::find(stages.begin(), stages.end(), stage) == stages.end()){
-            stringstream temp;
-            temp << "Stage " << stages.size() << ": " << Util::probeDef(stage, "info", "name");
-            stageNames.push_back(temp.str());
-            stages.push_back(stage);
-        }
-    } catch (const MugenException &ex){
-	Global::debug(0) << "Problem adding stage. Reason: " << ex.getReason() << endl;
-    }
-}
-
-//! Add stage to list
-void StageHandler::addStage(const std::string & stage){
-    try {
-	/* FIXME not a good solution to get file.
-         * 8/7/2011: why not? seems ok to me..
-         */
-        addStage(Util::findFile(Filesystem::RelativePath(stage)));
-    } catch (const Filesystem::NotFound & ex){
-	Global::debug(0) << "Problem adding stage. Reason: " << ex.getTrace() << endl;
-    }
-}
-
-// Cell
-Cell::Cell(int x, int y):
-location(x,y),
-background(NULL),
-character(NULL),
-randomSprite(NULL),
-random(false),
-blank(false),
+Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent):
+index(index),
+parent(parent),
 empty(true),
-characterScaleX(1),
-characterScaleY(1),
-flash(0),
-cursors(None){
+isRandom(false),
+flash(0){
 }
 
 Cell::~Cell(){
@@ -387,1210 +127,1827 @@ Cell::~Cell(){
 
 void Cell::act(){
     if (flash){
-	flash--;
+        flash--;
     }
 }
 
-void Cell::randomize(std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > & characters){
-    if (random){
-	unsigned int num = PaintownUtil::rnd(0,characters.size());
-        character = characters[num];
-    }
-}
-
-void Cell::render(const Graphics::Bitmap & bmp){
-    if (!blank){
-        if (background != 0){
-            background->render(position.x,position.y,bmp);
-        }
-        if (!empty){
-            Mugen::Effects effects;
-            effects.scalex = characterScaleX;
-            effects.scaley = characterScaleY;
-            if (random){
-                randomSprite->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
-            } else {
-                character->getIcon()->render(position.x + characterOffset.x, position.y + characterOffset.y, bmp,effects);
-            }
-        }
-        if (flash){
-            // Bitmap::drawingMode(Bitmap::MODE_TRANS);
-            Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-            bmp.translucent().rectangleFill( position.x -1, position.y -1, (position.x -1) + dimensions.x, (position.y - 1) + dimensions.y,Graphics::makeColor(255,255,255));
-            // Bitmap::drawingMode(Bitmap::MODE_SOLID);
-        }
-    }
-}
-
-Grid::Grid():
-rows(0),
-columns(0),
-wrapping(false),
-showEmptyBoxes(false),
-moveOverEmptyBoxes(false),
-cellSpacing(0),
-cellBackgroundSprite(0),
-cellRandomSprite(0),
-cellRandomSwitchTime(0),
-randomSwitchTimeTicker(0),
-portraitScaleX(1),
-portraitScaleY(1),
-type(Mugen::Arcade){
-}
-
-Grid::~Grid(){
-    // Destroy cell map
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-        std::vector< Cell *> &row = (*i);
-        for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-            Cell *cell = (*column);
-            if (cell){
-                delete cell;
-            }
-        }
-    }
-}
-
-void Grid::lock(){
-    gridLock.acquire();
-}
-
-void Grid::unlock(){
-    gridLock.release();
-}
-        
-std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > Grid::getCharacters() const {
-    PaintownUtil::Thread::ScopedLock scoped(gridLock);
-    /* a copy of characters will be returned */
-    return characters;
-}
-
-void Grid::initialize(){
-    Mugen::Point currentPosition;
-    currentPosition.y = position.y;
-    for (int row = 0; row < rows; ++row){
-	currentPosition.x = position.x;
-	std::vector< Cell *> cellRow;
-	for (int column = 0; column < columns; ++column){
-	    Cell *cell = new Cell(row,column);
-	    cell->setBackground(cellBackgroundSprite);
-	    cell->setRandomSprite(cellRandomSprite);
-	    cell->setPosition(currentPosition.x,currentPosition.y);
-	    cell->setDimensions(cellSize.x,cellSize.y);
-	    cell->setCharacterOffset(portraitOffset.x, portraitOffset.y);
-	    cell->setCharacterScale(portraitScaleX, portraitScaleY);
-            // Set random cell with a default character
-            if (cell->isRandom()){
-                cell->setCharacter(characters.front());
-            }
-	    cellRow.push_back(cell);
-	    currentPosition.x += cellSize.x + cellSpacing;
-	}
-	cells.push_back(cellRow);
-	currentPosition.y += cellSize.y + cellSpacing;
-    }
-}
-
-void Grid::act(Cursor & player1Cursor, Cursor & player2Cursor){
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &row = (*i);
-	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-	    cell->act();
-            if (randomSwitchTimeTicker == cellRandomSwitchTime){
-                if (player1Cursor.getState() == Cursor::CharacterSelect){
-                    if (player1Cursor.getCurrentCell() == cell && cell->isRandom()){
-                        cell->randomize(characters);
-                        player1Cursor.playRandomSound();
-                    }
-                }
-                if (player2Cursor.getState() == Cursor::CharacterSelect){
-                    if (player2Cursor.getCurrentCell() == cell && cell->isRandom()){
-                        cell->randomize(characters);
-                        player2Cursor.playRandomSound();
-                    }
-                }
-            }
-	}
-    }
-
-    if (randomSwitchTimeTicker == cellRandomSwitchTime){
-        randomSwitchTimeTicker = 0;
-    }
-    randomSwitchTimeTicker++;
-
-    stages.getFontHandler().act();
-}
-
-void Grid::render(const Graphics::Bitmap & bmp){
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &row = (*i);
-	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-	    if (cell->isEmpty()){
-		if (showEmptyBoxes && !cell->isBlank()){
-		    cell->render(bmp);
-		}
-	    } else {
-		cell->render(bmp);
-	    }
-	}
-    }
-}
-
-void Grid::addBlank(){
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &row = (*i);
-	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-	    if (cell->isEmpty()){
-                cell->setBlank(true);
-                return;
-            }
-        }
-    }
-}
-
-bool Grid::isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
-    lock();
-
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	vector<Cell *> &row = (*i);
-	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-            if (!cell->isEmpty() && cell->getCharacter() != NULL){
-                PaintownUtil::ReferenceCount<CharacterInfo> his = cell->getCharacter();
-                if (*his == *character){
-                    unlock();
-                    return false;
-                }
-            }
-        }
-    }
-
-    unlock();
-
-    return true;
-}
-
-bool Grid::addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
-    lock();
-    vector<Cell*> candidates;
-
-    /* first prefer empty cells */
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	vector<Cell *> &row = (*i);
-	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-            if (cell->isEmpty()){
-                candidates.push_back(cell);
-            }
-        }
-    }
-
-    /* then prefer blank cells */
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	vector<Cell *> &row = (*i);
-	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-            if (cell->isBlank()){
-                candidates.push_back(cell);
-            }
-        }
-    }
-
-    /* finally use random cells */
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	vector<Cell *> &row = (*i);
-	for (vector<Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-            if (cell->isRandom()){
-                candidates.push_back(cell);
-            }
-        }
-    }
-
-    bool success = false;
-
-    if (candidates.size() > 0){
-        Cell * cell = candidates[0];
-        cell->setRandom(false);
-        cell->setBlank(false);
-        cell->setCharacter(character);
-        character->setRandomStage(true);
-        character->setReferenceCell(cell);
-        characters.push_back(character);
-        success = true;
-    }
-
-    unlock();
-
-    return success;
-}
-
-void Grid::addCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character, bool isRandom){
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &row = (*i);
-	for (std::vector< Cell *>::iterator column = row.begin(); column != row.end(); ++column){
-	    Cell *cell = (*column);
-	    if (cell->isEmpty()){
-		if (isRandom){
-		    cell->setRandom(true);
-                    cell->setCharacter(character);
-		    return;
-		}
-		character->setReferenceCell(cell);
-		cell->setCharacter(character);
-		characters.push_back(character);
-		return;
-	    } 
-	}
-    }
-}
-
-void Grid::setCursorPlayer1Start(Cursor &cursor){
-    Cell *cell = getCell(player1Start.x,player1Start.y);
-    cell->setCursorState(Cell::One);
-    cursor.setCurrentCell(cell);
-}
-
-void Grid::setCursorPlayer2Start(Cursor &cursor){
-    Cell *cell = getCell(player2Start.x,player2Start.y);
-    cell->setCursorState(Cell::One);
-    cursor.setCurrentCell(cell);
-}
-
-void Grid::setCursorStageSelect(Cursor & cursor){
-    stages.setDisplay(true);
-    cursor.setState(Cursor::StageSelect);
-}
-
-void Grid::moveCursor(Cursor & cursor, int Point::* field, int wrap, int direction){
-    Mugen::Point current = cursor.getCurrentCell()->getLocation();
-
-    Cell *cell = NULL;
-    do{
-        current.*field += direction;
-        if (current.*field < 0){
-            if (wrapping){
-                current.*field = wrap - 1;
-            } else {
-                return;
-            }
-        } else if (current.*field >= wrap){
-            if (wrapping){
-                current.*field = 0;
-            } else {
-                return;
-            }
-        }
-
-        try {
-            cell = getCell(current.x, current.y);
-        } catch (const MugenException &me){
-            Global::debug(0) << "Could not get a cell at " << current.x << ", " << current.y << endl;
-            // Shouldn't happen but you never know lets not continue
-            return;
-        }
-        /* skip through blanks */
-    } while (cell && cell->isBlank());
-    
-    if (cell->isEmpty()){
-	if (!moveOverEmptyBoxes){
-	    return;
-	}
-    }
-    cursor.getCurrentCell()->popCursor();
-    cell->pushCursor();
-    cursor.setCurrentCell(cell);
-    cursor.playMoveSound();
-}
-
-void Grid::moveCursorLeft(Cursor &cursor){
-    moveCursor(cursor, &Point::y, columns, -1);
-}
-
-void Grid::moveCursorRight(Cursor &cursor){
-    moveCursor(cursor, &Point::y, columns, 1);
-}
-
-void Grid::moveCursorUp(Cursor &cursor){
-    moveCursor(cursor, &Point::x, rows, -1);
-}
-
-void Grid::moveCursorDown(Cursor &cursor){
-    moveCursor(cursor, &Point::x, rows, 1);
-}
-
-void Grid::selectCell(Cursor &cursor, const Mugen::Keys & key, bool modifier){
-    // *TODO use the key to determine which map(act) is used
-    // Get the appropriate cell for flashing in case of random
-    cursor.setActSelection(key, modifier);
-    cursor.getCurrentCell()->getCharacter()->getReferenceCell()->startFlash();
-    // set cursor state depending on state
-    switch (type){
-	case Arcade:
-	    cursor.setState(Cursor::Done);
-            cursor.playSelectSound();
-	    break;
-	case Versus:
-	    setCursorStageSelect(cursor);
-            cursor.playSelectSound();
-	    break;
-	case TeamArcade:
-	    break;
-	case TeamVersus:
-	    break;
-	case TeamCoop:
-	    break;
-	case Survival:
-	    break;
-	case SurvivalCoop:
-	    break;
-	case Training:
-	    cursor.setState(Cursor::Done);
-            cursor.playSelectSound();
-	    break;
-	case Watch:
-	    cursor.setState(Cursor::Done);
-            cursor.playSelectSound();
-	    break;
-	default:
-	    break;
-    }
-}
-
-void Grid::selectStage(){
-    // Set stage so that doesn't infinitely toggle
-    if (stages.isSelecting()){
-	stages.toggleSelecting();
-    }
-}
-
-Cell * Grid::getCell(int row, int column){
-    for (CellMap::iterator i = cells.begin(); i != cells.end(); ++i){
-	std::vector< Cell *> &rowIterator = (*i);
-	for (std::vector< Cell *>::iterator columnIterator = rowIterator.begin(); columnIterator != rowIterator.end(); ++columnIterator){
-	    Cell *cell = (*columnIterator);
-	    if (cell->getLocation() == Mugen::Point(row,column)){
-		return cell;
-	    }
-	}
+void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & work, const Font & font) const{
+    if (background != NULL){
+        background->render(x, y, work);
     }
     
-    std::ostringstream out;
-    out << "Could not find cell for row " << row << " and column " << column << std::endl;
-    throw MugenException(out.str(), __FILE__, __LINE__);
-}
-
-Cursor::Cursor():
-activeSprite(0),
-doneSprite(0),
-blink(false),
-blinkRate(10),
-blinkCounter(0),
-hideForBlink(false),
-faceScaleX(0),
-faceScaleY(0),
-facing(0),
-state(NotActive),
-moveSound(0),
-selectSound(0),
-randomSound(0),
-cancelRandom(false),
-actSelection(A),
-actModifier(false){
-}
-
-Cursor::~Cursor(){
-}
-
-void Cursor::act(Grid &grid){
-    vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input, InputSource());
-    for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-        const InputMap<Mugen::Keys>::InputEvent & event = *it;
-        if (!event.enabled){
-            continue;
+    // If random draw random icon otherwise draw character image if available
+    if (isRandom){
+        if (randomIcon != NULL){
+            randomIcon->render(x + offsetX, y + offsetY, work, effects);
         }
+    } else if (!empty) {
+        character.drawIcon(x + offsetX, y + offsetY, work, effects);
+    }
+    
+    if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
+        // Blink cursors
+        if (parent->getCurrentState(0) == Gui::SelectListInterface::Active && parent->getCurrentState(1) == Gui::SelectListInterface::Active){
+            drawPlayer1Cursor(x, y, work);
+            drawPlayer2Cursor(x, y, work, true);
+        } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Active && parent->getCurrentState(1) == Gui::SelectListInterface::Done){
+            drawPlayer2Cursor(x, y, work);
+            drawPlayer1Cursor(x, y, work);
+        } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Done && parent->getCurrentState(1) == Gui::SelectListInterface::Active){
+            drawPlayer1Cursor(x, y, work);
+            drawPlayer2Cursor(x, y, work);
+        } else {
+            drawPlayer2Cursor(x, y, work);
+            drawPlayer1Cursor(x, y, work);
+        }
+    } else if (parent->getCurrentIndex(0) == index){
+        drawPlayer1Cursor(x, y, work);
+    } else if (parent->getCurrentIndex(1) == index){
+        drawPlayer2Cursor(x, y, work);
+    }
+    
+    // Flash
+    if (flash){
+        // FIXME hot pink shows up after white
+        Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+        work.translucent().rectangleFill(x-1, y-1, x-1+width, y-1+height, Graphics::makeColor(255,255,255));
+    }
+}
 
-        switch (state){
-            case NotActive:
-                return;
-                break;
-            case TeamSelect:
-                /* whats supposed to be here? */
-                if (event[Up]){
-                }
-                if (event[Down]){
-                }
-                if (event[Left]){
-                }
-                if (event[Right]){
-                }
-                if (event[A]){
-                }
-                if (event[B]){
-                }
-                if (event[C]){
-                }
-                if (event[X]){
-                }
-                if (event[Y]){
-                }
-                if (event[Z]){
-                }
-                if (event[Start]){
-                }
-                break;
-            case CharacterSelect:
-                if (event[Up]){
-                    grid.moveCursorUp(*this);
-                }
-                if (event[Down]){
-                    grid.moveCursorDown(*this);
-                }
-                if (event[Left]){
-                    grid.moveCursorLeft(*this);
-                }
-                if (event[Right]){
-                    grid.moveCursorRight(*this);
-                }
+bool Cell::isEmpty() const{
+    return empty;
+}
 
-                if (!getCurrentCell()->isEmpty()){
-                    Mugen::Keys selectable[] = {A, B, C, X, Y, Z};
-                    for (unsigned int key = 0; key < sizeof(selectable) / sizeof(Mugen::Keys); key++){
-                        if (event[selectable[key]]){
-                            grid.selectCell(*this, selectable[key], event[Start]);
-                        }
-                    }
-                }
+void Cell::setRandom(bool r){
+    empty = !r;
+    isRandom = r;
+}
 
-                if (blink && (currentCell->getCursorState() == Cell::Two)){
-                    blinkCounter++;
-                    if (blinkCounter > blinkRate){
-                        blinkCounter = 0;
-                        hideForBlink = !hideForBlink;
-                    }
-                } else {
-                    hideForBlink = false;
-                }
-                break;
-            case StageSelect:
-                if (event[Left]){
-                    grid.getStageHandler().prev();
-                }
-                if (event[Right]){
-                    grid.getStageHandler().next();
-                }
-                /* code re-use *cough* */
-                if (event[A]){
-                    grid.selectStage();
-                }
-                if (event[B]){
-                    grid.selectStage();
-                }
-                if (event[C]){
-                    grid.selectStage();
-                }
-                if (event[X]){
-                    grid.selectStage();
-                }
-                if (event[Y]){
-                    grid.selectStage();
-                }
-                if (event[Z]){
-                    grid.selectStage();
-                }
-                if (event[Start]){
-                }
+void Cell::setCharacter(const Mugen::ArcadeData::CharacterInfo & character){
+    this->character = character;
+    empty = false;
+}
 
-                /* Check if selecting is still possible else set done state */
-                if (!grid.getStageHandler().isSelecting()){
-                    state = Done;
+void Cell::select(){
+    flash = 10;
+}
+
+void Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite> background){
+    Cell::background = background;
+}
+
+void Cell::setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon){
+    Cell::randomIcon = randomIcon;
+}
+
+void Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+    Cell::player1ActiveCursor = cursor;
+}
+
+void Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+    Cell::player1DoneCursor = cursor;
+}
+
+void Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+    Cell::player2ActiveCursor = cursor;
+}
+
+void Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+    Cell::player2DoneCursor = cursor;
+}
+
+void Cell::drawPlayer1Cursor(int x, int y, const Graphics::Bitmap & work) const {
+    if (parent->getCurrentState(0) == Gui::SelectListInterface::Disabled){
+    } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Active){
+        if (player1ActiveCursor != NULL){
+            player1ActiveCursor->render(x, y, work);
+        }
+    } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Done){
+        if (player1DoneCursor != NULL){
+            player1DoneCursor->render(x, y, work);
+        }
+    }
+}
+
+void Cell::drawPlayer2Cursor(int x, int y, const Graphics::Bitmap & work, bool blink) const {
+    if (parent->getCurrentState(1) == Gui::SelectListInterface::Disabled){
+    } else if (parent->getCurrentState(1) == Gui::SelectListInterface::Active){
+        if (blinkCursor && blink){
+            // Blink
+            blinkTime++;
+            if (blinkTime < 10){
+                if (player2ActiveCursor != NULL){
+                    player2ActiveCursor->render(x, y, work);
                 }
+            } else if (blinkTime >= 20){
+                blinkTime=0;
+            }
+        } else {
+            if (player2ActiveCursor != NULL){
+                player2ActiveCursor->render(x, y, work);
+            }
+        }
+    } else if (parent->getCurrentState(1) == Gui::SelectListInterface::Done){
+        if (player2DoneCursor != NULL){
+            player2DoneCursor->render(x, y, work);
+        }
+    }
+}
+
+
+TeamMenu::TeamMenu():
+current(Mugen::ArcadeData::CharacterCollection::Simultaneous),
+turns(Mugen::ArcadeData::CharacterCollection::Turns2),
+x(0),
+y(0),
+background(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+itemOffsetX(0),
+itemOffsetY(0),
+itemSpacingX(0),
+itemSpacingY(0),
+valueIconOffsetX(0),
+valueIconOffsetY(0),
+icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+emptyValueIconOffsetX(0),
+emptyValueIconOffsetY(0),
+emptyIcon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+valueSpacingX(0),
+valueSpacingY(0),
+enabled(false){
+    itemCurrentFont.setState(FontHandler::Blink);
+}
+
+TeamMenu::~TeamMenu(){
+}
+
+void TeamMenu::act(){
+    if (!enabled){
+        return;
+    }
+    itemCurrentFont.act();
+}
+
+void TeamMenu::draw(const Graphics::Bitmap & work, bool enemy){
+    if (!enabled){
+        return;
+    }
+    // Set location
+    int currentX = x, currentY = y;
+    if (background != NULL){
+        background->render(currentX, currentY, work);
+    }
+    // Regular font or enemy ?
+    if (!enemy){
+        titleFont.setLocation(currentX, currentY);
+        titleFont.draw(work);
+    } else {
+        enemyTitleFont.setLocation(currentX, currentY);
+        enemyTitleFont.draw(work);
+    }
+    
+    // First item (single)
+    currentX+=itemOffsetX;
+    currentY+=itemOffsetY;
+    if (current == Mugen::ArcadeData::CharacterCollection::Single){
+        itemCurrentFont.setLocation(currentX, currentY);
+        itemCurrentFont.draw("Single", work);
+    } else {
+        itemFont.setLocation(currentX, currentY);
+        itemFont.draw("Single", work);
+    }
+    
+    // Second item (simultaneous)
+    currentX+=itemSpacingX;
+    currentY+=itemSpacingY;
+    if (current == Mugen::ArcadeData::CharacterCollection::Simultaneous){
+        itemCurrentFont.setLocation(currentX, currentY);
+        itemCurrentFont.draw("Simul", work);
+    } else {
+        itemFont.setLocation(currentX, currentY);
+        itemFont.draw("Simul", work);
+    }
+    if (emptyIcon != NULL){
+        // Empty icons draw two
+        int emptyX = currentX + emptyValueIconOffsetX, emptyY = currentY + emptyValueIconOffsetY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+    }
+    if (icon != NULL){
+        // Icons draw two for Simul
+        int valueX = currentX + valueIconOffsetX, valueY = currentY + valueIconOffsetY;
+        icon->render(valueX, valueY, work);
+        valueX += valueSpacingX;
+        valueY += valueSpacingY;
+        icon->render(valueX, valueY, work);
+    }
+    // Third item (Turns)
+    currentX+=itemSpacingX;
+    currentY+=itemSpacingY;
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+        case Mugen::ArcadeData::CharacterCollection::Turns3:
+        case Mugen::ArcadeData::CharacterCollection::Turns4:
+            itemCurrentFont.setLocation(currentX, currentY);
+            itemCurrentFont.draw("Turns", work);
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            itemFont.setLocation(currentX, currentY);
+            itemFont.draw("Turns", work);
+            break;
+    }
+    if (emptyIcon != NULL){
+        // Empty icons draw four
+        int emptyX = currentX + emptyValueIconOffsetX, emptyY = currentY + emptyValueIconOffsetY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+        emptyX += valueSpacingX;
+        emptyY += valueSpacingY;
+        emptyIcon->render(emptyX, emptyY, work);
+    }
+    if (icon != NULL){
+        // Icons draw two by defualt
+        int valueX = currentX + valueIconOffsetX, valueY = currentY + valueIconOffsetY;
+        icon->render(valueX, valueY, work);
+        valueX += valueSpacingX;
+        valueY += valueSpacingY;
+        icon->render(valueX, valueY, work);
+        // Check which position it is on
+        switch (turns){
+            case Mugen::ArcadeData::CharacterCollection::Turns3:
+                valueX += valueSpacingX;
+                valueY += valueSpacingY;
+                icon->render(valueX, valueY, work);
                 break;
-            case Done:
+            case Mugen::ArcadeData::CharacterCollection::Turns4:
+                valueX += valueSpacingX;
+                valueY += valueSpacingY;
+                icon->render(valueX, valueY, work);
+                valueX += valueSpacingX;
+                valueY += valueSpacingY;
+                icon->render(valueX, valueY, work);
+                break;
+            case Mugen::ArcadeData::CharacterCollection::Turns2:
             default:
                 break;
         }
     }
 }
 
-void Cursor::render(Grid &grid, const Graphics::Bitmap & bmp){
-    switch (state){
-	case NotActive:
-	    return;
-	    break;
-	case TeamSelect:
-	    break;
-	case CharacterSelect:
-	    if (!hideForBlink){
-                if (activeSprite){
-                    activeSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
-                }
-	    }
-	    renderPortrait(bmp);
-	    break;
-	case Done:
-	default:
-	    if (!hideForBlink){
-                if (doneSprite){
-                    doneSprite->render(currentCell->getPosition().x,currentCell->getPosition().y,bmp);
-                }
-	    }
-	    renderPortrait(bmp);
+bool TeamMenu::up(){
+    if (!enabled){
+        return false;
     }
-    
-    /* Have to make sure stage select is prominent kinda stupid */
-    grid.getStageHandler().render(bmp);
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Single:
+            if (wrapping){
+                current = Mugen::ArcadeData::CharacterCollection::Turns2;
+                return true;
+            }
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+            current = Mugen::ArcadeData::CharacterCollection::Single;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
+            return true;
+            break;
+        default:
+            break;
+    };
+    return false;
 }
 
-void Cursor::playMoveSound(){
-    if (moveSound){
-        moveSound->play();
+bool TeamMenu::down(){
+    if (!enabled){
+        return false;
+    }
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Single:
+            current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+            current = Mugen::ArcadeData::CharacterCollection::Turns2;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            if (wrapping){
+                current = Mugen::ArcadeData::CharacterCollection::Single;
+                return true;
+            }
+            break;
+        default:
+            break;
+    };
+    return false;
+}
+
+bool TeamMenu::left(){
+    if (!enabled){
+        return false;
+    }
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            if (valueSpacingX >= 0){
+                return valueLess();
+            } else if (valueSpacingX < 0){
+                return valueMore();
+            }
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            return false;
+            break;
+    };
+    return false;
+}
+
+bool TeamMenu::right(){
+    if (!enabled){
+        return false;
+    }
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            if (valueSpacingX >= 0){
+                return valueMore();
+            } else if (valueSpacingX < 0){
+                return valueLess();
+            }
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            return false;
+            break;
+    };
+    return false;
+}
+
+const Mugen::ArcadeData::CharacterCollection::Type & TeamMenu::select(){
+    switch (current){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            return turns;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Single:
+        case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+        default:
+            return current;
+            break;
     }
 }
 
-void Cursor::playSelectSound(){
-    if (selectSound){
-        selectSound->play();
+void TeamMenu::reset(){
+    enabled = false;
+    current = Mugen::ArcadeData::CharacterCollection::Simultaneous;
+    turns = Mugen::ArcadeData::CharacterCollection::Turns2;
+}
+
+bool TeamMenu::valueLess(){
+    switch (turns){
+        case Mugen::ArcadeData::CharacterCollection::Turns4:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns3;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns3:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns2;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+        default:
+            return false;
+            break;
     }
 }
 
-void Cursor::playRandomSound(){
-    if (randomSound){
-        if (cancelRandom){
-            randomSound->stop();
+bool TeamMenu::valueMore(){
+    switch (turns){
+        case Mugen::ArcadeData::CharacterCollection::Turns2:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns3;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns3:
+            turns = Mugen::ArcadeData::CharacterCollection::Turns4;
+            return true;
+            break;
+        case Mugen::ArcadeData::CharacterCollection::Turns4:
+        default:
+            return false;
+            break;
+    }
+}
+
+StageMenu::StageMenu():
+random(true),
+current(0),
+enabled(false),
+finished(false){
+    font.setState(FontHandler::Blink);
+}
+StageMenu::~StageMenu(){
+}
+
+void StageMenu::act(){
+    if (!enabled){
+        return;
+    }
+    font.act();
+}
+
+void StageMenu::draw(const Graphics::Bitmap & work){
+    if (!enabled){
+        return;
+    }
+    // Stage
+    if (random){
+        font.draw("Stage: Random", work);
+    } else {
+        font.draw("Stage: " + names[current], work);
+    }
+}
+
+void StageMenu::add(const Filesystem::AbsolutePath & stage){
+    try {
+        for (std::vector<Filesystem::AbsolutePath>::iterator i = stages.begin(); i != stages.end(); ++i){
+            const Filesystem::AbsolutePath & check = *i;
+            if (stage == check){
+                return;
+            }
         }
-        randomSound->play();
-    } 
-}
-
-void Cursor::renderPortrait(const Graphics::Bitmap &bmp){
-    // Lets do the portrait and name
-    if (!currentCell->isEmpty() && !currentCell->isBlank()){
-	PaintownUtil::ReferenceCount<CharacterInfo> character = currentCell->getCharacter();
-	Mugen::Effects effects;
-	effects.facing = facing;
-	effects.scalex = faceScaleX;
-	effects.scaley = faceScaleY;
-	character->getPortrait()->render(faceOffset.x, faceOffset.y, bmp, effects);
-	font.render(character->getDisplayName(),bmp);
+        AstRef parsed(Util::parseDef(stage.path()));
+        const std::string & name = Util::probeDef(parsed, "info", "name");
+        stages.push_back(stage);
+        names.push_back(name);
+    } catch (const MugenException & ex){
+        Global::debug(0) << "Warning! Tried to load file: '" << stage.path() << "'. Message: " << ex.getReason() << std::endl;
     }
 }
 
-int Cursor::getActSelection(){
-    switch (actSelection){
-        case A:
-            if (!actModifier){
-                return 1;
-            } else {
-                return 7;
+bool StageMenu::up(){
+    return false;
+}
+
+bool StageMenu::down(){
+    return false;
+}
+
+bool StageMenu::left(){
+    if (!enabled || finished){
+        return false;
+    }
+    if (stages.size() >= 1){
+        if (random){
+            random = false;
+            current = stages.size()-1;
+        } else if (current > 0){
+            current--;
+        } else if (!random){
+            random = true;
+        }
+        return true;
+    }
+    return false;
+}
+
+bool StageMenu::right(){
+    if (!enabled || finished){
+        return false;
+    }
+    if (stages.size() >= 1){
+        if (random){
+            random = false;
+            current = 0;
+        } else if (current < stages.size()-1){
+            current++;
+        } else if (!random){
+            random = true;
+        }
+        return true;
+    }
+    return false;
+}
+
+void StageMenu::reset(){
+    finished = enabled = false;
+    random = true;
+    current = 0;
+    this->font.setState(FontHandler::Blink);
+}
+
+const Filesystem::AbsolutePath & StageMenu::select(){
+    if (random){
+        return stages[PaintownUtil::rnd(0, stages.size())];
+    }
+    return stages[current];
+}
+
+SoundSystem::SoundSystem(){
+}
+
+SoundSystem::~SoundSystem(){
+}
+
+void SoundSystem::init(const std::string & file){
+    Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
+    Global::debug(1) << "Got Sound File: '" << file << "'" << std::endl;
+}
+
+void SoundSystem::play(const Type & type){
+    MugenSound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
+    if (sound){
+        sound->play();
+    }
+}
+
+void SoundSystem::set(const Type & type, int group, int sound){
+    IndexValue values;
+    values.group = group;
+    values.index = sound;
+    soundLookup[type] = values;
+}
+
+/*! Thrown in cooperative play once first player picks his character... 
+ *  CharacterSelect::select utilizes Player::setCooperativeData to setup the second player when caught
+ *  FIXME do not render profile
+ */
+class CooperativeException : public std::exception {
+public:
+    CooperativeException(){
+    }
+    virtual ~CooperativeException() throw(){
+    }
+};
+
+Player::Player(unsigned int cursor, Gui::GridSelect & grid, std::vector< PaintownUtil::ReferenceCount<Cell> > & cells, std::vector<Mugen::ArcadeData::CharacterInfo> & characters, TeamMenu & teamMenu, TeamMenu & opponentTeamMenu, StageMenu & stageMenu, FontHandler & font, FontHandler & opponentFont, SoundSystem & sounds):
+cursor(cursor),
+grid(grid),
+cells(cells),
+characters(characters),
+teamMenu(teamMenu),
+opponentTeamMenu(opponentTeamMenu),
+stageMenu(stageMenu),
+font(font),
+opponentFont(opponentFont),
+sounds(sounds),
+currentGameType(Mugen::Undefined),
+cursorPosition(0),
+opponentCursorPosition(0),
+portraitX(0), 
+portraitY(0),
+opponentPortraitX(0), 
+opponentPortraitY(0),
+switchTime(0),
+currentRandom(0),
+collection(Mugen::ArcadeData::CharacterCollection::Single),
+opponentCollection(Mugen::ArcadeData::CharacterCollection::Single),
+selectState(NotStarted){
+    if (cursor == 0){
+        moveSound = SoundSystem::Player1Move;
+        doneSound = SoundSystem::Player1Done;
+        randomSound = SoundSystem::Player1Random;
+        teamMoveSound = SoundSystem::Player1TeamMove;
+        teamValueSound = SoundSystem::Player1TeamValue;
+        teamDoneSound = SoundSystem::Player1TeamDone;
+    } else if (cursor == 1){
+        moveSound = SoundSystem::Player2Move;
+        doneSound = SoundSystem::Player2Done;
+        randomSound = SoundSystem::Player2Random;
+        teamMoveSound = SoundSystem::Player2TeamMove;
+        teamValueSound = SoundSystem::Player2TeamValue;
+        teamDoneSound = SoundSystem::Player2TeamDone;
+    }
+}
+
+Player::~Player(){
+}
+
+void Player::act(){
+    if (cells[grid.getCurrentIndex(cursor)]->getRandom() && (selectState == Character || selectState == Opponent)){
+        switchTime++;
+        if (switchTime >= randomSwitchTime){
+            switchTime = 0;
+            currentRandom = PaintownUtil::rnd(0,characters.size());
+            sounds.play(randomSound);
+        }
+    }
+}
+
+void Player::draw(const Graphics::Bitmap & work){
+    if (grid.getCurrentState(cursor) == Gui::SelectListInterface::Disabled){
+        return;
+    }
+    switch (currentGameType){
+        case Arcade:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            break;
+        case Versus:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            break;
+        case TeamArcade:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            break;
+        case TeamVersus:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            break;
+        case TeamCoop:
+            switch (selectState){
+                case Character:
+                    drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+                    break;
+                case Opponent:
+                case Stage:
+                    drawPortrait(opponentCollection, opponentPortraitEffects, opponentPortraitX, opponentPortraitY, opponentFont, work);
+                    break;
+                default:
+                    break;
             }
-        case B:
-            if (!actModifier){
-                return 2;
-            } else {
-                return 8;
+            break;
+        case Survival:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            break;
+        case SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+                    break;
+                case Opponent:
+                case Stage:
+                    drawPortrait(opponentCollection, opponentPortraitEffects, opponentPortraitX, opponentPortraitY, opponentFont, work);
+                    break;
+                default:
+                    break;
             }
-        case C:
-            if (!actModifier){
-                return 3;
-            } else {
-                return 9;
+            break;
+        case Training:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            switch (selectState){
+                case Opponent:
+                case Stage:
+                case Finished:
+                    drawPortrait(opponentCollection, opponentPortraitEffects, opponentPortraitX, opponentPortraitY, opponentFont, work);
+                    break;
+                default:
+                    break;
             }
-        case X:
-            if (!actModifier){
-                return 4;
-            } else {
-                return 10;
+            break;
+        case Watch:
+            drawPortrait(collection, portraitEffects, portraitX, portraitY, font, work);
+            switch (selectState){
+                case Opponent:
+                case Stage:
+                case Finished:
+                    drawPortrait(opponentCollection, opponentPortraitEffects, opponentPortraitX, opponentPortraitY, opponentFont, work);
+                    break;
+                default:
+                    break;
             }
-        case Y:
-            if (!actModifier){
-                return 5;
-            } else {
-                return 11;
-            }
-        case Z:
-            if (!actModifier){
-                return 6;
-            } else {
-                return 12;
-            }
+            break;
+        case Undefined:
         default:
             break;
     }
-    return PaintownUtil::rnd(1,12);
 }
 
-VersusScreen::VersusScreen():
-background(0),
-time(0){
-}
-
-VersusScreen::~VersusScreen(){
-    delete background;
-}
-
-static const Graphics::Bitmap & getScreen(){
-    return *Graphics::screenParameter.current();
-}
-
-void VersusScreen::render(CharacterInfo & player1, CharacterInfo & player2, Mugen::Stage * stage){
-    // bool done = false;
-    bool escaped = false;
-    
-    // int ticker = 0;
-    // ParseCache cache;
-    
-    // Set the fade state
-    fader.setState(Gui::FadeTool::FadeIn);
-  
-    /*
-    double runCounter = 0;
-    Global::speed_counter = 0;
-    Global::second_counter = 0;
-    */
-    
-    // Set game keys temporary
-    InputMap<Mugen::Keys> gameInput;
-    gameInput.set(Keyboard::Key_ESC, 10, true, Mugen::Esc);
-    gameInput.set(Configuration::config(0).getJoystickQuit(), 10, true, Mugen::Esc);
-
-    class PlayerLoader: public PaintownUtil::Future<int> {
-    public:
-        PlayerLoader(CharacterInfo & player1, CharacterInfo & player2):
-            player1(player1),
-            player2(player2){
-                /* compute is a virtual function, is the virtual table set up
-                 * by the time start() tries to call it? or is that a race condition?
-                 */
-                // start();
-        }
-
-        CharacterInfo & player1;
-        CharacterInfo & player2;
-
-        virtual void compute(){
-            // Check acts lets make them use seperate ones
-            if (player1.getDefinitionFile() == player2.getDefinitionFile()){
-                if (player1.getPlayer1Act() == player2.getPlayer2Act()){
-                    int act = player1.getPlayer1Act()-1;
-                    if (act <= 0){
-                        act += 2;
+void Player::up(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
                     }
-                    player2.setPlayer2Act(act);
-                }
+                    break;
+                case NotStarted:
+                default:
+                    break;
             }
-            // Load player 1
-            player1.loadPlayer1();
-            // Load player 2
-            player2.loadPlayer2();
-#ifdef WII
-            /* FIXME: this is a hack, im not sure why its even required but fopen() will hang on sfp_lock_acquire
-             * in another thread without locking and unlocking the sfp lock.
-             * related things
-             *  newlib/libc/stdio/fopen.c -- calls sfp_lock_acquire
-             *  newlib/libc/sys/linux/sys/libc-lock.h - uses pthread's as the lock implementation
-             */
-            /*
-            __sfp_lock_acquire();
-            __sfp_lock_release();
-            */
-#endif
-            set(0);
-        }
-    };
-
-    PlayerLoader playerLoader(player1, player2);
-    playerLoader.start();
-
-    /* loading has three phases.
-     * 1. show the animations (portraits and backgrounds) for a second or two. if the
-     * user presses a key then continue to the next phase immediately instead of waiting.
-     * 2. if the players haven't been fully loaded yet then show a "Loading" screen and
-     * wait until the players fully load.
-     * 3. fade out.
-     *
-     * we can use 3 different logic classes to implement each phase
-     */
-
-    class Draw: public PaintownUtil::Draw {
-    public:
-        Draw(CharacterInfo & player1, CharacterInfo & player2,
-             Background * background, FontHandler & player1Font,
-             FontHandler & player2Font,
-             const Mugen::Point & player1Position,
-             const Mugen::Point & player2Position,
-             const Mugen::Effects & player1Effects,
-             const Mugen::Effects & player2Effects,
-             Gui::FadeTool & fader):
-            player1(player1),
-            player2(player2),
-            background(background),
-            player1Font(player1Font),
-            player2Font(player2Font),
-            player1Position(player1Position),
-            player2Position(player2Position),
-            player1Effects(player1Effects),
-            player2Effects(player2Effects),
-            fader(fader){
-            }
-
-        CharacterInfo & player1;
-        CharacterInfo & player2;
-        Background * background;
-        FontHandler & player1Font;
-        FontHandler & player2Font;
-        const Mugen::Point & player1Position;
-        const Mugen::Point & player2Position;
-	const Mugen::Effects & player1Effects;
-	const Mugen::Effects & player2Effects;
-        Gui::FadeTool & fader;
-
-        void draw(const Graphics::Bitmap & screen){
-            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
-            workArea.start();
-            // render backgrounds
-            background->renderBackground(0, 0, workArea);
-
-            // render portraits
-            player1.getPortrait()->render(player1Position.x, player1Position.y, workArea, player1Effects);
-            player2.getPortrait()->render(player2Position.x, player2Position.y, workArea, player2Effects);
-
-            // render fonts
-            player1Font.render(player1.getDisplayName(), workArea);
-            player2Font.render(player2.getDisplayName(), workArea);
-
-            // render Foregrounds
-            background->renderForeground(0,0,workArea);
-
-            // render fades
-            fader.draw(workArea);
-
-            // Finally render to screen
-            // workArea.Stretch(screen);
-            workArea.finish();
-            screen.BlitToScreen();
-        }
-    };
-
-    /* FIXME: handle ESC like the original code did */
-    class Logic1: public PaintownUtil::Logic {
-    public:
-        Logic1(Gui::FadeTool & fader,
-               Background * background,
-               FontHandler & player1Font,
-               FontHandler & player2Font, int time):
-            fader(fader),
-            background(background),
-            player1Font(player1Font),
-            player2Font(player2Font),
-            time(time),
-            ticker(0){
-        }
-	
-        Gui::FadeTool & fader;
-        Background * background;
-        FontHandler & player1Font;
-        FontHandler & player2Font;
-        int time;
-        int ticker;
-
-        double ticks(double system){
-            return Util::gameTicks(system);
-        }
-
-        bool done(){
-            return ticker >= time;
-        }
-
-        void run(){
-            ticker += 1;
-
-            // Fader
-            fader.act();
-
-            // Backgrounds
-            background->act();
-
-            // Player fonts
-            player1Font.act();
-            player2Font.act();
-        }
-    };
-
-    /* phase 2 consists of running the loading screen, we don't need a logic class 
-     * for that
-     */
-    /*
-    class Logic2: public PaintownUtil::Logic {
-    };
-    */
-
-    class Logic3: public PaintownUtil::Logic {
-    public:
-        Logic3(Gui::FadeTool & fader,
-               Background * background,
-               FontHandler & player1Font,
-               FontHandler & player2Font):
-            fader(fader),
-            background(background),
-            player1Font(player1Font),
-            player2Font(player2Font){
-        }
-	
-        Gui::FadeTool & fader;
-        Background * background;
-        FontHandler & player1Font;
-        FontHandler & player2Font;
-
-        bool done(){
-            return fader.getState() == Gui::FadeTool::EndFade;
-        }
-
-        double ticks(double system){
-            return Util::gameTicks(system);
-        }
-
-        void run(){
-            fader.act();
-            background->act();
-            player1Font.act();
-            player2Font.act();
-        }
-    };
-
-    Draw drawer(player1, player2, background,
-                player1Font, player2Font,
-                player1Position, player2Position,
-                player1Effects, player2Effects, fader);
-
-    Logic1 logic1(fader, background, player1Font, player2Font, time);
-
-    PaintownUtil::standardLoop(logic1, drawer);
-
-    try{
-        Loader::Info info;
-        Graphics::Bitmap background(getScreen(), true);
-        info.setBackground(&background);
-        info.setLoadingMessage("Loading...");
-        info.setPosition(10, 200);
-
-        class Context: public Loader::LoadingContext {
-        public:
-            Context(PlayerLoader & playerLoader, Mugen::Stage *& stage):
-                playerLoader(playerLoader),
-                stage(stage),
-                fail(NULL){
-                }
-
-            virtual void maybeFail(){
-                if (fail != NULL){
-                    fail->throwSelf();
-                }
-            }
-
-            virtual ~Context(){
-                delete fail;
-            }
-
-            virtual void load(){
-                try{
-                    /* future */
-                    int ok = playerLoader.get();
-
-                    // Load stage
-                    stage->addPlayer1(playerLoader.player1.getPlayer1());
-                    stage->addPlayer2(playerLoader.player2.getPlayer2());
-                    stage->load();
-                } catch (const MugenException & fail){
-                    this->fail = new MugenException(fail);
-                } catch (const LoadException & fail){
-                    this->fail = new LoadException(fail);
-                } catch (const Filesystem::NotFound & fail){
-                    this->fail = new Filesystem::NotFound(fail);
-                }
-            }
-
-            PlayerLoader & playerLoader;
-            Mugen::Stage *& stage;
-            Exception::Base * fail;
-        };
-
-        Context context(playerLoader, stage);
-        /* FIXME: the wii has problems loading stuff in a background thread
-         * while the load screen is going on.
-         */
-#ifdef WII
-        context.load();
-#else
-        Loader::loadScreen(context, info);
-#endif
-        context.maybeFail();
-
-        fader.setState(Gui::FadeTool::FadeOut);
-    } catch (const MugenException & e){
-        throw e;
-    }
-
-    fader.setState(Gui::FadeTool::FadeOut);
-    Logic3 logic3(fader, background, player1Font, player2Font);
-    PaintownUtil::standardLoop(logic3, drawer);
-    
-#if 0
-    while (!done || fader.getState() != Gui::FadeTool::EndFade){
-
-        bool draw = false;
-
-        if ( Global::speed_counter > 0 ){
-            draw = true;
-            runCounter += Util::gameTicks(Global::speed_counter);
-            Global::speed_counter = 0;
-            while ( runCounter >= 1.0 ){
-                // tick tock
-                ticker++;
-
-                runCounter -= 1;
-                // Key handler
-                InputManager::poll();
-
-                if (Global::shutdown()){
-                    throw ShutdownException();
-                }
-
-                vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput);
-                for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                    const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                    if (!event.enabled){
-                        continue;
-                    }
-
-                    if (event[Mugen::Esc]){
-                        done = escaped = true;
-                        fader.setState(Gui::FadeTool::FadeOut);
-                        InputManager::waitForRelease(gameInput, Mugen::Esc);
-                    }
-                }
-
-                // Logic
-                /* if done, dont run the loader again, just wait for the fadeout */
-                if (ticker >= time && !done){
-                    // PaintownUtil::Thread::Id loader;
-                    try{
-                        Level::LevelInfo info;
-                        info.setBackground(&bmp);
-                        info.setLoadingMessage("Loading...");
-                        info.setPosition(-1, 400);
-
-                        class Context: public Loader::LoadingContext {
-                            public:
-                                Context(PlayerLoader & playerLoader, Mugen::Stage *& stage):
-                                    playerLoader(playerLoader),
-                                    stage(stage),
-                                    fail(NULL){
-                                    }
-
-                                virtual void maybeFail(){
-                                    if (fail != NULL){
-                                        fail->throwSelf();
-                                    }
-                                }
-
-                                virtual ~Context(){
-                                    delete fail;
-                                }
-
-                                virtual void load(){
-                                    try{
-                                        /* future */
-                                        int ok = playerLoader.get();
-
-                                        // Load stage
-                                        stage->addPlayer1(playerLoader.player1.getPlayer1());
-                                        stage->addPlayer2(playerLoader.player2.getPlayer2());
-                                        stage->load();
-                                    } catch (const MugenException & fail){
-                                        this->fail = new MugenException(fail);
-                                    } catch (const LoadException & fail){
-                                        this->fail = new LoadException(fail);
-                                    }
-                                }
-
-                                PlayerLoader & playerLoader;
-                                Mugen::Stage *& stage;
-                                Exception::Base * fail;
-                        };
-
-                        Context context(playerLoader, stage);
-                        // Loader::startLoading(&loader, (void*) &info);
-                        Loader::loadScreen(context, info);
-                        context.maybeFail();
-
-                        // Loader::stopLoading(loader);
-                        done = true;
-                        fader.setState(Gui::FadeTool::FadeOut);
-                    } catch (const MugenException & e){
-                        // Loader::stopLoading(loader);
-                        throw e;
-                    }
-                }
-
-                // Fader
-                fader.act();
-
-                // Backgrounds
-                background->act();
-
-                // Player fonts
-                player1Font.act();
-                player2Font.act();
-            }
-        }
-
-        if (draw){
-            // render backgrounds
-            background->renderBackground(0,0,workArea);
-
-            // render portraits
-            player1.getPortrait()->render(player1Position.x,player1Position.y,workArea,player1Effects);
-            player2.getPortrait()->render(player2Position.x,player2Position.y,workArea,player2Effects);
-
-            // render fonts
-            player1Font.render(player1.getDisplayName(), workArea);
-            player2Font.render(player2.getDisplayName(), workArea);
-
-            // render Foregrounds
-            background->renderForeground(0,0,workArea);
-
-            // render fades
-            fader.draw(workArea);
-
-            // Finally render to screen
-            workArea.Stretch(bmp);
-            bmp.BlitToScreen();
-        }
-
-        while (Global::speed_counter < 1){
-            PaintownUtil::rest(1);
-        }
-    }
-#endif
-    
-    // **FIXME Hack figure something out
-    if (escaped){
-	throw Exception::Return(__FILE__, __LINE__);
-    }
-}
-
-static std::vector<Ast::Section*> collectSelectStuff(Ast::AstParse::section_iterator & iterator, Ast::AstParse::section_iterator end){
-    Ast::AstParse::section_iterator last = iterator;
-    vector<Ast::Section*> stuff;
-
-    Ast::Section * section = *iterator;
-    std::string head = section->getName();
-    /* better to do case insensitive regex matching rather than
-     * screw up the original string
-     */
-    stuff.push_back(section);
-    iterator++;
-
-    while (true){
-        if (iterator == end){
             break;
-        }
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.up()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(teamMoveSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.up()){
+                        sounds.play(teamMoveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.up()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.up()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.up(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
 
-        section = *iterator;
-        string sectionName = section->getName();
-        sectionName = Mugen::Util::fixCase(sectionName);
-        // Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
-        if (PaintownUtil::matchRegex(sectionName, "select")){
-            stuff.push_back(section);
+void Player::down(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.down()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.down()){
+                        sounds.play(teamMoveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                case Stage:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.down()){
+                        sounds.play(SoundSystem::Player1TeamMove);
+                    }
+                    break;
+                case Character:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.down()){
+                        sounds.play(SoundSystem::Player2TeamMove);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.down(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::left(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.left()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.left()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.left()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.left(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.left()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::right(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.right()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case Team:
+                    if (teamMenu.right()){
+                        sounds.play(teamValueSound);
+                    }
+                    break;
+                case Character:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case OpponentTeam:
+                    if (opponentTeamMenu.right()){
+                        sounds.play(SoundSystem::Player2TeamValue);
+                    }
+                    break;
+                case Opponent:
+                    if (grid.right(cursor)){
+                        sounds.play(moveSound);
+                    }
+                    break;
+                case Stage:
+                    if (stageMenu.right()){
+                        sounds.play(SoundSystem::StageMove);
+                    }
+                    break;
+                case NotStarted:
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+void Player::select(){
+    switch (selectState){
+        case Team:
+            sounds.play(teamDoneSound);
+            next();
+            break;
+        case Character:
+            if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
+                sounds.play(doneSound);
+                if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+                    cells[currentRandom]->select();
+                } else {
+                    cells[grid.getCurrentIndex(cursor)]->select();
+                }
+                next();
+            }
+            break;
+        case Opponent:
+            if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
+                sounds.play(doneSound);
+                if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+                    cells[currentRandom]->select();
+                } else {
+                    cells[grid.getCurrentIndex(cursor)]->select();
+                }
+                next();
+            }
+            break;
+        case OpponentTeam:
+            sounds.play(teamDoneSound);
+            next();
+            break;
+        case Stage:
+            sounds.play(SoundSystem::StageDone);
+            next();
+            break;
+        case NotStarted:
+        case Finished:
+        default:
+            break;
+    }
+}
+
+void Player::setPortraitEffects(const Mugen::Effects & effects, const Mugen::Effects & opponentEffects){
+    portraitEffects = effects;
+    opponentPortraitEffects = opponentEffects;
+}
+
+void Player::setCurrentGameType(const Mugen::GameType & type){
+    currentGameType = type;
+    next();
+}
+
+void Player::next(){
+    switch (currentGameType){
+        case Mugen::Arcade:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Versus:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    if (!stageMenu.getFinished()){
+                        selectState = Stage;
+                        stageMenu.setEnabled(true);
+                    } else {
+                        selectState = Finished;
+                    }
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                case Stage:
+                    selectState = Finished;
+                    stageMenu.finish();
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamArcade:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = OpponentTeam;
+                            opponentTeamMenu.setEnabled(true);
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                case OpponentTeam:
+                    selectState = Finished;
+                    opponentCollection.setType(opponentTeamMenu.select());
+                    opponentTeamMenu.setEnabled(false);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamVersus:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            if (!stageMenu.getFinished()){
+                                selectState = Stage;
+                                stageMenu.setEnabled(true);
+                            } else {
+                                selectState = Finished;
+                            }
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                case Stage:
+                    stageMenu.finish();
+                    selectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::TeamCoop:
+            switch (selectState){
+                case NotStarted:
+                    collection.setType(Mugen::ArcadeData::CharacterCollection::Simultaneous);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = WaitFinished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    throw CooperativeException();
+                    break;
+                case Opponent:
+                    opponentCollection.setSecond(getCurrentCell());
+                    selectState = Finished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Survival:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = OpponentTeam;
+                            opponentTeamMenu.setEnabled(true);
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                case OpponentTeam:
+                    selectState = Stage;
+                    opponentCollection.setType(opponentTeamMenu.select());
+                    opponentTeamMenu.setEnabled(false);
+                    stageMenu.setEnabled(true);
+                    break;
+                case Stage:
+                    selectState = Finished;
+                    stageMenu.finish();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::SurvivalCoop:
+            switch (selectState){
+                case NotStarted:
+                    collection.setType(Mugen::ArcadeData::CharacterCollection::Simultaneous);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = WaitFinished;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    throw CooperativeException();
+                    break;
+                case Opponent:
+                    opponentCollection.setSecond(getCurrentCell());
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    break;
+                case Team:
+                    selectState = Stage;
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    stageMenu.setEnabled(true);
+                    break;
+                case Stage:
+                    selectState = Finished;
+                    stageMenu.finish();
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Training:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    collection.setFirst(getCurrentCell());
+                    selectState = Opponent;
+                    grid.setCurrentIndex(cursor, opponentCursorPosition);
+                    break;
+                case Opponent:
+                    opponentCollection.setFirst(getCurrentCell());
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                    selectState = Stage;
+                    stageMenu.setEnabled(true);
+                    break;
+                case Stage:
+                    stageMenu.finish();
+                    selectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        case Mugen::Watch:
+            switch (selectState){
+                case NotStarted:
+                    selectState = Team;
+                    teamMenu.setEnabled(true);
+                    break;
+                case Team:
+                    collection.setType(teamMenu.select());
+                    teamMenu.setEnabled(false);
+                    selectState = Character;
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, cursorPosition);
+                    break;
+                case Character:
+                    if (!collection.checkSet()){
+                        collection.setNext(getCurrentCell());
+                        if (collection.checkSet()){
+                            selectState = OpponentTeam;
+                            opponentTeamMenu.setEnabled(true);
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                        }
+                    }
+                    break;
+                case OpponentTeam:
+                    opponentCollection.setType(opponentTeamMenu.select());
+                    selectState = Opponent;
+                    opponentTeamMenu.setEnabled(false);
+                    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+                    grid.setCurrentIndex(cursor, opponentCursorPosition);
+                    break;
+                case Opponent:
+                    if (!opponentCollection.checkSet()){
+                        opponentCollection.setNext(getCurrentCell());
+                        if (opponentCollection.checkSet()){
+                            grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
+                            selectState = Stage;
+                            stageMenu.setEnabled(true);
+                        }
+                    }
+                    break;
+                case Stage:
+                    stageMenu.finish();
+                    selectState = Finished;
+                    break;
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
+
+void Player::drawPortrait(const Mugen::ArcadeData::CharacterCollection & currentCollection, const Mugen::Effects & effects, int x, int y, FontHandler & currentFont, const Graphics::Bitmap & work){
+    const Mugen::ArcadeData::CharacterInfo & character = currentCollection.checkSet() ? currentCollection.getLastSet() : getCurrentCell();
+    
+    character.drawPortrait(x, y, work, effects);
+    
+    int heightMod = 0;
+    if (currentCollection.getFirstSet()){
+        currentFont.draw(currentCollection.getFirst().getName(), work);
+        heightMod += 15;
+    }
+    if (currentCollection.getSecondSet()){
+        currentFont.draw(currentCollection.getSecond().getName(), work, heightMod);
+        heightMod += 15;
+    }
+    if (currentCollection.getThirdSet()){
+        currentFont.draw(currentCollection.getFirst().getName(), work, heightMod);
+        heightMod += 15;
+    }
+    if (currentCollection.getFourthSet()){
+        currentFont.draw(currentCollection.getFirst().getName(), work, heightMod);
+    }
+    
+    if (!currentCollection.checkSet()){
+        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+            // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
+            currentFont.draw("Random", work, heightMod);
         } else {
-            break;
+            currentFont.draw(character.getName(), work, heightMod);
         }
-
-        last = iterator;
-        iterator++;
     }
-    iterator = last;
-    return stuff;
 }
 
-CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file, const PlayerType & playerType, const GameType & gameType):
-systemFile(file),
-sffFile(""),
-sndFile(""),
-selectFile(""),
-gameType(gameType),
-cancelSound(0),
-background(NULL),
-currentPlayer1(0),
-currentPlayer2(0),
-currentStage(0),
-playerType(playerType),
-quitSearching(false),
-searchingCheck(quitSearching, searchingLock.getLock()),
-characterAddThread(PaintownUtil::Thread::uninitializedValue),
-subscription(*this){
-    grid.setGameType(gameType);
+void Player::reset(){
+    collection = Mugen::ArcadeData::CharacterCollection(Mugen::ArcadeData::CharacterCollection::Single);
+    opponentCollection = Mugen::ArcadeData::CharacterCollection(Mugen::ArcadeData::CharacterCollection::Single);
+    selectState = NotStarted;
+    grid.setCurrentState(cursor, Gui::SelectListInterface::Disabled);
+    stageMenu.reset();
+    teamMenu.reset();
+    opponentTeamMenu.reset();
+}
 
-    // Set defaults
-    reset();
+void Player::setCooperativeData(const Player & cooperativePlayer){
+    // Second player
+    currentGameType = cooperativePlayer.currentGameType;
+    selectState = Opponent;
+    opponentCollection = cooperativePlayer.collection;
+    grid.setCurrentState(cursor, Gui::SelectListInterface::Active);
+    grid.setCurrentIndex(cursor, grid.getCurrentIndex(cooperativePlayer.cursor));   
+}
+
+const Mugen::ArcadeData::CharacterInfo & Player::getCurrentCell(){
+    if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+        return characters[currentRandom];
+    } 
+    return cells[grid.getCurrentIndex(cursor)]->getCharacter();
+}
+    
+CharacterSelect::CharacterSelect(const Filesystem::AbsolutePath & file):
+file(file),
+gridX(0),
+gridY(0),
+gridPositionX(0),
+gridPositionY(0),
+nextCell(0),
+currentGameType(Undefined),
+currentPlayer(Player1),
+player1(0, grid, cells, characters, player1TeamMenu, player2TeamMenu, stages, player1Font, player2Font, sounds),
+player2(1, grid, cells, characters, player2TeamMenu, player1TeamMenu, stages, player2Font, player1Font, sounds),
+canceled(false){
+    Global::debug(0) << "Got file: " << file.path() << std::endl;
 }
 
 CharacterSelect::~CharacterSelect(){
-    searchingCheck.set(true);
-
-    /* signal the add thread in case its waiting */
-    addCharacterLock.acquire();
-    addCharacterLock.signal();
-    addCharacterLock.release();
-
-    PaintownUtil::Thread::joinThread(characterAddThread);
-
-    // Get rid of sprites
-    for( Mugen::SpriteMap::iterator i = sprites.begin(); i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
-    // Get rid of sounds
-    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
-      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
-    // Cleanup fonts
-    for (std::vector< MugenFont *>::iterator f = fonts.begin(); f != fonts.end(); ++f){
-        if (*f) delete (*f);
-    }
-
-    /* background */
-    if (background){
-	delete background;
-    }
-    // Kill stage
-    if (currentStage){
-	delete currentStage;
-    }
 }
 
-void CharacterSelect::load(){
+void CharacterSelect::init(){
     try{
-        Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
+        Filesystem::AbsolutePath baseDir = file.getDirectory();
 
-        Global::debug(1) << baseDir.path() << endl;
+        Global::debug(1) << baseDir.path() << std::endl;
 
-        if (systemFile.isEmpty()){
-            throw MugenException("Cannot locate character select definition file for: " + systemFile.path(), __FILE__, __LINE__);
+        if (file.isEmpty()){
+            std::ostringstream out;
+            out << "Cannot locate character select definition file for: " << file.path();
+            throw MugenException( out.str(), __FILE__, __LINE__);
         }
 
         TimeDifference diff;
         diff.startTime();
-        AstRef parsed(Util::parseDef(systemFile.path()));
+        AstRef parsed(Util::parseDef(file.path()));
         diff.endTime();
-        Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
+        Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << std::endl;
 
         for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
@@ -1612,35 +1969,30 @@ void CharacterSelect::load(){
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "spr"){
-                            simple.view() >> select.sffFile;
-                            Global::debug(1) << "Got Sprite File: '" << select.sffFile << "'" << endl;
-                            Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(select.sffFile)), Filesystem::AbsolutePath(), select.sprites, true);
-                            for( Mugen::SpriteMap::iterator i = select.sprites.begin() ; i != select.sprites.end() ; ++i ){
-                                // Load these sprites so they are ready to use
-                                for (std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
-                                    if (j->second){
-                                        j->second->load(true, false);
-                                    }
-                                }
-                            }
+                            std::string sffFile;
+                            simple.view() >> sffFile;
+                            Global::debug(1) << "Got Sprite File: '" << sffFile << "'" << std::endl;
+                            Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(sffFile)), Filesystem::AbsolutePath(), select.sprites, true);
                         } else if (simple == "snd"){
-                            simple.view() >> select.sndFile;
-                            Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(select.sndFile)), select.sounds);
-                            Global::debug(1) << "Got Sound File: '" << select.sndFile << "'" << endl;
+                            std::string sndFile;
+                            simple.view() >> sndFile;
+                            select.sounds.init(sndFile);
                         } else if (simple == "logo.storyboard"){
                             // Ignore
                         } else if (simple == "intro.storyboard"){
                             // Ignore
                         } else if (simple == "select"){
-                            simple.view() >> select.selectFile;
-                            Global::debug(1) << "Got Select File: '" << select.selectFile << "'" << endl;
+                            std::string file;
+                            simple.view() >> file;
+                            select.selectFile = Mugen::Util::fixFileName(baseDir, Mugen::Util::stripDir(file));
+                            Global::debug(1) << "Got Select File: '" << file << "'" << std::endl;
                         } else if (simple == "fight"){
                             // Ignore
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
-                            string path;
-                            simple.view() >> path;
-                            select.fonts.push_back(new MugenFont(Util::findFile(Filesystem::RelativePath(path))));
-                            Global::debug(1) << "Got Font File: '" << path << "'" << endl;
+                            std::string fontPath;
+                            simple.view() >> fontPath;
+                            select.fonts.push_back(PaintownUtil::ReferenceCount<MugenFont>(new MugenFont(Util::findFile(Filesystem::RelativePath(fontPath)))));
+                            Global::debug(1) << "Got Font File: '" << fontPath << "'" << std::endl;
 
                         } else {
                             throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
@@ -1664,6 +2016,9 @@ void CharacterSelect::load(){
 
                     CharacterSelect & self;
                     Mugen::SpriteMap & sprites;
+                    
+                    Mugen::Effects player1Effects;
+                    Mugen::Effects player2Effects;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "fadein.time" ){
@@ -1696,149 +2051,158 @@ void CharacterSelect::load(){
                             }
                         } else if (simple == "rows"){
                             try{
-                                int rows;
-                                simple.view() >> rows;
-                                self.grid.setRows(rows);
+                                simple.view() >> self.gridY;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "columns"){
                             try{
-                                int columns;
-                                simple.view() >> columns;
-                                self.grid.setColumns(columns);
+                                simple.view() >> self.gridX;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "wrapping"){
                             try{
                                 bool wrap;
                                 simple.view() >> wrap;
-                                self.grid.setWrapping(wrap);
+                                self.grid.setWrap(wrap);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "pos"){
                             try{
                                 int x,y;
-                                simple.view() >> x >> y;
-                                self.grid.setPosition(x,y);
+                                simple.view() >> self.gridPositionX >> self.gridPositionY;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "showemptyboxes"){
                             try{
                                 bool boxes;
                                 simple.view() >> boxes;
-                                self.grid.setShowEmptyBoxes(boxes);
+                                self.grid.setDrawEmpty(boxes);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "moveoveremptyboxes"){
                             try{
                                 bool boxes;
                                 simple.view() >> boxes;
-                                self.grid.setMoveOverEmptyBoxes(boxes);
+                                self.grid.setAccessEmpty(boxes);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.size"){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                self.grid.setCellSize(x,y);
+                                self.grid.setCellDimensions(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.spacing"){
                             try{
                                 int spacing;
                                 simple.view() >> spacing;
-                                self.grid.setCellSpacing(spacing);
+                                self.grid.setCellMargins(spacing, spacing);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.bg.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.grid.setCellBackgroundSprite(sprites[group][sprite]);
+                                Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.grid.setCellRandomSprite(sprites[group][sprite]);
+                                Cell::setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.switchtime"){
                             try{
                                 int time;
                                 simple.view() >> time;
-                                self.grid.setCellRandomSwitchTime(time);
+                                Player::setRandomSwitchTime(time);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.startcell"){
                             try{
                                 int x,y;
                                 simple.view() >> x >> y;
-                                self.grid.setPlayer1Start(x,y);
+                                int index = 0;
+                                for (int i = 0; i <= x; ++i){
+                                    for (int j = 0; j < y; ++j){
+                                        index++;
+                                    }
+                                }
+                                self.player1.setCursorPosition(index);
+                                self.player2.setOpponentCursorPosition(index);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.active.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player1Cursor.setActiveSprite(sprites[group][sprite]);
+                                Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player1Cursor.setDoneSprite(sprites[group][sprite]);
+                                Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.player1Cursor.setMoveSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::Player1Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.player1Cursor.setSelectSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::Player1Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.player1Cursor.setRandomSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::Player1Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.startcell"){
                             try{
                                 int x,y;
                                 simple.view() >> x >> y;
-                                self.grid.setPlayer2Start(x,y);
+                                int index = 0;
+                                for (int i = 0; i <= x; ++i){
+                                    for (int j = 0; j < y; ++j){
+                                        index++;
+                                    }
+                                }
+                                self.player2.setCursorPosition(index);
+                                self.player1.setOpponentCursorPosition(index);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.active.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player2Cursor.setActiveSprite(sprites[group][sprite]);
+                                Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.done.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player2Cursor.setDoneSprite(sprites[group][sprite]);
+                                Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.blink"){
                             try{
                                 bool blink;
                                 simple.view() >> blink;
-                                self.player2Cursor.setBlink(blink);
+                                Cell::setBlinkCursor(blink);
                             } catch (const Ast::Exception & e){
                             }
                         } 
@@ -1846,64 +2210,64 @@ void CharacterSelect::load(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.player2Cursor.setMoveSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::Player2Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.player2Cursor.setSelectSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::Player2Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.player2Cursor.setRandomSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::Player2Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "random.move.snd.cancel"){
                             try{
                                 bool cancel;
                                 simple.view() >> cancel;
-                                self.player1Cursor.setRandomCancel(cancel);
-                                self.player2Cursor.setRandomCancel(cancel);
+                                //FIXME
+                                // Set cancel sound flag
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.grid.getStageHandler().setMoveSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::StageMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.grid.getStageHandler().setSelectSound(self.sounds[group][sound]);
+                                self.sounds.set(SoundSystem::StageDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "cancel.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.cancelSound = self.sounds[group][sound];
+                                self.sounds.set(SoundSystem::Cancel, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "portrait.offset"){
                             try{
                                 int x,y;
                                 simple.view() >> x >> y;
-                                self.grid.setPortraitOffset(x,y);
+                                Cell::setOffset(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "portrait.scale"){
                             try{
-                                double x,y;
-                                simple.view() >> x >> y;
-                                self.grid.setPortraitScale(x,y);
+                                Mugen::Effects effects;
+                                simple.view() >> effects.scalex >> effects.scaley;
+                                Cell::setEffects(effects);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "title.offset"){
@@ -1920,58 +2284,48 @@ void CharacterSelect::load(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            /* -1 indicates no font */
-                            if (index != -1){
-                                /* should this be set even if the parse fails? */
-                                self.titleFont.setPrimary(self.getFont(index), bank, position);
-                            }
+                            self.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p1.face.offset"){
                             try{
-                                int x, y;
+                                int x = 0, y = 0;
                                 simple.view() >> x >> y;
-                                self.player1Cursor.setFaceOffset(x,y);
+                                self.player1.setPortraitOffset(x, y);
+                                self.player2.setOpponentPortraitOffset(x, y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.face.scale"){
                             try{
-                                double x, y;
-                                simple.view() >> x >> y;
-                                self.player1Cursor.setFaceScale(x,y);
+                                simple.view() >> player1Effects.scalex >> player1Effects.scaley;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.face.facing"){
                             try{
-                                int f;
-                                simple.view() >> f;
-                                self.player1Cursor.setFacing(f);
+                                simple.view() >> player1Effects.facing;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.offset"){
                             try{
-                                int x, y;
+                                int x = 0, y = 0;
                                 simple.view() >> x >> y;
-                                self.player2Cursor.setFaceOffset(x,y);
+                                self.player2.setPortraitOffset(x, y);
+                                self.player1.setOpponentPortraitOffset(x, y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.scale"){
                             try{
-                                double x, y;
-                                simple.view() >> x >> y;
-                                self.player2Cursor.setFaceScale(x,y);
+                                simple.view() >> player2Effects.scalex >> player2Effects.scaley;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.facing"){
                             try{
-                                int f;
-                                simple.view() >> f;
-                                self.player2Cursor.setFacing(f);
+                                simple.view() >> player2Effects.facing;
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.name.offset"){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                self.player1Cursor.getFontHandler().setLocation(x,y);
+                                self.player1Font.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         }  else if ( simple == "p1.name.font"){
@@ -1981,31 +2335,26 @@ void CharacterSelect::load(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-
-                            if (index > 0){
-                                self.player1Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
-                            }
+                            self.player1Font.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "p2.name.offset"){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                self.player2Cursor.getFontHandler().setLocation(x,y);
+                                self.player2Font.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.name.font"){
+                            int index=0, bank=0, position=0;
                             try{
-                                int index, bank, position;
                                 simple.view() >> index >> bank >> position;
-                                if (index > 0){
-                                    self.player2Cursor.getFontHandler().setPrimary(self.getFont(index),bank,position);
-                                }
                             } catch (const Ast::Exception & e){
                             }
+                            self.player2Font.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.pos"){
                             try{
                                 int x, y;
                                 simple.view() >> x >> y;
-                                self.grid.getStageHandler().getFontHandler().setLocation(x,y);
+                                self.stages.font.setLocation(x,y);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.active.font"){
@@ -2015,10 +2364,7 @@ void CharacterSelect::load(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-
-                            if (index > 0){
-                                self.grid.getStageHandler().getFontHandler().setPrimary(self.getFont(index),bank,position);
-                            }
+                            self.stages.font.setActive(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2026,10 +2372,7 @@ void CharacterSelect::load(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-
-                            if (index > 0){
-                                self.grid.getStageHandler().getFontHandler().setBlink(self.getFont(index),bank,position);
-                            }
+                            self.stages.font.setActive2(SelectFont(self.getFont(index), bank, position));
                         } else if ( simple == "stage.done.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2037,146 +2380,317 @@ void CharacterSelect::load(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            if (index > 0){
-                                self.grid.getStageHandler().getFontHandler().setDone(self.getFont(index),bank,position);
+                            self.stages.font.setDone(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "teammenu.move.wrapping"){
+                            try {
+                                bool wrap;
+                                simple.view() >> wrap;
+                                TeamMenu::setWrapping(wrap);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.pos"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setPosition(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player1TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.selftitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.selftitle.text"){
+                            std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player1TeamMenu.titleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.enemytitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.enemytitle.text"){
+                            std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player1TeamMenu.enemyTitleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.move.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.sounds.set(SoundSystem::Player1TeamMove, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.value.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.sounds.set(SoundSystem::Player1TeamValue, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.done.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.sounds.set(SoundSystem::Player1TeamDone, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.item.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setItemOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.item.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setItemSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.item.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player1TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p1.teammenu.item.active.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player1TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p1.teammenu.item.active2.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                                self.player1TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                        } else if ( simple == "p1.teammenu.item.cursor.offset"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
+                        } else if ( simple == "p1.teammenu.item.cursor.anim"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
+                        } else if ( simple == "p1.teammenu.value.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.value.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player1TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.value.empty.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setEmptyValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.value.empty.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player1TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p1.teammenu.value.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player1TeamMenu.setValueSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.pos"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setPosition(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.bg.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player2TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.selftitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player2TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p2.teammenu.selftitle.text"){
+                             std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player2TeamMenu.titleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.enemytitle.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player2TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p2.teammenu.enemytitle.text"){
+                             std::string text;
+                            try {
+                                simple.view() >> text;
+                                self.player2TeamMenu.enemyTitleFont.setText(text);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.move.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.sounds.set(SoundSystem::Player2TeamMove, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.value.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.sounds.set(SoundSystem::Player2TeamValue, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.done.snd"){
+                            try{
+                                int group, sound;
+                                simple.view() >> group >> sound;
+                                self.sounds.set(SoundSystem::Player2TeamDone, group, sound);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.item.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setItemOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.item.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setItemSpacing(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.item.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player2TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p2.teammenu.item.active.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player2TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p2.teammenu.item.active2.font"){
+                            int index=0, bank=0, position=0;
+                            try {
+                                simple.view() >> index >> bank >> position;
+                            } catch (const Ast::Exception & e){
+                                //ignore for now
+                            }
+                            self.player2TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                        } else if ( simple == "p2.teammenu.item.cursor.offset"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
+                        } else if ( simple == "p2.teammenu.item.cursor.anim"){
+                            // TODO Not sure what this is, doesn't seem to do anything in mugen
+                        } else if ( simple == "p2.teammenu.value.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.value.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player2TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.value.empty.icon.offset"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setEmptyValueIconOffset(x,y);
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.value.empty.icon.spr"){
+                            try{
+                                int group, sprite;
+                                simple.view() >> group >> sprite;
+                                self.player2TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if ( simple == "p2.teammenu.value.spacing"){
+                            try{
+                                int x, y;
+                                simple.view() >> x >> y;
+                                self.player2TeamMenu.setValueSpacing(x,y);
+                            } catch (const Ast::Exception & e){
                             }
                         }
-#if 0
-                        else if ( simple.find("teammenu")!=std::string::npos ){
-                            /* Ignore for now */
-                        }
-#endif
-                        //else throw MugenException( "Unhandled option in Select Info Section: " + itemhead );
                     }
                 };
 
                 SelectInfoWalker walker(*this, sprites);
                 section->walk(walker);
+                player1.setPortraitEffects(walker.player1Effects, walker.player2Effects);
+                player2.setPortraitEffects(walker.player2Effects, walker.player1Effects);
             } else if (head == "selectbgdef"){ 
                 /* Background management */
-                Mugen::Background *manager = new Mugen::Background(systemFile, "selectbg");
-                background = manager;
+                background = PaintownUtil::ReferenceCount<Mugen::Background>(new Mugen::Background(file, "selectbg"));
             } else if (head.find("selectbg") != std::string::npos ){ /* Ignore for now */ }
             else if (head == "vs screen" ){
-                class VersusWalker: public Ast::Walker{
-                public:
-                    VersusWalker(VersusScreen & self, const CharacterSelect & select):
-                        self(self),
-                        select(select){
-                        }
-
-                    VersusScreen & self;
-                    const CharacterSelect & select;
-
-                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (simple == "time" ){
-                            try{
-                                int time;
-                                simple.view() >> time;
-                                self.setTime(time);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "fadein.time"){
-                            try{
-                                int time;
-                                simple.view() >> time;
-                                self.getFadeTool().setFadeInTime(time);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "fadeout.time"){
-                            try{
-                                int time;
-                                simple.view() >> time;
-                                self.getFadeTool().setFadeOutTime(time);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "p1.pos"){
-                            int x=0,y=0;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (Ast::Exception & e){
-                            }
-                            self.setPlayer1Position(Mugen::Point(x,y));
-                        } else if (simple == "p1.facing"){
-                            try{
-                                int face;
-                                simple.view() >> face;
-                                self.setPlayer1Facing(face);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "p1.scale"){
-                            double x,y;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setPlayer1Scale(x,y);
-                        } else if (simple == "p2.pos"){
-                            int x=0,y=0;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setPlayer2Position(Mugen::Point(x,y));
-                        } else if (simple == "p2.facing"){
-                            try{
-                                int face;
-                                simple.view() >> face;
-                                self.setPlayer2Facing(face);
-                            } catch (const Ast::Exception & e){
-                            }
-                        } else if (simple == "p2.scale"){
-                            double x,y;
-                            try{
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.setPlayer2Scale(x,y);
-                        } else if (simple == "p1.name.pos"){
-                            int x, y;
-                            try {
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.getPlayer1Font().setLocation(x,y);
-                        } else if (simple == "p1.name.font"){
-                            int index=0, bank=0, position=0;
-                            try {
-                                simple.view() >> index >> bank >> position;
-                            } catch (const Ast::Exception & e){
-                                //ignore for now
-                            }
-                            if (index > 0){
-                                self.getPlayer1Font().setPrimary(select.getFont(index),bank,position);
-                            }
-                        } else if (simple == "p2.name.pos"){
-                            int x, y;
-                            try {
-                                simple.view() >> x >> y;
-                            } catch (const Ast::Exception & e){
-                            }
-                            self.getPlayer2Font().setLocation(x,y);
-                        } else if (simple == "p2.name.font"){
-                            int index=0, bank=0, position=0;
-                            try {
-                                simple.view() >> index >> bank >> position;
-                            } catch (const Ast::Exception & e){
-                                //ignore for now
-                            }
-                            if (index > 0){
-                                self.getPlayer2Font().setPrimary(select.getFont(index),bank,position);
-                            }
-                        }
-                    }
-                };
-
-                VersusWalker walker(versus, *this);
-                section->walk(walker);
+                /* Don't handle versus here */
             }
             else if (head == "versusbgdef" ){
                 /* Background management */
-                Mugen::Background *manager = new Mugen::Background(systemFile, "versusbg");
-                versus.setBackground(manager);
+                //Mugen::Background *manager = new Mugen::Background(systemFile, "versusbg");
+                //versus.setBackground(manager);
             }
             else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
             else if (head == "demo mode" ){ /* Ignore for now */ }
@@ -2193,530 +2707,521 @@ void CharacterSelect::load(){
             else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
             else {
                 // throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
-                ostringstream context;
+                std::ostringstream context;
                 context << __FILE__ << ":" << __LINE__;
-                Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + systemFile.path() + "': " + head << endl;
+                Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
             }
         }
 
-        // Set up Grid
-        grid.initialize();
-
-        // Setup cursors
-        switch (gameType){
-            case Versus:
-                grid.setCursorPlayer1Start(player1Cursor);
-                grid.setCursorPlayer2Start(player2Cursor);
-                break;
-            case Arcade:
-            case Training:
-                if (playerType == Player1){
-                    grid.setCursorPlayer1Start(player1Cursor);
-                } else if (playerType == Player2){
-                    grid.setCursorPlayer2Start(player2Cursor);
-                }
-            case Watch:
-            default:
-                if (playerType == Player1){
-                    grid.setCursorPlayer1Start(player1Cursor);
-                } else if (playerType == Player2){
-                    grid.setCursorPlayer2Start(player2Cursor);
-                }
-                break;
+        // Set up Grid set starting offset to 1 so it doesn't clip
+        grid.setStartingOffset(1, 1);
+        grid.setGridSize(gridX, gridY);
+        // Set up cells
+        for (unsigned int i = 0; i < (unsigned int)(gridX * gridY); ++i){
+            PaintownUtil::ReferenceCount<Cell> cell = PaintownUtil::ReferenceCount<Cell>(new Cell(i, &grid));
+            cells.push_back(cell);
+            grid.addItem(cell.convert<Gui::SelectItem>());
         }
-        // Now load up our characters
-        parseSelect(Mugen::Util::fixFileName(baseDir, Mugen::Util::stripDir(selectFile)));
+        // Set up cursors
+        grid.setCursors(2);
+        //grid.setCurrentIndex(0, cursorPosition);
+        grid.setCurrentState(0, Gui::SelectListInterface::Disabled);
+        //grid.setCurrentIndex(1, opponentCursorPosition);
+        grid.setCurrentState(1, Gui::SelectListInterface::Disabled);
+        
+        // Set up fader
+        fader.setState(Gui::FadeTool::FadeIn);
+
     } catch (const Filesystem::NotFound & fail){
-        ostringstream out;
+        std::ostringstream out;
         out << "Could not load select screen because " << fail.getTrace();
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+    
+    parseSelect();
+}
+
+void CharacterSelect::cancel(){
+    // Fade out
+    fader.setState(Gui::FadeTool::FadeOut);
+    sounds.play(SoundSystem::Cancel);
+    canceled = true;
+}
+
+bool CharacterSelect::isDone() {
+    return (fader.getState() == Gui::FadeTool::EndFade);
+}
+
+void CharacterSelect::act(){
+    for (std::vector< PaintownUtil::ReferenceCount<Cell> >::iterator i = cells.begin(); i != cells.end(); ++i){
+        PaintownUtil::ReferenceCount<Cell> cell = *i;
+        cell->act();
+    }
+    background->act();
+    grid.act();
+    
+    // Player portraits
+    player1.act();
+    player2.act();
+    
+    // Team Menu
+    player1TeamMenu.act();
+    player2TeamMenu.act();
+    
+    // Stages
+    stages.act();
+    
+    // Fader
+    fader.act();
+    
+    switch (currentPlayer){
+        case Player1:
+            if (player1.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
+            break;
+        case Player2:
+            if (player2.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
+            break;
+        case Both:
+            if (player1.isFinished() && player2.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
+            break;
+        default:
+            break;
+    }   
+}
+
+static std::string getGameType(const Mugen::GameType & game){
+    switch (game){
+        case Mugen::Arcade:
+            return "Arcade";
+            break;
+        case Mugen::Versus:
+            return "Versus Mode";
+            break;
+        case Mugen::TeamArcade:
+            return "Team Arcade";
+            break;
+        case Mugen::TeamVersus:
+            return "Team Versus";
+            break;
+        case Mugen::TeamCoop:
+            return "Team Cooperative";
+            break;
+        case Mugen::Survival:
+            return "Survival";
+            break;
+        case Mugen::SurvivalCoop:
+            return "Survival Cooperative";
+            break;
+        case Mugen::Training:
+            return "Training Mode";
+            break;
+        case Mugen::Watch:
+            return "Watch Mode";
+            break;
+        case Mugen::Undefined:
+        default:
+            return "Set GameType and Players";
+            break;
+    }
+}
+
+void CharacterSelect::draw(const Graphics::Bitmap & work){
+    // Render Background
+    background->renderBackground(0,0,work);
+    
+    // Temporary bitmap for grid
+    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
+    temp.clearToMask();
+    grid.render(temp, Font::getDefaultFont());
+    // Minus 1 since it's been offset
+    temp.draw(gridPositionX-1, gridPositionY-1, work);
+    
+    // render title based on Mugen::GameType
+    titleFont.draw(getGameType(currentGameType), work);
+    
+    // Draw portrait and name
+    player1.draw(work);
+    player2.draw(work);
+    
+    // Team Menu
+    player1TeamMenu.draw(work);
+    player2TeamMenu.draw(work);
+    
+    // Stages
+    stages.draw(work);
+    
+    background->renderForeground(0,0,work);
+    
+    // Fader
+    fader.draw(work);
+}
+
+void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & player){
+    if (game == Mugen::Undefined){
+        return;
+    }
+    // Set up fader
+    fader.setState(Gui::FadeTool::FadeIn);
+    currentGameType = game;
+    currentPlayer = player;
+    player1.reset();
+    player2.reset();
+    switch (currentPlayer){
+        case Player1:
+            player1.setCurrentGameType(currentGameType);
+            break;
+        case Player2:
+            player2.setCurrentGameType(currentGameType);
+            break;
+        case Both:
+            player1.setCurrentGameType(currentGameType);
+            player2.setCurrentGameType(currentGameType);
+            break;
+        default:
+            break;
+    }
+}
+
+void CharacterSelect::up(unsigned int cursor){
+    if (cursor == 0){
+        player1.up();
+    } else if (cursor == 1){
+        player2.up();
+    }
+}
+
+void CharacterSelect::down(unsigned int cursor){
+    if (cursor == 0){
+        player1.down();
+    } else if (cursor == 1){
+        player2.down();
+    }
+}
+
+void CharacterSelect::left(unsigned int cursor){
+    if (cursor == 0){
+        player1.left();
+    } else if (cursor == 1){
+        player2.left();
+    }
+}
+
+void CharacterSelect::right(unsigned int cursor){
+    if (cursor == 0){
+        player1.right();
+    } else if (cursor == 1){
+        player2.right();
+    }
+}
+
+void CharacterSelect::select(unsigned int cursor){
+    if (cursor == 0){
+        try {
+            player1.select();
+        } catch (const CooperativeException & ex){
+            player2.reset();
+            player2.setCooperativeData(player1);
+            currentPlayer = Player2;
+        }
+    } else if (cursor ==1){
+        try {
+            player2.select();
+        } catch (const CooperativeException & ex){
+            player1.reset();
+            player1.setCooperativeData(player2);
+            currentPlayer = Player1;
+        }
+    }
+}
+
+bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
+    // Check if we don't exceed the cell count of the current grid
+    if (nextCell < cells.size()){
+        // Add to list
+        characters.push_back(character);
+        // Include stage if required
+        if (character.getIncludeStage()){
+            addStage(character.getStage());
+        }
+        // Add to current cell
+        cells[nextCell]->setCharacter(character);
+        // Increment cell
+        nextCell++;
+        return true;
+    }
+    return false;
+}
+
+void CharacterSelect::addEmpty(){
+    if (nextCell < cells.size()){
+        cells[nextCell]->setEmpty(true);
+        nextCell++;
+    }
+}
+
+void CharacterSelect::addRandom(){
+    if (nextCell < cells.size()){
+        cells[nextCell]->setRandom(true);
+        nextCell++;
+    }
+}
+
+void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
+    stages.add(stage);
+}
+
+Mugen::ArcadeData::MatchPath CharacterSelect::getArcadePath(){
+    if (currentPlayer == Player2){
+        return Mugen::ArcadeData::MatchPath(player2.getOpponentCollection().getType(), arcadeOrder, characters, stages.getStages());
+    }
+    
+    return Mugen::ArcadeData::MatchPath(player1.getOpponentCollection().getType(), arcadeOrder, characters, stages.getStages());
+}
+
+Mugen::ArcadeData::MatchPath CharacterSelect::getTeamArcadePath(){
+    if (currentPlayer == Player2){
+        return Mugen::ArcadeData::MatchPath(player2.getOpponentCollection().getType(), teamArcadeOrder, characters, stages.getStages());
+    }
+    
+    return Mugen::ArcadeData::MatchPath(player1.getOpponentCollection().getType(), teamArcadeOrder, characters, stages.getStages());
+}
+
+/* indexes start at 1 */
+PaintownUtil::ReferenceCount<MugenFont> CharacterSelect::getFont(int index) const {
+    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
+        return fonts[index - 1];
+    } else {
+        std::ostringstream out;
+        out << "No font for index " << index;
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
 }
 
-//! Get group of characters by order number
-std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > CharacterSelect::getCharacterGroup(int orderNumber){
-    std::vector<PaintownUtil::ReferenceCount<CharacterInfo> > tempCharacters;
-    for (std::vector<PaintownUtil::ReferenceCount<CharacterInfo> >::iterator i = characters.begin(); i != characters.end(); ++i){
-        PaintownUtil::ReferenceCount<CharacterInfo> character = *i;
-	if (character->getOrder() == orderNumber){
-	    tempCharacters.push_back(character);
-	}
-    }
-    return tempCharacters;
-}
-
-/* TODO: add a description of this structure */
-class CharacterCollect{
-public:
-    CharacterCollect():
-        random(false),
-        randomStage(false),
-        name(""),
-        stage(""),
-        includeStage(true),
-        blank(false),
-        order(1),
-        song(""){
-        }
-
-    ~CharacterCollect(){
-    }
-
-    bool random;
-    bool randomStage;
-    std::string name;
-    std::string stage;
-    bool includeStage;
-    bool blank;
-    int order;
-    std::string song;
-};
-        
-bool CharacterSelect::addInfo(const PaintownUtil::ReferenceCount<CharacterInfo> & info){
-    return grid.addInfo(info);
-}
-        
-bool CharacterSelect::isUniqueCharacter(const PaintownUtil::ReferenceCount<CharacterInfo> & character){
-    return grid.isUniqueCharacter(character);
-}
-
-static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::AbsolutePath & path){
-    try{
-        return Storage::instance().getFilesRecursive(path, "*.def");
-    } catch (const Filesystem::NotFound & fail){
-        return vector<Filesystem::AbsolutePath>();
-    }
-}
-
-static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath & path){
-    try{
-        return findFiles(Storage::instance().find(path));
-    } catch (const Filesystem::NotFound & fail){
-        return vector<Filesystem::AbsolutePath>();
-    }
-}
-
-bool CharacterSelect::maybeAddCharacter(const Filesystem::AbsolutePath & path){
-    Global::debug(1) << "Checking character " << path.path() << endl;
-    try{
-        PaintownUtil::ReferenceCount<CharacterInfo> info(new CharacterInfo(path));
-        Global::debug(1) << path.path() << " is good" << endl;
-        if (isUniqueCharacter(info)){
-            return addInfo(info);
-        }
-        return true;
-    } catch (const Filesystem::NotFound & fail){
-        Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
-    } catch (const Filesystem::Exception & fail){
-        Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
-    } catch (const Exception::Base & fail){
-        Global::debug(1) << "Failed to load " << path.path() << " because " << fail.getTrace() << endl;
-    } catch (...){
-        Global::debug(1) << "Failed to load " << path.path() << " for an unknown reason" << endl;
-    }
-
-    return true;
-}
-
-void * CharacterSelect::doAddCharacters(void * arg){
-    CharacterSelect * select = (CharacterSelect*) arg;
-    while (!select->searchingCheck.get()){
-        select->addCharacterLock.acquire();
-        /* if we have no more characters to process then wait for a signal */
-        if (select->addCharacters.size() == 0){
-            select->addCharacterLock.wait();
-        }
-        Filesystem::AbsolutePath path;
-        bool got = false;
-        /* we might have been signaled because the character select screen is over
-         * even though there are no more characters to process.
-         */
-        if (select->addCharacters.size() > 0){
-            path = select->addCharacters[0];
-            select->addCharacters.pop_front();
-            got = true;
-        }
-        select->addCharacterLock.release();
-
-        if (got){
-            if (!select->maybeAddCharacter(path)){
-                /* couldn't add any more characters, so just quit */
-                break;
-            }
-            /* yield the thread */
-            PaintownUtil::rest(0);
-        }
-    }
-
-    return NULL;
-}
-
-/* add a single character */
-void CharacterSelect::addFile(const Filesystem::AbsolutePath & file){
-    vector<Filesystem::AbsolutePath> one;
-    one.push_back(file);
-    addFiles(one);
-}
-
-void CharacterSelect::addFiles(const vector<Filesystem::AbsolutePath> & files){
-    /* Add all the found files in one swoop */
-    addCharacterLock.acquire();
-    addCharacterLock.signal();
-    for (vector<Filesystem::AbsolutePath>::const_iterator it = files.begin(); it != files.end(); it++){
-        const Filesystem::AbsolutePath & path = *it;
-        addCharacters.push_back(path);
-    }
-    addCharacterLock.release();
-}
-
-void CharacterSelect::startAddThread(){
-    characterAddThread = PaintownUtil::Thread::uninitializedValue;
-    if (!PaintownUtil::Thread::createThread(&characterAddThread, NULL, (PaintownUtil::Thread::ThreadFunction) doAddCharacters, this)){
-        Global::debug(0) << "Could not create character add thread" << endl;
-    }
-}
-
-void CharacterSelect::parseSelect(const Filesystem::AbsolutePath &selectFile){
-    startAddThread();
-
+void CharacterSelect::parseSelect(){
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
     
     TimeDifference diff;
     diff.startTime();
     AstRef parsed(Util::parseDef(file.path()));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
-    
-    // Characters
-    std::vector<CharacterCollect> characterCollection;
-    // Stages
-    std::vector<std::string> stageNames;
-    
-    // Arcade max matches
-    std::vector<int> arcadeMaxMatches;
-    // Team max matches
-    std::vector<int> teamMaxMatches;
+    Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << std::endl;
     
     for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
-	Ast::Section * section = *section_it;
-	std::string head = section->getName();
+        Ast::Section * section = *section_it;
+        std::string head = section->getName();
         
-	head = Mugen::Util::fixCase(head);
+        head = Mugen::Util::fixCase(head);
 
         if (head == "characters"){
             class CharacterWalker: public Ast::Walker{
             public:
-		CharacterWalker(std::vector< CharacterCollect > & characters):
-		characters(characters){}
-		virtual ~CharacterWalker(){}
-		
-		std::vector< CharacterCollect > &characters;
+                CharacterWalker(CharacterSelect & self):
+                self(self){}
+                virtual ~CharacterWalker(){}
+            
+                CharacterSelect & self;
+                
                 virtual void onValueList(const Ast::ValueList & list){
-                    CharacterCollect character;
-		    // Grab Character
-		    std::string temp;
+                    // Grab Character
+                    std::string temp;
                     Ast::View view = list.view();
-		    view >> temp;
+                    view >> temp;
 
                     if (temp == "blank"){
-                        character.blank = true;
+                        self.addEmpty();
                     } else if (temp == "randomselect"){
-			character.random = true;
-		    } else {
-			character.name = temp;
-		    }
-
-                    try{
-                        // Grab stage
-                        view >> temp;
-                        if (PaintownUtil::matchRegex(temp, "order = ")){
-                            temp.replace(0,std::string("order = ").size(),"");
-                            character.order = (bool)atoi(temp.c_str());
-                        } else if (temp == "random"){
-                            character.randomStage = true;
-                        } else {
-                            character.stage = temp;
-                        }
-                        // Grab options
-                        /* TODO: make the parser turn these into better AST nodes.
-                         * something like Assignment(Id(music), Filename(whatever))
-                         */
-                        while(true){
+                        self.addRandom();
+                    } else {
+                        Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
+                        try{
+                            // Grab stage
                             view >> temp;
-                            if (PaintownUtil::matchRegex(temp,"includestage = ")){
-                                temp.replace(0,std::string("includestage = ").size(),"");
-                                character.includeStage = (bool)atoi(temp.c_str());
-                            } else if (PaintownUtil::matchRegex(temp,"music = ")){
-                                temp.replace(0,std::string("music = ").size(),"");
-                                character.song = temp;
-                            } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                            if (PaintownUtil::matchRegex(temp, "order = ")){
                                 temp.replace(0,std::string("order = ").size(),"");
-                                character.order = (bool)atoi(temp.c_str());
+                                character.setOrder((int)atoi(temp.c_str()));
+                            } else if (temp == "random"){
+                                character.setRandomStage(true);
+                            } else {
+                                character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
                             }
+                            // Grab options
+                            /* TODO: make the parser turn these into better AST nodes.
+                            * something like Assignment(Id(music), Filename(whatever))
+                            */
+                            while(true){
+                                view >> temp;
+                                if (PaintownUtil::matchRegex(temp,"includestage = ")){
+                                    temp.replace(0,std::string("includestage = ").size(),"");
+                                    character.setIncludeStage((bool)atoi(temp.c_str()));
+                                } else if (PaintownUtil::matchRegex(temp,"music = ")){
+                                    temp.replace(0,std::string("music = ").size(),"");
+                                    character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
+                                } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                    temp.replace(0,std::string("order = ").size(),"");
+                                    character.setOrder((int)atoi(temp.c_str()));
+                                }
+                            }
+                        } catch (const Ast::Exception & e){
                         }
-                    } catch (const Ast::Exception & e){
+                        self.addCharacter(character);
                     }
-
-		    characters.push_back(character);
                 }
             };
 
-            CharacterWalker walk(characterCollection);
+            CharacterWalker walk(*this);
             section->walk(walk);
-	} else if (head == "extrastages"){
-	    class StageWalker: public Ast::Walker{
+        } else if (head == "extrastages"){
+            class StageWalker: public Ast::Walker{
             public:
-		StageWalker(std::vector< std::string > &names):
-		names(names){
-		}
-
-		virtual ~StageWalker(){
+                StageWalker(CharacterSelect & self):
+                self(self){
                 }
 
-		std::vector< std::string > &names;
+                virtual ~StageWalker(){
+                }
+
+                CharacterSelect & self;
 
                 virtual void onValueList(const Ast::ValueList & list){
-		    // Get Stage info and save it
-		    try {
-			std::string temp;
-			list.view() >> temp;
-			Global::debug(1) << "stage: " << temp << endl;
-			names.push_back(temp);
-		    } catch (const Ast::Exception & e){
-		    }
-                }
-            };
-	    StageWalker walk(stageNames);
-	    section->walk(walk);
-	} else if (head == "options"){
-	    class OptionWalker: public Ast::Walker{
-            public:
-		OptionWalker(std::vector<int> & arcade, std::vector<int> & team):
-		arcade(arcade),
-		team(team){
-		}
-		virtual ~OptionWalker(){}
-		std::vector<int> & arcade;
-		std::vector<int> & team;
-                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-		    if (simple == "arcade.maxmatches"){
-                        Ast::View view = simple.view();
-			// only 10 max matches
-			for (int i = 0; i < 10; ++i){
-			    try{
-				int matches;
-				view >> matches;
-				// No need to save the remaining of the matchup setup
-				if (matches == 0){
-				    break;
-				}
-				arcade.push_back(matches);
-			    } catch (const Ast::Exception & e){
-				break;
-			    }
-			}
-		    } else if (simple == "team.maxmatches"){
-                        Ast::View view = simple.view();
-			// only 10 max matches
-			for (int i = 0; i < 10; ++i){
-			    try{
-				int matches;
-				view >> matches;
-				// No need to save the remaining of the matchup setup
-				if (matches == 0){
-				    break;
-				}
-				team.push_back(matches);
-			    } catch (const Ast::Exception & e){
-				break;
-			    }
-			}
-		    }
-		}
-            };
-	    OptionWalker walk(arcadeMaxMatches,teamMaxMatches);
-	    section->walk(walk);
-	} else {
-	    // throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
-            ostringstream context;
-            context << __FILE__ << ":" << __LINE__;
-            Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << endl;
-	}
-    }
-    
-    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
-        try{
-            CharacterCollect & character = *i;
-            if (character.name != ""){
-                const Filesystem::AbsolutePath def = Util::findCharacterDef(character.name);
-                addFile(def);
-                stageNames.push_back(character.stage);
-            }
-        } catch (const Filesystem::NotFound & fail){
-            Global::debug(0) << "Error loading mugen character: " << fail.getTrace() << std::endl;
-        }
-    }
-
-    if (stageNames.size() == 0){
-        throw MugenException("No stages listed", __FILE__, __LINE__);
-    }
-
-    // Prepare stages
-    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
-	grid.getStageHandler().addStage((*i));
-    }
-    
-    /* FIXME: implement this stuff again */
-#if 0
-    // Set up our characters along the grid (excluding random select)
-    // Offset for stage placement
-    int stageOffset = 0;
-    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end();++i){
-	CharacterCollect & character = *i;
-        try{
-            if (!character.random && !character.blank){
-                // Get character
-                // *FIXME Not an elegant solution for character location
-
-                // look up the character's directory first in the <motif>/chars/...
-                // and then in mugen/chars/...
-                /* Mugen::Util::findDirectory(character.name) */
-                /*
-                const Filesystem::AbsolutePath baseDir = Filesystem::findInsensitive(Filesystem::RelativePath("mugen/chars/" + character.name));
-                Filesystem::RelativePath str = Filesystem::RelativePath(character.name).getFilename();
-                const Filesystem::AbsolutePath charDefFile = Util::fixFileName(baseDir, str.path() + ".def");
-                */
-                const Filesystem::AbsolutePath defFile = Util::findCharacterDef(character.name);
-
-                // const std::string charDefFile = Filesystem::cleanse(Mugen::Util::fixFileName(baseDir, std::string(str + ".def")));
-                Global::debug(1) << "Got character def: " << defFile.path() << endl;
-                CharacterInfo *charInfo = new CharacterInfo(defFile);
-                charInfo->setRandomStage(character.randomStage);
-                // Set stage
-                if (character.stage.empty()){
-                    // lets assume random then
-                    charInfo->setRandomStage(true);
-                } else {
-                    // Fix the stage name before handing it the character
-                    charInfo->setStage(Filesystem::RelativePath(character.stage));
-                    // also add the stage
-                    if (character.includeStage){
-                        // Pass base stage name, StageHandler will fix the stage name
-                        stageNames.insert(stageNames.begin() + stageOffset, character.stage);
-                        stageOffset++;
+                    // Get Stage info and save it
+                    try {
+                        std::string temp;
+                        list.view() >> temp;
+                        Global::debug(1) << "stage: " << temp << std::endl;
+                        self.addStage(Util::findFile(Filesystem::RelativePath(temp)));
+                    } catch (const Ast::Exception & e){
                     }
                 }
-                charInfo->setOrder(character.order);
-                charInfo->setMusic(character.song);
-                characters.push_back(charInfo);
-            }
-        } catch (const Filesystem::NotFound & error){
-            Global::debug(0) << "Could not load a tile: " << error.getTrace() << endl;
-        } catch (const MugenException & error){
-            Global::debug(0) << "Could not load a tile: " << error.getReason() << endl;
+            };
+            StageWalker walk(*this);
+            section->walk(walk);
+        } else if (head == "options"){
+            class OptionWalker: public Ast::Walker{
+            public:
+                OptionWalker(std::vector<int> & arcade, std::vector<int> & team):
+                arcade(arcade),
+                team(team){
+                }
+                virtual ~OptionWalker(){}
+                std::vector<int> & arcade;
+                std::vector<int> & team;
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "arcade.maxmatches"){
+                        Ast::View view = simple.view();
+                        // only 10 max matches
+                        for (int i = 0; i < 10; ++i){
+                            try{
+                                int matches;
+                                view >> matches;
+                                // No need to save the remaining of the matchup setup
+                                if (matches == 0){
+                                    break;
+                                }
+                                arcade.push_back(matches);
+                            } catch (const Ast::Exception & e){
+                                break;
+                            }
+                        }
+                    } else if (simple == "team.maxmatches"){
+                        Ast::View view = simple.view();
+                        // only 10 max matches
+                        for (int i = 0; i < 10; ++i){
+                            try{
+                                int matches;
+                                view >> matches;
+                                // No need to save the remaining of the matchup setup
+                                if (matches == 0){
+                                    break;
+                                }
+                                team.push_back(matches);
+                            } catch (const Ast::Exception & e){
+                                break;
+                            }
+                        }
+                    }
+                }
+            };
+            OptionWalker walk(arcadeOrder,teamArcadeOrder);
+            section->walk(walk);
+        } else {
+            // throw MugenException("Unhandled Section in '" + file.path() + "': " + head, __FILE__, __LINE__); 
+            std::ostringstream context;
+            context << __FILE__ << ":" << __LINE__;
+            Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
-    
-    // Now setup Grid
-    if (characters.size() == 0){
-        ostringstream out;
-        out << "No characters available to select. Please add some to " << selectFile.path();
-        throw MugenException(out.str(), __FILE__, __LINE__);
+}
+
+class SelectLogic: public PaintownUtil::Logic {
+public:
+    SelectLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::CharacterSelect & select, Searcher & search):
+    is_done(false),
+    canceled(false),
+    input1(input1),
+    input2(input2),
+    select(select),
+    search(search),
+    quitSearching(false),
+    searchingCheck(quitSearching, searchingLock.getLock()),
+    characterAddThread(PaintownUtil::Thread::uninitializedValue),
+    subscription(*this),
+    withSubscription(search, subscription){
     }
 
-    std::vector<CharacterInfo *>::iterator nextChar = characters.begin();
-    for (std::vector<CharacterCollect>::iterator i = characterCollection.begin(); i != characterCollection.end(); ++i){
-	CharacterCollect & character = *i;
-        if (character.blank){
-            grid.addBlank();
-        } else if (character.random){
-            if (characters.size() > 0){
-                grid.addCharacter(characters.front(), true);
+    bool is_done, canceled;
+    InputMap<Mugen::Keys> & input1, & input2;
+    Mugen::CharacterSelect & select;
+    Searcher & search;
+    
+    PaintownUtil::Thread::LockObject lock;
+    
+    PaintownUtil::Thread::LockObject searchingLock;
+    volatile bool quitSearching;
+    PaintownUtil::ThreadBoolean searchingCheck;
+
+    PaintownUtil::Thread::Id characterAddThread;
+    PaintownUtil::Thread::LockObject addCharacterLock;
+    std::deque<Filesystem::AbsolutePath> addCharacters;
+
+    class Subscriber: public Searcher::Subscriber {
+    public:
+        Subscriber(SelectLogic & owner):
+        owner(owner){
+        }
+        virtual ~Subscriber(){
+        }
+    
+        virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
+            for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+                const Filesystem::AbsolutePath & path = *it;
+                owner.addCharacter(path);
             }
-	} else {
-            if (nextChar != characters.end()){
-                grid.addCharacter(*nextChar);
-                nextChar++;
+        }
+
+        virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths){
+            for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+                const Filesystem::AbsolutePath & path = *it;
+                owner.addStage(path);
             }
-	}
-    }
+        }
+
+        SelectLogic & owner;
+    };
+
+    Subscriber subscription;
     
-    // Prepare stages
-    for (std::vector<std::string>::iterator i = stageNames.begin(); i != stageNames.end(); ++i){
-	grid.getStageHandler().addStage((*i));
-    }
-    
-    // Setup arcade matches
-    int order = 1;
-    for (std::vector<int>::iterator i = arcadeMaxMatches.begin(); i != arcadeMaxMatches.end();++i){
-	std::vector<CharacterInfo *> tempCharacters = getCharacterGroup(order);
-	std::random_shuffle(tempCharacters.begin(),tempCharacters.end());
-	std::vector<CharacterInfo *>::iterator currentCharacter = tempCharacters.begin();
-	std::queue<CharacterInfo *> characters;
-	for (int m = 0; m < *i; ++m){
-	    if (currentCharacter != tempCharacters.end()){
-		characters.push(*currentCharacter);
-		currentCharacter++;
-	    } else {
-		// No more
-		break;
-	    }
-	}
-	if (!characters.empty()){
-	    arcadeMatches.push(characters);
-	}
-	order++;
-    }
-    
-    // Setup team matches
-    order = 1;
-    for (std::vector<int>::iterator i =  teamMaxMatches.begin(); i != teamMaxMatches.end();++i){
-	std::vector<CharacterInfo *> tempCharacters = getCharacterGroup(order);
-	std::random_shuffle(tempCharacters.begin(),tempCharacters.end());
-	std::vector<CharacterInfo *>::iterator currentCharacter = tempCharacters.begin();
-	std::queue<CharacterInfo *> characters;
-	for (int m = 0; m < *i; ++m){
-	    if (currentCharacter != tempCharacters.end()){
-		characters.push(*currentCharacter);
-		currentCharacter++;
-	    } else {
-		// No more
-		break;
-	    }
-	}
-	if (!characters.empty()){
-	    teamMatches.push(characters);
-	}
-	order++;
-    }
-#endif
-}
-
-static Filesystem::AbsolutePath findSound(const Filesystem::RelativePath & music){
-    try{
-        /* First search by prepending sound to the path */
-        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("sound")).join(music));
-    } catch (const Filesystem::NotFound & fail){
-        /* Then search for the plain file */
-        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(music));
-    }
-}
-
-static void startMusic(const Filesystem::AbsolutePath & systemFile, const string & which){
-    try {
-	string music = Mugen::Util::probeDef(systemFile, "music", which);
-	Music::loadSong(findSound(Filesystem::RelativePath(music)).path());
-	Music::pause();
-	Music::play();
-    } catch (const MugenException & ex){
-    } catch (const Filesystem::NotFound & fail){
-        Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
-    }
-}
-
-void CharacterSelect::run(const std::string & title, Searcher & search){
-    bool escaped = false;
-
     class WithSubscription{
     public:
         WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
@@ -2732,568 +3237,121 @@ void CharacterSelect::run(const std::string & title, Searcher & search){
             search.unsubscribe(&subscription);
         }
     };
-
-    WithSubscription(search, subscription);
-
-    Gui::FadeTool fader;
-    // Set the fade state
-    fader.setState(Gui::FadeTool::FadeIn);
-  
-    // Run select screen background music
-    startMusic(systemFile, "select.bgm");
-
-    class Logic: public PaintownUtil::Logic {
-    public:
-        Logic(Gui::FadeTool & fader, MugenSound * cancelSound, CharacterSelect & select, Background * background, Grid & grid, Cursor & player1Cursor, Cursor & player2Cursor, FontHandler & titleFont):
-        is_done(false),
-        escaped(false),
-        fader(fader),
-        cancelSound(cancelSound),
-        select(select),
-        background(background),
-        grid(grid),
-        player1Cursor(player1Cursor),
-        player2Cursor(player2Cursor),
-        titleFont(titleFont){
-            gameInput = Mugen::getPlayer1Keys(20);
+    
+    WithSubscription withSubscription;
+    
+    void addCharacter(const Filesystem::AbsolutePath & path){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        try {
+            select.addCharacter(Mugen::ArcadeData::CharacterInfo(path));
+        } catch (...){
+            // Can't add character ignore
         }
+    }
+    
+    void addStage(const Filesystem::AbsolutePath & path){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        select.addStage(path);
+    }
+    
+    bool done(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        return is_done;
+    }
 
-        bool is_done;
-        bool escaped;
-        Gui::FadeTool & fader;
-        MugenSound * cancelSound;
-        InputMap<Mugen::Keys> gameInput;
-        CharacterSelect & select;
-        Background * background;
-        Grid & grid;
-        Cursor & player1Cursor;
-        Cursor & player2Cursor;
-        FontHandler & titleFont;
-
-        bool didEscape() const {
-            return escaped;
-        }
-
-        double ticks(double system){
-            return Util::gameTicks(system);
-        }
-
-        void run(){
-            InputSource source;
-            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput, source);
-            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                if (!event.enabled){
-                    continue;
-                }
-
-                if (event[Mugen::Esc]){
-                    is_done = escaped = true;
-                    fader.setState(Gui::FadeTool::FadeOut);
-                    // play cancel sound
-                    if (cancelSound){
-                        cancelSound->play();
+    void run(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Mugen::Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc){
+                    if (!canceled){
+                        select.cancel();
+                        quitSearching = canceled = true;
                     }
-                    InputManager::waitForRelease(gameInput, source, Mugen::Esc);
+                }
+                if (event.out == Left){
+                    select.left(0);
+                }
+                if (event.out == Down){
+                    select.down(0);
+                }
+                if (event.out == Right){
+                    select.right(0);
+                }
+                if (event.out == Up){
+                    select.up(0);
+                }
+                if (event.out == Enter || event.out == Start){
+                    select.select(0);
                 }
             }
-
-            /* *FIXME remove later when solution is found */
-            if (select.checkPlayerData()){
-                is_done = true;
-                fader.setState(Gui::FadeTool::FadeOut);
-            }
-
-            fader.act();
-
-            background->act();
-
-            grid.lock();
-            grid.act(player1Cursor, player2Cursor);
-
-            player1Cursor.act(grid);
-            player2Cursor.act(grid);
-            grid.unlock();
-
-            titleFont.act();
         }
-
-        bool done(){
-            return is_done || fader.getState() == Gui::FadeTool::EndFade;
-        }
-    };
-
-    class Draw: public PaintownUtil::Draw {
-    public:
-        Draw(Background * background, Grid & grid, Cursor & player1Cursor, Cursor & player2Cursor, FontHandler & titleFont, Gui::FadeTool & fader, const string & title):
-        background(background),
-        grid(grid),
-        player1Cursor(player1Cursor),
-        player2Cursor(player2Cursor),
-        titleFont(titleFont),
-        fader(fader),
-        title(title){
-        }
-
-        Background * background;
-        Grid & grid;
-        Cursor & player1Cursor;
-        Cursor & player2Cursor;
-        FontHandler & titleFont;
-        Gui::FadeTool & fader;
-        const string & title;
-
-        void draw(const Graphics::Bitmap & buffer){
-            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, buffer);
-            workArea.start();
-            background->renderBackground(0,0,workArea);
-	    // Render Grid
-            grid.lock();
-	    grid.render(workArea);
-	    // Render cursors
-	    player1Cursor.render(grid, workArea);
-	    player2Cursor.render(grid, workArea);
-            grid.unlock();
-	    
-	    // render title
-	    titleFont.render(title, workArea);
-	    
-	    // render Foregrounds
-	    background->renderForeground(0,0,workArea);
-	    
-	    // render fades
-	    fader.draw(workArea);
-	    
-	    // Finally render to screen
-	    // workArea.Stretch(buffer);
-            workArea.finish();
-	    buffer.BlitToScreen();
-        }
-    };
-
-    Logic logic(fader, cancelSound, *this, background, grid, player1Cursor, player2Cursor, titleFont);
-    Draw draw(background, grid, player1Cursor, player2Cursor, titleFont, fader, title);
-
-    PaintownUtil::standardLoop(logic, draw);
-    
-#if 0
-    while ( ! done && fader.getState() != Gui::FadeTool::EndFade ){
-    
-	bool draw = false;
-	
-        if ( Global::speed_counter3 > 0 ){
-            draw = true;
-            runCounter += Util::gameTicks(Global::speed_counter3);
-            Global::speed_counter3 = 0;
-            while ( runCounter >= 1.0 ){
-                runCounter -= 1;
-                // Key handler
-                InputManager::poll();
-
-                vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(gameInput);
-                for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                    const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                    if (!event.enabled){
-                        continue;
-                    }
-
-                    if (event[Mugen::Esc]){
-                        done = escaped = true;
-                        fader.setState(Gui::FadeTool::FadeOut);
-                        // play cancel sound
-                        if (cancelSound){
-                            cancelSound->play();
-                        }
-                        InputManager::waitForRelease(gameInput, Mugen::Esc);
+        out = InputManager::getEvents(input2, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Mugen::Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc){
+                    if (!canceled){
+                        select.cancel();
+                        quitSearching = canceled = true;
                     }
                 }
-
-                /* *FIXME remove later when solution is found */
-                if (checkPlayerData()){
-                    done = true;
-                    fader.setState(Gui::FadeTool::FadeOut);
+                if (event.out == Left){
+                    select.left(1);
                 }
-
-                // Logic
-
-                // Fader
-                fader.act();
-
-                // Backgrounds
-                background->act();
-
-                // Grid
-                grid.lock();
-                grid.act(player1Cursor, player2Cursor);
-
-                // Cursors
-                player1Cursor.act(grid);
-                player2Cursor.act(grid);
-                grid.unlock();
-
-                // Title
-                titleFont.act();
+                if (event.out == Down){
+                    select.down(1);
+                }
+                if (event.out == Right){
+                    select.right(1);
+                }
+                if (event.out == Up){
+                    select.up(1);
+                }
+                if (event.out == Enter || event.out == Start){
+                    select.select(1);
+                }
             }
         }
-		
-        /* is this needed here? */
-	while ( Global::second_counter > 0 ){
-	    game_time--;
-	    Global::second_counter--;
-	    if (game_time < 0){
-                game_time = 0;
-	    }
-	}
-
-	if ( draw ){
-	    // render backgrounds
-	    background->renderBackground(0,0,workArea);
-	    // Render Grid
-            grid.lock();
-	    grid.render(workArea);
-	    // Render cursors
-	    player1Cursor.render(grid, workArea);
-	    player2Cursor.render(grid, workArea);
-            grid.unlock();
-	    
-	    // render title
-	    titleFont.render(title, workArea);
-	    
-	    // render Foregrounds
-	    background->renderForeground(0,0,workArea);
-	    
-	    // render fades
-	    fader.draw(workArea);
-	    
-	    // Finally render to screen
-	    workArea.Stretch(bmp);
-	    bmp.BlitToScreen();
-	}
-
-	while (Global::speed_counter3 < 1){
-            PaintownUtil::rest(1);
-	}
+        select.act();
+        is_done = select.isDone();
+        if (is_done){
+            quitSearching = is_done;
+        }
     }
-#endif
 
-    quitSearching = true;
-    
-    // **FIXME Hack figure something out
-    if (logic.didEscape()){
-	throw Exception::Return(__FILE__, __LINE__);
+    double ticks(double system){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        return system;
     }
-}
+};
 
-void CharacterSelect::reset(){
-    switch (gameType){
-	case Arcade:
-	    // set first cursor1
-	    if (playerType == Player1){
-		player1Cursor.setState(Cursor::CharacterSelect);
-		player2Cursor.setState(Cursor::NotActive);
-                if (currentStage){
-                    delete currentStage;
-                    if (currentPlayer2->hasRandomStage()){
-                        currentStage = new Mugen::Stage(grid.getStageHandler().getRandomStage());
-                    } else {
-                        currentStage = new Mugen::Stage(Util::findFile(currentPlayer2->getStage()));
-                    }
-                }
-	    } else if (playerType == Player2){
-		player2Cursor.setState(Cursor::CharacterSelect);
-		player1Cursor.setState(Cursor::NotActive);
-                if (currentStage){
-                    delete currentStage;
-                    if (currentPlayer1->hasRandomStage()){
-                        currentStage = new Mugen::Stage(grid.getStageHandler().getRandomStage());
-                    } else {
-                        currentStage = new Mugen::Stage(Util::findFile(currentPlayer1->getStage()));
-                    }
-                }
-	    }
-	    break;
-	case Versus:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    player2Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case TeamArcade:
-	    player1Cursor.setState(Cursor::TeamSelect);
-	    break;
-	case TeamVersus:
-	    player1Cursor.setState(Cursor::TeamSelect);
-	    player2Cursor.setState(Cursor::TeamSelect);
-	    break;
-	case TeamCoop:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case Survival:
-	    player1Cursor.setState(Cursor::TeamSelect);
-	    break;
-	case SurvivalCoop:
-	    player1Cursor.setState(Cursor::CharacterSelect);
-	    break;
-	case Training:
-	    // set first cursor1
-	    if (playerType == Player1){
-		player1Cursor.setState(Cursor::CharacterSelect);
-		player2Cursor.setState(Cursor::NotActive);
-	    } else if (playerType == Player2){
-		player2Cursor.setState(Cursor::CharacterSelect);
-		player1Cursor.setState(Cursor::NotActive);
-	    }
-	    break;
-	case Watch:
-	    // set first cursor1
-	    if (playerType == Player1){
-		player1Cursor.setState(Cursor::CharacterSelect);
-		player2Cursor.setState(Cursor::NotActive);
-	    } else if (playerType == Player2){
-		player2Cursor.setState(Cursor::CharacterSelect);
-		player1Cursor.setState(Cursor::NotActive);
-	    }
-	    break;
-	default:
-	    break;
-    }
-}
-
-void CharacterSelect::renderVersusScreen(){
-
-    // start bgm
-    try {
-        std::string music = Util::probeDef(systemFile, "music", "vs.bgm");
-        Music::loadSong(Util::findFile(Filesystem::RelativePath(music)).path());
-        Music::pause();
-        Music::play();
-    } catch (const MugenException & ex){
-    } catch (const Filesystem::NotFound & fail){
-        Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
+class SelectDraw: public PaintownUtil::Draw {
+public:
+    SelectDraw(Mugen::CharacterSelect & select):
+    select(select){
     }
     
-    versus.render(*currentPlayer1, *currentPlayer2, currentStage);
+    Mugen::CharacterSelect & select;
+
+    void draw(const Graphics::Bitmap & buffer){
+        buffer.clear();
+        Graphics::StretchedBitmap work(320, 240, buffer);
+        work.start();
+        select.draw(work);
+        work.finish();
+        buffer.BlitToScreen();
+    }
+};
+
+PaintownUtil::ReferenceCount<PaintownUtil::Logic> CharacterSelect::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Searcher & search){
+    PaintownUtil::ReferenceCount<SelectLogic> logic = PaintownUtil::ReferenceCount<SelectLogic>(new SelectLogic(input1, input2, *this, search));
+    return logic.convert<PaintownUtil::Logic>();
 }
 
-bool CharacterSelect::setNextArcadeMatch(){
-    vector<PaintownUtil::ReferenceCount<CharacterInfo> > characters = grid.getCharacters();
-    if (characters.size() == 0){
-        return false;
-    }
-    std::random_shuffle(characters.begin(), characters.end());
-
-    if (playerType == Player1){
-	// tempPlayer = currentPlayer2 = characters.front();
-        currentPlayer2 = characters.front();
-        currentPlayer2->setPlayer2Act(PaintownUtil::rnd(1, 12));
-    } else if (playerType == Player2){
-	// tempPlayer = currentPlayer1 = characters.front();
-	currentPlayer1 = characters.front();
-        currentPlayer1->setPlayer1Act(PaintownUtil::rnd(1, 12));
-    }
-        
-    currentStage = new Mugen::Stage(grid.getStageHandler().getRandomStage());
-    
-    return true;
-
-    /* FIXME: redo the arcade stuff */
-    /*
-    if (arcadeMatches.empty()){
-	return false;
-    }
-    std::queue<CharacterInfo *> & characters = arcadeMatches.front();
-    if (characters.empty()){
-	arcadeMatches.pop();
-	if (arcadeMatches.empty()){
-	    return false;
-	}
-	characters = arcadeMatches.front();
-    }
-    CharacterInfo * tempPlayer = NULL;
-    if (playerType == Player1){
-	tempPlayer = currentPlayer2 = characters.front();
-        currentPlayer2->setPlayer2Act(PaintownUtil::rnd(1,12));
-    } else if (playerType == Player2){
-	tempPlayer = currentPlayer1 = characters.front();
-        currentPlayer1->setPlayer1Act(PaintownUtil::rnd(1,12));
-    }
-    characters.pop();
-    if (currentStage){
-        delete currentStage;
-        currentStage = NULL;
-    }
-    if (tempPlayer->hasRandomStage()){
-        currentStage = new Mugen::Stage(Util::findFile(grid.getStageHandler().getRandomStage()));
-    } else {
-        currentStage = new Mugen::Stage(Util::findFile(currentPlayer2->getStage()));
-    }
-    return true;
-    */
-}
-
-bool CharacterSelect::setNextTeamMatch(){
-    return false;
-}
-
-bool CharacterSelect::checkPlayerData(){
-    /* FIXME: theres a bunch of copy/pasted code in here, clean it up */
-    switch (gameType){
-	case Arcade:
-	    if (playerType == Player1){
-		if (player1Cursor.getState() == Cursor::Done){
-		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
-		    return true;
-		}
-	    } else if (playerType == Player2){
-		if (player2Cursor.getState() == Cursor::Done){
-		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer2->setPlayer1Act(player2Cursor.getActSelection());
-		    return true;
-		}
-	    }
-	    break;
-	case Versus:
-	    if ((player1Cursor.getState() == Cursor::Done) && (player2Cursor.getState() == Cursor::Done)){
-		currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
-                currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
-		currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
-                currentPlayer2->setPlayer1Act(player2Cursor.getActSelection());
-		if (currentStage){
-		    delete currentStage;
-		}
-		currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
-		return true;
-	    }
-	    break;
-	case TeamArcade:
-	    /* Ignore */
-	    break;
-	case TeamVersus:
-	    /* Ignore */
-	    break;
-	case TeamCoop:
-	    /* Ignore */
-	    break;
-	case Survival:
-	    /* Ignore */
-	    break;
-	case SurvivalCoop:
-	    /* Ignore */
-	    break;
-	case Training:
-            /* FIXME: I copy/pasted this from watch, is it right? */
-            if (playerType == Player1){
-		if (player1Cursor.getState() == Cursor::Done && !currentPlayer1){
-		    // Store 
-		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
-		    // Reset state and pick next player
-		    player1Cursor.setState(Cursor::CharacterSelect);
-		    grid.setCursorPlayer2Start(player1Cursor);
-		    return false;
-		} else if (player1Cursor.getState() == Cursor::Done && !currentPlayer2){
-		    currentPlayer2 = player1Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer2->setPlayer2Act(player1Cursor.getActSelection());
-		    grid.setCursorStageSelect(player1Cursor);
-		    return false;
-		} else if (player1Cursor.getState() == Cursor::Done){
-		    // Finish up
-		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
-		    return true;
-		}
-	    } else if (playerType == Player2){
-		if (player2Cursor.getState() == Cursor::Done && !currentPlayer2){
-		    // Store
-		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer2->setPlayer2Act(player2Cursor.getActSelection());
-		    // Reset state and pick next player
-		    player2Cursor.setState(Cursor::CharacterSelect);
-		    grid.setCursorPlayer1Start(player2Cursor);
-		    return false;
-		} else if (player2Cursor.getState() == Cursor::Done && !currentPlayer1){
-		    currentPlayer1 = player2Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer1->setPlayer1Act(player2Cursor.getActSelection());
-		    grid.setCursorStageSelect(player2Cursor);
-		    return false;
-		} else if (player2Cursor.getState() == Cursor::Done){
-		    // Finish up
-		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
-		    return true;
-		}
-	    }
-	    break;
-	case Watch:
-	    if (playerType == Player1){
-		if (player1Cursor.getState() == Cursor::Done && !currentPlayer1){
-		    // Store
-		    currentPlayer1 = player1Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer1->setPlayer1Act(player1Cursor.getActSelection());
-		    // Reset state and pick next player
-		    player1Cursor.setState(Cursor::CharacterSelect);
-		    grid.setCursorPlayer2Start(player1Cursor);
-		    return false;
-		} else if (player1Cursor.getState() == Cursor::Done && !currentPlayer2){
-		    currentPlayer2 = player1Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer2->setPlayer2Act(player1Cursor.getActSelection());
-		    grid.setCursorStageSelect(player1Cursor);
-		    return false;
-		} else if (player1Cursor.getState() == Cursor::Done){
-		    // Finish up
-		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
-		    return true;
-		}
-	    } else if (playerType == Player2){
-		if (player2Cursor.getState() == Cursor::Done && !currentPlayer2){
-		    // Store
-		    currentPlayer2 = player2Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer2->setPlayer2Act(player2Cursor.getActSelection());
-		    // Reset state and pick next player
-		    player2Cursor.setState(Cursor::CharacterSelect);
-		    grid.setCursorPlayer1Start(player2Cursor);
-		    return false;
-		} else if (player2Cursor.getState() == Cursor::Done && !currentPlayer1){
-		    currentPlayer1 = player2Cursor.getCurrentCell()->getCharacter();
-                    currentPlayer1->setPlayer1Act(player2Cursor.getActSelection());
-		    grid.setCursorStageSelect(player2Cursor);
-		    return false;
-		} else if (player2Cursor.getState() == Cursor::Done){
-		    // Finish up
-		    currentStage = new Mugen::Stage(grid.getStageHandler().getStage());
-		    return true;
-		}
-	    }
-	    break;
-	default:
-	    /* Ignore */
-	    break;
-    }
-    return false;
-}
-
-/* indexes start at 1 */
-MugenFont * CharacterSelect::getFont(int index) const {
-    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
-        return fonts[index - 1];
-    } else {
-        ostringstream out;
-        out << "No font for index " << index;
-        throw MugenException(out.str(), __FILE__, __LINE__);
-    }
-}
-
-CharacterSelect::Subscriber::Subscriber(CharacterSelect & owner):
-owner(owner){
-}
-
-CharacterSelect::Subscriber::~Subscriber(){
-}
-        
-void CharacterSelect::Subscriber::receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
-    owner.addFiles(paths);
-}
-
-void CharacterSelect::Subscriber::receiveStages(const std::vector<Filesystem::AbsolutePath> & paths){
-    for (vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
-        const Filesystem::AbsolutePath & path = *it;
-        owner.grid.getStageHandler().addStage(path);
-    }
+PaintownUtil::ReferenceCount<PaintownUtil::Draw> CharacterSelect::getDraw(){
+    PaintownUtil::ReferenceCount<SelectDraw> draw = PaintownUtil::ReferenceCount<SelectDraw>(new SelectDraw(*this));
+    return draw.convert<PaintownUtil::Draw>();
 }
