@@ -999,6 +999,7 @@ void Game::doArcade(Searcher & searcher){
         } catch (const Exception::Return & ex){
             return;
         } catch (const QuitGameException & ex){
+            return;
         }
     }
     
