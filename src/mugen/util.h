@@ -611,6 +611,9 @@ public:
         return this->first;
     }
     virtual inline void setSecond(const CharacterInfo & character, int act = 0){
+        if (this->type == Single){
+            return;
+        }
         this->second = character;
         this->second.setAct(act);
         this->secondSet = true;
@@ -619,6 +622,9 @@ public:
         return this->second;
     }
     virtual inline void setThird(const CharacterInfo & character, int act = 0){
+        if (this->type == Single || this->type == Simultaneous){
+            return;
+        }
         this->third = character;
         this->third.setAct(act);
         this->thirdSet = true;
@@ -627,6 +633,9 @@ public:
         return this->third;
     }
     virtual inline void setFourth(const CharacterInfo & character, int act = 0){
+        if (this->type == Single || this->type == Simultaneous){
+            return;
+        }
         this->fourth = character;
         this->fourth.setAct(act);
         this->fourthSet = true;

@@ -1225,7 +1225,7 @@ Mugen::Element::~Element(){
 }
 
 Mugen::ArcadeData::CharacterInfo::CharacterInfo():
-order(0),
+order(1),
 randomStage(true),
 includeStage(true),
 act(0),
@@ -1440,25 +1440,28 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
         for (unsigned int i = 0; i < order.size(); ++i){
             const int currentOrder = i+1;
             const std::vector<Mugen::ArcadeData::CharacterInfo> & orderedCharacters = getCollectionByOrder(currentOrder, type, characters);
+            if (orderedCharacters.empty()){
+                continue;
+            }
             for (int j = 0; j < order[i]; ++j){
-                const int random1 = PaintownUtil::rnd(0, characters.size());
-                const int random2 = PaintownUtil::rnd(0, characters.size());
-                const int random3 = PaintownUtil::rnd(0, characters.size());
-                const int random4 = PaintownUtil::rnd(0, characters.size());
+                const int random1 = PaintownUtil::rnd(0, orderedCharacters.size());
+                const int random2 = PaintownUtil::rnd(0, orderedCharacters.size());
+                const int random3 = PaintownUtil::rnd(0, orderedCharacters.size());
+                const int random4 = PaintownUtil::rnd(0, orderedCharacters.size());
                 
                 Mugen::ArcadeData::CharacterInfo first = orderedCharacters[random1];
                 if (first.getRandomStage()){
                     first.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
-                Mugen::ArcadeData::CharacterInfo second = orderedCharacters[random1];
+                Mugen::ArcadeData::CharacterInfo second = orderedCharacters[random2];
                 if (second.getRandomStage()){
                     second.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
-                Mugen::ArcadeData::CharacterInfo third = orderedCharacters[random1];
+                Mugen::ArcadeData::CharacterInfo third = orderedCharacters[random3];
                 if (third.getRandomStage()){
                     third.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
-                Mugen::ArcadeData::CharacterInfo fourth = orderedCharacters[random1];
+                Mugen::ArcadeData::CharacterInfo fourth = orderedCharacters[random4];
                 if (fourth.getRandomStage()){
                     fourth.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
@@ -1469,22 +1472,6 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
                 collection.setThird(third);
                 collection.setFourth(fourth);
                 opponents.push(collection);
-                
-                /*switch (type){
-                    case Mugen::ArcadeData::CharacterCollection::Simultaneous:
-                        break;
-                    case Mugen::ArcadeData::CharacterCollection::Turns2:
-                        break;
-                    case Mugen::ArcadeData::CharacterCollection::Turns3:
-                        break;
-                    case Mugen::ArcadeData::CharacterCollection::Turns4:
-                        break;
-                    case Mugen::ArcadeData::CharacterCollection::Single:
-                        Mugen::ArcadeData::CharacterInfo collection(type);
-                        
-                    default:
-                        break;
-                }*/
             }
         }
     }

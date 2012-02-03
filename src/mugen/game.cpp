@@ -718,12 +718,43 @@ void Game::doWatch(Searcher & searcher){
 }
 
 void Game::doArcade(Searcher & searcher){
-#if 0
-    Mugen::CharacterSelect select(systemFile, playerType, gameType);
-    select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
-    select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
-    select.load();
-    select.run("Arcade", searcher);
+    Mugen::CharacterSelect select(systemFile);
+    select.init();
+    if (playerType == Mugen::Player1){
+        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+    } else {
+        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player2);
+    }
+    InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+    InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+    InputMap<Mugen::Keys> playerKeys;
+    HumanBehavior behavior(keys1, keys2);
+    LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+    PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+    PaintownUtil::standardLoop(*logic, *draw);
+    
+    if (select.wasCanceled()){
+        return;
+    }
+    
+    Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
+    Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
+    
+    PaintownUtil::ReferenceCount<Mugen::Character> player1 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+    PaintownUtil::ReferenceCount<Mugen::Character> player2 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+    
+    bool playerLoaded = false;
+    if (playerType == Mugen::Player1){
+        player1Collection = select.getPlayer1().getCollection();
+        playerKeys = keys1;
+        behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+    } else {
+        player2Collection = select.getPlayer2().getCollection();
+        playerKeys = keys2;
+        behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+    }
+    
     Filesystem::AbsolutePath intro;
     Filesystem::AbsolutePath ending;
     bool displayWinScreen = false;
@@ -738,10 +769,11 @@ void Game::doArcade(Searcher & searcher){
     // get intro and ending for player
     Filesystem::AbsolutePath file;
     if (playerType == Player1){
-        file = select.getPlayer1Def();
+        file = player1Collection.getFirst().getDef();
     } else {
-        file = select.getPlayer2Def();
+        file = player2Collection.getFirst().getDef();
     }
+    
     Filesystem::AbsolutePath baseDir = file.getDirectory();
     try{
         intro = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(Util::probeDef(file, "arcade", "intro.storyboard")));
@@ -805,93 +837,101 @@ void Game::doArcade(Searcher & searcher){
     } catch (const Filesystem::NotFound & fail){
         Global::debug(0) << "Failed to get end credits from " << systemFile.path() << " " << fail.getTrace() << std::endl;
     }
-
-    InputMap<Mugen::Keys> input;
-    // Get player keys
-    if (playerType == Mugen::Player1){
-        input = Mugen::getPlayer1Keys(20);
-    } else if (playerType == Mugen::Player2){
-        input = Mugen::getPlayer2Keys(20);
-    }
-	
+    
     // Run intro before we begin game
     if (!intro.isEmpty()){
         try{
             Storyboard story(intro, true);
-            story.setInput(input);
+            story.setInput(playerKeys);
             story.run();
         } catch (...){
             Global::debug(0) << "Failed to load storyboard for some reason" << std::endl;
         }
     }
-
-    HumanBehavior player1HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
-    HumanBehavior player2HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
-
-    // RandomAIBehavior player1AIBehavior;
-    // RandomAIBehavior player2AIBehavior;
-    LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
-    LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
-
-    bool quit = false;
     
+    bool quit = false;
     // Total wins from player
     int wins = 0;
-
     // Display game over storyboard
     bool displayGameOver = false;
-
-    // Set initial oponent
-    if (!select.setNextArcadeMatch()){
-        throw MugenException("Could not set up arcade match", __FILE__, __LINE__);
-    }
+    // Match data
+    Mugen::ArcadeData::MatchPath match = select.getArcadePath();
     
-    try{
-        while (!quit){
-            select.renderVersusScreen();
-	    
-	    /* Reset characters. TODO: why? */
-	    select.getPlayer1()->resetPlayer();
-	    select.getPlayer2()->resetPlayer();
-
-            /* this is the guy thats in control */
-            Mugen::Character * player = 0;
-	    std::string musicOverride;
+    // Rematch?
+    bool rematch = false;
+    
+    while (!quit){
+        if (!rematch){
             if (playerType == Mugen::Player1){
-                player = select.getPlayer1();
-                player->setBehavior(&player1HumanBehavior);
-                select.getPlayer2()->setBehavior(&player2AIBehavior);
-                // player->setInput(getPlayer1Keys(), getPlayer1InputLeft());
-		// Get music from character
-		musicOverride = select.getPlayer2Music();
-            } else if (playerType == Mugen::Player2){
-                player = select.getPlayer2();
-                // player->setInput(getPlayer2Keys(), getPlayer2InputLeft());
-                player->setBehavior(&player2HumanBehavior);
-                select.getPlayer1()->setBehavior(&player1AIBehavior);
-		// Get music from character
-		musicOverride = select.getPlayer1Music();
+                player2Collection = match.next();
+            } else {
+                player1Collection = match.next();
             }
-
-
-            Mugen::Stage *stage = select.getStage();
-
-            // Lets reset the stage for good measure
-            stage->reset();
-
-            runMatch(stage, musicOverride);
-
-            /*! *FIXME *TODO
-             * Set next match and check if we have 
-             * completed the game to handle appropriately and other misc arcade stuff
-             */
-            // Check players wins
-            if (player->getMatchWins() > wins){
-                wins = player->getMatchWins();
+        }
+        {
+            VersusMenu versus(systemFile);
+            versus.init(player1Collection, player2Collection);
+            PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+            PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+            PaintownUtil::standardLoop(*logic, *draw);
+            if (versus.wasCanceled()){
+                return;
+            }
+        }
+        PaintownUtil::ReferenceCount<Mugen::Character> ourPlayer = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+        Filesystem::AbsolutePath stagePath;
+        Filesystem::AbsolutePath musicOverride;
+        if (playerType == Mugen::Player1){
+            if (!playerLoaded){
+                player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player1Side));
+                player1->load(player1Collection.getFirst().getAct());
+                playerLoaded = true;
+            }
+            if (!rematch){
+                player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
+                player2->load(player2Collection.getFirst().getAct());
+            } else {
+                player2->resetPlayer();
+                rematch = false;
+            }
+                
+            ourPlayer = player1;
+            player1->setBehavior(&behavior);
+            player2->setBehavior(&AIBehavior);
+            stagePath = player2Collection.getFirst().getStage();
+        } else {
+            if (!playerLoaded){
+                player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
+                player2->load(player2Collection.getFirst().getAct());
+                playerLoaded = true;
+            }
+            if (!rematch){
+                player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player2Side));
+                player1->load(player1Collection.getFirst().getAct());
+            } else {
+                player1->resetPlayer();
+                rematch = false;
+            }
+            
+            ourPlayer = player2;
+            player2->setBehavior(&behavior);
+            player1->setBehavior(&AIBehavior);
+            stagePath = player1Collection.getFirst().getStage();
+        }
+        // FIXME use override music later
+        Mugen::Stage stage(stagePath);
+        stage.addPlayer1(player1.raw());
+        stage.addPlayer2(player2.raw());
+        stage.load();
+        stage.reset();
+        try {
+            runMatch(&stage);
+            if (ourPlayer->getMatchWins() > wins){
+                wins = ourPlayer->getMatchWins();
                 // Reset player for next match
-                player->resetPlayer();
+                ourPlayer->resetPlayer();
                 // There is a win they may proceed
-                if (!select.setNextArcadeMatch()){
+                if (!match.hasMore()){
                     // Game is over and player has won display ending storyboard
                     if (displayWinScreen && ending.isEmpty()){
                         // Need to parse that and display it for now just ignore
@@ -900,26 +940,26 @@ void Game::doArcade(Searcher & searcher){
                         if (defaultEndingEnabled){
                             if (!defaultEnding.isEmpty()){
                                 Storyboard story(defaultEnding, true);
-                                story.setInput(input);
+                                story.setInput(playerKeys);
                                 story.run();
                             }
                         }
                     } else if (defaultEndingEnabled && ending.isEmpty()){
                         if (!defaultEnding.isEmpty()){
                             Storyboard story(defaultEnding, true);
-                            story.setInput(input);
+                            story.setInput(playerKeys);
                             story.run();
                         }
                     } else if (!ending.isEmpty()){
                         Storyboard story(ending, true);
-                        story.setInput(input);
+                        story.setInput(playerKeys);
                         story.run();
                     } 
                     if (creditsEnabled){                    
                         // credits
                         if (!credits.isEmpty()){
                             Storyboard story(defaultEnding, true);
-                            story.setInput(input);
+                            story.setInput(playerKeys);
                             story.run();
                         }
                     }
@@ -927,28 +967,49 @@ void Game::doArcade(Searcher & searcher){
                 }
             } else {
                 // Player lost do continue screen if enabled for now just quit
-                if (stage->doContinue(playerType, input)){
-                    select.reset();
-                    select.getPlayer1()->resetPlayer();
-                    select.getPlayer2()->resetPlayer();
-                    select.run("Arcade", searcher);
+                if (stage.doContinue(playerType, playerKeys)){
+                    if (playerType == Mugen::Player1){
+                        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+                    } else {
+                        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player2);
+                    }
+                    PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+                    PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+                    PaintownUtil::standardLoop(*logic, *draw);
+                    
+                    if (select.wasCanceled()){
+                        return;
+                    }
+                    
+                    if (playerType == Mugen::Player1){
+                        player1Collection = select.getPlayer1().getCollection();
+                        playerLoaded = false;
+                        rematch = true;
+                        wins = 0;
+                    } else {
+                        player2Collection = select.getPlayer2().getCollection();
+                        playerLoaded = false;
+                        rematch = true;
+                        wins = 0;
+                    }
                 } else {
                     quit = displayGameOver = true;
                 }
             }
+        } catch (const Exception::Return & ex){
+            return;
+        } catch (const QuitGameException & ex){
         }
-    } catch (const QuitGameException & e){
     }
-
+    
     // Show game over if ended through game otherwise just get out
     if (displayGameOver){
         if (!gameOver.isEmpty()){
             Storyboard story(gameOver, true);
-            story.setInput(input);
+            story.setInput(playerKeys);
             story.run();
         }
     }
-#endif
 }
 
 void Game::doVersus(Searcher & searcher){
