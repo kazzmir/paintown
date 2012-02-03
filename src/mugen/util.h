@@ -542,7 +542,12 @@ public:
     virtual inline const std::string & getDisplayName() const {
         return this->displayName;
     }
-    
+    virtual inline void setAct(int act){
+        this->act = act;
+    }
+    virtual inline int getAct() const {
+        return this->act;
+    }
 protected:
     //! Definition file
     Filesystem::AbsolutePath definition;
@@ -560,6 +565,8 @@ protected:
     std::string name;
     //! Display name
     std::string displayName;
+    //! Act position
+    int act;
     //! Icon
     PaintownUtil::ReferenceCount<MugenSprite> icon;
     //! Portrait
@@ -585,7 +592,7 @@ public:
     
     virtual bool checkSet() const;
     
-    virtual void setNext(const CharacterInfo &);
+    virtual void setNext(const CharacterInfo &, int act = 0);
     
     virtual const CharacterInfo & getLastSet() const;
     
@@ -595,29 +602,33 @@ public:
     virtual inline const Type & getType() const {
         return this->type;
     }
-    virtual inline void setFirst(const CharacterInfo & character){
+    virtual inline void setFirst(const CharacterInfo & character, int act = 0){
         this->first = character;
+        this->first.setAct(act);
         this->firstSet = true;
     }
     virtual inline const CharacterInfo & getFirst() const {
         return this->first;
     }
-    virtual inline void setSecond(const CharacterInfo & character){
+    virtual inline void setSecond(const CharacterInfo & character, int act = 0){
         this->second = character;
+        this->second.setAct(act);
         this->secondSet = true;
     }
     virtual inline const CharacterInfo & getSecond() const {
         return this->second;
     }
-    virtual inline void setThird(const CharacterInfo & character){
+    virtual inline void setThird(const CharacterInfo & character, int act = 0){
         this->third = character;
+        this->third.setAct(act);
         this->thirdSet = true;
     }
     virtual inline const CharacterInfo & getThird() const {
         return this->third;
     }
-    virtual inline void setFourth(const CharacterInfo & character){
+    virtual inline void setFourth(const CharacterInfo & character, int act = 0){
         this->fourth = character;
+        this->fourth.setAct(act);
         this->fourthSet = true;
     }
     virtual inline const CharacterInfo & getFourth() const {

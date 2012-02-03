@@ -24,7 +24,8 @@ fontx2(0),
 fonty1(0),
 fonty2(0),
 player1(Mugen::ArcadeData::CharacterCollection::Single),
-player2(Mugen::ArcadeData::CharacterCollection::Single){
+player2(Mugen::ArcadeData::CharacterCollection::Single),
+canceled(false){
     try{
         Filesystem::AbsolutePath baseDir = path.getDirectory();
 
@@ -215,6 +216,11 @@ void VersusMenu::draw(const Graphics::Bitmap & work){
 void VersusMenu::cancel(){
     // Fade out
     fader.setState(Gui::FadeTool::FadeOut);
+    canceled = true;
+}
+
+void VersusMenu::skip(){
+    fader.setState(Gui::FadeTool::FadeOut);
 }
 
 bool VersusMenu::isDone(){
@@ -284,10 +290,16 @@ public:
         for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
             const InputMap<Keys>::InputEvent & event = *it;
             if (event.enabled){
-                if (event.out == Esc || event.out == Enter){
+                if (event.out == Esc){
                     if (!canceled){
                         canceled = true;
                         versus.cancel();
+                    }
+                }
+                if (event.out == Enter || event.out == A || event.out == B || event.out == C || event.out == X || event.out == Y || event.out == Z){
+                    if (!canceled){
+                        canceled = true;
+                        versus.skip();
                     }
                 }
             }
@@ -296,10 +308,16 @@ public:
         for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
             const InputMap<Keys>::InputEvent & event = *it;
             if (event.enabled){
-                if (event.out == Esc || event.out == Enter){
+                if (event.out == Esc){
                     if (!canceled){
                         canceled = true;
                         versus.cancel();
+                    }
+                }
+                if (event.out == Enter || event.out == A || event.out == B || event.out == C || event.out == X || event.out == Y || event.out == Z){
+                    if (!canceled){
+                        canceled = true;
+                        versus.skip();
                     }
                 }
             }

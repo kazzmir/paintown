@@ -387,7 +387,7 @@ public:
     virtual void down();
     virtual void left();
     virtual void right();
-    virtual void select();
+    virtual void select(int act = 0);
     
     virtual void setPortraitEffects(const Mugen::Effects &, const Mugen::Effects &);
     
@@ -453,7 +453,7 @@ protected:
     const Mugen::ArcadeData::CharacterInfo & getCurrentCell();
     
     //! Next selection
-    void next();
+    void next(int act = 0);
     
     //! Draw profile info
     void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, FontHandler &, const Graphics::Bitmap &);
@@ -530,7 +530,7 @@ public:
     //! Move right
     virtual void right(unsigned int cursor);
     //! Make current selection
-    virtual void select(unsigned int cursor);
+    virtual void select(unsigned int cursor, int act = 0);
     //! Add Character
     virtual bool addCharacter(const Mugen::ArcadeData::CharacterInfo &);
     //! Add Empty slot

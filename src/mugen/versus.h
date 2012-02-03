@@ -26,6 +26,8 @@ public:
     
     virtual void cancel();
     
+    virtual void skip();
+    
     virtual bool isDone();
     
     //! Get Logic class
@@ -33,6 +35,11 @@ public:
     
     //! Get Draw class
     PaintownUtil::ReferenceCount<PaintownUtil::Draw> getDraw();
+    
+    //! Was canceled
+    inline bool wasCanceled() const {
+        return this->canceled;
+    }
     
 protected:
     //! Draw portrait
@@ -61,6 +68,8 @@ protected:
     //! CharacterCollection
     Mugen::ArcadeData::CharacterCollection player1;
     Mugen::ArcadeData::CharacterCollection player2;
+    //! Canceled?
+    bool canceled;
 };
 }
 #endif

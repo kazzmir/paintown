@@ -1228,6 +1228,7 @@ Mugen::ArcadeData::CharacterInfo::CharacterInfo():
 order(0),
 randomStage(true),
 includeStage(true),
+act(0),
 icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
 portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
 }
@@ -1237,6 +1238,7 @@ definition(file),
 order(1),
 randomStage(true),
 includeStage(true),
+act(0),
 icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
 portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
     try{
@@ -1249,10 +1251,10 @@ portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
         /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
         std::vector<Filesystem::RelativePath> actCollection;
         for (int i = 0; i < 12; ++i){
-            stringstream act;
-            act << "pal" << i;
+            stringstream actName;
+            actName << "pal" << i;
             try {
-                std::string actFile = Util::probeDef(parsed, "files", act.str());
+                std::string actFile = Util::probeDef(parsed, "files", actName.str());
                 actCollection.push_back(Filesystem::RelativePath(actFile));
             } catch (const MugenException &me){
                 // Ran its course got what we needed
@@ -1287,6 +1289,7 @@ randomStage(copy.randomStage),
 includeStage(copy.includeStage),
 name(copy.name),
 displayName(copy.displayName),
+act(copy.act),
 icon(copy.icon),
 portrait(copy.portrait){
 }
@@ -1303,6 +1306,7 @@ const Mugen::ArcadeData::CharacterInfo & Mugen::ArcadeData::CharacterInfo::opera
     includeStage = copy.includeStage;
     name = copy.name;
     displayName = copy.displayName;
+    act = copy.act;
     icon = copy.icon;
     portrait = copy.portrait;
     return *this;
@@ -1377,18 +1381,22 @@ bool Mugen::ArcadeData::CharacterCollection::checkSet() const {
     return false;
 }
 
-void Mugen::ArcadeData::CharacterCollection::setNext(const CharacterInfo & character){
+void Mugen::ArcadeData::CharacterCollection::setNext(const CharacterInfo & character, int act){
     if (!firstSet){
         first = character;
+        first.setAct(act);
         firstSet = true;
     } else if (!secondSet){
         second = character;
+        first.setAct(act);
         secondSet = true;
     } else if (!thirdSet){
         third = character;
+        first.setAct(act);
         thirdSet = true;
     } else if (!fourthSet){
         fourth = character;
+        first.setAct(act);
         fourthSet = true;
     }
 }

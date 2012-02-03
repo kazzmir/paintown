@@ -1519,11 +1519,11 @@ void Player::right(){
     }
 }
 
-void Player::select(){
+void Player::select(int act){
     switch (selectState){
         case Team:
             sounds.play(teamDoneSound);
-            next();
+            next(act);
             break;
         case Character:
             if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
@@ -1533,7 +1533,7 @@ void Player::select(){
                 } else {
                     cells[grid.getCurrentIndex(cursor)]->select();
                 }
-                next();
+                next(act);
             }
             break;
         case Opponent:
@@ -1544,16 +1544,16 @@ void Player::select(){
                 } else {
                     cells[grid.getCurrentIndex(cursor)]->select();
                 }
-                next();
+                next(act);
             }
             break;
         case OpponentTeam:
             sounds.play(teamDoneSound);
-            next();
+            next(act);
             break;
         case Stage:
             sounds.play(SoundSystem::StageDone);
-            next();
+            next(act);
             break;
         case NotStarted:
         case Finished:
@@ -1572,7 +1572,7 @@ void Player::setCurrentGameType(const Mugen::GameType & type){
     next();
 }
 
-void Player::next(){
+void Player::next(int act){
     switch (currentGameType){
         case Mugen::Arcade:
             switch (selectState){
@@ -1582,7 +1582,7 @@ void Player::next(){
                     grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Character:
-                    collection.setFirst(getCurrentCell());
+                    collection.setFirst(getCurrentCell(), act);
                     selectState = Finished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     break;
@@ -1598,7 +1598,7 @@ void Player::next(){
                     grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Character:
-                    collection.setFirst(getCurrentCell());
+                    collection.setFirst(getCurrentCell(), act);
                     if (!stageMenu.getFinished()){
                         selectState = Stage;
                         stageMenu.setEnabled(true);
@@ -1629,7 +1629,7 @@ void Player::next(){
                     break;
                 case Character:
                     if (!collection.checkSet()){
-                        collection.setNext(getCurrentCell());
+                        collection.setNext(getCurrentCell(), act);
                         if (collection.checkSet()){
                             selectState = OpponentTeam;
                             opponentTeamMenu.setEnabled(true);
@@ -1661,7 +1661,7 @@ void Player::next(){
                     break;
                 case Character:
                     if (!collection.checkSet()){
-                        collection.setNext(getCurrentCell());
+                        collection.setNext(getCurrentCell(), act);
                         if (collection.checkSet()){
                             if (!stageMenu.getFinished()){
                                 selectState = Stage;
@@ -1690,7 +1690,7 @@ void Player::next(){
                     grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Character:
-                    collection.setFirst(getCurrentCell());
+                    collection.setFirst(getCurrentCell(), act);
                     selectState = WaitFinished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     throw CooperativeException();
@@ -1719,7 +1719,7 @@ void Player::next(){
                     break;
                 case Character:
                     if (!collection.checkSet()){
-                        collection.setNext(getCurrentCell());
+                        collection.setNext(getCurrentCell(), act);
                         if (collection.checkSet()){
                             selectState = OpponentTeam;
                             opponentTeamMenu.setEnabled(true);
@@ -1750,7 +1750,7 @@ void Player::next(){
                     grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Character:
-                    collection.setFirst(getCurrentCell());
+                    collection.setFirst(getCurrentCell(), act);
                     selectState = WaitFinished;
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     throw CooperativeException();
@@ -1783,12 +1783,12 @@ void Player::next(){
                     grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Character:
-                    collection.setFirst(getCurrentCell());
+                    collection.setFirst(getCurrentCell(), act);
                     selectState = Opponent;
                     grid.setCurrentIndex(cursor, opponentCursorPosition);
                     break;
                 case Opponent:
-                    opponentCollection.setFirst(getCurrentCell());
+                    opponentCollection.setFirst(getCurrentCell() , act);
                     grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                     selectState = Stage;
                     stageMenu.setEnabled(true);
@@ -1816,7 +1816,7 @@ void Player::next(){
                     break;
                 case Character:
                     if (!collection.checkSet()){
-                        collection.setNext(getCurrentCell());
+                        collection.setNext(getCurrentCell(), act);
                         if (collection.checkSet()){
                             selectState = OpponentTeam;
                             opponentTeamMenu.setEnabled(true);
@@ -1833,7 +1833,7 @@ void Player::next(){
                     break;
                 case Opponent:
                     if (!opponentCollection.checkSet()){
-                        opponentCollection.setNext(getCurrentCell());
+                        opponentCollection.setNext(getCurrentCell() , act);
                         if (opponentCollection.checkSet()){
                             grid.setCurrentState(cursor, Gui::SelectListInterface::Done);
                             selectState = Stage;
@@ -2926,7 +2926,7 @@ void CharacterSelect::right(unsigned int cursor){
     }
 }
 
-void CharacterSelect::select(unsigned int cursor){
+void CharacterSelect::select(unsigned int cursor, int act){
     if (cursor == 0){
         try {
             player1.select();
@@ -3283,8 +3283,23 @@ public:
                 if (event.out == Up){
                     select.up(0);
                 }
-                if (event.out == Enter || event.out == Start){
-                    select.select(0);
+                if (event.out == A){
+                    select.select(0, 0);
+                }
+                if (event.out == B){
+                    select.select(0, 1);
+                }
+                if (event.out == C){
+                    select.select(0, 2);
+                }
+                if (event.out == X){
+                    select.select(0, 3);
+                }
+                if (event.out == Y){
+                    select.select(0, 4);
+                }
+                if (event.out == Z){
+                    select.select(0, 5);
                 }
             }
         }
@@ -3310,8 +3325,23 @@ public:
                 if (event.out == Up){
                     select.up(1);
                 }
-                if (event.out == Enter || event.out == Start){
-                    select.select(1);
+                if (event.out == A){
+                    select.select(1, 0);
+                }
+                if (event.out == B){
+                    select.select(1, 1);
+                }
+                if (event.out == C){
+                    select.select(1, 2);
+                }
+                if (event.out == X){
+                    select.select(1, 3);
+                }
+                if (event.out == Y){
+                    select.select(1, 4);
+                }
+                if (event.out == Z){
+                    select.select(1, 5);
                 }
             }
         }

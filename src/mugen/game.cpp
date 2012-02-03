@@ -678,66 +678,43 @@ void Game::doWatch(Searcher & searcher){
         if (select.wasCanceled()){
             return;
         }
-        
         //! FIXME Get first for now, later support team/turns
+        Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
+        Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
         if (playerType == Mugen::Player1){
-            {
-                VersusMenu versus(systemFile);
-                versus.init(select.getPlayer1().getCollection(), select.getPlayer1().getOpponentCollection());
-                PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
-                PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
-                PaintownUtil::standardLoop(*logic, *draw);
-            }
-            Global::debug(0) << "Loading player1: " << select.getPlayer1().getCollection().getFirst().getDef().path() << std::endl;
-            Mugen::Character player1(select.getPlayer1().getCollection().getFirst().getDef(), Stage::Player1Side);
-            player1.load(1);
-            Global::debug(0) << "Loading player2" << std::endl;
-            Mugen::Character player2(select.getPlayer1().getOpponentCollection().getFirst().getDef(), Stage::Player2Side);
-            player2.load(1);
-            player1.setBehavior(&player1AIBehavior);
-            player2.setBehavior(&player2AIBehavior);
-            Mugen::Stage stage(select.getStage());
-            stage.addPlayer1(&player1);
-            stage.addPlayer2(&player2);
-            Global::debug(0) << "Loading Stage" << std::endl;
-            stage.load();
-            stage.reset();
-            try {
-                runMatch(&stage);
-            } catch (const Exception::Return & ex){
-            } catch (const QuitGameException & ex){
-            }
+            player1Collection = select.getPlayer1().getCollection();
+            player2Collection = select.getPlayer1().getOpponentCollection();
         } else {
-            
+            player2Collection = select.getPlayer2().getCollection();
+            player1Collection = select.getPlayer2().getOpponentCollection();
         }
-    }
-    
-#if 0
-    /* Do watch screen */
-    bool quit = false;
-    while (!quit){
-	Mugen::CharacterSelect select(systemFile, playerType, gameType);
-	select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
-	select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
-	select.load();
-        try{
-            {
-                select.run("Watch Mode", searcher);
-                select.renderVersusScreen();
+        {
+            VersusMenu versus(systemFile);
+            versus.init(player1Collection, player2Collection);
+            PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+            PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+            PaintownUtil::standardLoop(*logic, *draw);
+            if (versus.wasCanceled()){
+                continue;
             }
-            LearningAIBehavior player1AIBehavior(Mugen::Data::getInstance().getDifficulty());
-            LearningAIBehavior player2AIBehavior(Mugen::Data::getInstance().getDifficulty());
-            select.getPlayer1()->setBehavior(&player1AIBehavior);
-            select.getPlayer2()->setBehavior(&player2AIBehavior);
-            Mugen::Stage *stage = select.getStage();
-            stage->reset();
-            runMatch(stage);
-        } catch (const Exception::Return & e){
-	    quit = true;
-	} catch (const QuitGameException & e){
+        }
+        Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
+        player1.load(player1Collection.getFirst().getAct());
+        Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
+        player2.load(player2Collection.getFirst().getAct());
+        player1.setBehavior(&player1AIBehavior);
+        player2.setBehavior(&player2AIBehavior);
+        Mugen::Stage stage(select.getStage());
+        stage.addPlayer1(&player1);
+        stage.addPlayer2(&player2);
+        stage.load();
+        stage.reset();
+        try {
+            runMatch(&stage);
+        } catch (const Exception::Return & ex){
+        } catch (const QuitGameException & ex){
         }
     }
-#endif 
 }
 
 void Game::doArcade(Searcher & searcher){
