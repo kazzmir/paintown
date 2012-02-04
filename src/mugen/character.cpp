@@ -1090,7 +1090,8 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
 }
 
 void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs){
-    /* FIXME: change to states in the characters own cns file */
+    characterData.who = NULL;
+    characterData.enabled = false;
     changeState(stage, state, inputs);
 }
 
@@ -2105,6 +2106,10 @@ void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, Muge
     }
 }
 
+bool Character::isBound() const {
+    return bind.time > 0;
+}
+
 void Character::bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY){
     bind.bound = bound;
     bind.time = time;
@@ -2785,6 +2790,11 @@ void Character::unbind(Object * who){
         bind.time = 0;
     }
 
+    if (characterData.who == who){
+        characterData.who = NULL;
+        characterData.enabled = false;
+    }
+
     for (map<int, Object*>::iterator it = targets.begin(); it != targets.end(); /**/){
         if (it->second == who){
             map<int, Object*>::iterator kill = it;
@@ -2923,6 +2933,9 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 }
 
 void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hisHit){
+    characterData.who = NULL;
+    characterData.enabled = false;
+
     wasHitCounter += 1;
     hitState.update(stage, *this, getY() > 0, hisHit);
     setXVelocity(hitState.xVelocity);
@@ -2941,9 +2954,14 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     
-    vector<string> active;
-    /* FIXME: replace 5000 with some constant */
-    changeState(stage, 5000, active);
+    if (hisHit.player2State != -1){
+        /* Use the state data from the enemy until we are hit or call SelfState */
+        useCharacterData((Character*) enemy);
+        changeState(stage, hisHit.player2State);
+    } else {
+        /* FIXME: replace 5000 with some constant */
+        changeState(stage, 5000);
+    }
 
     /*
     vector<string> active;
@@ -3781,6 +3799,10 @@ void Character::setDrawOffset(double x, double y){
 }
     
 State * Character::getState(int id) const {
+    if (characterData.enabled && characterData.who != NULL){
+        return characterData.who->getState(id);
+    }
+
     if (states.find(id) != states.end()){
         return states.find(id)->second;
     }
@@ -3821,6 +3843,11 @@ void Character::roundEnd(){
 
 bool Character::isAttacking() const { 
     return getMoveType() == Move::Attack;
+}
+    
+void Character::useCharacterData(const Character * who){
+    characterData.who = who;
+    characterData.enabled = true;
 }
         
 }

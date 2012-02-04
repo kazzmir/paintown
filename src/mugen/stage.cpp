@@ -2265,7 +2265,13 @@ int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
 vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Character * from) const {
     vector<Mugen::Character *> targets;
     if (id == -1){
-        /* TODO: match all enemies */
+        for (vector<Mugen::Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            /* FIXME: change to Character */
+            Mugen::Object * enemy = *enem;
+            if (from->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
+                targets.push_back((Mugen::Character*) enemy);
+            }
+        }
     } else {
         Mugen::Object * target = from->getTargetId(id);
         if (target != NULL){

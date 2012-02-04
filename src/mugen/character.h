@@ -1068,6 +1068,9 @@ public:
          * on them, but won't change states or anything.
          */
         virtual void testStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
+    
+        /* Is bound by a TargetBind or whatever */
+        virtual bool isBound() const;
 
 protected:
     void initialize();
@@ -1107,6 +1110,8 @@ protected:
     virtual void fixAssumptions();
     virtual StateController * parseState(Ast::Section * section);
     virtual State * parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path);
+
+    virtual void useCharacterData(const Character * who);
 
     // InputMap<Mugen::Keys> & getInput();
 
@@ -1649,6 +1654,16 @@ public:
          * Mugen 1.0
          */
         double airGetHitGroundLevel;
+
+        struct CharacterData {
+            CharacterData():
+            who(NULL),
+            enabled(false){
+            }
+
+            const Character * who;
+            bool enabled;
+        } characterData;
 };
 
 }

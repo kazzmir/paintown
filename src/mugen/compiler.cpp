@@ -3747,11 +3747,14 @@ public:
                  * attacker's TargetBind controller. Useful to prevent being stuck
                  * in thrown states. (int)
                  */
-                /* FIXME */
                 class HitVarIsBound: public HitVar {
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
-                        return RuntimeValue(false);
+                        return RuntimeValue(environment.getCharacter().isBound());
+                    }
+
+                    virtual std::string toString() const {
+                        return "gethitvar(isbound)";
                     }
 
                     Value * copy() const {
@@ -4365,7 +4368,21 @@ public:
 
             virtual std::string toString() const {
                 std::ostringstream out;
-                out << "-" << expression->toString();
+                switch (type){
+                    case Ast::ExpressionUnary::Not : {
+                        out << "!";
+                        break;
+                    }
+                    case Ast::ExpressionUnary::Minus : {
+                        out << "-";
+                        break;
+                    }
+                    case Ast::ExpressionUnary::Negation : {
+                        out << "~";
+                        break;
+                    }
+                }
+                out << expression->toString();
                 return out.str();
             }
 
