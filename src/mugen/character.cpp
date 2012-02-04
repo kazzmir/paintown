@@ -2810,7 +2810,7 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
     if (bind.time > 0 && bind.bound != NULL){
         bind.time -= 1;
         setX(bind.bound->getX() + bind.offsetX);
-        setY(bind.bound->getY() + bind.offsetY);
+        setY(bind.bound->getY() - bind.offsetY);
         switch (bind.facing){
             case -1: setFacing(bind.bound->getOppositeFacing()); break;
             case 0: maybeTurn(objects, stage); break;
