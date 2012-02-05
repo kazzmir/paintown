@@ -1039,7 +1039,7 @@ public:
         virtual void setSpritePriority(int priority);
         virtual int getSpritePriority() const;
         
-        virtual void setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
+        virtual void setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
 
         virtual bool isHelper() const;
 
@@ -1116,6 +1116,8 @@ protected:
     // InputMap<Mugen::Keys> & getInput();
 
 protected:
+
+    PaintownUtil::ReferenceCount<MugenAnimation> replaceSprites(const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
 
 	/* Location is the directory passed in ctor
 	This is where the def is loaded and all the relevant files
@@ -1371,9 +1373,9 @@ protected:
 
         int matchWins;
 
-        Compiler::Value * internalJumpNumber;
-
         Behavior * behavior;
+
+        PaintownUtil::ReferenceCount<MugenAnimation> foreignAnimation;
 
         /* true if the player is holding the back button */
         bool blocking;

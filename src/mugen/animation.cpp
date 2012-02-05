@@ -114,6 +114,10 @@ void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen
         sprite->render(placex, placey, work, effects);
     }
 }
+        
+void MugenFrame::setSprite(MugenSprite * sprite){
+    this->sprite = sprite;
+}
 
 MugenFrame::~MugenFrame(){
     /* the sprite is not deleted because it should be referenced from some

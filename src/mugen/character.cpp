@@ -722,8 +722,6 @@ Character::~Character(){
         State * state = (*it).second;
         delete state;
     }
-
-    // delete internalJumpNumber;
 }
 
 void Character::initialize(){
@@ -769,8 +767,6 @@ void Character::initialize(){
 
     lastTicket = 0;
 
-    internalJumpNumber = NULL;
-    
     /* Load up info for the select screen */
     //loadSelectData();
 
@@ -832,6 +828,7 @@ void Character::addCommand(Command * command){
 }
 
 void Character::setAnimation(int animation){
+    foreignAnimation = NULL;
     currentAnimation = animation;
     if (getCurrentAnimation() != NULL){
         getCurrentAnimation()->reset();
@@ -2485,6 +2482,11 @@ void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, in
 }
 
 PaintownUtil::ReferenceCount<MugenAnimation> Character::getCurrentAnimation() const {
+    /* Foreign animation is set by ChangeAnim2 */
+    if (foreignAnimation != NULL){
+        return foreignAnimation;
+    }
+
     return getAnimation(currentAnimation);
     /*
     typedef std::map< int, MugenAnimation * > Animations;
@@ -3751,9 +3753,24 @@ int Character::getSpritePriority() const {
         return spritePriority;
     }
 }
-        
-void Character::setTemporaryAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
-    /* TODO */
+
+/* Replace the sprites from the given animation with sprites from our own sff file */
+PaintownUtil::ReferenceCount<MugenAnimation> Character::replaceSprites(const PaintownUtil::ReferenceCount<MugenAnimation> & animation){
+    PaintownUtil::ReferenceCount<MugenAnimation> update = PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*animation));
+    const vector<MugenFrame*> & frames = update->getFrames();
+    for (vector<MugenFrame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
+        MugenFrame * frame = *it;
+        MugenSprite * sprite = frame->getSprite();
+        MugenSprite * mySprite = getSprite(sprite->getGroupNumber(), sprite->getImageNumber());
+        if (mySprite != NULL){
+            frame->setSprite(mySprite);
+        }
+    }
+    return update;
+}
+
+void Character::setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
+    foreignAnimation = replaceSprites(animation);
 }
         
 bool Character::isHelper() const {

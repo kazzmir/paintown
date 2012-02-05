@@ -53,6 +53,8 @@ class MugenFrame{
             return sprite;
         }
 
+        virtual void setSprite(MugenSprite * sprite);
+
 	// We'll keep them, but they probably won't be used
 	std::vector< MugenArea > defenseCollision;
 	// This is the only one will be worried about

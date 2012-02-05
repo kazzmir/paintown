@@ -4783,6 +4783,10 @@ public:
                         out << " > ";
                         break;
                     }
+                    case ExpressionInfix::Unequals : {
+                        out << " != ";
+                        break;
+                    }
                     case ExpressionInfix::Or : {
                         out << " || ";
                         break;
@@ -4795,11 +4799,54 @@ public:
                         out << " < ";
                         break;
                     }
+                    case ExpressionInfix::Assignment : {
+                        out << " = ";
+                        break;
+                    }
+                    case ExpressionInfix::Add : {
+                        out << " + ";
+                        break;
+                    }
+                    case ExpressionInfix::Subtract : {
+                        out << " - ";
+                        break;
+                    }
+                    case ExpressionInfix::Multiply : {
+                        out << " * ";
+                        break;
+                    }
+                    case ExpressionInfix::Divide : {
+                        out << " / ";
+                        break;
+                    }
+                    case ExpressionInfix::Modulo : {
+                        out << " % ";
+                        break;
+                    }
+                    case ExpressionInfix::Power : {
+                        out << " ** ";
+                        break;
+                    }
                     case ExpressionInfix::Equals : {
                         out << " = ";
                         break;
                     }
-                    default : break;
+                    case ExpressionInfix::XOr : {
+                        out << " ^^ ";
+                        break;
+                    }
+                    case ExpressionInfix::BitwiseOr : {
+                        out << " | ";
+                        break;
+                    } 
+                    case ExpressionInfix::BitwiseXOr : {
+                        out << " ^ ";
+                        break;
+                    }
+                    case ExpressionInfix::BitwiseAnd : {
+                        out << " & ";
+                        break;
+                    }
                 }
                 out << right->toString();
                 return out.str();

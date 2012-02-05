@@ -5302,9 +5302,9 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int animation = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
-        PaintownUtil::ReferenceCount<MugenAnimation> show = guy.getAnimation(animation);
+        PaintownUtil::ReferenceCount<MugenAnimation> show = stage.getEnemy(&guy)->getAnimation(animation);
         if (show != NULL){
-            stage.getEnemy(&guy)->setTemporaryAnimation(show);
+            guy.setForeignAnimation(show);
         } else {
             ostringstream out;
             out << "No animation found for " << animation;
