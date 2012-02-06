@@ -120,8 +120,8 @@ void MugenSprite::copyImage(const MugenSprite * copy){
     }
 
     if (copy->pcx != NULL){
-        this->pcx = new char[this->reallength];
-        memcpy(this->pcx, copy->pcx, this->reallength);
+        this->pcx = new char[this->newlength];
+        memcpy(this->pcx, copy->pcx, this->newlength);
     }
 
     memcpy(this->originalPalette, copy->originalPalette, sizeof(originalPalette));
@@ -380,24 +380,24 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
     }
     memcpy(originalPalette, pcx + newlength - 768, 768);
     if (!islinked){
-	if (!useact){
-	    if (samePalette){
-		memcpy(pcx + (reallength), palsave1, 768);
-		Global::debug(2) << "Applying 1st palette to Sprite: " << imageNumber << " in Group: " << groupNumber << endl;
-	    } else {
-		memcpy(palsave1, pcx+(reallength)-768, 768);
-	    }
-	} else {
-	    // Replace all palettes with the one supplied in act
-	    if (samePalette){
-		memcpy(pcx + (reallength), palsave1, 768);
-	    } else {
+        if (!useact){
+            if (samePalette){
+                memcpy(pcx + (reallength), palsave1, 768);
+                Global::debug(2) << "Applying 1st palette to Sprite: " << imageNumber << " in Group: " << groupNumber << endl;
+            } else {
+                memcpy(palsave1, pcx+(reallength)-768, 768);
+            }
+        } else {
+            // Replace all palettes with the one supplied in act
+            if (samePalette){
+                memcpy(pcx + (reallength), palsave1, 768);
+            } else {
                 /* TODO: add an explanation of what group 9000 means here */
-		if (!(groupNumber == 9000 && imageNumber == 1)){
-		    memcpy(pcx + (reallength)-768, palsave1, 768);
-		} 
-	    }
-	}
+                if (!(groupNumber == 9000 && imageNumber == 1)){
+                    memcpy(pcx + (reallength)-768, palsave1, 768);
+                } 
+            }
+        }
     }
 
     /* read values directly from the pcx header */

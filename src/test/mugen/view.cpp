@@ -521,7 +521,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                                     currentGroup = group;
                                 }
                                 if (group > 9999){
-                                    group = 0;
+                                    group = -1;
                                 }
                                 if (group == currentGroup){
                                     found = true;
@@ -553,7 +553,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                                     currentSprite = sprite;
                                 }
                                 if (sprite > 1000){
-                                    sprite = 0;
+                                    sprite = -1;
                                 }
                                 if (sprite == currentSprite){
                                     found = true;
@@ -588,7 +588,9 @@ void showSFF(const string & ourFile, const std::string &actFile){
                 effects.mask = mask;
                 
 		ourSprite->render(back.getWidth() / 2, back.getHeight() / 2, back, effects);
-		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off");
+                int y = 400;
+		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off"); y += Font::getDefaultFont().getHeight() + 3;
+		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Same palette? %s Real Length %d New Length %d", 0, ourSprite->getSamePalette() ? "yes" : "no", ourSprite->getRealLength(), ourSprite->getNewLength()); y += Font::getDefaultFont().getHeight() + 3;
 	    } else {
 		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    }
