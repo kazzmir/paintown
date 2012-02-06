@@ -1014,31 +1014,50 @@ void Game::doArcade(Searcher & searcher){
 }
 
 void Game::doVersus(Searcher & searcher){
-#if 0
-    bool quit = false;
-    while (!quit){
-        Mugen::CharacterSelect select(systemFile, playerType, gameType);
-        select.setPlayer1Keys(Mugen::getPlayer1Keys(20));
-        select.setPlayer2Keys(Mugen::getPlayer2Keys(20));
-        select.load();
-        select.run("Versus Mode", searcher);
-        select.renderVersusScreen();
-
-        HumanBehavior player1Input(getPlayer1Keys(), getPlayer1InputLeft());
-        HumanBehavior player2Input(getPlayer2Keys(), getPlayer2InputLeft());
-
-        /*
-	select.getPlayer1()->setInput(Mugen::getPlayer1Keys(), getPlayer1InputLeft());
-	select.getPlayer2()->setInput(Mugen::getPlayer2Keys(), getPlayer2InputLeft());
-        */
-	select.getPlayer1()->setBehavior(&player1Input);
-	select.getPlayer2()->setBehavior(&player2Input);
-
-        select.getStage()->reset();
-        try{
-            runMatch(select.getStage());
-        } catch (const QuitGameException & e){
+    while (true){
+        Mugen::CharacterSelect select(systemFile);
+        select.init();
+        select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
+        InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+        InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+        HumanBehavior behavior1 = HumanBehavior(keys1, getPlayer1InputLeft());
+        HumanBehavior behavior2 = HumanBehavior(keys2, getPlayer2InputLeft());
+        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+        PaintownUtil::standardLoop(*logic, *draw);
+        
+        if (select.wasCanceled()){
+            return;
+        }
+        Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
+        Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
+        player1Collection = select.getPlayer1().getCollection();
+        player2Collection = select.getPlayer2().getCollection();
+        {
+            VersusMenu versus(systemFile);
+            versus.init(player1Collection, player2Collection);
+            PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+            PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+            PaintownUtil::standardLoop(*logic, *draw);
+            if (versus.wasCanceled()){
+                continue;
+            }
+        }
+        Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
+        player1.load(player1Collection.getFirst().getAct());
+        Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
+        player2.load(player2Collection.getFirst().getAct());
+        player1.setBehavior(&behavior1);
+        player2.setBehavior(&behavior2);
+        Mugen::Stage stage(select.getStage());
+        stage.addPlayer1(&player1);
+        stage.addPlayer2(&player2);
+        stage.load();
+        stage.reset();
+        try {
+            runMatch(&stage);
+        } catch (const Exception::Return & ex){
+        } catch (const QuitGameException & ex){
         }
     }
-#endif
 }

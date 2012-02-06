@@ -745,6 +745,25 @@ void Player::act(){
             sounds.play(randomSound);
         }
     }
+    switch (currentGameType){
+        case Versus:
+        case TeamVersus:
+            // Make sure select stage is not stuck
+            if (selectState == Stage && stageMenu.getFinished()){
+                selectState = Finished;
+            }
+            break;
+        case Arcade:
+        case TeamArcade:
+        case TeamCoop:
+        case Survival:
+        case SurvivalCoop:
+        case Training:
+        case Watch:
+        case Undefined:
+        default:
+            break;
+    }
 }
 
 void Player::draw(const Graphics::Bitmap & work){
@@ -1615,6 +1634,7 @@ void Player::next(int act){
                 case Stage:
                     selectState = Finished;
                     stageMenu.finish();
+                    break;
                 default:
                     break;
             }
@@ -2965,7 +2985,7 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
     for (std::vector<Mugen::ArcadeData::CharacterInfo>::iterator i = characters.begin(); i != characters.end(); ++i){
         const Mugen::ArcadeData::CharacterInfo & check = *i;
         if (character == check){
-            return;
+            return false;
         }
     }
     // Check if we don't exceed the cell count of the current grid
