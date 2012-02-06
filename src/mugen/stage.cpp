@@ -988,6 +988,7 @@ void Mugen::Stage::physics(Object * mugen){
                                      menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
                        centerCollision(mplayer, menemy) &&
                        enemy->getY() == 0 &&
+                       (fabs(enemy->getX() - mugen->getX()) < ((Mugen::Character*)enemy)->getWidth() + ((Mugen::Character*) mugen)->getWidth()) &&
                        mplayer->getY() < enemy->getHeight() &&
                        enemy->getX() != maximumLeft() &&
                        enemy->getX() != maximumRight() &&
@@ -1066,7 +1067,7 @@ void Mugen::Stage::runCycle(){
         paletteEffects.time = 0;
         paletteEffects.counter += 1;
     }
-
+                    
     // camera crap
     if (quake_time > 0){
         quake_time--;
