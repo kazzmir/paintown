@@ -1810,7 +1810,7 @@ void Player::next(int act){
                 case Character:
                     collection.setFirst(getCurrentCell(), act);
                     selectState = Opponent;
-                    grid.setCurrentIndex(cursor, opponentCursorPosition);
+                    grid.setCurrentIndex(cursor, cursorPosition);
                     break;
                 case Opponent:
                     opponentCollection.setFirst(getCurrentCell() , act);
