@@ -578,7 +578,7 @@ protected:
     //! Parse select file
     void parseSelect();
     //! Path
-    const Filesystem::AbsolutePath & file;
+    const Filesystem::AbsolutePath file;
     //! Grid
     Gui::GridSelect grid;
     //! Grid dimensions
