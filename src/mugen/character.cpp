@@ -2900,11 +2900,14 @@ void Character::didHit(Object * enemy, Mugen::Stage & stage){
         behavior->hit(enemy);
     }
 
+    /* FIXME: handle p1getp2facing */
+    if (getHit().player1Facing == -1){
+        setFacing(getOppositeFacing());
+    }
+
     if (getHit().player1State != -1){
         changeState(stage, getHit().player1State);
     }
-
-    /* FIXME: handle player2State as well */
 }
 
 void Character::takeDamage(Stage & world, Object * obj, double amount, double forceX, double forceY){
@@ -2946,6 +2949,12 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
 
     if (hisHit.damage.damage != 0){
         takeDamage(stage, enemy, hisHit.damage.damage, true, true);
+    }
+
+    switch (hisHit.player2Facing){
+        case -1: setFacing(enemy->getOppositeFacing()); break;
+        case 1: setFacing(enemy->getFacing()); break;
+        default: break;
     }
 
     /*

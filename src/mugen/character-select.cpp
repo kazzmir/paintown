@@ -3219,7 +3219,7 @@ public:
     search(search),
     quitSearching(false),
     searchingCheck(quitSearching, searchingLock.getLock()),
-    characterAddThread(PaintownUtil::Thread::uninitializedValue),
+    // characterAddThread(PaintownUtil::Thread::uninitializedValue),
     subscription(*this),
     withSubscription(search, subscription){
     }
@@ -3235,15 +3235,16 @@ public:
     volatile bool quitSearching;
     PaintownUtil::ThreadBoolean searchingCheck;
 
-    PaintownUtil::Thread::Id characterAddThread;
+    // PaintownUtil::Thread::Id characterAddThread;
     PaintownUtil::Thread::LockObject addCharacterLock;
-    std::deque<Filesystem::AbsolutePath> addCharacters;
+    // std::deque<Filesystem::AbsolutePath> addCharacters;
 
     class Subscriber: public Searcher::Subscriber {
     public:
         Subscriber(SelectLogic & owner):
         owner(owner){
         }
+
         virtual ~Subscriber(){
         }
     
@@ -3269,15 +3270,35 @@ public:
     class WithSubscription{
     public:
         WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
+        subscribeThread(PaintownUtil::Thread::uninitializedValue),
         search(search),
         subscription(subscription){
+            if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
+                doSubscribe();
+            }
+        }
+
+        PaintownUtil::Thread::Id subscribeThread;
+
+        /* Start the subscription in a thread so that characters that are already found
+         * will be added in a separate thread instead of the main one
+         */
+        static void * subscribe(void * me){
+            WithSubscription * self = (WithSubscription*) me;
+            self->doSubscribe();
+            return NULL;
+        }
+
+        void doSubscribe(){
             search.subscribe(&subscription);
         }
 
         Searcher & search;
         Searcher::Subscriber & subscription;
 
-        ~WithSubscription(){
+        virtual ~WithSubscription(){
+            /* Make sure we wait for the initial join to finish before trying to unsubscribe */
+            PaintownUtil::Thread::joinThread(subscribeThread);
             search.unsubscribe(&subscription);
         }
     };
@@ -3285,17 +3306,19 @@ public:
     WithSubscription withSubscription;
     
     void addCharacter(const Filesystem::AbsolutePath & path){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
-        try {
-            select.addCharacter(Mugen::ArcadeData::CharacterInfo(path));
-        } catch (...){
-            // Can't add character ignore
+        if (!done()){
+            try {
+                select.addCharacter(Mugen::ArcadeData::CharacterInfo(path));
+            } catch (...){
+                // Can't add character ignore
+            }
         }
     }
     
     void addStage(const Filesystem::AbsolutePath & path){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
-        select.addStage(path);
+        if (!done()){
+            select.addStage(path);
+        }
     }
     
     bool done(){
@@ -3304,7 +3327,6 @@ public:
     }
 
     void run(){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
         std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
         for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
             const InputMap<Mugen::Keys>::InputEvent & event = *it;
@@ -3312,7 +3334,8 @@ public:
                 if (event.out == Esc){
                     if (!canceled){
                         select.cancel();
-                        quitSearching = canceled = true;
+                        canceled = true;
+                        searchingCheck.set(true);
                     }
                 }
                 if (event.out == Left){
@@ -3354,7 +3377,8 @@ public:
                 if (event.out == Esc){
                     if (!canceled){
                         select.cancel();
-                        quitSearching = canceled = true;
+                        searchingCheck.set(true);
+                        canceled = true;
                     }
                 }
                 if (event.out == Left){
@@ -3390,14 +3414,16 @@ public:
             }
         }
         select.act();
-        is_done = select.isDone();
+        {
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            is_done = select.isDone();
+        }
         if (is_done){
-            quitSearching = is_done;
+            searchingCheck.set(is_done);
         }
     }
 
     double ticks(double system){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
         return system;
     }
 };
