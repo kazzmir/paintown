@@ -337,6 +337,8 @@ protected:
     bool enabled;
     //! Is finished
     bool finished;
+    //! Thread lock
+    PaintownUtil::Thread::LockObject lock;
 };
 
 class SoundSystem{
@@ -624,6 +626,8 @@ protected:
     Player player1, player2;
     //! Canceled?
     bool canceled;
+    //! Thread Lock
+    PaintownUtil::Thread::LockObject lock;
 };
 
 }

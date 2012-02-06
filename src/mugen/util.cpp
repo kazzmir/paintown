@@ -1312,6 +1312,14 @@ const Mugen::ArcadeData::CharacterInfo & Mugen::ArcadeData::CharacterInfo::opera
     return *this;
 }
 
+bool Mugen::ArcadeData::CharacterInfo::operator==(const Mugen::ArcadeData::CharacterInfo & copy) const {
+    return ((this->name == copy.name) && (this->displayName == copy.displayName));
+}
+
+bool Mugen::ArcadeData::CharacterInfo::operator!=(const Mugen::ArcadeData::CharacterInfo & copy) const {
+    return ((this->name != copy.name) || (this->displayName != copy.displayName));
+}
+
 void Mugen::ArcadeData::CharacterInfo::drawIcon(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (icon != NULL){
         icon->render(x, y, work, effects);

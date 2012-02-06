@@ -500,6 +500,9 @@ public:
     
     const CharacterInfo & operator=(const CharacterInfo &);
     
+    bool operator==(const CharacterInfo &) const;
+    bool operator!=(const CharacterInfo &) const;
+    
     virtual void drawIcon(int x, int y, const Graphics::Bitmap &, const Mugen::Effects &) const;
     virtual void drawPortrait(int x, int y, const Graphics::Bitmap &, const Mugen::Effects &) const;
     

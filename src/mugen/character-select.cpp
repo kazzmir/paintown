@@ -558,6 +558,7 @@ StageMenu::~StageMenu(){
 }
 
 void StageMenu::act(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (!enabled){
         return;
     }
@@ -565,6 +566,7 @@ void StageMenu::act(){
 }
 
 void StageMenu::draw(const Graphics::Bitmap & work){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (!enabled){
         return;
     }
@@ -577,6 +579,7 @@ void StageMenu::draw(const Graphics::Bitmap & work){
 }
 
 void StageMenu::add(const Filesystem::AbsolutePath & stage){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     try {
         for (std::vector<Filesystem::AbsolutePath>::iterator i = stages.begin(); i != stages.end(); ++i){
             const Filesystem::AbsolutePath & check = *i;
@@ -589,7 +592,7 @@ void StageMenu::add(const Filesystem::AbsolutePath & stage){
         stages.push_back(stage);
         names.push_back(name);
     } catch (const MugenException & ex){
-        Global::debug(0) << "Warning! Tried to load file: '" << stage.path() << "'. Message: " << ex.getReason() << std::endl;
+        Global::debug(2) << "Warning! Tried to load file: '" << stage.path() << "'. Message: " << ex.getReason() << std::endl;
     }
 }
 
@@ -602,6 +605,7 @@ bool StageMenu::down(){
 }
 
 bool StageMenu::left(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (!enabled || finished){
         return false;
     }
@@ -620,6 +624,7 @@ bool StageMenu::left(){
 }
 
 bool StageMenu::right(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (!enabled || finished){
         return false;
     }
@@ -2753,6 +2758,7 @@ bool CharacterSelect::isDone() {
 }
 
 void CharacterSelect::act(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     for (std::vector< PaintownUtil::ReferenceCount<Cell> >::iterator i = cells.begin(); i != cells.end(); ++i){
         PaintownUtil::ReferenceCount<Cell> cell = *i;
         cell->act();
@@ -2838,6 +2844,7 @@ static std::string getGameType(const Mugen::GameType & game){
 }
 
 void CharacterSelect::draw(const Graphics::Bitmap & work){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     // Render Background
     background->renderBackground(0,0,work);
     
@@ -2869,6 +2876,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
 }
 
 void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & player){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (game == Mugen::Undefined){
         return;
     }
@@ -2895,6 +2903,7 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & p
 }
 
 void CharacterSelect::up(unsigned int cursor){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cursor == 0){
         player1.up();
     } else if (cursor == 1){
@@ -2903,6 +2912,7 @@ void CharacterSelect::up(unsigned int cursor){
 }
 
 void CharacterSelect::down(unsigned int cursor){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cursor == 0){
         player1.down();
     } else if (cursor == 1){
@@ -2911,6 +2921,7 @@ void CharacterSelect::down(unsigned int cursor){
 }
 
 void CharacterSelect::left(unsigned int cursor){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cursor == 0){
         player1.left();
     } else if (cursor == 1){
@@ -2919,6 +2930,7 @@ void CharacterSelect::left(unsigned int cursor){
 }
 
 void CharacterSelect::right(unsigned int cursor){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cursor == 0){
         player1.right();
     } else if (cursor == 1){
@@ -2927,6 +2939,7 @@ void CharacterSelect::right(unsigned int cursor){
 }
 
 void CharacterSelect::select(unsigned int cursor, int act){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cursor == 0){
         try {
             player1.select();
@@ -2947,6 +2960,14 @@ void CharacterSelect::select(unsigned int cursor, int act){
 }
 
 bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
+    // Check if the character exists
+    for (std::vector<Mugen::ArcadeData::CharacterInfo>::iterator i = characters.begin(); i != characters.end(); ++i){
+        const Mugen::ArcadeData::CharacterInfo & check = *i;
+        if (character == check){
+            return;
+        }
+    }
     // Check if we don't exceed the cell count of the current grid
     if (nextCell < cells.size()){
         // Add to list
@@ -2965,6 +2986,7 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
 }
 
 void CharacterSelect::addEmpty(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (nextCell < cells.size()){
         cells[nextCell]->setEmpty(true);
         nextCell++;
@@ -2972,6 +2994,7 @@ void CharacterSelect::addEmpty(){
 }
 
 void CharacterSelect::addRandom(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     if (nextCell < cells.size()){
         cells[nextCell]->setRandom(true);
         nextCell++;
@@ -2979,6 +3002,7 @@ void CharacterSelect::addRandom(){
 }
 
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
     stages.add(stage);
 }
 
