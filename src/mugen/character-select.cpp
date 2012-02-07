@@ -1951,7 +1951,7 @@ currentPlayer(Player1),
 player1(0, grid, cells, characters, player1TeamMenu, player2TeamMenu, stages, player1Font, player2Font, sounds),
 player2(1, grid, cells, characters, player2TeamMenu, player1TeamMenu, stages, player2Font, player1Font, sounds),
 canceled(false){
-    Global::debug(0) << "Got file: " << file.path() << std::endl;
+    Global::debug(1) << "Got file: " << file.path() << std::endl;
 }
 
 CharacterSelect::~CharacterSelect(){
