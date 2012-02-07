@@ -293,24 +293,57 @@ class TeamLoseOnKO : public Option {
 class AutoSearch : public Option {
     public:
     AutoSearch(){
-        optionName = "Auto Search Characters/Stages";
+        optionName = "Search Chars/Stages";
         setValue();
     }
     ~AutoSearch(){
     }
     void setValue(){
-        if (Data::getInstance().getAutoSearch()){
-            currentValue = "On";
-        } else {
-            currentValue = "Off";
+        switch (Data::getInstance().getSearchType()){
+            case Data::SelectDef:
+                currentValue = "select.def";
+                break;
+            case Data::SelectDefAndAuto:
+                currentValue = "select.def+auto";
+                break;
+            case Data::Auto:
+                currentValue = "auto";
+                break;
+            default:
+                break;
         }
     }
     void next(){
-        Data::getInstance().setAutoSearch(!Data::getInstance().getAutoSearch());
+        switch (Data::getInstance().getSearchType()){
+            case Data::SelectDef:
+                Data::getInstance().setSearchType(Data::SelectDefAndAuto);
+                break;
+            case Data::SelectDefAndAuto:
+                Data::getInstance().setSearchType(Data::Auto);
+                break;
+            case Data::Auto:
+                Data::getInstance().setSearchType(Data::SelectDef);
+                break;
+            default:
+                break;
+        }
         setValue();
     }
     void prev(){
-        Data::getInstance().setAutoSearch(!Data::getInstance().getAutoSearch());
+        
+        switch (Data::getInstance().getSearchType()){
+            case Data::SelectDef:
+                Data::getInstance().setSearchType(Data::Auto);
+                break;
+            case Data::SelectDefAndAuto:
+                Data::getInstance().setSearchType(Data::SelectDef);
+                break;
+            case Data::Auto:
+                Data::getInstance().setSearchType(Data::SelectDefAndAuto);
+                break;
+            default:
+                break;
+        }
         setValue();
     }
 };

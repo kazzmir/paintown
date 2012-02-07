@@ -71,9 +71,18 @@ class Data{
 
         bool getDrawShadows();
         
-        bool getAutoSearch();
+        enum SearchType{
+            SelectDef=0,
+            SelectDefAndAuto,
+            Auto,
+        };
         
-        void setAutoSearch(bool search);
+        bool autoSearch();
+        
+        const SearchType & getSearchType();
+        
+        void setSearchType(const SearchType &);
+        
     private:
         friend class ::Collector;
         static void destroy();
@@ -167,7 +176,7 @@ class Data{
          bool firstRun;
          
          /* Auto search (Use Searcher to add characters and stages to select screen and ignore select.def) */
-         bool autoSearch;
+         SearchType search;
 };
 
 }

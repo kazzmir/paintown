@@ -3091,7 +3091,7 @@ void CharacterSelect::parseSelect(){
                         self.addRandom();
                     } else {
                         // Only add characters if we auto search is off
-                        if (!Data::getInstance().getAutoSearch()){
+                        if (Data::getInstance().getSearchType() == Data::SelectDef || Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
                             Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
                             try{
                                 // Grab stage
@@ -3155,7 +3155,7 @@ void CharacterSelect::parseSelect(){
                 }
             };
             // Only add stages if auto search is off
-            if (!Data::getInstance().getAutoSearch()){
+            if (Data::getInstance().getSearchType() == Data::SelectDef || Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
                 StageWalker walk(*this);
                 section->walk(walk);
             }
@@ -3299,7 +3299,7 @@ public:
 
         void doSubscribe(){
             // Only subscribe if auto search is enabled
-            if (Data::getInstance().getAutoSearch()){
+            if (Data::getInstance().autoSearch()){
                 search.subscribe(&subscription);
             }
         }
