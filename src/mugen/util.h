@@ -674,6 +674,7 @@ protected:
 /*! Arcade Match Handling */
 class MatchPath{
 public:
+    MatchPath();
     MatchPath(const CharacterCollection::Type &, const std::vector<int> &, const std::vector<CharacterInfo> &, const std::vector<Filesystem::AbsolutePath> &);
     MatchPath(const MatchPath &);
     virtual ~MatchPath();

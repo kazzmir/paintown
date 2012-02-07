@@ -2983,12 +2983,13 @@ void CharacterSelect::select(unsigned int cursor, int act){
 bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     // Check if the character exists
+    /*
     for (std::vector<Mugen::ArcadeData::CharacterInfo>::iterator i = characters.begin(); i != characters.end(); ++i){
         const Mugen::ArcadeData::CharacterInfo & check = *i;
         if (character == check){
             return false;
         }
-    }
+    }*/
     // Check if we don't exceed the cell count of the current grid
     if (nextCell < cells.size()){
         // Add to list
@@ -3297,7 +3298,10 @@ public:
         }
 
         void doSubscribe(){
-            search.subscribe(&subscription);
+            // Only subscribe if auto search is enabled
+            if (Data::getInstance().getAutoSearch()){
+                search.subscribe(&subscription);
+            }
         }
 
         Searcher & search;

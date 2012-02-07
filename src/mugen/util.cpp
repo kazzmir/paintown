@@ -1433,6 +1433,9 @@ static std::vector<Mugen::ArcadeData::CharacterInfo> getCollectionByOrder(int or
     return collection;
 }
 
+Mugen::ArcadeData::MatchPath::MatchPath(){
+}
+
 Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, const std::vector<int> & order, const std::vector<CharacterInfo> & characters, const std::vector<Filesystem::AbsolutePath> & stages){
     if (characters.size() == 1){
         Mugen::ArcadeData::CharacterCollection collection(type);

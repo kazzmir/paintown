@@ -752,25 +752,12 @@ void Game::doWatch(Searcher & searcher){
 }
 
 void Game::doArcade(Searcher & searcher){
-    Mugen::CharacterSelect select(systemFile);
-    select.init();
-    if (playerType == Mugen::Player1){
-        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
-    } else {
-        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player2);
-    }
+    
     InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
     InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
     InputMap<Mugen::Keys> playerKeys;
     HumanBehavior behavior(keys1, keys2);
     LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
-    PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
-    PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
-    PaintownUtil::standardLoop(*logic, *draw);
-    
-    if (select.wasCanceled()){
-        return;
-    }
     
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
     Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
@@ -779,14 +766,39 @@ void Game::doArcade(Searcher & searcher){
     PaintownUtil::ReferenceCount<Mugen::Character> player2 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
     
     bool playerLoaded = false;
-    if (playerType == Mugen::Player1){
-        player1Collection = select.getPlayer1().getCollection();
-        playerKeys = keys1;
-        behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
-    } else {
-        player2Collection = select.getPlayer2().getCollection();
-        playerKeys = keys2;
-        behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+    
+    // Match data
+    Mugen::ArcadeData::MatchPath match;
+    
+    // Scoped so it doesn't persist
+    {
+        Mugen::CharacterSelect select(systemFile);
+        select.init();
+        if (playerType == Mugen::Player1){
+            select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+        } else {
+            select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player2);
+        }
+        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+        PaintownUtil::standardLoop(*logic, *draw);
+        
+        if (select.wasCanceled()){
+            return;
+        }
+    
+        if (playerType == Mugen::Player1){
+            player1Collection = select.getPlayer1().getCollection();
+            playerKeys = keys1;
+            behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+        } else {
+            player2Collection = select.getPlayer2().getCollection();
+            playerKeys = keys2;
+            behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+        }
+        
+        // Match data
+        match = select.getArcadePath();
     }
     
     Filesystem::AbsolutePath intro;
@@ -888,8 +900,6 @@ void Game::doArcade(Searcher & searcher){
     int wins = 0;
     // Display game over storyboard
     bool displayGameOver = false;
-    // Match data
-    Mugen::ArcadeData::MatchPath match = select.getArcadePath();
     
     // Rematch?
     bool rematch = false;
@@ -1002,6 +1012,8 @@ void Game::doArcade(Searcher & searcher){
             } else {
                 // Player lost do continue screen if enabled for now just quit
                 if (stage.doContinue(playerType, playerKeys)){
+                    Mugen::CharacterSelect select(systemFile);
+                    select.init();
                     if (playerType == Mugen::Player1){
                         select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
                     } else {
