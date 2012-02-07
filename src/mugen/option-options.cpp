@@ -290,6 +290,31 @@ class TeamLoseOnKO : public Option {
 	}
 };
 
+class AutoSearch : public Option {
+    public:
+    AutoSearch(){
+        optionName = "Auto Search Characters/Stages";
+        setValue();
+    }
+    ~AutoSearch(){
+    }
+    void setValue(){
+        if (Data::getInstance().getAutoSearch()){
+            currentValue = "On";
+        } else {
+            currentValue = "Off";
+        }
+    }
+    void next(){
+        Data::getInstance().setAutoSearch(!Data::getInstance().getAutoSearch());
+        setValue();
+    }
+    void prev(){
+        Data::getInstance().setAutoSearch(!Data::getInstance().getAutoSearch());
+        setValue();
+    }
+};
+
 class Escape: public Option {
 public:
     Escape(){
@@ -325,6 +350,7 @@ OptionOptions::OptionOptions( const std::string &name ){
     options.push_back(new Speed());
     options.push_back(new OneVsTeam());
     options.push_back(new TeamLoseOnKO());
+    options.push_back(new AutoSearch());
     options.push_back(new Escape());
     
     // Set first one

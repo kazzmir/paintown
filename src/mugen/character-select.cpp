@@ -8,6 +8,7 @@
 #include "util/stretch-bitmap.h"
 #include "mugen/ast/all.h"
 #include "mugen/sound.h"
+#include "mugen/config.h"
 
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
@@ -3088,38 +3089,41 @@ void CharacterSelect::parseSelect(){
                     } else if (temp == "randomselect"){
                         self.addRandom();
                     } else {
-                        Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
-                        try{
-                            // Grab stage
-                            view >> temp;
-                            if (PaintownUtil::matchRegex(temp, "order = ")){
-                                temp.replace(0,std::string("order = ").size(),"");
-                                character.setOrder((int)atoi(temp.c_str()));
-                            } else if (temp == "random"){
-                                character.setRandomStage(true);
-                            } else {
-                                character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
-                            }
-                            // Grab options
-                            /* TODO: make the parser turn these into better AST nodes.
-                            * something like Assignment(Id(music), Filename(whatever))
-                            */
-                            while(true){
+                        // Only add characters if we auto search is off
+                        if (!Data::getInstance().getAutoSearch()){
+                            Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
+                            try{
+                                // Grab stage
                                 view >> temp;
-                                if (PaintownUtil::matchRegex(temp,"includestage = ")){
-                                    temp.replace(0,std::string("includestage = ").size(),"");
-                                    character.setIncludeStage((bool)atoi(temp.c_str()));
-                                } else if (PaintownUtil::matchRegex(temp,"music = ")){
-                                    temp.replace(0,std::string("music = ").size(),"");
-                                    character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
-                                } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                if (PaintownUtil::matchRegex(temp, "order = ")){
                                     temp.replace(0,std::string("order = ").size(),"");
                                     character.setOrder((int)atoi(temp.c_str()));
+                                } else if (temp == "random"){
+                                    character.setRandomStage(true);
+                                } else {
+                                    character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
                                 }
+                                // Grab options
+                                /* TODO: make the parser turn these into better AST nodes.
+                                * something like Assignment(Id(music), Filename(whatever))
+                                */
+                                while(true){
+                                    view >> temp;
+                                    if (PaintownUtil::matchRegex(temp,"includestage = ")){
+                                        temp.replace(0,std::string("includestage = ").size(),"");
+                                        character.setIncludeStage((bool)atoi(temp.c_str()));
+                                    } else if (PaintownUtil::matchRegex(temp,"music = ")){
+                                        temp.replace(0,std::string("music = ").size(),"");
+                                        character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
+                                    } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                        temp.replace(0,std::string("order = ").size(),"");
+                                        character.setOrder((int)atoi(temp.c_str()));
+                                    }
+                                }
+                            } catch (const Ast::Exception & e){
                             }
-                        } catch (const Ast::Exception & e){
+                            self.addCharacter(character);
                         }
-                        self.addCharacter(character);
                     }
                 }
             };
@@ -3149,8 +3153,11 @@ void CharacterSelect::parseSelect(){
                     }
                 }
             };
-            StageWalker walk(*this);
-            section->walk(walk);
+            // Only add stages if auto search is off
+            if (!Data::getInstance().getAutoSearch()){
+                StageWalker walk(*this);
+                section->walk(walk);
+            }
         } else if (head == "options"){
             class OptionWalker: public Ast::Walker{
             public:

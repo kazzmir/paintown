@@ -40,7 +40,8 @@ explodMax(),
 sysExplodMax(),
 helperMax(),
 playerProjectileMax(),
-firstRun(){
+firstRun(),
+autoSearch(true){
     
     Filesystem::AbsolutePath baseDir = configFile.getDirectory();
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, configFile.getFilename().path());
@@ -239,4 +240,12 @@ Filesystem::RelativePath Data::cleanse(const Filesystem::RelativePath & path){
     }
     return Filesystem::RelativePath(str);
 
+}
+
+bool Data::getAutoSearch(){
+    return autoSearch;
+}
+
+void Data::setAutoSearch(bool search){
+    autoSearch = search;
 }

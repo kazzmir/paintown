@@ -70,6 +70,10 @@ class Data{
         int getGameSpeed();
 
         bool getDrawShadows();
+        
+        bool getAutoSearch();
+        
+        void setAutoSearch(bool search);
     private:
         friend class ::Collector;
         static void destroy();
@@ -161,6 +165,9 @@ class Data{
     
          /*;This is 1 the first time you run MUGEN.*/
          bool firstRun;
+         
+         /* Auto search (Use Searcher to add characters and stages to select screen and ignore select.def) */
+         bool autoSearch;
 };
 
 }
