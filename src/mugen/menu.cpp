@@ -296,7 +296,7 @@ void MugenMenu::loadData(){
                             }
                         } else {
                             //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
-                            Global::debug(0) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
+                            Global::debug(1) << "Unhandled option in Info Section: " << simple.toString() << __FILE__ << __LINE__ << endl;
                         }
                     }
                 };
@@ -377,7 +377,7 @@ void MugenMenu::loadData(){
 
                         } else {
                             //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
-                            Global::debug(0) << "Unhandled option in Files Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
+                            Global::debug(1) << "Unhandled option in Files Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
                         }
                     }
                 };
@@ -418,7 +418,7 @@ void MugenMenu::loadData(){
                         } else if (simple == "vs.bgm.loop"){
                         } else {
                             //throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
-                            Global::debug(0) << "Unhandled option in Music Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
+                            Global::debug(1) << "Unhandled option in Music Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
                         }
 		    }
 		};
@@ -572,7 +572,7 @@ void MugenMenu::loadData(){
                             }
                         } else {
                             //throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
-                            Global::debug(0) << "Unhandled option in Title Info Section: " << simple.toString() << __FILE__ << __LINE__;
+                            Global::debug(1) << "Unhandled option in Title Info Section: " << simple.toString() << __FILE__ << __LINE__;
                         }
                     }
                 };
@@ -604,7 +604,7 @@ void MugenMenu::loadData(){
                 //throw MugenException("Unhandled Section in '" + ourDefFile + "': " + head, __FILE__, __LINE__ );
                 ostringstream context;
                 context << __FILE__ << ":" << __LINE__;
-                Global::debug(0, context.str()) << "Unhandled Section: " << head << endl;
+                Global::debug(1, context.str()) << "Unhandled Section: " << head << endl;
             }
         } 
 
