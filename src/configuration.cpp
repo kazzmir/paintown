@@ -1071,6 +1071,10 @@ int Configuration::fps = 40;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
+Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::string & name){
+    return namespaces[name];
+}
+
 void Configuration::setProperty(string name, string value){
     properties[name] = value;
     saveConfiguration();

@@ -15,6 +15,8 @@ class Token;
 
 class Configuration{
 public:
+    
+    virtual ~Configuration();
 
     typedef Joystick::Key JoystickInput;
 
@@ -140,8 +142,6 @@ protected:
     Configuration( const Configuration & config );
     // Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump );
 
-    ~Configuration();
-
     Configuration & operator=( const Configuration & config );
 
     static Configuration defaultPlayer1Keys();
@@ -153,6 +153,8 @@ protected:
     static void setProperty(std::string name, std::string value);
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);
+
+    Util::ReferenceCount<Configuration> getNamespace(const std::string & name);
 
 private:
     /* keyboard */
@@ -181,6 +183,8 @@ private:
     JoystickInput joystick_attack6;
     JoystickInput joystick_jump;
     JoystickInput joystick_quit;
+
+    std::map<std::string, Util::ReferenceCount<Configuration> > namespaces;
 
 private:
     /* whether to save the configuration or not */
