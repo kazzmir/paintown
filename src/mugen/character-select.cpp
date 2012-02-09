@@ -1950,7 +1950,11 @@ currentGameType(Undefined),
 currentPlayer(Player1),
 player1(0, grid, cells, characters, player1TeamMenu, player2TeamMenu, stages, player1Font, player2Font, sounds),
 player2(1, grid, cells, characters, player2TeamMenu, player1TeamMenu, stages, player2Font, player1Font, sounds),
-canceled(false){
+canceled(false),
+demoLeftTime(0),
+demoRightTime(0),
+demoLeftRemaining(0),
+demoRightRemaining(0){
     Global::debug(1) << "Got file: " << file.path() << std::endl;
 }
 
@@ -2823,6 +2827,92 @@ void CharacterSelect::act(){
                 }
             }
             break;
+        case Demo:
+            if (!player1.isFinished()){
+                if (demoLeftTime < 11){
+                    demoLeftTime++;
+                } else {
+                    demoLeftTime = 0;
+                    if (demoLeftRemaining > 0){
+                        const int direction = PaintownUtil::rnd(0, 4);
+                        switch (direction){
+                            case 1:
+                                down(0);
+                                if (cells[grid.getCurrentIndex(0)]->isEmpty()){
+                                    up(0);
+                                }
+                                break;
+                            case 2:
+                                left(0);
+                                if (cells[grid.getCurrentIndex(0)]->isEmpty()){
+                                    right(0);
+                                }
+                                break;
+                            case 3:
+                                right(0);
+                                if (cells[grid.getCurrentIndex(0)]->isEmpty()){
+                                    left(0);
+                                }
+                                break;
+                            case 0:
+                            default:
+                                up(0);
+                                if (cells[grid.getCurrentIndex(0)]->isEmpty()){
+                                    down(0);
+                                }
+                                break;
+                        }
+                        demoLeftRemaining--;
+                    } else {
+                        select(0);
+                    }
+                }
+            }
+            if (!player2.isFinished()){
+                if (demoRightTime < 11){
+                    demoRightTime++;
+                } else {
+                    demoRightTime = 0;
+                    if (demoRightRemaining > 0){
+                        const int direction = PaintownUtil::rnd(0, 4);
+                        switch (direction){
+                            case 1:
+                                down(1);
+                                if (cells[grid.getCurrentIndex(1)]->isEmpty()){
+                                    up(1);
+                                }
+                                break;
+                            case 2:
+                                left(1);
+                                if (cells[grid.getCurrentIndex(1)]->isEmpty()){
+                                    right(1);
+                                }
+                                break;
+                            case 3:
+                                right(1);
+                                if (cells[grid.getCurrentIndex(1)]->isEmpty()){
+                                    left(1);
+                                }
+                                break;
+                            case 0:
+                            default:
+                                up(1);
+                                if (cells[grid.getCurrentIndex(1)]->isEmpty()){
+                                    down(1);
+                                }
+                                break;
+                        }
+                        demoRightRemaining--;
+                    } else {
+                        select(1);
+                    }
+                }
+            }
+            if (player1.isFinished() && player2.isFinished()){
+                if (fader.getState() != Gui::FadeTool::FadeOut && !isDone()){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+            }
         default:
             break;
     }   
@@ -2915,8 +3005,15 @@ void CharacterSelect::setMode(const Mugen::GameType & game, const PlayerType & p
             player2.setCurrentGameType(currentGameType);
             break;
         case Both:
+        case Demo:
             player1.setCurrentGameType(currentGameType);
             player2.setCurrentGameType(currentGameType);
+            demoLeftTime = PaintownUtil::rnd(0, 11);
+            demoRightTime = PaintownUtil::rnd(0, 11);
+            demoLeftRemaining = PaintownUtil::rnd(5, 11);
+            demoRightRemaining = PaintownUtil::rnd(5, 11);
+            grid.setCurrentIndex(0,0);
+            grid.setCurrentIndex(1, nextCell-1);
             break;
         default:
             break;

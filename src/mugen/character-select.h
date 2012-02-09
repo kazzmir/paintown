@@ -520,6 +520,7 @@ public:
         Player1,
         Player2,
         Both,
+        Demo,
     };
     //! Set Mode
     virtual void setMode(const Mugen::GameType &, const PlayerType & player = Player1);
@@ -633,6 +634,9 @@ protected:
     bool canceled;
     //! Thread Lock
     PaintownUtil::Thread::LockObject lock;
+    //! Demo moves left
+    int demoLeftTime, demoRightTime;
+    int demoLeftRemaining, demoRightRemaining;
 };
 
 }

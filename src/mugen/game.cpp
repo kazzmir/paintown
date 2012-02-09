@@ -2,6 +2,7 @@
 #include "util/stretch-bitmap.h"
 #include "game.h"
 
+#include <stdio.h>
 #include <ostream>
 #include <sstream>
 #include "util/font.h"
@@ -1105,5 +1106,103 @@ void Game::doVersus(Searcher & searcher){
         } catch (const Exception::Return & ex){
         } catch (const QuitGameException & ex){
         }
+    }
+}
+
+void Game::startDemo(Searcher & searcher){
+    
+    // Display select screen?
+    bool showSelectScreen = false;
+    bool showVersusScreen = false;
+    int endTime = 1500;
+    bool displayFightBars = false;
+    if (Util::probeDef(systemFile, "demo mode", "select.enabled") == "1"){
+        showSelectScreen = true;
+    }
+    if (Util::probeDef(systemFile, "demo mode", "vsscreen.enabled") == "1"){
+        showVersusScreen = true;
+    }
+    {
+        std::string temp;
+        if (!(temp = Util::probeDef(systemFile, "demo mode", "fight.endtime") == "1").empty()){
+            endTime = atoi(temp.c_str());
+        }
+    }
+    if (Util::probeDef(systemFile, "demo mode", "fight.bars.display") == "1"){
+        showSelectScreen = true;
+    }
+    /*select.enabled = 1        ;Set to 1 to display select screen, 0 to disable
+    vsscreen.enabled = 1      ;Set to 1 to display versus screen, 0 to disable
+    title.waittime = 600      ;Time to wait at title before starting demo mode
+    fight.endtime = 1500      ;Time to display the fight before returning to title
+    fight.playbgm = 0         ;Set to 1 to enable in-fight BGM, 0 to disable
+    fight.stopbgm = 1         ;Set to 1 to stop title BGM (only if playbgm = 0)
+    fight.bars.display = 0    ;Set to 1 to display lifebar, 0 to disable
+    intro.waitcycles = 1      ;Cycles to wait before intro cutscene is played again
+    debuginfo = 0             ;Set to 0 to hide debugging info (debug mode only)*/
+
+    
+    Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
+    Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
+    Filesystem::AbsolutePath stagePath;
+    
+    InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+    InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+    LearningAIBehavior behavior1(Mugen::Data::getInstance().getDifficulty());
+    LearningAIBehavior behavior2(Mugen::Data::getInstance().getDifficulty());
+    
+    // Display Select screen?
+    if (showSelectScreen){
+        Mugen::CharacterSelect select(systemFile);
+        select.init();
+        select.setMode(Mugen::Versus, Mugen::CharacterSelect::Demo);
+        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+        PaintownUtil::standardLoop(*logic, *draw);
+        
+        if (select.wasCanceled()){
+            return;
+        }
+        player1Collection = select.getPlayer1().getCollection();
+        player2Collection = select.getPlayer2().getCollection();
+        stagePath = select.getStage();
+    } else {
+        std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+        std::random_shuffle(allCharacters.begin(), allCharacters.end());
+        std::vector<Filesystem::AbsolutePath> allStages = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/stages/")), "*.def");
+        std::random_shuffle(allStages.begin(), allStages.end());
+        
+        player1Collection.setFirst(allCharacters[PaintownUtil::rnd(allCharacters.size())]);
+        player2Collection.setFirst(allCharacters[PaintownUtil::rnd(allCharacters.size())]);
+        stagePath = allStages[PaintownUtil::rnd(allStages.size())];
+    }
+    
+    if (showVersusScreen){
+        VersusMenu versus(systemFile);
+        versus.init(player1Collection, player2Collection);
+        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+        PaintownUtil::standardLoop(*logic, *draw);
+        if (versus.wasCanceled()){
+            return;
+        }
+    }
+    
+    // Load it up
+    Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
+    player1.load(player1Collection.getFirst().getAct());
+    Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
+    player2.load(player2Collection.getFirst().getAct());
+    player1.setBehavior(&behavior1);
+    player2.setBehavior(&behavior2);
+    Mugen::Stage stage(stagePath);
+    stage.addPlayer1(&player1);
+    stage.addPlayer2(&player2);
+    stage.load();
+    stage.reset();
+    try {
+        runMatch(&stage);
+    } catch (const Exception::Return & ex){
+    } catch (const QuitGameException & ex){
     }
 }

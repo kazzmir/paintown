@@ -39,6 +39,7 @@ enum Keys{
     Key7,
     Key8,
     Key9,
+    Key0,
 };
 
 class Logic: public Util::Logic {
@@ -128,6 +129,10 @@ public:
                     select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player1);
                     deinit = false;
                 }
+                if (event.out == Key0){
+                    select.setMode(Mugen::Versus, Mugen::CharacterSelect::Demo);
+                    deinit = false;
+                }
             }
         }
         select.act();
@@ -139,7 +144,7 @@ public:
     }
 };
 
-static const std::string MENU = "[1]-Arcade [2]-Versus [3]-TeamArcade [4]-TeamVersus\n[5]-TeamCoop [6]-Survival [7]-SurvivalCoop [8]-Training [9]-Watch";
+static const std::string MENU = "[1]-Arcade [2]-Versus [3]-TeamArcade [4]-TeamVersus [5]-TeamCoop\n [6]-Survival [7]-SurvivalCoop [8]-Training [9]-Watch [0]-Demo";
 
 class Draw: public Util::Draw {
 public:
@@ -200,6 +205,7 @@ int main(int argc, char ** argv){
         input.set(Keyboard::Key_7, 0, true, Key7);
         input.set(Keyboard::Key_8, 0, true, Key8);
         input.set(Keyboard::Key_9, 0, true, Key9);
+        input.set(Keyboard::Key_0, 0, true, Key0);
        
         try {
             Filesystem::AbsolutePath path(file);
@@ -225,7 +231,9 @@ int main(int argc, char ** argv){
                     select.setMode(Mugen::Training, Mugen::CharacterSelect::Player1);
                 } else if (check == "i"){
                     select.setMode(Mugen::Watch, Mugen::CharacterSelect::Player1);
-                } 
+                } else if (check == "j"){
+                    select.setMode(Mugen::Versus, Mugen::CharacterSelect::Demo);
+                }
             }
             Logic logic(input, select);
             Draw draw(select);
@@ -254,7 +262,7 @@ int main(int argc, char ** argv){
         std::cout << "[c] - TeamArcade   | [d] - TeamVersus" << std::endl;
         std::cout << "[e] - TeamCoop     | [f] - Survival" << std::endl;
         std::cout << "[g] - SurvivalCoop | [h] - Training" << std::endl;
-        std::cout << "[i] - Watch" << std::endl;
+        std::cout << "[i] - Watch        | [j] - Demo" << std::endl;
     }
     return 0;
 }

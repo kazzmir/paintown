@@ -33,6 +33,7 @@ class Game {
         void doTraining(Searcher & searcher);
         void doVersus(Searcher & searcher);
         void doWatch(Searcher & searcher);
+        void startDemo(Searcher & searcher);
 
         //! Player type
         PlayerType playerType;
