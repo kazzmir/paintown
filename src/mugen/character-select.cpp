@@ -3338,89 +3338,93 @@ public:
     }
 
     void run(){
-        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
-        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-            const InputMap<Mugen::Keys>::InputEvent & event = *it;
-            if (event.enabled){
-                if (event.out == Esc){
-                    if (!canceled){
-                        select.cancel();
-                        canceled = true;
-                        searchingCheck.set(true);
+        if (select.getCurrentPlayer() == CharacterSelect::Player1 || select.getCurrentPlayer() == CharacterSelect::Both){
+            std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
+            for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (event.enabled){
+                    if (event.out == Esc){
+                        if (!canceled){
+                            select.cancel();
+                            canceled = true;
+                            searchingCheck.set(true);
+                        }
                     }
-                }
-                if (event.out == Left){
-                    select.left(0);
-                }
-                if (event.out == Down){
-                    select.down(0);
-                }
-                if (event.out == Right){
-                    select.right(0);
-                }
-                if (event.out == Up){
-                    select.up(0);
-                }
-                if (event.out == A){
-                    select.select(0, 0);
-                }
-                if (event.out == B){
-                    select.select(0, 1);
-                }
-                if (event.out == C){
-                    select.select(0, 2);
-                }
-                if (event.out == X){
-                    select.select(0, 3);
-                }
-                if (event.out == Y){
-                    select.select(0, 4);
-                }
-                if (event.out == Z){
-                    select.select(0, 5);
+                    if (event.out == Left){
+                        select.left(0);
+                    }
+                    if (event.out == Down){
+                        select.down(0);
+                    }
+                    if (event.out == Right){
+                        select.right(0);
+                    }
+                    if (event.out == Up){
+                        select.up(0);
+                    }
+                    if (event.out == A){
+                        select.select(0, 0);
+                    }
+                    if (event.out == B){
+                        select.select(0, 1);
+                    }
+                    if (event.out == C){
+                        select.select(0, 2);
+                    }
+                    if (event.out == X){
+                        select.select(0, 3);
+                    }
+                    if (event.out == Y){
+                        select.select(0, 4);
+                    }
+                    if (event.out == Z){
+                        select.select(0, 5);
+                    }
                 }
             }
         }
-        out = InputManager::getEvents(input2, InputSource());
-        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-            const InputMap<Mugen::Keys>::InputEvent & event = *it;
-            if (event.enabled){
-                if (event.out == Esc){
-                    if (!canceled){
-                        select.cancel();
-                        searchingCheck.set(true);
-                        canceled = true;
+        if (select.getCurrentPlayer() == CharacterSelect::Player2 || select.getCurrentPlayer() == CharacterSelect::Both){
+            std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input2, InputSource());
+            for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (event.enabled){
+                    if (event.out == Esc){
+                        if (!canceled){
+                            select.cancel();
+                            searchingCheck.set(true);
+                            canceled = true;
+                        }
                     }
-                }
-                if (event.out == Left){
-                    select.left(1);
-                }
-                if (event.out == Down){
-                    select.down(1);
-                }
-                if (event.out == Right){
-                    select.right(1);
-                }
-                if (event.out == Up){
-                    select.up(1);
-                }
-                if (event.out == A){
-                    select.select(1, 0);
-                }
-                if (event.out == B){
-                    select.select(1, 1);
-                }
-                if (event.out == C){
-                    select.select(1, 2);
-                }
-                if (event.out == X){
-                    select.select(1, 3);
-                }
-                if (event.out == Y){
-                    select.select(1, 4);
-                }
-                if (event.out == Z){
-                    select.select(1, 5);
+                    if (event.out == Left){
+                        select.left(1);
+                    }
+                    if (event.out == Down){
+                        select.down(1);
+                    }
+                    if (event.out == Right){
+                        select.right(1);
+                    }
+                    if (event.out == Up){
+                        select.up(1);
+                    }
+                    if (event.out == A){
+                        select.select(1, 0);
+                    }
+                    if (event.out == B){
+                        select.select(1, 1);
+                    }
+                    if (event.out == C){
+                        select.select(1, 2);
+                    }
+                    if (event.out == X){
+                        select.select(1, 3);
+                    }
+                    if (event.out == Y){
+                        select.select(1, 4);
+                    }
+                    if (event.out == Z){
+                        select.select(1, 5);
+                    }
                 }
             }
         }

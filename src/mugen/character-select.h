@@ -572,6 +572,11 @@ public:
         return this->canceled;
     }
     
+    //! Current Player
+    inline const PlayerType & getCurrentPlayer() const {
+        return this->currentPlayer;
+    }
+    
 protected:
     //! Get font
     PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
