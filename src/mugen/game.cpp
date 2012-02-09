@@ -409,6 +409,10 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 doInput();
             }
             if (demoMode){
+                if (InputManager::anyInput() && fader.getState() != Gui::FadeTool::FadeOut){
+                    ticker = endTime;
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
                 if (ticker < endTime){
                     ticker++;
                 }
@@ -1183,13 +1187,15 @@ void Game::startDemo(Searcher & searcher){
     Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
     Filesystem::AbsolutePath stagePath;
     
-    InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
-    InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+    InputMap<Mugen::Keys> keys1;
+    InputMap<Mugen::Keys> keys2;
     LearningAIBehavior behavior1(Mugen::Data::getInstance().getDifficulty());
     LearningAIBehavior behavior2(Mugen::Data::getInstance().getDifficulty());
     
     // Display Select screen?
     if (showSelectScreen){
+        // Clear it before continuing
+        InputManager::waitForClear();
         Mugen::CharacterSelect select(systemFile);
         select.init();
         select.setMode(Mugen::Versus, Mugen::CharacterSelect::Demo);
@@ -1331,7 +1337,8 @@ void Game::startDemo(Searcher & searcher){
     }
     
     if (showVersusScreen){
-        VersusMenu versus(systemFile);
+        InputManager::waitForClear();
+        VersusMenu versus(systemFile, true);
         versus.init(player1Collection, player2Collection);
         PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
         PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();

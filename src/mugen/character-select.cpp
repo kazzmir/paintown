@@ -3526,6 +3526,15 @@ public:
             }
         }
         select.act();
+        if (select.getCurrentPlayer() == CharacterSelect::Demo){
+            if (InputManager::anyInput()){
+                if (!canceled){
+                    select.cancel();
+                    searchingCheck.set(true);
+                    canceled = true;
+                }
+            }
+        }
         {
             PaintownUtil::Thread::ScopedLock scoped(lock);
             is_done = select.isDone();

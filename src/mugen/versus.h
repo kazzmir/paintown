@@ -16,7 +16,7 @@ class Bitmap;
 namespace Mugen{
 class VersusMenu{
 public:
-    VersusMenu(const Filesystem::AbsolutePath &);
+    VersusMenu(const Filesystem::AbsolutePath &, bool demoMode = false);
     virtual ~VersusMenu();
     
     virtual void init(const Mugen::ArcadeData::CharacterCollection &, const Mugen::ArcadeData::CharacterCollection &);
@@ -39,6 +39,11 @@ public:
     //! Was canceled
     inline bool wasCanceled() const {
         return this->canceled;
+    }
+    
+    //! Is demo?
+    inline bool inDemoMode() const {
+        return this->demoMode;
     }
     
 protected:
@@ -70,6 +75,8 @@ protected:
     Mugen::ArcadeData::CharacterCollection player2;
     //! Canceled?
     bool canceled;
+    //! Is this a demo mode versus screen?
+    bool demoMode;
 };
 }
 #endif

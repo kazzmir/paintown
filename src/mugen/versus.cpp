@@ -11,7 +11,7 @@
 
 using namespace Mugen;
 
-VersusMenu::VersusMenu(const Filesystem::AbsolutePath & file):
+VersusMenu::VersusMenu(const Filesystem::AbsolutePath & file, bool demoMode):
 path(file),
 time(0),
 ticker(0),
@@ -25,7 +25,8 @@ fonty1(0),
 fonty2(0),
 player1(Mugen::ArcadeData::CharacterCollection::Single),
 player2(Mugen::ArcadeData::CharacterCollection::Single),
-canceled(false){
+canceled(false),
+demoMode(demoMode){
     try{
         Filesystem::AbsolutePath baseDir = path.getDirectory();
 
@@ -319,6 +320,14 @@ public:
                         canceled = true;
                         versus.skip();
                     }
+                }
+            }
+        }
+        if (versus.inDemoMode()){
+            if (InputManager::anyInput()){
+                if (!canceled){
+                    canceled = true;
+                    versus.cancel();
                 }
             }
         }
