@@ -201,6 +201,20 @@ public:
     }
 };
 
+class StartDemoOption: public ItemOption {
+public:
+    StartDemoOption(const std::string & name){
+        this->setText(name);
+    }
+
+    virtual ~StartDemoOption(){
+    }
+
+    void executeOption(const Mugen::PlayerType & player, bool & endGame){
+        throw StartGame(player, Mugen::Demo);
+    }
+};
+
 class TrainingOption: public ItemOption {
 public:
     TrainingOption(const std::string & name){
@@ -625,6 +639,9 @@ void MugenMenu::loadData(){
     if (fonts.size() == 0){
         throw MugenException("No fonts specified", __FILE__, __LINE__);
     }
+    
+    // FIXME remove later this is just to test the watch mode
+   addMenuOption(new Mugen::StartDemoOption("Run Demo"));
 }
 
 MugenMenu::~MugenMenu(){

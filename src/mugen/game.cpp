@@ -20,6 +20,7 @@
 #include "util/events.h"
 #include "util/console.h"
 #include "util/message-queue.h"
+#include "util/gui/fadetool.h"
 #include "factory/font_render.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/exceptions/exception.h"
@@ -75,6 +76,7 @@ void Game::run(Searcher & searcher){
             }
             case TeamArcade: {
                 //select.run("Team Arcade" , 1, true, &screen);
+                startDemo(searcher);
                 break;
             }
             case TeamVersus: {
@@ -99,6 +101,10 @@ void Game::run(Searcher & searcher){
             }
             case Watch: {
                 doWatch(searcher);
+                break;
+            }
+            case Demo: {
+                startDemo(searcher);
                 break;
             }
         }
@@ -134,7 +140,7 @@ enum MugenInput{
     ToggleConsole
 };
 
-static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = ""){
+static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1){
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;
@@ -286,12 +292,16 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console):
+        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, Gui::FadeTool & fader):
         state(state),
         gameSpeed(1.0),
         stage(stage),
         show_fps(show_fps),
-        console(console){
+        console(console),
+        endTime(endTime),
+        ticker(0),
+        demoMode((endTime != -1)),
+        fader(fader){
             gameInput.set(Keyboard::Key_F1, 10, false, SlowDown);
             gameInput.set(Keyboard::Key_F2, 10, false, SpeedUp);
             gameInput.set(Keyboard::Key_F3, 10, false, NormalSpeed);
@@ -317,6 +327,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         Console::Console & console;
         /* global info messages will appear in the console */
         MessageQueue messages;
+        
+        int endTime;
+        int ticker;
+        bool demoMode;
+        Gui::FadeTool & fader;
 
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
@@ -393,6 +408,16 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             } else {
                 doInput();
             }
+            if (demoMode){
+                ticker++;
+                if (ticker >= endTime && fader.getState() != Gui::FadeTool::FadeOut){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+                fader.act();
+                if (fader.getState() == Gui::FadeTool::EndFade){
+                    throw QuitGameException();
+                }
+            }
         }
 
         virtual bool done(){
@@ -406,17 +431,21 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(Mugen::Stage * stage, bool & show_fps, Console::Console & console):
+        Draw(Mugen::Stage * stage, bool & show_fps, Console::Console & console, bool displayFade, Gui::FadeTool & fader):
             stage(stage),
             show(true),
             show_fps(show_fps),
-            console(console){
+            console(console),
+            displayFade(displayFade),
+            fader(fader){
             }
 
         Mugen::Stage * stage;
         bool show;
         bool & show_fps;
         Console::Console & console;
+        bool displayFade;
+        Gui::FadeTool & fader;
     
         virtual void draw(const Graphics::Bitmap & screen){
             if (show_fps){
@@ -433,6 +462,9 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             work.start();
             stage->render(&work);
+            if (displayFade){
+                fader.draw(work);
+            }
             work.finish();
             FontRender * render = FontRender::getInstance();
             render->render(&screen);
@@ -441,9 +473,12 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         }
     };
 
+    Gui::FadeTool fader;
+    fader.setFadeInTime(0);
+    fader.setFadeOutTime(500);
     GameState state;
-    Logic logic(state, stage, show_fps, console);
-    Draw draw(stage, show_fps, console);
+    Logic logic(state, stage, show_fps, console, endTime, fader);
+    Draw draw(stage, show_fps, console, (endTime != -1), fader);
 
     PaintownUtil::standardLoop(logic, draw);
 }
@@ -1167,14 +1202,123 @@ void Game::startDemo(Searcher & searcher){
         player2Collection = select.getPlayer2().getCollection();
         stagePath = select.getStage();
     } else {
-        std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
-        std::random_shuffle(allCharacters.begin(), allCharacters.end());
-        std::vector<Filesystem::AbsolutePath> allStages = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/stages/")), "*.def");
-        std::random_shuffle(allStages.begin(), allStages.end());
+        class Collections{
+        public:
+            Collections(){
+            }
+            ~Collections(){
+            }
+            void addCharacter(const Filesystem::AbsolutePath & path){
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                allCharacters.push_back(path);
+            }
+            
+            void addStage(const Filesystem::AbsolutePath & path){
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                allStages.push_back(path);
+            }
+            const Filesystem::AbsolutePath & getCharacter(){
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                return allCharacters[PaintownUtil::rnd(allCharacters.size())];
+            }
+            const Filesystem::AbsolutePath & getStage(){
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                return allStages[PaintownUtil::rnd(allStages.size())];
+            }
+            
+        private:
+            std::vector<Filesystem::AbsolutePath> allCharacters;
+            std::vector<Filesystem::AbsolutePath> allStages;
+            PaintownUtil::Thread::LockObject lock;
+        } collections;
         
-        player1Collection.setFirst(allCharacters[PaintownUtil::rnd(allCharacters.size())]);
-        player2Collection.setFirst(allCharacters[PaintownUtil::rnd(allCharacters.size())]);
-        stagePath = allStages[PaintownUtil::rnd(allStages.size())];
+        class Subscriber: public Searcher::Subscriber {
+        public:
+            Subscriber(Collections & collections):
+            collections(collections){
+            }
+            
+            Collections & collections;
+        
+            virtual ~Subscriber(){
+            }
+        
+            virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
+                for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+                    const Filesystem::AbsolutePath & path = *it;
+                    collections.addCharacter(path);
+                }
+            }
+
+            virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths){
+                for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
+                    const Filesystem::AbsolutePath & path = *it;
+                    collections.addStage(path);
+                }
+            }
+        } subscription(collections);
+        
+        class WithSubscription{
+        public:
+            WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
+            subscribeThread(PaintownUtil::Thread::uninitializedValue),
+            search(search),
+            subscription(subscription){
+                if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
+                    doSubscribe();
+                }
+            }
+
+            PaintownUtil::Thread::Id subscribeThread;
+
+            /* Start the subscription in a thread so that characters that are already found
+            * will be added in a separate thread instead of the main one
+            */
+            static void * subscribe(void * me){
+                WithSubscription * self = (WithSubscription*) me;
+                self->doSubscribe();
+                return NULL;
+            }
+
+            void doSubscribe(){
+                // Only subscribe if auto search is enabled
+                if (Data::getInstance().autoSearch()){
+                    search.subscribe(&subscription);
+                }
+            }
+
+            Searcher & search;
+            Searcher::Subscriber & subscription;
+
+            virtual ~WithSubscription(){
+                /* Make sure we wait for the initial join to finish before trying to unsubscribe */
+                PaintownUtil::Thread::joinThread(subscribeThread);
+                search.unsubscribe(&subscription);
+            }
+        } withSubscription(searcher, subscription);
+        
+        PaintownUtil::Thread::LockObject lock;
+        
+        Filesystem::AbsolutePath path1;
+        Filesystem::AbsolutePath path2;
+        
+        {
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            path1 = collections.getCharacter();
+        }
+        {
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            path2 = collections.getCharacter();
+        }
+        Global::debug(0) << "Got player1: " << path1.path() << std::endl;
+        Global::debug(0) << "Got player2: " << path2.path() << std::endl;
+        
+        player1Collection.setFirst(Mugen::ArcadeData::CharacterInfo(path1));
+        player2Collection.setFirst(Mugen::ArcadeData::CharacterInfo(path2));
+        {
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            stagePath = collections.getStage();
+        }
     }
     
     if (showVersusScreen){
@@ -1201,7 +1345,7 @@ void Game::startDemo(Searcher & searcher){
     stage.load();
     stage.reset();
     try {
-        runMatch(&stage);
+        runMatch(&stage, "", endTime);
     } catch (const Exception::Return & ex){
     } catch (const QuitGameException & ex){
     }

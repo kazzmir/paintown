@@ -222,6 +222,7 @@ enum GameType {
     SurvivalCoop,
     Training,
     Watch,
+    Demo,
     Undefined,
 };
 
@@ -248,7 +249,6 @@ enum PlayerType{
     Player2,
     CPU,
     NoControl,
-    Demo,
 };
 
 /* thrown by options to start a game */
