@@ -409,8 +409,10 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 doInput();
             }
             if (demoMode){
-                ticker++;
-                if (ticker >= endTime && fader.getState() != Gui::FadeTool::FadeOut){
+                if (ticker < endTime){
+                    ticker++;
+                }
+                if (ticker == endTime && fader.getState() != Gui::FadeTool::FadeOut){
                     fader.setState(Gui::FadeTool::FadeOut);
                 }
                 fader.act();
@@ -474,8 +476,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     };
 
     Gui::FadeTool fader;
-    fader.setFadeInTime(0);
-    fader.setFadeOutTime(500);
+    fader.setFadeInTime(1);
+    fader.setFadeOutTime(60);
     GameState state;
     Logic logic(state, stage, show_fps, console, endTime, fader);
     Draw draw(stage, show_fps, console, (endTime != -1), fader);
@@ -1158,8 +1160,8 @@ void Game::startDemo(Searcher & searcher){
         showVersusScreen = true;
     }
     {
-        std::string temp;
-        if (!(temp = Util::probeDef(systemFile, "demo mode", "fight.endtime") == "1").empty()){
+        std::string temp = Util::probeDef(systemFile, "demo mode", "fight.endtime");
+        if (!temp.empty()){
             endTime = atoi(temp.c_str());
         }
     }
@@ -1217,13 +1219,18 @@ void Game::startDemo(Searcher & searcher){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
                 allStages.push_back(path);
             }
-            const Filesystem::AbsolutePath & getCharacter(){
+            const Filesystem::AbsolutePath getCharacter(){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
                 return allCharacters[PaintownUtil::rnd(allCharacters.size())];
             }
-            const Filesystem::AbsolutePath & getStage(){
+            const Filesystem::AbsolutePath getStage(){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
                 return allStages[PaintownUtil::rnd(allStages.size())];
+            }
+            
+            bool isEmpty(){
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                return (allCharacters.empty() || allStages.empty());
             }
             
         private:
@@ -1297,28 +1304,30 @@ void Game::startDemo(Searcher & searcher){
             }
         } withSubscription(searcher, subscription);
         
-        PaintownUtil::Thread::LockObject lock;
-        
         Filesystem::AbsolutePath path1;
         Filesystem::AbsolutePath path2;
         
-        {
-            PaintownUtil::Thread::ScopedLock scoped(lock);
-            path1 = collections.getCharacter();
+        int currentTime = System::currentSeconds();
+        Global::debug(1) << "Waiting for search..." << std::endl;
+        int i = 0;
+        while (collections.isEmpty()){
+            if (System::currentSeconds() >= (currentTime + 4)){
+                Global::debug(1) << "Couldn't find characters or stages withnin a reasonable time, Aborting." << std::endl;
+                return;
+            }
+            Global::debug(1) << "Time elapsed: " << i << std::endl;
         }
-        {
-            PaintownUtil::Thread::ScopedLock scoped(lock);
-            path2 = collections.getCharacter();
-        }
-        Global::debug(0) << "Got player1: " << path1.path() << std::endl;
-        Global::debug(0) << "Got player2: " << path2.path() << std::endl;
+        
+        path1 = collections.getCharacter();
+        path2 = collections.getCharacter();
+        
+        Global::debug(1) << "Got player1: " << path1.path() << std::endl;
+        Global::debug(1) << "Got player2: " << path2.path() << std::endl;
         
         player1Collection.setFirst(Mugen::ArcadeData::CharacterInfo(path1));
         player2Collection.setFirst(Mugen::ArcadeData::CharacterInfo(path2));
-        {
-            PaintownUtil::Thread::ScopedLock scoped(lock);
-            stagePath = collections.getStage();
-        }
+        
+        stagePath = collections.getStage();
     }
     
     if (showVersusScreen){
