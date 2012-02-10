@@ -977,6 +977,7 @@ rules:
 
     resource-f = "frontedgebodydist"{case}
                | "frontedgedist"{case}
+               | "front"{case}
                | "forcefeedback"{case}
                | "fallenvshake"{case}
                | "facing"{case}
