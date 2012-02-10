@@ -856,8 +856,8 @@ void Configuration::loadConfigurations(){
 
 void Configuration::parseProperty(const Token * token){
     /* Its either plain data or its a nested node which means its a namespace */
-    if (token->isData()){
-        string value;
+    string value;
+    if (token->match("_", value)){
         try{
             token->view() >> value;
             setProperty(token->getName(), value);
