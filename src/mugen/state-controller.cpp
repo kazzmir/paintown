@@ -5557,7 +5557,8 @@ public:
         int value = (int) evaluateNumber(this->value, environment, 0);
         bool kill = evaluateBool(this->kill, environment, true);
         bool absolute = evaluateBool(this->absolute, environment, false);
-        guy.takeDamage(stage, &guy, value, kill, absolute);
+        /* Negate value because its LifeAdd, not LifeSubtract */
+        guy.takeDamage(stage, &guy, -value, kill, absolute);
     }
 
     StateController * deepCopy() const {
