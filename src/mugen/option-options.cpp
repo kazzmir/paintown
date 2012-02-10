@@ -179,7 +179,12 @@ class TimeLimit : public Option {
     public:
 	TimeLimit(){
 	    optionName = "Time Limit";
-	    currentValue = getString(Data::getInstance().getTime());
+        int time = Data::getInstance().getTime();
+        if (time == -1){
+            currentValue = "None";
+        } else {
+            currentValue = getString(time);
+        }
 	}
 	~TimeLimit(){
 	}
@@ -789,10 +794,10 @@ public:
                     tok->view() >> temp;
                     // Set the default motif
                     try{
-                        if (Configuration::getMugenMotif() == "default"){
+                        if (::Configuration::getMugenMotif() == "default"){
                             Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
                         } else {
-                            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(Configuration::getMugenMotif()));
+                            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(::Configuration::getMugenMotif()));
                         }
                     } catch (const Filesystem::NotFound & fail){
                         throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
@@ -928,7 +933,7 @@ public:
         if (state.index != -1){
             Filesystem::RelativePath motif = Storage::instance().cleanse(state.paths[state.index]).removeFirstDirectory();
             Global::debug(1) << "Set muge motif to " << motif.path() << endl;
-            Configuration::setMugenMotif(motif.path());
+            ::Configuration::setMugenMotif(motif.path());
             Mugen::Data::getInstance().setMotif(motif);
         }
     }

@@ -119,6 +119,7 @@ namespace Util{
      */
     double gameTicks(double ticks, double speed = 1);
 }
+// End namespace Util
 
 class Point{
     public:
@@ -688,6 +689,20 @@ protected:
 };
 
 }
+// End namespace ArcadeData
+
+
+/*! Configuration Helper */
+namespace Configuration{
+void set(const std::string &, const std::string &);
+void set(const std::string &, bool value);
+void set(const std::string &, int value);
+void set(const std::string &, double value);
+bool check(const std::string &);
+PaintownUtil::ReferenceCount<std::istringstream> get(const std::string &);
+}
+// End namespace Configuration
+
 }
 
 #endif

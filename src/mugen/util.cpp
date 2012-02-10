@@ -14,6 +14,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "configuration.h"
+
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/debug.h"
@@ -1508,4 +1510,37 @@ Mugen::ArcadeData::CharacterCollection Mugen::ArcadeData::MatchPath::next(){
     CharacterCollection returnable = opponents.front();
     opponents.pop();
     return returnable;
+}
+
+void Mugen::Configuration::set(const std::string & property, const std::string & value){
+    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, value);
+}
+
+void Mugen::Configuration::set(const std::string & property, bool value){
+    std::ostringstream out;
+    out << value;
+    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, out.str());
+}
+
+void Mugen::Configuration::set(const std::string & property, int value){
+    std::ostringstream out;
+    out << value;
+    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, out.str());
+}
+
+void Mugen::Configuration::set(const std::string & property, double value){
+    std::ostringstream out;
+    out << value;
+    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, out.str());
+}
+
+bool Mugen::Configuration::check(const std::string & property){
+    return (::Configuration::getRootConfiguration()->getNamespace("mugen")->getProperty(property, "null") != "null");
+}
+
+PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const std::string & property){
+    if (!Mugen::Configuration::check(property)){
+        throw ios_base::failure("Not Set");
+    }
+    return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getRootConfiguration()->getNamespace("mugen")->getProperty(property, "null")));
 }

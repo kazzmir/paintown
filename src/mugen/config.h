@@ -75,6 +75,7 @@ class Data{
             SelectDef=0,
             SelectDefAndAuto,
             Auto,
+            NoUse,
         };
         
         bool autoSearch();

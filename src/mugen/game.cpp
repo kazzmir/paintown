@@ -307,7 +307,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             gameInput.set(Keyboard::Key_F3, 10, false, NormalSpeed);
             gameInput.set(Keyboard::Key_F4, 10, true, ToggleDebug);
             gameInput.set(Keyboard::Key_ESC, 0, true, QuitGame);
-            gameInput.set(Configuration::config(0).getJoystickQuit(), 0, true, QuitGame);
+            gameInput.set(::Configuration::config(0).getJoystickQuit(), 0, true, QuitGame);
             gameInput.set(Keyboard::Key_F5, 10, true, SetHealth);
             gameInput.set(Keyboard::Key_F9, 10, true, ShowFps);
             gameInput.set(Keyboard::Key_TILDE, 10, true, ToggleConsole);
@@ -465,7 +465,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 }
             }
 
-            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             work.start();
             stage->render(&work);
             if (displayFade){

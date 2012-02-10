@@ -20,6 +20,32 @@ using namespace Mugen;
 
 Data *Data::data = 0;
 
+std::string searchToString(const Data::SearchType & search){
+    switch (search){
+        case Data::SelectDefAndAuto:
+        default:
+            return "selectdef-auto";
+            break;
+        case Data::SelectDef:
+            return "selectdef";
+            break;
+        case Data::Auto:
+            return "auto";
+            break;
+    }
+}
+
+Data::SearchType searchToEnum(const std::string & search){
+    if (search == "selectdef-auto"){
+        return Data::SelectDefAndAuto;
+    } else if (search == "selectdef"){
+        return Data::SelectDef;
+    } else if (search == "auto"){
+        return Data::Auto;
+    }
+    return Data::NoUse;
+}
+
 Data::Data(const Filesystem::AbsolutePath & configFile):
 motif(""),
 difficulty(),
@@ -68,7 +94,7 @@ search(SelectDefAndAuto){
                 Data & self;
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     if (simple == "difficulty"){
-			simple.view() >> self.difficulty;
+                        simple.view() >> self.difficulty;
                     } else if (simple == "life"){
                         simple.view() >> self.life;
                     } else if (simple == "time"){
@@ -90,6 +116,51 @@ search(SelectDefAndAuto){
             OptionWalk walk(*this);
             section->walk(walk);
         }
+    }
+    // Now Load from the configuration file if not set then itialize them to the defaults in mugen.cfg
+    try {
+        *Mugen::Configuration::get("difficulty") >> difficulty;
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("difficulty", difficulty);
+    }
+    try {
+        *Mugen::Configuration::get("life") >> life;
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("life", life);
+    }
+    try {
+        *Mugen::Configuration::get("time") >> time;
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("time", time);
+    }
+    try {
+        *Mugen::Configuration::get("speed") >> gameSpeed;
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("speed", gameSpeed);
+    }
+    try {
+        *Mugen::Configuration::get("team1-vs-2-life") >> team1vs2Life;
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("team1-vs-2-life", team1vs2Life);
+    }
+    try {
+        *Mugen::Configuration::get("team-lose-on-ko") >> teamLoseOnKO;
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("team-lose-on-ko", teamLoseOnKO);
+    }
+    try {
+        string out;
+        *Mugen::Configuration::get("motif") >> out;
+        motif = Filesystem::RelativePath(out);
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("motif", motif.path());
+    }
+    try {
+        string out;
+        *Mugen::Configuration::get("search") >> out;
+        search = searchToEnum(out);
+    } catch (const ios_base::failure & ex){
+        Mugen::Configuration::set("search", searchToString(Data::SelectDefAndAuto));
     }
 }
 
@@ -159,6 +230,7 @@ const Filesystem::RelativePath & Data::getMotif(){
 
 void Data::setDifficulty(int difficulty){
     this->difficulty = difficulty;
+    Mugen::Configuration::set("difficulty", difficulty);
 }
 
 int Data::getDifficulty(){
@@ -167,6 +239,7 @@ int Data::getDifficulty(){
 
 void Data::setLife(int life){
     this->life = life;
+    Mugen::Configuration::set("life", life);
 }
 
 int Data::getLife(){
@@ -175,6 +248,7 @@ int Data::getLife(){
 
 void Data::setTime(int time){
     this->time = time;
+    Mugen::Configuration::set("time", time);
 }
 
 int Data::getTime(){ 
@@ -183,6 +257,7 @@ int Data::getTime(){
 
 void Data::setSpeed(int speed){
     this->speed = speed;
+    Mugen::Configuration::set("speed", speed);
 }
 
 int Data::getSpeed(){ 
@@ -191,6 +266,7 @@ int Data::getSpeed(){
 
 void Data::setTeam1vs2Life(int life){
     this->team1vs2Life = life;
+    Mugen::Configuration::set("team1-vs-2-life", team1vs2Life);
 }
 
 int Data::getTeam1vs2Life(){
@@ -199,6 +275,7 @@ int Data::getTeam1vs2Life(){
 
 void Data::setTeamLoseOnKO(bool lose){
     this->teamLoseOnKO = lose;
+    Mugen::Configuration::set("team-lose-on-ko", teamLoseOnKO);
 }
 
 bool Data::getTeamLoseOnKO(){
@@ -223,6 +300,7 @@ double Data::getSuperTargetDefenceMultiplier(){
 
 void Data::setGameSpeed(int speed){
     this->gameSpeed = speed;
+    Mugen::Configuration::set("speed", speed);
 }
 
 int Data::getGameSpeed(){
@@ -252,4 +330,5 @@ const Data::SearchType & Data::getSearchType(){
 
 void Data::setSearchType(const Data::SearchType & s){
     search = s;
+    Mugen::Configuration::set("search", searchToString(search));
 }
