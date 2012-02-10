@@ -472,9 +472,7 @@ public:
     /* true if enemy can hit this */
     virtual bool canBeHit(Object * enemy);
     
-    virtual inline int getAnimation() const {
-        return this->currentAnimation;
-    }
+    virtual int getAnimation() const;
     
     virtual inline int getCurrentState() const {
         return this->currentState;
@@ -1039,7 +1037,7 @@ public:
         virtual void setSpritePriority(int priority);
         virtual int getSpritePriority() const;
         
-        virtual void setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
+        virtual void setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int number);
 
         virtual bool isHelper() const;
 
@@ -1376,6 +1374,7 @@ protected:
         Behavior * behavior;
 
         PaintownUtil::ReferenceCount<MugenAnimation> foreignAnimation;
+        int foreignAnimationNumber;
 
         /* true if the player is holding the back button */
         bool blocking;

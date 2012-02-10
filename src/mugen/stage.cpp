@@ -1664,7 +1664,7 @@ void Mugen::Stage::toggleDebug(int choose){
     int count = 0;
     for (vector<Mugen::Object *>::iterator it = players.begin(); it != players.end(); it++, count++){
         Mugen::Character *player = (Mugen::Character *)(*it);
-        if (choose == count){
+        if (choose == count || choose == -1){
             player->enableDebug();
         } else {
             player->disableDebug();

@@ -5304,7 +5304,7 @@ public:
         int animation = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
         PaintownUtil::ReferenceCount<MugenAnimation> show = stage.getEnemy(&guy)->getAnimation(animation);
         if (show != NULL){
-            guy.setForeignAnimation(show);
+            guy.setForeignAnimation(show, animation);
         } else {
             ostringstream out;
             out << "No animation found for " << animation;

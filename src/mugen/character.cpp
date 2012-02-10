@@ -2480,6 +2480,13 @@ void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, in
         getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work, xscale, yscale);
     }
 }
+    
+int Character::getAnimation() const {
+    if (foreignAnimation != NULL){
+        return foreignAnimationNumber;
+    }
+    return currentAnimation;
+}
 
 PaintownUtil::ReferenceCount<MugenAnimation> Character::getCurrentAnimation() const {
     /* Foreign animation is set by ChangeAnim2 */
@@ -3681,6 +3688,10 @@ void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, i
     widthOverride.playerBack = playerBack;
 }
         
+/* FIXME: it may be easier to put the foreign animation stuff here rather than keep track of
+ * a separate set of foreign data, that way everything will just work, such as hasAnimation()
+ * and whatnot.
+ */
 PaintownUtil::ReferenceCount<MugenAnimation> Character::getAnimation(int id) const {
     std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> >::const_iterator where = getAnimations().find(id);
     if (where != getAnimations().end()){
@@ -3778,8 +3789,9 @@ PaintownUtil::ReferenceCount<MugenAnimation> Character::replaceSprites(const Pai
     return update;
 }
 
-void Character::setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
+void Character::setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int number){
     foreignAnimation = replaceSprites(animation);
+    foreignAnimationNumber = number;
 }
         
 bool Character::isHelper() const {
