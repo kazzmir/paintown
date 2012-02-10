@@ -158,6 +158,8 @@ protected:
 
     std::vector<Token*> getPropertyTokens();
 
+    void parseProperty(const Token * token);
+
 private:
     /* keyboard */
     int right;

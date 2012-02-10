@@ -774,6 +774,10 @@ void Configuration::loadConfigurations(){
                 n->view() >> font;
                 /* FIXME */
                 // setMenuFont(font);
+            } else if (*n == config_version){
+                string version;
+                n->view() >> version;
+                /* FIXME: check the version here */
             } else if (*n == config_sound){
                 int x;
                 n->view() >> x;
@@ -830,11 +834,14 @@ void Configuration::loadConfigurations(){
                     Configuration::setPlayMode(Configuration::FreeForAll);
                 }
             } else {
-                string value;
+                // string value;
                 try{
                     Util::ReferenceCount<Configuration> root = getRootConfiguration();
+                    root->parseProperty(n);
+                    /*
                     n->view() >> value;
                     root->setProperty(n->getName(), value);
+                    */
                 } catch (const TokenException & e){
                     /* ignore errors */
                 }
@@ -847,6 +854,27 @@ void Configuration::loadConfigurations(){
     }
 }
 
+void Configuration::parseProperty(const Token * token){
+    /* Its either plain data or its a nested node which means its a namespace */
+    if (token->isData()){
+        string value;
+        try{
+            token->view() >> value;
+            setProperty(token->getName(), value);
+        } catch (const TokenException & e){
+            /* ignore errors */
+        }
+    } else {
+        string nameSpace = token->getName();
+        Util::ReferenceCount<Configuration> module = getNamespace(nameSpace); 
+        TokenView view = token->view();
+        while (view.hasMore()){
+            const Token * next = NULL;
+            view >> next;
+            module->parseProperty(next);
+        }
+    }
+}
 
 std::string Configuration::getMugenMotif(){
     return mugenMotif;
@@ -926,6 +954,7 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
 }
 
 vector<Token*> Configuration::getPropertyTokens(){
+    /* All these tokens will be deleted by the calling function */
     vector<Token*> tokens;
     for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
         string name = (*it).first;
@@ -934,6 +963,22 @@ vector<Token*> Configuration::getPropertyTokens(){
         *property << name << value;
         tokens.push_back(property);
     }
+
+    for (map<std::string, Util::ReferenceCount<Configuration> >::iterator it = namespaces.begin(); it != namespaces.end(); it++){
+        string name = it->first;
+        Util::ReferenceCount<Configuration> configuration = it->second;
+        if (configuration != NULL){
+            Token * sub = new Token();
+            tokens.push_back(sub);
+            *sub << name;
+
+            vector<Token*> propertyTokens = configuration->getPropertyTokens();
+            for (vector<Token*>::iterator nit = propertyTokens.begin(); nit != propertyTokens.end(); nit++){
+                sub->addToken(*nit);
+            }
+        }
+    }
+
     return tokens;
 }
 
