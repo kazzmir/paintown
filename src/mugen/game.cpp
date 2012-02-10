@@ -1218,11 +1218,23 @@ void Game::startDemo(Searcher & searcher){
             }
             void addCharacter(const Filesystem::AbsolutePath & path){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
+                try {
+                    // Check for name of character ... if it doesn't find this it probably isn't a character
+                    Util::probeDef(path, "info", "name");
+                } catch (const MugenException & ex){
+                    return;
+                }
                 allCharacters.push_back(path);
             }
             
             void addStage(const Filesystem::AbsolutePath & path){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
+                try {
+                    // Just like character check for name of stage ... if it doesn't find this it probably isn't a stage
+                    Util::probeDef(path, "info", "name");
+                } catch (const MugenException & ex){
+                    return;
+                }
                 allStages.push_back(path);
             }
             const Filesystem::AbsolutePath getCharacter(){
@@ -1361,6 +1373,7 @@ void Game::startDemo(Searcher & searcher){
     stage.load();
     stage.reset();
     try {
+        InputManager::waitForClear();
         runMatch(&stage, "", endTime);
     } catch (const Exception::Return & ex){
     } catch (const QuitGameException & ex){
