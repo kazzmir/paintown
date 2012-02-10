@@ -427,9 +427,9 @@ enum ClientActions{
 };
 
 void runClient(const string & name, const string & host, const string & port){
-    Configuration::setStringProperty(propertyLastClientName, name);
-    Configuration::setStringProperty(propertyLastClientHost, host);
-    Configuration::setStringProperty(propertyLastClientPort, port);
+    Configuration::getRootConfiguration()->setProperty(propertyLastClientName, name);
+    Configuration::getRootConfiguration()->setProperty(propertyLastClientHost, host);
+    Configuration::getRootConfiguration()->setProperty(propertyLastClientPort, port);
     istringstream stream(port);
     int portNumber;
     stream >> portNumber;
@@ -506,9 +506,9 @@ static void doQuit(void * stuff){
 void networkClient(){
     // Global::speed_counter = 0;
     
-    TextInput nameInput(Configuration::getStringProperty(propertyLastClientName, string("player") + getANumber() + getANumber()));
-    TextInput hostInput(Configuration::getStringProperty(propertyLastClientHost, "localhost"));
-    TextInput portInput(Configuration::getStringProperty(propertyLastClientPort, "7887"));
+    TextInput nameInput(Configuration::getRootConfiguration()->getProperty(propertyLastClientName, string("player") + getANumber() + getANumber()));
+    TextInput hostInput(Configuration::getRootConfiguration()->getProperty(propertyLastClientHost, "localhost"));
+    TextInput portInput(Configuration::getRootConfiguration()->getProperty(propertyLastClientPort, "7887"));
 
     Focus focus = Name;
     nameInput.enable();

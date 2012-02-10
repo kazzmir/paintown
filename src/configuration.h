@@ -130,12 +130,15 @@ public:
     static bool isJoystickEnabled();
     static void setJoystickEnabled(bool enabled);
 
-    static void setStringProperty(const std::string & path, const std::string & value);
-    static std::string getStringProperty(const std::string & path, const std::string & defaultValue);
+    void setProperty(const std::string & path, const std::string & value);
+    std::string getProperty(const std::string & path, const std::string & defaultValue);
 
     static void disableSave();
     static void setSave(bool what);
     static bool getSave();
+    
+    Util::ReferenceCount<Configuration> getNamespace(const std::string & name);
+    static Util::ReferenceCount<Configuration> getRootConfiguration();
 
 protected:
     Configuration();
@@ -150,11 +153,10 @@ protected:
     static Token * saveKeyboard( int num, Configuration * configuration );
     static Token * saveJoystick( int num, Configuration * configuration );
 
-    static void setProperty(std::string name, std::string value);
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);
 
-    Util::ReferenceCount<Configuration> getNamespace(const std::string & name);
+    std::vector<Token*> getPropertyTokens();
 
 private:
     /* keyboard */
@@ -223,10 +225,13 @@ private:
 
     /* directory of current game/mod */
     static std::string currentGameDir;
-    static std::map<std::string, std::string> properties;
 
     static std::string language;
     static std::string mugenMotif;
+
+    /* Top level property that contains all other configuration objects */
+    static Util::ReferenceCount<Configuration> rootProperty;
+    std::map<std::string, std::string> properties;
 };
 
 #endif

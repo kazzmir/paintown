@@ -313,13 +313,13 @@ static int startMain(bool just_network_server, const NetworkJoin & networkJoin, 
                 string name = networkJoin.name;
                 if (port == ""){
                     /* FIXME: replace 7887 with a constant */
-                    port = Configuration::getStringProperty(Network::propertyLastClientPort, "7887");
+                    port = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientPort, "7887");
                 }
                 if (host == ""){
-                    host = Configuration::getStringProperty(Network::propertyLastClientHost, "127.0.0.1");
+                    host = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientHost, "127.0.0.1");
                 }
                 if (name == ""){
-                    name = Configuration::getStringProperty(Network::propertyLastClientName, "player");
+                    name = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientName, "player");
                 }
                 Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
                 try{

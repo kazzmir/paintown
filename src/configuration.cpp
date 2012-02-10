@@ -77,6 +77,8 @@ using namespace std;
 
 static const int InvalidKey = 0;
 static const Configuration::JoystickInput InvalidJoystick = Joystick::Invalid;
+    
+Util::ReferenceCount<Configuration> Configuration::rootProperty;
 
 /* don't save the configuration while loading it */
 class Disable{
@@ -830,8 +832,9 @@ void Configuration::loadConfigurations(){
             } else {
                 string value;
                 try{
+                    Util::ReferenceCount<Configuration> root = getRootConfiguration();
                     n->view() >> value;
-                    Configuration::setProperty(n->getName(), value);
+                    root->setProperty(n->getName(), value);
                 } catch (const TokenException & e){
                     /* ignore errors */
                 }
@@ -920,6 +923,18 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
     }
 
     return config;
+}
+
+vector<Token*> Configuration::getPropertyTokens(){
+    vector<Token*> tokens;
+    for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
+        string name = (*it).first;
+        string value = (*it).second;
+        Token * property = new Token();
+        *property << name << value;
+        tokens.push_back(property);
+    }
+    return tokens;
 }
 
 void Configuration::saveConfiguration(){
@@ -1019,6 +1034,11 @@ void Configuration::saveConfiguration(){
     *npc << config_npc_buddies << Configuration::getNpcBuddies();
     head.addToken( npc );
 
+    vector<Token*> propertyTokens = getRootConfiguration()->getPropertyTokens();
+    for (vector<Token*>::iterator it = propertyTokens.begin(); it != propertyTokens.end(); it++){
+        head.addToken(*it);
+    }
+    /*
     for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
         string name = (*it).first;
         string value = (*it).second;
@@ -1026,6 +1046,7 @@ void Configuration::saveConfiguration(){
         *property << name << value;
         head.addToken(property);
     }
+    */
 
     ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out );
     if (! out.bad()){
@@ -1062,7 +1083,7 @@ int Configuration::soundVolume = 70;
 int Configuration::musicVolume = 70;
 bool Configuration::joystickEnabled = true;
 std::string Configuration::currentGameDir = "";
-std::map<std::string, std::string> Configuration::properties;
+// std::map<std::string, std::string> Configuration::properties;
 std::string Configuration::language = "";
 std::string Configuration::mugenMotif = "default";
 std::string Configuration::qualityFilter = "none";
@@ -1072,19 +1093,18 @@ int Configuration::fps = 40;
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
 Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::string & name){
+    if (namespaces[name] == NULL){
+        namespaces[name] = Util::ReferenceCount<Configuration>(new Configuration());
+    }
     return namespaces[name];
 }
 
-void Configuration::setProperty(string name, string value){
+void Configuration::setProperty(const string & name, const string & value){
     properties[name] = value;
     saveConfiguration();
 }
 
-void Configuration::setStringProperty(const std::string & path, const std::string & value){
-    setProperty(path, value);
-}
-
-std::string Configuration::getStringProperty(const std::string & path, const std::string & defaultValue){
+std::string Configuration::getProperty(const std::string & path, const std::string & defaultValue){
     if (properties.find(path) == properties.end()){
         properties[path] = defaultValue;
     }
@@ -1215,4 +1235,12 @@ int Configuration::getFps(){
 void Configuration::setFps(int what){
     fps = what;
     saveConfiguration();
+}
+    
+Util::ReferenceCount<Configuration> Configuration::getRootConfiguration(){
+    if (rootProperty == NULL){
+        rootProperty = Util::ReferenceCount<Configuration>(new Configuration());
+    }
+
+    return rootProperty;
 }
