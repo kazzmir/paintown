@@ -46,7 +46,6 @@ struct ResourceEffect{
 struct HitDefinition{
     HitDefinition():
     alive(false),
-    hitFlag("MAF"),
     animationType(AttackType::Light),
     animationTypeAir(AttackType::NoAnimation),
     animationTypeFall(AttackType::NoAnimation),
@@ -84,8 +83,29 @@ struct HitDefinition{
         std::string physics;
     } attribute;
 
-    std::string hitFlag;
-    std::string guardFlag;
+    struct HitFlags{
+        HitFlags():
+        high(true),
+        low(true),
+        air(true),
+        fall(true),
+        down(false),
+        getHitState(false),
+        notGetHitState(false){
+        }
+
+        bool high;
+        bool low;
+        bool air;
+        bool fall;
+        bool down;
+        bool getHitState;
+        bool notGetHitState;
+    };
+   
+    HitFlags hitFlag;
+    HitFlags guardFlag;
+
     AttackType::Animation animationType;
     AttackType::Animation animationTypeAir;
     AttackType::Animation animationTypeFall;

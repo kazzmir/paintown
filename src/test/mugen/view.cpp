@@ -131,7 +131,7 @@ void testPCX(){
     length = fread(data, sizeof(char), 1<<18, f);
     Global::debug(0) << "Size is " << length << endl;
     fclose(f);
-    Graphics::Bitmap b = Graphics::Bitmap::memoryPCX(data, length);
+    Graphics::Bitmap b = Graphics::memoryPCX(data, length);
     // Bitmap b("x.pcx");
     if (b.getError()){
         Global::debug(0) << "what the hell" << endl;

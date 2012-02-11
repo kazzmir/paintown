@@ -1219,7 +1219,6 @@ public:
 
 struct HitDefinitionData{
     HitDefinitionData():
-        hitFlag("MAF"),
         guardFlag(),
         animationType(AttackType::Light),
         animationTypeAir(AttackType::NoAnimation),
@@ -1317,7 +1316,7 @@ struct HitDefinitionData{
      * If omitted, this defaults to "MAF".
      */
     /* HitFlag */
-    string hitFlag;
+    HitDefinition::HitFlags hitFlag;
 
     /* guardflag = hit_flags (string)
      * This determines how P2 may guard the attack. hit_flags is a string containing a combination of the following characters:
@@ -1326,7 +1325,7 @@ struct HitDefinitionData{
      * affectteam = team_type (string)
      * team_type specifies which team's players can be hit by this HitDef. Use B for both teams (all players), E for enemy team (opponents), or F for friendly team (your own team). The default is E.
      */
-    string guardFlag;
+    HitDefinition::HitFlags guardFlag;
 
     /* animtype = anim_type (string)
      * This refers to the type of animation that P2 will go into when hit by the attack. Choose from "light", "medium", "hard", "back", "up", or "diagup". The first three are self-explanatory. "Back" is the animation where P2 is knocked off her feet. "Up" should be used when the character is knocked straight up in the air (for instance, by an uppercut), and "DiagUp" should be used when the character is knocked up and backwards in the air, eventually landing on his head. The default is "Light".
@@ -1885,6 +1884,14 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
             return isType(simple) || StateController::handled(simple);
         }
 
+        HitDefinition::HitFlags parseHitFlags(const string & flags){
+            HitDefinition::HitFlags hitFlags;
+
+            /* TODO */
+
+            return hitFlags;
+        }
+
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "attr"){
                 string type, attack;
@@ -1913,12 +1920,12 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
             } else if (simple == "hitflag"){
                 string flags;
                 simple.view() >> flags;
-                hit.hitFlag = flags;
+                hit.hitFlag = parseHitFlags(flags);
             } else if (simple == "guardflag"){
                 try{
                     string flags;
                     simple.view() >> flags;
-                    hit.guardFlag = flags;
+                    hit.guardFlag = parseHitFlags(flags);
                 } catch (const Ast::Exception & fail){
                 }
             } else if (simple == "animtype"){
@@ -2251,6 +2258,9 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
     his.guardPause.player2 = evaluateNumberLocal(hit.guardPause.player2, his.pause.player2);
     his.groundType = hit.groundType;
     his.airType = hit.airType;
+
+    his.hitFlag = hit.hitFlag;
+    his.guardFlag = hit.guardFlag;
 
     his.attribute.state = hit.attribute.state;
     his.attribute.attackType = hit.attribute.attackType;

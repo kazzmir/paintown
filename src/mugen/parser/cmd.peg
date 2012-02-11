@@ -440,6 +440,20 @@ Ast::Identifier * makeSimpleIdentifier(const char * name){
     return identifier;
 }
 
+Ast::Identifier * makeSimpleIdentifier(const std::string & name){
+    Ast::Identifier * identifier = new Ast::SimpleIdentifier(name);
+    GC::save(identifier);
+    return identifier;
+}
+    
+Ast::Identifier * makeHitFlags(const Value & letters, const Value & modifiers){
+    std::ostringstream out;
+    out << *toString(letters);
+    if (modifiers.getValue() != NULL){
+        out << *toString(modifiers);
+    }
+    return makeSimpleIdentifier(out.str());
+}
 
 double * parseDouble(const Value & value){
     std::string * str = toString(value);
@@ -1010,14 +1024,12 @@ rules:
                       | !keyword identifier
 
     # FIXME: return proper hitflag
-    hitflag = hitflag_char+ hitflag_modifier? !"." {{ value = makeSimpleIdentifier("A"); }}
-    hitflag_char = "A"
-                 | "M"
-                 | "F"
-                 | "D"
+    hitflag = chars:hitflag_char+ modifier:hitflag_modifier? !"." {{
+        value = makeHitFlags(chars, modifier);
+    }}
+    hitflag_char = [AMFDL]
 
-    hitflag_modifier = "+"
-                     | "-"
+    hitflag_modifier = [+-]
 
     keyword = keyword_real !alpha_digit {{ value = $1; }}
     keyword_real = "vel"{case} s1 "y"{case} {{ value = makeKeyword("vel y"); }}
