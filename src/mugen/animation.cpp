@@ -109,8 +109,8 @@ MugenFrame & MugenFrame::operator=(const MugenFrame &copy){
 
 void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     if (sprite != NULL){
-        const int placex = x + xoffset;
-        const int placey = y + yoffset;
+        const int placex = x + (xoffset * effects.facing);
+        const int placey = y + (yoffset * effects.vfacing);
         sprite->render(placex, placey, work, effects);
     }
 }
