@@ -1887,7 +1887,20 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
         HitDefinition::HitFlags parseHitFlags(const string & flags){
             HitDefinition::HitFlags hitFlags;
 
-            /* TODO */
+            /* First disable all the flags, the default is MAF */
+            hitFlags.reset();
+
+            for (unsigned int index = 0; index < flags.size(); index++){
+                switch (flags[index]){
+                    case 'L': hitFlags.low = true; break;
+                    case 'H': hitFlags.high = true; break;
+                    case 'A': hitFlags.air = true; break;
+                    case 'F': hitFlags.fall = true; break;
+                    case 'D': hitFlags.down = true; break;
+                    case '+': hitFlags.getHitState = true; break;
+                    case '-': hitFlags.notGetHitState = true; break;
+                }
+            }
 
             return hitFlags;
         }

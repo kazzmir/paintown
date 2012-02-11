@@ -94,6 +94,16 @@ struct HitDefinition{
         notGetHitState(false){
         }
 
+        void reset(){
+            high = false;
+            low = false;
+            air = false;
+            fall = false;
+            down = false;
+            getHitState = false;
+            notGetHitState = false;
+        }
+
         bool high;
         bool low;
         bool air;
