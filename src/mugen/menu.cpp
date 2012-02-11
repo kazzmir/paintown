@@ -924,7 +924,7 @@ void MugenMenu::run(){
         Gui::FadeTool & fader;
 
         void draw(const Graphics::Bitmap & screen){
-            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             work.start();
             background->renderBackground(0, 0, work);
 

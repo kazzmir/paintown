@@ -2155,7 +2155,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         const Logic & logic;
 
         void draw(const Graphics::Bitmap & screen){
-            Graphics::StretchedBitmap board(320, 240, screen);
+            Graphics::StretchedBitmap board(320, 240, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             board.start();
             // Render background
             background->renderBackground(0, 0, board);

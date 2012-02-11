@@ -350,7 +350,7 @@ public:
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
-        Graphics::StretchedBitmap work(320, 240, buffer);
+        Graphics::StretchedBitmap work(320, 240, buffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
         work.start();
         versus.draw(work);
         work.finish();
