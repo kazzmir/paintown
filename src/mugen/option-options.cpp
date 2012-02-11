@@ -655,7 +655,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void draw(const Graphics::Bitmap & screen){
-            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen);
+            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             workArea.start();
             // render backgrounds
 	    background->renderBackground(0, 0, workArea);
