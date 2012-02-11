@@ -762,7 +762,8 @@ static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int at
 }
 
 bool Mugen::Stage::doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2){
-    return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
+    // return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
+    return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), 0, obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
 bool Mugen::Stage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2){
