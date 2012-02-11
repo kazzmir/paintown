@@ -261,7 +261,7 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask, bool
             memcpy(pcx + newlength - 768, originalPalette, 768);
         }
 
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, newlength), mask));
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, newlength), mask));
         if (mask){
             bitmap->replaceColor(bitmap->get8BitMaskColor(), Graphics::MaskColor());
         }

@@ -267,7 +267,7 @@ Graphics::Bitmap * MugenFont::makeBank(int bank) const {
     }
 
     memcpy(pcx + (pcxsize - 768), newpal, 768);
-    Graphics::Bitmap * bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+    Graphics::Bitmap * bmp = new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, pcxsize));
     bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
     return bmp;
 }
