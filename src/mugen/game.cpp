@@ -33,6 +33,7 @@
 #include "menu.h"
 #include "stage.h"
 #include "character-select.h"
+#include "characterhud.h"
 #include "storyboard.h"
 #include "behavior.h"
 #include "parse-cache.h"
@@ -88,7 +89,7 @@ void Game::run(Searcher & searcher){
                 break;
             }
             case Survival: {
-                //gameInfo = select.run("Survival" , 1, true, &screen);
+                doSurvival(searcher);
                 break;
             }
             case SurvivalCoop: {
@@ -140,7 +141,7 @@ enum MugenInput{
     ToggleConsole
 };
 
-static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1){
+static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1, int roundsOverride = -1){
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;
@@ -292,7 +293,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, Gui::FadeTool & fader):
+        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, Gui::FadeTool & fader, int roundsOverride):
         state(state),
         gameSpeed(1.0),
         stage(stage),
@@ -301,7 +302,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         endTime(endTime),
         ticker(0),
         demoMode((endTime != -1)),
-        fader(fader){
+        fader(fader),
+        roundsOverride(roundsOverride){
             gameInput.set(Keyboard::Key_F1, 10, false, SlowDown);
             gameInput.set(Keyboard::Key_F2, 10, false, SpeedUp);
             gameInput.set(Keyboard::Key_F3, 10, false, NormalSpeed);
@@ -332,6 +334,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         int ticker;
         bool demoMode;
         Gui::FadeTool & fader;
+        int roundsOverride;
 
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
@@ -424,6 +427,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                     throw QuitGameException();
                 }
             }
+            if (roundsOverride){
+                if (stage->getGameInfo()->getRound().getRound() > roundsOverride){
+                    throw QuitGameException();
+                }
+            }
         }
 
         virtual bool done(){
@@ -483,7 +491,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     fader.setFadeInTime(1);
     fader.setFadeOutTime(60);
     GameState state;
-    Logic logic(state, stage, show_fps, console, endTime, fader);
+    Logic logic(state, stage, show_fps, console, endTime, fader, roundsOverride);
     Draw draw(stage, show_fps, console, (endTime != -1), fader);
 
     PaintownUtil::standardLoop(logic, draw);
@@ -1378,4 +1386,151 @@ void Game::startDemo(Searcher & searcher){
     } catch (const Exception::Return & ex){
     } catch (const QuitGameException & ex){
     }
+}
+
+template<typename T>
+static T getRandom(const std::vector<T> & vec){
+    return vec[PaintownUtil::rnd(vec.size())];
+}
+
+void Game::doSurvival(Searcher & searcher){
+    InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+    InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+    InputMap<Mugen::Keys> playerKeys;
+    HumanBehavior behavior(keys1, keys2);
+    LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
+    
+    Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
+    Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
+    
+    PaintownUtil::ReferenceCount<Mugen::Character> player1 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+    PaintownUtil::ReferenceCount<Mugen::Character> player2 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+    
+    std::vector<Mugen::ArcadeData::CharacterInfo> characters;
+    
+    Filesystem::AbsolutePath stagePath;
+    
+    // Scoped so it doesn't persist
+    {
+        Mugen::CharacterSelect select(systemFile);
+        select.init();
+        if (playerType == Mugen::Player1){
+            select.setMode(Mugen::Survival, Mugen::CharacterSelect::Player1);
+        } else {
+            select.setMode(Mugen::Survival, Mugen::CharacterSelect::Player2);
+        }
+        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+        PaintownUtil::standardLoop(*logic, *draw);
+        
+        if (select.wasCanceled()){
+            return;
+        }
+    
+        if (playerType == Mugen::Player1){
+            player1Collection = select.getPlayer1().getCollection();
+            playerKeys = keys1;
+            behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+            player2Collection = select.getPlayer1().getOpponentCollection();
+        } else {
+            player2Collection = select.getPlayer2().getCollection();
+            playerKeys = keys2;
+            behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+            player1Collection = select.getPlayer2().getOpponentCollection();
+        }
+        
+        characters = select.getCharacters();
+        stagePath = select.getStage();
+    }
+    
+    int wins = 0;
+    bool playerLoaded = false;
+    
+    while (true){
+        if (playerType == Mugen::Player1){
+            switch (player2Collection.getType()){
+                case Mugen::ArcadeData::CharacterCollection::Turns4:
+                    player2Collection.setFourth(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                case Mugen::ArcadeData::CharacterCollection::Turns3:
+                    player2Collection.setThird(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                case Mugen::ArcadeData::CharacterCollection::Turns2:
+                case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+                    player2Collection.setSecond(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                case Mugen::ArcadeData::CharacterCollection::Single:
+                default:
+                    player2Collection.setFirst(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    break;
+            }
+        } else {
+            switch (player1Collection.getType()){
+                case Mugen::ArcadeData::CharacterCollection::Turns4:
+                    player1Collection.setFourth(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                case Mugen::ArcadeData::CharacterCollection::Turns3:
+                    player1Collection.setThird(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                case Mugen::ArcadeData::CharacterCollection::Turns2:
+                case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+                    player1Collection.setSecond(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                case Mugen::ArcadeData::CharacterCollection::Single:
+                default:
+                    player1Collection.setFirst(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    break;
+            }
+        }
+        {
+            VersusMenu versus(systemFile);
+            versus.init(player1Collection, player2Collection);
+            PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+            PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+            PaintownUtil::standardLoop(*logic, *draw);
+            if (versus.wasCanceled()){
+                return;
+            }
+        }
+        PaintownUtil::ReferenceCount<Mugen::Character> ourPlayer = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+        if (playerType == Mugen::Player1){
+            if (!playerLoaded){
+                player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player1Side));
+                player1->load(player1Collection.getFirst().getAct());
+                ourPlayer = player1;
+                player1->setBehavior(&behavior);
+                playerLoaded = true;
+            }
+            
+            player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
+            player2->load(player2Collection.getFirst().getAct());
+            player2->setBehavior(&AIBehavior);
+        } else {
+            if (!playerLoaded){
+                player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
+                player2->load(player2Collection.getFirst().getAct());
+                ourPlayer = player2;
+                player2->setBehavior(&behavior);
+                playerLoaded = true;
+            }
+            
+            player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player2Side));
+            player1->load(player1Collection.getFirst().getAct());
+            player1->setBehavior(&AIBehavior);
+        }
+        // FIXME use override music later
+        Mugen::Stage stage(stagePath);
+        stage.addPlayer1(player1.raw());
+        stage.addPlayer2(player2.raw());
+        stage.load();
+        stage.reset();
+        try {
+            runMatch(&stage, "", -1, 1);
+            if (ourPlayer->getMatchWins() > wins){
+                wins = ourPlayer->getMatchWins();
+                // Reset player for next match
+                ourPlayer->resetPlayer();
+            } else {
+                break;
+            }
+        } catch (const Exception::Return & ex){
+            return;
+        } catch (const QuitGameException & ex){
+        }
+    }
+    // FIXME show total matches won
 }

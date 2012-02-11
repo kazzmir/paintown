@@ -215,6 +215,20 @@ public:
     }
 };
 
+class SurvivalOption: public ItemOption {
+public:
+    SurvivalOption(const std::string & name){
+        this->setText(name);
+    }
+
+    virtual ~SurvivalOption(){
+    }
+
+    void executeOption(const Mugen::PlayerType & player, bool & endGame){
+        throw StartGame(player, Mugen::Survival);
+    }
+};
+
 class TrainingOption: public ItemOption {
 public:
     TrainingOption(const std::string & name){
@@ -521,7 +535,7 @@ void MugenMenu::loadData(){
                             }
                         } else if (simple == "menu.itemname.survival"){
                             try{
-                                menu.addMenuOption(new Mugen::DummyOption(simple.valueAsString()));
+                                menu.addMenuOption(new Mugen::SurvivalOption(simple.valueAsString()));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "menu.itemname.survivalcoop"){

@@ -3141,6 +3141,14 @@ Mugen::ArcadeData::MatchPath CharacterSelect::getTeamArcadePath(){
     return Mugen::ArcadeData::MatchPath(player1.getOpponentCollection().getType(), teamArcadeOrder, characters, stages.getStages());
 }
 
+const std::vector<Mugen::ArcadeData::CharacterInfo> & CharacterSelect::getCharacters() const {
+    return characters;
+}
+
+const std::vector<Filesystem::AbsolutePath> & CharacterSelect::getStages() const {
+    return stages.getStages();
+}
+
 /* indexes start at 1 */
 PaintownUtil::ReferenceCount<MugenFont> CharacterSelect::getFont(int index) const {
     if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){

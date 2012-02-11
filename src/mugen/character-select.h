@@ -546,6 +546,10 @@ public:
     virtual Mugen::ArcadeData::MatchPath getArcadePath();
     //! Get Team Arcade Match
     virtual Mugen::ArcadeData::MatchPath getTeamArcadePath();
+    //! Get character list
+    virtual const std::vector<Mugen::ArcadeData::CharacterInfo> & getCharacters() const;
+    //! Get stage list
+    const std::vector<Filesystem::AbsolutePath> & getStages() const;
     
     //! Get Logic class
     PaintownUtil::ReferenceCount<PaintownUtil::Logic> getLogic(InputMap<Mugen::Keys> &, InputMap<Mugen::Keys> &, Searcher &);

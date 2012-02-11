@@ -29,11 +29,12 @@ class Game {
         /* start a scripted match */
         static void startScript(const std::string & player1Name, const std::string & player1Script, const std::string & player2Name, const std::string & player2Script, const std::string & stageName);
     private:
-        void doArcade(Searcher & searcher);
-        void doTraining(Searcher & searcher);
-        void doVersus(Searcher & searcher);
-        void doWatch(Searcher & searcher);
-        void startDemo(Searcher & searcher);
+        void doArcade(Searcher &);
+        void doTraining(Searcher &);
+        void doVersus(Searcher &);
+        void doWatch(Searcher &);
+        void doSurvival(Searcher &);
+        void startDemo(Searcher &);
 
         //! Player type
         PlayerType playerType;
