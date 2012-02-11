@@ -1893,6 +1893,7 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
             for (unsigned int index = 0; index < flags.size(); index++){
                 switch (flags[index]){
                     case 'L': hitFlags.low = true; break;
+                    case 'M': hitFlags.low = true; hitFlags.high = true; break;
                     case 'H': hitFlags.high = true; break;
                     case 'A': hitFlags.air = true; break;
                     case 'F': hitFlags.fall = true; break;

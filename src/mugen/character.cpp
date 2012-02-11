@@ -3887,5 +3887,22 @@ void Character::useCharacterData(const Character * who){
     characterData.who = who;
     characterData.enabled = true;
 }
-        
+    
+bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
+    bool ok = false;
+    ok = ok || (getStateType() == StateType::Air && flags.air);
+    ok = ok || (getStateType() == StateType::Stand && flags.high);
+    ok = ok || (getStateType() == StateType::Crouch && flags.low);
+    ok = ok || (getStateType() == StateType::LyingDown && flags.down);
+    /* FIXME: handle fall */
+    if (flags.getHitState){
+        ok = ok && (getMoveType() == Move::Hit);
+    }
+    if (flags.notGetHitState){
+        ok = ok && (getMoveType() != Move::Hit);
+    }
+
+    return ok;
+}
+
 }

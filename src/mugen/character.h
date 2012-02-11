@@ -1069,6 +1069,9 @@ public:
     
         /* Is bound by a TargetBind or whatever */
         virtual bool isBound() const;
+    
+        /* True if the hitflags match our current state */
+        virtual bool compatibleHitFlag(const HitDefinition::HitFlags & flags);
 
 protected:
     void initialize();
@@ -1092,6 +1095,7 @@ protected:
     virtual bool doStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
 
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+
 
     void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);

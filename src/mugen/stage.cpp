@@ -922,7 +922,8 @@ void Mugen::Stage::physics(Object * mugen){
                 bool blockingCollision = doBlockingDetection(mugen, enemy);
 
                 /* guarding */
-                if ((collision || blockingCollision) && enemy->isBlocking(mugen->getHit())){
+                if ((collision || blockingCollision) && enemy->isBlocking(mugen->getHit()) &&
+                    enemy->compatibleHitFlag(mugen->getHit().guardFlag)){
                     /* FIXME: why do we differentiate between blocking collision and a
                      * regular collision?
                      */
@@ -936,7 +937,7 @@ void Mugen::Stage::physics(Object * mugen){
                     }
                     mugen->didHitGuarded(enemy, *this);
                     enemy->guarded(mugen, mugen->getHit());
-                } else if (collision){
+                } else if (collision && enemy->compatibleHitFlag(mugen->getHit().hitFlag)){
                     addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
                              (int)(mugen->getHit().sparkPosition.y + enemy->getRY()),
                              mugen->getHit().spark, mugen->getDefaultSpark(),
