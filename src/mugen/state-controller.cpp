@@ -5249,7 +5249,7 @@ public:
         vector<Character*> targets = stage.getTargets(id, &guy);
         for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
             Character * target = *it;
-            target->takeDamage(stage, &guy, amount, kill, absolute);
+            target->takeDamage(stage, &guy, -amount, kill, absolute);
         }
     }
 
