@@ -2353,12 +2353,15 @@ public:
     HitDefinitionData hit;
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        guy.enableHit();
-        guy.nextTicket();
-        /* set all the hitdef crap */
-        FullEnvironment env(stage, guy, commands);
-        HitDefinition & his = guy.getHit();
-        evaluateHitDefinition(hit, his, env);
+        /* If not in an attack state don't do anything */
+        if (guy.getMoveType() == Move::Attack){
+            guy.enableHit();
+            guy.nextTicket();
+            /* set all the hitdef crap */
+            FullEnvironment env(stage, guy, commands);
+            HitDefinition & his = guy.getHit();
+            evaluateHitDefinition(hit, his, env);
+        }
     }
 
     StateController * deepCopy() const {
