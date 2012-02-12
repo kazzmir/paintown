@@ -1061,6 +1061,8 @@ public:
 
         /* get a target for a given id */
         virtual Object * getTargetId(int id) const;
+    
+        virtual bool withinGuardDistance(const Mugen::Character * enemy) const;
 
         /* For testing only. Will run through all the state controllers and call the triggers
          * on them, but won't change states or anything.
@@ -1095,8 +1097,7 @@ protected:
     virtual bool doStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
 
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
-
-
+        
     void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void stopGuarding(Mugen::Stage & stage, const std::vector<std::string> & inputs);

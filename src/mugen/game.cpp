@@ -427,7 +427,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                     throw QuitGameException();
                 }
             }
-            if (roundsOverride){
+            if (roundsOverride > -1){
                 if (stage->getGameInfo()->getRound().getRound() > roundsOverride){
                     throw QuitGameException();
                 }

@@ -2592,6 +2592,17 @@ void Character::processAfterImages(){
     }
 #endif
 }
+    
+bool Character::withinGuardDistance(const Mugen::Character * enemy) const {
+    if (enemy != NULL){
+        if (enemy->getHit().isEnabled() && enemy->getHit().guardDistance >= 0){
+            return fabs(getX() - enemy->getX()) < enemy->getHit().guardDistance;
+        }
+
+        return fabs(getX() - enemy->getX()) < enemy->getAttackDistance();
+    }
+    return false;
+}
 
 /* Inherited members */
 void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen::Object*>* add){
@@ -2670,15 +2681,22 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
 
         blocking = holdingBlock(active);
 
-        if (needToGuard){
-            needToGuard = false;
-            /* misnamed state, but this is the first guard state and will
-             * eventually transition to stand/crouch/air guard
-             */
-            guarding = true;
+        /* FIXME: there are a bunch more states that are considered blocking */
+        if (blocking && getCurrentState() != Mugen::StartGuardStand &&
+            withinGuardDistance(stage->getEnemy(this))){
             changeState(*stage, Mugen::StartGuardStand, active);
         }
 
+        /*
+        if (needToGuard){
+            needToGuard = false;
+            / * misnamed state, but this is the first guard state and will
+             * eventually transition to stand/crouch/air guard
+             * /
+            guarding = true;
+            changeState(*stage, Mugen::StartGuardStand, active);
+        }
+        */
     }
 
     /* Check the states even if we are paused. If a controller has 'ignorehitpause = 1'

@@ -1454,10 +1454,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
 
-                    bool out = false;
-                    out |= enemy->getMoveType() == Move::Attack;
+                    bool out = enemy->getMoveType() == Move::Attack && 
+                               environment.getCharacter().withinGuardDistance(enemy);
 
-                    /* FIXME: deal with distance as well */
                     return RuntimeValue(out);
                 }
 
