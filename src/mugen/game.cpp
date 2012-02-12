@@ -1520,16 +1520,16 @@ void Game::doSurvival(Searcher & searcher){
         stage.reset();
         try {
             runMatch(&stage, "", -1, 1);
-            if (ourPlayer->getMatchWins() > wins){
-                wins = ourPlayer->getMatchWins();
+        } catch (const Exception::Return & ex){
+            return;
+        } catch (const QuitGameException & ex){
+            if (ourPlayer->getWins().size() == 1){
+                wins++;
                 // Reset player for next match
                 ourPlayer->resetPlayer();
             } else {
                 break;
             }
-        } catch (const Exception::Return & ex){
-            return;
-        } catch (const QuitGameException & ex){
         }
     }
     // FIXME show total matches won
