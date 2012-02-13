@@ -777,6 +777,14 @@ class GameInfo{
         virtual void render(const Element::Layer &, const Graphics::Bitmap &);
 
         virtual void reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
+        
+        virtual inline void setMatchWins(int wins){
+            this->roundControl.setMatchWins(wins);
+        }
+        virtual inline void setWins(int maxWins, int maxDraws){
+            this->roundControl.setMatchWins(maxWins);
+            this->roundControl.setMatchMaxDrawGames(maxDraws);
+        }
 	
 	virtual inline int getGameTime(){
 	    return this->timer.getElapsedTicks();

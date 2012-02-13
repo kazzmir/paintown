@@ -141,7 +141,7 @@ enum MugenInput{
     ToggleConsole
 };
 
-static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1, int roundsOverride = -1){
+static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1){
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;
@@ -293,7 +293,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, Gui::FadeTool & fader, int roundsOverride):
+        Logic(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, Gui::FadeTool & fader):
         state(state),
         gameSpeed(1.0),
         stage(stage),
@@ -302,8 +302,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         endTime(endTime),
         ticker(0),
         demoMode((endTime != -1)),
-        fader(fader),
-        roundsOverride(roundsOverride){
+        fader(fader){
             gameInput.set(Keyboard::Key_F1, 10, false, SlowDown);
             gameInput.set(Keyboard::Key_F2, 10, false, SpeedUp);
             gameInput.set(Keyboard::Key_F3, 10, false, NormalSpeed);
@@ -334,7 +333,6 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         int ticker;
         bool demoMode;
         Gui::FadeTool & fader;
-        int roundsOverride;
 
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
@@ -427,11 +425,6 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                     throw QuitGameException();
                 }
             }
-            if (roundsOverride > -1){
-                if (stage->getGameInfo()->getRound().getRound() > roundsOverride){
-                    throw QuitGameException();
-                }
-            }
         }
 
         virtual bool done(){
@@ -491,7 +484,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
     fader.setFadeInTime(1);
     fader.setFadeOutTime(60);
     GameState state;
-    Logic logic(state, stage, show_fps, console, endTime, fader, roundsOverride);
+    Logic logic(state, stage, show_fps, console, endTime, fader);
     Draw draw(stage, show_fps, console, (endTime != -1), fader);
 
     PaintownUtil::standardLoop(logic, draw);
@@ -1517,19 +1510,20 @@ void Game::doSurvival(Searcher & searcher){
         stage.addPlayer1(player1.raw());
         stage.addPlayer2(player2.raw());
         stage.load();
+        stage.getGameInfo()->setWins(1, 0);
         stage.reset();
         try {
-            runMatch(&stage, "", -1, 1);
-        } catch (const Exception::Return & ex){
-            return;
-        } catch (const QuitGameException & ex){
-            if (ourPlayer->getWins().size() == 1){
+            runMatch(&stage);
+            if (ourPlayer->getMatchWins()> wins){
                 wins++;
                 // Reset player for next match
                 ourPlayer->resetPlayer();
             } else {
                 break;
             }
+        } catch (const Exception::Return & ex){
+            return;
+        } catch (const QuitGameException & ex){
         }
     }
     // FIXME show total matches won
