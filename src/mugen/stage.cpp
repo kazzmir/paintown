@@ -1128,11 +1128,17 @@ void Mugen::Stage::runCycle(){
 
         // Players go in here
         std::vector<Mugen::Object *> add;
-        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
-            bool next = true;
+        /* Do all states first */
+        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
             /* use local variables more often, iterators can be easily confused */
             Mugen::Object * player = *it;
             player->act(&objects, this, &add);
+        }
+
+        /* Then do physics/collision detection */
+        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
+            bool next = true;
+            Mugen::Object * player = *it;
             physics(player);
 
             /* Debug crap put it on console */

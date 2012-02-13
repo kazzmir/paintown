@@ -660,7 +660,6 @@ frozen(false){
     hitCount = 0;
     C(wins);
     C(matchWins);
-    blocking = false;
     C(regenerateHealth);
     C(regenerating);
     C(regenerateTime);
@@ -751,7 +750,6 @@ void Character::initialize(){
     has_control = true;
     airjumpnum = 0;
     airjumpheight = 35;
-    blocking = false;
     guarding = false;
     behavior = NULL;
 
@@ -2603,6 +2601,16 @@ bool Character::withinGuardDistance(const Mugen::Character * enemy) const {
     }
     return false;
 }
+        
+/* True if the state is one of the predetermined blocking states */
+static bool blockingState(int state){
+    return state == StartGuardStand ||
+           state == StartGuardCrouch ||
+           state == StartGuardAir ||
+           state == GuardStand ||
+           state == GuardCrouch ||
+           state == GuardAir;
+}
 
 /* Inherited members */
 void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen::Object*>* add){
@@ -2616,7 +2624,6 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     }
 
     /* reset some stuff */
-    blocking = false;
     widthOverride.enabled = false;
     transOverride.enabled = false;
 
@@ -2679,10 +2686,12 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
         /* if shakeTime is non-zero should we update stateTime? */
         stateTime += 1;
 
-        blocking = holdingBlock(active);
+        bool blocking = holdingBlock(active);
 
         /* FIXME: there are a bunch more states that are considered blocking */
-        if (blocking && getCurrentState() != Mugen::StartGuardStand &&
+        if (blocking && !blockingState(getCurrentState()) &&
+            getMoveType() == Move::Idle &&
+            stage->getEnemy(this)->getMoveType() == Move::Attack &&
             withinGuardDistance(stage->getEnemy(this))){
             changeState(*stage, Mugen::StartGuardStand, active);
         }
@@ -3622,7 +3631,7 @@ void Character::resetPlayer(){
         
 bool Character::isBlocking(const HitDefinition & hit){
     /* FIXME: can only block if in the proper state relative to the hit def */
-    return hasControl() && blocking;
+    return hasControl() && blockingState(getCurrentState());
 }
         
 void Character::resetHitFlag(){

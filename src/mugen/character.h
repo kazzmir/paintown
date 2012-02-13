@@ -1382,7 +1382,7 @@ protected:
         int foreignAnimationNumber;
 
         /* true if the player is holding the back button */
-        bool blocking;
+        // bool blocking;
 
         //! regenerate health?
         bool regenerateHealth;
