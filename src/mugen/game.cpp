@@ -1524,6 +1524,7 @@ void Game::doSurvival(Searcher & searcher){
         } catch (const Exception::Return & ex){
             return;
         } catch (const QuitGameException & ex){
+            return;
         }
     }
     // FIXME show total matches won
