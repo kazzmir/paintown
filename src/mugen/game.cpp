@@ -527,10 +527,10 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
             try{
                 return doLoad(all[choice]);
             } catch (const MugenException & failed){
-                Global::debug(0) << "Failed to load because " << failed.getReason() << std::endl;
+                Global::debug(0) << "Failed to load " << all[choice].path() << " because " << failed.getReason() << std::endl;
                 all.erase(all.begin() + choice);
             } catch (const Filesystem::NotFound & failed){
-                Global::debug(0) << "Failed to load because " << failed.getTrace() << std::endl;
+                Global::debug(0) << "Failed to load " << all[choice].path() << " because " << failed.getTrace() << std::endl;
                 all.erase(all.begin() + choice);
             }
         }

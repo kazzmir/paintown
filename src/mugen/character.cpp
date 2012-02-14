@@ -1773,6 +1773,14 @@ void Character::load(int useAct){
      
     AstRef parsed(Util::parseDef(location.path()));
     try{
+        /* Every character should have a [Files] section at least. Possibly [Info] as well
+         * but I'm not sure yet.
+         */
+        if (parsed->findSection("files") == NULL){
+            std::ostringstream out;
+            out << "Could not find a [Files] section in " << location.path();
+            throw MugenException(out.str(), __FILE__, __LINE__);
+        }
         /* Extract info for our first section of our stage */
         for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
@@ -1822,7 +1830,9 @@ void Character::load(int useAct){
                                     self.palDefaults.push_back((*it) - 1);
                                 }
                                 // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
-                            } else throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                            } else {
+                                throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
+                            }
                         }
                 };
 
