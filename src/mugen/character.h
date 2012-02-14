@@ -832,7 +832,7 @@ public:
         void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
 
         /* `this' character guarded `enemy' */
-        void guarded(Object * enemy, const HitDefinition & hit);
+        void guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
 
         /* true if the player is holding back */
         bool isBlocking(const HitDefinition & hit);
@@ -1382,7 +1382,7 @@ protected:
         int foreignAnimationNumber;
 
         /* true if the player is holding the back button */
-        // bool blocking;
+        bool blocking;
 
         //! regenerate health?
         bool regenerateHealth;

@@ -105,7 +105,7 @@ public:
     virtual ResourceEffect getDefaultSpark() const = 0;
     virtual ResourceEffect getDefaultGuardSpark() const = 0;
     virtual int getAttackDistance() const = 0;
-    virtual void guarded(Object * enemy, const HitDefinition & hit) = 0;
+    virtual void guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
     virtual void addPower(double d) = 0;
     virtual void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
     virtual void didHit(Object * enemy, Mugen::Stage & stage) = 0;

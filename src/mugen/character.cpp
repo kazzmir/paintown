@@ -658,6 +658,7 @@ frozen(false){
     lastTicket = 0;
     combo = 0;
     hitCount = 0;
+    blocking = false;
     C(wins);
     C(matchWins);
     C(regenerateHealth);
@@ -748,6 +749,7 @@ void Character::initialize(){
     yscale = 1;
     debug = false;
     has_control = true;
+    blocking = false;
     airjumpnum = 0;
     airjumpheight = 35;
     guarding = false;
@@ -1071,7 +1073,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
     /* reset hit count */
     hitCount = 0;
 
-    Global::debug(1) << "Change to state " << stateNumber << endl;
+    Global::debug(1, getDisplayName()) << "Change from state " << currentState << " to state " << stateNumber << endl;
     previousState = currentState;
     currentState = stateNumber;
     resetStateTime();
@@ -2161,7 +2163,7 @@ void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs
     if (stateType == StateType::Crouch){
         changeState(stage, Crouching, inputs);
     } else if (stateType == StateType::Air){
-        changeState(stage, 52, inputs);
+        changeState(stage, 51, inputs);
     } else {
         changeState(stage, Standing, inputs);
     }
@@ -2618,6 +2620,7 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     reversalActive = false;
 
     special.reset();
+    blocking = false;
 
     if (frozen){
         frozen = false;
@@ -2648,6 +2651,8 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     if (hitState.recoverTime > 0){
         hitState.recoverTime -= 1;
     }
+
+    blocking = holdingBlock(active);
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){
@@ -2685,8 +2690,6 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
 
         /* if shakeTime is non-zero should we update stateTime? */
         stateTime += 1;
-
-        bool blocking = holdingBlock(active);
 
         /* FIXME: there are a bunch more states that are considered blocking */
         if (blocking && !blockingState(getCurrentState()) &&
@@ -3052,7 +3055,7 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
                      * to be activated.
                      */
                     if (controller->persistentOk()){
-                        Global::debug(1, getDisplayName()) << "Activate controller " << controller->getName() << std::endl;
+                        Global::debug(2, getDisplayName()) << "Activate controller " << controller->getName() << std::endl;
                         /* activate may modify the current state */
                         controller->activate(stage, *this, active);
 
@@ -3631,7 +3634,7 @@ void Character::resetPlayer(){
         
 bool Character::isBlocking(const HitDefinition & hit){
     /* FIXME: can only block if in the proper state relative to the hit def */
-    return hasControl() && blockingState(getCurrentState());
+    return hasControl() && blocking;
 }
         
 void Character::resetHitFlag(){
@@ -3643,7 +3646,7 @@ bool Character::isGuarding() const {
     return guarding;
 }
         
-void Character::guarded(Object * enemy, const HitDefinition & hit){
+void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
     hitState.guarded = true;
     lastTicket = enemy->getTicket();
@@ -3656,6 +3659,14 @@ void Character::guarded(Object * enemy, const HitDefinition & hit){
     if (inAir){
     } else {
         setXVelocity(hit.guardVelocity);
+    }
+    
+    if (getStateType() == StateType::Air){
+        changeState(stage, Mugen::GuardAir);
+    } else if (getStateType() == StateType::Crouch){
+        changeState(stage, Mugen::GuardCrouch);
+    } else if (getStateType() == StateType::Stand){
+        changeState(stage, Mugen::GuardStand);
     }
 }
 
