@@ -1322,7 +1322,7 @@ rsx
         return env
     def gcc(env):
         if isOSX104():
-            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
+            env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_FRAMEWORKS -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
         else:
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
         return env
