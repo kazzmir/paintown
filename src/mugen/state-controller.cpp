@@ -4563,6 +4563,59 @@ public:
     }
 };
 
+class ControllerTargetPowerAdd: public StateController {
+public:
+    ControllerTargetPowerAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    ControllerTargetPowerAdd(const ControllerTargetPowerAdd & you):
+    StateController(you),
+    id(copy(you.id)),
+    value(copy(you.value)){
+    }
+
+    Value id;
+    Value value;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetPowerAdd & controller):
+            controller(controller){
+            }
+
+            ControllerTargetPowerAdd & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                } else if (simple == "value"){
+                    controller.value = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        vector<Character*> targets = stage.getTargets((int) evaluateNumber(this->id, environment, -1), &guy);
+        int power = (int) evaluateNumber(this->value, FullEnvironment(stage, guy, commands), 0);
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            target->addPower(power);
+        }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetPowerAdd(*this);
+    }
+};
+
 class ControllerDefenceMulSet: public StateController {
 public:
     ControllerDefenceMulSet(Ast::Section * section, const string & name, int state):
@@ -7488,9 +7541,9 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToRoot : return new ControllerBindToRoot(section, name, state);
         case StateController::BindToTarget : return new ControllerBindToTarget(section, name, state);
         case StateController::Debug: return new ControllerDebug(section, name, state);
+        case StateController::TargetPowerAdd : return new ControllerTargetPowerAdd(section, name, state);
         case StateController::SndPan :
         case StateController::TargetDrop :
-        case StateController::TargetPowerAdd :
         case StateController::TargetVelAdd :
         case StateController::TargetVelSet : {
             class DefaultController: public StateController {
