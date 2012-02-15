@@ -1,5 +1,5 @@
-#ifndef mugen_match
-#define mugen_match
+#ifndef mugen_match_h
+#define mugen_match_h
 
 #include <vector>
 

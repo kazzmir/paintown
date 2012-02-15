@@ -35,7 +35,8 @@ const Side & Round::getWinner(){
     return winner;
 }
     
-Manager::Manager(const Filesystem::AbsolutePath &){
+Manager::Manager(const Filesystem::AbsolutePath & file){
+    //Round::setFramesPerCount();
 }
 
 Manager::~Manager(){
