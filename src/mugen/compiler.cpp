@@ -289,6 +289,13 @@ int toRangeHigh(const RuntimeValue & value){
 
     return 0;
 }
+    
+RuntimeValue RuntimeValue::operator+(const RuntimeValue & other) const {
+    if (type == RuntimeValue::Double && other.type == RuntimeValue::Double){
+        return RuntimeValue(this->double_value + other.double_value);
+    }
+    throw MugenRuntimeException("cannot add values together", __FILE__, __LINE__);
+}
 
 bool RuntimeValue::operator==(const RuntimeValue & value2) const {
     const RuntimeValue & value1 = *this;

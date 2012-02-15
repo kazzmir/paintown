@@ -6129,6 +6129,83 @@ public:
         return new ControllerParentVarSet(*this);
     }
 };
+
+class ControllerParentVarAdd: public StateController {
+public:
+    ControllerParentVarAdd(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        integerIndex = extractAttribute(section, "v");
+        integerValue = extractAttribute(section, "value");
+        floatIndex = extractAttribute(section, "fv");
+        floatValue = extractAttribute(section, "value");
+        parse(section);
+    }
+
+    ControllerParentVarAdd(const ControllerParentVarSet & you):
+    StateController(you),
+    integerIndex(copy(you.integerIndex)),
+    floatIndex(copy(you.floatIndex)),
+    integerValue(copy(you.integerValue)),
+    floatValue(copy(you.floatValue)){
+    }
+
+    Value integerIndex;
+    Value floatIndex;
+    Value integerValue;
+    Value floatValue;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerParentVarAdd & controller):
+            controller(controller){
+            }
+
+            ControllerParentVarAdd & controller;
+
+            virtual void onAttributeArray(const Ast::AttributeArray & simple){
+                if (simple == "var"){
+                    controller.integerIndex = Compiler::compile(simple.getIndex());
+                    const Ast::Value * value = simple.getValue();
+                    controller.integerValue = Compiler::compile(value);
+                } else if (simple == "fvar"){
+                    controller.floatIndex = Compiler::compile(simple.getIndex());
+                    const Ast::Value * value = simple.getValue();
+                    controller.floatValue = Compiler::compile(value);
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        if (guy.isHelper()){
+            Mugen::Helper & helper = *(Mugen::Helper*)&guy;
+            Character * parent = helper.getParent();
+            if (parent == NULL){
+                throw MugenNormalRuntimeException("No parent for helper");
+            }
+            FullEnvironment environment(stage, guy, commands);
+            if (floatIndex != NULL && floatValue != NULL){
+                int index = (int) evaluateNumber(floatIndex, environment, 0);
+                parent->setFloatVariable(index, floatValue->evaluate(environment) + parent->getFloatVariable(index));
+            }
+
+            if (integerIndex != NULL && integerValue != NULL){
+                int index = (int) evaluateNumber(integerIndex, environment, 0);
+                parent->setVariable(index, integerValue->evaluate(environment) + parent->getVariable(index));
+            }
+        } else {
+            Global::debug(1) << "Warning, trying to use ParentVarSet on a non-helper" << endl;
+        }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerParentVarAdd(*this);
+    }
+};
         
 class ControllerDisplayToClipboard: public StateController {
 public:
@@ -7393,6 +7470,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::PlayerPush : return new ControllerPlayerPush(section, name, state);
         case StateController::Pause : return new ControllerPause(section, name, state);
         case StateController::ParentVarSet : return new ControllerParentVarSet(section, name, state);
+        case StateController::ParentVarAdd : return new ControllerParentVarAdd(section, name, state);
         case StateController::DisplayToClipboard : return new ControllerDisplayToClipboard(section, name, state);
         case StateController::AttackMulSet : return new ControllerAttackMulSet(section, name, state);
         case StateController::HitOverride : return new ControllerHitOverride(section, name, state);
@@ -7410,7 +7488,6 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToRoot : return new ControllerBindToRoot(section, name, state);
         case StateController::BindToTarget : return new ControllerBindToTarget(section, name, state);
         case StateController::Debug: return new ControllerDebug(section, name, state);
-        case StateController::ParentVarAdd :
         case StateController::SndPan :
         case StateController::TargetDrop :
         case StateController::TargetPowerAdd :

@@ -134,6 +134,8 @@ public:
     bool operator>(const RuntimeValue & other) const;
     bool operator>=(const RuntimeValue & other) const;
 
+    RuntimeValue operator+(const RuntimeValue & other) const;
+
     inline bool isBool() const {
         return type == Bool;
     }
