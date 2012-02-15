@@ -26,6 +26,7 @@ exception.cpp
 font.cpp
 item.cpp
 item-content.cpp
+match.cpp
 menu.cpp
 reader.cpp
 section.cpp
