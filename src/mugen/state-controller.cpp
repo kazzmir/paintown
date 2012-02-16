@@ -892,7 +892,7 @@ public:
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.setXVelocity(result.getDoubleValue());
+                guy.setXVelocity(result.getDoubleValue() * (guy.getFacing() == FacingLeft ? -1 : 1));
             }
         }
         if (y != NULL){
@@ -907,6 +907,80 @@ public:
         return new ControllerVelSet(*this);
     }
 };
+
+class ControllerTargetVelSet: public StateController {
+public:
+    ControllerTargetVelSet(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section){
+            parse(section);
+        }
+
+    ControllerTargetVelSet(const ControllerTargetVelSet & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)),
+    id(copy(you.id)){
+    }
+
+    Value x;
+    Value y;
+    Value id;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetVelSet & controller):
+                controller(controller){
+                }
+
+            ControllerTargetVelSet & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "x"){
+                    controller.x = Compiler::compile(simple.getValue());
+                } else if (simple == "y"){
+                    controller.y = Compiler::compile(simple.getValue());
+                } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        double vx = 0;
+        double vy = 0;
+        if (x != NULL){
+            RuntimeValue result = x->evaluate(environment);
+            if (result.isDouble()){
+                vx = result.getDoubleValue();
+            }
+        }
+        if (y != NULL){
+            RuntimeValue result = y->evaluate(environment);
+            if (result.isDouble()){
+                vy = result.getDoubleValue();
+            }
+        }
+
+        vector<Character*> targets = stage.getTargets((int) evaluateNumber(this->id, environment, -1), &guy);
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            guy.setXVelocity(vx * (target->getFacing() == FacingLeft ? -1 : 1));
+            guy.setYVelocity(vy);
+        }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetVelSet(*this);
+    }
+};
+
+
 
 class ControllerHitVelSet: public StateController {
 public:
@@ -1139,7 +1213,7 @@ public:
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
+                guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue() * (guy.getFacing() == FacingLeft ? -1 : 1));
             }
         }
         if (y != NULL){
@@ -1152,6 +1226,78 @@ public:
 
     StateController * deepCopy() const {
         return new ControllerVelAdd(*this);
+    }
+};
+
+class ControllerTargetVelAdd: public StateController {
+public:
+    ControllerTargetVelAdd(Ast::Section * section, const string & name, int state):
+        StateController(name, state, section){
+            parse(section);
+        }
+
+    ControllerTargetVelAdd(const ControllerTargetVelAdd & you):
+    StateController(you),
+    x(copy(you.x)),
+    y(copy(you.y)),
+    id(copy(you.id)){
+    }
+
+    Value x;
+    Value y;
+    Value id;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetVelAdd & controller):
+                controller(controller){
+                }
+
+            ControllerTargetVelAdd & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "x"){
+                    controller.x = Compiler::compile(simple.getValue());
+                } else if (simple == "y"){
+                    controller.y = Compiler::compile(simple.getValue());
+                } else if (simple == "id"){
+                    controller.id = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        double vx = 0;
+        double vy = 0;
+        if (x != NULL){
+            RuntimeValue result = x->evaluate(environment);
+            if (result.isDouble()){
+                vx = result.getDoubleValue();
+            }
+        }
+        if (y != NULL){
+            RuntimeValue result = y->evaluate(environment);
+            if (result.isDouble()){
+                vy = result.getDoubleValue();
+            }
+        }
+
+        vector<Character*> targets = stage.getTargets((int) evaluateNumber(this->id, environment, -1), &guy);
+        for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
+            Character * target = *it;
+            guy.setXVelocity(target->getXVelocity() + vx * (target->getFacing() == FacingLeft ? -1 : 1));
+            guy.setYVelocity(target->getYVelocity() + vy);
+        }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetVelAdd(*this);
     }
 };
 
@@ -7542,10 +7688,10 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::BindToTarget : return new ControllerBindToTarget(section, name, state);
         case StateController::Debug: return new ControllerDebug(section, name, state);
         case StateController::TargetPowerAdd : return new ControllerTargetPowerAdd(section, name, state);
+        case StateController::TargetVelAdd : return new ControllerTargetVelAdd(section, name, state);
+        case StateController::TargetVelSet : return new ControllerTargetVelSet(section, name, state);
         case StateController::SndPan :
-        case StateController::TargetDrop :
-        case StateController::TargetVelAdd :
-        case StateController::TargetVelSet : {
+        case StateController::TargetDrop : {
             class DefaultController: public StateController {
             public:
                 DefaultController(Ast::Section * section, const string & name, int state):
