@@ -6477,7 +6477,7 @@ public:
         parse(section);
     }
 
-    ControllerParentVarAdd(const ControllerParentVarSet & you):
+    ControllerParentVarAdd(const ControllerParentVarAdd & you):
     StateController(you),
     integerIndex(copy(you.integerIndex)),
     floatIndex(copy(you.floatIndex)),
