@@ -2558,6 +2558,8 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
     his.attribute.attackType = hit.attribute.attackType;
     his.attribute.physics = hit.attribute.physics;
 
+    his.guardDistance = evaluateNumberLocal(hit.guardDistance, -1);
+
     his.yAcceleration = evaluateNumberLocal(hit.yAcceleration, 0.35);
     his.animationTypeFall = hit.animationTypeFall;
     his.airHitTime = evaluateNumberLocal(hit.airHitTime, 20);
@@ -2604,6 +2606,9 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
 
     his.player1State = evaluateNumberLocal(hit.player1State, -1);
     his.player2State = evaluateNumberLocal(hit.player2State, -1);
+
+    his.player1Facing = evaluateNumberLocal(hit.player1Facing, 0);
+    his.player2Facing = evaluateNumberLocal(hit.player2Facing, 0);
     
     his.player1SpritePriority = evaluateNumberLocal(hit.player1SpritePriority, 1);
     his.player2SpritePriority = evaluateNumberLocal(hit.player2SpritePriority, 0);
