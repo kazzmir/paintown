@@ -4634,7 +4634,7 @@ public:
             class PosY: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(-environment.getCharacter().getYPosition());
+                    return RuntimeValue(environment.getCharacter().getYPosition());
                 }
 
                 virtual std::string toString() const {

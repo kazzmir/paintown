@@ -465,7 +465,7 @@ double Object::getZ() const {
 }
     
 double Object::getRY() const {
-    return getZ() - getY();
+    return getZ() + getY();
 }
     
 void Object::moveX(double x, bool force){
@@ -2487,7 +2487,7 @@ const MugenSprite * Character::getCurrentFrame() const {
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
     if (getCurrentAnimation() != NULL){
-        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() + getY() - rel_y), *work, xscale, yscale);
+        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() - getY() - rel_y), *work, xscale, yscale);
     }
 }
     
@@ -2873,7 +2873,7 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
 
         if (getCurrentPhysics() == Mugen::Physics::Air){
             /* gravity */
-            if (getY() > 0){
+            if (getY() < 0){
                 double gravity = getGravity();
                 setYVelocity(getYVelocity() + gravity);
             } else if (getYVelocity() > 0){
@@ -2888,7 +2888,7 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
         }
 
         moveX(getXVelocity());
-        moveY(-getYVelocity());
+        moveY(getYVelocity());
         /*
            if (mugen->getY() < 0){
            mugen->setY(0);
