@@ -39,7 +39,19 @@ vector<string> DummyBehavior::currentCommands(const Mugen::Stage & stage, Charac
 DummyBehavior::~DummyBehavior(){
 }
 
-HumanBehavior::HumanBehavior(InputMap<Mugen::Keys> right, InputMap<Mugen::Keys> left):
+static void debugit(const string & what, const InputMap<Mugen::Keys> & right){
+    Global::debug(0) << "Debug input map " << what << std::endl;
+    const std::map<Keyboard::KeyType, PaintownUtil::ReferenceCount<KeyState<Mugen::Keys> > > & keys = right.getKeyStates();
+    for (std::map<Keyboard::KeyType, PaintownUtil::ReferenceCount<KeyState<Mugen::Keys> > >::const_iterator it = keys.begin(); it != keys.end(); it++){
+        Keyboard::KeyType key = it->first;
+        const PaintownUtil::ReferenceCount<KeyState<Mugen::Keys> > & state = it->second;
+        if (state != NULL){
+            Global::debug(0) << "Mapped " << key << " to " << state->out << std::endl;
+        }
+    } 
+}
+
+HumanBehavior::HumanBehavior(const InputMap<Mugen::Keys> & right, const InputMap<Mugen::Keys> & left):
 right(right),
 left(left){
 }

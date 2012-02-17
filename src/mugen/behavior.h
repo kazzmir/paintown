@@ -34,7 +34,7 @@ public:
 
 class HumanBehavior: public Behavior {
 public:
-    HumanBehavior(InputMap<Keys> left, InputMap<Keys> right);
+    HumanBehavior(const InputMap<Keys> & left, const InputMap<Keys> & right);
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     

@@ -892,7 +892,7 @@ public:
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.setXVelocity(result.getDoubleValue() * (guy.getFacing() == FacingLeft ? -1 : 1));
+                guy.setXVelocity(result.getDoubleValue());
             }
         }
         if (y != NULL){
