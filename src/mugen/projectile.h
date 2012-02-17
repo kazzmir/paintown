@@ -49,6 +49,8 @@ public:
     /* Ticks since this projectile hit something */
     virtual unsigned long int getLastHitTicks() const;
 
+    virtual unsigned long int getLastGuardTicks() const;
+
     /* Ticks since this projectile was canceled */
     virtual int getLastCancelTicks() const;
 
@@ -61,6 +63,7 @@ public:
     const std::vector<MugenArea> getDefenseBoxes() const;
 
     void doCollision(Object * mugen, const Stage & stage);
+    void wasGuarded(Object * mugen, const Stage & stage);
 
     virtual bool isDead() const;
 
@@ -91,6 +94,7 @@ protected:
     int priority;
     int cancelAnimation;
     unsigned long int lastHitTicks;
+    unsigned long int lastGuardTicks;
     int lastCanceled;
 };
 

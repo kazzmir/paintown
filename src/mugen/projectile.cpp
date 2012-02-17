@@ -45,6 +45,7 @@ hit(hit),
 priority(priority),
 cancelAnimation(cancelAnimation),
 lastHitTicks(0),
+lastGuardTicks(0),
 lastCanceled(0){
     PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
     if (his != NULL){
@@ -110,9 +111,17 @@ void Projectile::doCollision(Object * mugen, const Stage & stage){
     activeMissTime = missTime;
     lastHitTicks = stage.getTicks();
 }
+
+void Projectile::wasGuarded(Object * mugen, const Stage & stage){
+    lastGuardTicks = stage.getTicks();
+}
     
 unsigned long int Projectile::getLastHitTicks() const {
     return lastHitTicks;
+}
+
+unsigned long int Projectile::getLastGuardTicks() const {
+    return lastGuardTicks;
 }
 
 bool Projectile::canCollide() const {

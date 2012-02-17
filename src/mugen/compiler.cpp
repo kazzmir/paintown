@@ -3195,32 +3195,55 @@ public:
         }
 
         if (function == "projguarded"){
+            /* Very similar to ProjHit */
             class ProjGuarded: public Value {
             public:
-                ProjGuarded(Value * id, Value * value, Value * time):
-                id(id), value(value), time(time){
+                ProjGuarded(Value * id, Value * value, Value * compare):
+                id(id), value(value), compare(compare){
                 }
 
                 Value * id;
                 Value * value;
-                Value * time;
+                Value * compare;
 
                 virtual ~ProjGuarded(){
                     delete id;
                     delete value;
-                    delete time;
+                    delete compare;
                 }
 
                 Value * copy() const {
                     return new ProjGuarded(Compiler::copy(id),
                                            Compiler::copy(value),
-                                           Compiler::copy(time));
+                                           Compiler::copy(compare));
+                }
+
+                bool didGuard(const Environment & environment, Projectile * projectile, bool hit) const {
+                    unsigned long ticks = environment.getStage().getTicks() - projectile->getLastGuardTicks();
+
+                    FullEnvironment use(environment.getStage(), environment.getCharacter(), environment.getCommands(), RuntimeValue((int) ticks));
+                    bool result = compare->evaluate(use).toBool();
+
+                    if (hit){
+                        return result;
+                    } else {
+                        return ! result;
+                    }
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* TODO */
-                    return false;
+                    int id = (int) this->id->evaluate(environment).toNumber();
+                    bool hit = (int) this->value->evaluate(environment).toBool();
+                    
+                    vector<Projectile*> projectiles = environment.getStage().findProjectile(id, &environment.getCharacter());
+                    bool found = false;
+                    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+                        Projectile * projectile = *it;
+                        found = found || didGuard(environment, projectile, hit);
+                    }
+                    return RuntimeValue(found);
                 }
+
             };
             
             return new ProjGuarded(compile(function.getArg1()),

@@ -854,6 +854,7 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
 
             playSound(owner, projectile->getHitDefinition().guardHitSound.group, projectile->getHitDefinition().guardHitSound.item, projectile->getHitDefinition().guardHitSound.own);
             mugen->guarded(*this, owner, projectile->getHitDefinition());
+            projectile->wasGuarded(mugen, *this);
             /* TODO: Should we call didHitGuarded on owner? */
         } else {
             addSpark((int)(projectile->getHitDefinition().sparkPosition.x + projectile->getX()),
