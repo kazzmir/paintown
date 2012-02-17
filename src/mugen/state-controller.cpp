@@ -980,7 +980,68 @@ public:
     }
 };
 
+class ControllerTargetDrop: public StateController {
+public:
+    ControllerTargetDrop(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
 
+    ControllerTargetDrop(const ControllerTargetDrop & you):
+    StateController(you),
+    exclude(copy(you.exclude)),
+    keep(copy(you.keep)){
+    }
+
+    Value exclude;
+    Value keep;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerTargetDrop & controller):
+                controller(controller){
+                }
+
+            ControllerTargetDrop & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "excludeID"){
+                    controller.exclude = Compiler::compile(simple.getValue());
+                } else if (simple == "keepone"){
+                    controller.keep = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int id = (int) evaluateNumber(this->exclude, environment, -1);
+        bool keep = evaluateBool(this->keep, environment, true);
+
+        /* FIXME: targets should be a map of int to vector<Object*> in which case 'keep'
+         * would have an effect.
+         */
+        map<int, Object*> & targets = guy.getTargets();
+        for (map<int, Object*>::iterator it = targets.begin(); it != targets.end(); /**/){
+            if (it->first != id){
+                map<int, Object*>::iterator kill = it;
+                it++;
+                targets.erase(kill);
+            } else {
+                it++;
+            }
+        }
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerTargetDrop(*this);
+    }
+};
 
 class ControllerHitVelSet: public StateController {
 public:
@@ -7690,8 +7751,8 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetPowerAdd : return new ControllerTargetPowerAdd(section, name, state);
         case StateController::TargetVelAdd : return new ControllerTargetVelAdd(section, name, state);
         case StateController::TargetVelSet : return new ControllerTargetVelSet(section, name, state);
-        case StateController::SndPan :
-        case StateController::TargetDrop : {
+        case StateController::TargetDrop : return new ControllerTargetDrop(section, name, state);
+        case StateController::SndPan : {
             class DefaultController: public StateController {
             public:
                 DefaultController(Ast::Section * section, const string & name, int state):

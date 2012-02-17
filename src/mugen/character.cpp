@@ -3952,5 +3952,9 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
 
     return ok;
 }
+        
+std::map<int, Object *> & Character::getTargets(){
+    return targets;
+}
 
 }

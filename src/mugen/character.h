@@ -813,6 +813,8 @@ public:
          * will be the same as 'bound' and adjusted by the facing and offsets
          */
         virtual void bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY);
+        
+        std::map<int, Object *> & getTargets();
 
         virtual inline int getHeight() const {
             return height;
