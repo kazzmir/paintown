@@ -91,7 +91,7 @@ public:
 
     virtual std::string toString() const {
         std::ostringstream out;
-        out << argument;
+        out << "x" << argument;
         return out.str();
     }
 

@@ -3194,6 +3194,74 @@ public:
                                compile(function.getArg3()));
         }
 
+        if (function == "projguarded"){
+            class ProjGuarded: public Value {
+            public:
+                ProjGuarded(Value * id, Value * value, Value * time):
+                id(id), value(value), time(time){
+                }
+
+                Value * id;
+                Value * value;
+                Value * time;
+
+                virtual ~ProjGuarded(){
+                    delete id;
+                    delete value;
+                    delete time;
+                }
+
+                Value * copy() const {
+                    return new ProjGuarded(Compiler::copy(id),
+                                           Compiler::copy(value),
+                                           Compiler::copy(time));
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* TODO */
+                    return false;
+                }
+            };
+            
+            return new ProjGuarded(compile(function.getArg1()),
+                                   compile(function.getArg2()),
+                                   compile(function.getArg3()));
+        }
+
+        if (function == "projcontact"){
+            class ProjContact: public Value {
+            public:
+                ProjContact(Value * id, Value * value, Value * time):
+                id(id), value(value), time(time){
+                }
+
+                Value * id;
+                Value * value;
+                Value * time;
+
+                virtual ~ProjContact(){
+                    delete id;
+                    delete value;
+                    delete time;
+                }
+
+                Value * copy() const {
+                    return new ProjContact(Compiler::copy(id),
+                                           Compiler::copy(value),
+                                           Compiler::copy(time));
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* TODO */
+                    return false;
+                }
+            };
+            
+            return new ProjContact(compile(function.getArg1()),
+                                   compile(function.getArg2()),
+                                   compile(function.getArg3()));
+        }
+
         if (function == "ln"){
             class Ln: public Value {
             public: 
