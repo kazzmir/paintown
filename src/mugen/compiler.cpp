@@ -4598,12 +4598,12 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* top of the screen is 0
                      * floor is some positive integer below that.
-                     * character position: positive is above ground, negative below.
+                     * character position: negative is above ground, positive below.
                      * absolute position is floor - character - top
                      */
                     int floor = environment.getStage().getFloor();
                     int y = environment.getCharacter().getYPosition();
-                    int position = floor - y;
+                    int position = floor + y;
                     return RuntimeValue(position);
                 }
 
@@ -4690,7 +4690,7 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-                    return RuntimeValue(-enemy->getY() - (-environment.getCharacter().getY()));
+                    return RuntimeValue(enemy->getY() - environment.getCharacter().getY());
                 }
 
                 Value * copy() const {
@@ -4776,7 +4776,7 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-                    return RuntimeValue(-enemy->getY() - (-environment.getCharacter().getY()));
+                    return RuntimeValue(enemy->getY() - environment.getCharacter().getY());
 
                 }
 
@@ -4819,7 +4819,7 @@ public:
                     if (root == NULL){
                         runtimeError("No root", __FILE__, __LINE__);
                     }
-                    return RuntimeValue(environment.getCharacter().getX() - root->getY());
+                    return RuntimeValue(environment.getCharacter().getY() - root->getY());
                 }
 
                 Value * copy() const {

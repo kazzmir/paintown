@@ -2626,6 +2626,8 @@ static bool blockingState(int state){
 
 /* Inherited members */
 void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen::Object*>* add){
+        
+    this->special.invisible = true;
     
     reversalActive = false;
 
@@ -2730,8 +2732,8 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     doStates(*stage, active, -1);
     doStates(*stage, active, currentState);
 
-    /*! do regeneration if set */
-    if (regenerateHealth){
+    /*! do regeneration if set, but only for main players */
+    if (regenerateHealth && !isHelper()){
         if (getHealth() < 5){
             setHealth(5);
             regenerateTime = REGENERATE_TIME;
@@ -3718,6 +3720,7 @@ void Character::assertSpecial(Specials special){
     if (special == Invisible){
         this->special.invisible = true;
     }
+    /* FIXME: handle other specials */
 }
 
 void Character::enableHit(){
