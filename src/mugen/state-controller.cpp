@@ -908,6 +908,77 @@ public:
     }
 };
 
+class ControllerSndPan: public StateController {
+public:
+    ControllerSndPan(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+    
+    ControllerSndPan(const ControllerSndPan & you):
+    StateController(you),
+    channel(copy(you.channel)),
+    pan(copy(you.pan)),
+    absolutePan(copy(you.absolutePan)){
+    }
+
+    Value channel;
+    Value pan;
+    Value absolutePan;
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerSndPan & controller):
+            controller(controller){
+            }
+
+            ControllerSndPan & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "channel"){
+                    controller.channel = Compiler::compile(simple.getValue());
+                } else if (simple == "pan"){
+                    controller.pan = Compiler::compile(simple.getValue());
+                } else if (simple == "abspan"){
+                    controller.absolutePan = Compiler::compile(simple.getValue());
+                }
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+
+        if (channel == NULL){
+            compileError("No channel given for SndPan", __FILE__, __LINE__);
+        }
+
+        if (pan == NULL && absolutePan == NULL){
+            compileError("No pan or abspan given for SndPan", __FILE__, __LINE__);
+        }
+    }
+    
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+        int channel = (int) evaluateNumber(this->channel, environment, 0);
+        int pan = 0;
+        if (this->pan != NULL){
+            /* FIXME: These parameters cannot both be specified at the same time. p determines the sound offset in pixels from the player (in the case of pan) or from the center of the screen (in the case of abspan). See PlaySnd for a description of the panning parameters.
+             */
+            pan = (int) evaluateNumber(this->pan, environment, 0);
+        }
+        if (this->absolutePan != NULL){
+            pan = (int) evaluateNumber(this->absolutePan, environment, 0);
+        }
+
+        /* TODO: adjust the pan of a sound */
+    }
+    
+    StateController * deepCopy() const {
+        return new ControllerSndPan(*this);
+    }
+};
+
 class ControllerTargetVelSet: public StateController {
 public:
     ControllerTargetVelSet(Ast::Section * section, const string & name, int state):
@@ -7752,7 +7823,8 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetVelAdd : return new ControllerTargetVelAdd(section, name, state);
         case StateController::TargetVelSet : return new ControllerTargetVelSet(section, name, state);
         case StateController::TargetDrop : return new ControllerTargetDrop(section, name, state);
-        case StateController::SndPan : {
+        case StateController::SndPan : return new ControllerSndPan(section, name, state);
+        default: {
             class DefaultController: public StateController {
             public:
                 DefaultController(Ast::Section * section, const string & name, int state):
