@@ -3151,6 +3151,9 @@ const std::vector<Filesystem::AbsolutePath> & CharacterSelect::getStages() const
 
 /* indexes start at 1 */
 PaintownUtil::ReferenceCount<MugenFont> CharacterSelect::getFont(int index) const {
+    if (index == -1){
+        return PaintownUtil::ReferenceCount<MugenFont>(NULL);
+    }
     if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
         return fonts[index - 1];
     } else {
@@ -3197,7 +3200,13 @@ void CharacterSelect::parseSelect(){
                     } else {
                         // Only add characters if we auto search is off
                         if (Data::getInstance().getSearchType() == Data::SelectDef || Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
-                            Mugen::ArcadeData::CharacterInfo character(Util::findCharacterDef(temp));              
+                            Filesystem::AbsolutePath tempPath;
+                            try {
+                                tempPath = Util::findCharacterDef(temp);
+                            } catch (const Storage::NotFound & ex){
+                                return;
+                            }
+                            Mugen::ArcadeData::CharacterInfo character(tempPath);              
                             try{
                                 // Grab stage
                                 view >> temp;
