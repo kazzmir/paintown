@@ -5729,7 +5729,7 @@ public:
         bool unbound = evaluateBool(value, environment, false);
         bool cameraX = evaluateBool(moveCameraX, environment, false);
         bool cameraY = evaluateBool(moveCameraY, environment, false);
-        /* TODO */
+        stage.enableScreenBound(unbound, cameraX, cameraY);
     }
 
     StateController * deepCopy() const {

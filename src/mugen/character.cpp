@@ -1095,7 +1095,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
         state->transitionTo(stage, *this);
         doStates(stage, inputs, currentState);
     } else {
-        Global::debug(0) << "Unknown state " << currentState << endl;
+        Global::debug(0, getDisplayName()) << "Unknown state " << currentState << endl;
     }
 }
 

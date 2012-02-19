@@ -182,6 +182,8 @@ public:
         return gameHUD;
     }
 
+    virtual void enableScreenBound(bool offScreen, bool panX, bool panY);
+
     virtual void Quake(int q);
 
     //! Do continue screen return true to continue playing, false to end
@@ -681,6 +683,17 @@ private:
         int time;
         bool under;
     } environmentColor;
+
+    struct ScreenBound{
+        ScreenBound():
+            enabled(false){
+            }
+
+        bool enabled;
+        bool offScreen;
+        bool panX;
+        bool panY;
+    } screenBound;
 };
 
 }

@@ -715,18 +715,39 @@ void Mugen::Stage::setCamera( const double x, const double y ){
     camerax = x;
     cameray = y; 
     // Camera boundaries
-    if( camerax < boundleft ) camerax = boundleft;
-    else if( camerax > boundright )camerax = boundright;
-    if( cameray < boundhigh ) cameray = boundhigh;
-    else if( cameray > boundlow )cameray = boundlow;
+    if (camerax < boundleft){
+        camerax = boundleft;
+    } else if (camerax > boundright){
+        camerax = boundright;
+    }
+
+    if (cameray < boundhigh){
+        cameray = boundhigh;
+    } else if (cameray > boundlow){
+        cameray = boundlow;
+    }
 }
-void Mugen::Stage::moveCamera( const double x, const double y ){ 
-    camerax += x; cameray += y; 
+void Mugen::Stage::moveCamera(const double x, const double y){ 
+    if (!screenBound.enabled || screenBound.panX){
+        camerax += x;
+    }
+
+    if (!screenBound.enabled || screenBound.panY){
+        cameray += y; 
+    }
+
     // Camera boundaries
-    if( camerax < boundleft ) camerax = boundleft;
-    else if( camerax > boundright )camerax = boundright;
-    if( cameray < boundhigh ) cameray = boundhigh;
-    else if( cameray > boundlow )cameray = boundlow;
+    if (camerax < boundleft){
+        camerax = boundleft;
+    } else if (camerax > boundright){
+        camerax = boundright;
+    }
+
+    if (cameray < boundhigh){
+        cameray = boundhigh;
+    } else if (cameray > boundlow){
+        cameray = boundlow;
+    }
 }
 
 static bool anyCollisions(const vector<MugenArea> & boxes1, int x1, int y1, const vector<MugenArea> & boxes2, int x2, int y2){
@@ -1072,6 +1093,8 @@ void Mugen::Stage::unbind(Mugen::Object * what){
 
 /* A main cycle of the game */
 void Mugen::Stage::runCycle(){
+    screenBound.enabled = false;
+
     if (paletteEffects.time > 0){
         paletteEffects.time = 0;
         paletteEffects.counter += 1;
@@ -2439,4 +2462,11 @@ void Mugen::Stage::setPaletteEffects(int time, int addRed, int addGreen, int add
 
 void Mugen::Stage::Quake(int q){
     quake_time += q;
+}
+    
+void Mugen::Stage::enableScreenBound(bool offScreen, bool panX, bool panY){
+    screenBound.enabled = true;
+    screenBound.offScreen = offScreen;
+    screenBound.panX = panX;
+    screenBound.panY = panY;
 }
