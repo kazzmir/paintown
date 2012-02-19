@@ -290,6 +290,7 @@ public:
 
     virtual void setMoveType(const std::string & type);
     virtual void setLayer(int layer);
+    virtual void setSpritePriority(int priority);
                     
     virtual inline void setHitDefPersist(bool what){
         hitDefPersist = what;
@@ -328,6 +329,9 @@ protected:
     bool hitDefPersist;
     int layer;
     bool changeLayer;
+
+    int spritePriority;
+    bool changeSpritePriority;
 };
 
 class Command;

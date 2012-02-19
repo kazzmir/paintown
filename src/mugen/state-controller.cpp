@@ -6247,11 +6247,22 @@ public:
         /* FIXME */
         Mugen::Helper * helper = new Mugen::Helper(&guy, guy.getRoot(), (int) evaluateNumber(id, environment, 0));
 
-        if (posType == Player1){
-            double x = evaluateNumber(posX, environment, 0) + guy.getX();
-            double y = evaluateNumber(posY, environment, 0) + guy.getRY();
-            helper->setX(x);
-            helper->setY(y);
+        switch (posType){
+            case Player1: {
+                double x = evaluateNumber(posX, environment, 0) + guy.getX();
+                double y = evaluateNumber(posY, environment, 0) + guy.getY();
+                helper->setX(x);
+                helper->setY(y);
+                break;
+            }
+            case Player2:
+            case Front:
+            case Back:
+            case Left:
+            case Right: {
+                Global::debug(0) << "Warning: Unimplemented postype " << posType << std::endl;
+                break;
+            }
         }
         stage.addObject(helper);
         helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);

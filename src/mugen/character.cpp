@@ -111,7 +111,9 @@ moveType(Move::Idle),
 juggle(0),
 hitDefPersist(false),
 layer(0),
-changeLayer(false){
+changeLayer(false),
+spritePriority(0),
+changeSpritePriority(false){
 }
     
 State * State::deepCopy() const {
@@ -132,6 +134,8 @@ State * State::deepCopy() const {
     state->hitDefPersist = this->hitDefPersist;
     state->layer = this->layer;
     state->changeLayer = this->changeLayer;
+    state->spritePriority = this->spritePriority;
+    state->changeSpritePriority = this->changeSpritePriority;
     for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
         StateController * controller = *it;
         state->addController(controller->deepCopy());
@@ -172,6 +176,11 @@ void State::addControllerFront(StateController * controller){
 #endif
 
     controllers.insert(controllers.begin(), controller);
+}
+    
+void State::setSpritePriority(int priority){
+    changeSpritePriority = true;
+    spritePriority = priority;
 }
 
 void State::setJuggle(Compiler::Value * juggle){
@@ -216,6 +225,10 @@ void State::transitionTo(const Mugen::Stage & stage, Character & who){
 
     if (juggle != NULL){
         who.setCurrentJuggle((int) juggle->evaluate(FullEnvironment(stage, who)).toNumber());
+    }
+
+    if (changeSpritePriority){
+        who.setSpritePriority(spritePriority);
     }
 
     who.setMoveType(moveType);
@@ -413,7 +426,7 @@ virtualy(copy.virtualy),
 virtualz(copy.virtualz),
 attack_ticket(copy.attack_ticket),
 alliance(copy.alliance),
-facing(FacingLeft),
+facing(copy.facing),
 objectId(copy.objectId),
 ticket(copy.ticket){
 }
@@ -1482,6 +1495,9 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                 } else if (simple == "movehitpersist"){
                 } else if (simple == "hitcountpersist"){
                 } else if (simple == "sprpriority"){
+                    int priority;
+                    simple.view() >> priority;
+                    definition->setSpritePriority(priority);
                 } else {
                     Global::debug(0) << "Unhandled attribute in Statedef " << definition->getState() << ": " << simple.toString() << " " << sourceLocation(simple, path) << endl;
                 }
