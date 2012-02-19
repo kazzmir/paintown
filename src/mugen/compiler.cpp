@@ -337,11 +337,12 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
                 default: return false;
             }
         }
+        case RuntimeValue::Bool:
         case RuntimeValue::Double : {
             switch (value2.type){
                 case RuntimeValue::Double : {
                     double epsilon = 0.0000001;
-                    return fabs(value1.getDoubleValue() - value2.getDoubleValue()) < epsilon;
+                    return fabs(value1.toNumber() - value2.toNumber()) < epsilon;
                 }
                 case RuntimeValue::RangeType : {
                     return value1.toNumber() > toRangeLow(value2) &&

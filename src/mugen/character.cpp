@@ -2943,9 +2943,13 @@ void Character::didHitGuarded(Object * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().guardPause.player1;
     hitState.spritePriority = getHit().player1SpritePriority;
     hitState.moveContact = 1;
+    characterData.who = NULL;
+    characterData.enabled = false;
 }
 
 void Character::didHit(Object * enemy, Mugen::Stage & stage){
+    characterData.who = NULL;
+    characterData.enabled = false;
     hitState.shakeTime = getHit().pause.player1;
     hitState.spritePriority = getHit().player1SpritePriority;
     hitState.moveContact = 1;
@@ -3048,12 +3052,6 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
         /* FIXME: replace 5000 with some constant */
         changeState(stage, 5000);
     }
-
-    /*
-    vector<string> active;
-    while (doStates(active, currentState)){
-    }
-    */
 }
 
 /* returns true if a state change occured */
