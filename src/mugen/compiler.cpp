@@ -952,14 +952,15 @@ public:
             return new Facing();
         }
 
-        if (identifier == "backedgebodydist" ||
-            identifier == "backedgedist"){
+        if (identifier == "backedgebodydist"){
             class BackEdgeBodyDist: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getBackX();
-                    return RuntimeValue(PaintownUtil::min(x - environment.getStage().maximumLeft(),
-                                                          environment.getStage().maximumRight() - x));
+                    switch (environment.getCharacter().getFacing()){
+                        case FacingRight: return x - environment.getStage().maximumLeft();
+                        case FacingLeft: return environment.getStage().maximumRight() - x;
+                    }
                 }
 
                 Value * copy() const {
@@ -970,24 +971,36 @@ public:
             return new BackEdgeBodyDist();
         }
 
-        /*
         if (identifier == "backedgedist"){
             class BackEdgeDist: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
+                    int x = environment.getCharacter().getX();
+                    /* FIXME: handle screenbound in case maximumLeft/Right don't */
+                    switch (environment.getCharacter().getFacing()){
+                        case FacingRight: return x - environment.getStage().maximumLeft();
+                        case FacingLeft: return environment.getStage().maximumRight() - x;
+
+                    }
+                }
+
+                Value * copy() const {
+                    return new BackEdgeDist();
                 }
             };
-        }
-        */
 
-        if (identifier == "frontedgebodydist" ||
-            identifier == "frontedgedist"){
+            return new BackEdgeDist();
+        }
+
+        if (identifier == "frontedgebodydist"){
             class FrontEdgeBodyDist: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getFrontX();
-                    return RuntimeValue(PaintownUtil::min(x - environment.getStage().maximumLeft(),
-                                                          environment.getStage().maximumRight() - x));
+                    switch (environment.getCharacter().getFacing()){
+                        case FacingLeft: return x - environment.getStage().maximumLeft();
+                        case FacingRight: return environment.getStage().maximumRight() - x;
+                    }
                 }
 
                 Value * copy() const {
@@ -996,6 +1009,25 @@ public:
             };
 
             return new FrontEdgeBodyDist();
+        }
+
+        if (identifier == "frontedgedist"){
+            class FrontEdgeDist: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int x = environment.getCharacter().getX();
+                    switch (environment.getCharacter().getFacing()){
+                        case FacingLeft: return x - environment.getStage().maximumLeft();
+                        case FacingRight: return environment.getStage().maximumRight() - x;
+                    }
+                }
+
+                Value * copy() const {
+                    return new FrontEdgeDist();
+                }
+            };
+
+            return new FrontEdgeDist();
         }
 
         if (identifier == "hitdefattr:state"){
