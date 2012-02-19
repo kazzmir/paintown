@@ -747,6 +747,7 @@ totalDraws(0),
 matchWins(0),
 matchMaxDrawGames(0),
 startWaitTime(0),
+introTime(100), /* FIXME; 100 is just a guess */
 roundDisplayTime(0),
 fightDisplayTime(0),
 controlTime(0),
@@ -822,8 +823,8 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
 	case DisplayIntro:
 	    // Check if player states are done with intro move on to next
 	    // for now just go ahead and start the round
-            if ((player1.getCurrentState() == Mugen::Standing) && (player2.getCurrentState() == Mugen::Standing)){
-                setState(WaitForRound,stage,player1,player2);
+            if (ticker > introTime && !player1.isAssertIntro() && !player2.isAssertIntro()){
+                setState(WaitForRound, stage, player1, player2);
             }
 	    Global::debug(1) << "Round Ticker: " << ticker << " | DisplayIntro "  << endl;
 	    break;
@@ -1099,8 +1100,6 @@ void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character
     std::vector<std::string> vec;
     switch (this->state){
 	case WaitForIntro:
-            player1.changeState(stage, Mugen::Initialize, vec);
-	    player2.changeState(stage, Mugen::Initialize, vec);
 	    break;
 	case DisplayIntro:
             /* The initialize state (5900) will call a change state controller
@@ -1112,6 +1111,8 @@ void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character
             player1.changeState(stage, Mugen::Intro, vec);
             player2.changeState(stage, Mugen::Intro, vec);
             */
+            player1.changeState(stage, Mugen::Initialize, vec);
+	    player2.changeState(stage, Mugen::Initialize, vec);
 	    break;
 	case WaitForRound:
             player1.changeState(stage, Mugen::Standing, vec);

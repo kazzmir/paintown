@@ -612,6 +612,7 @@ class Round{
 	int matchWins;
 	int matchMaxDrawGames;
 	int startWaitTime;
+        int introTime;
 		
 	Mugen::Point position;
 	//! How long before displaying round

@@ -673,6 +673,9 @@ public:
 
         virtual void destroyed(Stage & stage);
 
+        /* True if the character is asserting the intro flag */
+        virtual bool isAssertIntro();
+
         virtual void resetStateTime();
 
         virtual void setVariable(int index, const RuntimeValue & value);
@@ -1548,14 +1551,17 @@ public:
 
         struct SpecialStuff{
             SpecialStuff():
-            invisible(false){
+            invisible(false),
+            intro(false){
             }
 
             void reset(){
                 invisible = false;
+                intro = false;
             }
 
             bool invisible;
+            bool intro;
         } special;
 
         struct PaletteEffects{

@@ -3720,6 +3720,9 @@ void Character::assertSpecial(Specials special){
     if (special == Invisible){
         this->special.invisible = true;
     }
+    if (special == Intro){
+        this->special.intro = true;
+    }
     /* FIXME: handle other specials */
 }
 
@@ -3958,6 +3961,10 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
         
 std::map<int, Object *> & Character::getTargets(){
     return targets;
+}
+        
+bool Character::isAssertIntro(){
+    return special.intro;
 }
 
 }
