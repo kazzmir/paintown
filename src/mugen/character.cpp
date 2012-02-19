@@ -3027,8 +3027,8 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
     }
 
     switch (hisHit.player2Facing){
-        case -1: setFacing(enemy->getOppositeFacing()); break;
-        case 1: setFacing(enemy->getFacing()); break;
+        case -1: setFacing(enemy->getFacing()); break;
+        case 1: setFacing(enemy->getOppositeFacing()); break;
         default: break;
     }
 
