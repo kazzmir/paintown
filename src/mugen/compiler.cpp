@@ -413,8 +413,10 @@ static bool compareRuntimeValues(const RuntimeValue & value1, const RuntimeValue
         throw MugenRuntimeException("invalid value", __FILE__, __LINE__);
     }
     switch (value1.type){
+        case RuntimeValue::Bool:
         case RuntimeValue::Double: {
             switch (value2.type){
+                case RuntimeValue::Bool:
                 case RuntimeValue::Double: return compareDoubles(value1.toNumber(), value2.toNumber());
                 default: break;
             }
@@ -1247,6 +1249,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHitCount());
                 }
+                
+                virtual std::string toString() const {
+                    return "hitcount";
+                }
 
                 Value * copy() const {
                     return new HitCount();
@@ -1712,6 +1718,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->isGuarding());
+                }
+                
+                virtual std::string toString() const {
+                    return "moveguarded";
                 }
 
                 Value * copy() const {
@@ -4691,6 +4701,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->getY() - environment.getCharacter().getY());
+                }
+                
+                virtual std::string toString() const {
+                    return "p2bodydist y";
                 }
 
                 Value * copy() const {
