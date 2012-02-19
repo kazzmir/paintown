@@ -929,7 +929,7 @@ void Mugen::Stage::physics(Object * mugen){
         }
     } else if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
         /* gravity */
-        if (getY() < 0){
+        if (mugen->getY() < 0){
             mugen->setYVelocity(mugen->getYVelocity() + mugen->getGravity());
         }
     }
@@ -1723,18 +1723,10 @@ void Mugen::Stage::addObject(Mugen::Object * o){
 }
 
 bool Mugen::Stage::finished() const { return false; }
-void Mugen::Stage::reloadLevel() throw( LoadException ){ 
+void Mugen::Stage::reloadLevel(){
     cleanup();
     loaded = false;
     load(); 
-}
-/* upper left hand corner of the screen */
-int Mugen::Stage::getX(){
-    return (int)getCameraX();
-}
-
-int Mugen::Stage::getY(){
-    return (int)getCameraY();
 }
 
 /* bleh.. */
@@ -1755,7 +1747,7 @@ int Mugen::Stage::getMinimumZ(){ return zoffset; }
 void Mugen::Stage::begin(){
 }
 
-const std::string Mugen::Stage::getStageName(const std::string &filename) throw (MugenException){
+const std::string Mugen::Stage::getStageName(const std::string &filename){
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath dir = Storage::instance().find(Filesystem::RelativePath("mugen/stages/"));
     Global::debug(1) << dir.path() << endl;

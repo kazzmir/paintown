@@ -2888,7 +2888,7 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
         }
 
         if (getCurrentPhysics() == Mugen::Physics::Air){
-            if (getY() >= 0){
+            if (getY() > 0){
                 /* change to the landing state */
                 // mugen->setXVelocity(0);
                 vector<string> inputs;

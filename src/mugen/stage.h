@@ -211,14 +211,11 @@ public:
     virtual void draw(Graphics::Bitmap * work);
     virtual void addObject(Object * o);
     virtual bool finished() const;
-    virtual void reloadLevel() throw( LoadException );
-    /* upper left hand corner of the screen */
-    virtual int getX();
-    virtual int getY();
+    virtual void reloadLevel();
     virtual Object * findObject(int id);
     virtual int getMaximumZ();
     virtual int getMinimumZ();
-    static const std::string getStageName(const std::string &filename) throw (MugenException);
+    static const std::string getStageName(const std::string &filename);
     
     bool isaPlayer(Object * o) const;
 
