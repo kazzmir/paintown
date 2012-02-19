@@ -2643,8 +2643,6 @@ static bool blockingState(int state){
 /* Inherited members */
 void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen::Object*>* add){
         
-    this->special.invisible = true;
-    
     reversalActive = false;
 
     special.reset();
@@ -2890,6 +2888,17 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
         }
 
         if (getCurrentPhysics() == Mugen::Physics::Air){
+            if (getY() >= 0){
+                /* change to the landing state */
+                // mugen->setXVelocity(0);
+                vector<string> inputs;
+                /* FIXME: replace 52 with a constant */
+                changeState(stage, 52, inputs);
+            }
+        }
+
+#if 0
+        if (getCurrentPhysics() == Mugen::Physics::Air){
             /* gravity */
             if (getY() < 0){
                 double gravity = getGravity();
@@ -2904,6 +2913,7 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
         } else if (getCurrentPhysics() == Mugen::Physics::Stand){
             setY(0);
         }
+#endif
 
         moveX(getXVelocity());
         moveY(getYVelocity());

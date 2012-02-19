@@ -896,6 +896,7 @@ void Mugen::Stage::physics(Object * mugen){
 
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
         mugen->getCurrentPhysics() == Mugen::Physics::Crouch){
+        mugen->setY(0);
         /* friction */
         if (mugen->getY() == 0){
             mugen->setXVelocity(mugen->getXVelocity() * mugen->getGroundFriction());
@@ -904,6 +905,11 @@ void Mugen::Stage::physics(Object * mugen){
                 ticker % 5 == 0){
                 createDust((int) mugen->getX(), (int) mugen->getRY());
             }
+        }
+    } else if (mugen->getCurrentPhysics() == Mugen::Physics::Air){
+        /* gravity */
+        if (getY() < 0){
+            mugen->setYVelocity(mugen->getYVelocity() + mugen->getGravity());
         }
     }
 
@@ -1167,8 +1173,12 @@ void Mugen::Stage::runCycle(){
             }
         }
 
-        objects.insert(objects.end(), add.begin(), add.end());
-        objects.insert(objects.end(), addedObjects.begin(), addedObjects.end());
+        /* Have to insert objects at the front of the vector because new helpers should
+         * have their states executed before players. At least this is the only way
+         * I can get MVC2_IronMan's intro to work properly.
+         */
+        objects.insert(objects.begin(), add.begin(), add.end());
+        objects.insert(objects.begin(), addedObjects.begin(), addedObjects.end());
         addedObjects.clear();
     }
 }

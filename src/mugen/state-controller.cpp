@@ -6601,9 +6601,13 @@ public:
     ControllerDisplayToClipboard(const ControllerDisplayToClipboard & you):
     StateController(you),
     text(you.text){
+        for (vector<Compiler::Value*>::const_iterator it = you.parameters.begin(); it != you.parameters.end(); it++){
+            Compiler::Value * parameter = copy(*it);
+            parameters.push_back(parameter);
+        }
     }
 
-    ~ControllerDisplayToClipboard(){
+    virtual ~ControllerDisplayToClipboard(){
         for (vector<Compiler::Value*>::iterator it = parameters.begin(); it != parameters.end(); it++){
             delete *it;
         }
