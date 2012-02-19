@@ -3534,7 +3534,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        guy.doTurn(stage);
+        guy.reverseFacing();
     }
 
     StateController * deepCopy() const {
