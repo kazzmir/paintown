@@ -1100,6 +1100,8 @@ void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character
     std::vector<std::string> vec;
     switch (this->state){
 	case WaitForIntro:
+            player1.changeState(stage, Mugen::Initialize, vec);
+	    player2.changeState(stage, Mugen::Initialize, vec);
 	    break;
 	case DisplayIntro:
             /* The initialize state (5900) will call a change state controller
@@ -1111,8 +1113,6 @@ void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character
             player1.changeState(stage, Mugen::Intro, vec);
             player2.changeState(stage, Mugen::Intro, vec);
             */
-            player1.changeState(stage, Mugen::Initialize, vec);
-	    player2.changeState(stage, Mugen::Initialize, vec);
 	    break;
 	case WaitForRound:
             player1.changeState(stage, Mugen::Standing, vec);
