@@ -378,11 +378,13 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
             Global::debug(0) << "Warning: could not read " << reallength << " bytes from pcx file, only read " << read << endl;
         }
     }
+
     memcpy(originalPalette, pcx + newlength - 768, 768);
     if (!islinked){
         if (!useact){
             if (samePalette){
                 memcpy(pcx + (reallength), palsave1, 768);
+                memcpy(originalPalette, pcx + newlength - 768, 768);
                 Global::debug(2) << "Applying 1st palette to Sprite: " << imageNumber << " in Group: " << groupNumber << endl;
             } else {
                 memcpy(palsave1, pcx+(reallength)-768, 768);
@@ -391,6 +393,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
             // Replace all palettes with the one supplied in act
             if (samePalette){
                 memcpy(pcx + (reallength), palsave1, 768);
+                memcpy(originalPalette, pcx + newlength - 768, 768);
             } else {
                 /* TODO: add an explanation of what group 9000 means here */
                 if (!(groupNumber == 9000 && imageNumber == 1)){
