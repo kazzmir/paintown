@@ -14,7 +14,6 @@
 #include "animation.h"
 #include "util.h"
 #include "compiler.h"
-#include "definitions.h"
 #include "util/bitmap.h"
 #include "object.h"
 #include "common.h"
