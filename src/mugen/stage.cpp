@@ -1394,7 +1394,8 @@ vector<int> Mugen::Stage::allSpritePriorities(){
     }
 
     std::sort(priorities.begin(), priorities.end());
-    std::unique(priorities.begin(), priorities.end());
+    vector<int>::iterator newEnd = std::unique(priorities.begin(), priorities.end());
+    priorities.resize(newEnd - priorities.begin());
 
     return priorities;
 }
