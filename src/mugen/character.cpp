@@ -1719,6 +1719,9 @@ void Character::startRecording(int count){
     ostringstream filename;
     filename << getDisplayName() << "-" << count << ".txt";
     record->out.open(filename.str().c_str());
+    if (!record->out.good()){
+        Global::debug(0) << "Could not record " << filename.str() << std::endl;
+    }
     record->ticks = 1;
 }
 

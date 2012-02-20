@@ -265,8 +265,9 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 std::vector<Object*> players = stage->getPlayers();
                 int count = 0;
                 for (std::vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
+                    count += 1;
                     Character * player = (Character*) *it;
-                    player->startRecording(count + 1);
+                    player->startRecording(count);
                 }
                 return "Recording";
             }

@@ -257,7 +257,12 @@ vector<int> StateController::sortTriggers() const {
 }
 
 bool StateController::canTrigger(const Environment & environment) const {
-    if (!ignoreHitPause(environment) && environment.getCharacter().isPaused()){
+    /* Only characters that are shaking from the hit and in an attack state have to deal with
+     * ignorehitpause.
+     * The character that is hit will probably be in a hit state (or idle) but his states
+     * continue to execute as normal.
+     */
+    if (!ignoreHitPause(environment) && environment.getCharacter().isPaused() && environment.getCharacter().getMoveType() == Move::Attack){
         return false;
     }
 
