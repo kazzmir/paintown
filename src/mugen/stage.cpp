@@ -918,7 +918,7 @@ void Mugen::Stage::physics(Object * mugen){
 
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
         mugen->getCurrentPhysics() == Mugen::Physics::Crouch){
-        mugen->setY(0);
+        // mugen->setY(0);
         /* friction */
         if (mugen->getY() == 0){
             mugen->setXVelocity(mugen->getXVelocity() * mugen->getGroundFriction());
