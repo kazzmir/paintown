@@ -939,7 +939,7 @@ void Mugen::Stage::physics(Object * mugen){
 
         for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = (Mugen::Character*) *enem;
-            if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit(mugen)){
+            if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit((Character*) mugen)){
 		// Check attack distance to make sure we begin block at the correct distance
                 /*
 		if (doBlockingDetection(mugen, enemy) && enemy->isBlocking(*mugen->getHit())){

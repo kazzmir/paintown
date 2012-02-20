@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include "definitions.h"
+#include "common.h"
 
 namespace Ast{
     class Value;

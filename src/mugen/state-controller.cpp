@@ -4450,28 +4450,13 @@ public:
     }
 };
 
-class ControllerHitBy: public StateController {
-public:
-    ControllerHitBy(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    slot(-1),
-    standing(false),
-    crouching(false),
-    aerial(false){
-        parse(section);
-    }
-
-    ControllerHitBy(const ControllerHitBy & you):
-    StateController(you),
-    time(copy(you.time)),
-    slot(you.slot),
-    standing(you.standing),
-    crouching(you.crouching),
-    aerial(you.aerial),
-    attributes(you.attributes){
-    }
-
-    Value time;
+struct HitByAttributes{
+    HitByAttributes():
+        slot(-1),
+        standing(false),
+        crouching(false),
+        aerial(false){
+        }
 
     int slot;
     bool standing;
@@ -4479,6 +4464,109 @@ public:
     bool aerial;
 
     vector<AttackType::Attribute> attributes;
+};
+
+static HitByAttributes parseHitByAttributes(const Ast::AttributeSimple & simple){
+    HitByAttributes hit;
+
+    if (simple == "value"){
+        hit.slot = 0;
+    } else if (simple == "value2"){
+        hit.slot = 1;
+    }
+    string type;
+    vector<string> moreTypes;
+    if (simple.getValue() != NULL && ! simple.getValue()->hasMultiple()){
+        string type;
+        simple.view() >> type;
+        type = PaintownUtil::lowerCaseAll(type);
+    } else {
+        Ast::View view = simple.view();
+        view >> type;
+        try{
+            while (true){
+                string what;
+                view >> what;
+                what = PaintownUtil::lowerCaseAll(what);
+                moreTypes.push_back(what);
+            }
+        } catch (const Ast::Exception & e){
+        }
+    }
+
+    if (type.find('s') != string::npos){
+        hit.standing = true;
+    }
+
+    if (type.find('c') != string::npos){
+        hit.crouching = true;
+    }
+
+    if (type.find('a') != string::npos){
+        hit.aerial = true;
+    }
+
+    map<string, AttackType::Attribute> attributes;
+    attributes["na"] = AttackType::NormalAttack;
+    attributes["nt"] = AttackType::NormalThrow;
+    attributes["np"] = AttackType::NormalProjectile;
+    attributes["sa"] = AttackType::SpecialAttack;
+    attributes["st"] = AttackType::SpecialThrow;
+    attributes["sp"] = AttackType::SpecialProjectile;
+    attributes["ha"] = AttackType::HyperAttack;
+    attributes["ht"] = AttackType::HyperThrow;
+    attributes["hp"] = AttackType::HyperProjectile;
+
+    for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
+        string what = *it;
+        /* A = all */
+        if (what[0] == 'a'){
+            switch (what[1]){
+                case 'a': {
+                    hit.attributes.push_back(AttackType::NormalAttack);
+                    hit.attributes.push_back(AttackType::SpecialAttack);
+                    hit.attributes.push_back(AttackType::HyperAttack);
+                    break;
+                }
+                case 'p': {
+                    hit.attributes.push_back(AttackType::NormalProjectile);
+                    hit.attributes.push_back(AttackType::SpecialProjectile);
+                    hit.attributes.push_back(AttackType::HyperProjectile);
+                    break;
+                }
+                case 't': {
+                    hit.attributes.push_back(AttackType::NormalThrow);
+                    hit.attributes.push_back(AttackType::SpecialThrow);
+                    hit.attributes.push_back(AttackType::HyperThrow);
+                    break;
+                }
+            }
+        } else {
+            if (attributes.find(what) != attributes.end()){
+                hit.attributes.push_back(attributes[what]);
+            }
+        }
+    }
+
+    return hit;
+}
+
+class ControllerHitBy: public StateController {
+public:
+    ControllerHitBy(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    ControllerHitBy(const ControllerHitBy & you):
+    StateController(you),
+    time(copy(you.time)),
+    attributes(you.attributes){
+    }
+
+    Value time;
+
+    HitByAttributes attributes;
 
     virtual ~ControllerHitBy(){
     }
@@ -4496,64 +4584,7 @@ public:
                 if (simple == "time"){
                     controller.time = Compiler::compile(simple.getValue());
                 } else if (simple == "value" || simple == "value2"){
-                    try{
-                        if (simple == "value"){
-                            controller.slot = 0;
-                        } else if (simple == "value2"){
-                            controller.slot = 1;
-                        }
-                        string type;
-                        vector<string> moreTypes;
-                        if (simple.getValue() != NULL && ! simple.getValue()->hasMultiple()){
-                            string type;
-                            simple.view() >> type;
-                            type = PaintownUtil::lowerCaseAll(type);
-                        } else {
-                            Ast::View view = simple.view();
-                            view >> type;
-                            try{
-                                while (true){
-                                    string what;
-                                    view >> what;
-                                    what = PaintownUtil::lowerCaseAll(what);
-                                    moreTypes.push_back(what);
-                                }
-                            } catch (const Ast::Exception & e){
-                            }
-                        }
-
-                        if (type.find('s') != string::npos){
-                            controller.standing = true;
-                        }
-
-                        if (type.find('c') != string::npos){
-                            controller.crouching = true;
-                        }
-
-                        if (type.find('a') != string::npos){
-                            controller.aerial = true;
-                        }
-
-                        map<string, AttackType::Attribute> attributes;
-                        attributes["na"] = AttackType::NormalAttack;
-                        attributes["nt"] = AttackType::NormalThrow;
-                        attributes["np"] = AttackType::NormalProjectile;
-                        attributes["sa"] = AttackType::SpecialAttack;
-                        attributes["st"] = AttackType::SpecialThrow;
-                        attributes["sp"] = AttackType::SpecialProjectile;
-                        attributes["ha"] = AttackType::HyperAttack;
-                        attributes["ht"] = AttackType::HyperThrow;
-                        attributes["hp"] = AttackType::HyperProjectile;
-
-                        for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
-                            string what = *it;
-                            if (attributes.find(what) != attributes.end()){
-                                controller.attributes.push_back(attributes[what]);
-                            }
-                        }
-                    } catch (const Ast::Exception & fail){
-                        Global::debug(1) << "Could not get values " << fail.getReason() << endl;
-                    }
+                    controller.attributes = parseHitByAttributes(simple);
                 }
             }
         };
@@ -4563,8 +4594,8 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        if (slot != -1){
-            guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, attributes);
+        if (attributes.slot != -1){
+            guy.setHitByOverride(attributes.slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), attributes.standing, attributes.crouching, attributes.aerial, attributes.attributes);
         }
     }
 
@@ -4576,32 +4607,19 @@ public:
 class ControllerNotHitBy: public StateController {
 public:
     ControllerNotHitBy(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section),
-    slot(-1),
-    standing(true),
-    crouching(true),
-    aerial(true){
+    StateController(name, state, section){
         parse(section);
     }
 
     ControllerNotHitBy(const ControllerNotHitBy & you):
     StateController(you),
     time(copy(you.time)),
-    slot(you.slot),
-    standing(you.standing),
-    crouching(you.crouching),
-    aerial(you.aerial),
     attributes(you.attributes){
     }
 
     Value time;
 
-    int slot;
-    bool standing;
-    bool crouching;
-    bool aerial;
-
-    vector<AttackType::Attribute> attributes;
+    HitByAttributes attributes;
 
     virtual ~ControllerNotHitBy(){
     }
@@ -4619,60 +4637,7 @@ public:
                 if (simple == "time"){
                     controller.time = Compiler::compile(simple.getValue());
                 } else if (simple == "value" || simple == "value2"){
-                    if (simple == "value"){
-                        controller.slot = 0;
-                    } else if (simple == "value2"){
-                        controller.slot = 1;
-                    }
-                    string type;
-                    vector<string> moreTypes;
-                    if (! simple.getValue()->hasMultiple()){
-                        string type;
-                        simple.view() >> type;
-                        type = PaintownUtil::lowerCaseAll(type);
-                    } else {
-                        Ast::View view = simple.view();
-                        view >> type;
-                        try{
-                            while (true){
-                                string what;
-                                view >> what;
-                                what = PaintownUtil::lowerCaseAll(what);
-                                moreTypes.push_back(what);
-                            }
-                        } catch (const Ast::Exception & e){
-                        }
-                    }
-
-                    if (type.find('s') != string::npos){
-                        controller.standing = false;
-                    }
-
-                    if (type.find('c') != string::npos){
-                        controller.crouching = false;
-                    }
-
-                    if (type.find('a') != string::npos){
-                        controller.aerial = false;
-                    }
-
-                    map<string, AttackType::Attribute> attributes;
-                    attributes["na"] = AttackType::NormalAttack;
-                    attributes["nt"] = AttackType::NormalThrow;
-                    attributes["np"] = AttackType::NormalProjectile;
-                    attributes["sa"] = AttackType::SpecialAttack;
-                    attributes["st"] = AttackType::SpecialThrow;
-                    attributes["sp"] = AttackType::SpecialProjectile;
-                    attributes["ha"] = AttackType::HyperAttack;
-                    attributes["ht"] = AttackType::HyperThrow;
-                    attributes["hp"] = AttackType::HyperProjectile;
-
-                    for (vector<string>::iterator it = moreTypes.begin(); it != moreTypes.end(); it++){
-                        string what = *it;
-                        if (attributes.find(what) != attributes.end()){
-                            controller.attributes.push_back(attributes[what]);
-                        }
-                    }
+                    controller.attributes = parseHitByAttributes(simple);
                 }
             }
         };
@@ -4716,9 +4681,9 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        if (slot != -1){
-            vector<AttackType::Attribute> notAttributes = difference(allAttributes(), attributes);
-            guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), standing, crouching, aerial, notAttributes);
+        if (attributes.slot != -1){
+            vector<AttackType::Attribute> notAttributes = difference(allAttributes(), attributes.attributes);
+            guy.setHitByOverride(attributes.slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), attributes.standing, attributes.crouching, attributes.aerial, notAttributes);
         }
     }
 

@@ -12,6 +12,19 @@ namespace AttackType{
     extern std::string Special;
     extern std::string Hyper;
 
+    enum Attribute{
+        NoAttribute,
+        NormalAttack,
+        NormalThrow,
+        NormalProjectile,
+        SpecialAttack,
+        SpecialThrow,
+        SpecialProjectile,
+        HyperAttack,
+        HyperThrow,
+        HyperProjectile
+    };
+
     enum Animation{
         NoAnimation = -1,
         Light = 0,

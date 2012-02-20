@@ -474,7 +474,7 @@ public:
     virtual void setAnimation(int animation);
     
     /* true if enemy can hit this */
-    virtual bool canBeHit(Object * enemy);
+    virtual bool canBeHit(Character * enemy);
     
     virtual int getAnimation() const;
     

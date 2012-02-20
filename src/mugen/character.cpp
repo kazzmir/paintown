@@ -992,8 +992,66 @@ static bool isStateDefSection(string name){
            PaintownUtil::matchRegex(name, "statedef ");
 }
 
-bool Character::canBeHit(Object * enemy){
-    /* FIXME: handle the hit flags here */
+static AttackType::Attribute parseAttribute(const string & kind, const string & action){
+    map<string, AttackType::Attribute> attributes;
+    attributes["na"] = AttackType::NormalAttack;
+    attributes["nt"] = AttackType::NormalThrow;
+    attributes["np"] = AttackType::NormalProjectile;
+    attributes["sa"] = AttackType::SpecialAttack;
+    attributes["st"] = AttackType::SpecialThrow;
+    attributes["sp"] = AttackType::SpecialProjectile;
+    attributes["ha"] = AttackType::HyperAttack;
+    attributes["ht"] = AttackType::HyperThrow;
+    attributes["hp"] = AttackType::HyperProjectile;
+
+    string use = PaintownUtil::lowerCaseAll(kind) + PaintownUtil::lowerCaseAll(action);
+    if (attributes.find(use) != attributes.end()){
+        return attributes[use];
+    }
+
+    return AttackType::NoAttribute;
+}
+
+bool Character::canBeHit(Character * enemy){
+    for (int slot = 0; slot < 2; slot++){
+        /* Only check active slots */
+        if (hitByOverride[slot].time > 0){
+            /* Check the state type */
+            if (enemy->getHit().attribute.state == StateType::Crouch &&
+                !hitByOverride[slot].crouching){
+                return false;
+            }
+            
+            if (enemy->getHit().attribute.state == StateType::Stand &&
+                !hitByOverride[slot].standing){
+                return false;
+            }
+            
+            if (enemy->getHit().attribute.state == StateType::Air &&
+                !hitByOverride[slot].aerial){
+                return false;
+            }
+
+            /* Then check the physics type */
+            AttackType::Attribute hitType = parseAttribute(enemy->getHit().attribute.attackType, enemy->getHit().attribute.physics);
+            const vector<AttackType::Attribute> & attributes = hitByOverride[slot].attributes;
+            bool ok = false;
+
+            /* The hit type of the hit definition must be in the list of attributes somewhere */
+            for (vector<AttackType::Attribute>::const_iterator it = attributes.begin(); it != attributes.end(); it++){
+                if (hitType == *it){
+                    ok = true;
+                    break;
+                }
+            }
+
+            /* If not then return false immediately */
+            if (!ok){
+                return false;
+            }
+        }
+    }
+
     return (moveType != Move::Hit && lastTicket < enemy->getTicket()) ||
            (moveType == Move::Hit && lastTicket < enemy->getTicket() &&
             juggleRemaining >= enemy->getCurrentJuggle());
@@ -1090,7 +1148,9 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
     /* reset hit count */
     hitCount = 0;
 
-    Global::debug(1, getDisplayName()) << "Change from state " << currentState << " to state " << stateNumber << endl;
+    ostringstream debug;
+    debug << getDisplayName() << "-" << getObjectId();
+    Global::debug(1, debug.str()) << "Change from state " << currentState << " to state " << stateNumber << endl;
     previousState = currentState;
     currentState = stateNumber;
     resetStateTime();
@@ -1099,7 +1159,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
         state->transitionTo(stage, *this);
         doStates(stage, inputs, currentState);
     } else {
-        Global::debug(0, getDisplayName()) << "Unknown state " << currentState << endl;
+        Global::debug(0, debug.str()) << "Unknown state " << currentState << endl;
     }
 }
 
