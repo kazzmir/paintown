@@ -388,7 +388,14 @@ void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, cons
     effects.scalex = scalex;
     effects.scaley = scaley;
 
+    /* Temporarily disable boxes */
+    bool saveShowOffense = showOffense;
+    bool saveShowDefense = showDefense;
+    showOffense = false;
+    showDefense = false;
     renderFrame(frame, xaxis, yaxis, work, effects);
+    showOffense = saveShowOffense;
+    showDefense = saveShowDefense;
 }
 
 void MugenAnimation::forwardFrame(){
