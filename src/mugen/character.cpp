@@ -2569,6 +2569,10 @@ const MugenSprite * Character::getCurrentFrame() const {
 }
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
+    if (special.invisible){
+        return;
+    }
+
     if (getCurrentAnimation() != NULL){
         getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() - getY() - rel_y), *work, xscale, yscale);
     }

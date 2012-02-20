@@ -6219,7 +6219,7 @@ public:
 
         switch (posType){
             case Player1: {
-                double x = evaluateNumber(posX, environment, 0) + guy.getX();
+                double x = evaluateNumber(posX, environment, 0) * (guy.getFacing() == FacingLeft ? -1 : 1) + guy.getX();
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
                 helper->setY(y);
