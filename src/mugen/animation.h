@@ -105,13 +105,7 @@ class MugenAnimation{
 	// Get next Frame
 	const MugenFrame *getNext();
 	
-	// Reset
-	inline void reset(){ 
-            this->position = 0; 
-            if (this->playOnce){
-                this->started = false;
-            }
-        }
+        virtual void reset();
 
         virtual MugenAnimation * copy() const;
 	

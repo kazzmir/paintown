@@ -287,6 +287,16 @@ void MugenAnimation::logic(){
     }
 }
 
+void MugenAnimation::reset(){ 
+    this->position = 0; 
+    if (this->playOnce){
+        this->started = false;
+    }
+    this->looped = false;
+    this->ticks = 0;
+    this->virtual_ticks = 0;
+}
+
 void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     
     frame->render(xaxis, yaxis, work, effects);
