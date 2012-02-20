@@ -238,6 +238,8 @@ public:
     virtual void addEffect(Effect * effect);
     virtual void removeEffects(const Character * owner, int id);
 
+    virtual Object * findPlayerById(int id) const;
+
     virtual int countMyHelpers(const Character * owner) const;
     virtual std::vector<Projectile*> findProjectile(int id, const Character * owner) const;
     virtual std::vector<Effect*> findExplode(int id, const Character * owner) const;
@@ -346,6 +348,8 @@ protected:
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+
+    int nextObjectId();
     
 protected:
 
@@ -691,6 +695,8 @@ private:
         bool panX;
         bool panY;
     } screenBound;
+
+    int objectId;
 };
 
 }

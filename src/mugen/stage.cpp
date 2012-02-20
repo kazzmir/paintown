@@ -220,7 +220,8 @@ gameHUD(NULL),
 gameOver(false),
 gameRate(1),
 cycles(0),
-quake_time(0){
+quake_time(0),
+objectId(0){
 }
 
 #if 0
@@ -1652,6 +1653,7 @@ void Mugen::Stage::addPlayer1( Mugen::Object * o ){
     o->setY(p1starty);
     o->setZ(currentZOffset());
     o->setFacing(FacingRight);
+    o->setObjectId(nextObjectId());
     objects.push_back(o);
     players.push_back(o);
 
@@ -1673,6 +1675,7 @@ void Mugen::Stage::addPlayer2(Mugen::Object * o ){
     o->setY(p2starty);
     o->setZ(currentZOffset());
     o->setFacing(FacingLeft);
+    o->setObjectId(nextObjectId());
     objects.push_back(o);
     players.push_back(o);
     
@@ -1719,6 +1722,7 @@ void Mugen::Stage::draw( Graphics::Bitmap * work ){
 }
 
 void Mugen::Stage::addObject(Mugen::Object * o){
+    o->setObjectId(nextObjectId());
     addedObjects.push_back(o);
 }
 
@@ -1727,6 +1731,12 @@ void Mugen::Stage::reloadLevel(){
     cleanup();
     loaded = false;
     load(); 
+}
+    
+int Mugen::Stage::nextObjectId(){
+    int now = objectId;
+    objectId += 1;
+    return now;
 }
 
 /* bleh.. */
@@ -2356,6 +2366,16 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
     }
 }
     
+Mugen::Object * Mugen::Stage::findPlayerById(int id) const {
+    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Object * object = *it;
+        if (object->getObjectId() == id){
+            return object;
+        }
+    }
+    return NULL;
+}
+
 std::vector<Mugen::Effect*> Mugen::Stage::findExplode(int id, const Character * owner) const {
     vector<Effect*> found;
 

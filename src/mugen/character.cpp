@@ -544,6 +544,10 @@ void Character::reverseFacing(){
 int Object::getObjectId() const {
     return objectId;
 }
+    
+void Object::setObjectId(int id){
+    this->objectId = id;
+}
 
 Character::Character(const Filesystem::AbsolutePath & s, int alliance):
 Object(alliance),

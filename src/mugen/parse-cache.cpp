@@ -84,6 +84,7 @@ Util::ReferenceCount<Ast::AstParse> Parser::loadFile(const string & path){
     } catch (const MugenException & e){
     }
 
+    Global::debug(1, "mugen-parse-cache") << "Parsing " << path << endl;
     Util::ReferenceCount<Ast::AstParse> out = doParse(path);
     try{
         saveCached(out, path);

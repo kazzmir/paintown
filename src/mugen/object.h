@@ -70,6 +70,7 @@ public:
     virtual int getHeight() const = 0;
 	
     virtual int getObjectId() const;
+    virtual void setObjectId(int id);
 
     virtual unsigned int getTicket() const;
     virtual void nextTicket();

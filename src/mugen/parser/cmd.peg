@@ -902,6 +902,7 @@ rules:
                   | "animelemtime"{case}
                   | "animelemno"{case}
                   | "animexist"{case}
+                  | "playeridexist"{case}
                   | "projguarded"{case}
                   | "projcanceltime"{case}
                   | "projhittime"{case}

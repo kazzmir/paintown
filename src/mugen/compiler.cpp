@@ -711,16 +711,22 @@ public:
         }
 
         if (identifier == "id"){
-            /* FIXME add ID's to character
-               class ID : public Value{
-               public:
-               RuntimeValue evaluate(const Environment & environment) const {
-               return RuntimeValue(environment.getCharacter().getID());
-               }
-               };
+            class ID: public Value{
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return RuntimeValue(environment.getCharacter().getObjectId());
+                }
 
-               return new ID(); */
-            return compile(0);
+                virtual std::string toString() const {
+                    return "ID";
+                }
+
+                Value * copy() const {
+                    return new ID();
+                }
+            };
+
+            return new ID();
         }
 
         if (identifier == "command"){
@@ -3111,6 +3117,32 @@ public:
             return compile(0);
         }
         */
+
+        if (function == "playeridexist"){
+            class PlayerIdExist: public Value {
+            public:
+                PlayerIdExist(Value * id):
+                id(id){
+                }
+
+                Value * id;
+
+                virtual ~PlayerIdExist(){
+                    delete id;
+                }
+              
+                RuntimeValue evaluate(const Environment & environment) const {
+                    int id = (int) this->id->evaluate(environment).toNumber();
+                    return environment.getStage().findPlayerById(id) != NULL;
+                }
+
+                Value * copy() const {
+                    return new PlayerIdExist(Compiler::copy(id));
+                }
+            };
+
+            return new PlayerIdExist(compile(function.getArg1()));
+        }
 
         if (function == "projhit"){
             class ProjHit: public Value {
