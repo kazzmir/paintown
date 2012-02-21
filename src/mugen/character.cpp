@@ -2462,17 +2462,32 @@ void Character::fixAssumptions(){
 
     /* standing turn state */
     {
-        State * turn = new State(5);
+        State * turn = new State(StandTurning);
         turn->setType(State::Unchanged);
-        turn->setAnimation(Compiler::compile(5));
-        states[5] = turn;
+        turn->setAnimation(Compiler::compile(StandTurning));
+        states[StandTurning] = turn;
 
         ostringstream raw;
         raw << "[State 5, paintown-internal-turn]\n";
         raw << "value = " << Standing << "\n";
         raw << "trigger1 = animtime = 0\n";
 
-        turn->addController(parseController(raw.str(), "turn", 5, StateController::ChangeState));
+        turn->addController(parseController(raw.str(), "turn", StandTurning, StateController::ChangeState));
+    }
+
+    /* standing turn state */
+    {
+        State * turn = new State(CrouchTurning);
+        turn->setType(State::Unchanged);
+        turn->setAnimation(Compiler::compile(CrouchTurning));
+        states[CrouchTurning] = turn;
+
+        ostringstream raw;
+        raw << "[State 5, paintown-internal-crouch-turn]\n";
+        raw << "value = " << Standing << "\n";
+        raw << "trigger1 = animtime = 0\n";
+
+        turn->addController(parseController(raw.str(), "turn", CrouchTurning, StateController::ChangeState));
     }
 
     /* if y reaches 0 then auto-transition to state 52.
