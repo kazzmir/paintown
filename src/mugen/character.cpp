@@ -112,7 +112,7 @@ juggle(0),
 hitDefPersist(false),
 layer(0),
 changeLayer(false),
-spritePriority(0),
+spritePriority(NULL),
 changeSpritePriority(false){
 }
     
@@ -134,7 +134,7 @@ State * State::deepCopy() const {
     state->hitDefPersist = this->hitDefPersist;
     state->layer = this->layer;
     state->changeLayer = this->changeLayer;
-    state->spritePriority = this->spritePriority;
+    state->spritePriority = Compiler::copy(this->spritePriority);
     state->changeSpritePriority = this->changeSpritePriority;
     for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
         StateController * controller = *it;
@@ -178,7 +178,7 @@ void State::addControllerFront(StateController * controller){
     controllers.insert(controllers.begin(), controller);
 }
     
-void State::setSpritePriority(int priority){
+void State::setSpritePriority(Compiler::Value * priority){
     changeSpritePriority = true;
     spritePriority = priority;
 }
@@ -215,20 +215,22 @@ void State::setLayer(int layer){
 void State::transitionTo(const Mugen::Stage & stage, Character & who){
     /* TODO: handle layer */
 
+    FullEnvironment environment(stage, who);
+
     if (animation != NULL){
-        who.setAnimation((int) animation->evaluate(FullEnvironment(stage, who)).toNumber());
+        who.setAnimation((int) animation->evaluate(environment).toNumber());
     }
 
     if (changeControl){
-        who.setControl(control->evaluate(FullEnvironment(stage, who)).toBool());
+        who.setControl(control->evaluate(environment).toBool());
     }
 
     if (juggle != NULL){
-        who.setCurrentJuggle((int) juggle->evaluate(FullEnvironment(stage, who)).toNumber());
+        who.setCurrentJuggle((int) juggle->evaluate(environment).toNumber());
     }
 
-    if (changeSpritePriority){
-        who.setSpritePriority(spritePriority);
+    if (changeSpritePriority && spritePriority != NULL){
+        who.setSpritePriority((int) spritePriority->evaluate(environment).toNumber());
     }
 
     who.setMoveType(moveType);
@@ -1559,9 +1561,7 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                 } else if (simple == "movehitpersist"){
                 } else if (simple == "hitcountpersist"){
                 } else if (simple == "sprpriority"){
-                    int priority;
-                    simple.view() >> priority;
-                    definition->setSpritePriority(priority);
+                    definition->setSpritePriority(Compiler::compile(simple.getValue()));
                 } else {
                     Global::debug(0) << "Unhandled attribute in Statedef " << definition->getState() << ": " << simple.toString() << " " << sourceLocation(simple, path) << endl;
                 }
