@@ -3120,8 +3120,14 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
         useCharacterData((Character*) enemy);
         changeState(stage, hisHit.player2State);
     } else {
-        /* FIXME: replace 5000 with some constant */
-        changeState(stage, 5000);
+        /* FIXME: replace 50*0 with some constant */
+        if (getStateType() == StateType::Air){
+            changeState(stage, 5020);
+        } else if (getStateType() == StateType::Crouch){
+            changeState(stage, 5010);
+        } else if (getStateType() == StateType::Stand){
+            changeState(stage, 5000);
+        }
     }
 }
 
