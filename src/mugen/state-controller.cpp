@@ -6225,7 +6225,16 @@ public:
                 helper->setY(y);
                 break;
             }
-            case Player2:
+            case Player2: {
+                Character * enemy = stage.getEnemy(&guy);
+                if (enemy != NULL){
+                    double x = evaluateNumber(posX, environment, 0) * (enemy->getFacing() == FacingLeft ? -1 : 1) + enemy->getX();
+                    double y = evaluateNumber(posY, environment, 0) + enemy->getY();
+                    helper->setX(x);
+                    helper->setY(y);
+                }
+                break;
+            }
             case Front:
             case Back:
             case Left:
@@ -7803,7 +7812,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::Offset : return new ControllerOffset(section, name, state);
         case StateController::ExplodBindTime : return new ControllerExplodBindTime(section, name, state);
         case StateController::Trans : return new ControllerTrans(section, name, state);
-        case StateController::AppendToClipboard : return new ControllerAppendToClipboard(section, name, state);
+        case StateController::AppendToClipboard : return new ControllerDisplayToClipboard(section, name, state);
         case StateController::ClearClipboard : return new ControllerClearClipboard(section, name, state);
         case StateController::MoveHitReset : return new ControllerMoveHitReset(section, name, state);
         case StateController::BindToRoot : return new ControllerBindToRoot(section, name, state);

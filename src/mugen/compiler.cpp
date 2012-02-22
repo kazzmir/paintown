@@ -5161,6 +5161,9 @@ Value::~Value(){
  * Caller must delete the result at some point.
  */
 Value * compile(const Ast::Value * input){
+    if (input == NULL){
+        compileError("Tried to compile null input", __FILE__, __LINE__);
+    }
     CompileWalker compiler;
     try{
         input->walk(compiler);

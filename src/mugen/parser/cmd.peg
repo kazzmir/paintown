@@ -795,8 +795,7 @@ rules:
                 | value
                 | "(" s e:expr s ")" {{ value = e; }}
 
-    function = name:function_name s "(" s args:args s ")" {{ value = makeFunction(name, args); }}
-             | name:"teammode"{case} s "=" s arg1:identifier {{
+    function = name:"teammode"{case} s "=" s arg1:identifier {{
                  value = makeFunction1(name, arg1);
              }}
              | name:"teammode"{case} s "!=" s arg1:identifier {{
@@ -830,7 +829,7 @@ rules:
                  value = makeExpressionEquals(Value(makeExpressionModulo(Value(makeIdentifier(getCurrentLine(line), getCurrentColumn(line), "time")), mod)), to);
              }}
              # FIXME: can any integer follow the = or just positive integers?
-             | line:<line> name:projectile_trigger id:integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{
+             | line:<line> name:projectile_trigger id:paren_integer? s "=" s arg1:integer (s "," s compare:all_compare s ticks:value)? {{
                 value = Value(makeProjectileExpression(line, name, id, arg1, compare, ticks));
              }}
              | "hitdefattr"{case} s comparison:compare_equal s state:hitdef-attribute s "," s attributes:hitdef-attack-attribute {{
@@ -844,7 +843,11 @@ rules:
                    error << "Invalid hitdefattr on line " << getCurrentLine(line) << " column " << getCurrentColumn(line);
                    throw ParseException(error.str());
                }}
+             | name:function_name s "(" s args:args s ")" {{ value = makeFunction(name, args); }}
              # FIXME: handle hitdefattr with no attack-attributes listed
+
+    paren_integer = "(" s id:integer s ")" {{ value = id; }}
+                  | integer
     
     projectile_trigger = "projhit"{case}
                        | "projguarded"{case}
