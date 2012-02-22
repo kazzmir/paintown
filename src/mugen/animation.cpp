@@ -286,6 +286,14 @@ void MugenAnimation::logic(){
         }
     }
 }
+        
+void MugenAnimation::setPosition(int position){
+    if (position < frames.size() && position >= 0){
+        this->position = position;
+        this->ticks = 0;
+        this->virtual_ticks = 0;
+    }
+}
 
 void MugenAnimation::reset(){ 
     this->position = 0; 

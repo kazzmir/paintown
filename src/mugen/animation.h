@@ -116,6 +116,8 @@ class MugenAnimation{
             return position;
         }
 
+        virtual void setPosition(int position);
+
         virtual inline int getTicks() const {
             return ticks;
         }

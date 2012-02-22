@@ -4750,6 +4750,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getX());
                 }
+
+                std::string toString() const {
+                    return "pos x";
+                }
                 
                 Value * copy() const {
                     return new PosX();
@@ -5148,6 +5152,10 @@ public:
             RuntimeValue evaluate(const Environment & environment) const {
                 /* FIXME */
                 return RuntimeValue(false);
+            }
+
+            std::string toString() const {
+                return "value-list";
             }
 
             Value * copy() const {

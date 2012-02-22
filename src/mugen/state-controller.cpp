@@ -517,13 +517,16 @@ public:
 
     ControllerChangeAnim(const ControllerChangeAnim & you):
     StateController(you),
-    value(copy(you.value)){
+    value(copy(you.value)),
+    element(copy(you.element)){
     }
 
     Value value;
+    Value element;
 
     void parse(Ast::Section * section){
         extractValue(value, section);
+        element = extractAttribute(section, "elem");
 
         if (value == NULL){
             ostringstream out;
@@ -533,10 +536,12 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
+        FullEnvironment environment(stage, guy, commands);
+        RuntimeValue result = value->evaluate(environment);
         if (result.isDouble()){
             int value = (int) result.getDoubleValue();
-            guy.setAnimation(value);
+            int element = evaluateNumber(this->element, environment, 0);
+            guy.setAnimation(value, element);
         }
     }
 
@@ -1233,7 +1238,7 @@ public:
         if (y != NULL){
             RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.moveY(-result.getDoubleValue());
+                guy.moveY(result.getDoubleValue());
                 // guy.setY(guy.getY() + result.getDoubleValue());
             }
         }
@@ -6554,7 +6559,7 @@ public:
                         while (true){
                             const Ast::Value * next;
                             view >> next;
-                            parameters.push_back(Compiler::compile(value));
+                            parameters.push_back(Compiler::compile(next));
                         }
                     } catch (const Ast::Exception & fail){
                     }

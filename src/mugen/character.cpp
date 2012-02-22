@@ -846,11 +846,12 @@ void Character::addCommand(Command * command){
     commands.push_back(command);
 }
 
-void Character::setAnimation(int animation){
+void Character::setAnimation(int animation, int element){
     foreignAnimation = NULL;
     currentAnimation = animation;
     if (getCurrentAnimation() != NULL){
         getCurrentAnimation()->reset();
+        getCurrentAnimation()->setPosition(element);
     }
 }
 

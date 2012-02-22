@@ -470,7 +470,7 @@ public:
     /* change back to states in the players own cns file */
     virtual void changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     
-    virtual void setAnimation(int animation);
+    virtual void setAnimation(int animation, int element = 0);
     
     /* true if enemy can hit this */
     virtual bool canBeHit(Character * enemy);
