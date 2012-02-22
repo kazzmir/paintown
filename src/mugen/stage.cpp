@@ -2415,6 +2415,20 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner,
             }
         }
     }
+
+    /* Have to check the addedObjects vector in case the player adds a helper and then
+     * immediately checks for its existence in the same tick. `Guy' does this.
+     */
+    for (vector<Mugen::Object*>::const_iterator it = addedObjects.begin(); it != addedObjects.end(); it++){
+        /* FIXME! dont assume its a character */
+        Mugen::Character * who = (Mugen::Character*) *it;
+        if (who->isHelper()){
+            Mugen::Helper * helper = (Mugen::Helper*) who;
+            if (helper->getHelperId() == id && helper->getParent() == owner){
+                out.push_back(helper);
+            }
+        }
+    }
     return out;
 }
 

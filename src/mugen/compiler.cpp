@@ -2017,31 +2017,51 @@ public:
             return new Root(compile(helper.getOriginal()));
         }
         
-        /* FIXME: can take an argument */
         if (helper == "helper"){
             class Helper: public Value {
             public:
-                Helper(Value * argument):
-                    argument(argument){
+                Helper(Value * argument, Value * original):
+                    argument(argument),
+                    original(original){
                     }
 
                 Value * argument;
+                Value * original;
 
                 virtual ~Helper(){
                     delete argument;
+                    delete original;
                 }
 
                 Value * copy() const {
-                    return new Helper(Compiler::copy(argument));
+                    return new Helper(Compiler::copy(argument),
+                                      Compiler::copy(original));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    vector<Mugen::Helper *> helpers ;
+                    if (argument != NULL){
+                        int id = argument->evaluate(environment).toNumber();
+                        helpers = environment.getStage().findHelpers(&environment.getCharacter(), id);
+                    } else {
+                        helpers = environment.getStage().findHelpers(&environment.getCharacter());
+                    }
+
+                    for (vector<Mugen::Helper*>::iterator it = helpers.begin(); it != helpers.end(); it++){
+                        Mugen::Helper * helper = *it;
+                        FullEnvironment redirected(environment.getStage(), *helper, environment.getCommands());
+                        return original->evaluate(redirected);
+                    }
+                    runtimeError("No helpers found", __FILE__, __LINE__);
+                    return 0;
                 }
             };
 
-            return new Helper(compile(helper.getOriginal()));
+            Value * maybeArgument = NULL;
+            if (helper.getArgument() != NULL){
+                maybeArgument = compile(helper.getArgument());
+            }
+            return new Helper(maybeArgument, compile(helper.getOriginal()));
         }
 
         /* FIXME: can take an argument */

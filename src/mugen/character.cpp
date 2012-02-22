@@ -2774,7 +2774,7 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
         PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
         if (animation != NULL){
             /* Check debug state */
-            if (debug){
+            if (debug && !isHelper()){
                 if (!animation->showingDefense()){
                     animation->toggleDefense();
                 }
@@ -3572,7 +3572,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         }
     }
 
-    if (debug){
+    if (debug && !isHelper()){
         const Font & font = Font::getFont(Global::DEFAULT_FONT, 16, 16);
         int x = 1;
         if (getAlliance() == Mugen::Stage::Player2Side){
