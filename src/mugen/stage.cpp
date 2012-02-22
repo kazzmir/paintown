@@ -1864,10 +1864,17 @@ bool Mugen::Stage::isaPlayer(Mugen::Object * o) const {
 }
 
 int Mugen::Stage::maximumRight() const {
+    /* FIXME: screenbound should be per character I think */
+    if (screenBound.enabled && screenBound.offScreen){
+        return boundright + DEFAULT_WIDTH / 2;
+    }
     return (int)(camerax + DEFAULT_WIDTH / 2);
 }
 
 int Mugen::Stage::maximumLeft() const {
+    if (screenBound.enabled && screenBound.offScreen){
+        return boundleft - DEFAULT_WIDTH / 2;
+    }
     return (int)(camerax - DEFAULT_WIDTH / 2);
 }
     

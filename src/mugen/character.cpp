@@ -3569,7 +3569,19 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         if (paletteEffects.time > 0){
             drawWithEffects(animation, x, y, paletteEffects.counter, *work);
         } else {
-            animation->render(getFacing() == FacingLeft, false, x, y, *work, xscale, yscale);
+            if (transOverride.enabled){
+                Mugen::Effects effects;
+                effects.facing = getFacing() == FacingLeft;
+                effects.vfacing = false;
+                effects.scalex = xscale;
+                effects.scaley = yscale;
+                effects.alphaSource = transOverride.alphaSource;
+                effects.alphaDest = transOverride.alphaDestination;
+                effects.trans = transOverride.type;
+                animation->render(x, y, *work, effects);
+            } else {
+                animation->render(getFacing() == FacingLeft, false, x, y, *work, xscale, yscale);
+            }
         }
     }
 

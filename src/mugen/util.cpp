@@ -1206,6 +1206,13 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
 Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2) const {
     Mugen::Effects result(*this);
     result.mask |= e2.mask;
+    result.trans = e2.trans;
+    result.alphaSource = e2.alphaSource;
+    result.alphaDest = e2.alphaDest;
+    result.scalex = e2.scalex;
+    result.scaley = e2.scaley;
+    result.facing = e2.facing;
+    result.vfacing = e2.vfacing;
     return result;
 }
             

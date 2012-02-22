@@ -5701,7 +5701,7 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
-        bool unbound = evaluateBool(value, environment, false);
+        bool unbound = evaluateBool(value, environment, false) == false;
         bool cameraX = evaluateBool(moveCameraX, environment, false);
         bool cameraY = evaluateBool(moveCameraY, environment, false);
         stage.enableScreenBound(unbound, cameraX, cameraY);
