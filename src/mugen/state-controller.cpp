@@ -1180,6 +1180,9 @@ public:
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (toBool(result)){
+                /* FIXME: should velocity be based on the facing direction? The
+                 * documentation doesn't say.
+                 */ 
                 guy.setXVelocity(guy.getHitState().xVelocity);
             }
         }
@@ -1243,14 +1246,12 @@ public:
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
                 guy.moveX(result.getDoubleValue());
-                // guy.setX(guy.getX() + result.getDoubleValue());
             }
         }
         if (y != NULL){
             RuntimeValue result = y->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
                 guy.moveY(result.getDoubleValue());
-                // guy.setY(guy.getY() + result.getDoubleValue());
             }
         }
     }
@@ -1366,7 +1367,7 @@ public:
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue() * (guy.getFacing() == FacingLeft ? -1 : 1));
+                guy.setXVelocity(guy.getXVelocity());
             }
         }
         if (y != NULL){
