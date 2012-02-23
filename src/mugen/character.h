@@ -820,7 +820,8 @@ public:
          */
         virtual void bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY);
         
-        std::map<int, Object *> & getTargets();
+        std::map<int, std::vector<Object *> > & getTargets();
+        const std::map<int, std::vector<Object*> > & getTargets() const;
 
         virtual inline int getHeight() const {
             return height;
@@ -1655,7 +1656,7 @@ public:
 
         Bind bind;
 
-        std::map<int, Object *> targets;
+        std::map<int, std::vector<Object *> > targets;
 
         int spritePriority;
 

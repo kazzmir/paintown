@@ -1488,8 +1488,13 @@ public:
             class NumTarget: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(1);
+                    const map<int, vector<Object*> > & targets = environment.getCharacter().getTargets();
+                    double count = 0;
+                    for (map<int, vector<Object* > >::const_iterator it = targets.begin(); it != targets.end(); it++){
+                        const vector<Object*> & objects = it->second;
+                        count += objects.size();
+                    }
+                    return count;
                 }
 
                 Value * copy() const {

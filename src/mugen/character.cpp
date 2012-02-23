@@ -2947,13 +2947,14 @@ void Character::unbind(Object * who){
         characterData.enabled = false;
     }
 
-    for (map<int, Object*>::iterator it = targets.begin(); it != targets.end(); /**/){
-        if (it->second == who){
-            map<int, Object*>::iterator kill = it;
-            it++;
-            targets.erase(kill);
-        } else {
-            it++;
+    for (map<int, vector<Object*> >::iterator it = targets.begin(); it != targets.end(); it++){
+        vector<Object*> & objects = it->second;
+        for (vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
+            if (*it2 == who){
+                it2 = objects.erase(it2);
+            } else {
+                it2++;
+            }
         }
     }
 }
@@ -3015,12 +3016,24 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
 }
 
 void Character::setTargetId(int id, Object * enemy){
-    targets[id] = enemy;
+    vector<Object*> & objects = targets[id];
+
+    /* Don't add a duplicate target */
+    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        if (*it == enemy){
+            return;
+        }
+    }
+    objects.push_back(enemy);
 }
         
 Object * Character::getTargetId(int id) const {
     if (targets.find(id) != targets.end()){
-        return targets.find(id)->second;
+        const vector<Object*> & objects = targets.find(id)->second;
+        if (objects.size() > 0){
+            /* FIXME: return a random target? */
+            return objects[PaintownUtil::rnd(objects.size())];
+        }
     }
     return NULL;
 }
@@ -4088,7 +4101,11 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
     return ok;
 }
         
-std::map<int, Object *> & Character::getTargets(){
+std::map<int, vector<Object *> > & Character::getTargets(){
+    return targets;
+}
+
+const std::map<int, vector<Object*> > & Character::getTargets() const {
     return targets;
 }
         
