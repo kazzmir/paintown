@@ -1051,7 +1051,7 @@ public:
         vector<Character*> targets = stage.getTargets((int) evaluateNumber(this->id, environment, -1), &guy);
         for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
             Character * target = *it;
-            guy.setXVelocity(vx * (target->getFacing() == FacingLeft ? -1 : 1));
+            guy.setXVelocity(vx);
             guy.setYVelocity(vy);
         }
     }
@@ -1445,7 +1445,7 @@ public:
         vector<Character*> targets = stage.getTargets((int) evaluateNumber(this->id, environment, -1), &guy);
         for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
             Character * target = *it;
-            guy.setXVelocity(target->getXVelocity() + vx * (target->getFacing() == FacingLeft ? -1 : 1));
+            guy.setXVelocity(target->getXVelocity() + vx);
             guy.setYVelocity(target->getYVelocity() + vy);
         }
     }
