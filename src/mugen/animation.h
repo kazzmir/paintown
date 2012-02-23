@@ -127,6 +127,11 @@ class MugenAnimation{
 	
 	// Update logic | go through frames
 	void logic();
+        /* Normal logic won't occur for characters that are in a hit state
+         * but we need to make sure the animation "keeps going" so that
+         * an AnimElem doesn't get stuck.
+         */
+        void virtualTick();
 	
 	// Render current frame optionally scale defaults to 1
 	void render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex=1, double scaley=1, bool ownPalette = false);

@@ -264,6 +264,10 @@ const std::vector<MugenArea> MugenAnimation::getAttackBoxes(bool reverse) const 
     }
     return frame->getAttackBoxes();
 }
+        
+void MugenAnimation::virtualTick(){
+    virtual_ticks += 1;
+}
 
 void MugenAnimation::logic(){
     if (position < frames.size()){

@@ -2770,6 +2770,12 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (hitState.shakeTime > 0){
         hitState.shakeTime -= 1;
+
+        /* Need to update the animation so it doesn't get stuck */
+        PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
+        if (animation != NULL){
+            animation->virtualTick();
+        }
     } else {
         /* Stuff to skip if the player is shaking/paused */
         PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
@@ -3135,6 +3141,8 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
         case 1: setFacing(enemy->getOppositeFacing()); break;
         default: break;
     }
+
+    setControl(false);
 
     /*
     if (getHealth() <= 0){
