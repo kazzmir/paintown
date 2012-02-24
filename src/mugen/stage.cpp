@@ -908,7 +908,7 @@ void Mugen::Stage::doProjectileToProjectileCollision(Projectile * mine, Projecti
 }
 
 /* for helpers and players */
-void Mugen::Stage::physics(Object * mugen){
+void Mugen::Stage::physics(Character * mugen){
     /* ignore physics while the player is paused */
     if (mugen->isPaused()){
         return;
@@ -937,8 +937,8 @@ void Mugen::Stage::physics(Object * mugen){
 
     if (mugen->isAttacking() && mugen->getHit().isEnabled()){
 
-        for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-            Mugen::Character * enemy = (Mugen::Character*) *enem;
+        for (vector<Mugen::Character*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Character * enemy = *enem;
             if (enemy->getAlliance() != mugen->getAlliance() && enemy->canBeHit((Character*) mugen)){
 		// Check attack distance to make sure we begin block at the correct distance
                 /*
@@ -961,9 +961,9 @@ void Mugen::Stage::physics(Object * mugen){
                         addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
                                  (int)(mugen->getHit().sparkPosition.y + enemy->getRY()),
                                  mugen->getHit().guardSpark, mugen->getDefaultGuardSpark(),
-                                 (Character*) mugen);
+                                 mugen);
 
-                        playSound((Character*) mugen, mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
+                        playSound(mugen, mugen->getHit().guardHitSound.group, mugen->getHit().guardHitSound.item, mugen->getHit().guardHitSound.own);
                     }
                     mugen->didHitGuarded(enemy, *this);
                     enemy->guarded(*this, mugen, mugen->getHit());
@@ -971,9 +971,9 @@ void Mugen::Stage::physics(Object * mugen){
                     addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getX()),
                              (int)(mugen->getHit().sparkPosition.y + enemy->getRY()),
                              mugen->getHit().spark, mugen->getDefaultSpark(),
-                             (Character*) mugen);
+                             mugen);
 
-                    playSound((Character*) mugen, mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
+                    playSound(mugen, mugen->getHit().hitSound.group, mugen->getHit().hitSound.item, mugen->getHit().hitSound.own);
 
                     /* order matters here, the guy attacking needs to know that
                      * he hit enemy so the guy can update his combo stuff.
@@ -988,7 +988,7 @@ void Mugen::Stage::physics(Object * mugen){
     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
         Projectile * projectile = *it;
         if (projectile->getOwner() != mugen && projectile->canCollide()){
-            doProjectileCollision(projectile, (Character*) mugen);
+            doProjectileCollision(projectile, mugen);
         }
 
         for (vector<Projectile*>::iterator it2 = projectiles.begin(); it2 != projectiles.end(); it2++){
@@ -1006,22 +1006,22 @@ void Mugen::Stage::physics(Object * mugen){
     /* TODO: projectile collisions with other projectiles */
 
     // Check collisions
-    for (vector<Mugen::Object*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
-        Mugen::Object *enemy = *enem;
+    for (vector<Mugen::Character*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        Mugen::Character *enemy = *enem;
         if (mugen->getAlliance() != enemy->getAlliance()){
             // Do stuff for players
             if (isaPlayer(enemy)){
                 // He collides with another push him away
-                Mugen::Object * mplayer = (Mugen::Object *) mugen;
-                Mugen::Object * menemy = (Mugen::Object *) enemy;
+                Mugen::Character * mplayer = mugen;
+                Mugen::Character * menemy = enemy;
                 /* TODO: make this cleaner
                    FIXME: we need to check collisions in the air and push as well */
                 // NOTE: if Push Check is disabled do not do this
-                if (((Mugen::Character*)mplayer)->isPushable() && ((Mugen::Character*)menemy)->isPushable()){
+                if (mplayer->isPushable() && menemy->isPushable()){
                     while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(),
                                         menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
                         centerCollision(mplayer, menemy) &&
-                        (fabs(enemy->getX() - mugen->getX()) < ((Mugen::Character*)enemy)->getWidth() + ((Mugen::Character*) mugen)->getWidth()) &&
+                        (fabs(enemy->getX() - mugen->getX()) < enemy->getWidth() + mugen->getWidth()) &&
                         mplayer->getY() < enemy->getHeight()){
                         
                         bool enemyMoved = false;
@@ -1030,8 +1030,8 @@ void Mugen::Stage::physics(Object * mugen){
                         /* NOTE centers used to check for the end of the screen.
                         *      A character shouldn't be able to jump over another if he's bound to either end of the stage 
                         */
-                        const int playerCenter = mplayer->getX()+(((Mugen::Character*)mplayer)->getWidth()/2);
-                        const int enemyCenter = enemy->getX()+(((Mugen::Character*)enemy)->getWidth()/2);
+                        const int playerCenter = mplayer->getX()+(mplayer->getWidth()/2);
+                        const int enemyCenter = enemy->getX()+(enemy->getWidth()/2);
                         if (enemy->getFacing() == FacingLeft && enemy->getX() == maximumRight() && playerCenter >= enemyCenter){
                             // Right hand side of stage
                             mplayer->moveLeftForce(1.5);
@@ -1089,10 +1089,10 @@ void Mugen::Stage::physics(Object * mugen){
     }
 }
 
-vector<Mugen::Object*> Mugen::Stage::getOpponents(Mugen::Object * who){
-    vector<Mugen::Object*> out;
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
-        Mugen::Object * player = *it;
+vector<Mugen::Character*> Mugen::Stage::getOpponents(Mugen::Object * who){
+    vector<Mugen::Character*> out;
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); ++it){
+        Mugen::Character * player = *it;
         if (isaPlayer(player) && player->getAlliance() != who->getAlliance()){
             out.push_back(player);
         }
@@ -1101,9 +1101,9 @@ vector<Mugen::Object*> Mugen::Stage::getOpponents(Mugen::Object * who){
     return out;
 }
 
-void Mugen::Stage::unbind(Mugen::Object * what){
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
-        Mugen::Object * guy = *it;
+void Mugen::Stage::unbind(Mugen::Character * what){
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); ++it){
+        Mugen::Character * guy = *it;
         guy->unbind(what);
     }
 }
@@ -1174,18 +1174,18 @@ void Mugen::Stage::runCycle(){
         background->act();
 
         // Players go in here
-        std::vector<Mugen::Object *> add;
+        std::vector<Mugen::Character *> add;
         /* Do all states first */
-        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
             /* use local variables more often, iterators can be easily confused */
-            Mugen::Object * player = *it;
+            Mugen::Character * player = *it;
             player->act(&objects, this, &add);
         }
 
         /* Then do physics/collision detection */
-        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
+        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); /**/ ){
             bool next = true;
-            Mugen::Object * player = *it;
+            Mugen::Character * player = *it;
             physics(player);
 
             /* Debug crap put it on console */
@@ -1394,8 +1394,8 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
 vector<int> Mugen::Stage::allSpritePriorities(){
     vector<int> priorities;
 
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Mugen::Object * object = *it;
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * object = *it;
         priorities.push_back(object->getSpritePriority());
     }
 
@@ -1474,8 +1474,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     vector<int> priorities = allSpritePriorities();
     for (vector<int>::iterator spritePriority = priorities.begin(); spritePriority != priorities.end(); spritePriority++){
         // Players go in here
-        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-            Mugen::Object *obj = *it;
+        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+            Mugen::Character *obj = *it;
 
             if (obj->getSpritePriority() == *spritePriority){
                 /* Reflection */
@@ -1527,9 +1527,9 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     gameHUD->render(Mugen::Element::Top, *work);
 
     // Player debug
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
 	if (isaPlayer(*it)){
-            Mugen::Character *character = (Mugen::Character*)*it;
+            Mugen::Character *character = *it;
 	    // Player debug crap
 	    if (debugMode){
 		// Players x positioning
@@ -1602,8 +1602,8 @@ void Mugen::Stage::reset(){
     // background->reset(startx, starty, resetBG);
     
     // Reset player positions
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end();){
-        Mugen::Object *player = *it;
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end();){
+        Mugen::Character *player = *it;
 
         /* remove any non-player objects, like projectiles or helpers */
         if (!isaPlayer(player)){
@@ -1612,7 +1612,7 @@ void Mugen::Stage::reset(){
             delete player;
             it = objects.erase(it);
         } else {
-            Mugen::Character * character = (Mugen::Character*) player;
+            Mugen::Character * character = player;
             vector<string> inputs;
             //character->changeState(*this, Mugen::Intro, inputs);
             character->setHealth(character->getMaxHealth());
@@ -1659,12 +1659,12 @@ void Mugen::Stage::reset(){
     gameHUD->reset(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 }
 
-std::vector<Mugen::Object *> Mugen::Stage::getPlayers() const {
+std::vector<Mugen::Character *> Mugen::Stage::getPlayers() const {
     return players;
 }
 
 // Add player1 people
-void Mugen::Stage::addPlayer1( Mugen::Object * o ){
+void Mugen::Stage::addPlayer1(Mugen::Character * o){
     o->setAlliance(Player1Side);
     o->setX(p1startx);
     o->setY(p1starty);
@@ -1682,11 +1682,11 @@ void Mugen::Stage::addPlayer1( Mugen::Object * o ){
     playerInfo[o].rightSide = false;
     playerInfo[o].jumped = false;
 
-    ((Mugen::Character *) o)->setCommonSounds(&sounds);
+    o->setCommonSounds(&sounds);
 }
 
 // Add player2 people
-void Mugen::Stage::addPlayer2(Mugen::Object * o ){
+void Mugen::Stage::addPlayer2(Mugen::Character * o){
     o->setAlliance(Player2Side);
     o->setX(p2startx);
     o->setY(p2starty);
@@ -1704,12 +1704,12 @@ void Mugen::Stage::addPlayer2(Mugen::Object * o ){
     playerInfo[o].rightSide = false;
     playerInfo[o].jumped = false;
 
-    ((Mugen::Character *) o)->setCommonSounds(&sounds);
+    o->setCommonSounds(&sounds);
 }
 
 void Mugen::Stage::setPlayerHealth(int health){
-    for ( vector<Mugen::Object * >::iterator it = players.begin(); it != players.end(); it++ ){
-        Mugen::Character *player = (Mugen::Character *)(*it);
+    for (vector<Mugen::Character *>::iterator it = players.begin(); it != players.end(); it++ ){
+        Mugen::Character *player = *it;
 	player->setHealth(health);
     }
 }
@@ -1724,8 +1724,8 @@ void Mugen::Stage::toggleConsole(){
 void Mugen::Stage::toggleDebug(int choose){
     debugMode = !debugMode;
     int count = 0;
-    for (vector<Mugen::Object *>::iterator it = players.begin(); it != players.end(); it++, count++){
-        Mugen::Character *player = (Mugen::Character *)(*it);
+    for (vector<Mugen::Character *>::iterator it = players.begin(); it != players.end(); it++, count++){
+        Mugen::Character *player = *it;
         if (choose == count || choose == -1){
             player->enableDebug();
         } else {
@@ -1738,7 +1738,7 @@ void Mugen::Stage::draw( Graphics::Bitmap * work ){
     render(work);
 }
 
-void Mugen::Stage::addObject(Mugen::Object * o){
+void Mugen::Stage::addObject(Mugen::Character * o){
     o->setObjectId(nextObjectId());
     addedObjects.push_back(o);
 }
@@ -1757,9 +1757,9 @@ int Mugen::Stage::nextObjectId(){
 }
 
 /* bleh.. */
-Mugen::Object * Mugen::Stage::findObject(int id){ 
-    for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); it++){
-        Mugen::Object * object = *it;
+Mugen::Character * Mugen::Stage::findObject(int id){ 
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * object = *it;
         if (object->getObjectId() == id){
             return object;
         }
@@ -1854,8 +1854,8 @@ void Mugen::Stage::cleanup(){
         }
         projectiles.clear();
 
-        for (vector<Mugen::Object*>::iterator it = objects.begin(); it != objects.end(); /**/){
-            Mugen::Object * object = *it;
+        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); /**/){
+            Mugen::Character * object = *it;
 
             /* remove any non-player objects, like projectiles or helpers */
             if (!isaPlayer(object)){
@@ -1870,8 +1870,8 @@ void Mugen::Stage::cleanup(){
     }
 }
 
-bool Mugen::Stage::isaPlayer(Mugen::Object * o) const {
-    for (vector<Mugen::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
+bool Mugen::Stage::isaPlayer(Mugen::Character * o) const {
+    for (vector<Mugen::Character *>::const_iterator it = players.begin(); it != players.end(); it++ ){
         if ( (*it) == o ){
             return true;
         }
@@ -2183,7 +2183,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
                     answer = false;
                 }
             }
-            std::vector<Mugen::Object *> add;
+            std::vector<Mugen::Character *> add;
             character->act(&add, stage, &add);
         }
 
@@ -2274,10 +2274,10 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 }
     
 Mugen::Character * Mugen::Stage::getEnemy(const Mugen::Character * who) const {
-    for (vector<Mugen::Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
-        Mugen::Object * enemy = *enem;
+    for (vector<Mugen::Character*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+        Mugen::Character * enemy = *enem;
         if (who->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
-            return (Mugen::Character*) enemy;
+            return enemy;
         }
     }
 
@@ -2318,9 +2318,8 @@ void Mugen::Stage::addEffect(Mugen::Effect * effect){
 
 int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
     int count = 0;
-    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
-        /* FIXME! dont assume its a character */
-        Mugen::Character * who = (Mugen::Character*) *it;
+    for (vector<Mugen::Character*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
             if (helper->getParent() == owner){
@@ -2334,18 +2333,16 @@ int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
 vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Character * from) const {
     vector<Mugen::Character *> targets;
     if (id == -1){
-        for (vector<Mugen::Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
-            /* FIXME: change to Character */
-            Mugen::Object * enemy = *enem;
+        for (vector<Mugen::Character*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Character * enemy = *enem;
             if (from->getAlliance() != enemy->getAlliance() && isaPlayer(enemy)){
-                targets.push_back((Mugen::Character*) enemy);
+                targets.push_back(enemy);
             }
         }
     } else {
-        Mugen::Object * target = from->getTargetId(id);
+        Mugen::Character * target = from->getTargetId(id);
         if (target != NULL){
-            /* FIXME: dont assume its a character */
-            targets.push_back((Mugen::Character*) target);
+            targets.push_back(target);
         }
     }
     return targets;
@@ -2390,9 +2387,9 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
     }
 }
     
-Mugen::Object * Mugen::Stage::findPlayerById(int id) const {
-    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
-        Mugen::Object * object = *it;
+Mugen::Character * Mugen::Stage::findPlayerById(int id) const {
+    for (vector<Mugen::Character*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * object = *it;
         if (object->getObjectId() == id){
             return object;
         }
@@ -2428,9 +2425,8 @@ vector<Mugen::Projectile*> Mugen::Stage::findProjectile(int id, const Character 
 
 vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner, int id) const {
     vector<Mugen::Helper*> out;
-    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
-        /* FIXME! dont assume its a character */
-        Mugen::Character * who = (Mugen::Character*) *it;
+    for (vector<Mugen::Character*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
             if (helper->getHelperId() == id && helper->getParent() == owner){
@@ -2442,9 +2438,8 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner,
     /* Have to check the addedObjects vector in case the player adds a helper and then
      * immediately checks for its existence in the same tick. `Guy' does this.
      */
-    for (vector<Mugen::Object*>::const_iterator it = addedObjects.begin(); it != addedObjects.end(); it++){
-        /* FIXME! dont assume its a character */
-        Mugen::Character * who = (Mugen::Character*) *it;
+    for (vector<Mugen::Character*>::const_iterator it = addedObjects.begin(); it != addedObjects.end(); it++){
+        Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
             if (helper->getHelperId() == id && helper->getParent() == owner){
@@ -2457,9 +2452,8 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner,
 
 vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner) const {
     vector<Mugen::Helper*> out;
-    for (vector<Mugen::Object*>::const_iterator it = objects.begin(); it != objects.end(); it++){
-        /* FIXME! dont assume its a character */
-        Mugen::Character * who = (Mugen::Character*) *it;
+    for (vector<Mugen::Character*>::const_iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
             if (helper->getParent() == owner){

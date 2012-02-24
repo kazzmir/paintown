@@ -157,13 +157,13 @@ public:
     // Reset scenario
     void reset();
     
-    virtual std::vector<Object *> getPlayers() const;
+    virtual std::vector<Character *> getPlayers() const;
 
     // Add player1 people
-    virtual void addPlayer1(Object * o);
+    virtual void addPlayer1(Character * o);
 
     // Add player2 people
-    virtual void addPlayer2(Object * o);
+    virtual void addPlayer2(Character * o);
 
     // Set player health
     virtual void setPlayerHealth(int health);
@@ -209,15 +209,15 @@ public:
 
     // Inherited world actions
     virtual void draw(Graphics::Bitmap * work);
-    virtual void addObject(Object * o);
+    virtual void addObject(Character * o);
     virtual bool finished() const;
     virtual void reloadLevel();
-    virtual Object * findObject(int id);
+    virtual Character * findObject(int id);
     virtual int getMaximumZ();
     virtual int getMinimumZ();
     static const std::string getStageName(const std::string &filename);
     
-    bool isaPlayer(Object * o) const;
+    bool isaPlayer(Character * o) const;
 
     virtual Character * getEnemy(const Character * who) const;
     virtual std::vector<Character *> getTargets(int id, const Character * from) const;
@@ -238,7 +238,7 @@ public:
     virtual void addEffect(Effect * effect);
     virtual void removeEffects(const Character * owner, int id);
 
-    virtual Object * findPlayerById(int id) const;
+    virtual Character * findPlayerById(int id) const;
 
     virtual int countMyHelpers(const Character * owner) const;
     virtual std::vector<Projectile*> findProjectile(int id, const Character * owner) const;
@@ -268,7 +268,7 @@ public:
     virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
     
     /* Remove references from this object to other objects, like through targetting */
-    virtual void unbind(Object * what);
+    virtual void unbind(Character * what);
 
 protected:
     struct cymk_holder{
@@ -344,7 +344,7 @@ protected:
     void loadSectionMusic(Ast::Section * section);
 
     void updatePlayer(Object *o);
-    void physics(Object * o);
+    void physics(Character * o);
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
@@ -364,7 +364,7 @@ protected:
     int findMinimumSpritePriority();
     std::vector<int> allSpritePriorities();
 
-    std::vector<Object*> getOpponents(Object * who);
+    std::vector<Character*> getOpponents(Object * who);
 
     /* Location is the directory passed in ctor
        This is where the def is loaded and all the relevant files
@@ -615,10 +615,10 @@ private:
 
     std::vector<Projectile*> projectiles;
 
-    std::vector<Object*> objects;
+    std::vector<Character*> objects;
 
     // player list so we can distinguish
-    std::vector<Object *> players;
+    std::vector<Character *> players;
 
     /* FIXME: sort of a hack which lets other classes with a reference to the
      * stage call stage.addObject(blah). really a vector should be passed
@@ -626,7 +626,7 @@ private:
      * insert all the objects from that vector into the `objects' vector
      * at some later point.
      */
-    std::vector<Object*> addedObjects;
+    std::vector<Character*> addedObjects;
     // Hold information for players
     std::map<void *, PlayerData> playerInfo;
 

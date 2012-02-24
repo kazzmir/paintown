@@ -436,8 +436,10 @@ ticket(copy.ticket){
 Object::~Object(){
 }
 
-void Object::doMovement(const std::vector<Object*> & objects, Stage & stage){
+/*
+void Object::doMovement(const std::vector<Character*> & objects, Stage & stage){
 }
+*/
     
 unsigned int Object::getTicket() const {
     return ticket;
@@ -2727,7 +2729,7 @@ static bool blockingState(int state){
 }
 
 /* Inherited members */
-void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen::Object*>* add){
+void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mugen::Character*>* add){
         
     reversalActive = false;
 
@@ -2927,10 +2929,10 @@ void Character::addCombo(int combo){
     }
 }
 
-void Character::maybeTurn(const vector<Object*> & objects, Stage & stage){
+void Character::maybeTurn(const vector<Character*> & objects, Stage & stage){
     if (canTurn()){
-        for (vector<Object*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
-            Mugen::Object * enemy = *enem;
+        for (vector<Character*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
+            Mugen::Character * enemy = *enem;
             if (stage.isaPlayer(enemy) && enemy->getAlliance() != getAlliance()){
                 if ((enemy->getX() > getX() && getFacing() != Mugen::FacingRight) ||
                     (enemy->getX() < getX() && getFacing() != Mugen::FacingLeft)){
@@ -2946,7 +2948,7 @@ void Character::destroyed(Stage & stage){
     stage.removeEffects(this, -1);
 }
 
-void Character::unbind(Object * who){
+void Character::unbind(Character * who){
     if (bind.bound == who){
         bind.bound = NULL;
         bind.time = 0;
@@ -2957,9 +2959,9 @@ void Character::unbind(Object * who){
         characterData.enabled = false;
     }
 
-    for (map<int, vector<Object*> >::iterator it = targets.begin(); it != targets.end(); it++){
-        vector<Object*> & objects = it->second;
-        for (vector<Object*>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
+    for (map<int, vector<Character*> >::iterator it = targets.begin(); it != targets.end(); it++){
+        vector<Character*> & objects = it->second;
+        for (vector<Character*>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
             if (*it2 == who){
                 it2 = objects.erase(it2);
             } else {
@@ -2969,7 +2971,7 @@ void Character::unbind(Object * who){
     }
 }
 
-void Character::doMovement(const vector<Object*> & objects, Stage & stage){
+void Character::doMovement(const vector<Character*> & objects, Stage & stage){
     if (bind.time > 0 && bind.bound != NULL){
         bind.time -= 1;
         setX(bind.bound->getX() + bind.offsetX);
@@ -3025,11 +3027,11 @@ void Character::doMovement(const vector<Object*> & objects, Stage & stage){
     }
 }
 
-void Character::setTargetId(int id, Object * enemy){
-    vector<Object*> & objects = targets[id];
+void Character::setTargetId(int id, Character * enemy){
+    vector<Character*> & objects = targets[id];
 
     /* Don't add a duplicate target */
-    for (vector<Object*>::iterator it = objects.begin(); it != objects.end(); it++){
+    for (vector<Character*>::iterator it = objects.begin(); it != objects.end(); it++){
         if (*it == enemy){
             return;
         }
@@ -3037,9 +3039,9 @@ void Character::setTargetId(int id, Object * enemy){
     objects.push_back(enemy);
 }
         
-Object * Character::getTargetId(int id) const {
+Character * Character::getTargetId(int id) const {
     if (targets.find(id) != targets.end()){
-        const vector<Object*> & objects = targets.find(id)->second;
+        const vector<Character*> & objects = targets.find(id)->second;
         if (objects.size() > 0){
             /* FIXME: return a random target? */
             return objects[PaintownUtil::rnd(objects.size())];
@@ -3048,7 +3050,7 @@ Object * Character::getTargetId(int id) const {
     return NULL;
 }
         
-void Character::didHitGuarded(Object * enemy, Mugen::Stage & stage){
+void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     /* TODO */
     hitState.shakeTime = getHit().guardPause.player1;
     hitState.spritePriority = getHit().player1SpritePriority;
@@ -3057,7 +3059,7 @@ void Character::didHitGuarded(Object * enemy, Mugen::Stage & stage){
     characterData.enabled = false;
 }
 
-void Character::didHit(Object * enemy, Mugen::Stage & stage){
+void Character::didHit(Character * enemy, Mugen::Stage & stage){
     characterData.who = NULL;
     characterData.enabled = false;
     hitState.shakeTime = getHit().pause.player1;
@@ -4120,11 +4122,11 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
     return ok;
 }
         
-std::map<int, vector<Object *> > & Character::getTargets(){
+std::map<int, vector<Character *> > & Character::getTargets(){
     return targets;
 }
 
-const std::map<int, vector<Object*> > & Character::getTargets() const {
+const std::map<int, vector<Character*> > & Character::getTargets() const {
     return targets;
 }
         

@@ -1488,10 +1488,10 @@ public:
             class NumTarget: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const map<int, vector<Object*> > & targets = environment.getCharacter().getTargets();
+                    const map<int, vector<Character*> > & targets = environment.getCharacter().getTargets();
                     double count = 0;
-                    for (map<int, vector<Object* > >::const_iterator it = targets.begin(); it != targets.end(); it++){
-                        const vector<Object*> & objects = it->second;
+                    for (map<int, vector<Character* > >::const_iterator it = targets.begin(); it != targets.end(); it++){
+                        const vector<Character*> & objects = it->second;
                         count += objects.size();
                     }
                     return count;

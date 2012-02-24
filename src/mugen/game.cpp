@@ -237,11 +237,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 int character = 0;
                 int state = 0;
                 input >> command >> character >> state;
-                std::vector<Object*> players = stage->getPlayers();
+                std::vector<Character*> players = stage->getPlayers();
                 int count = 0;
                 if (character < players.size()){
                     std::vector<string> inputs;
-                    Character * player = (Character*) players[character];
+                    Character * player = players[character];
                     player->changeState(*stage, state, inputs);
                     std::ostringstream out;
                     out << "Changed state for " << player->getDisplayName() << " to " << state;
@@ -262,11 +262,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             Mugen::Stage * stage;
 
             string act(const string & line){
-                std::vector<Object*> players = stage->getPlayers();
+                std::vector<Character*> players = stage->getPlayers();
                 int count = 0;
-                for (std::vector<Object*>::iterator it = players.begin(); it != players.end(); it++){
+                for (std::vector<Character*>::iterator it = players.begin(); it != players.end(); it++){
                     count += 1;
-                    Character * player = (Character*) *it;
+                    Character * player = *it;
                     player->startRecording(count);
                 }
                 return "Recording";

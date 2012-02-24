@@ -429,7 +429,7 @@ public:
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 
     /*! This all the inherited members */
-    virtual void act(std::vector<Mugen::Object*>*, Stage*, std::vector<Mugen::Object*>*);                       
+    virtual void act(std::vector<Mugen::Character*>*, Stage*, std::vector<Mugen::Character*>*);                       
     virtual void draw(Graphics::Bitmap*, int cameraX, int cameraY);
     virtual const std::string getAttackName();
     virtual int getDamage() const;
@@ -450,7 +450,7 @@ public:
 
     virtual void reverseFacing();
 
-    virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
+    virtual void doMovement(const std::vector<Character*> & objects, Stage & stage);
 
     /* absolute X coordinate of the back of the character */
     virtual int getBackX() const;
@@ -820,8 +820,8 @@ public:
          */
         virtual void bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY);
         
-        std::map<int, std::vector<Object *> > & getTargets();
-        const std::map<int, std::vector<Object*> > & getTargets() const;
+        std::map<int, std::vector<Character *> > & getTargets();
+        const std::map<int, std::vector<Character*> > & getTargets() const;
 
         virtual inline int getHeight() const {
             return height;
@@ -832,10 +832,10 @@ public:
         }
 
         /* `this' hit `enemy' */
-        void didHit(Object * enemy, Mugen::Stage & stage);
+        void didHit(Character * enemy, Mugen::Stage & stage);
         
         /* `this' object hit `enemy' but the enemy guarded it (so not really a hit) */
-        void didHitGuarded(Object * enemy, Mugen::Stage & stage);
+        void didHitGuarded(Character * enemy, Mugen::Stage & stage);
 
         /* `enemy' hit `this' with hitdef `hit' */
         void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
@@ -1019,7 +1019,7 @@ public:
 	}
     
         /* let go of a bound character (BindToRoot / BindToTarget */
-        virtual void unbind(Object * who);
+        virtual void unbind(Character * who);
 
         virtual void setDrawOffset(double x, double y);
 
@@ -1067,10 +1067,10 @@ public:
         /* bind the enemy to the target id. used for target redirection
          * and BindToTarget
          */
-        virtual void setTargetId(int id, Object * enemy);
+        virtual void setTargetId(int id, Character * enemy);
 
         /* get a target for a given id */
-        virtual Object * getTargetId(int id) const;
+        virtual Character * getTargetId(int id) const;
     
         virtual bool withinGuardDistance(const Mugen::Character * enemy) const;
 
@@ -1112,7 +1112,7 @@ protected:
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void stopGuarding(Mugen::Stage & stage, const std::vector<std::string> & inputs);
 
-    void maybeTurn(const std::vector<Object*> & objects, Stage & stage);
+    void maybeTurn(const std::vector<Character*> & objects, Stage & stage);
 
     /*
     internalCommand_t resetJump;
@@ -1661,7 +1661,7 @@ public:
 
         Bind bind;
 
-        std::map<int, std::vector<Object *> > targets;
+        std::map<int, std::vector<Character *> > targets;
 
         int spritePriority;
 

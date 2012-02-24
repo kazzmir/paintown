@@ -52,7 +52,7 @@ public:
     virtual void moveLeftForce(double x);
     virtual void moveRightForce(double y);
 
-    virtual void unbind(Object * who) = 0;
+    // virtual void unbind(Object * who) = 0;
     
     virtual double getHealth() const = 0;
         
@@ -60,7 +60,7 @@ public:
     virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh) = 0;
     virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y) = 0;
     
-    virtual void act(std::vector<Mugen::Object*>*, Stage*, std::vector<Mugen::Object*>*) = 0;
+    // virtual void act(std::vector<Mugen::Object*>*, Stage*, std::vector<Mugen::Object*>*) = 0;
     
     virtual int getAlliance() const;
     virtual void setAlliance(int alliance);
@@ -75,7 +75,7 @@ public:
     virtual unsigned int getTicket() const;
     virtual void nextTicket();
     
-    virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
+    // virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
 
     virtual int getSpritePriority() const = 0;
 
@@ -109,8 +109,8 @@ public:
     virtual void guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
     virtual void addPower(double d) = 0;
     virtual void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
-    virtual void didHit(Object * enemy, Mugen::Stage & stage) = 0;
-    virtual void didHitGuarded(Object * enemy, Mugen::Stage & stage) = 0;
+    // virtual void didHit(Object * enemy, Mugen::Stage & stage) = 0;
+    // virtual void didHitGuarded(Object * enemy, Mugen::Stage & stage) = 0;
 protected:
     double virtualx;
     double virtualy;
