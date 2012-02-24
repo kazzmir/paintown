@@ -1014,7 +1014,9 @@ void Mugen::Stage::physics(Object * mugen){
                 // He collides with another push him away
                 Mugen::Object * mplayer = (Mugen::Object *) mugen;
                 Mugen::Object * menemy = (Mugen::Object *) enemy;
-                /* TODO: make this cleaner */
+                /* TODO: make this cleaner
+                   FIXME: we need to check collisions in the air and push as well */
+                // NOTE: if Push Check is disabled do not do this
                 while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(),
                                      menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
                        centerCollision(mplayer, menemy) &&
@@ -1025,8 +1027,14 @@ void Mugen::Stage::physics(Object * mugen){
                        enemy->getX() != maximumRight() &&
                        menemy->getMoveType() == Mugen::Move::Idle){
 
+                    /* NOTE: player should not be able to fall through the other player */
+                    if (mplayer->getY() < 0){
+                        if (mplayer->getY() >= enemy->getHeight()){
+                            mplayer->setY(enemy->getHeight()-mplayer->getHeight());
+                        }
+                    }
+                    
                     /* use move*Force to override pos freeze */
-
                     if (enemy->getX() < mugen->getX()){
                         if (enemy->getX() <= maximumLeft()){
                             /* FIXME */
