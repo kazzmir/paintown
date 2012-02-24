@@ -1425,7 +1425,7 @@ public:
                     life(0){
                     }
 
-                Frame(MugenFrame * sprite, Effects effects, int life, int x, int y, bool show):
+                Frame(MugenFrame sprite, Effects effects, int life, int x, int y, bool show):
                     sprite(sprite),
                     extra(-1),
                     effects(effects),
@@ -1435,7 +1435,7 @@ public:
                     show(show){
                     }
 
-                MugenFrame * sprite;
+                MugenFrame sprite;
                 // Bitmap cache;
                 unsigned int extra;
                 Effects effects;

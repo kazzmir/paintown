@@ -39,7 +39,7 @@ class MugenFrame{
 	
 	MugenFrame & operator=( const MugenFrame &copy );
 	
-	virtual void render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects);
+	virtual void render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const;
 
         virtual inline const std::vector<MugenArea> & getDefenseBoxes() const {
             return defenseCollision;

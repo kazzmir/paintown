@@ -107,7 +107,7 @@ MugenFrame & MugenFrame::operator=(const MugenFrame &copy){
     return *this;
 }
 
-void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects){
+void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (sprite != NULL){
         const int placex = x + (xoffset * effects.facing);
         const int placey = y + (yoffset * effects.vfacing);

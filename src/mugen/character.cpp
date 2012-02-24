@@ -2667,26 +2667,22 @@ void Character::processAfterImages(){
         afterImage.lifetime -= 1;
     }
 
-    afterImage.currentTime -= 1;
+    if (afterImage.currentTime > 0){
+        afterImage.currentTime -= 1;
+    }
 
     int x = (int) getX();
     int y = (int) getRY();
 
     /* not sure if checking for the timegap > 0 is the right thing.. */
     if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
-        // int life = 200;
         afterImage.currentTime += afterImage.timegap;
         PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
             MugenFrame * currentSprite = animation->getCurrentFrame();
-            afterImage.frames.push_front(AfterImage::Frame(currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+            afterImage.frames.push_front(AfterImage::Frame(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
         }
-        /*
-           while (afterImage.frames.size() > afterImage.length){
-           afterImage.frames.pop_front();
-           }
-           */
     }
     if (afterImage.length > 0 && afterImage.frames.size() >= afterImage.length){
         afterImage.frames.resize(afterImage.length - 1);
@@ -3149,6 +3145,9 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
         hitState.fall.fall = true;
     }
     */
+    
+    /* FIXME: not sure if disabling afterimage's is the right thing */
+    afterImage.lifetime = 0;
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     
@@ -3376,7 +3375,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     total.filter = &filter;
 
     // MugenSprite::draw(frame.sprite->getSprite()->getFinalBitmap(frame.effects), x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), work, total);
-    frame.sprite->render(x, y, work, total);
+    frame.sprite.render(x, y, work, total);
 
     // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
     /*
@@ -3581,8 +3580,8 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
             AfterImage::Frame & frame = afterImage.frames[index];
             if (frame.show){
-                int x = frame.x - cameraX + drawOffset.x + frame.sprite->xoffset;
-                int y = frame.y - cameraY + drawOffset.y + frame.sprite->yoffset;
+                int x = frame.x - cameraX + drawOffset.x + frame.sprite.xoffset;
+                int y = frame.y - cameraY + drawOffset.y + frame.sprite.yoffset;
                 drawAfterImage(afterImage, frame, index, x, y, *work);
             }
         }
