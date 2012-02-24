@@ -2739,6 +2739,11 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     if (frozen){
         frozen = false;
     }
+ 
+    //! Check pushable
+    if (pushPlayer > 0){
+        pushPlayer--;
+    }
 
     /* reset some stuff */
     widthOverride.enabled = false;
@@ -2880,11 +2885,6 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             }
         }
         */
-    }
-    
-    //! Check pushable
-    if (pushPlayer > 0){
-        pushPlayer--;
     }
 }
         
@@ -4038,7 +4038,7 @@ double Character::forwardPoint(double x) const {
 }
         
 void Character::disablePushCheck(){
-    pushPlayer = 2;
+    pushPlayer = 1;
 }
 
 bool Character::isPushable(){
