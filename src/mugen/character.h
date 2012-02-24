@@ -1054,6 +1054,7 @@ public:
         virtual void addCombo(int combo);
 
         virtual void disablePushCheck();
+        virtual bool isPushable();
 
         virtual void setReversalActive();
         ReversalData & getReversal();
@@ -1544,6 +1545,10 @@ protected:
         PaintownUtil::ReferenceCount<RecordingInformation> record;
 
         virtual void recordCommands(const std::vector<std::string> & commands);
+        
+        // PushPlayer only one tick
+        int pushPlayer;
+        
 public:
         /* this definition is down here so we can get access to the AfterImage
          * struct definition

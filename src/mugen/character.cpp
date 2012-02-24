@@ -553,14 +553,16 @@ void Object::setObjectId(int id){
 
 Character::Character(const Filesystem::AbsolutePath & s, int alliance):
 Object(alliance),
-commonSounds(NULL){
+commonSounds(NULL),
+pushPlayer(0){
     this->location = s;
     initialize();
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance):
 Object(x,y, alliance),
-commonSounds(NULL){
+commonSounds(NULL),
+pushPlayer(0){
     this->location = s;
     initialize();
 }
@@ -571,7 +573,8 @@ Object(copy),
 commonSounds(NULL),
 debug(false),
 needToGuard(false),
-frozen(false){
+frozen(false),
+pushPlayer(0){
     /* simple macro to copy fields */
 #define C(field) field = copy.field
     C(xscale);
@@ -2876,6 +2879,11 @@ void Character::act(vector<Mugen::Object*>* others, Stage * stage, vector<Mugen:
         }
         */
     }
+    
+    //! Check pushable
+    if (pushPlayer > 0){
+        pushPlayer--;
+    }
 }
         
 void Character::addPower(double d){
@@ -4028,7 +4036,11 @@ double Character::forwardPoint(double x) const {
 }
         
 void Character::disablePushCheck(){
-    /* TODO */
+    pushPlayer = 2;
+}
+
+bool Character::isPushable(){
+    return (pushPlayer == 0);
 }
         
 void Character::setHitOverride(int slot, const string & attribute, int state, int time, bool air){
