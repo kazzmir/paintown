@@ -55,6 +55,7 @@ static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
 static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
 static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
 static const char * MUGEN_INSTANT_SCRIPT_ARG[] = {"mugen:script"};
+static const char * MUGEN_INSTANT_ARCADE_ARG[] = {"mugen:arcade"};
 static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
 static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
@@ -113,6 +114,7 @@ static void showOptions(){
     Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG)) << " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts" << endl;
+    Global::debug(0) << " " << all(MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players" << endl;
     Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
     Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
     Global::debug(0) << " " << all(RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG)) << " : Don't rate limit the game to the default fps (40). This is only useful for benchmarking graphics capabilities." << endl;
@@ -183,6 +185,11 @@ static bool parseMugenInstant(string input, string * player1, string * player2, 
 static void runMugenTraining(const string & player1, const string & player2, const string & stage){
     Global::debug(0) << "Mugen training mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
     Mugen::Game::startTraining(player1, player2, stage);
+}
+
+static void runMugenArcade(const string & player1, const string & player2, const string & stage){
+    Global::debug(0) << "Mugen arcade mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
+    Mugen::Game::startArcade(player1, player2, stage);
 }
 
 static void runMugenScript(const string & player1, const string & player1Script, const string & player2, const string & player2Script, const string & stage){
@@ -279,6 +286,7 @@ struct MugenInstant{
         None,
         Training,
         Watch,
+        Arcade,
         Script
     };
 
@@ -334,6 +342,9 @@ static int startMain(bool just_network_server, const NetworkJoin & networkJoin, 
             } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Script){
                 setMugenMotif(mainMenuPath());
                 runMugenScript(mugenInstant.player1, mugenInstant.player1Script, mugenInstant.player2, mugenInstant.player2Script, mugenInstant.stage);
+            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Arcade){
+                setMugenMotif(mainMenuPath());
+                runMugenArcade(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
             } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Training){
                 setMugenMotif(mainMenuPath());
                 runMugenTraining(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
@@ -430,6 +441,7 @@ int paintown_main(int argc, char ** argv){
     ADD_ARGS(MUGEN_INSTANT_ARG);
     ADD_ARGS(MUGEN_INSTANT_WATCH_ARG);
     ADD_ARGS(MUGEN_INSTANT_SCRIPT_ARG);
+    ADD_ARGS(MUGEN_INSTANT_ARCADE_ARG);
     ADD_ARGS(RATE_LIMIT_ARG);
 #ifdef HAVE_NETWORKING
     ADD_ARGS(NETWORK_SERVER_ARG);
@@ -502,6 +514,15 @@ int paintown_main(int argc, char ** argv){
                 mugenInstant.kind = MugenInstant::Watch;
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
+            }
+
+        } else if (isArg(argv[q], MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG))){
+            q += 1;
+            if (q < argc){
+                mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+                mugenInstant.kind = MugenInstant::Arcade;
+            } else {
+                Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
             }
 
         } else if (isArg(argv[q], DEBUG_ARG, NUM_ARGS(DEBUG_ARG))){
