@@ -1020,44 +1020,50 @@ void Mugen::Stage::physics(Object * mugen){
                 while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(),
                                      menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
                        centerCollision(mplayer, menemy) &&
-                       enemy->getY() == 0 &&
                        (fabs(enemy->getX() - mugen->getX()) < ((Mugen::Character*)enemy)->getWidth() + ((Mugen::Character*) mugen)->getWidth()) &&
-                       mplayer->getY() < enemy->getHeight() &&
-                       enemy->getX() != maximumLeft() &&
-                       enemy->getX() != maximumRight() &&
-                       menemy->getMoveType() == Mugen::Move::Idle){
-
-                    /* NOTE: player should not be able to fall through the other player */
-                    if (mplayer->getY() < 0){
-                        if (mplayer->getY() >= enemy->getHeight()){
-                            mplayer->setY(enemy->getHeight()-mplayer->getHeight());
+                       mplayer->getY() < enemy->getHeight()){
+                    
+                    bool enemyMoved = false;
+                    /* use move*Force to override pos freeze */
+                    
+                    /* NOTE centers used to check for the end of the screen.
+                     *      A character shouldn't be able to jump over another if he's bound to either end of the stage 
+                     */
+                    const int playerCenter = mplayer->getX()+(((Mugen::Character*)mplayer)->getWidth()/2);
+                    const int enemyCenter = enemy->getX()+(((Mugen::Character*)enemy)->getWidth()/2);
+                    if (enemy->getFacing() == FacingLeft && enemy->getX() == maximumRight() && playerCenter >= enemyCenter){
+                        // Right hand side of stage
+                        mplayer->moveLeftForce(1.5);
+                        enemyMoved = true;
+                    } else if (enemy->getFacing() == FacingRight && enemy->getX() == maximumLeft() && playerCenter <= enemyCenter){
+                        // Left hand side of stage
+                        mplayer->moveRightForce(1.5);
+                        enemyMoved = true;
+                    } else if (enemy->getX() >= mplayer->getX()){
+                        // Move character
+                        if (enemy->getX() >= maximumRight()){
+                            mplayer->moveLeftForce(0.5);
+                            enemyMoved = true;
+                        } else {
+                            enemy->moveRightForce(0.5);
+                            enemyMoved = true;
+                        }
+                    } else if (enemy->getX() < mplayer->getX()){
+                        // Move character
+                        if (enemy->getX() <= maximumLeft()){
+                            mplayer->moveRightForce(0.5);
+                            enemyMoved = true;
+                        } else {
+                            enemy->moveLeftForce(0.5);
+                            enemyMoved = true;
                         }
                     }
                     
-                    /* use move*Force to override pos freeze */
-                    if (enemy->getX() < mugen->getX()){
-                        if (enemy->getX() <= maximumLeft()){
-                            /* FIXME */
-                            mugen->moveRightForce(0.5);
-                        } else {
-                            /* FIXME! */
-                            enemy->moveLeftForce(0.5);
-                        }
-                        // enemy->moveLeft( ((Mugen::Character *)player)->getSpeed() );
-                    } else if (enemy->getX() > mugen->getX()){
-                        if (enemy->getX() >= maximumRight()){
-                            /* FIXME */
-                            mugen->moveLeftForce(0.5);
-                        } else {
-                            /* FIXME! */
-                            enemy->moveRightForce(0.5);
-                        }
-                        // enemy->moveRight( ((Mugen::Character *)player)->getSpeed() );
-                    } else if (enemy->getX() == mugen->getX()){
-                        if (enemy->getX() >= maximumRight()){
-                            mugen->moveLeftForce(0.5);
-                        } else {
-                            mugen->moveRightForce(0.5);
+                    /* NOTE: player should not be able to fall through the other player */
+                    if (mplayer->getY() < 0 && !enemyMoved){
+                        const int bottom = mplayer->getY() + mplayer->getHeight();
+                        if (bottom >= enemy->getY()){
+                            mplayer->setY(enemy->getY()-mplayer->getHeight());
                         }
                     }
                 }
