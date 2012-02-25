@@ -6326,7 +6326,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        guy.moveY(-guy.getGravity());
+        guy.setYVelocity(guy.getYVelocity() + guy.getGravity());
     }
 
     StateController * deepCopy() const {
