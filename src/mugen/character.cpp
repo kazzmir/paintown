@@ -2974,7 +2974,7 @@ void Character::unbind(Character * who){
 void Character::doMovement(const vector<Character*> & objects, Stage & stage){
     if (bind.time > 0 && bind.bound != NULL){
         bind.time -= 1;
-        setX(bind.bound->getX() + bind.offsetX);
+        setX(bind.bound->getX() + bind.offsetX * (bind.bound->getFacing() == FacingLeft ? -1 : 1));
         setY(bind.bound->getY() + bind.offsetY);
         switch (bind.facing){
             case -1: setFacing(bind.bound->getOppositeFacing()); break;
