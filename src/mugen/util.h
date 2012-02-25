@@ -554,6 +554,8 @@ public:
         return this->act;
     }
 protected:
+    //! Load images portrait and profile
+    virtual void loadImages();
     //! Definition file
     Filesystem::AbsolutePath definition;
     //! Stage file

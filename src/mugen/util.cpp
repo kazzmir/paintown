@@ -1253,36 +1253,10 @@ portrait(PaintownUtil::ReferenceCount<MugenSprite>(NULL)){
     try{
         AstRef parsed(Util::parseDef(file.path()));
 
-        Filesystem::RelativePath spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
         name = Util::probeDef(parsed, "info", "name");
         displayName = Util::probeDef(parsed, "info", "displayname");
 
-        /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
-        std::vector<Filesystem::RelativePath> actCollection;
-        for (int i = 0; i < 12; ++i){
-            stringstream actName;
-            actName << "pal" << i;
-            try {
-                std::string actFile = Util::probeDef(parsed, "files", actName.str());
-                actCollection.push_back(Filesystem::RelativePath(actFile));
-            } catch (const MugenException &me){
-                // Ran its course got what we needed
-            }
-        }
-
-        if (actCollection.size() == 0){
-            throw MugenException("No pal files specified", __FILE__, __LINE__);
-        }
-
-        // just a precaution
-        Filesystem::AbsolutePath realSpriteFile = Storage::instance().findInsensitive(Storage::instance().cleanse(file.getDirectory()).join(spriteFile));
-
-        /* pull out the icon and the portrait from the sff */
-        MugenSprite * iconCopy;
-        MugenSprite * portraitCopy;
-        Util::getIconAndPortrait(realSpriteFile, file.getDirectory().join(actCollection[0]), &iconCopy, &portraitCopy);
-        icon = PaintownUtil::ReferenceCount<MugenSprite>(iconCopy);
-        portrait = PaintownUtil::ReferenceCount<MugenSprite>(portraitCopy);
+        loadImages();
     } catch (...){
         /* barf! */
         throw;
@@ -1338,6 +1312,43 @@ void Mugen::ArcadeData::CharacterInfo::drawIcon(int x, int y, const Graphics::Bi
 void Mugen::ArcadeData::CharacterInfo::drawPortrait(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (portrait != NULL){
         portrait->render(x, y, work, effects);
+    }
+}
+
+void Mugen::ArcadeData::CharacterInfo::loadImages(){
+    try{
+        AstRef parsed(Util::parseDef(definition.path()));
+
+        /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
+        std::vector<Filesystem::RelativePath> actCollection;
+        for (int i = 0; i < 12; ++i){
+            stringstream actName;
+            actName << "pal" << i;
+            try {
+                std::string actFile = Util::probeDef(parsed, "files", actName.str());
+                actCollection.push_back(Filesystem::RelativePath(actFile));
+            } catch (const MugenException &me){
+                // Ran its course got what we needed
+            }
+        }
+
+        if (actCollection.size() == 0){
+            throw MugenException("No pal files specified", __FILE__, __LINE__);
+        }
+        
+        Filesystem::RelativePath spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
+        
+        // just a precaution
+        Filesystem::AbsolutePath realSpriteFile = Storage::instance().findInsensitive(Storage::instance().cleanse(definition.getDirectory()).join(spriteFile));
+
+        /* pull out the icon and the portrait from the sff */
+        MugenSprite * iconCopy;
+        MugenSprite * portraitCopy;
+        Util::getIconAndPortrait(realSpriteFile, definition.getDirectory().join(actCollection[act]), &iconCopy, &portraitCopy);
+        icon = PaintownUtil::ReferenceCount<MugenSprite>(iconCopy);
+        portrait = PaintownUtil::ReferenceCount<MugenSprite>(portraitCopy);
+    } catch(...){
+        throw;
     }
 }
 
@@ -1487,10 +1498,10 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
                 }
                 
                 Mugen::ArcadeData::CharacterCollection collection(type);
-                collection.setFirst(first);
-                collection.setSecond(second);
-                collection.setThird(third);
-                collection.setFourth(fourth);
+                collection.setFirst(first, PaintownUtil::rnd(0,6));
+                collection.setSecond(second, PaintownUtil::rnd(0,6));
+                collection.setThird(third, PaintownUtil::rnd(0,6));
+                collection.setFourth(fourth, PaintownUtil::rnd(0,6));
                 opponents.push(collection);
             }
         }

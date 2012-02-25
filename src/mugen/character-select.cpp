@@ -3060,7 +3060,7 @@ void CharacterSelect::select(unsigned int cursor, int act){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cursor == 0){
         try {
-            player1.select();
+            player1.select(act);
         } catch (const CooperativeException & ex){
             player2.reset();
             player2.setCooperativeData(player1);
@@ -3068,7 +3068,7 @@ void CharacterSelect::select(unsigned int cursor, int act){
         }
     } else if (cursor ==1){
         try {
-            player2.select();
+            player2.select(act);
         } catch (const CooperativeException & ex){
             player1.reset();
             player1.setCooperativeData(player2);
