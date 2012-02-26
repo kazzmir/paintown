@@ -35,6 +35,11 @@ void Helper::reParent(Character * parent){
 void Helper::roundEnd(Mugen::Stage & stage){
     /* Anything to do here? */
 }
+    
+bool Helper::canBeHit(Character * enemy){
+    /* Pretty sure a helper can never be hit */
+    return false;
+}
 
 State * Helper::getState(int id) const {
     /* states -3 and -2 are disabled for helpers */
