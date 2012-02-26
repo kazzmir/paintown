@@ -354,7 +354,7 @@ static int littleEndian16(const char * input){
     return (((unsigned char) byte2) << 8) | (unsigned char) byte1;
 }
 
-void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], unsigned char actPalette[], bool mask){
+void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
     /* TODO: 768 is littered everywhere, replace with a constant */
     ifile.seekg(location + 32, ios::beg);
     ifile.clear();
