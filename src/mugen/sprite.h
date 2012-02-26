@@ -34,7 +34,7 @@ class MugenSprite{
         void drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work);
 	
 	// load/reload sprite
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> load(bool mask, bool ownPalette);
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> load(bool mask);
 	void reload(bool mask=true);
         /* deletes raw pcx data */
         void unloadRaw();
@@ -83,7 +83,7 @@ class MugenSprite{
         void cleanup();
 	
 	/* get the internal bitmap */
-        Util::ReferenceCount<Graphics::Bitmap> getBitmap(bool mask, bool ownPalette);
+        Util::ReferenceCount<Graphics::Bitmap> getBitmap(bool mask);
 
         /* get the properly scaled sprite */
         Util::ReferenceCount<Graphics::Bitmap> getFinalBitmap(const Mugen::Effects & effects);
@@ -103,7 +103,6 @@ class MugenSprite{
 	char comments[12];
 	char * pcx;
         int maskColor;
-        char originalPalette[768];
 
         /* come straight from the pcx */
         int width, height;
@@ -114,10 +113,6 @@ class MugenSprite{
         /* Loaded with a palette that may not be our own */
         Util::ReferenceCount<Graphics::Bitmap> unmaskedBitmap;
         Util::ReferenceCount<Graphics::Bitmap> maskedBitmap;
-
-        /* Loaded with the palette from the PCX file */
-        Util::ReferenceCount<Graphics::Bitmap> unmaskedBitmapPalette;
-        Util::ReferenceCount<Graphics::Bitmap> maskedBitmapPalette;
         
         void draw(const Util::ReferenceCount<Graphics::Bitmap> &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
 };

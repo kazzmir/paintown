@@ -4214,11 +4214,7 @@ public:
         }
 	
         virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-            /* FIXME: ownpalette should deal with palette effects, not whether
-             * we use the palette from the pcx file.
-             */
-            bool usePalette = false;
-            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY, NULL, usePalette);
+            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY, NULL);
         }
 
         virtual bool isDead(){

@@ -48,8 +48,6 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
     this->loaded = copy.loaded;
     this->defaultMask = copy.defaultMask;
 
-    memcpy(this->originalPalette, copy.originalPalette, sizeof(originalPalette));
-
     if (copy.comments != 0){
         /* this line is right */
         memcpy(this->comments, copy.comments, sizeof(MugenSprite::comments));
@@ -66,8 +64,6 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
 
     this->unmaskedBitmap = copy.unmaskedBitmap;
     this->maskedBitmap = copy.maskedBitmap;
-    this->unmaskedBitmapPalette = copy.unmaskedBitmapPalette;
-    this->maskedBitmapPalette = copy.maskedBitmapPalette;
 }
 
 MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
@@ -88,7 +84,6 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->height = copy.height;
     this->loaded = copy.loaded;
     this->defaultMask = copy.defaultMask;
-    memcpy(this->originalPalette, copy.originalPalette, sizeof(originalPalette));
     if (copy.comments){
         memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
     }
@@ -104,8 +99,6 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
 
     this->unmaskedBitmap = copy.unmaskedBitmap;
     this->maskedBitmap = copy.maskedBitmap;
-    this->unmaskedBitmapPalette = copy.unmaskedBitmapPalette;
-    this->maskedBitmapPalette = copy.maskedBitmapPalette;
     
     return *this;
 }
@@ -124,13 +117,10 @@ void MugenSprite::copyImage(const MugenSprite * copy){
         memcpy(this->pcx, copy->pcx, this->newlength);
     }
 
-    memcpy(this->originalPalette, copy->originalPalette, sizeof(originalPalette));
     this->width = copy->width;
     this->height = copy->height;
     this->unmaskedBitmap = copy->unmaskedBitmap;
     this->maskedBitmap = copy->maskedBitmap;
-    this->unmaskedBitmapPalette = copy->unmaskedBitmapPalette;
-    this->maskedBitmapPalette = copy->maskedBitmapPalette;
     this->loaded = copy->loaded;
     this->defaultMask = copy->defaultMask;
 }
@@ -154,8 +144,6 @@ void MugenSprite::cleanup(){
 
     unmaskedBitmap = NULL;
     maskedBitmap = NULL;
-    unmaskedBitmapPalette = NULL;
-    maskedBitmapPalette = NULL;
 }
 
 MugenSprite::~MugenSprite(){
@@ -233,7 +221,7 @@ static bool isScaled(const Mugen::Effects & effects){
 }
 
 PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
-    PaintownUtil::ReferenceCount<Graphics::Bitmap> use = getBitmap(effects.mask, effects.ownPalette);
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> use = getBitmap(effects.mask);
     if (use == NULL){
         return use;
     }
@@ -251,23 +239,11 @@ void MugenSprite::render(const int xaxis, const int yaxis, const Graphics::Bitma
     draw(getFinalBitmap(effects), xaxis, yaxis, where, effects);
 }
 
-PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask, bool ownPalette){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask){
     if (pcx){
-        /* Handle the palette depending on ownPalette */
-
-        char oldPalette[768];
-        if (ownPalette){
-            memcpy(oldPalette, pcx + newlength - 768, 768);
-            memcpy(pcx + newlength - 768, originalPalette, 768);
-        }
-
         PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, newlength), mask));
         if (mask){
             bitmap->replaceColor(bitmap->get8BitMaskColor(), Graphics::MaskColor());
-        }
-
-        if (ownPalette){
-            memcpy(pcx + newlength - 768, oldPalette, 768);
         }
 
         return bitmap;
@@ -281,34 +257,14 @@ void MugenSprite::reload(bool mask){
     unmaskedBitmap = NULL;
 
     if (mask){
-        maskedBitmap = load(mask, false);
+        maskedBitmap = load(mask);
     } else {
-        unmaskedBitmap = load(mask, false);
+        unmaskedBitmap = load(mask);
     }
 }
 
-PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask, bool ownPalette){
-    if (ownPalette){
-        if (mask){
-            if (maskedBitmapPalette != NULL){
-                return maskedBitmapPalette;
-            }
-            if (unmaskedBitmapPalette != NULL){
-                maskedBitmapPalette = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*unmaskedBitmapPalette, true));
-                maskedBitmapPalette->replaceColor(maskedBitmapPalette->get8BitMaskColor(), Graphics::MaskColor());
-                return maskedBitmapPalette;
-            }
-
-            maskedBitmapPalette = load(true, true);
-            return maskedBitmapPalette;
-        } else {
-            if (unmaskedBitmapPalette != NULL){
-                return unmaskedBitmapPalette;
-            }
-            unmaskedBitmapPalette = load(false, true);
-            return unmaskedBitmapPalette;
-        }
-    } else if (mask){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask){
+    if (mask){
         if (maskedBitmap != NULL){
             return maskedBitmap;
         }
@@ -318,13 +274,13 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask,
             return maskedBitmap;
         }
 
-        maskedBitmap = load(true, false);
+        maskedBitmap = load(true);
         return maskedBitmap;
     } else {
         if (unmaskedBitmap != NULL){
             return unmaskedBitmap;
         }
-        unmaskedBitmap = load(defaultMask, false);
+        unmaskedBitmap = load(defaultMask);
         return unmaskedBitmap;
     }
     return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
@@ -390,13 +346,10 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
          */
     } else {
         if (samePalette){
-            memcpy(originalPalette, palsave1, 768);
             memcpy(pcx + newlength - 768, palsave1, 768);
         } else {
             /* Otherwise copy our palette to palsave1 for future sprites */
             memcpy(palsave1, pcx + newlength - 768, 768);
-            /* And save the palette too */
-            memcpy(originalPalette, palsave1, 768);
         }
     }
 

@@ -1166,7 +1166,6 @@ trans(None),
 alphaSource(255),
 alphaDest(255),
 mask(false),
-ownPalette(false),
 facing(1),
 vfacing(1),
 scalex(1),
@@ -1179,7 +1178,6 @@ Mugen::Effects::Effects(const Mugen::Effects & copy){
     this->alphaSource = copy.alphaSource;
     this->alphaDest = copy.alphaDest;
     this->mask = copy.mask;
-    this->ownPalette = copy.ownPalette;
     this->facing = copy.facing;
     this->vfacing = copy.vfacing;
     this->scalex = copy.scalex;
@@ -1193,7 +1191,6 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->alphaSource = e.alphaSource;
     this->alphaDest = e.alphaDest;
     this->mask = e.mask;
-    this->ownPalette = e.ownPalette;
     this->facing = e.facing;
     this->vfacing = e.vfacing;
     this->scalex = e.scalex;

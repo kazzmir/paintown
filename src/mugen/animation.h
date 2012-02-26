@@ -134,11 +134,11 @@ class MugenAnimation{
         void virtualTick();
 	
 	// Render current frame optionally scale defaults to 1
-	void render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex=1, double scaley=1, bool ownPalette = false);
+	void render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex=1, double scaley=1);
         void render(int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);
 	
 	// Render current frame overriding flipping
-	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1, Graphics::Bitmap::Filter * filter = NULL, bool ownPalette = false);
+	void render( bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1, Graphics::Bitmap::Filter * filter = NULL);
 
         /* automatically sets the effect trans type to ADDALPHA */
 	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1);
