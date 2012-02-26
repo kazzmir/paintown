@@ -31,6 +31,10 @@ void Helper::destroyed(Stage & stage){
 void Helper::reParent(Character * parent){
     this->owner = parent;
 }
+    
+void Helper::roundEnd(Mugen::Stage & stage){
+    /* Anything to do here? */
+}
 
 State * Helper::getState(int id) const {
     /* states -3 and -2 are disabled for helpers */

@@ -987,7 +987,7 @@ public:
         }
 
         /* Called when the current round ended */
-        virtual void roundEnd();
+        virtual void roundEnd(Mugen::Stage & stage);
 
         virtual inline void setDefaultSpark(const ResourceEffect & effect){
             spark = effect;

@@ -40,6 +40,7 @@
 #include "command.h"
 #include "behavior.h"
 #include "state-controller.h"
+#include "helper.h"
 
 #include "util/input/input-map.h"
 #include "util/input/input-manager.h"
@@ -4092,10 +4093,15 @@ unsigned int Character::getWasHitCount() const {
     return wasHitCounter;
 }
         
-void Character::roundEnd(){
+void Character::roundEnd(Stage & stage){
     /* TODO: reset int and float arrays, use intpersist and floatpersist.
      * maybe kill helpers or projectiles.
      */
+    vector<Helper*> helpers = stage.findHelpers(this);
+    for (vector<Helper*>::iterator it = helpers.begin(); it != helpers.end(); it++){
+        Helper * helper = *it;
+        stage.removeHelper(helper);
+    }
 }
 
 bool Character::isAttacking() const { 

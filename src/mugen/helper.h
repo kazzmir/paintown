@@ -32,6 +32,8 @@ public:
     inline Character * getParent() const {
         return owner;
     }
+        
+    virtual void roundEnd(Mugen::Stage & stage);
 
     virtual const Character * getRoot() const {
         return root;

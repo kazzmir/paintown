@@ -2356,22 +2356,26 @@ void Mugen::Stage::setEnvironmentColor(Graphics::Color color, int time, bool und
 }
 
 void Mugen::Stage::removeHelper(Mugen::Character * who){
-    /* The character will ultimately be removed in the logic loop */
-    who->setHealth(-1);
+    /* Make sure its actually a helper */
+    if (who->isHelper()){
+        /* The character will ultimately be removed in the logic loop */
+        who->setHealth(-1);
 
-    /* Remove any effects owned by this character/helper.
-     * Technically this isn't needed because when the helper is destroyed in the
-     * main logic loop it will call destroyed() which will eventually
-     * call stage.removeEffects(this), but theres no real harm in doing
-     * it here as well.
-     */
-    removeEffects(who, -1);
+        /* Remove any effects owned by this character/helper.
+         * Technically this isn't needed because when the helper is destroyed in the
+         * main logic loop it will call destroyed() which will eventually
+         * call stage.removeEffects(this), but theres no real harm in doing
+         * it here as well.
+         */
+        removeEffects(who, -1);
 
-    vector<Mugen::Helper*> children = findHelpers(who);
-    for (vector<Mugen::Helper*>::iterator it = children.begin(); it != children.end(); it++){
-        Mugen::Helper * helper = *it;
-        /* lose parent association, still has root though */
-        helper->reParent(NULL);
+        vector<Mugen::Helper*> children = findHelpers(who);
+        for (vector<Mugen::Helper*>::iterator it = children.begin(); it != children.end(); it++){
+            Mugen::Helper * helper = *it;
+            /* lose parent association, still has root though */
+            helper->reParent(NULL);
+        }
+
     }
 }
 

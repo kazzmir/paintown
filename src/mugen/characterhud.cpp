@@ -982,8 +982,8 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
                 } else if (ticker >= overTime + fader.getFadeOutTime()) {
                     currentRound++;
                     stage.reset();
-                    player1.roundEnd();
-                    player2.roundEnd();
+                    player1.roundEnd(stage);
+                    player2.roundEnd(stage);
                     // Lets check draws
                     if (matchMaxDrawGames != -1){
                         // Exit match

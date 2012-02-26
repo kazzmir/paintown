@@ -478,7 +478,6 @@ void showSFF(const string & ourFile, const std::string &actFile){
     double gameSpeed = 1.0;
     double runCounter = 0;
     bool mask = false;
-    bool ownPalette = false;
     
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
    
@@ -570,8 +569,6 @@ void showSFF(const string & ourFile, const std::string &actFile){
                             quit = true;
                         } else if (event.out == LocalKeyboard::Action1){
                             mask = ! mask;
-                        } else if (event.out == LocalKeyboard::Action2){
-                            ownPalette = ! ownPalette;
                         }
                     }
                 }
@@ -591,11 +588,10 @@ void showSFF(const string & ourFile, const std::string &actFile){
 	    if (ourSprite){
 		Mugen::Effects effects;
                 effects.mask = mask;
-                effects.ownPalette = ownPalette;
                 
 		ourSprite->render(back.getWidth() / 2, back.getHeight() / 2, back, effects);
                 int y = 400;
-		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s Own (P)alette %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off", ownPalette ? "on" : "off"); y += Font::getDefaultFont().getHeight() + 3;
+		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s Own (P)alette %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off"); y += Font::getDefaultFont().getHeight() + 3;
 		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Same palette? %s Real Length %d New Length %d", 0, ourSprite->getSamePalette() ? "yes" : "no", ourSprite->getRealLength(), ourSprite->getNewLength()); y += Font::getDefaultFont().getHeight() + 3;
 	    } else {
 		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
