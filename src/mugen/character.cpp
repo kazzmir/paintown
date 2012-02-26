@@ -604,6 +604,7 @@ pushPlayer(0){
     C(palDefaults);
     C(currentPalette);
     C(cmdFile);
+    C(ownPalette);
     C(constantsFile);
     C(sffFile);
     C(airFile);
@@ -760,6 +761,7 @@ void Character::initialize(){
     previousState = currentState;
     stateType = StateType::Stand;
     currentAnimation = Standing;
+    ownPalette = false;
     /* FIXME: whats the default sprite priority? */
     spritePriority = 0;
     juggleRemaining = 0;
@@ -4132,6 +4134,14 @@ const std::map<int, vector<Character*> > & Character::getTargets() const {
         
 bool Character::isAssertIntro(){
     return special.intro;
+}
+    
+bool Character::isOwnPalette() const {
+    return ownPalette;
+}
+
+void Character::setOwnPalette(bool what){
+    ownPalette = what;
 }
 
 }

@@ -354,7 +354,7 @@ static int littleEndian16(const char * input){
     return (((unsigned char) byte2) << 8) | (unsigned char) byte1;
 }
 
-void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
+void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], unsigned char actPalette[], bool mask){
     /* TODO: 768 is littered everywhere, replace with a constant */
     ifile.seekg(location + 32, ios::beg);
     ifile.clear();
@@ -379,7 +379,35 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
         }
     }
 
-    memcpy(originalPalette, pcx + newlength - 768, 768);
+    /* If we are using the same palette as the previous sprite then we need to copy their
+     * palette from palsave1 into our original palette and to the end of the pcx where
+     * the palette usually lives.
+     */
+
+    if (groupNumber == 9000){
+        /* always use the palette from the original pcx file for group 9000 sprites
+         * and don't use the palette for future sprites
+         */
+    } else {
+        if (samePalette){
+            memcpy(originalPalette, palsave1, 768);
+            memcpy(pcx + newlength - 768, palsave1, 768);
+        } else {
+            /* Otherwise copy our palette to palsave1 for future sprites */
+            memcpy(palsave1, pcx + newlength - 768, 768);
+            /* And save the palette too */
+            memcpy(originalPalette, palsave1, 768);
+        }
+    }
+
+    /* If we are using the act palette then copy that to the end of the pcx file */
+    /*
+    if (useact){
+        memcpy(pcx + newlength - 768, actPalette, 768);
+    }
+    */
+
+#if 0
     if (!islinked){
         if (!useact){
             if (samePalette){
@@ -402,6 +430,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
             }
         }
     }
+#endif
 
     /* read values directly from the pcx header */
     int xmin = littleEndian16(&pcx[4]);

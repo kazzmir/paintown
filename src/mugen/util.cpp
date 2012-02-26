@@ -480,11 +480,14 @@ public:
         //unsigned char colorsave[3]; // rgb pal save
 
         memset(palsave1, 0, sizeof(palsave1));
+        memset(actPalette, 0, sizeof(actPalette));
 
         // Load in first palette
-        if (readPalette(palette, palsave1)){
+        if (readPalette(palette, actPalette)){
             useact = true;
         }
+
+        memcpy(palsave1, actPalette, sizeof(palsave1));
     }
 
     virtual ~SffReader(){
@@ -515,7 +518,7 @@ public:
                 sprite->copyImage(temp);
             } else {
                 bool islinked = false;
-                sprite->loadPCX(sffStream, islinked, useact, palsave1, mask);
+                sprite->loadPCX(sffStream, islinked, useact, palsave1, actPalette, mask);
             }
         }
         return sprite;
@@ -563,7 +566,7 @@ public:
             }
             sprite->copyImage(temp);
         } else {
-            sprite->loadPCX(sffStream, islinked, useact, palsave1, mask);
+            sprite->loadPCX(sffStream, islinked, useact, palsave1, actPalette, mask);
         }
             
         spriteIndex[currentSprite] = sprite;
@@ -587,6 +590,7 @@ protected:
     int location;
     uint32_t totalImages;
     unsigned char palsave1[768]; // First image palette
+    unsigned char actPalette[768]; // First image palette
 };
 
     }

@@ -4214,7 +4214,11 @@ public:
         }
 	
         virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY, NULL, ownPalette);
+            /* FIXME: ownpalette should deal with palette effects, not whether
+             * we use the palette from the pcx file.
+             */
+            bool usePalette = false;
+            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY, NULL, usePalette);
         }
 
         virtual bool isDead(){
@@ -6233,6 +6237,8 @@ public:
         FullEnvironment environment(stage, guy, commands);
         /* FIXME */
         Mugen::Helper * helper = new Mugen::Helper(&guy, guy.getRoot(), (int) evaluateNumber(id, environment, 0));
+
+        helper->setOwnPalette(evaluateBool(ownPalette, environment, false));
 
         switch (posType){
             case Player1: {

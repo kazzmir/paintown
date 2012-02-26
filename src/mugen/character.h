@@ -438,6 +438,9 @@ public:
     virtual int getWidth() const;
     virtual int getBackWidth() const;
 
+    virtual bool isOwnPalette() const;
+    virtual void setOwnPalette(bool what);
+
     virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual double getMaxHealth() const {
@@ -1687,6 +1690,8 @@ public:
             const Character * who;
             bool enabled;
         } characterData;
+
+        bool ownPalette;
 };
 
 }
