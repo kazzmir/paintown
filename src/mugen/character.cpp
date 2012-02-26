@@ -1833,6 +1833,17 @@ void Character::stopRecording(){
     recordCommands(last);
     record = NULL;
 }
+    
+void Character::checkStateControllers(){
+    for (map<int, State*>::iterator it = states.begin(); it != states.end(); it++){
+        State * state = it->second;
+        if (state->getControllers().size() == 0){
+            std::ostringstream out;
+            out << "State " << state->getState() << " has no state controllers";
+            throw MugenException(out.str(), __FILE__, __LINE__);
+        }
+    }
+}
 
 /* a container for a directory and a file */
 struct Location{
@@ -2116,6 +2127,9 @@ void Character::load(int useAct){
         out << "Could not load " << location.path() << ": " << e.getReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
+
+    /* Check that all state's have at least one state controller */
+    checkStateControllers();
 
     /* Is this just for testing? */
     if (getMaxHealth() == 0 || getHealth() == 0){

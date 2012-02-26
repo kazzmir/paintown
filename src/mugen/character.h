@@ -1094,6 +1094,8 @@ protected:
     virtual inline void setCurrentState(int state){
         this->currentState = state;
     }
+
+    void checkStateControllers();
     
     virtual void loadSelectData();
 
