@@ -142,6 +142,206 @@ enum MugenInput{
     ToggleConsole
 };
 
+class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
+    public:
+        LogicDraw(Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, bool displayFade, Gui::FadeTool & fader):
+        endMatch(false),
+        gameSpeed(1.0),
+        stage(stage),
+        show_fps(show_fps),
+        console(console),
+        gameTicks(0),
+        endTime(endTime),
+        ticker(0),
+        demoMode((endTime != -1)),
+        show(true),
+        displayFade(displayFade),
+        fader(fader),
+        showGameSpeed(0){
+            gameInput.set(Keyboard::Key_F1, SlowDown);
+            gameInput.set(Keyboard::Key_F2, SpeedUp);
+            gameInput.set(Keyboard::Key_F3, NormalSpeed);
+            gameInput.set(Keyboard::Key_F4, ToggleDebug);
+            gameInput.set(Keyboard::Key_F6, Pause);
+            gameInput.set(Keyboard::Key_ESC, QuitGame);
+            gameInput.set(::Configuration::config(0).getJoystickQuit(), QuitGame);
+            gameInput.set(Keyboard::Key_F5, SetHealth);
+            gameInput.set(Keyboard::Key_F9, ShowFps);
+            gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
+
+            Global::registerInfo(&messages);
+        }
+
+        virtual ~LogicDraw(){
+            Global::unregisterInfo(&messages);
+        }
+
+        InputMap<MugenInput> gameInput;
+        bool endMatch;
+        double gameSpeed;
+        Mugen::Stage * stage;
+        bool & show_fps;
+        Console::Console & console;
+        /* global info messages will appear in the console */
+        MessageQueue messages;
+
+        double gameTicks;
+        int endTime;
+        int ticker;
+        bool demoMode;
+        bool show;
+        bool displayFade;
+        Gui::FadeTool & fader;
+        int showGameSpeed;
+
+        void doInput(){
+            class Handler: public InputHandler<MugenInput> {
+                public:
+                    Handler(LogicDraw & logic):
+                        logic(logic){
+                        }
+
+                    LogicDraw & logic;
+
+                    void release(const MugenInput & out, Keyboard::unicode_t code){
+                    }
+
+                    void press(const MugenInput & out, Keyboard::unicode_t code){
+                        const int DISPLAY_GAME_SPEED_TIME = 100;
+                        switch (out){
+                            case SlowDown: {
+                                               logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                               logic.gameSpeed -= 0.1;
+                                               if (logic.gameSpeed < 0.1){
+                                                   logic.gameSpeed = 0.1;
+                                               }
+                                               break;
+                                           }
+                            case SpeedUp: {
+                                              logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                              logic.gameSpeed += 0.1;
+                                              break;
+                                          }
+                            case Pause: {
+                                            logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                            logic.gameSpeed = 0;
+                                            break;
+                                        }
+                            case NormalSpeed: {
+                                                  logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                                  logic.gameSpeed = 1;
+                                                  break;
+                                              }
+                            case ToggleDebug: {
+                                                  logic.stage->toggleDebug(0);
+                                                  break;
+                                              }
+                            case QuitGame: {
+                                               throw QuitGameException();
+                                           }
+                            case SetHealth: {
+                                                logic.stage->setPlayerHealth(1);
+                                                break;
+                                            }
+                            case ShowFps: {
+                                              logic.show_fps = ! logic.show_fps;
+                                              break;
+                                          }
+                            case ToggleConsole: {
+                                                    logic.console.toggle();
+                                                    break;
+                                                }
+                        }
+                    }
+            };
+
+            Handler handler(*this);
+            InputManager::handleEvents(gameInput, InputSource(), handler);
+        }
+
+        virtual void run(){
+            gameTicks += gameSpeed;
+            // Do stage logic catch match exception to handle the next match
+            while (gameTicks > 0){
+                gameTicks -= 1;
+                stage->logic();
+            }
+            while (messages.hasAny()){
+                console.addLine(messages.get());
+            }
+            console.act();
+            endMatch = stage->isMatchOver();
+
+            if (showGameSpeed > 0){
+                showGameSpeed -= 1;
+            }
+
+            if (console.isActive()){
+                try{
+                    console.doInput();
+                } catch (Exception::Return & r){
+                    throw QuitGameException();
+                }
+            } else {
+                doInput();
+            }
+
+            if (demoMode){
+                if (InputManager::anyInput() && fader.getState() != Gui::FadeTool::FadeOut){
+                    ticker = endTime;
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+                if (ticker < endTime){
+                    ticker++;
+                }
+                if (ticker == endTime && fader.getState() != Gui::FadeTool::FadeOut){
+                    fader.setState(Gui::FadeTool::FadeOut);
+                }
+                fader.act();
+                if (fader.getState() == Gui::FadeTool::EndFade){
+                    throw QuitGameException();
+                }
+            }
+        }
+
+        virtual bool done(){
+            return endMatch;
+        }
+
+        virtual double ticks(double system){
+            return Mugen::Util::gameTicks(system);
+        }
+
+        virtual void draw(const Graphics::Bitmap & screen){
+            if (show_fps){
+                if (Global::second_counter % 2 == 0){
+                    if (show){
+                        Global::debug(0) << "FPS: " << getFps() << std::endl;
+                        show = false;
+                    }
+                } else {
+                    show = true;
+                }
+            }
+
+            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+            work.start();
+            stage->render(&work);
+            if (displayFade){
+                fader.draw(work);
+            }
+            work.finish();
+            FontRender * render = FontRender::getInstance();
+            render->render(&screen);
+            console.draw(screen);
+            if (showGameSpeed > 0){
+                const ::Font & font = ::Font::getDefaultFont(15, 15);
+                font.printf(1, screen.getHeight() - font.getHeight() - 5, Graphics::makeColor(255, 255, 255), screen, "Game speed %f", 0, gameSpeed);
+            }
+            screen.BlitToScreen();
+        }
+};
+
 static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1){
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
@@ -285,219 +485,11 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     bool show_fps = false;
 
-    struct GameState{
-        GameState():
-            endMatch(false){
-            }
-
-        bool endMatch;
-    };
-
-    class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
-    public:
-        LogicDraw(GameState & state, Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, bool displayFade, Gui::FadeTool & fader):
-        state(state),
-        gameSpeed(1.0),
-        stage(stage),
-        show_fps(show_fps),
-        console(console),
-        gameTicks(0),
-        endTime(endTime),
-        ticker(0),
-        demoMode((endTime != -1)),
-        show(true),
-        displayFade(displayFade),
-        fader(fader),
-        showGameSpeed(0){
-            gameInput.set(Keyboard::Key_F1, SlowDown);
-            gameInput.set(Keyboard::Key_F2, SpeedUp);
-            gameInput.set(Keyboard::Key_F3, NormalSpeed);
-            gameInput.set(Keyboard::Key_F4, ToggleDebug);
-            gameInput.set(Keyboard::Key_F6, Pause);
-            gameInput.set(Keyboard::Key_ESC, QuitGame);
-            gameInput.set(::Configuration::config(0).getJoystickQuit(), QuitGame);
-            gameInput.set(Keyboard::Key_F5, SetHealth);
-            gameInput.set(Keyboard::Key_F9, ShowFps);
-            gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
-
-            Global::registerInfo(&messages);
-        }
-
-        virtual ~LogicDraw(){
-            Global::unregisterInfo(&messages);
-        }
-
-        InputMap<MugenInput> gameInput;
-        GameState & state;
-        double gameSpeed;
-        Mugen::Stage * stage;
-        bool & show_fps;
-        Console::Console & console;
-        /* global info messages will appear in the console */
-        MessageQueue messages;
-        
-        double gameTicks;
-        int endTime;
-        int ticker;
-        bool demoMode;
-        bool show;
-        bool displayFade;
-        Gui::FadeTool & fader;
-        int showGameSpeed;
-
-        void doInput(){
-            class Handler: public InputHandler<MugenInput> {
-            public:
-                Handler(LogicDraw & logic):
-                    logic(logic){
-                    }
-
-                LogicDraw & logic;
-
-                void release(const MugenInput & out, Keyboard::unicode_t code){
-                }
-
-                void press(const MugenInput & out, Keyboard::unicode_t code){
-                    const int DISPLAY_GAME_SPEED_TIME = 100;
-                    switch (out){
-                        case SlowDown: {
-                            logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                            logic.gameSpeed -= 0.1;
-                            if (logic.gameSpeed < 0.1){
-                                logic.gameSpeed = 0.1;
-                            }
-                            break;
-                        }
-                        case SpeedUp: {
-                            logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                            logic.gameSpeed += 0.1;
-                            break;
-                        }
-                        case Pause: {
-                            logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                            logic.gameSpeed = 0;
-                            break;
-                        }
-                        case NormalSpeed: {
-                            logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                            logic.gameSpeed = 1;
-                            break;
-                        }
-                        case ToggleDebug: {
-                            logic.stage->toggleDebug(0);
-                            break;
-                        }
-                        case QuitGame: {
-                            throw QuitGameException();
-                        }
-                        case SetHealth: {
-                            logic.stage->setPlayerHealth(1);
-                            break;
-                        }
-                        case ShowFps: {
-                            logic.show_fps = ! logic.show_fps;
-                            break;
-                        }
-                        case ToggleConsole: {
-                            logic.console.toggle();
-                            break;
-                        }
-                    }
-                }
-            };
-
-            Handler handler(*this);
-            InputManager::handleEvents(gameInput, InputSource(), handler);
-        }
-
-        virtual void run(){
-            gameTicks += gameSpeed;
-            // Do stage logic catch match exception to handle the next match
-            while (gameTicks > 0){
-                gameTicks -= 1;
-                stage->logic();
-            }
-            while (messages.hasAny()){
-                console.addLine(messages.get());
-            }
-            console.act();
-            state.endMatch = stage->isMatchOver();
-
-            if (showGameSpeed > 0){
-                showGameSpeed -= 1;
-            }
-
-            if (console.isActive()){
-                try{
-                    console.doInput();
-                } catch (Exception::Return & r){
-                    throw QuitGameException();
-                }
-            } else {
-                doInput();
-            }
-
-            if (demoMode){
-                if (InputManager::anyInput() && fader.getState() != Gui::FadeTool::FadeOut){
-                    ticker = endTime;
-                    fader.setState(Gui::FadeTool::FadeOut);
-                }
-                if (ticker < endTime){
-                    ticker++;
-                }
-                if (ticker == endTime && fader.getState() != Gui::FadeTool::FadeOut){
-                    fader.setState(Gui::FadeTool::FadeOut);
-                }
-                fader.act();
-                if (fader.getState() == Gui::FadeTool::EndFade){
-                    throw QuitGameException();
-                }
-            }
-        }
-
-        virtual bool done(){
-            return state.endMatch;
-        }
-
-        virtual double ticks(double system){
-            return Mugen::Util::gameTicks(system);
-        }
-    
-        virtual void draw(const Graphics::Bitmap & screen){
-            if (show_fps){
-                if (Global::second_counter % 2 == 0){
-                    if (show){
-                        Global::debug(0) << "FPS: " << getFps() << std::endl;
-                        show = false;
-                    }
-                } else {
-                    show = true;
-                }
-            }
-
-            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
-            work.start();
-            stage->render(&work);
-            if (displayFade){
-                fader.draw(work);
-            }
-            work.finish();
-            FontRender * render = FontRender::getInstance();
-            render->render(&screen);
-            console.draw(screen);
-            if (showGameSpeed > 0){
-                const ::Font & font = ::Font::getDefaultFont(15, 15);
-                font.printf(1, screen.getHeight() - font.getHeight() - 5, Graphics::makeColor(255, 255, 255), screen, "Game speed %f", 0, gameSpeed);
-            }
-            screen.BlitToScreen();
-        }
-    };
 
     Gui::FadeTool fader;
     fader.setFadeInTime(1);
     fader.setFadeOutTime(60);
-    GameState state;
-    LogicDraw all(state, stage, show_fps, console, endTime, (endTime != -1), fader);
+    LogicDraw all(stage, show_fps, console, endTime, (endTime != -1), fader);
     // Draw draw(stage, show_fps, console, (endTime != -1), fader);
 
     PaintownUtil::standardLoop(all, all);
