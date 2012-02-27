@@ -33,12 +33,12 @@ bool TeamMenu::wrapping = false;
 int Player::randomSwitchTime = 4;
 
 SelectFont::SelectFont():
-font(PaintownUtil::ReferenceCount<MugenFont>(NULL)),
+font(PaintownUtil::ReferenceCount<Font>(NULL)),
 bank(0),
 position(0){
 }
 
-SelectFont::SelectFont(PaintownUtil::ReferenceCount<MugenFont> font, int bank, int position):
+SelectFont::SelectFont(PaintownUtil::ReferenceCount<Font> font, int bank, int position):
 font(font),
 bank(bank),
 position(position){
@@ -132,7 +132,7 @@ void Cell::act(){
     }
 }
 
-void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & work, const Font & font) const{
+void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & work, const ::Font & font) const{
     if (background != NULL){
         background->render(x, y, work);
     }
@@ -2021,7 +2021,7 @@ void CharacterSelect::init(){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string fontPath;
                             simple.view() >> fontPath;
-                            select.fonts.push_back(PaintownUtil::ReferenceCount<MugenFont>(new MugenFont(Util::findFile(Filesystem::RelativePath(fontPath)))));
+                            select.fonts.push_back(PaintownUtil::ReferenceCount<Font>(new Font(Util::findFile(Filesystem::RelativePath(fontPath)))));
                             Global::debug(1) << "Got Font File: '" << fontPath << "'" << std::endl;
 
                         } else {
@@ -2962,7 +2962,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Temporary bitmap for grid
     const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
     temp.clearToMask();
-    grid.render(temp, Font::getDefaultFont());
+    grid.render(temp, ::Font::getDefaultFont());
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
     
@@ -3150,9 +3150,9 @@ const std::vector<Filesystem::AbsolutePath> & CharacterSelect::getStages() const
 }
 
 /* indexes start at 1 */
-PaintownUtil::ReferenceCount<MugenFont> CharacterSelect::getFont(int index) const {
+PaintownUtil::ReferenceCount<Mugen::Font> CharacterSelect::getFont(int index) const {
     if (index == -1){
-        return PaintownUtil::ReferenceCount<MugenFont>(NULL);
+        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
     }
     if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
         return fonts[index - 1];

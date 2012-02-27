@@ -49,8 +49,9 @@ static MugenItemContent *getOpts(const std::string &opt){
     return temp;
 }
 
+namespace Mugen{
 
-MugenFont::MugenFont(const Filesystem::AbsolutePath & file):
+Font::Font(const Filesystem::AbsolutePath & file):
 type(Fixed),
 width(0),
 height(0),
@@ -79,7 +80,7 @@ pcxsize(0){
 }
 
 #if 0
-MugenFont::MugenFont( const char * file ):
+Font::Font( const char * file ):
 type(Fixed),
 width(0),
 height(0),
@@ -105,7 +106,7 @@ currentBank(0){
 #endif
 
 /* is this constructor ever used? should it make deep copies of bmp and pcx? */
-MugenFont::MugenFont( const MugenFont &copy ){
+Font::Font( const Font &copy ){
     this->type = copy.type;
     this->width = copy.width;
     this->height = copy.height;
@@ -118,13 +119,13 @@ MugenFont::MugenFont( const MugenFont &copy ){
     this->banks = copy.banks;
 }
 
-MugenFont::~MugenFont(){
+Font::~Font(){
     if (pcx){
         delete[] pcx;
     }
 }
     
-MugenFont & MugenFont::operator=( const MugenFont &copy ){
+Font & Font::operator=( const Font &copy ){
     this->type = copy.type;
     this->width = copy.width;
     this->height = copy.height;
@@ -139,20 +140,20 @@ MugenFont & MugenFont::operator=( const MugenFont &copy ){
 }
 
 // Implement Font stuff
-void MugenFont::setSize( const int x, const int y ){
+void Font::setSize( const int x, const int y ){
     // We don't change sizes
     if  ( (x < 0 || y < 0) && type!=Fixed ){
         return;
     }
 }
-int MugenFont::getSizeX() const{
+int Font::getSizeX() const{
     return width;
 }
-int MugenFont::getSizeY() const{
+int Font::getSizeY() const{
     return height;
 }
 
-int MugenFont::textLength( const char * text ) const{
+int Font::textLength( const char * text ) const{
     std::string str(text);
     int size =0;
     for (unsigned int i = 0; i < str.size(); ++i){
@@ -167,22 +168,22 @@ int MugenFont::textLength( const char * text ) const{
     return size;
 }
 
-int MugenFont::getHeight( const string & str ) const {
+int Font::getHeight( const string & str ) const {
     // What? I guess this is for freetype?
     return getHeight();
 }
 
-int MugenFont::getHeight() const {
+int Font::getHeight() const {
     return height;
 }
     
 #if 0
-void MugenFont::printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const {
+void Font::printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const string & str, int marker, ... ) const {
     /* call the other printf somehow.. */
 }
 #endif
 
-void MugenFont::printf(int x, int y, int bank, const Graphics::Bitmap & work, const string & str, int marker, ... ){
+void Font::printf(int x, int y, int bank, const Graphics::Bitmap & work, const string & str, int marker, ... ){
     // Va list
     char buf[512];
     va_list ap;
@@ -193,7 +194,7 @@ void MugenFont::printf(int x, int y, int bank, const Graphics::Bitmap & work, co
 
     const std::string newstr(buf);
             
-    const Util::ReferenceCount<Graphics::Bitmap> & font = changeBank(bank);
+    const PaintownUtil::ReferenceCount<Graphics::Bitmap> & font = changeBank(bank);
     if (font == NULL){
         return;
     }
@@ -217,7 +218,7 @@ void MugenFont::printf(int x, int y, int bank, const Graphics::Bitmap & work, co
     }
 }
 
-void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bitmap & work, const string & str){
+void Font::render(int x, int y, int position, int bank, const Graphics::Bitmap & work, const string & str){
     const int height = getHeight();
     const int length = textLength(str.c_str());
     switch (position){
@@ -235,11 +236,11 @@ void MugenFont::render(int x, int y, int position, int bank, const Graphics::Bit
 }
 
 /* get a pointer to a specific bank. bank numbers start from 0 */
-unsigned char * MugenFont::findBankPalette(int bank) const {
+unsigned char * Font::findBankPalette(int bank) const {
     return pcx + pcxsize - ((bank+1) * colors * 3);
 }
 
-Graphics::Bitmap * MugenFont::makeBank(int bank) const {
+Graphics::Bitmap * Font::makeBank(int bank) const {
     unsigned char newpal[768];
     // Reset palette
     memcpy(pcx + (pcxsize - 768), palette, 768);
@@ -272,9 +273,9 @@ Graphics::Bitmap * MugenFont::makeBank(int bank) const {
     return bmp;
 }
 
-Util::ReferenceCount<Graphics::Bitmap> MugenFont::changeBank(int bank){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> Font::changeBank(int bank){
     if (bank < 0 || bank > (colors -1)){
-        return Util::ReferenceCount<Graphics::Bitmap>(NULL);
+        return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
     }
 
     if (banks[bank] == NULL){
@@ -284,7 +285,7 @@ Util::ReferenceCount<Graphics::Bitmap> MugenFont::changeBank(int bank){
     return banks[bank];
 }
 
-void MugenFont::load(){
+void Font::load(){
     /* 16 skips the header stuff */
     /*
     int location = 16;
@@ -409,5 +410,7 @@ void MugenFont::load(){
     }
 
     ifile.close();
+
+}
 
 }

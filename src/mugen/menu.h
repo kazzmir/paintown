@@ -21,8 +21,11 @@
  */
 
 class MugenAnimation;
-class MugenFont;
 class MugenSection;
+
+namespace Mugen{
+    class Font;
+}
 
 namespace Ast{
     class Section;
@@ -45,8 +48,8 @@ class CursorHandler{
 	
 	// Handles cursor box blinking
 	virtual void act();
-	virtual void renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> &, const Graphics::Bitmap &);
-	int getFontHeight(std::vector<MugenFont *> & fonts);
+	virtual void renderText(int x, int y, bool active, const std::string & text, std::vector<Mugen::Font *> &, const Graphics::Bitmap &);
+	int getFontHeight(std::vector<Mugen::Font *> & fonts);
 	virtual inline void setCursor(int x1, int y1, int x2, int y2){
 	    this->cursor.x1 = x1;
 	    this->cursor.y1 = y1;
@@ -88,6 +91,7 @@ namespace Gui{
 }
 
 namespace Mugen{
+    class Font;
     class Sprite;
     class Background;
     class Character;
@@ -101,7 +105,7 @@ public:
 	
 	virtual void logic();
 	
-	virtual void render(int x, int y, CursorHandler &, std::vector<MugenFont *> &, const Graphics::Bitmap &);
+	virtual void render(int x, int y, CursorHandler &, std::vector<Font *> &, const Graphics::Bitmap &);
 	
 	virtual void executeOption(const Mugen::PlayerType &, bool & endGame)=0;
  
@@ -191,7 +195,7 @@ class MugenMenu {
 	std::string fightFile;
 	
 	/*! Fonts */
-	std::vector<MugenFont *>fonts;
+	std::vector<Mugen::Font *>fonts;
 	
 	/*! Music files */
 	std::string titleMusic;

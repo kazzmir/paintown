@@ -6,8 +6,9 @@
 #include "util/stretch-bitmap.h"
 #include "util/timedifference.h"
 #include "util/trans-bitmap.h"
-#include "mugen/ast/all.h"
-#include "mugen/sound.h"
+#include "ast/all.h"
+#include "sound.h"
+#include "font.h"
 
 using namespace Mugen;
 
@@ -69,7 +70,7 @@ demoMode(demoMode){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string fontPath;
                             simple.view() >> fontPath;
-                            self.fonts.push_back(PaintownUtil::ReferenceCount<MugenFont>(new MugenFont(Util::findFile(Filesystem::RelativePath(fontPath)))));
+                            self.fonts.push_back(PaintownUtil::ReferenceCount<Font>(new Font(Util::findFile(Filesystem::RelativePath(fontPath)))));
                             Global::debug(1) << "Got Font File: '" << fontPath << "'" << std::endl;
 
                         }
@@ -230,7 +231,7 @@ bool VersusMenu::isDone(){
 
 void VersusMenu::drawPortrait(const Mugen::ArcadeData::CharacterCollection & collection, const Mugen::Effects & effects, int x, int y, int fontx, int fonty, const Mugen::FontInfo & fontInfo, const Graphics::Bitmap & work){
     
-    PaintownUtil::ReferenceCount<MugenFont> font;
+    PaintownUtil::ReferenceCount<Font> font;
     
     int heightMod = 0;
     if (collection.getFirstSet()){
@@ -257,7 +258,7 @@ void VersusMenu::drawPortrait(const Mugen::ArcadeData::CharacterCollection & col
 }
 
 /* indexes start at 1 */
-PaintownUtil::ReferenceCount<MugenFont> VersusMenu::getFont(int index) const {
+PaintownUtil::ReferenceCount<Mugen::Font> VersusMenu::getFont(int index) const {
     if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
         return fonts[index - 1];
     } else {

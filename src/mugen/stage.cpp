@@ -2100,7 +2100,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
     // Uses system font3 by default
     std::string fontFile = Mugen::Util::probeDef(systemFile, "Files", "font3");
 
-    MugenFont font(Mugen::Util::findFile(Filesystem::RelativePath(fontFile)));
+    Font font(Mugen::Util::findFile(Filesystem::RelativePath(fontFile)));
     
     Mugen::Character * character = NULL;
 
@@ -2194,7 +2194,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, Graphics::Color shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, MugenFont & font, const Logic & logic):
+        Draw(Mugen::Background * background, int reflectionIntensity, Mugen::Character * character, double cameray, int shadowIntensity, Graphics::Color shadowColor, double shadowYscale, int shadowFadeRangeHigh, int shadowFadeRangeMid, Font & font, const Logic & logic):
         background(background),
         reflectionIntensity(reflectionIntensity),
         character(character),
@@ -2219,7 +2219,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         int shadowFadeRangeHigh;
         int shadowFadeRangeMid;
     
-        MugenFont & font;
+        Font & font;
         const Logic & logic;
 
         void draw(const Graphics::Bitmap & screen){

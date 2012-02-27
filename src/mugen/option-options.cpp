@@ -63,7 +63,7 @@ Option::~Option(){
 void Option::enter(){
 }
 
-void Option::render(MugenFont & font, int x, int y, const Graphics::Bitmap & bmp){
+void Option::render(Mugen::Font & font, int x, int y, const Graphics::Bitmap & bmp){
     const int rightX = x + 195;
     font.render(x+5, y, 1, 0, bmp, optionName);
     font.render(rightX, y, -1, 0, bmp, currentValue);
@@ -422,7 +422,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
     
     PaintownUtil::ReferenceCount<Background> background;
-    std::vector< MugenFont *> fonts;
+    std::vector< Font *> fonts;
     SoundMap sounds;
     
     Point moveSound;
@@ -435,13 +435,13 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	if (head == "Files"){
             class FileWalker: public Ast::Walker {
                 public:
-                    FileWalker(std::vector<MugenFont *> & fonts, SoundMap & sounds, const Filesystem::AbsolutePath & baseDir):
+                    FileWalker(std::vector<Font *> & fonts, SoundMap & sounds, const Filesystem::AbsolutePath & baseDir):
                         fonts(fonts),
 			sounds(sounds),
                         baseDir(baseDir){
                         }
 
-                    std::vector<MugenFont *> & fonts;
+                    std::vector<Font *> & fonts;
 		    SoundMap & sounds;
                     const Filesystem::AbsolutePath & baseDir;
 
@@ -454,7 +454,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string temp;
                             simple.view() >> temp;
-                            fonts.push_back(new MugenFont(Util::findFile(Filesystem::RelativePath(temp))));
+                            fonts.push_back(new Font(Util::findFile(Filesystem::RelativePath(temp))));
                             Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                         }
                     }
@@ -522,7 +522,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     // InputMap<Keys> player2Input = getPlayer2Keys(20);
     
     // Our Font
-    MugenFont * font = fonts[1];
+    Font * font = fonts[1];
     
     // Box
     
@@ -625,7 +625,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(const PaintownUtil::ReferenceCount<Background> & background, MugenFont * font, const vector<class Option *> & options):
+        Draw(const PaintownUtil::ReferenceCount<Background> & background, Font * font, const vector<class Option *> & options):
         background(background),
         font(font),
         options(options){
@@ -640,11 +640,11 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         PaintownUtil::ReferenceCount<Background> background;
-        MugenFont * font;
+        Font * font;
         Box optionArea;
         const vector<class Option *> & options;
 
-        void doOptions(MugenFont & font, int x, int y, Graphics::Bitmap & where){
+        void doOptions(Font & font, int x, int y, Graphics::Bitmap & where){
             /* where do the numbers 30 and 20 come from? */
             int mod = 30;
             for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
@@ -690,7 +690,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     PaintownUtil::standardLoop(logic, draw);
 
     // Get rid of sprites
-    for (std::vector<MugenFont *>::iterator i = fonts.begin() ; i != fonts.end() ; ++i){
+    for (std::vector<Font *>::iterator i = fonts.begin() ; i != fonts.end() ; ++i){
 	if (*i){
 	    delete *i;
 	}
@@ -711,7 +711,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 }
 
 /*
-void OptionOptions::doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap & bmp){
+void OptionOptions::doOptions(Font & font, int x, int y, const Graphics::Bitmap & bmp){
     int mod = 30;
     for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
 	class Option * option = *i;

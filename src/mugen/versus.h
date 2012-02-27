@@ -1,10 +1,10 @@
 #ifndef mugen_versus_h
 #define mugen_versus_h
 
-#include "mugen/background.h"
-#include "mugen/util.h"
-#include "mugen/sprite.h"
-#include "mugen/font.h"
+#include "background.h"
+#include "util.h"
+#include "sprite.h"
+#include "font.h"
 
 #include "util/pointer.h"
 #include "util/gui/fadetool.h"
@@ -50,13 +50,13 @@ protected:
     //! Draw portrait
     void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, int fontx, int fonty, const Mugen::FontInfo &, const Graphics::Bitmap &);
     //! Get font
-    PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
+    PaintownUtil::ReferenceCount<Font> getFont(int index) const;
     //! Path
     const Filesystem::AbsolutePath & path;
     //! Sprites
     Mugen::SpriteMap sprites;
     //! Fonts
-    std::vector< PaintownUtil::ReferenceCount<MugenFont> > fonts;
+    std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
     //! Versus background
     PaintownUtil::ReferenceCount<Mugen::Background> background;
     //! Time to show screen

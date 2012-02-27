@@ -398,7 +398,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
 
 void showFont(const string & ourFile){
     Global::debug(0) << "Trying to load font: " << ourFile << "..." << endl;
-    MugenFont font( Storage::instance().find(Filesystem::RelativePath(ourFile)));
+    Mugen::Font font( Storage::instance().find(Filesystem::RelativePath(ourFile)));
     Global::debug(0) << "Loaded font: \"" << ourFile << "\" successfully." << endl;
     
     bool quit = false;

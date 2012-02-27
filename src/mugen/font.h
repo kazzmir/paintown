@@ -7,13 +7,17 @@
 #include <stdint.h>
 
 // Extend the font interface already made for paintown
-#include "util/font.h"
+// #include "util/font.h"
 #include "util/file-system.h"
 #include "util/pointer.h"
+
+namespace PaintownUtil = ::Util;
 
 namespace Graphics{
 class Bitmap;
 }
+
+namespace Mugen{
 
 enum FontType{
     Fixed = 0,
@@ -25,16 +29,16 @@ struct FontLocation{
     int width;
 };
 
-class MugenFont{
+class Font{
 public:
-    MugenFont( const Filesystem::AbsolutePath & file );
-    // MugenFont( const char * file );
+    Font( const Filesystem::AbsolutePath & file );
+    // Font( const char * file );
 private:
-    MugenFont( const MugenFont &copy );
+    Font( const Font &copy );
 public:
-    virtual ~MugenFont();
+    virtual ~Font();
     
-    MugenFont & operator=( const MugenFont &copy );
+    Font & operator=( const Font &copy );
     
     // Implement Font stuff
     virtual void setSize( const int x, const int y );
@@ -51,7 +55,7 @@ public:
     
     virtual void render( int x, int y, int position, int bank, const Graphics::Bitmap & work, const std::string & str );
     
-    virtual Util::ReferenceCount<Graphics::Bitmap> changeBank(int bank);
+    virtual PaintownUtil::ReferenceCount<Graphics::Bitmap> changeBank(int bank);
     
     inline int getTotalBanks() { return colors; };
 
@@ -73,7 +77,7 @@ protected:
     int colors;
     int offsetx;
     int offsety;
-    std::map<int, Util::ReferenceCount<Graphics::Bitmap> > banks;
+    std::map<int, PaintownUtil::ReferenceCount<Graphics::Bitmap> > banks;
     unsigned char *pcx;
     unsigned char palette[768];
     uint32_t pcxsize;
@@ -84,5 +88,7 @@ protected:
     
     void load();
 };
+
+}
 
 #endif

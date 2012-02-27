@@ -3,11 +3,11 @@
 
 #include <vector>
 
-#include "mugen/background.h"
-#include "mugen/util.h"
-#include "mugen/sprite.h"
-#include "mugen/font.h"
-#include "mugen/search.h"
+#include "background.h"
+#include "util.h"
+#include "sprite.h"
+#include "font.h"
+#include "search.h"
 
 #include "util/events.h"
 #include "util/pointer.h"
@@ -22,13 +22,13 @@ namespace Mugen{
 class SelectFont{
 public:
     SelectFont();
-    SelectFont(PaintownUtil::ReferenceCount<MugenFont> font, int bank, int position);
+    SelectFont(PaintownUtil::ReferenceCount<Font> font, int bank, int position);
     SelectFont(const SelectFont &);
     ~SelectFont();
     const SelectFont & operator=(const SelectFont &);
     void draw(int x, int y, const std::string &, const Graphics::Bitmap &);
 private:
-    PaintownUtil::ReferenceCount<MugenFont> font;
+    PaintownUtil::ReferenceCount<Font> font;
     int bank;
     int position;
 };
@@ -104,13 +104,13 @@ private:
     int blinkTime;
 };
     
-class Cell : public Gui::SelectItem {
+class Cell: public Gui::SelectItem {
 public:
     Cell(unsigned int index, const Gui::SelectListInterface *);
     virtual ~Cell();
     
     virtual void act();
-    virtual void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const Font &) const;
+    virtual void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const ::Font &) const;
     virtual bool isEmpty() const;
     
     virtual void setCharacter(const Mugen::ArcadeData::CharacterInfo &);
@@ -584,7 +584,7 @@ public:
     
 protected:
     //! Get font
-    PaintownUtil::ReferenceCount<MugenFont> getFont(int index) const;
+    PaintownUtil::ReferenceCount<Font> getFont(int index) const;
     //! Parse select file
     void parseSelect();
     //! Path
@@ -604,7 +604,7 @@ protected:
     //! Select file
     Filesystem::AbsolutePath selectFile;
     //! Fonts
-    std::vector< PaintownUtil::ReferenceCount<MugenFont> > fonts;
+    std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
     
     //! Font Handlers
     FontHandler titleFont;

@@ -116,7 +116,7 @@ void CursorHandler::renderCursor(int x, int y, const Graphics::Bitmap & bmp){
     }
 }
 
-void CursorHandler::renderText(int x, int y, bool active, const std::string & text, std::vector<MugenFont *> & fonts, const Graphics::Bitmap & bmp){
+void CursorHandler::renderText(int x, int y, bool active, const std::string & text, std::vector<Mugen::Font *> & fonts, const Graphics::Bitmap & bmp){
     if (active){
 	renderCursor(x, y, bmp);
 	fonts[activeFont.index-1]->render(x, y, activeFont.position, activeFont.bank, bmp, text);
@@ -125,7 +125,7 @@ void CursorHandler::renderText(int x, int y, bool active, const std::string & te
     }
 }
 
-int CursorHandler::getFontHeight(std::vector<MugenFont *> & fonts){
+int CursorHandler::getFontHeight(std::vector<Mugen::Font *> & fonts){
     return fonts[itemFont.index-1]->getHeight();
 }
 
@@ -154,7 +154,7 @@ Mugen::ItemOption::~ItemOption(){
 void Mugen::ItemOption::logic(){
 }
 
-void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<MugenFont *> & fonts, const Graphics::Bitmap & bmp){
+void Mugen::ItemOption::render(int x, int y, CursorHandler & handler,  std::vector<Font *> & fonts, const Graphics::Bitmap & bmp){
     handler.renderText(x, y, (getState() == Selected), getText(), fonts, bmp);
 }
 
@@ -394,7 +394,7 @@ void MugenMenu::loadData(){
                                 Filesystem::AbsolutePath path = Mugen::Util::findFont(Filesystem::RelativePath(temp));
 
                                 if (true){
-                                    menu.fonts.push_back(new MugenFont(path));
+                                    menu.fonts.push_back(new Mugen::Font(path));
                                     Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                                 }
                             } catch (const Filesystem::NotFound & fail){
@@ -1051,7 +1051,7 @@ void MugenMenu::cleanup(){
       }
     }
 	
-    for (vector<MugenFont *>::iterator it = fonts.begin(); it != fonts.end(); it++){
+    for (vector<Mugen::Font *>::iterator it = fonts.begin(); it != fonts.end(); it++){
         delete *it;
     }
 

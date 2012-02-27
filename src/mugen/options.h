@@ -8,9 +8,10 @@
 #include <string>
 
 class Token;
-class MugenFont;
 
 namespace Mugen {
+
+class Font;
 
 class Character;
 
@@ -38,7 +39,7 @@ public:
     virtual void next()=0;
     virtual void prev()=0;
     virtual void enter();
-    virtual void render(MugenFont &, int x, int y, const Graphics::Bitmap &);
+    virtual void render(Font &, int x, int y, const Graphics::Bitmap &);
     virtual inline const Mugen::Point & getPosition() const {
         return this->position;
     }
@@ -69,7 +70,7 @@ private:
     std::vector<class Option *> options;
     std::vector<class Option *>::const_iterator selectedOption;
     
-    // void doOptions(MugenFont & font, int x, int y, const Graphics::Bitmap &);
+    // void doOptions(Font & font, int x, int y, const Graphics::Bitmap &);
 };
 
 /* For the top level paintown menu */
