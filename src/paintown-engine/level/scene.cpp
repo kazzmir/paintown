@@ -457,14 +457,18 @@ void Scene::startMusic(){
         /* this lets you give music paths like foo*.mp3 or use a sub directory */
         try{
             Filesystem::AbsolutePath modMusic = Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("music"));
-            Filesystem::AbsolutePath root = Storage::instance().find(Filesystem::RelativePath("music"));
+            Filesystem::AbsolutePath rootMusic = Storage::instance().find(Filesystem::RelativePath("music"));
+            Filesystem::AbsolutePath root = Storage::instance().find(Filesystem::RelativePath("."));
             for (vector<string>::iterator it = music.begin(); it != music.end(); it++){
-                vector<Filesystem::AbsolutePath> more = Storage::instance().getFiles(root, Filesystem::RelativePath(*it), false);
+                vector<Filesystem::AbsolutePath> more = Storage::instance().getFiles(rootMusic, Filesystem::RelativePath(*it), false);
                 songs.insert(songs.end(), more.begin(), more.end());
-                if (modMusic != root){
+                if (modMusic != rootMusic){
                     vector<Filesystem::AbsolutePath> modMore = Storage::instance().getFiles(modMusic, Filesystem::RelativePath(*it), false);
                     songs.insert(songs.end(), modMore.begin(), modMore.end());
                 }
+                    
+                vector<Filesystem::AbsolutePath> rootMore = Storage::instance().getFiles(root, Filesystem::RelativePath(*it), false);
+                songs.insert(songs.end(), rootMore.begin(), rootMore.end());
             }
         } catch (const Filesystem::NotFound & fail){
         }
