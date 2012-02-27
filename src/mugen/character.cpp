@@ -578,6 +578,7 @@ debug(false),
 needToGuard(false),
 frozen(false),
 pushPlayer(0){
+    maxChangeStates = 0;
     /* simple macro to copy fields */
 #define C(field) field = copy.field
     C(xscale);
