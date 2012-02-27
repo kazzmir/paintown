@@ -1450,6 +1450,20 @@ static std::vector<Mugen::ArcadeData::CharacterInfo> getCollectionByOrder(int or
     return collection;
 }
 
+// Extract the first charcter and remove it as it's not needed anymore, select random teammates
+static std::vector<Mugen::ArcadeData::CharacterInfo> extractTeam(const Mugen::ArcadeData::CharacterCollection::Type & type, std::vector<Mugen::ArcadeData::CharacterInfo> & collection){
+    std::vector<Mugen::ArcadeData::CharacterInfo> characters(type);
+    unsigned int deletable = PaintownUtil::rnd(0, collection.size());
+    characters.push_back(collection[deletable]);
+    characters.push_back(collection[PaintownUtil::rnd(0, collection.size())]);
+    characters.push_back(collection[PaintownUtil::rnd(0, collection.size())]);
+    characters.push_back(collection[PaintownUtil::rnd(0, collection.size())]);
+    
+    collection.erase(collection.begin()+deletable);
+    
+    return characters;
+}
+
 Mugen::ArcadeData::MatchPath::MatchPath(){
 }
 
@@ -1467,29 +1481,26 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
         // matches per each order (vector<int>)
         for (unsigned int i = 0; i < order.size(); ++i){
             const int currentOrder = i+1;
-            const std::vector<Mugen::ArcadeData::CharacterInfo> & orderedCharacters = getCollectionByOrder(currentOrder, type, characters);
+            std::vector<Mugen::ArcadeData::CharacterInfo> orderedCharacters = getCollectionByOrder(currentOrder, type, characters);
             if (orderedCharacters.empty()){
                 continue;
             }
             for (int j = 0; j < order[i]; ++j){
-                const int random1 = PaintownUtil::rnd(0, orderedCharacters.size());
-                const int random2 = PaintownUtil::rnd(0, orderedCharacters.size());
-                const int random3 = PaintownUtil::rnd(0, orderedCharacters.size());
-                const int random4 = PaintownUtil::rnd(0, orderedCharacters.size());
+                std::vector<Mugen::ArcadeData::CharacterInfo> team = extractTeam(type, orderedCharacters);
                 
-                Mugen::ArcadeData::CharacterInfo first = orderedCharacters[random1];
+                Mugen::ArcadeData::CharacterInfo first = team[0];
                 if (first.getRandomStage()){
                     first.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
-                Mugen::ArcadeData::CharacterInfo second = orderedCharacters[random2];
+                Mugen::ArcadeData::CharacterInfo second = team[1];
                 if (second.getRandomStage()){
                     second.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
-                Mugen::ArcadeData::CharacterInfo third = orderedCharacters[random3];
+                Mugen::ArcadeData::CharacterInfo third = team[2];
                 if (third.getRandomStage()){
                     third.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
-                Mugen::ArcadeData::CharacterInfo fourth = orderedCharacters[random4];
+                Mugen::ArcadeData::CharacterInfo fourth = team[3];
                 if (fourth.getRandomStage()){
                     fourth.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
@@ -1500,6 +1511,10 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
                 collection.setThird(third, PaintownUtil::rnd(0,6));
                 collection.setFourth(fourth, PaintownUtil::rnd(0,6));
                 opponents.push(collection);
+                
+                if (orderedCharacters.empty()){
+                    break;
+                }
             }
         }
     }
