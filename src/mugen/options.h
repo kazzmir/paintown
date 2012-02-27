@@ -39,7 +39,8 @@ public:
     virtual void next()=0;
     virtual void prev()=0;
     virtual void enter();
-    virtual void render(Font &, int x, int y, const Graphics::Bitmap &);
+    virtual void render(Font &, int x1, int x2, int y, const Graphics::Bitmap &);
+    virtual int getWidth(Font &);
     virtual inline const Mugen::Point & getPosition() const {
         return this->position;
     }

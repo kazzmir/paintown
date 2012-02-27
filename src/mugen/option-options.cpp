@@ -63,25 +63,26 @@ Option::~Option(){
 void Option::enter(){
 }
 
-void Option::render(Mugen::Font & font, int x, int y, const Graphics::Bitmap & bmp){
-    const int rightX = x + 195;
-    font.render(x+5, y, 1, 0, bmp, optionName);
-    font.render(rightX, y, -1, 0, bmp, currentValue);
+void Option::render(Mugen::Font & font, int x1, int x2, int y, const Graphics::Bitmap & bmp){
+    font.render(x1, y, 1, 0, bmp, optionName);
+    font.render(x2, y, -1, 0, bmp, currentValue);
     if (selected){
-	alpha += alphaMod;
-	if (alpha <= 0){
-	    alpha = 0;
-	    alphaMod = 6;
-	}
-	else if (alpha >= 128){
-	    alpha = 128;
-	    alphaMod = -6;
-	}
-	// Bitmap::drawingMode(Bitmap::MODE_TRANS);
+        alpha += alphaMod;
+        if (alpha <= 0){
+            alpha = 0;
+            alphaMod = 6;
+        }
+        else if (alpha >= 128){
+            alpha = 128;
+            alphaMod = -6;
+        }
         Graphics::Bitmap::transBlender(0,0,0,alpha);
-	bmp.translucent().rectangleFill(x+2, y-10, rightX+2, y+2, Graphics::makeColor(255,255,255));
-	// Bitmap::drawingMode(Bitmap::MODE_SOLID);
+        bmp.translucent().rectangleFill(x1-2, y-10, x2+2, y+2, Graphics::makeColor(255,255,255));
     }
+}
+
+int Option::getWidth(Mugen::Font & font){
+    return font.textLength(optionName.c_str()) + font.textLength(currentValue.c_str());
 }
 
 class Difficulty: public Option {
@@ -627,11 +628,14 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     public:
         Draw(const PaintownUtil::ReferenceCount<Background> & background, Font * font, const vector<class Option *> & options):
         background(background),
+        upsize(Graphics::Bitmap(640, 480)),
         font(font),
         options(options){
+            const int totalHeight = options.size() * (font->getHeight() + 10);
+            const int totalWidth = getLargestWidth(options, *font) + 50;
             //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
-            optionArea.location.setPosition(Gui::AbsolutePoint((DEFAULT_WIDTH/2) - (100), (DEFAULT_HEIGHT/2) - (90)));
-            optionArea.location.setPosition2(Gui::AbsolutePoint(260,210));
+            optionArea.location.setPosition(Gui::AbsolutePoint((640/2) - (totalWidth/2), (480/2) - (totalHeight/2)));
+            optionArea.location.setPosition2(Gui::AbsolutePoint((640/2) + (totalWidth/2), (480/2) + (totalHeight/2)));
 
             optionArea.transforms.setRadius(5);
             optionArea.colors.body = Graphics::makeColor(0,0,60);
@@ -640,40 +644,57 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         PaintownUtil::ReferenceCount<Background> background;
+        const Graphics::Bitmap upsize;
         Font * font;
         Box optionArea;
         const vector<class Option *> & options;
-
-        void doOptions(Font & font, int x, int y, Graphics::Bitmap & where){
-            /* where do the numbers 30 and 20 come from? */
-            int mod = 30;
+        
+        int getLargestWidth(const vector<class Option *> & options, Font & font){
+            int width = 0;
             for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
                 class Option * option = *i;
-                option->render(font, x, y+mod, where);
-                mod += 20;
+                const int check = option->getWidth(font);
+                if (check > width){
+                    width = check;
+                }
+            }
+            return width;
+        }
+
+        void doOptions(Font & font, int x1, int x2, int y, const Graphics::Bitmap & where){
+            int mod = 8;
+            for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
+                class Option * option = *i;
+                option->render(font, x1, x2, y+mod, where);
+                mod += font.getHeight()+10;
             }
         }
 
         void draw(const Graphics::Bitmap & screen){
-            Graphics::StretchedBitmap workArea(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+            screen.clearToMask();
+            Graphics::StretchedBitmap workArea(320, 240, upsize, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             workArea.start();
             // render backgrounds
-	    background->renderBackground(0, 0, workArea);
-	    
-	    // render fonts
-	    font->render(DEFAULT_WIDTH/2, 20, 0, 0, workArea, "OPTIONS" );
-	    
-	    optionArea.render(workArea);
-	    
-	    doOptions(*font, optionArea.location.getX(), optionArea.location.getY(), workArea);
-	    
-	    // render Foregrounds
-	    background->renderForeground(0, 0, workArea);
-	    
-	    // Finally render to screen
+            background->renderBackground(0, 0, workArea);
             workArea.finish();
-	    // workArea.Stretch(screen);
-	    screen.BlitToScreen();
+            upsize.drawStretched(screen);
+            
+            // render fonts
+            font->render(640/2, 20, 0, 0, screen, "OPTIONS" );
+            
+            optionArea.render(screen);
+            
+            doOptions(*font, optionArea.location.getX() + 10, optionArea.location.getX2() - 10, optionArea.location.getY() + 5, screen);
+            
+            workArea.clearToMask();
+            workArea.start();
+            // render Foregrounds
+            background->renderForeground(0, 0, workArea);
+            // Finally render to screen
+            workArea.finish();
+            upsize.drawStretched(screen);
+            // workArea.Stretch(screen);
+            screen.BlitToScreen();
         }
     };
 
