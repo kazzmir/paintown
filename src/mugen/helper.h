@@ -9,7 +9,7 @@ class Sound;
 /* copy all data from the parent somehow, maybe lazily. to speed things up */
 class Helper: public Character {
 public:
-    Helper(Character * parent, const Character * root, int id);
+    Helper(Character * parent, const Character * root, int id, const std::string & name);
     virtual ~Helper();
 
     virtual inline int getHelperId() const {

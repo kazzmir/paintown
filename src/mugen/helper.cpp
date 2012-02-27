@@ -7,12 +7,12 @@ using namespace std;
 
 namespace Mugen{
 
-Helper::Helper(Character * owner, const Character * root, int id):
+Helper::Helper(Character * owner, const Character * root, int id, const string & name):
 Character(*owner),
 owner(owner),
 root(root),
 id(id),
-name(owner->getName() + " (helper)"){
+name(owner->getName() + " " + name + " (helper)"){
     behavior = &dummy;
 }
 
