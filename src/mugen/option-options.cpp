@@ -528,7 +528,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(bool & escaped, MugenSound * cancel, MugenSound * move, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption, const PaintownUtil::ReferenceCount<Background> & background):
+        Logic(bool & escaped, Sound * cancel, Sound * move, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption, const PaintownUtil::ReferenceCount<Background> & background):
         escaped(escaped),
         logic_done(false),
         cancelSound(cancel),
@@ -546,8 +546,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         bool & escaped;
         bool logic_done;
 
-        MugenSound * cancelSound;
-        MugenSound * moveSound;
+        Sound * cancelSound;
+        Sound * moveSound;
     
         PaintownUtil::ReferenceCount<Background> background;
 
@@ -677,11 +677,11 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
     };
 
-    MugenSound * cancel = NULL;
+    Sound * cancel = NULL;
     if (sounds[cancelSound.x][cancelSound.y]){
         cancel = sounds[cancelSound.x][cancelSound.y];
     }
-    MugenSound * move = NULL;
+    Sound * move = NULL;
     if (sounds[moveSound.x][moveSound.y]){
         move = sounds[moveSound.x][moveSound.y];
     }
@@ -696,8 +696,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 	}
     }
     // Get rid of sounds
-    for (std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
-	for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for (std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
+	for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	    if (j->second){
 		delete j->second;
 	    }

@@ -669,7 +669,7 @@ void SoundSystem::init(const std::string & file){
 }
 
 void SoundSystem::play(const Type & type){
-    MugenSound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
+    Sound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
     if (sound){
         sound->play();
     }

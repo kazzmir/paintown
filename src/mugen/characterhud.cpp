@@ -228,7 +228,7 @@ void FightElement::setFont(MugenFont *fnt, int bank, int position){
     }
 }
 
-void FightElement::setSound(MugenSound * sound){
+void FightElement::setSound(Sound * sound){
     if (sound){
 	setType(IS_SOUND);
 	this->sound = sound;
@@ -1941,7 +1941,7 @@ GameInfo::~GameInfo(){
     
     // Get rid of sounds
     for( Mugen::SoundMap::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
-      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+      for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second ){
 	      delete j->second;
 	  }

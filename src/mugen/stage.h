@@ -84,7 +84,6 @@ namespace Ast{
 }
 
 class MugenItemContent;
-class MugenSound;
 // class MugenBackgroundManager;
 
 struct PlayerData {
@@ -100,6 +99,7 @@ struct PlayerData {
 
 namespace Mugen {
 
+class Sound;
 class Sprite;
 
 class Stage{
@@ -562,7 +562,7 @@ protected:
     //std::vector< MugenBackground * > foregrounds;
 
     /* Sounds */
-    std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
+    std::map< unsigned int, std::map< unsigned int, Sound * > > sounds;
 
     // MugenBackgroundManager *background;
     Background * background;

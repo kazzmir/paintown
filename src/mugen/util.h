@@ -18,7 +18,6 @@ namespace PaintownUtil = ::Util;
 typedef ::Util::ReferenceCount<Ast::AstParse> AstRef;
 
 class MugenBackground;
-class MugenSound;
 class MugenItemContent;
 class MugenSection;
 class MugenCharacterSelect;
@@ -30,11 +29,12 @@ namespace Mugen{
 
     class Animation;
     class Sprite;
+    class Sound;
 
 /* Makes the use of the sprite maps easier */
 typedef std::map< unsigned int, Sprite *> GroupMap;
 typedef std::map< unsigned int, GroupMap> SpriteMap;
-typedef std::map< unsigned int, std::map< unsigned int, MugenSound * > > SoundMap;
+typedef std::map< unsigned int, std::map< unsigned int, Sound * > > SoundMap;
 
 /* FIXME: add descriptions of every function here */
 namespace Util{

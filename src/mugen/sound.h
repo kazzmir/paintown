@@ -5,11 +5,13 @@
 
 class Sound;
 
-class MugenSound{
+namespace Mugen{
+
+class Sound{
 public:
-    MugenSound();
-    MugenSound(const MugenSound &copy);
-    virtual ~MugenSound();
+    Sound();
+    Sound(const Sound &copy);
+    virtual ~Sound();
 
     void load();
     void play();
@@ -20,8 +22,9 @@ public:
     int groupNumber;
     int sampleNumber;
     char * sample;
-    Sound * sound;
-
+    ::Sound * sound;
 };
+
+}
 
 #endif

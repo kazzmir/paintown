@@ -736,8 +736,8 @@ Character::~Character(){
     animations.clear();
     
     // Get rid of sounds
-    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
-      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for( std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+      for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -3695,11 +3695,11 @@ void Character::setTransOverride(TransType type, int alphaFrom, int alphaTo){
     transOverride.alphaDestination = alphaTo;
 }
 
-static MugenSound * findSound(const Mugen::SoundMap & sounds, int group, int item){
+static Sound * findSound(const Mugen::SoundMap & sounds, int group, int item){
     Mugen::SoundMap::const_iterator findGroup = sounds.find(group);
     if (findGroup != sounds.end()){
-        const map<unsigned int, MugenSound*> & found = (*findGroup).second;
-        map<unsigned int, MugenSound*>::const_iterator sound = found.find(item);
+        const map<unsigned int, Sound*> & found = (*findGroup).second;
+        map<unsigned int, Sound*>::const_iterator sound = found.find(item);
         if (sound != found.end()){
             return (*sound).second;
         }
@@ -3707,14 +3707,14 @@ static MugenSound * findSound(const Mugen::SoundMap & sounds, int group, int ite
     return NULL;
 }
 
-MugenSound * Character::getCommonSound(int group, int item) const {
+Sound * Character::getCommonSound(int group, int item) const {
     if (getCommonSounds() == NULL){
         return NULL;
     }
     return findSound(*getCommonSounds(), group, item);
 }
         
-MugenSound * Character::getSound(int group, int item) const {
+Sound * Character::getSound(int group, int item) const {
     return findSound(getSounds(), group, item);
 }
 

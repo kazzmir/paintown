@@ -654,7 +654,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
              // Go to next sound
              ifile.seekg(location, ios::beg);
              // next sprite
-             MugenSound *temp = new MugenSound();
+             Mugen::Sound *temp = new Mugen::Sound();
 
              /* FIXME: change 4 to sizeof(...) */
              temp->next = reader.readByte4();

@@ -845,7 +845,7 @@ void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<Ani
 */
 
 void Mugen::Stage::playSound(Character * owner, int group, int item, bool own){
-    MugenSound * sound = NULL;
+    Mugen::Sound * sound = NULL;
     if (own){
         sound = owner->getSound(group, item);
     } else {
@@ -1841,9 +1841,9 @@ void Mugen::Stage::cleanup(){
         }
         showSparks.clear();
 
-        for (map<unsigned int, map<unsigned int, MugenSound*> >::iterator it1 = sounds.begin(); it1 != sounds.end(); it1++){
-            map<unsigned int, MugenSound*> & group = (*it1).second;
-            for (map<unsigned int, MugenSound*>::iterator it2 = group.begin(); it2 != group.end(); it2++){
+        for (map<unsigned int, map<unsigned int, Mugen::Sound*> >::iterator it1 = sounds.begin(); it1 != sounds.end(); it1++){
+            map<unsigned int, Mugen::Sound*> & group = (*it1).second;
+            for (map<unsigned int, Mugen::Sound*>::iterator it2 = group.begin(); it2 != group.end(); it2++){
                 delete (*it2).second;
             }
         }

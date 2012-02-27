@@ -721,7 +721,7 @@ public:
     }
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
-        MugenSound * sound = NULL;
+        Sound * sound = NULL;
         if (item != NULL){
             int groupNumber = (int) group->evaluate(FullEnvironment(stage, guy)).toNumber();
             int itemNumber = (int) item->evaluate(FullEnvironment(stage, guy)).toNumber();
@@ -2907,7 +2907,7 @@ public:
     }
 
     void playSound(Character & guy, const Environment & environment) const {
-        MugenSound * sound = NULL;
+        Mugen::Sound * sound = NULL;
         if (this->sound.item != NULL){
             int groupNumber = (int) this->sound.group->evaluate(environment).toNumber();
             int itemNumber = (int) this->sound.item->evaluate(environment).toNumber();

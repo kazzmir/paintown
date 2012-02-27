@@ -39,10 +39,10 @@ namespace Graphics{
 class Bitmap;
 }
 class MugenItemContent;
-class MugenSound;
 
 namespace Mugen{
 
+class Sound;
 class Sprite;
 class Animation;
 extern PaintownUtil::Parameter<Filesystem::RelativePath> stateFileParameter;
@@ -411,11 +411,11 @@ public:
         }
         */
 	
-	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >& getSounds() const {
+	virtual inline const std::map<unsigned int, std::map<unsigned int, Sound *> >& getSounds() const {
             return sounds;
         }
 
-	virtual inline const std::map<unsigned int, std::map<unsigned int, MugenSound *> >* getCommonSounds() const {
+	virtual inline const std::map<unsigned int, std::map<unsigned int, Sound *> >* getCommonSounds() const {
             return commonSounds;
         }
 
@@ -896,8 +896,8 @@ public:
         /* recover after falling */
         virtual bool canRecover() const;
 
-        virtual MugenSound * getSound(int group, int item) const;
-        virtual MugenSound * getCommonSound(int group, int item) const;
+        virtual Sound * getSound(int group, int item) const;
+        virtual Sound * getCommonSound(int group, int item) const;
 
         virtual inline void setJugglePoints(int x){
             airjuggle = x;
@@ -915,7 +915,7 @@ public:
             return currentJuggle;
         }
 
-        virtual inline void setCommonSounds(const std::map< unsigned int, std::map< unsigned int, MugenSound * > > * sounds){
+        virtual inline void setCommonSounds(const std::map< unsigned int, std::map< unsigned int, Sound * > > * sounds){
             this->commonSounds = sounds;
         }
 
@@ -1326,9 +1326,9 @@ protected:
 	std::map< int, PaintownUtil::ReferenceCount<Animation> > animations;
 	
 	/* Sounds */
-	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
+	std::map< unsigned int, std::map< unsigned int, Sound * > > sounds;
         /* sounds from the stage */
-        const std::map< unsigned int, std::map< unsigned int, MugenSound * > > * commonSounds;
+        const std::map< unsigned int, std::map< unsigned int, Sound * > > * commonSounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;

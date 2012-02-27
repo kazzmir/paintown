@@ -1045,8 +1045,8 @@ void MugenMenu::cleanup(){
     cleanupSprites();
 
     // Get rid of sounds
-    for( std::map< unsigned int, std::map< unsigned int, MugenSound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
-      for( std::map< unsigned int, MugenSound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for( std::map< unsigned int, std::map< unsigned int, Mugen::Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+      for( std::map< unsigned int, Mugen::Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }

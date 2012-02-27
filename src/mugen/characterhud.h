@@ -14,7 +14,6 @@ namespace Graphics{
 class Bitmap;
 }
 class MugenFont;
-class MugenSound;
 
 namespace Ast{
     class AstParse;
@@ -22,6 +21,7 @@ namespace Ast{
 
 namespace Mugen{
 
+class Sound;
 class Sprite;
 class Animation;
 class Character;
@@ -80,7 +80,7 @@ class FightElement: public Element {
         virtual inline void setPosition(int position){
             this->position = position;
         }
-        virtual void setSound(MugenSound *);
+        virtual void setSound(Sound *);
 	virtual int getWidth();
 	virtual int getHeight();
 	virtual inline void setOffset(int x, int y){ 
@@ -128,7 +128,7 @@ class FightElement: public Element {
         Mugen::Point spriteData;
 	Sprite *sprite;
 	MugenFont *font;
-        MugenSound *sound;
+        Sound *sound;
 	Mugen::Point offset;
 	int displaytime;
 	int soundtime;

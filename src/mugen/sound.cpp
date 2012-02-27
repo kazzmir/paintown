@@ -2,7 +2,9 @@
 #include "sound.h"
 #include "util/sound.h"
 
-MugenSound::MugenSound():
+namespace Mugen{
+
+Sound::Sound():
 next(0),
 length(0),
 groupNumber(0),
@@ -12,23 +14,23 @@ sound(0){
     //Nothing
 }
 
-void MugenSound::load(){
-    sound = new Sound(sample, length);
+void Sound::load(){
+    sound = new ::Sound(sample, length);
 }
 
-void MugenSound::play(){
+void Sound::play(){
     if (sound){
         sound->play();
     }
 }
 
-void MugenSound::stop(){
+void Sound::stop(){
     if (sound){
         sound->stop();
     }
 }
 
-MugenSound::MugenSound( const MugenSound &copy ){
+Sound::Sound( const Sound &copy ){
     this->next = copy.next;
     this->length = copy.length;
     this->groupNumber = copy.groupNumber;
@@ -38,7 +40,7 @@ MugenSound::MugenSound( const MugenSound &copy ){
     load();
 }
 
-MugenSound::~MugenSound(){
+Sound::~Sound(){
     if (sample){
         delete[] sample;
     }
@@ -47,3 +49,4 @@ MugenSound::~MugenSound(){
     }
 }
 
+}
