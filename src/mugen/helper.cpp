@@ -100,19 +100,19 @@ bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, in
 }
 */
     
-PaintownUtil::ReferenceCount<MugenAnimation> Helper::getAnimation(int id) const {
-    map<int, PaintownUtil::ReferenceCount<MugenAnimation> >::const_iterator findIt = proxyAnimations.find(id);
+PaintownUtil::ReferenceCount<Animation> Helper::getAnimation(int id) const {
+    map<int, PaintownUtil::ReferenceCount<Animation> >::const_iterator findIt = proxyAnimations.find(id);
     if (findIt == proxyAnimations.end() && owner != NULL){
         if (owner->hasAnimation(id)){
-            PaintownUtil::ReferenceCount<MugenAnimation> dad = owner->getAnimation(id);
+            PaintownUtil::ReferenceCount<Animation> dad = owner->getAnimation(id);
             /* this is why proxyAnimations has to be mutable */
-            proxyAnimations[id] = PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*dad));
+            proxyAnimations[id] = PaintownUtil::ReferenceCount<Animation>(new Animation(*dad));
             return proxyAnimations[id];
         }
     } else {
         return findIt->second;
     }
-    return PaintownUtil::ReferenceCount<MugenAnimation>(NULL);
+    return PaintownUtil::ReferenceCount<Animation>(NULL);
 }
     
 bool Helper::isHelper() const {

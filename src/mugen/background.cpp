@@ -671,7 +671,7 @@ animation(0){
     data->walk(walker);
 }
     
-void AnimationElement::setAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
+void AnimationElement::setAnimation(PaintownUtil::ReferenceCount<Animation> animation){
     this->animation = animation;
 }
 
@@ -1612,7 +1612,7 @@ class AnimationController: public Controller {
                     for (std::vector< BackgroundElement *>::iterator i = elements.begin(); i != elements.end(); ++i){
                         BackgroundElement *element = *i;
                         /* FIXME: this cast looks dangerous. Explain it or remove it */
-                        ((AnimationElement *)element)->setAnimation(PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*animation)));
+                        ((AnimationElement *)element)->setAnimation(PaintownUtil::ReferenceCount<Animation>(new Animation(*animation)));
                     }
                 }
 	    }
@@ -1625,7 +1625,7 @@ class AnimationController: public Controller {
 	}
 
     private:
-        PaintownUtil::ReferenceCount<MugenAnimation> animation;
+        PaintownUtil::ReferenceCount<Animation> animation;
 };
 
 /* Background controller which handles all individual controllers under it */
@@ -2098,7 +2098,7 @@ Background::~Background(){
     }
      // Get rid of animation lists;
     /*
-    for( std::map< int, MugenAnimation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
+    for( std::map< int, Animation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){
 	if( i->second )delete i->second;
     }
     */

@@ -72,12 +72,12 @@ static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
 
-Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority):
+Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<Animation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority):
 owner(owner),
 /* Copy the animation here so that it can start from frame 0 and not accidentally
  * be shared with another Effect
  */
-animation(PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*animation))),
+animation(PaintownUtil::ReferenceCount<Animation>(new Animation(*animation))),
 id(id),
 x(x),
 y(y),
@@ -113,12 +113,12 @@ Effect::~Effect(){
 
 class Spark: public Effect {
 public:
-    Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<MugenAnimation> animation);
+    Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<Animation> animation);
     virtual ~Spark();
 };
 
 /* FIXME: can sparks be scaled? */
-Spark::Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<MugenAnimation> animation):
+Spark::Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<Animation> animation):
 Effect(NULL, animation, -1, x, y, 1, 1, spritePriority){
 }
 
@@ -673,7 +673,7 @@ void Mugen::Stage::load(){
         Global::debug(-1) << "Effect group " << (*it).first << endl;
     }
 
-    spark = new MugenAnimation();
+    spark = new Animation();
     for (Mugen::GroupMap::iterator it = effects[0].begin(); it != effects[0].end(); it++){
         MugenFrame * frame = new MugenFrame();
         frame->sprite = (*it).second;
@@ -751,12 +751,12 @@ void Mugen::Stage::moveCamera(const double x, const double y){
     }
 }
 
-static bool anyCollisions(const vector<MugenArea> & boxes1, int x1, int y1, const vector<MugenArea> & boxes2, int x2, int y2){
+static bool anyCollisions(const vector<Mugen::MugenArea> & boxes1, int x1, int y1, const vector<Mugen::MugenArea> & boxes2, int x2, int y2){
 
-    for (vector<MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
-        for (vector<MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
-            const MugenArea & attack = *attack_i;
-            const MugenArea & defense = *defense_i;
+    for (vector<Mugen::MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
+        for (vector<Mugen::MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
+            const Mugen::MugenArea & attack = *attack_i;
+            const Mugen::MugenArea & defense = *defense_i;
             if (attack.collision(x1, y1, defense, x2, y2)){
                 return true;
             }
@@ -767,11 +767,11 @@ static bool anyCollisions(const vector<MugenArea> & boxes1, int x1, int y1, cons
 
 }
 
-static bool anyBlocking(const vector<MugenArea> & boxes1, int x1, int y1, int attackDist, const vector<MugenArea> & boxes2, int x2, int y2){
-    for (vector<MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
-        for (vector<MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
-            const MugenArea & attack = *attack_i;
-            MugenArea defense = *defense_i;
+static bool anyBlocking(const vector<Mugen::MugenArea> & boxes1, int x1, int y1, int attackDist, const vector<Mugen::MugenArea> & boxes2, int x2, int y2){
+    for (vector<Mugen::MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
+        for (vector<Mugen::MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
+            const Mugen::MugenArea & attack = *attack_i;
+            Mugen::MugenArea defense = *defense_i;
 	    defense.x1 -= attackDist;
 	    defense.x2 += attackDist;
             if (attack.collision(x1, y1, defense, x2, y2)){
@@ -792,7 +792,7 @@ bool Mugen::Stage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * ob
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Stage::getFightAnimation(int id){
+PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Stage::getFightAnimation(int id){
     if (sparks[id] == 0){
         ostringstream out;
         out << "No fightfx animation for " << id;
@@ -803,7 +803,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Mugen::Stage::getFightAnimation(int
 }
 
 void Mugen::Stage::addSpark(int x, int y, int sparkNumber, bool own, Character * owner){
-    PaintownUtil::ReferenceCount<MugenAnimation> sprite;
+    PaintownUtil::ReferenceCount<Mugen::Animation> sprite;
     if (own && owner != NULL){
         sprite = owner->getAnimation(sparkNumber);
     } else {
@@ -819,7 +819,7 @@ void Mugen::Stage::addSpark(int x, int y, int sparkNumber, bool own, Character *
         return;
     }
     /* FIXME: sprite priority */
-    Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<MugenAnimation>(sprite->copy()));
+    Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<Mugen::Animation>(sprite->copy()));
     showSparks.push_back(spark);
 }
 
@@ -835,10 +835,10 @@ void Mugen::Stage::addSpark(int x, int y, const ResourceEffect & resource, const
 }
 
 /*
-void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation){
+void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<Animation> & animation){
     if (animation != NULL){
         / * FIXME: sprite priority * /
-        Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<MugenAnimation>(animation->copy()));
+        Mugen::Spark * spark = new Mugen::Spark(x, y, 0, PaintownUtil::ReferenceCount<Animation>(animation->copy()));
         showSparks.push_back(spark);
     }
 }

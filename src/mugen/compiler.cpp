@@ -1529,7 +1529,7 @@ public:
             class AnimTime: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    PaintownUtil::ReferenceCount<MugenAnimation> animation = environment.getCharacter().getCurrentAnimation();
+                    PaintownUtil::ReferenceCount<Animation> animation = environment.getCharacter().getCurrentAnimation();
                     if (animation == NULL){
                         std::ostringstream out;
                         out << "No animation for position " << environment.getCharacter().getAnimation() << std::endl;
@@ -4402,7 +4402,7 @@ public:
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     int index = (int) this->index->evaluate(environment).toNumber();
-                    PaintownUtil::ReferenceCount<MugenAnimation> animation = environment.getCharacter().getCurrentAnimation();
+                    PaintownUtil::ReferenceCount<Animation> animation = environment.getCharacter().getCurrentAnimation();
                     if (animation == NULL){
                         runtimeError("Current animation is NULL", __FILE__, __LINE__);
                     }
@@ -4429,7 +4429,7 @@ public:
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
-                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    Animation * animation = environment.getCharacter().getCurrentAnimation();
                     if (animation->getPosition() + 1 == index){
                         / * handle the second argument of animelem here * /
                         return RuntimeValue(animation->getTicks() == 0);
@@ -4459,7 +4459,7 @@ public:
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     unsigned int index = (unsigned int) this->index->evaluate(environment).toNumber();
-                    MugenAnimation * animation = environment.getCharacter().getCurrentAnimation();
+                    Animation * animation = environment.getCharacter().getCurrentAnimation();
                     if (animation->getPosition() + 1 <= index){
                         / * handle the second argument of animelem here * /
                         return RuntimeValue(animation->getTicks() == 0);

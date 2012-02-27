@@ -4075,7 +4075,7 @@ public:
 
     class ExplodeEffect: public Effect {
     public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip, bool verticalFlip, bool ownPalette, bool removeOnHit):
+        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<Animation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip, bool verticalFlip, bool ownPalette, bool removeOnHit):
             Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
             stage(stage),
             velocityX(velocityX),
@@ -4354,7 +4354,7 @@ public:
 
         bool ownPalette = evaluateBool(this->ownPalette, env, false);
 
-        PaintownUtil::ReferenceCount<MugenAnimation> animation;
+        PaintownUtil::ReferenceCount<Animation> animation;
         if (ownAnimation){
             animation = guy.getAnimation(animation_value);
         } else {
@@ -4443,7 +4443,7 @@ public:
         x += PaintownUtil::rnd(random) - random / 2;
         y += PaintownUtil::rnd(random) - random / 2;
 
-        PaintownUtil::ReferenceCount<MugenAnimation> animation;
+        PaintownUtil::ReferenceCount<Animation> animation;
         animation = stage.getFightAnimation(animation_value);
         if (animation == NULL){
             ostringstream out;
@@ -4453,7 +4453,7 @@ public:
 
         class GameAnimation: public Effect {
         public:
-            GameAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int x, int y):
+            GameAnimation(PaintownUtil::ReferenceCount<Animation> animation, int x, int y):
             /* FIXME: sprite priority */
             Effect(NULL, animation, -1, x, y, 1, 1, 0){
             }
@@ -5652,7 +5652,7 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         int animation = (int) evaluateNumber(value, FullEnvironment(stage, guy, commands), 0);
-        PaintownUtil::ReferenceCount<MugenAnimation> show = stage.getEnemy(&guy)->getAnimation(animation);
+        PaintownUtil::ReferenceCount<Animation> show = stage.getEnemy(&guy)->getAnimation(animation);
         if (show != NULL){
             guy.setForeignAnimation(show, animation);
         } else {

@@ -17,7 +17,6 @@
 namespace PaintownUtil = ::Util;
 typedef ::Util::ReferenceCount<Ast::AstParse> AstRef;
 
-class MugenAnimation;
 class MugenBackground;
 class MugenSprite;
 class MugenSound;
@@ -29,6 +28,8 @@ namespace Ast{
 }
 
 namespace Mugen{
+
+    class Animation;
 
 /* Makes the use of the sprite maps easier */
 typedef std::map< unsigned int, MugenSprite *> GroupMap;
@@ -79,12 +80,12 @@ namespace Util{
     // Get background: The background must be deleted if used outside of stage/menus (Note: we give the background a ticker to whatever is running it)
     MugenBackground *getBackground( const unsigned long int &ticker, Ast::Section *section, Mugen::SpriteMap &sprites );
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
-    PaintownUtil::ReferenceCount<MugenAnimation> getAnimation(Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
+    PaintownUtil::ReferenceCount<Animation> getAnimation(Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
     /* pull a sprite out of a const sprite map */
     MugenSprite * getSprite(const Mugen::SpriteMap & sprites, int group, int item);
 
     /* if mask is true, then effects.mask will be true by default */
-    std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask);
+    std::map<int, PaintownUtil::ReferenceCount<Animation> > loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask);
 
     /* destroys raw pcx data in a MugenSprite */
     void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);

@@ -573,7 +573,7 @@ pushPlayer(0){
 /* FIXME: need to copy more attributes */
 Character::Character(const Character & copy):
 Object(copy),
-commonSounds(NULL),
+commonSounds(copy.commonSounds),
 debug(false),
 needToGuard(false),
 frozen(false),
@@ -725,11 +725,13 @@ Character::~Character(){
     }
     
      // Get rid of bitmaps
+    /*
     for( std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > >::iterator i = bitmaps.begin() ; i != bitmaps.end() ; ++i ){
       for( std::map< unsigned int, Graphics::Bitmap * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
+    */
     
     animations.clear();
     
@@ -2623,7 +2625,7 @@ int Character::getAnimation() const {
     return currentAnimation;
 }
 
-PaintownUtil::ReferenceCount<MugenAnimation> Character::getCurrentAnimation() const {
+PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
     /* Foreign animation is set by ChangeAnim2 */
     if (foreignAnimation != NULL){
         return foreignAnimation;
@@ -2631,10 +2633,10 @@ PaintownUtil::ReferenceCount<MugenAnimation> Character::getCurrentAnimation() co
 
     return getAnimation(currentAnimation);
     /*
-    typedef std::map< int, MugenAnimation * > Animations;
+    typedef std::map< int, Animation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentAnimation);
     if (it != getAnimations().end()){
-        MugenAnimation * animation = (*it).second;
+        Animation * animation = (*it).second;
         return animation;
     }
     return NULL;
@@ -2699,7 +2701,7 @@ void Character::processAfterImages(){
     /* not sure if checking for the timegap > 0 is the right thing.. */
     if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
         afterImage.currentTime += afterImage.timegap;
-        PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
+        PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
             MugenFrame * currentSprite = animation->getCurrentFrame();
@@ -2795,13 +2797,13 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
         hitState.shakeTime -= 1;
 
         /* Need to update the animation so it doesn't get stuck */
-        PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
+        PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             animation->virtualTick();
         }
     } else {
         /* Stuff to skip if the player is shaking/paused */
-        PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
+        PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             /* Check debug state */
             if (debug && !isHelper()){
@@ -3418,7 +3420,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     // frame.cache = Bitmap(fixed, true);
 }
 
-void Character::drawWithEffects(const PaintownUtil::ReferenceCount<MugenAnimation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work){
+void Character::drawWithEffects(const PaintownUtil::ReferenceCount<Animation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work){
     class Effects: public Graphics::Bitmap::Filter {
     public:
         Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
@@ -3593,7 +3595,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         return;
     }
 
-    PaintownUtil::ReferenceCount<MugenAnimation> animation = getCurrentAnimation();
+    PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
     /* this should never be NULL... */
     if (animation != NULL){
         int x = getX() - cameraX + drawOffset.x;
@@ -3922,12 +3924,12 @@ void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, i
  * a separate set of foreign data, that way everything will just work, such as hasAnimation()
  * and whatnot.
  */
-PaintownUtil::ReferenceCount<MugenAnimation> Character::getAnimation(int id) const {
-    std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> >::const_iterator where = getAnimations().find(id);
+PaintownUtil::ReferenceCount<Animation> Character::getAnimation(int id) const {
+    std::map<int, PaintownUtil::ReferenceCount<Animation> >::const_iterator where = getAnimations().find(id);
     if (where != getAnimations().end()){
         return where->second;
     }
-    return PaintownUtil::ReferenceCount<MugenAnimation>(NULL);
+    return PaintownUtil::ReferenceCount<Animation>(NULL);
 }
         
 void Character::setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes){
@@ -4005,8 +4007,8 @@ int Character::getSpritePriority() const {
 }
 
 /* Replace the sprites from the given animation with sprites from our own sff file */
-PaintownUtil::ReferenceCount<MugenAnimation> Character::replaceSprites(const PaintownUtil::ReferenceCount<MugenAnimation> & animation){
-    PaintownUtil::ReferenceCount<MugenAnimation> update = PaintownUtil::ReferenceCount<MugenAnimation>(new MugenAnimation(*animation));
+PaintownUtil::ReferenceCount<Animation> Character::replaceSprites(const PaintownUtil::ReferenceCount<Animation> & animation){
+    PaintownUtil::ReferenceCount<Animation> update = PaintownUtil::ReferenceCount<Animation>(new Animation(*animation));
     const vector<MugenFrame*> & frames = update->getFrames();
     for (vector<MugenFrame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
         MugenFrame * frame = *it;
@@ -4019,7 +4021,7 @@ PaintownUtil::ReferenceCount<MugenAnimation> Character::replaceSprites(const Pai
     return update;
 }
 
-void Character::setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int number){
+void Character::setForeignAnimation(PaintownUtil::ReferenceCount<Animation> animation, int number){
     foreignAnimation = replaceSprites(animation);
     foreignAnimationNumber = number;
 }

@@ -14,6 +14,8 @@
 
 using namespace std;
 
+namespace Mugen{
+
 static void renderCollision( const std::vector< MugenArea > &vec, const Graphics::Bitmap &bmp, int x, int y, Graphics::Color color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
@@ -128,7 +130,7 @@ MugenFrame::~MugenFrame(){
 /*
 Holds mugen animations, ie: player.air
 */
-MugenAnimation::MugenAnimation():
+Animation::Animation():
 loopPosition(0),
 position(0),
 playOnce(false),
@@ -141,7 +143,7 @@ ticks(0),
 virtual_ticks(0){
 }
 
-MugenAnimation::MugenAnimation(const MugenAnimation &copy):
+Animation::Animation(const Animation &copy):
 playOnce(copy.playOnce),
 looped(false){
     this->loopPosition = copy.loopPosition;
@@ -158,7 +160,7 @@ looped(false){
     this->started = false;
 }
 
-MugenAnimation::~MugenAnimation(){
+Animation::~Animation(){
     for (std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i){
 	if (*i){
             delete (*i);
@@ -166,14 +168,14 @@ MugenAnimation::~MugenAnimation(){
     }
 }
 
-void MugenAnimation::addFrame( MugenFrame *frame ){
+void Animation::addFrame( MugenFrame *frame ){
     if (frame->loopstart){
 	loopPosition = frames.size();
     }
     frames.push_back(frame);
 }
 
-const MugenFrame * MugenAnimation::getNext(){
+const MugenFrame * Animation::getNext(){
     if (position < frames.size() - 1){
         position += 1;
     } else {
@@ -189,7 +191,7 @@ const MugenFrame * MugenAnimation::getNext(){
  * position should be between 1 and frames.size() + 1, i.e. the index
  * starts at 1 instead of 0.
  */
-int MugenAnimation::animationElementElapsed(int position) const {
+int Animation::animationElementElapsed(int position) const {
     int total = 0;
     if (position < 1 || position > (int) frames.size() + 1){
         ostringstream out;
@@ -214,7 +216,7 @@ int MugenAnimation::animationElementElapsed(int position) const {
 }
 
 /* time left in the animation */
-int MugenAnimation::animationTime() const {
+int Animation::animationTime() const {
     // return (int) position - (int) frames.size() + 1;
     if (frames[position]->time == -1){
         return -1;
@@ -249,7 +251,7 @@ static vector<MugenArea> reverseBoxes(const vector<MugenArea> & boxes){
     return out;
 }
 
-const std::vector<MugenArea> MugenAnimation::getDefenseBoxes(bool reverse) const {
+const std::vector<MugenArea> Animation::getDefenseBoxes(bool reverse) const {
     MugenFrame * frame = frames[position];
     if (reverse){
         return reverseBoxes(frame->getDefenseBoxes());
@@ -257,7 +259,7 @@ const std::vector<MugenArea> MugenAnimation::getDefenseBoxes(bool reverse) const
     return frame->getDefenseBoxes();
 }
 
-const std::vector<MugenArea> MugenAnimation::getAttackBoxes(bool reverse) const {
+const std::vector<MugenArea> Animation::getAttackBoxes(bool reverse) const {
     MugenFrame * frame = frames[position];
     if (reverse){
         return reverseBoxes(frame->getAttackBoxes());
@@ -265,11 +267,11 @@ const std::vector<MugenArea> MugenAnimation::getAttackBoxes(bool reverse) const 
     return frame->getAttackBoxes();
 }
         
-void MugenAnimation::virtualTick(){
+void Animation::virtualTick(){
     virtual_ticks += 1;
 }
 
-void MugenAnimation::logic(){
+void Animation::logic(){
     if (position < frames.size()){
         if (frames[position]->time != -1){
             ticks += 1;
@@ -291,7 +293,7 @@ void MugenAnimation::logic(){
     }
 }
         
-void MugenAnimation::setPosition(int position){
+void Animation::setPosition(int position){
     if (position < frames.size() && position >= 0){
         this->position = position;
         this->ticks = 0;
@@ -299,7 +301,7 @@ void MugenAnimation::setPosition(int position){
     }
 }
 
-void MugenAnimation::reset(){ 
+void Animation::reset(){ 
     this->position = 0; 
     if (this->playOnce){
         this->started = false;
@@ -309,7 +311,7 @@ void MugenAnimation::reset(){
     this->virtual_ticks = 0;
 }
 
-void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
+void Animation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     
     frame->render(xaxis, yaxis, work, effects);
 
@@ -322,7 +324,7 @@ void MugenAnimation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const
     }
 }
 
-void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
+void Animation::render(int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     if (position >= frames.size()){
         return;
     }
@@ -331,11 +333,11 @@ void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap & work,
     renderFrame(frames[position], xaxis, yaxis, work, combined);
 }
         
-MugenAnimation * MugenAnimation::copy() const {
-    return new MugenAnimation(*this);
+Animation * Animation::copy() const {
+    return new Animation(*this);
 }
 
-void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley){
+void Animation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley){
     if (position >= frames.size()){
         return;
     }
@@ -368,7 +370,7 @@ void MugenAnimation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, 
 #endif
 }
 
-Mugen::Effects MugenAnimation::getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley){
+Mugen::Effects Animation::getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley){
     MugenFrame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
@@ -378,7 +380,7 @@ Mugen::Effects MugenAnimation::getCurrentEffects(bool facing, bool vfacing, doub
     return effects;
 }
 
-void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley, Graphics::Bitmap::Filter * filter){
+void Animation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley, Graphics::Bitmap::Filter * filter){
     if (position >= frames.size()){
         return;
     }
@@ -394,7 +396,7 @@ void MugenAnimation::render(bool facing, bool vfacing, const int xaxis, const in
     renderFrame(frame, xaxis, yaxis, work, effects);
 }
 
-void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley){
+void Animation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley){
     if (position >= frames.size()){
         return;
     }
@@ -411,18 +413,18 @@ void MugenAnimation::renderReflection(bool facing, bool vfacing, int alpha, cons
     frame->render(xaxis, yaxis, work, effects);
 }
 
-void MugenAnimation::forwardFrame(){
+void Animation::forwardFrame(){
     if( position < frames.size() -1 )position++;
     else position = loopPosition;
 }
 
-void MugenAnimation::backFrame(){
+void Animation::backFrame(){
     if( position > loopPosition )position--;
     else position = frames.size() - 1;
 }
 
 /* who uses this function? */
-void MugenAnimation::reloadBitmaps(){
+void Animation::reloadBitmaps(){
     for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
 	MugenFrame *frame = *i;
 	if (frame->sprite){
@@ -434,7 +436,7 @@ void MugenAnimation::reloadBitmaps(){
 }
 
 // Get name of type of animation
-const std::string MugenAnimation::getName(const Mugen::AnimationType t){
+const std::string Animation::getName(const Mugen::AnimationType t){
     switch( t ){
         case Mugen::Standing : return "Standing";break;
 	case Mugen::StandTurning : return "Stand turning";break;
@@ -533,4 +535,6 @@ const std::string MugenAnimation::getName(const Mugen::AnimationType t){
 	case Mugen::Unknown :
 	default: return "Custom or Optional Animation";break;
     }
+}
+
 }

@@ -18,6 +18,7 @@ namespace Console{
 }
 
 namespace Mugen{
+    class Animation;
     class Character;
     struct ResourceEffect;
     class Projectile;
@@ -30,7 +31,7 @@ namespace Mugen{
 
 class Effect{
 public:
-    Effect(const Character * owner, PaintownUtil::ReferenceCount<MugenAnimation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority);
+    Effect(const Character * owner, PaintownUtil::ReferenceCount<Animation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority);
     
     virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY);
     virtual void logic();
@@ -67,7 +68,7 @@ public:
     virtual ~Effect();
 protected:
     const Character * owner;
-    PaintownUtil::ReferenceCount<MugenAnimation> animation;
+    PaintownUtil::ReferenceCount<Animation> animation;
     int id;
     double x;
     double y;
@@ -85,7 +86,6 @@ namespace Ast{
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
-class MugenAnimation;
 // class MugenBackgroundManager;
 
 struct PlayerData {
@@ -115,7 +115,7 @@ public:
         return name;
     }
     /*
-       inline const std::map<int, MugenAnimation*> & getAnimations() const {
+       inline const std::map<int, Animation*> & getAnimations() const {
        return animations;
        }*/
     
@@ -232,7 +232,7 @@ public:
     virtual void createDust(int x, int y);
 
     /* get an animation from fightfx.sff */
-    virtual PaintownUtil::ReferenceCount<MugenAnimation> getFightAnimation(int id);
+    virtual PaintownUtil::ReferenceCount<Animation> getFightAnimation(int id);
 
     virtual void addProjectile(Projectile * projectile);
     virtual void addEffect(Effect * effect);
@@ -354,7 +354,7 @@ protected:
 protected:
 
     void addSpark(int x, int y, int sparkNumber, bool own, Character * owner);
-    // void addSpark(int x, int y, const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
+    // void addSpark(int x, int y, const PaintownUtil::ReferenceCount<Animation> & animation);
     void addSpark(int x, int y, const ResourceEffect & resource, const ResourceEffect & default_, Character * owner);
     void playSound(Character * owner, int group, int item, bool own);
     void doProjectileCollision(Projectile * projectile, Character * mugen);
@@ -552,7 +552,7 @@ protected:
     //std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 
     /* Animation Lists stored by action number, ie [Begin Action 500] */
-    //std::map< int, MugenAnimation * > animations;
+    //std::map< int, Animation * > animations;
 
     /* Backgrounds */
     //std::vector< MugenBackground * > backgrounds;
@@ -651,7 +651,7 @@ private:
     void initializeName();
 
     SpriteMap effects;
-    std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > sparks;
+    std::map<int, PaintownUtil::ReferenceCount<Animation> > sparks;
     std::vector<Effect*> showSparks;
 
     // Character huds

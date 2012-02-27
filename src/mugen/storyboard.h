@@ -22,7 +22,6 @@ class Bitmap;
 
 class MugenSprite;
 class MugenSound;
-class MugenAnimation;
 
 namespace Ast{
 class AstParse;
@@ -30,6 +29,7 @@ class AstParse;
 
 namespace Mugen{
  
+class Animation;
 class Background;
 
 
@@ -53,7 +53,7 @@ class Layer{
             return this->startTime;
         }
 
-        virtual inline void setAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation){
+        virtual inline void setAnimation(PaintownUtil::ReferenceCount<Animation> animation){
             this->animation = animation;
         }
         //! Override
@@ -64,7 +64,7 @@ class Layer{
 	Mugen::Point offset;
 	int startTime;
         bool enabled;
-        PaintownUtil::ReferenceCount<MugenAnimation> animation;
+        PaintownUtil::ReferenceCount<Animation> animation;
 };
 
 class Scene {

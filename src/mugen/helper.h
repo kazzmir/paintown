@@ -25,7 +25,7 @@ public:
     virtual const std::string getName() const;
     virtual const std::string getDisplayName() const;
     using Character::getAnimation;
-    virtual PaintownUtil::ReferenceCount<MugenAnimation> getAnimation(int id) const;
+    virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
     using Character::getState;
     virtual State * getState(int id) const;
 
@@ -53,7 +53,7 @@ protected:
     const Character * root;
     HitDefinition hit;
     DummyBehavior dummy;
-    mutable std::map< int, PaintownUtil::ReferenceCount<MugenAnimation> > proxyAnimations;
+    mutable std::map< int, PaintownUtil::ReferenceCount<Animation> > proxyAnimations;
     mutable std::map< int, State *> proxyStates;
     int id;
     std::string name;

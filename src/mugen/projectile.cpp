@@ -47,9 +47,9 @@ cancelAnimation(cancelAnimation),
 lastHitTicks(0),
 lastGuardTicks(0),
 lastCanceled(0){
-    PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(animation);
+    PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(animation);
     if (his != NULL){
-        this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+        this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
     }
 }
 
@@ -100,9 +100,9 @@ const std::vector<MugenArea> Projectile::getDefenseBoxes() const {
 void Projectile::doCollision(Object * mugen, const Stage & stage){
     hits -= 1;
     if (hits <= 0){
-        PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(hitAnimation);
+        PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(hitAnimation);
         if (his != NULL){
-            this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+            this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
         }
         velocityX = removeVelocityX;
         velocityY = removeVelocityY;
@@ -137,9 +137,9 @@ void Projectile::canceled(const Stage & stage, Projectile * higher){
     velocityX = removeVelocityX;
     velocityY = removeVelocityY;
     lastCanceled = stage.getTicks();
-    PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(cancelAnimation);
+    PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(cancelAnimation);
     if (his != NULL){
-        this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+        this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
     }
 }
     
@@ -158,9 +158,9 @@ void Projectile::logic(){
         removeTime -= 1;
 
         if (removeTime == 0){
-            PaintownUtil::ReferenceCount<MugenAnimation> his = owner->getAnimation(removeAnimation);
+            PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(removeAnimation);
             if (his != NULL){
-                this->animation = PaintownUtil::ReferenceCount<MugenAnimation>(his->copy());
+                this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
             }
             velocityX = removeVelocityX;
             velocityY = removeVelocityY;

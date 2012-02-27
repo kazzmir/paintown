@@ -12,6 +12,7 @@ class Bitmap;
 }
 class MugenSprite;
 
+namespace Mugen{
 /*
 Collision Area
 */
@@ -96,18 +97,18 @@ class MugenFrame{
 /*
  * Holds mugen animations, ie: player.air
  */
-class MugenAnimation{
+class Animation{
     public:
-	MugenAnimation();
-	MugenAnimation( const MugenAnimation &copy );
-	virtual ~MugenAnimation();
+	Animation();
+	Animation( const Animation &copy );
+	virtual ~Animation();
 	
 	// Get next Frame
 	const MugenFrame *getNext();
 	
         virtual void reset();
 
-        virtual MugenAnimation * copy() const;
+        virtual Animation * copy() const;
 	
 	// Add a frame
 	void addFrame( MugenFrame * );
@@ -227,5 +228,7 @@ class MugenAnimation{
         /* incremented when the animation specifies a looptime of -1 */
         int virtual_ticks;
 };
+
+}
 
 #endif

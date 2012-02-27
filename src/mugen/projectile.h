@@ -11,9 +11,9 @@ namespace Graphics{
 class Bitmap;
 }
 
-class MugenAnimation;
 namespace Mugen{
 
+class Animation;
 class Object;
 class Character;
 class Projectile{
@@ -74,7 +74,7 @@ public:
 protected:
     Character * owner;
     int spritePriority;
-    ::Util::ReferenceCount<MugenAnimation> animation;
+    ::Util::ReferenceCount<Animation> animation;
     double x, y;
     double velocityX, velocityY;
     double accelerateX, accelerateY;

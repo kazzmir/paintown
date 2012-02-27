@@ -275,9 +275,9 @@ public:
     virtual ~AnimationElement();
     virtual void act();
     virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
-    virtual void setAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation);
+    virtual void setAnimation(PaintownUtil::ReferenceCount<Animation> animation);
 private:
-    PaintownUtil::ReferenceCount<MugenAnimation> animation;
+    PaintownUtil::ReferenceCount<Animation> animation;
 };
 
 /*! Parallax Element */
@@ -457,7 +457,7 @@ class Background{
 	Mugen::SpriteMap sprites;
 	
 	//! Animations
-	// std::map< int, MugenAnimation * > animations;
+	// std::map< int, Animation * > animations;
 	
 	//! Debug State
 	bool debug;

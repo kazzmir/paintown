@@ -41,10 +41,10 @@ class Bitmap;
 class MugenItemContent;
 class MugenSprite;
 class MugenSound;
-class MugenAnimation;
 
 namespace Mugen{
 
+class Animation;
 extern PaintownUtil::Parameter<Filesystem::RelativePath> stateFileParameter;
 
 class Behavior;
@@ -398,11 +398,11 @@ public:
             return currentPalette;
         }
 
-        virtual inline const std::map<int, PaintownUtil::ReferenceCount<MugenAnimation> > & getAnimations() const {
+        virtual inline const std::map<int, PaintownUtil::ReferenceCount<Animation> > & getAnimations() const {
             return animations;
         }
 
-        virtual PaintownUtil::ReferenceCount<MugenAnimation> getAnimation(int id) const;
+        virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
 
         /*
         virtual inline void setInput(const InputMap<Mugen::Keys> & inputLeft, const InputMap<Mugen::Keys> & inputRight){
@@ -424,7 +424,7 @@ public:
         }
 
         virtual const MugenSprite * getCurrentFrame() const;
-        PaintownUtil::ReferenceCount<MugenAnimation> getCurrentAnimation() const;
+        PaintownUtil::ReferenceCount<Animation> getCurrentAnimation() const;
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
 
@@ -1049,7 +1049,7 @@ public:
         virtual void setSpritePriority(int priority);
         virtual int getSpritePriority() const;
         
-        virtual void setForeignAnimation(PaintownUtil::ReferenceCount<MugenAnimation> animation, int number);
+        virtual void setForeignAnimation(PaintownUtil::ReferenceCount<Animation> animation, int number);
 
         virtual bool isHelper() const;
 
@@ -1135,7 +1135,7 @@ protected:
 
 protected:
 
-    PaintownUtil::ReferenceCount<MugenAnimation> replaceSprites(const PaintownUtil::ReferenceCount<MugenAnimation> & animation);
+    PaintownUtil::ReferenceCount<Animation> replaceSprites(const PaintownUtil::ReferenceCount<Animation> & animation);
 
 	/* Location is the directory passed in ctor
 	This is where the def is loaded and all the relevant files
@@ -1320,10 +1320,10 @@ protected:
 	/* Sprites */
 	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
 	// Bitmaps of those sprites
-	std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
+	// std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
 	
 	/* Animation Lists stored by action number, ie [Begin Action 500] */
-	std::map< int, PaintownUtil::ReferenceCount<MugenAnimation> > animations;
+	std::map< int, PaintownUtil::ReferenceCount<Animation> > animations;
 	
 	/* Sounds */
 	std::map< unsigned int, std::map< unsigned int, MugenSound * > > sounds;
@@ -1393,7 +1393,7 @@ protected:
 
         Behavior * behavior;
 
-        PaintownUtil::ReferenceCount<MugenAnimation> foreignAnimation;
+        PaintownUtil::ReferenceCount<Animation> foreignAnimation;
         int foreignAnimationNumber;
 
         /* true if the player is holding the back button */
@@ -1632,7 +1632,7 @@ public:
         PaletteEffects paletteEffects;
 
         virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
-        void drawWithEffects(const PaintownUtil::ReferenceCount<MugenAnimation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
+        void drawWithEffects(const PaintownUtil::ReferenceCount<Animation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
 
         double max_health;
         double health;
