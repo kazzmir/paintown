@@ -8,19 +8,23 @@
 
 #include "util.h"
 
+namespace PaintownUtil = ::Util;
+
 namespace Graphics{
 class Bitmap;
 }
 
-class MugenSprite{
+namespace Mugen{
+
+class Sprite{
     public:
-	MugenSprite(bool defaultMask);
-	MugenSprite(const MugenSprite &copy);
-	virtual ~MugenSprite();
+	Sprite(bool defaultMask);
+	Sprite(const Sprite &copy);
+	virtual ~Sprite();
 	
-	MugenSprite & operator=(const MugenSprite &copy);
+	Sprite & operator=(const Sprite &copy);
 	// For map searching
-	bool operator<(const MugenSprite &copy);
+	bool operator<(const Sprite &copy);
 	
 	// Reads in the sprite info from stream
 	void read(std::ifstream & ifile, const int loc);
@@ -40,7 +44,7 @@ class MugenSprite{
         void unloadRaw();
 
         /* just copies the bitmap */
-        void copyImage(const MugenSprite * copy);
+        void copyImage(const Sprite * copy);
 
 	int getWidth() const;
 	int getHeight() const;
@@ -83,10 +87,10 @@ class MugenSprite{
         void cleanup();
 	
 	/* get the internal bitmap */
-        Util::ReferenceCount<Graphics::Bitmap> getBitmap(bool mask);
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> getBitmap(bool mask);
 
         /* get the properly scaled sprite */
-        Util::ReferenceCount<Graphics::Bitmap> getFinalBitmap(const Mugen::Effects & effects);
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> getFinalBitmap(const Mugen::Effects & effects);
 	
     private:
 	uint32_t next;
@@ -111,10 +115,12 @@ class MugenSprite{
         bool defaultMask;
 	
         /* Loaded with a palette that may not be our own */
-        Util::ReferenceCount<Graphics::Bitmap> unmaskedBitmap;
-        Util::ReferenceCount<Graphics::Bitmap> maskedBitmap;
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> unmaskedBitmap;
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> maskedBitmap;
         
-        void draw(const Util::ReferenceCount<Graphics::Bitmap> &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
+        void draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
 };
+
+}
 
 #endif

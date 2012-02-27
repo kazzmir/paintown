@@ -16,28 +16,28 @@ using namespace std;
 
 namespace Mugen{
 
-static void renderCollision( const std::vector< MugenArea > &vec, const Graphics::Bitmap &bmp, int x, int y, Graphics::Color color ){
+static void renderCollision( const std::vector< Area > &vec, const Graphics::Bitmap &bmp, int x, int y, Graphics::Color color ){
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
     }
 }
 
 /// area
-MugenArea::MugenArea():
+Area::Area():
 x1(0),
 y1(0),
 x2(0),
 y2(0){ 
 }
 
-MugenArea::MugenArea( const MugenArea &copy ){
+Area::Area( const Area &copy ){
     this->x1 = copy.x1;
     this->y1 = copy.y1;
     this->x2 = copy.x2;
     this->y2 = copy.y2;
 }
 
-MugenArea & MugenArea::operator=( const MugenArea &copy ){
+Area & Area::operator=( const Area &copy ){
     this->x1 = copy.x1;
     this->y1 = copy.y1;
     this->x2 = copy.x2;
@@ -46,10 +46,10 @@ MugenArea & MugenArea::operator=( const MugenArea &copy ){
     return *this;
 }
 
-MugenArea::~MugenArea(){
+Area::~Area(){
 }
 
-bool MugenArea::collision(int mx, int my, const MugenArea & area, int ax, int ay) const {
+bool Area::collision(int mx, int my, const Area & area, int ax, int ay) const {
 
     const int x1 = this->x1 + mx;
     const int x2 = this->x2 + mx;
@@ -76,7 +76,7 @@ bool MugenArea::collision(int mx, int my, const MugenArea & area, int ax, int ay
 /*
 Frame
 */
-MugenFrame::MugenFrame(bool mask):
+Frame::Frame(bool mask):
 loopstart(false),
 sprite(0),
 xoffset(0),
@@ -85,7 +85,7 @@ time(0){
     effects.mask = mask;
 }
 
-MugenFrame::MugenFrame(const MugenFrame &copy){
+Frame::Frame(const Frame &copy){
     this->loopstart = copy.loopstart;
     this->sprite = copy.sprite;
     this->xoffset = copy.xoffset;
@@ -96,7 +96,7 @@ MugenFrame::MugenFrame(const MugenFrame &copy){
     this->attackCollision = copy.attackCollision;
 }
 
-MugenFrame & MugenFrame::operator=(const MugenFrame &copy){
+Frame & Frame::operator=(const Frame &copy){
     this->loopstart = copy.loopstart;
     this->sprite = copy.sprite;
     this->xoffset = copy.xoffset;
@@ -109,7 +109,7 @@ MugenFrame & MugenFrame::operator=(const MugenFrame &copy){
     return *this;
 }
 
-void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
+void Frame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (sprite != NULL){
         const int placex = x + (xoffset * effects.facing);
         const int placey = y + (yoffset * effects.vfacing);
@@ -117,11 +117,11 @@ void MugenFrame::render(int x, int y, const Graphics::Bitmap & work, const Mugen
     }
 }
         
-void MugenFrame::setSprite(MugenSprite * sprite){
+void Frame::setSprite(Sprite * sprite){
     this->sprite = sprite;
 }
 
-MugenFrame::~MugenFrame(){
+Frame::~Frame(){
     /* the sprite is not deleted because it should be referenced from some
      * Mugen::SpriteMap.
      */
@@ -151,9 +151,9 @@ looped(false){
     this->type = copy.type;
     this->showDefense = copy.showDefense;
     this->showOffense = copy.showOffense;
-    for (vector<MugenFrame*>::const_iterator it = copy.frames.begin(); it != copy.frames.end(); it++){
-        MugenFrame * old = *it;
-        this->frames.push_back(new MugenFrame(*old));
+    for (vector<Frame*>::const_iterator it = copy.frames.begin(); it != copy.frames.end(); it++){
+        Frame * old = *it;
+        this->frames.push_back(new Frame(*old));
     }
     this->ticks = 0;
     this->virtual_ticks = 0;
@@ -161,21 +161,21 @@ looped(false){
 }
 
 Animation::~Animation(){
-    for (std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i){
+    for (std::vector< Frame * >::iterator i = frames.begin() ; i != frames.end() ; ++i){
 	if (*i){
             delete (*i);
         }
     }
 }
 
-void Animation::addFrame( MugenFrame *frame ){
+void Animation::addFrame( Frame *frame ){
     if (frame->loopstart){
 	loopPosition = frames.size();
     }
     frames.push_back(frame);
 }
 
-const MugenFrame * Animation::getNext(){
+const Frame * Animation::getNext(){
     if (position < frames.size() - 1){
         position += 1;
     } else {
@@ -235,32 +235,32 @@ int Animation::animationTime() const {
 }
 
 /* reverses through the y-axis (just the x coordinates */
-static MugenArea reverseBox(const MugenArea & area){
-    MugenArea reversed(area);
+static Area reverseBox(const Area & area){
+    Area reversed(area);
     reversed.x1 = -reversed.x1;
     reversed.x2 = -reversed.x2;
     return reversed;
 }
 
-static vector<MugenArea> reverseBoxes(const vector<MugenArea> & boxes){
-    vector<MugenArea> out;
-    for (vector<MugenArea>::const_iterator it = boxes.begin(); it != boxes.end(); it++){
+static vector<Area> reverseBoxes(const vector<Area> & boxes){
+    vector<Area> out;
+    for (vector<Area>::const_iterator it = boxes.begin(); it != boxes.end(); it++){
         out.push_back(reverseBox(*it));
     }
 
     return out;
 }
 
-const std::vector<MugenArea> Animation::getDefenseBoxes(bool reverse) const {
-    MugenFrame * frame = frames[position];
+const std::vector<Area> Animation::getDefenseBoxes(bool reverse) const {
+    Frame * frame = frames[position];
     if (reverse){
         return reverseBoxes(frame->getDefenseBoxes());
     }
     return frame->getDefenseBoxes();
 }
 
-const std::vector<MugenArea> Animation::getAttackBoxes(bool reverse) const {
-    MugenFrame * frame = frames[position];
+const std::vector<Area> Animation::getAttackBoxes(bool reverse) const {
+    Frame * frame = frames[position];
     if (reverse){
         return reverseBoxes(frame->getAttackBoxes());
     }
@@ -311,7 +311,7 @@ void Animation::reset(){
     this->virtual_ticks = 0;
 }
 
-void Animation::renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
+void Animation::renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
     
     frame->render(xaxis, yaxis, work, effects);
 
@@ -371,7 +371,7 @@ void Animation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, doubl
 }
 
 Mugen::Effects Animation::getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley){
-    MugenFrame * frame = frames[position];
+    Frame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
@@ -385,7 +385,7 @@ void Animation::render(bool facing, bool vfacing, const int xaxis, const int yax
         return;
     }
 
-    MugenFrame * frame = frames[position];
+    Frame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
@@ -401,7 +401,7 @@ void Animation::renderReflection(bool facing, bool vfacing, int alpha, const int
         return;
     }
 
-    MugenFrame * frame = frames[position];
+    Frame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
     effects.facing = (facing ? -1 : 1);
     effects.vfacing = (vfacing ? -1 : 1);
@@ -425,8 +425,8 @@ void Animation::backFrame(){
 
 /* who uses this function? */
 void Animation::reloadBitmaps(){
-    for( std::vector< MugenFrame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
-	MugenFrame *frame = *i;
+    for( std::vector< Frame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
+	Frame *frame = *i;
 	if (frame->sprite){
 	   // if (frame->bmp) delete frame->bmp;
 	    //frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));

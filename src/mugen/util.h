@@ -18,7 +18,6 @@ namespace PaintownUtil = ::Util;
 typedef ::Util::ReferenceCount<Ast::AstParse> AstRef;
 
 class MugenBackground;
-class MugenSprite;
 class MugenSound;
 class MugenItemContent;
 class MugenSection;
@@ -30,9 +29,10 @@ namespace Ast{
 namespace Mugen{
 
     class Animation;
+    class Sprite;
 
 /* Makes the use of the sprite maps easier */
-typedef std::map< unsigned int, MugenSprite *> GroupMap;
+typedef std::map< unsigned int, Sprite *> GroupMap;
 typedef std::map< unsigned int, GroupMap> SpriteMap;
 typedef std::map< unsigned int, std::map< unsigned int, MugenSound * > > SoundMap;
 
@@ -82,13 +82,13 @@ namespace Util{
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     PaintownUtil::ReferenceCount<Animation> getAnimation(Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
     /* pull a sprite out of a const sprite map */
-    MugenSprite * getSprite(const Mugen::SpriteMap & sprites, int group, int item);
+    Sprite * getSprite(const Mugen::SpriteMap & sprites, int group, int item);
 
     /* if mask is true, then effects.mask will be true by default */
     std::map<int, PaintownUtil::ReferenceCount<Animation> > loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask);
 
-    /* destroys raw pcx data in a MugenSprite */
-    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+    /* destroys raw pcx data in a Sprite */
+    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
 
     // const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
     
@@ -101,11 +101,11 @@ namespace Util{
      * whole sprite list
      * Throws exception if not found
      */
-    MugenSprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
+    Sprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
     /* similar to probeSff but searches for sprites 9000,0 and 9000,1 which are
      * the icon and the portrait respectively.
      */
-    void getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, MugenSprite ** icon, MugenSprite ** portrait);
+    void getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, Sprite ** icon, Sprite ** portrait);
 
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.
@@ -573,9 +573,9 @@ protected:
     //! Act position
     int act;
     //! Icon
-    PaintownUtil::ReferenceCount<MugenSprite> icon;
+    PaintownUtil::ReferenceCount<Sprite> icon;
     //! Portrait
-    PaintownUtil::ReferenceCount<MugenSprite> portrait;
+    PaintownUtil::ReferenceCount<Sprite> portrait;
 };
 
 /*! Single, Simultaneous or Turns collection */

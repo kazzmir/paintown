@@ -16,12 +16,12 @@
 using namespace Mugen;
 
 // Cell static members
-PaintownUtil::ReferenceCount<MugenSprite> Cell::background = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
-PaintownUtil::ReferenceCount<MugenSprite> Cell::randomIcon = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
-PaintownUtil::ReferenceCount<MugenSprite> Cell::player1ActiveCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
-PaintownUtil::ReferenceCount<MugenSprite> Cell::player1DoneCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
-PaintownUtil::ReferenceCount<MugenSprite> Cell::player2ActiveCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
-PaintownUtil::ReferenceCount<MugenSprite> Cell::player2DoneCursor = PaintownUtil::ReferenceCount<MugenSprite>(NULL);
+PaintownUtil::ReferenceCount<Sprite> Cell::background = PaintownUtil::ReferenceCount<Sprite>(NULL);
+PaintownUtil::ReferenceCount<Sprite> Cell::randomIcon = PaintownUtil::ReferenceCount<Sprite>(NULL);
+PaintownUtil::ReferenceCount<Sprite> Cell::player1ActiveCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
+PaintownUtil::ReferenceCount<Sprite> Cell::player1DoneCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
+PaintownUtil::ReferenceCount<Sprite> Cell::player2ActiveCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
+PaintownUtil::ReferenceCount<Sprite> Cell::player2DoneCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
 bool Cell::blinkCursor = false;
 int Cell::blinkTime = 0;
 Mugen::Effects Cell::effects = Mugen::Effects();
@@ -193,27 +193,27 @@ void Cell::select(){
     flash = 10;
 }
 
-void Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite> background){
+void Cell::setBackground(PaintownUtil::ReferenceCount<Sprite> background){
     Cell::background = background;
 }
 
-void Cell::setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon){
+void Cell::setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon){
     Cell::randomIcon = randomIcon;
 }
 
-void Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+void Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
     Cell::player1ActiveCursor = cursor;
 }
 
-void Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+void Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
     Cell::player1DoneCursor = cursor;
 }
 
-void Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+void Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
     Cell::player2ActiveCursor = cursor;
 }
 
-void Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor){
+void Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
     Cell::player2DoneCursor = cursor;
 }
 
@@ -261,17 +261,17 @@ current(Mugen::ArcadeData::CharacterCollection::Simultaneous),
 turns(Mugen::ArcadeData::CharacterCollection::Turns2),
 x(0),
 y(0),
-background(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+background(PaintownUtil::ReferenceCount<Sprite>(NULL)),
 itemOffsetX(0),
 itemOffsetY(0),
 itemSpacingX(0),
 itemSpacingY(0),
 valueIconOffsetX(0),
 valueIconOffsetY(0),
-icon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+icon(PaintownUtil::ReferenceCount<Sprite>(NULL)),
 emptyValueIconOffsetX(0),
 emptyValueIconOffsetY(0),
-emptyIcon(PaintownUtil::ReferenceCount<MugenSprite>(NULL)),
+emptyIcon(PaintownUtil::ReferenceCount<Sprite>(NULL)),
 valueSpacingX(0),
 valueSpacingY(0),
 enabled(false){
@@ -2134,14 +2134,14 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setBackground(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setBackground(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setRandomIcon(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.switchtime"){
@@ -2169,14 +2169,14 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.move.snd"){
@@ -2218,14 +2218,14 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.done.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.blink"){
@@ -2429,7 +2429,7 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player1TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                self.player1TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.selftitle.font"){
@@ -2536,7 +2536,7 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player1TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                self.player1TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.value.empty.icon.offset"){
@@ -2550,7 +2550,7 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player1TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                self.player1TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.value.spacing"){
@@ -2571,7 +2571,7 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player2TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                self.player2TeamMenu.setBackgroundSprite(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.selftitle.font"){
@@ -2678,7 +2678,7 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player2TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                self.player2TeamMenu.setValueIconSprite(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.value.empty.icon.offset"){
@@ -2692,7 +2692,7 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                self.player2TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite>(sprites[group][sprite]));
+                                self.player2TeamMenu.setEmptyValueIconSprite(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.value.spacing"){

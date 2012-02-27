@@ -132,12 +132,12 @@ public:
         return this->character;
     }
     
-    static void setBackground(PaintownUtil::ReferenceCount<MugenSprite> background);
-    static void setRandomIcon(PaintownUtil::ReferenceCount<MugenSprite> randomIcon);
-    static void setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
-    static void setPlayer1DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
-    static void setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
-    static void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<MugenSprite> cursor);
+    static void setBackground(PaintownUtil::ReferenceCount<Sprite> background);
+    static void setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon);
+    static void setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
+    static void setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
+    static void setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
+    static void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
     static inline void setBlinkCursor(bool blink){
         Cell::blinkCursor = blink;
     }
@@ -150,12 +150,12 @@ public:
     }
     
 protected:
-    static PaintownUtil::ReferenceCount<MugenSprite> background;
-    static PaintownUtil::ReferenceCount<MugenSprite> randomIcon;
-    static PaintownUtil::ReferenceCount<MugenSprite> player1ActiveCursor;
-    static PaintownUtil::ReferenceCount<MugenSprite> player1DoneCursor;
-    static PaintownUtil::ReferenceCount<MugenSprite> player2ActiveCursor;
-    static PaintownUtil::ReferenceCount<MugenSprite> player2DoneCursor;
+    static PaintownUtil::ReferenceCount<Sprite> background;
+    static PaintownUtil::ReferenceCount<Sprite> randomIcon;
+    static PaintownUtil::ReferenceCount<Sprite> player1ActiveCursor;
+    static PaintownUtil::ReferenceCount<Sprite> player1DoneCursor;
+    static PaintownUtil::ReferenceCount<Sprite> player2ActiveCursor;
+    static PaintownUtil::ReferenceCount<Sprite> player2DoneCursor;
     
     static bool blinkCursor;
     static int blinkTime;
@@ -212,7 +212,7 @@ public:
         this->x = x;
         this->y = y;
     }
-    virtual inline void setBackgroundSprite(PaintownUtil::ReferenceCount<MugenSprite> sprite){
+    virtual inline void setBackgroundSprite(PaintownUtil::ReferenceCount<Sprite> sprite){
         this->background = sprite;
     }
     virtual inline void setItemOffset(int x, int y){
@@ -227,14 +227,14 @@ public:
         this->valueIconOffsetX = x;
         this->valueIconOffsetY = y;
     }
-    virtual inline void setValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite> icon){
+    virtual inline void setValueIconSprite(PaintownUtil::ReferenceCount<Sprite> icon){
         this->icon = icon;
     }
     virtual inline void setEmptyValueIconOffset(int x, int y){
         this->emptyValueIconOffsetX = x;
         this->emptyValueIconOffsetY = y;
     }
-    virtual inline void setEmptyValueIconSprite(PaintownUtil::ReferenceCount<MugenSprite> icon){
+    virtual inline void setEmptyValueIconSprite(PaintownUtil::ReferenceCount<Sprite> icon){
         this->emptyIcon = icon;
     }
     virtual inline void setValueSpacing(int x, int y){
@@ -260,7 +260,7 @@ protected:
     //! Position of menu
     int x, y;
     //! Background sprite
-    PaintownUtil::ReferenceCount<MugenSprite> background;
+    PaintownUtil::ReferenceCount<Sprite> background;
     //! Item starting offset
     int itemOffsetX, itemOffsetY;
     //! Item spacing offset
@@ -268,11 +268,11 @@ protected:
     //! Value icon offset
     int valueIconOffsetX, valueIconOffsetY;
     //! Value icon sprite
-    PaintownUtil::ReferenceCount<MugenSprite> icon;
+    PaintownUtil::ReferenceCount<Sprite> icon;
     //! Empty Value icon offset
     int emptyValueIconOffsetX, emptyValueIconOffsetY;
     //! Empty Value icon sprite
-    PaintownUtil::ReferenceCount<MugenSprite> emptyIcon;
+    PaintownUtil::ReferenceCount<Sprite> emptyIcon;
     //! Value spacing
     int valueSpacingX, valueSpacingY;
     //! Menu enabled?

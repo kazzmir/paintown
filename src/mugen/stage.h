@@ -84,7 +84,6 @@ namespace Ast{
 }
 
 class MugenItemContent;
-class MugenSprite;
 class MugenSound;
 // class MugenBackgroundManager;
 
@@ -100,6 +99,8 @@ struct PlayerData {
 };
 
 namespace Mugen {
+
+class Sprite;
 
 class Stage{
 public:
@@ -347,7 +348,7 @@ protected:
     void physics(Character * o);
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
-    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
 
     int nextObjectId();
     
@@ -549,7 +550,7 @@ protected:
     //bool debugbg;
 
     /* Sprites */
-    //std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+    //std::map< unsigned int, std::map< unsigned int, Sprite * > > sprites;
 
     /* Animation Lists stored by action number, ie [Begin Action 500] */
     //std::map< int, Animation * > animations;

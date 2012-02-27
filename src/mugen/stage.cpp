@@ -703,10 +703,10 @@ void Mugen::Stage::load(){
     loaded = true;
 }
 
-void Mugen::Stage::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
-    for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            MugenSprite * sprite = j->second;
+void Mugen::Stage::destroyRaw(const map< unsigned int, std::map< unsigned int, Sprite * > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, Sprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, Sprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            Sprite * sprite = j->second;
             sprite->unloadRaw();
         }
     }
@@ -751,12 +751,12 @@ void Mugen::Stage::moveCamera(const double x, const double y){
     }
 }
 
-static bool anyCollisions(const vector<Mugen::MugenArea> & boxes1, int x1, int y1, const vector<Mugen::MugenArea> & boxes2, int x2, int y2){
+static bool anyCollisions(const vector<Mugen::Area> & boxes1, int x1, int y1, const vector<Mugen::Area> & boxes2, int x2, int y2){
 
-    for (vector<Mugen::MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
-        for (vector<Mugen::MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
-            const Mugen::MugenArea & attack = *attack_i;
-            const Mugen::MugenArea & defense = *defense_i;
+    for (vector<Mugen::Area>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
+        for (vector<Mugen::Area>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
+            const Mugen::Area & attack = *attack_i;
+            const Mugen::Area & defense = *defense_i;
             if (attack.collision(x1, y1, defense, x2, y2)){
                 return true;
             }
@@ -767,11 +767,11 @@ static bool anyCollisions(const vector<Mugen::MugenArea> & boxes1, int x1, int y
 
 }
 
-static bool anyBlocking(const vector<Mugen::MugenArea> & boxes1, int x1, int y1, int attackDist, const vector<Mugen::MugenArea> & boxes2, int x2, int y2){
-    for (vector<Mugen::MugenArea>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
-        for (vector<Mugen::MugenArea>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
-            const Mugen::MugenArea & attack = *attack_i;
-            Mugen::MugenArea defense = *defense_i;
+static bool anyBlocking(const vector<Mugen::Area> & boxes1, int x1, int y1, int attackDist, const vector<Mugen::Area> & boxes2, int x2, int y2){
+    for (vector<Mugen::Area>::const_iterator attack_i = boxes1.begin(); attack_i != boxes1.end(); attack_i++){
+        for (vector<Mugen::Area>::const_iterator defense_i = boxes2.begin(); defense_i != boxes2.end(); defense_i++){
+            const Mugen::Area & attack = *attack_i;
+            Mugen::Area defense = *defense_i;
 	    defense.x1 -= attackDist;
 	    defense.x2 += attackDist;
             if (attack.collision(x1, y1, defense, x2, y2)){
@@ -1828,7 +1828,7 @@ void Mugen::Stage::cleanup(){
 
         for (Mugen::SpriteMap::iterator it1 = effects.begin(); it1 != effects.end(); it1++){
             for (Mugen::GroupMap::iterator it2 = (*it1).second.begin(); it2 != (*it1).second.end(); it2++){
-                MugenSprite * sprite = (*it2).second;
+                Sprite * sprite = (*it2).second;
                 delete sprite;
             }
         }

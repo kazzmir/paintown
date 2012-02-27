@@ -1064,7 +1064,7 @@ void MugenMenu::cleanup(){
 void MugenMenu::cleanupSprites(){
     // Get rid of sprites
     for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+      for( std::map< unsigned int, Mugen::Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }

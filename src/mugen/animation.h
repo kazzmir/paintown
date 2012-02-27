@@ -10,21 +10,21 @@
 namespace Graphics{
 class Bitmap;
 }
-class MugenSprite;
 
 namespace Mugen{
+    class Sprite;
 /*
 Collision Area
 */
-class MugenArea{
+class Area{
 public:
-    MugenArea();
-    MugenArea( const MugenArea &copy );
-    virtual ~MugenArea();
+    Area();
+    Area( const Area &copy );
+    virtual ~Area();
 
-    bool collision(int mx, int my, const MugenArea & area, int ax, int ay) const;
+    bool collision(int mx, int my, const Area & area, int ax, int ay) const;
     
-    MugenArea & operator=( const MugenArea &copy );
+    Area & operator=( const Area &copy );
     
     int x1,y1,x2,y2;
 };
@@ -32,38 +32,38 @@ public:
 /*
 Frame
 */
-class MugenFrame{
+class Frame{
     public:
-	MugenFrame(bool defaultMask);
-	MugenFrame( const MugenFrame &copy );
-	virtual ~MugenFrame();
+	Frame(bool defaultMask);
+	Frame(const Frame &copy);
+	virtual ~Frame();
 	
-	MugenFrame & operator=( const MugenFrame &copy );
+	Frame & operator=( const Frame &copy );
 	
 	virtual void render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const;
 
-        virtual inline const std::vector<MugenArea> & getDefenseBoxes() const {
+        virtual inline const std::vector<Area> & getDefenseBoxes() const {
             return defenseCollision;
         }
         
-        virtual inline const std::vector<MugenArea> & getAttackBoxes() const {
+        virtual inline const std::vector<Area> & getAttackBoxes() const {
             return attackCollision;
         }
 
-        virtual inline MugenSprite * getSprite() const {
+        virtual inline Sprite * getSprite() const {
             return sprite;
         }
 
-        virtual void setSprite(MugenSprite * sprite);
+        virtual void setSprite(Sprite * sprite);
 
 	// We'll keep them, but they probably won't be used
-	std::vector< MugenArea > defenseCollision;
+	std::vector< Area > defenseCollision;
 	// This is the only one will be worried about
-	std::vector< MugenArea > attackCollision;
+	std::vector< Area > attackCollision;
 	// Is this frame a loopstart position?
 	bool loopstart;
 	// This is the sprite 
-	MugenSprite *sprite;
+	Sprite *sprite;
 	// Additional Offsets which are in character.air (ie x + sprite.x)
 	int xoffset;
 	int yoffset;
@@ -104,14 +104,14 @@ class Animation{
 	virtual ~Animation();
 	
 	// Get next Frame
-	const MugenFrame *getNext();
+	const Frame *getNext();
 	
         virtual void reset();
 
         virtual Animation * copy() const;
 	
 	// Add a frame
-	void addFrame( MugenFrame * );
+	void addFrame( Frame * );
 
         virtual inline unsigned int getPosition() const {
             return position;
@@ -144,8 +144,8 @@ class Animation{
         /* automatically sets the effect trans type to ADDALPHA */
 	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1);
 
-        virtual const std::vector<MugenArea> getDefenseBoxes(bool reverse) const;
-        virtual const std::vector<MugenArea> getAttackBoxes(bool reverse) const;
+        virtual const std::vector<Area> getDefenseBoxes(bool reverse) const;
+        virtual const std::vector<Area> getAttackBoxes(bool reverse) const;
 	
 	// Go forward a frame 
 	void forwardFrame();
@@ -156,7 +156,7 @@ class Animation{
 	void reloadBitmaps();
 	
 	inline unsigned int getCurrentPosition() { return position; }
-	inline MugenFrame *getCurrentFrame(){ return frames[position]; }
+	inline Frame *getCurrentFrame(){ return frames[position]; }
         Mugen::Effects getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley);
 	
 	// Set type number
@@ -176,7 +176,7 @@ class Animation{
             return looped;
         }
 	
-        inline const std::vector<MugenFrame*> & getFrames() const {
+        inline const std::vector<Frame*> & getFrames() const {
             return frames;
         }
 
@@ -202,11 +202,11 @@ class Animation{
 
     protected:
 
-        void renderFrame(MugenFrame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);
+        void renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);
 	
     private:
 	
-	std::vector< MugenFrame * > frames;
+	std::vector< Frame * > frames;
 	
 	unsigned int loopPosition;
 	unsigned int position;

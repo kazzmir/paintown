@@ -101,8 +101,8 @@ public:
     virtual const HitDefinition & getHit() const = 0;
     virtual int getCurrentJuggle() const = 0;
     virtual bool isAttacking() const = 0;
-    virtual const std::vector<MugenArea> getAttackBoxes() const = 0;
-    virtual const std::vector<MugenArea> getDefenseBoxes() const = 0;
+    virtual const std::vector<Area> getAttackBoxes() const = 0;
+    virtual const std::vector<Area> getDefenseBoxes() const = 0;
     virtual ResourceEffect getDefaultSpark() const = 0;
     virtual ResourceEffect getDefaultGuardSpark() const = 0;
     virtual int getAttackDistance() const = 0;

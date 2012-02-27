@@ -39,11 +39,11 @@ namespace Graphics{
 class Bitmap;
 }
 class MugenItemContent;
-class MugenSprite;
 class MugenSound;
 
 namespace Mugen{
 
+class Sprite;
 class Animation;
 extern PaintownUtil::Parameter<Filesystem::RelativePath> stateFileParameter;
 
@@ -419,11 +419,11 @@ public:
             return commonSounds;
         }
 
-        virtual inline MugenSprite * getSprite(int group, int image){
+        virtual inline Sprite * getSprite(int group, int image){
             return this->sprites[group][image];
         }
 
-        virtual const MugenSprite * getCurrentFrame() const;
+        virtual const Sprite * getCurrentFrame() const;
         PaintownUtil::ReferenceCount<Animation> getCurrentAnimation() const;
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
@@ -865,8 +865,8 @@ public:
             return hitState;
         }
 
-        const std::vector<MugenArea> getAttackBoxes() const;
-        const std::vector<MugenArea> getDefenseBoxes() const;
+        const std::vector<Area> getAttackBoxes() const;
+        const std::vector<Area> getDefenseBoxes() const;
 
         /* paused from an attack */
         virtual bool isPaused() const;
@@ -1111,7 +1111,7 @@ protected:
     virtual std::vector<std::string> doInput(const Mugen::Stage & stage);
     virtual bool doStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
 
-    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites);
+    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
         
     void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
@@ -1318,7 +1318,7 @@ protected:
         double crouchFrictionThreshold;
 
 	/* Sprites */
-	std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+	std::map< unsigned int, std::map< unsigned int, Sprite * > > sprites;
 	// Bitmaps of those sprites
 	// std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
 	
@@ -1425,13 +1425,13 @@ public:
                 translucent(Default){
                 }
 
-            struct Frame{
-                Frame():
+            struct Image{
+                Image():
                     sprite(NULL),
                     life(0){
                     }
 
-                Frame(MugenFrame sprite, Effects effects, int life, int x, int y, bool show):
+                Image(Frame sprite, Effects effects, int life, int x, int y, bool show):
                     sprite(sprite),
                     extra(-1),
                     effects(effects),
@@ -1441,7 +1441,7 @@ public:
                     show(show){
                     }
 
-                MugenFrame sprite;
+                Frame sprite;
                 // Bitmap cache;
                 unsigned int extra;
                 Effects effects;
@@ -1483,7 +1483,7 @@ public:
             RGBx add;
             RGBx multiply;
 
-            std::deque<Frame> frames;
+            std::deque<Image> frames;
         } afterImage;
 protected:
 
@@ -1560,7 +1560,7 @@ public:
          */
         virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply);
     
-        void drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work);
+        void drawAfterImage(const AfterImage & afterImage, const AfterImage::Image & frame, int index, int x, int y, const Graphics::Bitmap & work);
         void processAfterImages();
 
         struct SpecialStuff{

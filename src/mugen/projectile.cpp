@@ -83,18 +83,18 @@ void Projectile::draw(const Graphics::Bitmap & work, double x, double y){
     }
 }
     
-const std::vector<MugenArea> Projectile::getAttackBoxes() const {
+const std::vector<Area> Projectile::getAttackBoxes() const {
     if (!shouldRemove && animation != NULL){
         return animation->getAttackBoxes(facing == FacingLeft);
     }
-    return vector<MugenArea>();
+    return vector<Area>();
 }
     
-const std::vector<MugenArea> Projectile::getDefenseBoxes() const {
+const std::vector<Area> Projectile::getDefenseBoxes() const {
     if (!shouldRemove && animation != NULL){
         return animation->getDefenseBoxes(facing == FacingLeft);
     }
-    return vector<MugenArea>();
+    return vector<Area>();
 }
     
 void Projectile::doCollision(Object * mugen, const Stage & stage){

@@ -13,7 +13,6 @@
 namespace Graphics{
 class Bitmap;
 }
-class MugenSprite;
 class MugenFont;
 class MugenSound;
 
@@ -23,6 +22,7 @@ namespace Ast{
 
 namespace Mugen{
 
+class Sprite;
 class Animation;
 class Character;
 class Stage;
@@ -75,7 +75,7 @@ class FightElement: public Element {
             return this->spriteData;
         }
 
-	virtual void setSprite(MugenSprite *);
+	virtual void setSprite(Sprite *);
 	virtual void setFont(MugenFont *, int bank, int position);
         virtual inline void setPosition(int position){
             this->position = position;
@@ -126,7 +126,7 @@ class FightElement: public Element {
 	ElementType type;
         PaintownUtil::ReferenceCount<Animation> action;
         Mugen::Point spriteData;
-	MugenSprite *sprite;
+	Sprite *sprite;
 	MugenFont *font;
         MugenSound *sound;
 	Mugen::Point offset;

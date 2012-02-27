@@ -10,9 +10,10 @@
 namespace PaintownUtil = ::Util;
 
 using namespace std;
-using namespace Mugen;
 
-MugenSprite::MugenSprite(bool mask):
+namespace Mugen{
+
+Sprite::Sprite(bool mask):
 next(0),
 location(0),
 length(0),
@@ -31,7 +32,7 @@ loaded(false),
 defaultMask(mask){
 }
 
-MugenSprite::MugenSprite(const MugenSprite &copy){
+Sprite::Sprite(const Sprite &copy){
     this->next = copy.next;
     this->location = copy.location;
     this->length = copy.length;
@@ -50,7 +51,7 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
 
     if (copy.comments != 0){
         /* this line is right */
-        memcpy(this->comments, copy.comments, sizeof(MugenSprite::comments));
+        memcpy(this->comments, copy.comments, sizeof(Sprite::comments));
     }
 
     /* why do we need to copy the pcx data if we already have the bitmap? */
@@ -66,7 +67,7 @@ MugenSprite::MugenSprite(const MugenSprite &copy){
     this->maskedBitmap = copy.maskedBitmap;
 }
 
-MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
+Sprite & Sprite::operator=( const Sprite &copy ){
     cleanup();
 
     this->next = copy.next;
@@ -85,7 +86,7 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     this->loaded = copy.loaded;
     this->defaultMask = copy.defaultMask;
     if (copy.comments){
-        memcpy( this->comments, copy.comments, sizeof(MugenSprite::comments) );
+        memcpy( this->comments, copy.comments, sizeof(Sprite::comments) );
     }
 
     if (copy.pcx){
@@ -103,7 +104,7 @@ MugenSprite & MugenSprite::operator=( const MugenSprite &copy ){
     return *this;
 }
 
-void MugenSprite::copyImage(const MugenSprite * copy){
+void Sprite::copyImage(const Sprite * copy){
     this->reallength = copy->reallength;
     this->newlength = copy->newlength;
 
@@ -125,16 +126,16 @@ void MugenSprite::copyImage(const MugenSprite * copy){
     this->defaultMask = copy->defaultMask;
 }
 
-bool MugenSprite::isLoaded() const {
+bool Sprite::isLoaded() const {
     return loaded;
 }
 
-bool MugenSprite::operator<(const MugenSprite &copy){
+bool Sprite::operator<(const Sprite &copy){
     return (this->groupNumber < copy.groupNumber) &&
            (this->imageNumber < copy.imageNumber);
 }
 
-void MugenSprite::cleanup(){
+void Sprite::cleanup(){
     if (pcx){
         delete[] pcx;
         pcx = NULL;
@@ -146,12 +147,12 @@ void MugenSprite::cleanup(){
     maskedBitmap = NULL;
 }
 
-MugenSprite::~MugenSprite(){
+Sprite::~Sprite(){
     cleanup();
 }
 
 // Set sprite info
-void MugenSprite::read(std::ifstream & ifile, const int loc){
+void Sprite::read(std::ifstream & ifile, const int loc){
     // Go to next sprite
     ifile.seekg(loc, std::ios::beg);
     
@@ -181,7 +182,7 @@ void MugenSprite::read(std::ifstream & ifile, const int loc){
     }
 }
 /*
-void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, const double scalex, const double scaley){
+void Sprite::render(const int xaxis, const int yaxis, Bitmap &where, const double scalex, const double scaley){
     const int placex = (xaxis - this->x );
     const int placey = (yaxis - this->y );
     
@@ -192,7 +193,7 @@ void MugenSprite::render(const int xaxis, const int yaxis, Bitmap &where, const 
     modImage.draw(placex, placey, where);
 }
 
-void MugenSprite::render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &where, const double scalex, const double scaley){
+void Sprite::render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &where, const double scalex, const double scaley){
     const int placex = (xaxis - this->x );
     const int placey = (yaxis - this->y );
     // temp for scaling
@@ -220,7 +221,7 @@ static bool isScaled(const Mugen::Effects & effects){
            fabs(effects.scaley - 1) > epsilon;
 }
 
-PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getFinalBitmap(const Mugen::Effects & effects){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> Sprite::getFinalBitmap(const Mugen::Effects & effects){
     PaintownUtil::ReferenceCount<Graphics::Bitmap> use = getBitmap(effects.mask);
     if (use == NULL){
         return use;
@@ -235,11 +236,11 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getFinalBitmap(const
     return modImage;
 }
 
-void MugenSprite::render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+void Sprite::render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     draw(getFinalBitmap(effects), xaxis, yaxis, where, effects);
 }
 
-PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> Sprite::load(bool mask){
     if (pcx){
         PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, newlength), mask));
         if (mask){
@@ -252,7 +253,7 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::load(bool mask){
     return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
 }
 
-void MugenSprite::reload(bool mask){
+void Sprite::reload(bool mask){
     maskedBitmap = NULL;
     unmaskedBitmap = NULL;
 
@@ -263,7 +264,7 @@ void MugenSprite::reload(bool mask){
     }
 }
 
-PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask){
+PaintownUtil::ReferenceCount<Graphics::Bitmap> Sprite::getBitmap(bool mask){
     if (mask){
         if (maskedBitmap != NULL){
             return maskedBitmap;
@@ -287,7 +288,7 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> MugenSprite::getBitmap(bool mask)
 }
 
 /* deletes raw data */
-void MugenSprite::unloadRaw(){
+void Sprite::unloadRaw(){
     /*
     if (pcx){
         delete[] pcx;
@@ -296,11 +297,11 @@ void MugenSprite::unloadRaw(){
     */
 }
 
-int MugenSprite::getWidth() const {
+int Sprite::getWidth() const {
     return width;
 }
 
-int MugenSprite::getHeight() const {
+int Sprite::getHeight() const {
     return height;
 }
 
@@ -310,7 +311,7 @@ static int littleEndian16(const char * input){
     return (((unsigned char) byte2) << 8) | (unsigned char) byte1;
 }
 
-void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
+void Sprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
     /* TODO: 768 is littered everywhere, replace with a constant */
     ifile.seekg(location + 32, ios::beg);
     ifile.clear();
@@ -406,7 +407,7 @@ void MugenSprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, uns
     */
 }
 
-void MugenSprite::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
+void Sprite::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
     PaintownUtil::ReferenceCount<Graphics::Bitmap> final = getFinalBitmap(effects);
     Graphics::Bitmap single(*final, sourceX1, sourceY, sourceWidth, sourceHeight);
     single.drawStretched(destX, destY, destWidth, destHeight, work);
@@ -511,6 +512,8 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
     }
 }
 
-void MugenSprite::draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+void Sprite::draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     drawReal(bmp, xaxis, yaxis, this->x * effects.scalex, this->y * effects.scaley, where, effects);
+}
+
 }

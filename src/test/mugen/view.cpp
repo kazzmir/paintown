@@ -40,7 +40,7 @@ namespace PaintownUtil = ::Util;
 
 using namespace std;
 
-static void showCollision( const std::vector< MugenArea > &vec, Graphics::Bitmap &bmp, int x, int y, int color, int &start ){
+static void showCollision( const std::vector< Mugen::Area > &vec, Graphics::Bitmap &bmp, int x, int y, int color, int &start ){
     int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
@@ -159,7 +159,7 @@ void showCharacter(const string & ourFile){
     bool showClsn2 = false;
     bool moveImage = false;
 
-    map<int,Util::ReferenceCount<MugenAnimation> >::const_iterator it = character.getAnimations().begin();
+    map<int,Util::ReferenceCount<Mugen::Animation> >::const_iterator it = character.getAnimations().begin();
     unsigned int currentAnim = 0;
     unsigned int lastAnim = character.getAnimations().size() -1;
     unsigned int currentFrame = 0;
@@ -249,7 +249,7 @@ void showCharacter(const string & ourFile){
             if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor( 255,0,0 ), start  );
 
             Font::getDefaultFont().printf( 15, 310, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
-            Font::getDefaultFont().printf( 15, 320, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, MugenAnimation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
+            Font::getDefaultFont().printf( 15, 320, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
             if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 330, Graphics::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->getLength(), it->second->getCurrentFrame()->sprite->getX(), it->second->getCurrentFrame()->sprite->getY(), it->second->getCurrentFrame()->sprite->getGroupNumber(), it->second->getCurrentFrame()->sprite->getImageNumber());
             Font::getDefaultFont().printf( 15, 340, Graphics::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight() );
             Font::getDefaultFont().printf( 15, 350, Graphics::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
@@ -460,7 +460,7 @@ void showFont(const string & ourFile){
 }
 
 void showSFF(const string & ourFile, const std::string &actFile){
-    std::map< unsigned int, std::map< unsigned int, MugenSprite * > > sprites;
+    std::map< unsigned int, std::map< unsigned int, Mugen::Sprite * > > sprites;
     int currentGroup = 0;
     int currentSprite = 0;
     Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
@@ -579,7 +579,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
 
         if (draw){
 	    back.clear();
-	    MugenSprite *ourSprite = sprites[currentGroup][currentSprite];
+            Mugen::Sprite *ourSprite = sprites[currentGroup][currentSprite];
 
             back.rectangleFill(0, 0, back.getWidth(), back.getHeight() * 3 / 2, Graphics::makeColor(32, 32, 32));
             back.line(0, back.getHeight() / 2, back.getWidth(), back.getHeight() / 2, Graphics::makeColor(255, 255, 255));

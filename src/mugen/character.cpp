@@ -718,8 +718,8 @@ Character::~Character(){
     stopRecording();
 
      // Get rid of sprites
-    for (std::map< unsigned int, std::map< unsigned int, MugenSprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    for (std::map< unsigned int, std::map< unsigned int, Sprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+      for( std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
     }
@@ -2212,10 +2212,10 @@ void Character::load(int useAct){
     */
 }
 
-void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, MugenSprite * > > & sprites){
-    for (map< unsigned int, std::map< unsigned int, MugenSprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, MugenSprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            MugenSprite * sprite = j->second;
+void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, Sprite * > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, Sprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, Sprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            Sprite * sprite = j->second;
             sprite->unloadRaw();
         }
     }
@@ -2547,7 +2547,7 @@ void Character::fixAssumptions(){
 
 // Render sprite
 void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp , const int flip, const double scalex, const double scaley ){
-    MugenSprite *sprite = sprites[group][image];
+    Sprite *sprite = sprites[group][image];
     if (sprite){
         Mugen::Effects effects;
         /* -1 in effects.facing means its flipped */
@@ -2600,7 +2600,7 @@ const Character * Character::getRoot() const {
     return this;
 }
 
-const MugenSprite * Character::getCurrentFrame() const {
+const Sprite * Character::getCurrentFrame() const {
     if (getCurrentAnimation() != NULL){
         return getCurrentAnimation()->getCurrentFrame()->getSprite();
     } else {
@@ -2704,8 +2704,8 @@ void Character::processAfterImages(){
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
-            MugenFrame * currentSprite = animation->getCurrentFrame();
-            afterImage.frames.push_front(AfterImage::Frame(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+            Frame * currentSprite = animation->getCurrentFrame();
+            afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
         }
     }
     if (afterImage.length > 0 && afterImage.frames.size() >= afterImage.length){
@@ -2713,8 +2713,8 @@ void Character::processAfterImages(){
     }
 
 #if 0
-    for (deque<AfterImage::Frame>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
-        AfterImage::Frame & frame = *it;
+    for (deque<AfterImage::Image>::iterator it = afterImage.frames.begin(); it != afterImage.frames.end(); /**/ ){
+        AfterImage::Image & frame = *it;
         frame.life -= 1;
         /* negative lifetimes mean indefinite frames */
         if (frame.life == 0){
@@ -3254,7 +3254,7 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
     return false;
 }
 
-void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Frame & frame, int index, int x, int y, const Graphics::Bitmap & work){
+void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::Image & frame, int index, int x, int y, const Graphics::Bitmap & work){
     class AfterImageFilter: public Graphics::Bitmap::Filter {
     public:
         /* all the components have this formula
@@ -3403,7 +3403,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     Effects total = frame.effects + afterImage.translucent;
     total.filter = &filter;
 
-    // MugenSprite::draw(frame.sprite->getSprite()->getFinalBitmap(frame.effects), x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), work, total);
+    // Sprite::draw(frame.sprite->getSprite()->getFinalBitmap(frame.effects), x, y, frame.sprite->getSprite()->getX(), frame.sprite->getSprite()->getY(), work, total);
     frame.sprite.render(x, y, work, total);
 
     // frame.sprite->render(frame.x - cameraX + drawOffset.x, frame.y - cameraY + drawOffset.y, *work, frame.effects + afterImage.translucent + blender);
@@ -3607,7 +3607,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         }
 
         for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
-            AfterImage::Frame & frame = afterImage.frames[index];
+            AfterImage::Image & frame = afterImage.frames[index];
             if (frame.show){
                 int x = frame.x - cameraX + drawOffset.x + frame.sprite.xoffset;
                 int y = frame.y - cameraY + drawOffset.y + frame.sprite.yoffset;
@@ -3731,18 +3731,18 @@ void Character::doTurn(Mugen::Stage & stage){
     reverseFacing();
 }
 
-const vector<MugenArea> Character::getAttackBoxes() const {
+const vector<Area> Character::getAttackBoxes() const {
     if (getCurrentAnimation() != NULL){
         return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft);
     }
-    return vector<MugenArea>();
+    return vector<Area>();
 }
 
-const vector<MugenArea> Character::getDefenseBoxes() const {
+const vector<Area> Character::getDefenseBoxes() const {
     if (getCurrentAnimation() != NULL){
         return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft);
     }
-    return vector<MugenArea>();
+    return vector<Area>();
 }
 
 const std::string Character::getAttackName(){
@@ -4009,11 +4009,11 @@ int Character::getSpritePriority() const {
 /* Replace the sprites from the given animation with sprites from our own sff file */
 PaintownUtil::ReferenceCount<Animation> Character::replaceSprites(const PaintownUtil::ReferenceCount<Animation> & animation){
     PaintownUtil::ReferenceCount<Animation> update = PaintownUtil::ReferenceCount<Animation>(new Animation(*animation));
-    const vector<MugenFrame*> & frames = update->getFrames();
-    for (vector<MugenFrame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
-        MugenFrame * frame = *it;
-        MugenSprite * sprite = frame->getSprite();
-        MugenSprite * mySprite = getSprite(sprite->getGroupNumber(), sprite->getImageNumber());
+    const vector<Frame*> & frames = update->getFrames();
+    for (vector<Frame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
+        Frame * frame = *it;
+        Sprite * sprite = frame->getSprite();
+        Sprite * mySprite = getSprite(sprite->getGroupNumber(), sprite->getImageNumber());
         if (mySprite != NULL){
             frame->setSprite(mySprite);
         }

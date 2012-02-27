@@ -59,8 +59,8 @@ public:
 
     virtual Character * getOwner() const;
         
-    const std::vector<MugenArea> getAttackBoxes() const;
-    const std::vector<MugenArea> getDefenseBoxes() const;
+    const std::vector<Area> getAttackBoxes() const;
+    const std::vector<Area> getDefenseBoxes() const;
 
     void doCollision(Object * mugen, const Stage & stage);
     void wasGuarded(Object * mugen, const Stage & stage);

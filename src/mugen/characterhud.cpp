@@ -209,7 +209,7 @@ void FightElement::setAction(PaintownUtil::ReferenceCount<Animation> anim){
         action->setAsOneTime(true);
     }
 }
-void FightElement::setSprite(MugenSprite *spr){
+void FightElement::setSprite(Sprite *spr){
     if (spr){
 	setType(IS_SPRITE);
 	sprite = spr;
@@ -1328,7 +1328,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                         /*
                         for( Mugen::SpriteMap::iterator i = self.sprites.begin() ; i != self.sprites.end() ; ++i ){
                             // Load these sprites so they are ready to use
-                            for( std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+                            for( std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
                                 if (j->second){
                                     j->second->load();
                                 }
@@ -1923,7 +1923,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
 GameInfo::~GameInfo(){
     // Get rid of sprites
     for (Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i){
-	for (std::map< unsigned int, MugenSprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
+	for (std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
 	    if (j->second){
                 delete j->second;
             }

@@ -22,7 +22,6 @@
 
 class MugenAnimation;
 class MugenFont;
-class MugenSprite;
 class MugenSection;
 
 namespace Ast{
@@ -89,6 +88,7 @@ namespace Gui{
 }
 
 namespace Mugen{
+    class Sprite;
     class Background;
     class Character;
     class CharacterSelect;
