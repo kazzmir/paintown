@@ -2869,10 +2869,14 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     /* Check the states even if we are paused. If a controller has 'ignorehitpause = 1'
      * then it will might still activate.
      */
-    /* always run through the negative states */
-    doStates(*stage, active, -3);
-    doStates(*stage, active, -2);
-    doStates(*stage, active, -1);
+    /* always run through the negative states unless we are borrowing another
+     * players states
+     */
+    if (!characterData.enabled){
+        doStates(*stage, active, -3);
+        doStates(*stage, active, -2);
+        doStates(*stage, active, -1);
+    }
     doStates(*stage, active, currentState);
 
     /*! do regeneration if set, but only for main players */
