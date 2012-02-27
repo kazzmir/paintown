@@ -914,6 +914,9 @@ void Mugen::Stage::physics(Character * mugen){
         return;
     }
 
+    // Z/Y offset
+    mugen->setZ(currentZOffset());
+
     mugen->doMovement(objects, *this);
 
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
@@ -1135,6 +1138,7 @@ void Mugen::Stage::runCycle(){
         }
     }
 
+    /* FIXME: Projectiles should not act during a pause or superpause */
     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); /**/){
         Projectile * projectile = *it;
         projectile->logic();
@@ -1907,8 +1911,6 @@ void Mugen::Stage::addProjectile(Projectile * projectile){
 }
 
 void Mugen::Stage::updatePlayer(Mugen::Object * player){
-    // Z/Y offset
-    player->setZ(currentZOffset());
 
     // Move X and Camera
     const double px = player->getX();
