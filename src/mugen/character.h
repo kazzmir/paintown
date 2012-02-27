@@ -1694,6 +1694,10 @@ public:
         } characterData;
 
         bool ownPalette;
+        /* keep a count of the number of times changeState was called to prevent
+         * an infinite recursion.
+         */
+        int maxChangeStates;
 };
 
 }

@@ -755,6 +755,7 @@ Character::~Character(){
 void Character::initialize(){
     max_health = 0;
     health = 0;
+    maxChangeStates = 0;
     currentState = Standing;
     currentPhysics = Physics::Stand;
     moveType = Move::Idle;
@@ -1143,6 +1144,14 @@ void Character::changeState(Mugen::Stage & stage, int state){
 }
 
 void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<string> & inputs){
+
+    maxChangeStates += 1;
+    if (maxChangeStates > 100){
+        std::ostringstream out;
+        out << "ChangeState called more than 100 times, most likely this is a bug";
+        Global::debug(0) << out.str() << std::endl;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
     /* dont let after images carry over to the next state
      * UPDATE: mugen actually allows this
      */
@@ -2749,7 +2758,8 @@ static bool blockingState(int state){
 
 /* Inherited members */
 void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mugen::Character*>* add){
-        
+
+    maxChangeStates = 0;
     reversalActive = false;
 
     special.reset();
