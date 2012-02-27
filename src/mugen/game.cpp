@@ -546,6 +546,194 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
     }
 }
 
+/*! Wrap characters for teams by type for use by futures and game modes */
+class CharacterTeam{
+public:
+    CharacterTeam(const Mugen::ArcadeData::CharacterCollection & collection, const Stage::teams & side):
+    collection(collection),
+    side(side){
+        loaded[0] = loaded[1] = loaded[2] = loaded[3] = false;
+        switch (collection.getType()){
+            case Mugen::ArcadeData::CharacterCollection::Turns4:
+                fourth = PaintownUtil::ReferenceCount<Character>(new Character(collection.getFourth().getDef(), side));
+            case Mugen::ArcadeData::CharacterCollection::Turns3:
+                third = PaintownUtil::ReferenceCount<Character>(new Character(collection.getThird().getDef(), side));
+            case Mugen::ArcadeData::CharacterCollection::Turns2:
+            case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+                second = PaintownUtil::ReferenceCount<Character>(new Character(collection.getSecond().getDef(), side));
+            default:
+            case Mugen::ArcadeData::CharacterCollection::Single:
+                first = PaintownUtil::ReferenceCount<Character>(new Character(collection.getFirst().getDef(), side));
+                break;
+        }
+    }
+    
+    void load(){
+        switch (collection.getType()){
+            case Mugen::ArcadeData::CharacterCollection::Turns4:
+                if (!loaded[3]){
+                    fourth->load(collection.getFourth().getAct());
+                    loaded[3] = true;
+                }
+            case Mugen::ArcadeData::CharacterCollection::Turns3:
+                if (!loaded[2]){
+                    third->load(collection.getThird().getAct());
+                    loaded[2] = true;
+                }
+            case Mugen::ArcadeData::CharacterCollection::Turns2:
+            case Mugen::ArcadeData::CharacterCollection::Simultaneous:
+                if (!loaded[1]){
+                    second->load(collection.getSecond().getAct());
+                    loaded[1] = true;
+                }
+            default:
+            case Mugen::ArcadeData::CharacterCollection::Single:
+                if (!loaded[0]){
+                    first->load(collection.getFirst().getAct());
+                    loaded[0] = true;
+                }
+                break;
+        }
+    }
+    
+    Character & getFirst(){
+        return *first;
+    }
+    
+    Character & getSecond(){
+        return *second;
+    }
+    
+    Character & getThird(){
+        return *third;
+    }
+    
+    Character & getFourth(){
+        return *fourth;
+    }
+    
+protected:
+    const Mugen::ArcadeData::CharacterCollection & collection;
+    const Stage::teams & side;
+    bool loaded[4];
+    PaintownUtil::ReferenceCount<Character> first;
+    PaintownUtil::ReferenceCount<Character> second;
+    PaintownUtil::ReferenceCount<Character> third;
+    PaintownUtil::ReferenceCount<Character> fourth;
+};
+
+class PlayerLoader: public PaintownUtil::Future<int> {
+public:
+    PlayerLoader(CharacterTeam & player1, CharacterTeam & player2):
+        player1(player1),
+        player2(player2){
+            /* compute is a virtual function, is the virtual table set up
+                * by the time start() tries to call it? or is that a race condition?
+                */
+            // start();
+    }
+
+    CharacterTeam & player1;
+    CharacterTeam & player2;
+
+    virtual void compute(){
+        // Load player 1
+        player1.load();
+        // Load player 2
+        player2.load();
+        // NOTE is this needed anymore?
+#ifdef WII
+        /* FIXME: this is a hack, im not sure why its even required but fopen() will hang on sfp_lock_acquire
+            * in another thread without locking and unlocking the sfp lock.
+            * related things
+            *  newlib/libc/stdio/fopen.c -- calls sfp_lock_acquire
+            *  newlib/libc/sys/linux/sys/libc-lock.h - uses pthread's as the lock implementation
+            */
+        /*
+        __sfp_lock_acquire();
+        __sfp_lock_release();
+        */
+#endif
+        set(0);
+    }
+};
+
+static PaintownUtil::ReferenceCount<PlayerLoader> preLoadCharacters(CharacterTeam & player1, CharacterTeam & player2){
+    
+    PaintownUtil::ReferenceCount<PlayerLoader> playerLoader =  PaintownUtil::ReferenceCount<PlayerLoader>(new PlayerLoader(player1, player2));
+    playerLoader->start();
+    
+    return playerLoader;
+}
+
+void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen::Stage & stage){
+    try{
+        Loader::Info info;
+        Graphics::Bitmap background(*Graphics::screenParameter.current(), true);
+        info.setBackground(&background);
+        info.setLoadingMessage("Loading...");
+        info.setPosition(25, 25);
+
+        class Context: public Loader::LoadingContext {
+        public:
+            Context(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen::Stage & stage):
+                playerLoader(playerLoader),
+                stage(stage),
+                fail(NULL){
+                }
+
+            virtual void maybeFail(){
+                if (fail != NULL){
+                    fail->throwSelf();
+                }
+            }
+
+            virtual ~Context(){
+                delete fail;
+            }
+
+            virtual void load(){
+                try{
+                    /* future */
+                    int ok = playerLoader->get();
+
+                    
+                    /*! FIXME 
+                    * this is only handling one on one matches, it will need to accomodate teams at a later point 
+                    */
+                    // Load stage
+                    stage.addPlayer1(&playerLoader->player1.getFirst());
+                    stage.addPlayer2(&playerLoader->player2.getFirst());
+                    stage.load();
+                } catch (const MugenException & fail){
+                    this->fail = new MugenException(fail);
+                } catch (const LoadException & fail){
+                    this->fail = new LoadException(fail);
+                } catch (const Filesystem::NotFound & fail){
+                    this->fail = new Filesystem::NotFound(fail);
+                }
+            }
+
+            PaintownUtil::ReferenceCount<PlayerLoader> playerLoader;
+            Mugen::Stage & stage;
+            Exception::Base * fail;
+        };
+
+        Context context(playerLoader, stage);
+        /* FIXME: the wii has problems loading stuff in a background thread
+         * while the load screen is going on.
+         */
+#ifdef WII
+        context.load();
+#else
+        Loader::loadScreen(context, info);
+#endif
+        context.maybeFail();
+    } catch (const MugenException & e){
+        throw e;
+    }
+}
+
 void Game::startArcade(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
@@ -734,8 +922,10 @@ void Game::doTraining(Searcher & searcher){
             Mugen::Data::getInstance().setTime(time);
             return;
         }
+        
         Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
         Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
+        
         if (playerType == Mugen::Player1){
             player1Collection = select.getPlayer1().getCollection();
             player2Collection = select.getPlayer1().getOpponentCollection();
@@ -743,6 +933,11 @@ void Game::doTraining(Searcher & searcher){
             player2Collection = select.getPlayer2().getCollection();
             player1Collection = select.getPlayer2().getOpponentCollection();
         }
+        // Prepares futures
+        CharacterTeam player1(player1Collection, Stage::Player1Side);
+        CharacterTeam player2(player2Collection, Stage::Player2Side);
+        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(player1, player2);
+        
         {
             VersusMenu versus(systemFile);
             versus.init(player1Collection, player2Collection);
@@ -753,23 +948,18 @@ void Game::doTraining(Searcher & searcher){
                 continue;
             }
         }
-        Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
-        player1.load(player1Collection.getFirst().getAct());
-        Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
-        player2.load(player2Collection.getFirst().getAct());
         if (playerType == Player1){
-            player1.setBehavior(&behavior);
-            player2.setBehavior(&dummyBehavior);
+            player1.getFirst().setBehavior(&behavior);
+            player2.getFirst().setBehavior(&dummyBehavior);
         } else {
-            player1.setBehavior(&dummyBehavior);
-            player2.setBehavior(&behavior);
+            player1.getFirst().setBehavior(&dummyBehavior);
+            player2.getFirst().setBehavior(&behavior);
         }
-        player1.setRegeneration(true);
-        player2.setRegeneration(true);
+        player1.getFirst().setRegeneration(true);
+        player2.getFirst().setRegeneration(true);
         Mugen::Stage stage(select.getStage());
-        stage.addPlayer1(&player1);
-        stage.addPlayer2(&player2);
-        stage.load();
+        // Prepares stage
+        prepareStage(loader, stage);
         stage.reset();
         try {
             runMatch(&stage);
@@ -810,6 +1000,12 @@ void Game::doWatch(Searcher & searcher){
             player2Collection = select.getPlayer2().getCollection();
             player1Collection = select.getPlayer2().getOpponentCollection();
         }
+        
+        // Prepares futures
+        CharacterTeam player1(player1Collection, Stage::Player1Side);
+        CharacterTeam player2(player2Collection, Stage::Player2Side);
+        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(player1, player2);
+        
         {
             VersusMenu versus(systemFile);
             versus.init(player1Collection, player2Collection);
@@ -820,16 +1016,12 @@ void Game::doWatch(Searcher & searcher){
                 continue;
             }
         }
-        Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
-        player1.load(player1Collection.getFirst().getAct());
-        Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
-        player2.load(player2Collection.getFirst().getAct());
-        player1.setBehavior(&player1AIBehavior);
-        player2.setBehavior(&player2AIBehavior);
+        
+        player1.getFirst().setBehavior(&player1AIBehavior);
+        player2.getFirst().setBehavior(&player2AIBehavior);
         Mugen::Stage stage(select.getStage());
-        stage.addPlayer1(&player1);
-        stage.addPlayer2(&player2);
-        stage.load();
+        // Prepare stage
+        prepareStage(loader, stage);
         stage.reset();
         try {
             runMatch(&stage);
@@ -850,8 +1042,8 @@ void Game::doArcade(Searcher & searcher){
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
     Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
     
-    PaintownUtil::ReferenceCount<Mugen::Character> player1 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
-    PaintownUtil::ReferenceCount<Mugen::Character> player2 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+    PaintownUtil::ReferenceCount<CharacterTeam> player1 = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
+    PaintownUtil::ReferenceCount<CharacterTeam> player2 = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
     
     bool playerLoaded = false;
     
@@ -1005,6 +1197,46 @@ void Game::doArcade(Searcher & searcher){
                 player1Collection = match.next();
             }
         }
+        
+        PaintownUtil::ReferenceCount<CharacterTeam> ourPlayer = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
+        Filesystem::AbsolutePath stagePath;
+        Filesystem::AbsolutePath musicOverride;
+        if (playerType == Mugen::Player1){
+            if (!playerLoaded){
+                player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
+                playerLoaded = true;
+            }
+            if (!rematch){
+                player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
+            } else {
+                player2->getFirst().resetPlayer();
+                rematch = false;
+            }
+                
+            ourPlayer = player1;
+            player1->getFirst().setBehavior(&behavior);
+            player2->getFirst().setBehavior(&AIBehavior);
+            stagePath = player2Collection.getFirst().getStage();
+        } else {
+            if (!playerLoaded){
+                player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
+                playerLoaded = true;
+            }
+            if (!rematch){
+                player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
+            } else {
+                player1->getFirst().resetPlayer();
+                rematch = false;
+            }
+            
+            ourPlayer = player2;
+            player2->getFirst().setBehavior(&behavior);
+            player1->getFirst().setBehavior(&AIBehavior);
+            stagePath = player1Collection.getFirst().getStage();
+        }
+        
+        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(*player1, *player2);
+        
         {
             VersusMenu versus(systemFile);
             versus.init(player1Collection, player2Collection);
@@ -1015,58 +1247,17 @@ void Game::doArcade(Searcher & searcher){
                 return;
             }
         }
-        PaintownUtil::ReferenceCount<Mugen::Character> ourPlayer = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
-        Filesystem::AbsolutePath stagePath;
-        Filesystem::AbsolutePath musicOverride;
-        if (playerType == Mugen::Player1){
-            if (!playerLoaded){
-                player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player1Side));
-                player1->load(player1Collection.getFirst().getAct());
-                playerLoaded = true;
-            }
-            if (!rematch){
-                player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
-                player2->load(player2Collection.getFirst().getAct());
-            } else {
-                player2->resetPlayer();
-                rematch = false;
-            }
-                
-            ourPlayer = player1;
-            player1->setBehavior(&behavior);
-            player2->setBehavior(&AIBehavior);
-            stagePath = player2Collection.getFirst().getStage();
-        } else {
-            if (!playerLoaded){
-                player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
-                player2->load(player2Collection.getFirst().getAct());
-                playerLoaded = true;
-            }
-            if (!rematch){
-                player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player2Side));
-                player1->load(player1Collection.getFirst().getAct());
-            } else {
-                player1->resetPlayer();
-                rematch = false;
-            }
-            
-            ourPlayer = player2;
-            player2->setBehavior(&behavior);
-            player1->setBehavior(&AIBehavior);
-            stagePath = player1Collection.getFirst().getStage();
-        }
+        
         // FIXME use override music later
         Mugen::Stage stage(stagePath);
-        stage.addPlayer1(player1.raw());
-        stage.addPlayer2(player2.raw());
-        stage.load();
+        prepareStage(loader, stage);
         stage.reset();
         try {
             runMatch(&stage);
-            if (ourPlayer->getMatchWins() > wins){
-                wins = ourPlayer->getMatchWins();
+            if (ourPlayer->getFirst().getMatchWins() > wins){
+                wins = ourPlayer->getFirst().getMatchWins();
                 // Reset player for next match
-                ourPlayer->resetPlayer();
+                ourPlayer->getFirst().resetPlayer();
                 // There is a win they may proceed
                 if (!match.hasMore()){
                     // Game is over and player has won display ending storyboard
@@ -1172,6 +1363,12 @@ void Game::doVersus(Searcher & searcher){
         Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
         player1Collection = select.getPlayer1().getCollection();
         player2Collection = select.getPlayer2().getCollection();
+        
+        // Prepares futures
+        CharacterTeam player1(player1Collection, Stage::Player1Side);
+        CharacterTeam player2(player2Collection, Stage::Player2Side);
+        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(player1, player2);
+        
         {
             VersusMenu versus(systemFile);
             versus.init(player1Collection, player2Collection);
@@ -1182,16 +1379,11 @@ void Game::doVersus(Searcher & searcher){
                 continue;
             }
         }
-        Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
-        player1.load(player1Collection.getFirst().getAct());
-        Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
-        player2.load(player2Collection.getFirst().getAct());
-        player1.setBehavior(&behavior1);
-        player2.setBehavior(&behavior2);
+        
+        player1.getFirst().setBehavior(&behavior1);
+        player2.getFirst().setBehavior(&behavior2);
         Mugen::Stage stage(select.getStage());
-        stage.addPlayer1(&player1);
-        stage.addPlayer2(&player2);
-        stage.load();
+        prepareStage(loader, stage);
         stage.reset();
         try {
             runMatch(&stage);
@@ -1400,6 +1592,11 @@ void Game::startDemo(Searcher & searcher){
         stagePath = collections.getStage();
     }
     
+    // Prepares futures
+    CharacterTeam player1(player1Collection, Stage::Player1Side);
+    CharacterTeam player2(player2Collection, Stage::Player2Side);
+    PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(player1, player2);
+    
     if (showVersusScreen){
         InputManager::waitForClear();
         VersusMenu versus(systemFile, true);
@@ -1413,16 +1610,10 @@ void Game::startDemo(Searcher & searcher){
     }
     
     // Load it up
-    Mugen::Character player1(player1Collection.getFirst().getDef(), Stage::Player1Side);
-    player1.load(player1Collection.getFirst().getAct());
-    Mugen::Character player2(player2Collection.getFirst().getDef(), Stage::Player2Side);
-    player2.load(player2Collection.getFirst().getAct());
-    player1.setBehavior(&behavior1);
-    player2.setBehavior(&behavior2);
+    player1.getFirst().setBehavior(&behavior1);
+    player2.getFirst().setBehavior(&behavior2);
     Mugen::Stage stage(stagePath);
-    stage.addPlayer1(&player1);
-    stage.addPlayer2(&player2);
-    stage.load();
+    prepareStage(loader, stage);
     stage.reset();
     try {
         InputManager::waitForClear();
@@ -1447,8 +1638,8 @@ void Game::doSurvival(Searcher & searcher){
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
     Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
     
-    PaintownUtil::ReferenceCount<Mugen::Character> player1 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
-    PaintownUtil::ReferenceCount<Mugen::Character> player2 = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
+    PaintownUtil::ReferenceCount<CharacterTeam> player1 = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
+    PaintownUtil::ReferenceCount<CharacterTeam> player2 = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
     
     std::vector<Mugen::ArcadeData::CharacterInfo> characters;
     
@@ -1520,6 +1711,32 @@ void Game::doSurvival(Searcher & searcher){
                     break;
             }
         }
+        
+        PaintownUtil::ReferenceCount<CharacterTeam> ourPlayer = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
+        if (playerType == Mugen::Player1){
+            if (!playerLoaded){
+                player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
+                ourPlayer = player1;
+                player1->getFirst().setBehavior(&behavior);
+                playerLoaded = true;
+            }
+            
+            player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
+            player2->getFirst().setBehavior(&AIBehavior);
+        } else {
+            if (!playerLoaded){
+                player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
+                ourPlayer = player2;
+                player2->getFirst().setBehavior(&behavior);
+                playerLoaded = true;
+            }
+            
+            player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
+            player1->getFirst().setBehavior(&AIBehavior);
+        }
+        
+        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(*player1, *player2);
+        
         {
             VersusMenu versus(systemFile);
             versus.init(player1Collection, player2Collection);
@@ -1530,45 +1747,19 @@ void Game::doSurvival(Searcher & searcher){
                 return;
             }
         }
-        PaintownUtil::ReferenceCount<Mugen::Character> ourPlayer = PaintownUtil::ReferenceCount<Mugen::Character>(NULL);
-        if (playerType == Mugen::Player1){
-            if (!playerLoaded){
-                player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player1Side));
-                player1->load(player1Collection.getFirst().getAct());
-                ourPlayer = player1;
-                player1->setBehavior(&behavior);
-                playerLoaded = true;
-            }
-            
-            player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
-            player2->load(player2Collection.getFirst().getAct());
-            player2->setBehavior(&AIBehavior);
-        } else {
-            if (!playerLoaded){
-                player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player2Collection.getFirst().getDef(), Stage::Player2Side));
-                player2->load(player2Collection.getFirst().getAct());
-                ourPlayer = player2;
-                player2->setBehavior(&behavior);
-                playerLoaded = true;
-            }
-            
-            player1 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(player1Collection.getFirst().getDef(), Stage::Player2Side));
-            player1->load(player1Collection.getFirst().getAct());
-            player1->setBehavior(&AIBehavior);
-        }
+        
         // FIXME use override music later
         Mugen::Stage stage(stagePath);
-        stage.addPlayer1(player1.raw());
-        stage.addPlayer2(player2.raw());
-        stage.load();
+        prepareStage(loader, stage);
+        // FIXME Add mode in stage to keep from reverting the wins and allowing matches to last 1 round
         stage.getGameInfo()->setWins(1, 0);
         stage.reset();
         try {
             runMatch(&stage);
-            if (ourPlayer->getMatchWins()> wins){
+            if (ourPlayer->getFirst().getMatchWins()> wins){
                 wins++;
                 // Reset player for next match
-                ourPlayer->resetPlayer();
+                ourPlayer->getFirst().resetPlayer();
             } else {
                 break;
             }
@@ -1578,5 +1769,6 @@ void Game::doSurvival(Searcher & searcher){
             return;
         }
     }
-    // FIXME show total matches won
+    // FIXME show total matches won (very similar to Stage::doContinue)
+    Global::debug(0) << "Matches Survived: " << wins << std::endl;
 }
