@@ -77,7 +77,7 @@ void Option::render(Mugen::Font & font, int x1, int x2, int y, const Graphics::B
             alphaMod = -6;
         }
         Graphics::Bitmap::transBlender(0,0,0,alpha);
-        bmp.translucent().rectangleFill(x1-2, y-10, x2+2, y+2, Graphics::makeColor(255,255,255));
+        bmp.translucent().rectangleFill(x1-2, y-font.getHeight()-2, x2+2, y+2, Graphics::makeColor(255,255,255));
     }
 }
 
@@ -631,8 +631,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         upsize(Graphics::Bitmap(640, 480)),
         font(font),
         options(options){
-            const int totalHeight = options.size() * (font->getHeight() + 10);
-            const int totalWidth = getLargestWidth(options, *font) + 50;
+            const int totalHeight = (options.size() * (font->getHeight()+font->getHeight()/2)) + font->getHeight()*2;
+            const int totalWidth = getLargestWidth(options, *font) + getLargestWidth(options, *font)/4;
             //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
             optionArea.location.setPosition(Gui::AbsolutePoint((640/2) - (totalWidth/2), (480/2) - (totalHeight/2)));
             optionArea.location.setPosition2(Gui::AbsolutePoint((640/2) + (totalWidth/2), (480/2) + (totalHeight/2)));
@@ -662,11 +662,11 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void doOptions(Font & font, int x1, int x2, int y, const Graphics::Bitmap & where){
-            int mod = 8;
+            int mod = font.getHeight()+font.getHeight()/2;
             for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
                 class Option * option = *i;
                 option->render(font, x1, x2, y+mod, where);
-                mod += font.getHeight()+10;
+                mod += font.getHeight()+font.getHeight()/2;
             }
         }
 
