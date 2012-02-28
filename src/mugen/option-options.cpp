@@ -637,11 +637,17 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             const int totalHeight = (options.size() * (font->getHeight()+font->getHeight()/2)) + font->getHeight()*2;
             const int totalWidth = getLargestWidth(options, *font) + getLargestWidth(options, *font)/4;
             
-            checkDimensions(totalWidth, totalHeight);
+            resolutionx = totalWidth;
+            resolutiony = totalHeight;
             
-            optionArea.location.setPosition(Gui::AbsolutePoint((resolutionx/2) - (totalWidth/2), (resolutiony/2) - (totalHeight/2)));
-            optionArea.location.setPosition2(Gui::AbsolutePoint((resolutionx/2) + (totalWidth/2), (resolutiony/2) + (totalHeight/2)));
-
+            upsize = Graphics::Bitmap(resolutionx, resolutiony);
+            
+            fontArea.setPosition(Gui::AbsolutePoint((resolutionx/2) - (totalWidth/2), (resolutiony/2) - (totalHeight/2)));
+            fontArea.setPosition2(Gui::AbsolutePoint((resolutionx/2) + (totalWidth/2), (resolutiony/2) + (totalHeight/2)));
+            
+            optionArea.location.setPosition(Gui::AbsolutePoint(160, 120));
+            optionArea.location.setPosition2(Gui::AbsolutePoint(480, 360));
+            
             optionArea.transforms.setRadius(5);
             optionArea.colors.body = Graphics::makeColor(0,0,60);
             optionArea.colors.bodyAlpha = 150;
@@ -655,6 +661,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         Font * font;
         Box optionArea;
         const vector<class Option *> & options;
+        Gui::Coordinate fontArea;
         
         int getLargestWidth(const vector<class Option *> & options, Font & font){
             int width = 0;
@@ -666,26 +673,6 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                 }
             }
             return width;
-        }
-        
-        void checkDimensions(int width, int height){
-            bool changed = false;
-            if (width <= 320 && height <= 240){
-                resolutionx = 320;
-                resolutiony = 240;
-                changed = true;
-            } else if (width <= 640 && height <= 480){
-                resolutionx = 640;
-                height = 480;
-                changed = true;
-            } else {
-                resolutionx = 1024;
-                resolutiony = 768;
-                changed = true;
-            }
-            if (changed){
-                upsize = Graphics::Bitmap(resolutionx, resolutiony);
-            }
         }
 
         void doOptions(Font & font, int x1, int x2, int y, const Graphics::Bitmap & where){
@@ -709,13 +696,14 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             // render fonts
             upsize.clearToMask();
             font->render(resolutionx/2, 20, 0, 0, upsize, "OPTIONS" );
+            upsize.drawStretched(160, 20, 320, 240, screen);
             
-            //! FIXME this ends up blending with the mask color
-            optionArea.render(upsize);
+            optionArea.render(screen);
             
-            doOptions(*font, optionArea.location.getX() + 10, optionArea.location.getX2() - 10, optionArea.location.getY() + 5, upsize);
+            upsize.clearToMask();
+            doOptions(*font, fontArea.getX() + 10, fontArea.getX2() - 10, fontArea.getY() + 5, upsize);
             
-            upsize.drawStretched(screen);
+            upsize.drawStretched(160, 120, 320, 240, screen);
             
             workArea.clearToMask();
             workArea.start();
