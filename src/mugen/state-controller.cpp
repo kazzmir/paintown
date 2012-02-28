@@ -6254,10 +6254,43 @@ public:
                 }
                 break;
             }
-            case Front:
-            case Back:
-            case Left:
+            case Front: {
+                double x = evaluateNumber(posX, environment, 0);
+                switch (guy.getFacing()){
+                    case FacingRight: x = environment.getStage().maximumRight() + x; break;
+                    case FacingLeft: x = environment.getStage().maximumLeft() - x; break;
+                }
+                double y = evaluateNumber(posY, environment, 0) + guy.getY();
+                helper->setX(x);
+                helper->setY(y);
+                break;
+            }
+            case Back: {
+                double x = evaluateNumber(posX, environment, 0);
+                switch (guy.getFacing()){
+                    case FacingRight: x = environment.getStage().maximumRight() - x; break;
+                    case FacingLeft: x = environment.getStage().maximumLeft() + x; break;
+                }
+                double y = evaluateNumber(posY, environment, 0) + guy.getY();
+                helper->setX(x);
+                helper->setY(y);
+                break;
+            }
+            case Left: {
+                double x = evaluateNumber(posX, environment, 0) + environment.getStage().maximumLeft();
+                double y = evaluateNumber(posY, environment, 0) + guy.getY();
+                helper->setX(x);
+                helper->setY(y);
+                break;
+            }
             case Right: {
+                double x = environment.getStage().maximumRight() - evaluateNumber(posX, environment, 0);
+                double y = evaluateNumber(posY, environment, 0) + guy.getY();
+                helper->setX(x);
+                helper->setY(y);
+                break;
+            }
+            default: {
                 Global::debug(0) << "Warning: Unimplemented postype " << posType << std::endl;
                 break;
             }
@@ -6804,11 +6837,7 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "pos"){
-                    const Ast::Value * x;
-                    const Ast::Value * y;
-                    simple.view() >> x >> y;
-                    controller.x = Compiler::compile(x);
-                    controller.y = Compiler::compile(y);
+                    readValues(simple.getValue(), controller.x, controller.y);
                 }
             }
         };
@@ -6819,7 +6848,12 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
-            /* TODO */
+            FullEnvironment environment(stage, guy, commands);
+            int time = (int) evaluateNumber(this->time, environment, 1);
+            int facing = (int) evaluateNumber(this->facing, environment, 0);
+            double x = evaluateNumber(this->x, environment, 0);
+            double y = evaluateNumber(this->y, environment, 0);
+            guy.bindTo(((Mugen::Helper*)&guy)->getParent(), time, facing, x, y);
         }
     }
 };
@@ -7561,7 +7595,7 @@ public:
         if (guy.isHelper()){
             FullEnvironment environment(stage, guy, commands);
             int time = (int) evaluateNumber(this->time, environment, 1);
-            int facing = (int) evaluateNumber(this->facing, environment, -1);
+            int facing = (int) evaluateNumber(this->facing, environment, 0);
             double x = evaluateNumber(this->positionX, environment, 0);
             double y = evaluateNumber(this->positionY, environment, 0);
             guy.bindTo(guy.getRoot(), time, facing, x, y);
