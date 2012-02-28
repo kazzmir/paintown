@@ -21,6 +21,7 @@ enum Type{
     Air, /* A */
     Stand, /* S */
     Crouch, /* C */
+    Unchanged /* U */
 };
 
 }

@@ -134,6 +134,7 @@ enum MugenInput{
     SlowDown,
     SpeedUp,
     Pause,
+    ForwardFrame,
     NormalSpeed,
     ToggleDebug,
     QuitGame,
@@ -163,6 +164,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_F3, NormalSpeed);
             gameInput.set(Keyboard::Key_F4, ToggleDebug);
             gameInput.set(Keyboard::Key_F6, Pause);
+            gameInput.set(Keyboard::Key_F7, ForwardFrame);
             gameInput.set(Keyboard::Key_ESC, QuitGame);
             gameInput.set(::Configuration::config(0).getJoystickQuit(), QuitGame);
             gameInput.set(Keyboard::Key_F5, SetHealth);
@@ -210,47 +212,53 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                         const int DISPLAY_GAME_SPEED_TIME = 100;
                         switch (out){
                             case SlowDown: {
-                                               logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                                               logic.gameSpeed -= 0.1;
-                                               if (logic.gameSpeed < 0.1){
-                                                   logic.gameSpeed = 0.1;
-                                               }
-                                               break;
-                                           }
+                                logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                logic.gameSpeed -= 0.1;
+                                if (logic.gameSpeed < 0.1){
+                                    logic.gameSpeed = 0.1;
+                                }
+                                break;
+                            }
                             case SpeedUp: {
-                                              logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                                              logic.gameSpeed += 0.1;
-                                              break;
-                                          }
+                                logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                logic.gameSpeed += 0.1;
+                                break;
+                            }
+                            case ForwardFrame: {
+                                logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                logic.gameSpeed = 0;
+                                logic.gameTicks = 1;
+                                break;
+                            }
                             case Pause: {
-                                            logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                                            logic.gameSpeed = 0;
-                                            break;
-                                        }
+                                logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                logic.gameSpeed = 0;
+                                break;
+                            }
                             case NormalSpeed: {
-                                                  logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
-                                                  logic.gameSpeed = 1;
-                                                  break;
-                                              }
+                                logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
+                                logic.gameSpeed = 1;
+                                break;
+                            }
                             case ToggleDebug: {
-                                                  logic.stage->toggleDebug(0);
-                                                  break;
-                                              }
+                                logic.stage->toggleDebug(0);
+                                break;
+                            }
                             case QuitGame: {
-                                               throw QuitGameException();
-                                           }
+                                throw QuitGameException();
+                            }
                             case SetHealth: {
-                                                logic.stage->setPlayerHealth(1);
-                                                break;
-                                            }
+                                logic.stage->setPlayerHealth(1);
+                                break;
+                            }
                             case ShowFps: {
-                                              logic.show_fps = ! logic.show_fps;
-                                              break;
-                                          }
+                                logic.show_fps = ! logic.show_fps;
+                                break;
+                            }
                             case ToggleConsole: {
-                                                    logic.console.toggle();
-                                                    break;
-                                                }
+                                logic.console.toggle();
+                                break;
+                            }
                         }
                     }
             };

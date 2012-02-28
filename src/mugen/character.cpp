@@ -104,7 +104,6 @@ control(NULL),
 changeVelocity(false),
 velocity_x(NULL),
 velocity_y(NULL),
-changePhysics(false),
 physics(Physics::None),
 changePower(false),
 powerAdd(NULL),
@@ -127,7 +126,6 @@ State * State::deepCopy() const {
     state->velocity_x = Compiler::copy(this->velocity_x);
     state->velocity_y = Compiler::copy(this->velocity_y);
     state->physics = this->physics;
-    state->changePhysics = this->changePhysics;
     state->changePower = this->changePower;
     state->powerAdd = Compiler::copy(this->powerAdd);
     state->moveType = this->moveType;
@@ -204,7 +202,6 @@ void State::setMoveType(const std::string & type){
 }
     
 void State::setPhysics(Physics::Type p){
-    changePhysics = true;
     physics = p;
 }
 
@@ -264,7 +261,7 @@ void State::transitionTo(const Mugen::Stage & stage, Character & who){
         // Global::debug(0) << "Velocity set to " << velocity_x->evaluate(FullEnvironment(stage, who)).toNumber() << ", " << velocity_y->evaluate(FullEnvironment(stage, who)).toNumber() << endl;
     }
 
-    if (changePhysics){
+    if (physics != Physics::Unchanged){
         who.setCurrentPhysics(physics);
     }
 
@@ -1552,11 +1549,9 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
                         definition->setPhysics(Physics::Crouch);
                     } else if (type == "A"){
                         definition->setPhysics(Physics::Air);
+                    } else if (type == "U"){
+                        definition->setPhysics(Physics::Unchanged);
                     }
-                    /* if physics is U (unchanged) then dont set the state physics
-                     * and then the character's physics won't change during
-                     * a state transition.
-                     */
                 } else if (simple == "anim"){
                     definition->setAnimation(Compiler::compile(simple.getValue()));
                 } else if (simple == "velset"){
