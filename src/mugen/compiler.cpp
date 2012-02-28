@@ -4531,8 +4531,40 @@ public:
         }
 
         if (function == "numtarget"){
-            /* FIXME */
-            return compile(0);
+            class NumTarget: public Value{
+            public:
+                NumTarget(Value * index):
+                    index(index){
+                    }
+
+                Value * index;
+
+                virtual ~NumTarget(){
+                    delete index;
+                }
+ 
+                virtual std::string toString() const {
+                    std::ostringstream out;
+                    out << "numtarget(" << index->toString() << ")";
+                    return out.str();
+                }
+
+                Value * copy() const {
+                    return new NumTarget(Compiler::copy(index));
+                }
+
+                RuntimeValue evaluate(const Environment & environment) const {
+                    const map<int, vector<Character*> > & targets = environment.getCharacter().getTargets();
+                    int index = this->index->evaluate(environment).toNumber();
+                    if (targets.find(index) != targets.end()){
+                        const vector<Character*> & found = targets.find(index)->second;
+                        return (int) found.size();
+                    }
+                    return 0;
+                }
+            };
+
+            return new NumTarget(compile(function.getArg1()));
         }
 
         std::ostringstream out;
