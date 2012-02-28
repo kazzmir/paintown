@@ -628,14 +628,19 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     public:
         Draw(const PaintownUtil::ReferenceCount<Background> & background, Font * font, const vector<class Option *> & options):
         background(background),
+        resolutionx(640),
+        resolutiony(480),
+        backgroundBuffer(Graphics::Bitmap(325,245)),
         upsize(Graphics::Bitmap(640, 480)),
         font(font),
         options(options){
             const int totalHeight = (options.size() * (font->getHeight()+font->getHeight()/2)) + font->getHeight()*2;
             const int totalWidth = getLargestWidth(options, *font) + getLargestWidth(options, *font)/4;
-            //optionArea.location.setDimensions(Gui::AbsolutePoint(260),210);
-            optionArea.location.setPosition(Gui::AbsolutePoint((640/2) - (totalWidth/2), (480/2) - (totalHeight/2)));
-            optionArea.location.setPosition2(Gui::AbsolutePoint((640/2) + (totalWidth/2), (480/2) + (totalHeight/2)));
+            
+            checkDimensions(totalWidth, totalHeight);
+            
+            optionArea.location.setPosition(Gui::AbsolutePoint((resolutionx/2) - (totalWidth/2), (resolutiony/2) - (totalHeight/2)));
+            optionArea.location.setPosition2(Gui::AbsolutePoint((resolutionx/2) + (totalWidth/2), (resolutiony/2) + (totalHeight/2)));
 
             optionArea.transforms.setRadius(5);
             optionArea.colors.body = Graphics::makeColor(0,0,60);
@@ -644,7 +649,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         PaintownUtil::ReferenceCount<Background> background;
-        const Graphics::Bitmap upsize;
+        int resolutionx, resolutiony;
+        Graphics::Bitmap backgroundBuffer;
+        Graphics::Bitmap upsize;
         Font * font;
         Box optionArea;
         const vector<class Option *> & options;
@@ -660,6 +667,26 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             }
             return width;
         }
+        
+        void checkDimensions(int width, int height){
+            bool changed = false;
+            if (width <= 320 && height <= 240){
+                resolutionx = 320;
+                resolutiony = 240;
+                changed = true;
+            } else if (width <= 640 && height <= 480){
+                resolutionx = 640;
+                height = 480;
+                changed = true;
+            } else {
+                resolutionx = 1024;
+                resolutiony = 768;
+                changed = true;
+            }
+            if (changed){
+                upsize = Graphics::Bitmap(resolutionx, resolutiony);
+            }
+        }
 
         void doOptions(Font & font, int x1, int x2, int y, const Graphics::Bitmap & where){
             int mod = font.getHeight()+font.getHeight()/2;
@@ -671,20 +698,24 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void draw(const Graphics::Bitmap & screen){
-            screen.clearToMask();
-            Graphics::StretchedBitmap workArea(320, 240, upsize, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+            //screen.clearToMask();
+            Graphics::StretchedBitmap workArea(320, 240, backgroundBuffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             workArea.start();
             // render backgrounds
             background->renderBackground(0, 0, workArea);
             workArea.finish();
-            upsize.drawStretched(screen);
+            backgroundBuffer.drawStretched(screen);
             
             // render fonts
-            font->render(640/2, 20, 0, 0, screen, "OPTIONS" );
+            upsize.clearToMask();
+            font->render(resolutionx/2, 20, 0, 0, upsize, "OPTIONS" );
             
-            optionArea.render(screen);
+            //! FIXME this ends up blending with the mask color
+            optionArea.render(upsize);
             
-            doOptions(*font, optionArea.location.getX() + 10, optionArea.location.getX2() - 10, optionArea.location.getY() + 5, screen);
+            doOptions(*font, optionArea.location.getX() + 10, optionArea.location.getX2() - 10, optionArea.location.getY() + 5, upsize);
+            
+            upsize.drawStretched(screen);
             
             workArea.clearToMask();
             workArea.start();
@@ -692,7 +723,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             background->renderForeground(0, 0, workArea);
             // Finally render to screen
             workArea.finish();
-            upsize.drawStretched(screen);
+            backgroundBuffer.drawStretched(screen);
             // workArea.Stretch(screen);
             screen.BlitToScreen();
         }
