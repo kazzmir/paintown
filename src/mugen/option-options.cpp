@@ -644,14 +644,6 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             
             fontArea.setPosition(Gui::AbsolutePoint((resolutionx/2) - (totalWidth/2), (resolutiony/2) - (totalHeight/2)));
             fontArea.setPosition2(Gui::AbsolutePoint((resolutionx/2) + (totalWidth/2), (resolutiony/2) + (totalHeight/2)));
-            
-            optionArea.location.setPosition(Gui::AbsolutePoint(160, 120));
-            optionArea.location.setPosition2(Gui::AbsolutePoint(480, 360));
-            
-            optionArea.transforms.setRadius(5);
-            optionArea.colors.body = Graphics::makeColor(0,0,60);
-            optionArea.colors.bodyAlpha = 150;
-            optionArea.colors.border = Graphics::makeColor(0,0,20);
         }
 
         PaintownUtil::ReferenceCount<Background> background;
@@ -659,7 +651,6 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         Graphics::Bitmap backgroundBuffer;
         Graphics::Bitmap upsize;
         Font * font;
-        Box optionArea;
         const vector<class Option *> & options;
         Gui::Coordinate fontArea;
         
@@ -685,34 +676,42 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void draw(const Graphics::Bitmap & screen){
-            //screen.clearToMask();
+            // render backgrounds
             Graphics::StretchedBitmap workArea(320, 240, backgroundBuffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             workArea.start();
-            // render backgrounds
             background->renderBackground(0, 0, workArea);
             workArea.finish();
             backgroundBuffer.drawStretched(screen);
             
-            // render fonts
+            // render title
             upsize.clearToMask();
             font->render(resolutionx/2, 20, 0, 0, upsize, "OPTIONS" );
-            upsize.drawStretched(160, 20, 320, 240, screen);
             
-            optionArea.render(screen);
+            const int x = screen.getWidth()/6;
+            const int y = screen.getHeight()/6;
+            const int width = (screen.getWidth()/2) + x;
+            const int height = (screen.getHeight()/2) + y;
             
+            upsize.drawStretched(x, screen.getHeight()/25, width, height, screen);
+            
+            // Do background
+            Graphics::Bitmap::transBlender(0,0,0,150);
+            screen.translucent().roundRectFill(5, x, y, x+width, y+height, Graphics::makeColor(0,0,60));
+            screen.translucent().roundRect(5, x, y, x+width, y+height, Graphics::makeColor(0,0,20));
+            
+            // Render options
             upsize.clearToMask();
             doOptions(*font, fontArea.getX() + 10, fontArea.getX2() - 10, fontArea.getY() + 5, upsize);
+            upsize.drawStretched(x, y, width, height, screen);
             
-            upsize.drawStretched(160, 120, 320, 240, screen);
-            
+            // render Foregrounds
             workArea.clearToMask();
             workArea.start();
-            // render Foregrounds
             background->renderForeground(0, 0, workArea);
+            
             // Finally render to screen
             workArea.finish();
             backgroundBuffer.drawStretched(screen);
-            // workArea.Stretch(screen);
             screen.BlitToScreen();
         }
     };
