@@ -976,8 +976,8 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
                 } else if (player1.getHealth() == player2.getHealth()){
                     if (!winStateSet){
                         winStateSet = true;
-                        lastWinState.winner = NULL;
-                        /* FIXME: should we set the lastWinState.game.type to Draw
+                        lastWinner.winner = NULL;
+                        /* FIXME: should we set the lastWinner.game.type to Draw
                          * or something?
                          */
                         player1.changeState(stage, Mugen::Draw);
