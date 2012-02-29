@@ -110,7 +110,9 @@ PaintownUtil::ReferenceCount<Animation> Helper::getAnimation(int id) const {
             return proxyAnimations[id];
         }
     } else {
-        return findIt->second;
+        if (findIt != proxyAnimations.end()){
+            return findIt->second;
+        }
     }
     return PaintownUtil::ReferenceCount<Animation>(NULL);
 }

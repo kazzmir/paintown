@@ -2467,6 +2467,16 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner)
             }
         }
     }
+
+    for (vector<Mugen::Character*>::const_iterator it = addedObjects.begin(); it != addedObjects.end(); it++){
+        Mugen::Character * who = *it;
+        if (who->isHelper()){
+            Mugen::Helper * helper = (Mugen::Helper*) who;
+            if (helper->getParent() == owner){
+                out.push_back(helper);
+            }
+        }
+    }
     return out;
 }
     
