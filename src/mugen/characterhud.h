@@ -591,6 +591,16 @@ class Round{
             return this->roundEnd;
         }
 
+        bool isWinner(const Mugen::Character & who) const;
+        bool isWinnerKO(const Mugen::Character & who) const;
+        bool isWinnerTime(const Mugen::Character & who) const;
+        bool isWinnerPerfect(const Mugen::Character & who) const;
+
+        bool isLoser(const Mugen::Character & who) const;
+        bool isLoserKO(const Mugen::Character & who) const;
+        bool isLoserTime(const Mugen::Character & who) const;
+        bool isLoserPerfect(const Mugen::Character & who) const;
+
     protected:
         void doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Character & loser);
 
@@ -698,6 +708,10 @@ class Round{
         Behavior * player2Behavior;
         DummyBehavior dummyBehavior;
 
+        struct LastWinner{
+            const Mugen::Character * winner;
+            WinGame game;
+        } lastWinner;
 };
 
 class WinIcon{

@@ -788,6 +788,38 @@ Round::~Round(){
     }
 }
 
+bool Round::isWinner(const Mugen::Character & who) const {
+    return winStateSet && lastWinner.winner == &who;
+}
+
+bool Round::isWinnerKO(const Mugen::Character & who) const {
+    return isWinner(who) && lastWinner.game.type == WinGame::Normal;
+}
+
+bool Round::isWinnerTime(const Mugen::Character & who) const {
+    return isWinner(who) && lastWinner.game.type == WinGame::TimeOver;
+}
+
+bool Round::isWinnerPerfect(const Mugen::Character & who) const {
+    return isWinner(who) && lastWinner.game.perfect;
+}
+
+bool Round::isLoser(const Mugen::Character & who) const {
+    return winStateSet && lastWinner.winner != &who;
+}
+
+bool Round::isLoserKO(const Mugen::Character & who) const {
+    return isLoser(who) && lastWinner.game.type == WinGame::Normal;
+}
+
+bool Round::isLoserTime(const Mugen::Character & who) const {
+    return isLoser(who) && lastWinner.game.type == WinGame::TimeOver;
+}
+
+bool Round::isLoserPerfect(const Mugen::Character & who) const {
+    return isLoser(who) && lastWinner.game.perfect;
+}
+
 void Round::doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Character & loser){
     winner.changeState(stage, Mugen::Win);
 
@@ -810,6 +842,12 @@ void Round::doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Charac
     if (loser.getHealth() > 0){
         loser.changeState(stage, Mugen::Lose);
     }
+
+    /* Keep track of who the current winner is so we can implement the triggers
+     * Win, WinTime, WinKO, and WinPerfect
+     */
+    lastWinner.winner = &winner;
+    lastWinner.game = win;
 }
 
 void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
@@ -938,9 +976,12 @@ void Round::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Charact
                 } else if (player1.getHealth() == player2.getHealth()){
                     if (!winStateSet){
                         winStateSet = true;
-                        std::vector<std::string> vec;
-                        player1.changeState(stage, Mugen::Draw, vec);
-                        player2.changeState(stage, Mugen::Draw, vec);
+                        lastWinState.winner = NULL;
+                        /* FIXME: should we set the lastWinState.game.type to Draw
+                         * or something?
+                         */
+                        player1.changeState(stage, Mugen::Draw);
+                        player2.changeState(stage, Mugen::Draw);
                     }
                     if (ticker >= overWinTime + winDisplayTime){
                         if (draw.notStarted()){
@@ -1097,11 +1138,10 @@ void Round::reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Chara
 
 void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     this->state = state;
-    std::vector<std::string> vec;
     switch (this->state){
 	case WaitForIntro:
-            player1.changeState(stage, Mugen::Initialize, vec);
-	    player2.changeState(stage, Mugen::Initialize, vec);
+            player1.changeState(stage, Mugen::Initialize);
+	    player2.changeState(stage, Mugen::Initialize);
 	    break;
 	case DisplayIntro:
             /* The initialize state (5900) will call a change state controller
@@ -1115,11 +1155,10 @@ void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character
             */
 	    break;
 	case WaitForRound:
-            player1.changeState(stage, Mugen::Standing, vec);
-            player2.changeState(stage, Mugen::Standing, vec);
+            player1.changeState(stage, Mugen::Standing);
+            player2.changeState(stage, Mugen::Standing);
 	    break;
-	case DisplayRound:
-            {
+	case DisplayRound: {
                 FightElement & element = getRoundElement();
                 FightElement & soundElement = getRoundSoundElement();
                 if (element.notStarted()){

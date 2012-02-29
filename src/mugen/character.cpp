@@ -856,11 +856,15 @@ void Character::addCommand(Command * command){
 }
 
 void Character::setAnimation(int animation, int element){
-    foreignAnimation = NULL;
-    currentAnimation = animation;
-    if (getCurrentAnimation() != NULL){
-        getCurrentAnimation()->reset();
-        getCurrentAnimation()->setPosition(element);
+    if (getAnimation(animation) != NULL){
+        foreignAnimation = NULL;
+        currentAnimation = animation;
+        if (getCurrentAnimation() != NULL){
+            getCurrentAnimation()->reset();
+            getCurrentAnimation()->setPosition(element);
+        }
+    } else {
+        Global::debug(0, getDisplayName()) << "No animation for " << animation << std::endl;
     }
 }
 

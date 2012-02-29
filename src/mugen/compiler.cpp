@@ -1338,8 +1338,7 @@ public:
             class WinTime: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    return environment.getStage().getGameInfo()->getRound().isWinnerTime(environment.getCharacter());
                 }
 
                 Value * copy() const {
@@ -1354,8 +1353,7 @@ public:
             class Winko: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(false);
+                    return environment.getStage().getGameInfo()->getRound().isWinnerKO(environment.getCharacter());
                 }
 
                 Value * copy() const {
@@ -1367,16 +1365,25 @@ public:
         }
 
         if (identifier == "winperfect"){
-            /* FIXME */
-            return compile(0);
+            class WinPerfect: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return environment.getStage().getGameInfo()->getRound().isWinnerPerfect(environment.getCharacter());
+                }
+
+                Value * copy() const {
+                    return new WinPerfect();
+                }
+            };
+
+            return new WinPerfect();
         }
 
         if (identifier == "win"){
             class Win: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* FIXME */
-                    return RuntimeValue(0);
+                    return environment.getStage().getGameInfo()->getRound().isWinner(environment.getCharacter());
                 }
 
                 Value * copy() const {
@@ -1388,18 +1395,48 @@ public:
         }
 
         if (identifier == "lose"){
-            /* FIXME */
-            return compile(0);
+            class Lose: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return environment.getStage().getGameInfo()->getRound().isLoser(environment.getCharacter());
+                }
+
+                Value * copy() const {
+                    return new Lose();
+                }
+            };
+
+            return new Lose();
         }
         
         if (identifier == "loseko"){
-            /* FIXME */
-            return compile(0);
+            class LoseKO: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return environment.getStage().getGameInfo()->getRound().isLoserKO(environment.getCharacter());
+                }
+
+                Value * copy() const {
+                    return new LoseKO();
+                }
+            };
+
+            return new LoseKO();
         }
         
         if (identifier == "losetime"){
-            /* FIXME */
-            return compile(0);
+            class LoseTime: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    return environment.getStage().getGameInfo()->getRound().isLoserTime(environment.getCharacter());
+                }
+
+                Value * copy() const {
+                    return new LoseTime();
+                }
+            };
+
+            return new LoseTime();
         }
 
         if (identifier == "drawgame"){
