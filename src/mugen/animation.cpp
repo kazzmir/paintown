@@ -111,8 +111,8 @@ Frame & Frame::operator=(const Frame &copy){
 
 void Frame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (sprite != NULL){
-        const int placex = x + (xoffset * effects.facing);
-        const int placey = y + (yoffset * effects.vfacing);
+        const int placex = x + (xoffset * effects.facing * effects.scalex);
+        const int placey = y + (yoffset * effects.vfacing * effects.scaley);
         sprite->render(placex, placey, work, effects);
     }
 }
