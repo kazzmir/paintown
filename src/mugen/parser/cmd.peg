@@ -1031,7 +1031,7 @@ rules:
     hitflag = chars:hitflag_char+ modifier:hitflag_modifier? !"." {{
         value = makeHitFlags(chars, modifier);
     }}
-    hitflag_char = [AMFDL]
+    hitflag_char = [HAMFDL]
 
     hitflag_modifier = [+-]
 

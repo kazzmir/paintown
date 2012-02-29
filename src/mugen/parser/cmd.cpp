@@ -19644,7 +19644,7 @@ Result rule_hitflag(Stream & stream, const int position){
                         int position_peg_8 = result_peg_5.getPosition();
                         
                         char letter_peg_11 = stream.get(result_peg_5.getPosition());
-                        if (letter_peg_11 != '\0' && strchr("AMFDL", letter_peg_11) != NULL){
+                        if (letter_peg_11 != '\0' && strchr("HAMFDL", letter_peg_11) != NULL){
                             result_peg_5.nextPosition();
                             result_peg_5.setValue(Value((void*) (long) letter_peg_11));
                         } else {
