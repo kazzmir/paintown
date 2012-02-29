@@ -109,7 +109,7 @@ public:
     virtual int getAttackDistance() const = 0;
     virtual void guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
     virtual void addPower(double d) = 0;
-    virtual void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
+    // virtual void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit) = 0;
     // virtual void didHit(Object * enemy, Mugen::Stage & stage) = 0;
     // virtual void didHitGuarded(Object * enemy, Mugen::Stage & stage) = 0;
 protected:

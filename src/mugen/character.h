@@ -841,7 +841,7 @@ public:
         void didHitGuarded(Character * enemy, Mugen::Stage & stage);
 
         /* `enemy' hit `this' with hitdef `hit' */
-        void wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
+        void wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hit);
 
         /* `this' character guarded `enemy' */
         void guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);

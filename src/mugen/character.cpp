@@ -3161,7 +3161,7 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
     takeDamage(world, obj, amount, true, true);
 }
 
-void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition & hisHit){
+void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
     characterData.who = NULL;
     characterData.enabled = false;
 
@@ -3195,8 +3195,11 @@ void Character::wasHit(Mugen::Stage & stage, Object * enemy, const HitDefinition
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
     
     if (hisHit.player2State != -1){
-        /* Use the state data from the enemy until we are hit or call SelfState */
-        useCharacterData((Character*) enemy);
+        /* Use the state data from the enemy until we are hit or call SelfState
+         * Always get the data from root so we don't bind to a helper which may
+         * be deleted soon.
+         */
+        useCharacterData(enemy->getRoot());
         changeState(stage, hisHit.player2State);
     } else {
         /* FIXME: replace 50*0 with some constant */

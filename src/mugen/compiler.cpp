@@ -4837,13 +4837,15 @@ public:
             return new PosX();
         }
         
-        /* FIXME: verify p2bodydist is right. for now they are copy/pastes of p2dist */
         if (keyword == "p2bodydist x"){
             class P2BodyDistX: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
-                    return RuntimeValue(fabs(enemy->getFrontX() - environment.getCharacter().getFrontX()));
+                    switch (environment.getCharacter().getFacing()){
+                        case FacingLeft: return environment.getCharacter().getFrontX() - enemy->getFrontX();
+                        case FacingRight: return enemy->getFrontX() - environment.getCharacter().getFrontX();
+                    }
                 }
 
                 virtual std::string toString() const {
@@ -4936,8 +4938,10 @@ public:
                     /* FIXME: im not sure this is right, should it take into account
                      * the facing direction?
                      */
-                    return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
-
+                    switch (environment.getCharacter().getFacing()){
+                        case FacingLeft: return environment.getCharacter().getX() - enemy->getX();
+                        case FacingRight: return enemy->getX() - environment.getCharacter().getX();
+                    }
                 }
 
                 Value * copy() const {
