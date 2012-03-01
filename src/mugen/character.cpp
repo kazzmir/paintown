@@ -3167,8 +3167,24 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
 
     wasHitCounter += 1;
     hitState.update(stage, *this, getY() < 0, hisHit);
-    setXVelocity(hitState.xVelocity);
+
+    /* I guess HitVelSet in the 50X0 states will set the velocity
+     * based on the hitstate.
+     */
+    /*
+    switch (enemy->getFacing()){
+        case FacingRight: {
+            setXVelocity(-hitState.xVelocity);
+            break;
+        }
+        case FacingLeft: {
+            setXVelocity(hitState.xVelocity);
+            break;
+        }
+    }
     setYVelocity(hitState.yVelocity);
+    */
+
     lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){

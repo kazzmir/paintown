@@ -1183,7 +1183,12 @@ public:
                 /* FIXME: should velocity be based on the facing direction? The
                  * documentation doesn't say.
                  */ 
-                guy.setXVelocity(guy.getHitState().xVelocity);
+                Character * enemy = stage.getEnemy(&guy);
+                /* If both players are facing the same direction then negate the
+                 * velocity.
+                 */
+                int multiplier = (enemy->getFacing() == guy.getFacing()) ? -1 : 1;
+                guy.setXVelocity(guy.getHitState().xVelocity * multiplier);
             }
         }
 
