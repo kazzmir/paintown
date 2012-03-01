@@ -3166,7 +3166,7 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     characterData.enabled = false;
 
     wasHitCounter += 1;
-    hitState.update(stage, *this, getY() > 0, hisHit);
+    hitState.update(stage, *this, getY() < 0, hisHit);
     setXVelocity(hitState.xVelocity);
     setYVelocity(hitState.yVelocity);
     lastTicket = enemy->getTicket();
