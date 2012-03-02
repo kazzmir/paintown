@@ -51,6 +51,187 @@ static std::string getString(int number){
     return str.str();
 }
 
+ListFont::ListFont():
+font(PaintownUtil::ReferenceCount<Mugen::Font>(NULL)),
+bank(-1),
+position(0){
+}
+
+ListFont::ListFont(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position):
+font(font),
+bank(bank),
+position(position){
+}
+
+ListFont::ListFont(const ListFont & copy):
+font(copy.font),
+bank(copy.bank),
+position(copy.position){
+}
+
+ListFont::~ListFont(){
+}
+
+const ListFont & ListFont::operator=(const ListFont & copy){
+    font = copy.font;
+    bank = copy.bank;
+    position = copy.position;
+    
+    return *this;
+}
+
+void ListFont::draw(int x, int y, const std::string & message, const Graphics::Bitmap & work){
+    if (font != NULL){
+        font->render(x, y, position, bank, work, message);
+    }
+}
+
+void ListFont::draw(int x, int y, int position, const std::string & message, const Graphics::Bitmap & work){
+    if (font != NULL){
+        font->render(x, y, position, bank, work, message);
+    }
+}
+
+int ListFont::getHeight(){
+    if (font != NULL){
+        return font->getHeight();
+    }
+    
+    return 0;
+}
+
+ScrollAction::ScrollAction():
+expandState(Disabled),
+current(0),
+itemTop(0),
+itemBottom(0),
+visibleItems(5),
+autoSpacing(false),
+startX(0),
+startY(0),
+spacingX(0),
+spacingY(0),
+offsetX(0),
+currentOffsetX(0),
+offsetY(0),
+currentOffsetY(0){
+}
+
+ScrollAction::~ScrollAction(){
+}
+
+void ScrollAction::act(){
+    if (autoSpacing){
+        spacingY = font.getHeight();
+    }
+    if (currentOffsetX < offsetX){
+        currentOffsetX = (currentOffsetX+offsetX)/2;
+    }
+    if (currentOffsetY < offsetY){
+        currentOffsetY = (currentOffsetX+offsetY)/2;
+    }
+}
+
+void ScrollAction::render(const Graphics::Bitmap &, const ::Font &) const{
+    
+    int y = startY - currentOffsetY;
+    int x = startX;
+    bool moveLeft = true;
+    for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i){
+        // FIXME Convert to whatever the item type is going to be
+        const PaintownUtil::ReferenceCount<ScrollItem> item = *i;
+        if (expandState == Disabled){
+            // TODO Don't apply currentOffsetX modifier to x
+        } else {
+            if (moveLeft){
+                // TODO Subtract currentOffsetX modifier to x
+            } else {
+                // TODO Add currentOffsetX modifier to x
+            }
+            moveLeft = !moveLeft;
+        }
+        x+=spacingX;
+        y+=spacingY;
+    }
+}
+
+void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> &){
+}
+
+void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &){
+}
+
+const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & ScrollAction::getItems() const{
+    return text;
+}
+
+void ScrollAction::clearItems(){
+}
+
+unsigned int ScrollAction::getCurrentIndex() const{
+    return current;
+}
+
+bool ScrollAction::next(){
+    if (current < text.size()-1){
+        current++;
+    } else {
+        current = 0;
+    }
+    checkOffset();
+    return true;
+}
+
+bool ScrollAction::previous(){
+    if (current > 0){
+        current--;
+    } else {
+        current = text.size()-1;
+    }
+    checkOffset();
+    return true;
+}
+
+void ScrollAction::setExpandState(const ExpandState & state){
+    expandState = state;
+    switch (expandState){
+        case Expand:
+            // FIXME get the screen width and go off of that
+            offsetX = 640;
+            break;
+        case Retract:
+            offsetX = 0;
+            break;
+        case Disabled:
+        default:
+            offsetX = currentOffsetX = 0;
+            break;
+    }
+}
+
+void ScrollAction::setListFont(const ListFont & f){
+    font = f;
+}
+
+void ScrollAction::setActiveFont(const ListFont & f){
+    activeFont = f;
+}
+
+void ScrollAction::checkOffset(){
+    if (current < itemTop){
+        itemTop = current;
+        itemBottom = itemTop + visibleItems;
+    } else if (current > itemBottom){
+        itemBottom = current;
+        itemTop = itemBottom - visibleItems;
+    }
+    
+    offsetY = 0;
+    for (unsigned int i = 0; i < itemTop; ++i){
+        offsetY+=spacingY;
+    }
+}
+
 Option::Option():
 selected(false),
 alpha(0),
@@ -630,7 +811,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         background(background),
         resolutionx(640),
         resolutiony(480),
-        backgroundBuffer(Graphics::Bitmap(325,245)),
+        backgroundBuffer(Graphics::Bitmap(320,240)),
         upsize(Graphics::Bitmap(640, 480)),
         font(font),
         options(options){

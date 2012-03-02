@@ -3,17 +3,148 @@
 
 #include "menu.h"
 #include "util/menu/optionfactory.h"
+#include "util/gui/scroll-list.h"
+#include "util/pointer.h"
 
 #include <vector>
 #include <string>
 
 class Token;
 
+namespace PaintownUtil = ::Util;
+
 namespace Mugen {
 
 class Font;
 
 class Character;
+
+class ListFont{
+public:
+    ListFont();
+    ListFont(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position);
+    ListFont(const ListFont &);
+    virtual ~ListFont();
+    
+    virtual const ListFont & operator=(const ListFont &);
+    
+    virtual void draw(int x, int y, const std::string &, const Graphics::Bitmap &);
+    virtual void draw(int x, int y, int position, const std::string &, const Graphics::Bitmap &);
+    
+    virtual int getHeight();
+protected:
+    PaintownUtil::ReferenceCount<Mugen::Font> font;
+    int bank;
+    int position;
+};
+
+class ScrollAction : public Gui::ScrollListInterface{
+public:
+    ScrollAction();
+    virtual ~ScrollAction();
+    
+    //! Act
+    virtual void act();
+    
+    //! Render (Ignores font from paintown) pass Mugen::Font for list and active wrapped in ListFont
+    virtual void render(const Graphics::Bitmap &, const ::Font &) const;
+
+    //! Add item
+    virtual void addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> &);
+
+    //! Add vector of text
+    virtual void addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
+    
+    //! Get vector of text
+    virtual const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & getItems() const;
+    
+    //! Clear list
+    virtual void clearItems();
+    
+    //! Get current Index
+    virtual unsigned int getCurrentIndex() const;
+
+    //! Next
+    virtual bool next();
+
+    //! Previous
+    virtual bool previous() ;
+    
+    enum ExpandState{
+        Disabled,
+        Retract,
+        Expand,
+    };
+    
+    //! Toggle expanding in and out of view
+    virtual void setExpandState(const ExpandState &);
+    
+    //! List Font
+    virtual void setListFont(const ListFont &);
+    
+    //! Active Font
+    virtual void setActiveFont(const ListFont &);
+    
+    //! Set visible items (defaults to 5)
+    virtual inline void setVisibleItems(int items){
+        this->visibleItems = items;
+    }
+    
+    //! Set autospacing (ignores set spacing)
+    virtual inline void setAutoSpacing(bool spacing){
+        this->autoSpacing = spacing;
+    }
+    
+    //! Set Spacing
+    virtual inline void setSpacing(int x, int y){
+        this->spacingX = x;
+        this->spacingY = y;
+    }
+    
+protected:
+    //! Check the y offset
+    virtual void checkOffset();
+    
+    //! Is expanding enabled
+    ExpandState expandState;
+    
+    //! Font
+    ListFont font;
+    
+    //! Active font
+    ListFont activeFont;
+    
+    //! Current item
+    unsigned int current;
+    
+    //! Item offset
+    unsigned int itemTop;
+    unsigned int itemBottom;
+    
+    //! Set visible items
+    int visibleItems;
+    
+    //! Auto spacing
+    bool autoSpacing;
+    
+    //! location to render
+    int startX;
+    int startY;
+    
+    //! Spacing
+    int spacingX;
+    int spacingY;
+    
+    //! Offsets
+    int offsetX;
+    int currentOffsetX;
+    int offsetY;
+    int currentOffsetY;
+    
+    //! Item list
+    std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > text;
+    
+};
 
 class OptionArcade: public ItemOption {
 public:
