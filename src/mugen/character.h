@@ -484,8 +484,8 @@ public:
         return this->currentState;
     }
 
-    virtual State * getState(int id) const;
-    virtual void setState(int id, State * what);
+    virtual PaintownUtil::ReferenceCount<State> getState(int id) const;
+    virtual void setState(int id, PaintownUtil::ReferenceCount<State> what);
 
         virtual inline std::string getStateType() const {
             return stateType;
@@ -1127,7 +1127,7 @@ protected:
 
     virtual void fixAssumptions();
     virtual StateController * parseState(Ast::Section * section);
-    virtual State * parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path);
+    virtual PaintownUtil::ReferenceCount<State> parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path, std::map<int, PaintownUtil::ReferenceCount<State> > & states);
 
     virtual void useCharacterData(const Character * who);
 
@@ -1335,7 +1335,7 @@ protected:
 
         std::vector<Command *> commands;
 
-        std::map<int, State*> states;
+        std::map<int, PaintownUtil::ReferenceCount<State> > states;
 
         int currentState;
         int previousState;

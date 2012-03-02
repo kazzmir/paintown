@@ -743,11 +743,6 @@ Character::~Character(){
     for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         delete (*it);
     }
-        
-    for (map<int, State*>::iterator it = states.begin(); it != states.end(); it++){
-        State * state = (*it).second;
-        delete state;
-    }
 }
 
 void Character::initialize(){
@@ -868,14 +863,22 @@ void Character::setAnimation(int animation, int element){
     }
 }
 
+static void mergeStates(map<int, PaintownUtil::ReferenceCount<State> > & mergeIn,
+                        map<int, PaintownUtil::ReferenceCount<State> > & from){
+    for (map<int, PaintownUtil::ReferenceCount<State> >::iterator it = from.begin(); it != from.end(); it++){
+        mergeIn[it->first] = it->second;
+    }
+}
+
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath full = Storage::instance().lookupInsensitive(baseDir, path);
+    map<int, PaintownUtil::ReferenceCount<State> > out;
     try{
         int defaultTime = 15;
         int defaultBufferTime = 1;
 
         AstRef parsed(Util::parseCmd(full.path()));
-        State * currentState = NULL;
+        PaintownUtil::ReferenceCount<State> currentState;
         for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -963,7 +966,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                 DefaultWalker walker(defaultTime, defaultBufferTime);
                 section->walk(walker);
             } else if (PaintownUtil::matchRegex(head, "statedef")){
-                currentState = parseStateDefinition(section, full);
+                currentState = parseStateDefinition(section, full, out);
             } else if (PaintownUtil::matchRegex(head, "state ")){
                 if (currentState != NULL){
                     currentState->addController(parseState(section));
@@ -1000,6 +1003,8 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         out << "Could not parse " << path.path() << ": " << e.getReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
+                
+    mergeStates(states, out);
 }
 
 static bool isStateDefSection(string name){
@@ -1179,7 +1184,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
     currentState = stateNumber;
     resetStateTime();
     if (getState(currentState) != NULL){
-        State * state = getState(currentState);
+        PaintownUtil::ReferenceCount<State> state = getState(currentState);
         state->transitionTo(stage, *this);
         doStates(stage, inputs, currentState);
     } else {
@@ -1502,7 +1507,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     }
 }
 
-State * Character::parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path){
+PaintownUtil::ReferenceCount<State> Character::parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path, map<int, PaintownUtil::ReferenceCount<State> > & stateMap){
     std::string head = section->getName();
     /* this should really be head = Mugen::Util::fixCase(head) */
     head = Util::fixCase(head);
@@ -1510,12 +1515,12 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
     int state = atoi(PaintownUtil::captureRegex(head, "statedef *(-?[0-9]+)", 0).c_str());
     class StateWalker: public Ast::Walker {
         public:
-            StateWalker(State * definition, const Filesystem::AbsolutePath & path):
+            StateWalker(PaintownUtil::ReferenceCount<State> definition, const Filesystem::AbsolutePath & path):
             definition(definition),
             path(path){
             }
 
-            State * definition;
+            PaintownUtil::ReferenceCount<State> definition;
             const Filesystem::AbsolutePath & path;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
@@ -1588,15 +1593,21 @@ State * Character::parseStateDefinition(Ast::Section * section, const Filesystem
             }
     };
 
-    State * definition = new State(state);
+    PaintownUtil::ReferenceCount<State> definition(new State(state));
     StateWalker walker(definition, path);
     section->walk(walker);
-    if (states[state] != NULL){
+
+    /* FIXME: find out if only common states can be overriden */
+    if (stateMap[state] != NULL){
+        /* Don't let states be overriden within a single file. */
+        return definition;
+        /*
         Global::debug(1) << "Overriding state " << state << endl;
         delete states[state];
+        */
     }
     Global::debug(2) << "Adding state definition " << state << endl;
-    states[state] = definition;
+    stateMap[state] = definition;
 
     return definition;
 }
@@ -1774,14 +1785,15 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
     AstRef parsed(Util::parseCmd(full.path()));
-    State * currentState = NULL;
+    map<int, PaintownUtil::ReferenceCount<State> > out;
+    PaintownUtil::ReferenceCount<State> currentState;
     for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         head = Util::fixCase(head);
 
         if (PaintownUtil::matchRegex(head, "statedef")){
-            currentState = parseStateDefinition(section, full);
+            currentState = parseStateDefinition(section, full, out);
         } else if (PaintownUtil::matchRegex(head, "state ")){
             if (currentState != NULL){
                 StateController * controller = parseState(section);
@@ -1796,6 +1808,8 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
             }
         }
     }
+
+    mergeStates(states, out);
 }
     
 void Character::startRecording(int count){
@@ -1846,8 +1860,8 @@ void Character::stopRecording(){
 }
     
 void Character::checkStateControllers(){
-    for (map<int, State*>::iterator it = states.begin(); it != states.end(); it++){
-        State * state = it->second;
+    for (map<int, PaintownUtil::ReferenceCount<State> >::iterator it = states.begin(); it != states.end(); it++){
+        PaintownUtil::ReferenceCount<State> state = it->second;
         if (state->getControllers().size() == 0){
             std::ostringstream out;
             out << "State " << state->getState() << " has no state controllers";
@@ -2936,8 +2950,8 @@ void Character::addPower(double d){
 }
         
 void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> & active, int stateNumber){
-    if (getState(stateNumber) != 0){
-        State * state = getState(stateNumber);
+    if (getState(stateNumber) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(stateNumber);
         const vector<StateController*> & controllers = state->getControllers();
         FullEnvironment environment(stage, *this, active);
         for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
@@ -3232,8 +3246,8 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
 /* returns true if a state change occured */
 bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
-    if (getState(stateNumber) != 0){
-        State * state = getState(stateNumber);
+    if (getState(stateNumber) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(stateNumber);
         // Global::debug(0) << getDisplayName() << " evaluating state " << stateNumber << " states " << state->getControllers().size() << std::endl;
         const vector<StateController*> & controllers = state->getControllers();
         FullEnvironment environment(stage, *this, active);
@@ -4105,7 +4119,7 @@ void Character::setDrawOffset(double x, double y){
     drawOffset.set(x, y);
 }
     
-State * Character::getState(int id) const {
+PaintownUtil::ReferenceCount<State> Character::getState(int id) const {
     if (characterData.enabled && characterData.who != NULL){
         return characterData.who->getState(id);
     }
@@ -4113,11 +4127,10 @@ State * Character::getState(int id) const {
     if (states.find(id) != states.end()){
         return states.find(id)->second;
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<State>(NULL);
 }
 
-void Character::setState(int id, State * what){
-    delete states[id];
+void Character::setState(int id, PaintownUtil::ReferenceCount<State> what){
     states[id] = what;
 }
         

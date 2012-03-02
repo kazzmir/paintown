@@ -27,7 +27,7 @@ public:
     using Character::getAnimation;
     virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
     using Character::getState;
-    virtual State * getState(int id) const;
+    virtual PaintownUtil::ReferenceCount<State> getState(int id) const;
 
     void reParent(Character * parent);
 
@@ -54,7 +54,7 @@ protected:
     HitDefinition hit;
     DummyBehavior dummy;
     mutable std::map< int, PaintownUtil::ReferenceCount<Animation> > proxyAnimations;
-    mutable std::map< int, State *> proxyStates;
+    mutable std::map< int, PaintownUtil::ReferenceCount<State> > proxyStates;
     int id;
     std::string name;
 };
