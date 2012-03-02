@@ -144,8 +144,8 @@ class Animation{
         /* automatically sets the effect trans type to ADDALPHA */
 	void renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex = 1, const double scaley = 1);
 
-        virtual const std::vector<Area> getDefenseBoxes(bool reverse) const;
-        virtual const std::vector<Area> getAttackBoxes(bool reverse) const;
+        virtual const std::vector<Area> getDefenseBoxes(bool reverse, double xscale, double yscale) const;
+        virtual const std::vector<Area> getAttackBoxes(bool reverse, double xscale, double yscale) const;
 	
 	// Go forward a frame 
 	void forwardFrame();

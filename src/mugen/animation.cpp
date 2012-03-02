@@ -242,6 +242,15 @@ static Area reverseBox(const Area & area){
     return reversed;
 }
 
+static Area scaleBox(const Area & area, double x, double y){
+    Area scaled(area);
+    scaled.x1 *= x;
+    scaled.x2 *= x;
+    scaled.y1 *= y;
+    scaled.y2 *= y;
+    return scaled;
+}
+
 static vector<Area> reverseBoxes(const vector<Area> & boxes){
     vector<Area> out;
     for (vector<Area>::const_iterator it = boxes.begin(); it != boxes.end(); it++){
@@ -251,20 +260,30 @@ static vector<Area> reverseBoxes(const vector<Area> & boxes){
     return out;
 }
 
-const std::vector<Area> Animation::getDefenseBoxes(bool reverse) const {
-    Frame * frame = frames[position];
-    if (reverse){
-        return reverseBoxes(frame->getDefenseBoxes());
+static vector<Area> scaleBoxes(const vector<Area> & boxes, double x, double y){
+    vector<Area> out;
+    for (vector<Area>::const_iterator it = boxes.begin(); it != boxes.end(); it++){
+        out.push_back(scaleBox(*it, x, y));
     }
-    return frame->getDefenseBoxes();
+
+    return out;
 }
 
-const std::vector<Area> Animation::getAttackBoxes(bool reverse) const {
+
+const std::vector<Area> Animation::getDefenseBoxes(bool reverse, double xscale, double yscale) const {
     Frame * frame = frames[position];
     if (reverse){
-        return reverseBoxes(frame->getAttackBoxes());
+        return scaleBoxes(reverseBoxes(frame->getDefenseBoxes()), xscale, yscale);
     }
-    return frame->getAttackBoxes();
+    return scaleBoxes(frame->getDefenseBoxes(), xscale, yscale);
+}
+
+const std::vector<Area> Animation::getAttackBoxes(bool reverse, double xscale, double yscale) const {
+    Frame * frame = frames[position];
+    if (reverse){
+        return scaleBoxes(reverseBoxes(frame->getAttackBoxes()), xscale, yscale);
+    }
+    return scaleBoxes(frame->getAttackBoxes(), xscale, yscale);
 }
         
 void Animation::virtualTick(){
@@ -316,11 +335,11 @@ void Animation::renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics:
     frame->render(xaxis, yaxis, work, effects);
 
     if (showDefense){
-        renderCollision(getDefenseBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::makeColor(0, 255, 0));
+        renderCollision(getDefenseBoxes(effects.facing == -1, effects.scalex, effects.scaley), work, xaxis, yaxis, Graphics::makeColor(0, 255, 0));
     }
 
     if (showOffense){
-        renderCollision(getAttackBoxes(effects.facing == -1), work, xaxis, yaxis, Graphics::makeColor(255,0,0 ));
+        renderCollision(getAttackBoxes(effects.facing == -1, effects.scalex, effects.scaley), work, xaxis, yaxis, Graphics::makeColor(255,0,0 ));
     }
 }
 

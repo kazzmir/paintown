@@ -3766,14 +3766,14 @@ void Character::doTurn(Mugen::Stage & stage){
 
 const vector<Area> Character::getAttackBoxes() const {
     if (getCurrentAnimation() != NULL){
-        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft);
+        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft, xscale, yscale);
     }
     return vector<Area>();
 }
 
 const vector<Area> Character::getDefenseBoxes() const {
     if (getCurrentAnimation() != NULL){
-        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft);
+        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft, xscale, yscale);
     }
     return vector<Area>();
 }

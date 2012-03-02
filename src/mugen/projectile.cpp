@@ -85,14 +85,14 @@ void Projectile::draw(const Graphics::Bitmap & work, double x, double y){
     
 const std::vector<Area> Projectile::getAttackBoxes() const {
     if (!shouldRemove && animation != NULL){
-        return animation->getAttackBoxes(facing == FacingLeft);
+        return animation->getAttackBoxes(facing == FacingLeft, scaleX, scaleY);
     }
     return vector<Area>();
 }
     
 const std::vector<Area> Projectile::getDefenseBoxes() const {
     if (!shouldRemove && animation != NULL){
-        return animation->getDefenseBoxes(facing == FacingLeft);
+        return animation->getDefenseBoxes(facing == FacingLeft, scaleX, scaleY);
     }
     return vector<Area>();
 }
