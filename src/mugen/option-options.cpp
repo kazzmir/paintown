@@ -100,6 +100,19 @@ int ListFont::getHeight(){
     return 0;
 }
 
+ListItem::ListItem(){
+}
+
+ListItem::~ListItem(){
+}
+
+void ListItem::draw(int x, int y, const Graphics::Bitmap &, const ::Font & font, int distance) const{
+}
+
+int ListItem::size(const ::Font & font) const{
+    return 0;
+}
+
 ScrollAction::ScrollAction():
 expandState(Disabled),
 current(0),
@@ -132,21 +145,22 @@ void ScrollAction::act(){
     }
 }
 
-void ScrollAction::render(const Graphics::Bitmap &, const ::Font &) const{
+void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
     
     int y = startY - currentOffsetY;
     int x = startX;
     bool moveLeft = true;
-    for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i){
-        // FIXME Convert to whatever the item type is going to be
-        const PaintownUtil::ReferenceCount<ScrollItem> item = *i;
+    unsigned int index = 0;
+    for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i, ++index){
+        const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
+        const ListFont & useFont = (index != current) ? font : activeFont;
         if (expandState == Disabled){
-            // TODO Don't apply currentOffsetX modifier to x
+            item->draw(x, y, work, useFont);
         } else {
             if (moveLeft){
-                // TODO Subtract currentOffsetX modifier to x
+                item->draw(x - currentOffsetX, y, work, useFont);
             } else {
-                // TODO Add currentOffsetX modifier to x
+                item->draw(x + currentOffsetX, y, work, useFont);
             }
             moveLeft = !moveLeft;
         }
@@ -155,7 +169,8 @@ void ScrollAction::render(const Graphics::Bitmap &, const ::Font &) const{
     }
 }
 
-void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> &){
+void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> & item){
+    text.push_back(item);
 }
 
 void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &){

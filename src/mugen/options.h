@@ -38,6 +38,20 @@ protected:
     int position;
 };
 
+class ListItem : public Gui::ScrollItem{
+public:
+    ListItem();
+    virtual ~ListItem();
+    //Ignore end of the line
+    void draw(int x, int y, const Graphics::Bitmap &, const ::Font & font, int distance) const;
+    int size(const ::Font & font) const;
+    
+    virtual void run() = 0;
+    virtual void draw(int x, int y, const Graphics::Bitmap &, const ListFont &) const = 0;
+    
+protected:
+};
+
 class ScrollAction : public Gui::ScrollListInterface{
 public:
     ScrollAction();
