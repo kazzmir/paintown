@@ -11,7 +11,7 @@ def getEnvironment():
     return unix.getEnvironment()
 
 def buildType(platform):
-    return platform
+    return '-'.join(platform)
 
 environment = getEnvironment()
 use = environment

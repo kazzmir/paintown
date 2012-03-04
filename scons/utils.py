@@ -81,3 +81,43 @@ def pegBuilder(environment):
                    suffix = '.cpp',
                    src_suffix = '.peg')
 
+def safeParseConfig(environment, config):
+    # redirects stderr, not super safe
+    def version1():
+        import sys
+        out = open('fail.log', 'w')
+        old_stderr = sys.stderr
+        try:
+            sys.stderr = out
+            environment.ParseConfig(config)
+            out.close()
+            sys.stderr = old_stderr
+        except Exception, e:
+            out.close()
+            sys.stderr = old_stderr
+            raise e
+    # use the subprocess module to pass the output of stdout directly
+    # to mergeflags and trash stderr
+    # Not done yet!! This requires python 2.4
+    def version2():
+        import subprocess
+        process = subprocess.Popen(config.split(' '), stdout = subprocess.PIPE)
+        # p = subprocess.Popen(["ruby", "-e", code], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        out = p.stdout.readline().strip()
+        environment.MergeFlags(out)
+
+    version1()
+
+def makeUseEnvironment(key, default):
+    def use():
+        import os
+        try:
+            return int(os.environ[key]) == 1
+        except KeyError:
+            return default
+    return use
+
+useLLVM = makeUseEnvironment('llvm', False)
+useSDL = makeUseEnvironment('sdl', False)
+useAllegro4 = makeUseEnvironment('allegro4', False)
+useAllegro5 = makeUseEnvironment('allegro5', False)
