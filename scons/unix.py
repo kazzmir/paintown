@@ -252,14 +252,17 @@ def configure(environment, backends):
         for backend in backends:
             if backend == 'SDL' and config.CheckSDL():
                 environment.Append(CPPDEFINES = ['USE_SDL'])
+                environment['PAINTOWN_BACKEND'] = 'sdl'
                 environment.Append(PAINTOWN_PLATFORM = ['sdl'])
                 raise OkBackend()
             if backend == 'Allegro4' and config.CheckAllegro4():
                 environment.Append(CPPDEFINES = ['USE_ALLEGRO'])
+                environment['PAINTOWN_BACKEND'] = 'allegro4'
                 environment.Append(PAINTOWN_PLATFORM = ['allegro4'])
                 raise OkBackend()
             if backend == 'Allegro5' and config.CheckAllegro5():
                 environment.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+                environment['PAINTOWN_BACKEND'] = 'allegro5'
                 environment.Append(PAINTOWN_PLATFORM = ['allegro5'])
                 raise OkBackend()
     except OkBackend:
@@ -276,7 +279,6 @@ def getEnvironment():
     environment = Environment(ENV = os.environ)
     peg_color = 'light-cyan'
     environment['PAINTOWN_PLATFORM'] = ['unix']
-    environment['PAINTOWN_BACKEND'] = 'sdl'
     environment['PAINTOWN_USE_PRX'] = False
     environment['PAINTOWN_TESTS'] = {'CheckPython': checkPython}
     environment['PAINTOWN_COLORIZE'] = utils.colorize

@@ -2,6 +2,11 @@ from SCons.Environment import Environment
 
 def getEnvironment():
     import utils
+
+    if utils.useWii():
+        import wii
+        return wii.getEnvironment()
+
     if utils.isLinux():
         import unix
         return unix.getEnvironment()
@@ -11,6 +16,7 @@ def getEnvironment():
     return unix.getEnvironment()
 
 def buildType(platform):
+    platform.sort()
     return '-'.join(platform)
 
 environment = getEnvironment()

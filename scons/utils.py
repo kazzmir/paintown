@@ -74,6 +74,7 @@ def peg_to_cpp(target, source, env):
     fout.write('\n')
     fout.close()
 
+# Build a cpp file from a peg definition
 def pegBuilder(environment):
     from SCons.Builder import Builder
     from SCons.Action import Action
@@ -81,6 +82,8 @@ def pegBuilder(environment):
                    suffix = '.cpp',
                    src_suffix = '.peg')
 
+# Try to execute a script that will produce some compiler flags but fail
+# gracefully if the script dies or can't be found
 def safeParseConfig(environment, config):
     # redirects stderr, not super safe
     def version1():
@@ -108,6 +111,7 @@ def safeParseConfig(environment, config):
 
     version1()
 
+# Create a function that pulls out some key from the shell environment
 def makeUseEnvironment(key, default):
     def use():
         import os
@@ -117,7 +121,25 @@ def makeUseEnvironment(key, default):
             return default
     return use
 
+# Replace standard tool invocations with nice colored text
+def lessVerbose(env):
+    link_color = 'light-red'
+    ar_color = 'yellow'
+    ranlib_color = 'light-purple'
+    peg_color = 'light-cyan'
+    env['CCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
+    env['SHCCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
+    env['CXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
+    env['SHCXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
+    env['LINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
+    env['SHLINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
+    env['ARCOMSTR'] = "%s %s" % (colorize('Building library', ar_color), colorize('$TARGET', 'light-blue'))
+    env['RANLIBCOMSTR'] = "%s %s" % (colorize('Indexing library', ranlib_color), colorize('$TARGET', 'light-blue'))
+    env['PEG_MAKE'] = "%s %s" % (colorize('Creating peg parser', peg_color), colorize('$TARGET', 'light-blue'))
+    return env
+
 useLLVM = makeUseEnvironment('llvm', False)
 useSDL = makeUseEnvironment('sdl', False)
 useAllegro4 = makeUseEnvironment('allegro4', False)
 useAllegro5 = makeUseEnvironment('allegro5', False)
+useWii = makeUseEnvironment('wii', False)
