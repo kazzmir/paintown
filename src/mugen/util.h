@@ -8,6 +8,7 @@
 #include <queue>
 #include "exception.h"
 #include "configuration.h"
+#include "sound.h"
 #include "util/bitmap.h"
 #include "util/pointer.h"
 #include "ast/extra.h"
@@ -29,7 +30,6 @@ namespace Mugen{
 
     class Animation;
     class Sprite;
-    class Sound;
 
 /* Makes the use of the sprite maps easier */
 typedef std::map< unsigned int, Sprite *> GroupMap;
@@ -703,6 +703,55 @@ PaintownUtil::ReferenceCount<std::istringstream> get(const std::string &);
 }
 // End namespace Configuration
 
+/*! Sound system to make playing and using sounds easier. 
+ * FIXME make SoundMap use ReferenceCount
+ */
+template <typename Type>
+class SoundSystem{
+public:
+    SoundSystem(){
+    }
+    ~SoundSystem(){
+        // Get rid of sounds
+        for (std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
+            for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+                if (j->second){
+                    delete j->second;
+                }
+            }
+        }
+    }
+    //! Init the sound system given a .snd file
+    void init(const std::string & file){
+        Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
+        Global::debug(1) << "Got Sound File: '" << file << "'" << std::endl;
+    }
+    //! Play
+    void play(const Type & type){
+        Sound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
+        if (sound){
+            sound->play();
+        }
+    }
+    //! Sets a sound
+    virtual void set(const Type & type, int group, int sound){
+        IndexValue values;
+        values.group = group;
+        values.index = sound;
+        soundLookup[type] = values;
+    }
+protected:
+    //! Sounds
+    Mugen::SoundMap sounds;
+    //! Sound lookup
+    struct IndexValue{
+        int group;
+        int index;
+    };
+    std::map<Type, IndexValue> soundLookup;
+};
+
 }
+// End namespace Mugen
 
 #endif

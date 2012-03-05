@@ -657,31 +657,6 @@ const Filesystem::AbsolutePath & StageMenu::select(){
     return stages[current];
 }
 
-SoundSystem::SoundSystem(){
-}
-
-SoundSystem::~SoundSystem(){
-}
-
-void SoundSystem::init(const std::string & file){
-    Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
-    Global::debug(1) << "Got Sound File: '" << file << "'" << std::endl;
-}
-
-void SoundSystem::play(const Type & type){
-    Sound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
-    if (sound){
-        sound->play();
-    }
-}
-
-void SoundSystem::set(const Type & type, int group, int sound){
-    IndexValue values;
-    values.group = group;
-    values.index = sound;
-    soundLookup[type] = values;
-}
-
 /*! Thrown in cooperative play once first player picks his character... 
  *  CharacterSelect::select utilizes Player::setCooperativeData to setup the second player when caught
  *  FIXME do not render profile
@@ -694,7 +669,7 @@ public:
     }
 };
 
-Player::Player(unsigned int cursor, Gui::GridSelect & grid, std::vector< PaintownUtil::ReferenceCount<Cell> > & cells, std::vector<Mugen::ArcadeData::CharacterInfo> & characters, TeamMenu & teamMenu, TeamMenu & opponentTeamMenu, StageMenu & stageMenu, FontHandler & font, FontHandler & opponentFont, SoundSystem & sounds):
+Player::Player(unsigned int cursor, Gui::GridSelect & grid, std::vector< PaintownUtil::ReferenceCount<Cell> > & cells, std::vector<Mugen::ArcadeData::CharacterInfo> & characters, TeamMenu & teamMenu, TeamMenu & opponentTeamMenu, StageMenu & stageMenu, FontHandler & font, FontHandler & opponentFont, Mugen::SoundSystem<SelectSoundType> & sounds):
 cursor(cursor),
 grid(grid),
 cells(cells),
@@ -718,19 +693,19 @@ collection(Mugen::ArcadeData::CharacterCollection::Single),
 opponentCollection(Mugen::ArcadeData::CharacterCollection::Single),
 selectState(NotStarted){
     if (cursor == 0){
-        moveSound = SoundSystem::Player1Move;
-        doneSound = SoundSystem::Player1Done;
-        randomSound = SoundSystem::Player1Random;
-        teamMoveSound = SoundSystem::Player1TeamMove;
-        teamValueSound = SoundSystem::Player1TeamValue;
-        teamDoneSound = SoundSystem::Player1TeamDone;
+        moveSound = Player1Move;
+        doneSound = Player1Done;
+        randomSound = Player1Random;
+        teamMoveSound = Player1TeamMove;
+        teamValueSound = Player1TeamValue;
+        teamDoneSound = Player1TeamDone;
     } else if (cursor == 1){
-        moveSound = SoundSystem::Player2Move;
-        doneSound = SoundSystem::Player2Done;
-        randomSound = SoundSystem::Player2Random;
-        teamMoveSound = SoundSystem::Player2TeamMove;
-        teamValueSound = SoundSystem::Player2TeamValue;
-        teamDoneSound = SoundSystem::Player2TeamDone;
+        moveSound = Player2Move;
+        doneSound = Player2Done;
+        randomSound = Player2Random;
+        teamMoveSound = Player2TeamMove;
+        teamValueSound = Player2TeamValue;
+        teamDoneSound = Player2TeamDone;
     }
 }
 
@@ -874,7 +849,7 @@ void Player::up(){
             switch (selectState){
                 case Team:
                     if (teamMenu.up()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -884,7 +859,7 @@ void Player::up(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.up()){
-                        sounds.play(SoundSystem::Player2TeamMove);
+                        sounds.play(Player2TeamMove);
                     }
                 case NotStarted:
                 default:
@@ -895,7 +870,7 @@ void Player::up(){
             switch (selectState){
                 case Team:
                     if (teamMenu.up()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -978,7 +953,7 @@ void Player::up(){
             switch (selectState){
                 case Team:
                     if (teamMenu.up()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -988,7 +963,7 @@ void Player::up(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.up()){
-                        sounds.play(SoundSystem::Player2TeamMove);
+                        sounds.play(Player2TeamMove);
                     }
                     break;
                 case Opponent:
@@ -1037,7 +1012,7 @@ void Player::down(){
             switch (selectState){
                 case Team:
                     if (teamMenu.down()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -1047,7 +1022,7 @@ void Player::down(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.down()){
-                        sounds.play(SoundSystem::Player2TeamMove);
+                        sounds.play(Player2TeamMove);
                     }
                 case NotStarted:
                 default:
@@ -1058,7 +1033,7 @@ void Player::down(){
             switch (selectState){
                 case Team:
                     if (teamMenu.down()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -1088,7 +1063,7 @@ void Player::down(){
             switch (selectState){
                 case Team:
                     if (teamMenu.down()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -1141,7 +1116,7 @@ void Player::down(){
             switch (selectState){
                 case Team:
                     if (teamMenu.down()){
-                        sounds.play(SoundSystem::Player1TeamMove);
+                        sounds.play(Player1TeamMove);
                     }
                     break;
                 case Character:
@@ -1151,7 +1126,7 @@ void Player::down(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.down()){
-                        sounds.play(SoundSystem::Player2TeamMove);
+                        sounds.play(Player2TeamMove);
                     }
                     break;
                 case Opponent:
@@ -1192,7 +1167,7 @@ void Player::left(){
                     break;
                 case Stage:
                     if (stageMenu.left()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                 case NotStarted:
                 default:
@@ -1213,7 +1188,7 @@ void Player::left(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.left()){
-                        sounds.play(SoundSystem::Player2TeamValue);
+                        sounds.play(Player2TeamValue);
                     }
                 case NotStarted:
                 default:
@@ -1234,7 +1209,7 @@ void Player::left(){
                     break;
                 case Stage:
                     if (stageMenu.left()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1273,7 +1248,7 @@ void Player::left(){
                     break;
                 case Stage:
                     if (stageMenu.left()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1290,7 +1265,7 @@ void Player::left(){
                     break;
                 case Stage:
                     if (stageMenu.left()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                 case NotStarted:
                 default:
@@ -1311,7 +1286,7 @@ void Player::left(){
                     break;
                 case Stage:
                     if (stageMenu.left()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1333,7 +1308,7 @@ void Player::left(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.left()){
-                        sounds.play(SoundSystem::Player2TeamValue);
+                        sounds.play(Player2TeamValue);
                     }
                     break;
                 case Opponent:
@@ -1343,7 +1318,7 @@ void Player::left(){
                     break;
                 case Stage:
                     if (stageMenu.left()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1379,7 +1354,7 @@ void Player::right(){
                     break;
                 case Stage:
                     if (stageMenu.right()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                 case NotStarted:
                 default:
@@ -1400,7 +1375,7 @@ void Player::right(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.right()){
-                        sounds.play(SoundSystem::Player2TeamValue);
+                        sounds.play(Player2TeamValue);
                     }
                 case NotStarted:
                 default:
@@ -1421,7 +1396,7 @@ void Player::right(){
                     break;
                 case Stage:
                     if (stageMenu.right()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1460,7 +1435,7 @@ void Player::right(){
                     break;
                 case Stage:
                     if (stageMenu.right()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1477,7 +1452,7 @@ void Player::right(){
                     break;
                 case Stage:
                     if (stageMenu.right()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1499,7 +1474,7 @@ void Player::right(){
                     break;
                 case Stage:
                     if (stageMenu.right()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1521,7 +1496,7 @@ void Player::right(){
                     break;
                 case OpponentTeam:
                     if (opponentTeamMenu.right()){
-                        sounds.play(SoundSystem::Player2TeamValue);
+                        sounds.play(Player2TeamValue);
                     }
                     break;
                 case Opponent:
@@ -1531,7 +1506,7 @@ void Player::right(){
                     break;
                 case Stage:
                     if (stageMenu.right()){
-                        sounds.play(SoundSystem::StageMove);
+                        sounds.play(StageMove);
                     }
                     break;
                 case NotStarted:
@@ -1577,7 +1552,7 @@ void Player::select(int act){
             next(act);
             break;
         case Stage:
-            sounds.play(SoundSystem::StageDone);
+            sounds.play(StageDone);
             next(act);
             break;
         case NotStarted:
@@ -2183,21 +2158,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player1Move, group, sound);
+                                self.sounds.set(Player1Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player1Done, group, sound);
+                                self.sounds.set(Player1Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player1Random, group, sound);
+                                self.sounds.set(Player1Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.startcell"){
@@ -2240,21 +2215,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player2Move, group, sound);
+                                self.sounds.set(Player2Move, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.cursor.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player2Done, group, sound);
+                                self.sounds.set(Player2Done, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.random.move.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player2Random, group, sound);
+                                self.sounds.set(Player2Random, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "random.move.snd.cancel"){
@@ -2269,21 +2244,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::StageMove, group, sound);
+                                self.sounds.set(StageMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "stage.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::StageDone, group, sound);
+                                self.sounds.set(StageDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "cancel.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Cancel, group, sound);
+                                self.sounds.set(Cancel, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "portrait.offset"){
@@ -2466,21 +2441,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player1TeamMove, group, sound);
+                                self.sounds.set(Player1TeamMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.value.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player1TeamValue, group, sound);
+                                self.sounds.set(Player1TeamValue, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player1TeamDone, group, sound);
+                                self.sounds.set(Player1TeamDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.teammenu.item.offset"){
@@ -2608,21 +2583,21 @@ void CharacterSelect::init(){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player2TeamMove, group, sound);
+                                self.sounds.set(Player2TeamMove, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.value.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player2TeamValue, group, sound);
+                                self.sounds.set(Player2TeamValue, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.done.snd"){
                             try{
                                 int group, sound;
                                 simple.view() >> group >> sound;
-                                self.sounds.set(SoundSystem::Player2TeamDone, group, sound);
+                                self.sounds.set(Player2TeamDone, group, sound);
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.teammenu.item.offset"){
@@ -2774,7 +2749,7 @@ void CharacterSelect::init(){
 void CharacterSelect::cancel(){
     // Fade out
     fader.setState(Gui::FadeTool::FadeOut);
-    sounds.play(SoundSystem::Cancel);
+    sounds.play(Cancel);
     canceled = true;
 }
 

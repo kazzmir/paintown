@@ -80,23 +80,30 @@ const ListFont & ListFont::operator=(const ListFont & copy){
     return *this;
 }
 
-void ListFont::draw(int x, int y, const std::string & message, const Graphics::Bitmap & work){
+void ListFont::draw(int x, int y, const std::string & message, const Graphics::Bitmap & work) const{
     if (font != NULL){
         font->render(x, y, position, bank, work, message);
     }
 }
 
-void ListFont::draw(int x, int y, int position, const std::string & message, const Graphics::Bitmap & work){
+void ListFont::draw(int x, int y, int position, const std::string & message, const Graphics::Bitmap & work) const{
     if (font != NULL){
         font->render(x, y, position, bank, work, message);
     }
 }
 
-int ListFont::getHeight(){
+int ListFont::getHeight() const{
     if (font != NULL){
         return font->getHeight();
     }
     
+    return 0;
+}
+
+int ListFont::getWidth(const std::string & text) const{
+    if (font != NULL){
+        return font->textLength(text.c_str());
+    }
     return 0;
 }
 
@@ -127,7 +134,13 @@ spacingY(0),
 offsetX(0),
 currentOffsetX(0),
 offsetY(0),
-currentOffsetY(0){
+currentOffsetY(0),
+showCursor(false),
+autoCursor(false),
+cursorX1(0),
+cursorX2(0),
+cursorY1(0),
+cursorY2(0){
 }
 
 ScrollAction::~ScrollAction(){
@@ -135,7 +148,7 @@ ScrollAction::~ScrollAction(){
 
 void ScrollAction::act(){
     if (autoSpacing){
-        spacingY = font.getHeight();
+        spacingY = font.getHeight() + font.getHeight()/2;
     }
     if (currentOffsetX < offsetX){
         currentOffsetX = (currentOffsetX+offsetX)/2;
@@ -146,24 +159,35 @@ void ScrollAction::act(){
 }
 
 void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
-    
     int y = startY - currentOffsetY;
     int x = startX;
     bool moveLeft = true;
     unsigned int index = 0;
     for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i, ++index){
-        const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
-        const ListFont & useFont = (index != current) ? font : activeFont;
-        if (expandState == Disabled){
-            item->draw(x, y, work, useFont);
-        } else {
-            if (moveLeft){
-                item->draw(x - currentOffsetX, y, work, useFont);
+        //if (index >= itemTop-1 && index <= itemBottom+1){
+            const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
+            const ListFont & useFont = (index != current) ? font : activeFont;
+            if (expandState == Disabled){
+                item->draw(x, y, work, useFont);
+                if (index == current && showCursor){
+                    Graphics::Bitmap::transBlender(0,0,0,128);
+                    if (autoCursor){
+                        const int width = item->getWidth(useFont)/2 + item->getWidth(useFont)/4;
+                        const int height = useFont.getHeight()/2 + useFont.getHeight()/4;
+                        work.translucent().rectangleFill(x - width, y - useFont.getHeight(), x + width, y, Graphics::makeColor(255,255,255));
+                    } else {
+                        work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(255,255,255));
+                    }
+                }
             } else {
-                item->draw(x + currentOffsetX, y, work, useFont);
+                if (moveLeft){
+                    item->draw(x - currentOffsetX, y, work, useFont);
+                } else {
+                    item->draw(x + currentOffsetX, y, work, useFont);
+                }
+                moveLeft = !moveLeft;
             }
-            moveLeft = !moveLeft;
-        }
+        //}
         x+=spacingX;
         y+=spacingY;
     }
@@ -171,6 +195,10 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
 
 void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> & item){
     text.push_back(item);
+    /*if (itemTop < visibleItems){
+        itemTop++;
+    }*/
+    checkOffset();
 }
 
 void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &){
@@ -205,6 +233,31 @@ bool ScrollAction::previous(){
     }
     checkOffset();
     return true;
+}
+
+int ScrollAction::getMaxWidth(){
+    int width = 0;
+    for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i){
+        const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
+        const int check = item->getWidth(font);
+        if (check > width){
+            width = check;
+        }
+    }
+    return width;
+}
+
+int ScrollAction::getMaxHeight(){
+    int height = 0;
+    int index = 0;
+    for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i, ++index){
+        if (index == visibleItems+1){
+            break;
+        }
+        const ListFont & useFont = (index != current) ? font : activeFont;
+        height += (autoSpacing ? useFont.getHeight() : spacingY);
+    }
+    return height;
 }
 
 void ScrollAction::setExpandState(const ExpandState & state){
@@ -242,7 +295,7 @@ void ScrollAction::checkOffset(){
     }
     
     offsetY = 0;
-    for (unsigned int i = 0; i < itemTop; ++i){
+    for (unsigned int i = itemTop; i < itemBottom; ++i){
         offsetY+=spacingY;
     }
 }
@@ -572,7 +625,26 @@ public:
     }
 };
 
-OptionOptions::OptionOptions( const std::string &name ){
+class DummyItem : public ListItem{
+public:
+    DummyItem(const std::string name):
+    name(name){
+    }
+    virtual void run(){
+    }
+    
+    virtual void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(x, y, name, work);
+    }
+    
+    virtual int getWidth(const ListFont & font){
+        return font.getWidth(name);
+    }
+    std::string name;
+};
+
+OptionOptions::OptionOptions( const std::string &name ):
+background(PaintownUtil::ReferenceCount<Background>(NULL)){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to Options");
     }
@@ -588,6 +660,17 @@ OptionOptions::OptionOptions( const std::string &name ){
     options.push_back(new AutoSearch());
     options.push_back(new Escape());
     
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option1")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option2")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option3")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option4")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option5")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option6")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option7")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option8")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option9")));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option10")));
+    
     // Set first one
     options[0]->toggleSelected();
     selectedOption = options.begin();
@@ -595,9 +678,9 @@ OptionOptions::OptionOptions( const std::string &name ){
 
 OptionOptions::~OptionOptions(){
     for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
-	if (*i){
-	    delete *i;
-	}
+        if (*i){
+            delete *i;
+        }
     }
 }
 
@@ -605,9 +688,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Filesystem::AbsolutePath systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
-    
+
     Global::debug(1) << baseDir.path() << endl;
-    
+
     if (systemFile.isEmpty()){
         throw MugenException("Cannot locate character select definition file for: " + systemFile.path(), __FILE__, __LINE__);
     }
@@ -617,142 +700,136 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     AstRef parsed(Util::parseDef(systemFile.path()));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
-    
-    PaintownUtil::ReferenceCount<Background> background;
-    std::vector< Font *> fonts;
-    SoundMap sounds;
-    
-    Point moveSound;
-    Point doneSound;
-    Point cancelSound;
+
+    std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
     
     for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
         Ast::Section * section = *section_it;
-	std::string head = section->getName();
-	if (head == "Files"){
+        std::string head = section->getName();
+        if (head == "Files"){
             class FileWalker: public Ast::Walker {
-                public:
-                    FileWalker(std::vector<Font *> & fonts, SoundMap & sounds, const Filesystem::AbsolutePath & baseDir):
-                        fonts(fonts),
-			sounds(sounds),
-                        baseDir(baseDir){
-                        }
+            public:
+                FileWalker(OptionOptions & self, std::vector< PaintownUtil::ReferenceCount<Font> > & fonts, const Filesystem::AbsolutePath & baseDir):
+                self(self),
+                fonts(fonts),
+                baseDir(baseDir){
+                }
+                
+                OptionOptions & self;
+                std::vector< PaintownUtil::ReferenceCount<Font> > & fonts;
+                const Filesystem::AbsolutePath & baseDir;
 
-                    std::vector<Font *> & fonts;
-		    SoundMap & sounds;
-                    const Filesystem::AbsolutePath & baseDir;
-
-                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (simple == "snd"){
-			    std::string file;
-                            simple.view() >> file;
-                            Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
-                            Global::debug(1) << "Got Sound File: '" << file << "'" << endl;
-                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
-                            std::string temp;
-                            simple.view() >> temp;
-                            fonts.push_back(new Font(Util::findFile(Filesystem::RelativePath(temp))));
-                            Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-                        }
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    if (simple == "snd"){
+                        std::string file;
+                        simple.view() >> file;
+                        self.sounds.init(file);
+                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                        std::string temp;
+                        simple.view() >> temp;
+                        fonts.push_back(PaintownUtil::ReferenceCount<Font>(new Font(Util::findFile(Filesystem::RelativePath(temp)))));
+                        Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
                     }
+                }
             };
-            FileWalker walker(fonts, sounds, baseDir);
+            FileWalker walker(*this, fonts, baseDir);
             section->walk(walker);
         } else if (head == "Option Info"){
-	    class InfoWalker: public Ast::Walker{
-                public:
-                    InfoWalker(Point & moveSound, Point & doneSound, Point & cancelSound):
-                        moveSound(moveSound),
-                        doneSound(doneSound),
-			cancelSound(cancelSound){
+            class InfoWalker: public Ast::Walker{
+            public:
+                InfoWalker(OptionOptions & self):
+                self(self){
+                }
+
+                OptionOptions & self;
+
+                virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                    int group=0, sound=0;
+                    if (simple == "cursor.move.snd"){
+                        try{
+                            simple.view() >> group >> sound;
+                            self.sounds.set(OptionOptions::Move, group, sound);
+                        } catch (const Ast::Exception & e){
                         }
-
-                    Point & moveSound;
-		    Point & doneSound;
-		    Point & cancelSound;
-
-                    virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (simple == "cursor.move.snd"){
-			    try{
-				simple.view() >> moveSound.x >> moveSound.y;
-			    } catch (const Ast::Exception & e){
-			    }
-                        } else if (simple == "cursor.done.snd"){
-			    try{
-				simple.view() >> doneSound.x >> doneSound.y;
-			    } catch (const Ast::Exception & e){
-			    }
-                        } else if (simple == "cancel.snd"){
-			    try{
-				simple.view() >> cancelSound.x >> cancelSound.y;
-			    } catch (const Ast::Exception & e){
-			    }
-                        } 
-                    }
+                    } else if (simple == "cursor.done.snd"){
+                        try{
+                            simple.view() >> group >> sound;
+                            self.sounds.set(OptionOptions::Done, group, sound);
+                        } catch (const Ast::Exception & e){
+                        }
+                    } else if (simple == "cancel.snd"){
+                        try{
+                            simple.view() >> group >> sound;
+                            self.sounds.set(OptionOptions::Cancel, group, sound);
+                        } catch (const Ast::Exception & e){
+                        }
+                    } 
+                }
             };
-            InfoWalker walker(moveSound, doneSound, cancelSound);
+            InfoWalker walker(*this);
             section->walk(walker);
-	} else if (head == "OptionBGdef"){ 
-	    /* Background management */
-	    background = PaintownUtil::ReferenceCount<Background>(new Background(systemFile, "optionbg"));
-	}
+        } else if (head == "OptionBGdef"){ 
+            /* Background management */
+            background = PaintownUtil::ReferenceCount<Background>(new Background(systemFile, "optionbg"));
+        }
     }
 
     /* FIXME: do all other cleanup here too */
     if (background == NULL){
         throw MugenException("OptionBGDef was not specified", __FILE__, __LINE__);
     }
-    
+
     // Run options
     bool done = false;
     bool escaped = false;
-    
-    int ticker = 0;
-  
-    double runCounter = 0;
-    // Global::speed_counter = 0;
-    Global::second_counter = 0;
-    // int game_time = 100;
-    
-    // Set game keys temporary
-    // InputMap<Keys> player1Input = getPlayer1Keys(20);
-    // InputMap<Keys> player2Input = getPlayer2Keys(20);
-    
+
     // Our Font
-    Font * font = fonts[1];
+    for (std::vector<PaintownUtil::ReferenceCount<Font> >::iterator i = fonts.begin(); i != fonts.end(); ++i){
+        PaintownUtil::ReferenceCount<Font> ourFont = *i;
+        // NOTE This should keep it in a reasonable range, although I don't think it's correct
+        if (ourFont != NULL && (ourFont->getHeight() >= 8 && ourFont->getHeight() < 15)){
+            font = ourFont;
+            break;
+        }
+    }
     
+    ListFont listFont(font, 0, 0);
+    
+    list.setListFont(listFont);
+    list.setActiveFont(listFont);
+    list.setVisibleItems(5);
+    list.setAutoSpacing(true);
+    list.setLocation(160, 120);
+    list.setShowCursor(true);
+    list.setAutoCursor(true);
+    list.setCursorCoords(-20,-10,16,0);
+
     // Box
-    
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(bool & escaped, Sound * cancel, Sound * move, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption, const PaintownUtil::ReferenceCount<Background> & background):
+        Logic(OptionOptions & self, bool & escaped, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption):
+        self(self),
         escaped(escaped),
         logic_done(false),
-        cancelSound(cancel),
-        moveSound(move),
-        background(background),
         options(options),
         selectedOption(selectedOption){
             player1Input = getPlayer1Keys(20);
             player2Input = getPlayer2Keys(20);
         }
-    
+        
+        OptionOptions & self;
+
         InputMap<Keys> player1Input;
         InputMap<Keys> player2Input;
 
         bool & escaped;
         bool logic_done;
 
-        Sound * cancelSound;
-        Sound * moveSound;
-    
-        PaintownUtil::ReferenceCount<Background> background;
-
         const vector<class Option *> & options;
         vector<class Option *>::const_iterator & selectedOption;
 
         double ticks(double system){
-	    return Util::gameTicks(system);
+        return Util::gameTicks(system);
         }
 
         void run(){
@@ -770,9 +847,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
                 if (event[Esc]){
                     logic_done = escaped = true;
-                    if (cancelSound != NULL){
-                        cancelSound->play();
-                    }
+                    self.sounds.play(OptionOptions::Cancel);
                     InputManager::waitForRelease(player1Input, input1, Esc);
                     InputManager::waitForRelease(player2Input, input2, Esc);
                 }
@@ -785,9 +860,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                         selectedOption = options.begin() + options.size()-1;
                     }
                     (*selectedOption)->toggleSelected();
-                    if (moveSound != NULL){
-                        moveSound->play();
-                    }
+                    self.sounds.play(OptionOptions::Move);
+                    self.list.previous();
                 }
                 if (event[Down]){
                     (*selectedOption)->toggleSelected();
@@ -796,9 +870,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                         selectedOption = options.begin();
                     }
                     (*selectedOption)->toggleSelected();
-                    if (moveSound != NULL){
-                        moveSound->play();
-                    }
+                    self.sounds.play(OptionOptions::Move);
+                    self.list.next();
                 }
                 if (event[Left]){
                     (*selectedOption)->prev();
@@ -810,9 +883,9 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     (*selectedOption)->enter();
                 }
             }
-
-            // Backgrounds
-            background->act();
+            
+            // Act out
+            self.act();
         }
 
         bool done(){
@@ -822,16 +895,15 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(const PaintownUtil::ReferenceCount<Background> & background, Font * font, const vector<class Option *> & options):
-        background(background),
+        Draw(OptionOptions & self, const vector<class Option *> & options):
+        self(self),
         resolutionx(640),
         resolutiony(480),
         backgroundBuffer(Graphics::Bitmap(320,240)),
         upsize(Graphics::Bitmap(640, 480)),
-        font(font),
         options(options){
-            const int totalHeight = (options.size() * (font->getHeight()+font->getHeight()/2)) + font->getHeight()*2;
-            const int totalWidth = getLargestWidth(options, *font) + getLargestWidth(options, *font)/4;
+            const int totalHeight = (options.size() * (self.font->getHeight()+self.font->getHeight()/2)) + self.font->getHeight()*2;
+            const int totalWidth = getLargestWidth(options, *self.font) + getLargestWidth(options, *self.font)/4;
             
             resolutionx = totalWidth;
             resolutiony = totalHeight;
@@ -842,11 +914,10 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             fontArea.setPosition2(Gui::AbsolutePoint((resolutionx/2) + (totalWidth/2), (resolutiony/2) + (totalHeight/2)));
         }
 
-        PaintownUtil::ReferenceCount<Background> background;
+        OptionOptions & self;
         int resolutionx, resolutiony;
         Graphics::Bitmap backgroundBuffer;
         Graphics::Bitmap upsize;
-        Font * font;
         const vector<class Option *> & options;
         Gui::Coordinate fontArea;
         
@@ -872,16 +943,18 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         void draw(const Graphics::Bitmap & screen){
-            // render backgrounds
+            self.draw(screen);
+#if 0
+            // render mugen backgrounds
             Graphics::StretchedBitmap workArea(320, 240, backgroundBuffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             workArea.start();
-            background->renderBackground(0, 0, workArea);
+            //self.background->renderBackground(0, 0, workArea);
             workArea.finish();
             backgroundBuffer.drawStretched(screen);
             
             // render title
             upsize.clearToMask();
-            font->render(resolutionx/2, 20, 0, 0, upsize, "OPTIONS" );
+            self.font->render(resolutionx/2, 20, 0, 0, upsize, "OPTIONS" );
             
             const int x = screen.getWidth()/6;
             const int y = screen.getHeight()/6;
@@ -897,52 +970,50 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
             
             // Render options
             upsize.clearToMask();
-            doOptions(*font, fontArea.getX() + 10, fontArea.getX2() - 10, fontArea.getY() + 5, upsize);
+            doOptions(*self.font, fontArea.getX() + 10, fontArea.getX2() - 10, fontArea.getY() + 5, upsize);
             upsize.drawStretched(x, y, width, height, screen);
             
-            // render Foregrounds
+            // render mugen Foregrounds
             workArea.clearToMask();
             workArea.start();
-            background->renderForeground(0, 0, workArea);
+            //self.background->renderForeground(0, 0, workArea);
             
             // Finally render to screen
             workArea.finish();
             backgroundBuffer.drawStretched(screen);
+#endif
             screen.BlitToScreen();
         }
     };
 
-    Sound * cancel = NULL;
-    if (sounds[cancelSound.x][cancelSound.y]){
-        cancel = sounds[cancelSound.x][cancelSound.y];
-    }
-    Sound * move = NULL;
-    if (sounds[moveSound.x][moveSound.y]){
-        move = sounds[moveSound.x][moveSound.y];
-    }
-    Logic logic(escaped, cancel, move, options, selectedOption, background);
-    Draw draw(background, font, options);
+    Logic logic(*this, escaped, options, selectedOption);
+    Draw draw(*this, options);
     PaintownUtil::standardLoop(logic, draw);
 
-    // Get rid of sprites
-    for (std::vector<Font *>::iterator i = fonts.begin() ; i != fonts.end() ; ++i){
-	if (*i){
-	    delete *i;
-	}
-    }
-    // Get rid of sounds
-    for (std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
-	for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	    if (j->second){
-		delete j->second;
-	    }
-	}
-    }
-    
     // **FIXME Hack figure something out
     if (escaped){
-	throw Exception::Return(__FILE__, __LINE__);
+        throw Exception::Return(__FILE__, __LINE__);
     }
+}
+
+void OptionOptions::act(){
+    background->act();
+    list.act();
+}
+
+void OptionOptions::draw(const Graphics::Bitmap & work){
+    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+    workArea.start();
+    
+    // Backgrounds
+    background->renderBackground(0, 0, workArea);
+    
+    list.render(workArea, ::Font::getDefaultFont());
+    
+    // Foregrounds
+    background->renderForeground(0, 0, workArea);
+    workArea.finish();
+    
 }
 
 /*

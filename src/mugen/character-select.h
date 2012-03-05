@@ -341,45 +341,28 @@ protected:
     PaintownUtil::Thread::LockObject lock;
 };
 
-class SoundSystem{
-public:
-    SoundSystem();
-    ~SoundSystem();
-    void init(const std::string &);
-    //! Sound types
-    enum Type{
-        Player1Move=0,
-        Player1Done,
-        Player1Random,
-        Player2Move,
-        Player2Done,
-        Player2Random,
-        Player1TeamMove,
-        Player1TeamValue,
-        Player1TeamDone,
-        Player2TeamMove,
-        Player2TeamValue,
-        Player2TeamDone,
-        StageMove,
-        StageDone,
-        Cancel,
-    };
-    void play(const Type &);
-    virtual void set(const Type &, int group, int sound);
-protected:
-    //! Sounds
-    Mugen::SoundMap sounds;
-    //! Sound lookup
-    struct IndexValue{
-        int group;
-        int index;
-    };
-    std::map<Type, IndexValue> soundLookup;
+//! Sound types
+enum SelectSoundType{
+    Player1Move=0,
+    Player1Done,
+    Player1Random,
+    Player2Move,
+    Player2Done,
+    Player2Random,
+    Player1TeamMove,
+    Player1TeamValue,
+    Player1TeamDone,
+    Player2TeamMove,
+    Player2TeamValue,
+    Player2TeamDone,
+    StageMove,
+    StageDone,
+    Cancel,
 };
 
 class Player{
 public:
-    Player(unsigned int cursor, Gui::GridSelect &, std::vector< PaintownUtil::ReferenceCount<Cell> > &, std::vector<Mugen::ArcadeData::CharacterInfo> &, TeamMenu &, TeamMenu &, StageMenu &, FontHandler &, FontHandler &, SoundSystem &);
+    Player(unsigned int cursor, Gui::GridSelect &, std::vector< PaintownUtil::ReferenceCount<Cell> > &, std::vector<Mugen::ArcadeData::CharacterInfo> &, TeamMenu &, TeamMenu &, StageMenu &, FontHandler &, FontHandler &, Mugen::SoundSystem<SelectSoundType> &);
     virtual ~Player();
     
     virtual void act();
@@ -444,9 +427,9 @@ protected:
     StageMenu & stageMenu;
     FontHandler & font;
     FontHandler & opponentFont;
-    SoundSystem & sounds;
+    Mugen::SoundSystem<SelectSoundType> & sounds;
     
-    SoundSystem::Type moveSound, doneSound, randomSound, teamMoveSound, teamValueSound, teamDoneSound;
+    SelectSoundType moveSound, doneSound, randomSound, teamMoveSound, teamValueSound, teamDoneSound;
     
     //! Current GameType
     Mugen::GameType currentGameType;
@@ -600,7 +583,7 @@ protected:
     //! Sprites
     Mugen::SpriteMap sprites;
     //! Sounds
-    SoundSystem sounds;
+    Mugen::SoundSystem<SelectSoundType> sounds;
     //! Select file
     Filesystem::AbsolutePath selectFile;
     //! Fonts

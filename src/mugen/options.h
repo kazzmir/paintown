@@ -5,6 +5,7 @@
 #include "util/menu/optionfactory.h"
 #include "util/gui/scroll-list.h"
 #include "util/pointer.h"
+#include "util.h"
 
 #include <vector>
 #include <string>
@@ -28,10 +29,11 @@ public:
     
     virtual const ListFont & operator=(const ListFont &);
     
-    virtual void draw(int x, int y, const std::string &, const Graphics::Bitmap &);
-    virtual void draw(int x, int y, int position, const std::string &, const Graphics::Bitmap &);
+    virtual void draw(int x, int y, const std::string &, const Graphics::Bitmap &) const;
+    virtual void draw(int x, int y, int position, const std::string &, const Graphics::Bitmap &) const;
     
-    virtual int getHeight();
+    virtual int getHeight() const;
+    virtual int getWidth(const std::string &) const;
 protected:
     PaintownUtil::ReferenceCount<Mugen::Font> font;
     int bank;
@@ -48,6 +50,7 @@ public:
     
     virtual void run() = 0;
     virtual void draw(int x, int y, const Graphics::Bitmap &, const ListFont &) const = 0;
+    virtual int getWidth(const ListFont &) = 0;
     
 protected:
 };
@@ -84,6 +87,12 @@ public:
     //! Previous
     virtual bool previous() ;
     
+    //! Get max width of largest option
+    virtual int getMaxWidth();
+    
+    //! Get max height of the option area
+    virtual int getMaxHeight();
+    
     enum ExpandState{
         Disabled,
         Retract,
@@ -113,6 +122,26 @@ public:
     virtual inline void setSpacing(int x, int y){
         this->spacingX = x;
         this->spacingY = y;
+    }
+    
+    virtual inline void setLocation(int x, int y){
+        this->startX = x;
+        this->startY = y;
+    }
+    
+    virtual inline void setShowCursor(bool cursor){
+        this->showCursor = cursor;
+    }
+    
+    virtual inline void setAutoCursor(bool cursor){
+        this->autoCursor = cursor;
+    }
+    
+    virtual inline void setCursorCoords(int x1, int y1, int x2, int y2){
+        this->cursorX1 = x1;
+        this->cursorY1 = y1;
+        this->cursorX2 = x2;
+        this->cursorY2 = y2;
     }
     
 protected:
@@ -157,6 +186,16 @@ protected:
     
     //! Item list
     std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > text;
+    
+    //! Box cursor
+    bool showCursor;
+    //! Create coordinates for box cursor depending on the text
+    bool autoCursor;
+    //! Predefined cursor coordinates, ignored if autoCursor is enabled
+    int cursorX1;
+    int cursorX2;
+    int cursorY1;
+    int cursorY2;
     
 };
 
@@ -210,13 +249,34 @@ public:
     
     virtual ~OptionOptions();
     void executeOption(const Mugen::PlayerType &, bool & endGame);
+    
+    void act();
+    void draw(const Graphics::Bitmap &);
+    
+    //! Sound types
+    enum Sounds{
+        Move,
+        Done,
+        Cancel,
+    };
 
 private:
 
     std::vector<class Option *> options;
     std::vector<class Option *>::const_iterator selectedOption;
     
-    // void doOptions(Font & font, int x, int y, const Graphics::Bitmap &);
+    //! Background
+    PaintownUtil::ReferenceCount<Background> background;
+    
+    //! List
+    ScrollAction list;
+    
+    //! Sound system
+    Mugen::SoundSystem<Sounds> sounds;
+    
+    //! 1st or 2nd font from system.def
+    PaintownUtil::ReferenceCount<Font> font;
+    
 };
 
 /* For the top level paintown menu */
