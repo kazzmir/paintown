@@ -745,6 +745,14 @@ class AutoSearch : public ListItem {
 
 class Escape: public ListItem {
 public:
+    
+    class EscapeException : public std::exception{
+    public:
+        EscapeException(){
+        }
+        ~EscapeException() throw() {
+        }
+    };
     Escape(){
         optionName = "Return to Main Menu";
         currentValue = "(Esc)";
@@ -762,12 +770,13 @@ public:
     }
     
     bool isRunnable() const{
+        // NOTE lets jump the gun here
+        throw EscapeException();
         return true;
     }
 
     void run(){
-        // **FIXME Hack figure something out
-        throw Exception::Return(__FILE__, __LINE__);
+        throw EscapeException();
     }
     
     void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
@@ -963,10 +972,12 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
 
                 if (event[Esc]){
-                    logic_done = escaped = true;
-                    self.cancel();
-                    InputManager::waitForRelease(player1Input, input1, Esc);
-                    InputManager::waitForRelease(player2Input, input2, Esc);
+                    if (!escaped){
+                        logic_done = escaped = true;
+                        self.cancel();
+                        InputManager::waitForRelease(player1Input, input1, Esc);
+                        InputManager::waitForRelease(player2Input, input2, Esc);
+                    }
                 }
 
                 if (event[Up]){
@@ -982,7 +993,12 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     self.right();
                 }
                 if (event[Start]){
-                    self.enter();
+                    try {
+                        self.enter();
+                    } catch (const Escape::EscapeException & ex){
+                        logic_done = escaped = true;
+                        self.cancel();
+                    }
                 }
             }
             
@@ -1039,8 +1055,8 @@ void OptionOptions::draw(const Graphics::Bitmap & work){
     list.getFont().draw(160, 15, getText(), workArea);
     
     Graphics::Bitmap::transBlender(0,0,0,150);
-    workArea.translucent().rectangleFill(x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
-    workArea.translucent().rectangle(x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
+    workArea.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
+    workArea.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
     
     Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
     list.render(temp, ::Font::getDefaultFont());
