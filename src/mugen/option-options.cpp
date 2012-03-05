@@ -45,6 +45,8 @@ namespace Mugen{
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 
+static const int ITEM_SPACER = 5;
+
 static std::string getString(int number){
     std::ostringstream str;
     str << number;
@@ -86,9 +88,9 @@ void ListFont::draw(int x, int y, const std::string & message, const Graphics::B
     }
 }
 
-void ListFont::draw(int x, int y, int position, const std::string & message, const Graphics::Bitmap & work) const{
+void ListFont::draw(int x, int y, int positionOverride, const std::string & message, const Graphics::Bitmap & work) const{
     if (font != NULL){
-        font->render(x, y, position, bank, work, message);
+        font->render(x, y, positionOverride, bank, work, message);
     }
 }
 
@@ -120,6 +122,13 @@ int ListItem::size(const ::Font & font) const{
     return 0;
 }
 
+void ListItem::run(){
+}
+
+bool ListItem::isRunnable() const {
+    return false;
+}
+
 ScrollAction::ScrollAction():
 expandState(Disabled),
 current(0),
@@ -135,12 +144,18 @@ offsetX(0),
 currentOffsetX(0),
 offsetY(0),
 currentOffsetY(0),
+scrollWaitX(5),
+scrollWaitY(2),
+marginTop(0),
+marginBottom(0),
 showCursor(false),
 autoCursor(false),
 cursorX1(0),
 cursorX2(0),
 cursorY1(0),
-cursorY2(0){
+cursorY2(0),
+cursorAlpha(0),
+cursorAlphaMod(6){
 }
 
 ScrollAction::~ScrollAction(){
@@ -150,16 +165,35 @@ void ScrollAction::act(){
     if (autoSpacing){
         spacingY = font.getHeight() + font.getHeight()/2;
     }
-    if (currentOffsetX < offsetX){
-        currentOffsetX = (currentOffsetX+offsetX)/2;
+    
+    if (showCursor){
+        cursorAlpha+=cursorAlphaMod;
+        if (cursorAlpha > 128){
+            cursorAlpha = 128;
+            cursorAlphaMod = -6;
+        } else if (cursorAlpha < 0){
+            cursorAlpha = 0;
+            cursorAlphaMod = 6;
+        }
     }
-    if (currentOffsetY < offsetY){
-        currentOffsetY = (currentOffsetX+offsetY)/2;
+    
+    if (scrollWaitX > 0){
+        scrollWaitX--;
+    } else {
+        currentOffsetX = (currentOffsetX+offsetX)/2;
+        scrollWaitX = 5;
+    }
+
+    if (scrollWaitY > 0){
+        scrollWaitY--;
+    } else {
+        currentOffsetY = (currentOffsetY+offsetY)/2;
+        scrollWaitY = 2;
     }
 }
 
 void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
-    int y = startY - currentOffsetY;
+    int y = startY - currentOffsetY + marginTop;
     int x = startX;
     bool moveLeft = true;
     unsigned int index = 0;
@@ -170,10 +204,10 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
             if (expandState == Disabled){
                 item->draw(x, y, work, useFont);
                 if (index == current && showCursor){
-                    Graphics::Bitmap::transBlender(0,0,0,128);
+                    Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
                     if (autoCursor){
-                        const int width = item->getWidth(useFont)/2 + item->getWidth(useFont)/4;
-                        const int height = useFont.getHeight()/2 + useFont.getHeight()/4;
+                        const int width = item->getWidth(useFont)/2 + 5;
+                        const int height = useFont.getHeight()/2 + 5;
                         work.translucent().rectangleFill(x - width, y - useFont.getHeight(), x + width, y, Graphics::makeColor(255,255,255));
                     } else {
                         work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(255,255,255));
@@ -195,10 +229,6 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
 
 void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> & item){
     text.push_back(item);
-    /*if (itemTop < visibleItems){
-        itemTop++;
-    }*/
-    checkOffset();
 }
 
 void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &){
@@ -218,21 +248,41 @@ unsigned int ScrollAction::getCurrentIndex() const{
 bool ScrollAction::next(){
     if (current < text.size()-1){
         current++;
+        if (current > itemBottom){
+            itemTop++;
+            itemBottom++;
+            offsetY = (itemBottom+1 - visibleItems) * spacingY;
+        }
     } else {
-        current = 0;
+        current = itemTop = 0;
+        itemBottom = visibleItems - 1;
+        offsetY = 0;
     }
-    checkOffset();
     return true;
 }
 
 bool ScrollAction::previous(){
     if (current > 0){
         current--;
+        if (current < itemTop){
+            itemTop--;
+            itemBottom--;
+            offsetY = (itemBottom+1 - visibleItems) * spacingY;
+        }
     } else {
-        current = text.size()-1;
+        current = itemBottom = text.size()-1;
+        itemTop = text.size() - visibleItems;
+        offsetY = (itemBottom+1 - visibleItems) * spacingY;
     }
-    checkOffset();
     return true;
+}
+
+bool ScrollAction::valueNext(){
+    return getCurrent()->next();
+}
+
+bool ScrollAction::valuePrevious(){
+    return getCurrent()->previous();
 }
 
 int ScrollAction::getMaxWidth(){
@@ -265,7 +315,7 @@ void ScrollAction::setExpandState(const ExpandState & state){
     switch (expandState){
         case Expand:
             // FIXME get the screen width and go off of that
-            offsetX = 640;
+            offsetX = 320;
             break;
         case Retract:
             offsetX = 0;
@@ -283,21 +333,6 @@ void ScrollAction::setListFont(const ListFont & f){
 
 void ScrollAction::setActiveFont(const ListFont & f){
     activeFont = f;
-}
-
-void ScrollAction::checkOffset(){
-    if (current < itemTop){
-        itemTop = current;
-        itemBottom = itemTop + visibleItems;
-    } else if (current > itemBottom){
-        itemBottom = current;
-        itemTop = itemBottom - visibleItems;
-    }
-    
-    offsetY = 0;
-    for (unsigned int i = itemTop; i < itemBottom; ++i){
-        offsetY+=spacingY;
-    }
 }
 
 Option::Option():
@@ -334,10 +369,10 @@ int Option::getWidth(Mugen::Font & font){
     return font.textLength(optionName.c_str()) + font.textLength(currentValue.c_str());
 }
 
-class Difficulty: public Option {
-    public:
-	Difficulty(){
-	    optionName = "Difficulty";
+class Difficulty: public ListItem {
+public:
+    Difficulty(){
+        optionName = "Difficulty";
             int difficulty = Data::getInstance().getDifficulty();
             if (difficulty < 1){
                 difficulty = 1;
@@ -346,52 +381,68 @@ class Difficulty: public Option {
                 difficulty = 8;
                 Data::getInstance().setDifficulty(difficulty);
             }
-	    currentValue = getDifficultyName(difficulty);
-	}
-	~Difficulty(){
-	}
-	void next(){
+        currentValue = getDifficultyName(difficulty);
+    }
+    virtual ~Difficulty(){
+    }
+    bool next(){
             int difficulty = Data::getInstance().getDifficulty() + 1;
             if (difficulty > 8){
                 difficulty = 8;
+                return false;
             }
             Data::getInstance().setDifficulty(difficulty);
             currentValue = getDifficultyName(difficulty);
+            return true;
         }
-	void prev(){
+    bool previous(){
             int difficulty = Data::getInstance().getDifficulty() - 1;
             if (difficulty < 1){
                 difficulty = 1;
+                return false;
             }
             Data::getInstance().setDifficulty(difficulty);
             currentValue = getDifficultyName(difficulty);
-	}
+            return true;
+    }
+    
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
         
-        std::string getDifficultyName(int difficulty){
-            
-            switch (difficulty){
-                case 1:
-                case 2:
-                    return "Easy " + getString(difficulty);
-                    break;
-                case 3:
-                case 4:
-                case 5:
-                    return "Medium " + getString(difficulty);
-                    break;
-                case 6:
-                case 7:
-                case 8:
-                    return "Hard " + getString(difficulty);
-                    break;
-                default:
-                    break;
-            }
-            return std::string();
+    std::string getDifficultyName(int difficulty){
+        
+        switch (difficulty){
+            case 1:
+            case 2:
+                return "Easy " + getString(difficulty);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                return "Medium " + getString(difficulty);
+                break;
+            case 6:
+            case 7:
+            case 8:
+                return "Hard " + getString(difficulty);
+                break;
+            default:
+                break;
         }
+        return std::string();
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class Life : public Option {
+class Life : public ListItem {
     public:
 	Life(){
 	    optionName = "Life";
@@ -407,25 +458,42 @@ class Life : public Option {
 	}
 	~Life(){
 	}
-	void next(){
-            int life = Data::getInstance().getLife()+10;
-            if (life > 300){
-                life = 300;
-            }
-            Data::getInstance().setLife(life);
-	    currentValue = getString(life)+"%%";
+	bool next(){
+        int life = Data::getInstance().getLife()+10;
+        if (life > 300){
+            life = 300;
+            return false;
         }
-	void prev(){
-            int life = Data::getInstance().getLife()-10;
-            if (life < 30){
-                life = 30;
-            }
-            Data::getInstance().setLife(life);
-	    currentValue = getString(life)+"%%";
+        Data::getInstance().setLife(life);
+        currentValue = getString(life)+"%%";
+        return true;
+        }
+	bool previous(){
+        int life = Data::getInstance().getLife()-10;
+        if (life < 30){
+            life = 30;
+            return false;
+        }
+        Data::getInstance().setLife(life);
+        currentValue = getString(life)+"%%";
+        return true;
 	}
+    
+    
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class TimeLimit : public Option {
+class TimeLimit : public ListItem {
     public:
 	TimeLimit(){
 	    optionName = "Time Limit";
@@ -438,7 +506,7 @@ class TimeLimit : public Option {
 	}
 	~TimeLimit(){
 	}
-	void next(){
+	bool next(){
 	    int time = Data::getInstance().getTime();
 	    if (time != -1){
 		time+=20;
@@ -454,8 +522,9 @@ class TimeLimit : public Option {
 	    } else {
 		currentValue = getString(time);
 	    }
+	    return true;
 	}
-	void prev(){
+	bool previous(){
 	    int time = Data::getInstance().getTime();
 	    if (time == -1){
 		time = 99;
@@ -469,10 +538,23 @@ class TimeLimit : public Option {
 	    }
 	    Data::getInstance().setTime(time);
 	    currentValue = getString(time);
+        return true;
 	}
+	
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class Speed : public Option {
+class Speed : public ListItem {
     public:
 	Speed(){
 	    optionName = "Speed";
@@ -488,21 +570,23 @@ class Speed : public Option {
 	}
 	~Speed(){
 	}
-	void next(){
+	bool next(){
             int speed = Data::getInstance().getSpeed() + 1;
             if (speed > 9){
                 speed = 9;
             }
             Data::getInstance().setSpeed(speed);
 	    currentValue = getSpeedName(speed);
+        return true;
 	}
-	void prev(){
+	bool previous(){
             int speed = Data::getInstance().getSpeed() - 1;
             if (speed < -9){
                 speed = -9;
             }
             Data::getInstance().setSpeed(speed);
 	    currentValue = getSpeedName(speed);
+        return true;
 	}
 
         std::string getSpeedName(int speed){
@@ -515,9 +599,23 @@ class Speed : public Option {
             }
             return std::string();
         }
+        
+    
+    
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class OneVsTeam : public Option {
+class OneVsTeam : public ListItem {
     public:
 	OneVsTeam(){
 	    optionName = "1P VS Team Advantage";
@@ -525,13 +623,27 @@ class OneVsTeam : public Option {
 	}
 	~OneVsTeam(){
 	}
-	void next(){
+	bool next(){
+        return false;
 	}
-	void prev(){
+	bool previous(){
+        return false;
 	}
+	
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class TeamLoseOnKO : public Option {
+class TeamLoseOnKO : public ListItem {
     public:
 	TeamLoseOnKO(){
 	    optionName = "If player KOed";
@@ -539,13 +651,27 @@ class TeamLoseOnKO : public Option {
 	}
 	~TeamLoseOnKO(){
 	}
-	void next(){
+	bool next(){
+        return false;
 	}
-	void prev(){
+	bool previous(){
+        return false;
 	}
+	
+	void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class AutoSearch : public Option {
+class AutoSearch : public ListItem {
     public:
     AutoSearch(){
         optionName = "Search Chars/Stages";
@@ -568,7 +694,7 @@ class AutoSearch : public Option {
                 break;
         }
     }
-    void next(){
+    bool next(){
         switch (Data::getInstance().getSearchType()){
             case Data::SelectDef:
                 Data::getInstance().setSearchType(Data::SelectDefAndAuto);
@@ -583,8 +709,9 @@ class AutoSearch : public Option {
                 break;
         }
         setValue();
+        return true;
     }
-    void prev(){
+    bool previous(){
         
         switch (Data::getInstance().getSearchType()){
             case Data::SelectDef:
@@ -600,10 +727,23 @@ class AutoSearch : public Option {
                 break;
         }
         setValue();
+        return true;
     }
+    
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return 160;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
 };
 
-class Escape: public Option {
+class Escape: public ListItem {
 public:
     Escape(){
         optionName = "Return to Main Menu";
@@ -613,34 +753,34 @@ public:
     virtual ~Escape(){
     }
 
-    void next(){
+    bool next(){
+        return false;
     }
 
-    void prev(){
+    bool previous(){
+        return false;
+    }
+    
+    bool isRunnable() const{
+        return true;
     }
 
-    void enter(){
+    void run(){
         // **FIXME Hack figure something out
         throw Exception::Return(__FILE__, __LINE__);
     }
-};
-
-class DummyItem : public ListItem{
-public:
-    DummyItem(const std::string name):
-    name(name){
-    }
-    virtual void run(){
+    
+    void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
+        font.draw(60, y, 1, optionName, work);
+        font.draw(260, y, -1, currentValue, work);
     }
     
-    virtual void draw(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(x, y, name, work);
+    int getWidth(const ListFont & font){
+        return 160;
     }
     
-    virtual int getWidth(const ListFont & font){
-        return font.getWidth(name);
-    }
-    std::string name;
+    std::string optionName;
+    std::string currentValue;
 };
 
 OptionOptions::OptionOptions( const std::string &name ):
@@ -651,37 +791,17 @@ background(PaintownUtil::ReferenceCount<Background>(NULL)){
     this->setText(name);
     
     // Add options
-    options.push_back(new Difficulty());
-    options.push_back(new Life());
-    options.push_back(new TimeLimit());
-    options.push_back(new Speed());
-    options.push_back(new OneVsTeam());
-    options.push_back(new TeamLoseOnKO());
-    options.push_back(new AutoSearch());
-    options.push_back(new Escape());
-    
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option1")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option2")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option3")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option4")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option5")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option6")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option7")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option8")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option9")));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Option10")));
-    
-    // Set first one
-    options[0]->toggleSelected();
-    selectedOption = options.begin();
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Difficulty()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Life()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TimeLimit()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Speed()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new OneVsTeam()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TeamLoseOnKO()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
+    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
 }
 
 OptionOptions::~OptionOptions(){
-    for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
-        if (*i){
-            delete *i;
-        }
-    }
 }
 
 void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
@@ -799,20 +919,20 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     list.setActiveFont(listFont);
     list.setVisibleItems(5);
     list.setAutoSpacing(true);
-    list.setLocation(160, 120);
+    //list.setLocation(160, 120);
+    list.setLocation(160, 0);
     list.setShowCursor(true);
     list.setAutoCursor(true);
     list.setCursorCoords(-20,-10,16,0);
+    //list.setExpandState(ScrollAction::Expand);
 
     // Box
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(OptionOptions & self, bool & escaped, const vector<class Option*> & options, vector<class Option *>::const_iterator & selectedOption):
+        Logic(OptionOptions & self, bool & escaped):
         self(self),
         escaped(escaped),
-        logic_done(false),
-        options(options),
-        selectedOption(selectedOption){
+        logic_done(false){
             player1Input = getPlayer1Keys(20);
             player2Input = getPlayer2Keys(20);
         }
@@ -824,10 +944,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
         bool & escaped;
         bool logic_done;
-
-        const vector<class Option *> & options;
-        vector<class Option *>::const_iterator & selectedOption;
-
+        
         double ticks(double system){
         return Util::gameTicks(system);
         }
@@ -847,40 +964,25 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
                 if (event[Esc]){
                     logic_done = escaped = true;
-                    self.sounds.play(OptionOptions::Cancel);
+                    self.cancel();
                     InputManager::waitForRelease(player1Input, input1, Esc);
                     InputManager::waitForRelease(player2Input, input2, Esc);
                 }
 
                 if (event[Up]){
-                    (*selectedOption)->toggleSelected();
-                    if (selectedOption > options.begin()){
-                        selectedOption--;
-                    } else {
-                        selectedOption = options.begin() + options.size()-1;
-                    }
-                    (*selectedOption)->toggleSelected();
-                    self.sounds.play(OptionOptions::Move);
-                    self.list.previous();
+                    self.up();
                 }
                 if (event[Down]){
-                    (*selectedOption)->toggleSelected();
-                    selectedOption++;
-                    if (selectedOption == options.end()){
-                        selectedOption = options.begin();
-                    }
-                    (*selectedOption)->toggleSelected();
-                    self.sounds.play(OptionOptions::Move);
-                    self.list.next();
+                    self.down();
                 }
                 if (event[Left]){
-                    (*selectedOption)->prev();
+                    self.left();
                 }
                 if (event[Right]){
-                    (*selectedOption)->next();
+                    self.right();
                 }
                 if (event[Start]){
-                    (*selectedOption)->enter();
+                    self.enter();
                 }
             }
             
@@ -895,99 +997,20 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(OptionOptions & self, const vector<class Option *> & options):
-        self(self),
-        resolutionx(640),
-        resolutiony(480),
-        backgroundBuffer(Graphics::Bitmap(320,240)),
-        upsize(Graphics::Bitmap(640, 480)),
-        options(options){
-            const int totalHeight = (options.size() * (self.font->getHeight()+self.font->getHeight()/2)) + self.font->getHeight()*2;
-            const int totalWidth = getLargestWidth(options, *self.font) + getLargestWidth(options, *self.font)/4;
-            
-            resolutionx = totalWidth;
-            resolutiony = totalHeight;
-            
-            upsize = Graphics::Bitmap(resolutionx, resolutiony);
-            
-            fontArea.setPosition(Gui::AbsolutePoint((resolutionx/2) - (totalWidth/2), (resolutiony/2) - (totalHeight/2)));
-            fontArea.setPosition2(Gui::AbsolutePoint((resolutionx/2) + (totalWidth/2), (resolutiony/2) + (totalHeight/2)));
+        Draw(OptionOptions & self):
+        self(self){
         }
 
         OptionOptions & self;
-        int resolutionx, resolutiony;
-        Graphics::Bitmap backgroundBuffer;
-        Graphics::Bitmap upsize;
-        const vector<class Option *> & options;
-        Gui::Coordinate fontArea;
         
-        int getLargestWidth(const vector<class Option *> & options, Font & font){
-            int width = 0;
-            for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
-                class Option * option = *i;
-                const int check = option->getWidth(font);
-                if (check > width){
-                    width = check;
-                }
-            }
-            return width;
-        }
-
-        void doOptions(Font & font, int x1, int x2, int y, const Graphics::Bitmap & where){
-            int mod = font.getHeight()+font.getHeight()/2;
-            for (vector<class Option *>::const_iterator i = options.begin(); i != options.end(); ++i){
-                class Option * option = *i;
-                option->render(font, x1, x2, y+mod, where);
-                mod += font.getHeight()+font.getHeight()/2;
-            }
-        }
-
         void draw(const Graphics::Bitmap & screen){
             self.draw(screen);
-#if 0
-            // render mugen backgrounds
-            Graphics::StretchedBitmap workArea(320, 240, backgroundBuffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
-            workArea.start();
-            //self.background->renderBackground(0, 0, workArea);
-            workArea.finish();
-            backgroundBuffer.drawStretched(screen);
-            
-            // render title
-            upsize.clearToMask();
-            self.font->render(resolutionx/2, 20, 0, 0, upsize, "OPTIONS" );
-            
-            const int x = screen.getWidth()/6;
-            const int y = screen.getHeight()/6;
-            const int width = (screen.getWidth()/2) + x;
-            const int height = (screen.getHeight()/2) + y;
-            
-            upsize.drawStretched(x, screen.getHeight()/25, width, height, screen);
-            
-            // Do background
-            Graphics::Bitmap::transBlender(0,0,0,150);
-            screen.translucent().roundRectFill(5, x, y, x+width, y+height, Graphics::makeColor(0,0,60));
-            screen.translucent().roundRect(5, x, y, x+width, y+height, Graphics::makeColor(0,0,20));
-            
-            // Render options
-            upsize.clearToMask();
-            doOptions(*self.font, fontArea.getX() + 10, fontArea.getX2() - 10, fontArea.getY() + 5, upsize);
-            upsize.drawStretched(x, y, width, height, screen);
-            
-            // render mugen Foregrounds
-            workArea.clearToMask();
-            workArea.start();
-            //self.background->renderForeground(0, 0, workArea);
-            
-            // Finally render to screen
-            workArea.finish();
-            backgroundBuffer.drawStretched(screen);
-#endif
             screen.BlitToScreen();
         }
     };
 
-    Logic logic(*this, escaped, options, selectedOption);
-    Draw draw(*this, options);
+    Logic logic(*this, escaped);
+    Draw draw(*this);
     PaintownUtil::standardLoop(logic, draw);
 
     // **FIXME Hack figure something out
@@ -1008,7 +1031,19 @@ void OptionOptions::draw(const Graphics::Bitmap & work){
     // Backgrounds
     background->renderBackground(0, 0, workArea);
     
-    list.render(workArea, ::Font::getDefaultFont());
+    const int width = list.getMaxWidth();
+    const int height = list.getMaxHeight() + list.getTopMargin() + list.getBottomMargin();
+    const int x = 160 - width/2;
+    const int y = 120 - height/2;
+    
+    list.getFont().draw(160, 15, getText(), workArea);
+    
+    Graphics::Bitmap::transBlender(0,0,0,150);
+    workArea.translucent().rectangleFill(x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
+    workArea.translucent().rectangle(x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
+    
+    Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
+    list.render(temp, ::Font::getDefaultFont());
     
     // Foregrounds
     background->renderForeground(0, 0, workArea);
@@ -1016,16 +1051,41 @@ void OptionOptions::draw(const Graphics::Bitmap & work){
     
 }
 
-/*
-void OptionOptions::doOptions(Font & font, int x, int y, const Graphics::Bitmap & bmp){
-    int mod = 30;
-    for (vector<class Option *>::iterator i = options.begin(); i != options.end(); ++i){
-	class Option * option = *i;
-	option->render(font, x, y+mod, bmp);
-	mod+=20;
+void OptionOptions::up(){
+    if (list.previous()){
+        sounds.play(OptionOptions::Move);
     }
 }
-*/
+
+void OptionOptions::down(){
+    
+    if (list.next()){
+        sounds.play(OptionOptions::Move);
+    }
+}
+
+void OptionOptions::left(){
+    if (list.valuePrevious()){
+        // Play sound? not in this house!
+    }
+}
+
+void OptionOptions::right(){
+    if (list.valueNext()){
+    }
+}
+
+void OptionOptions::enter(){
+    if (list.getCurrent()->isRunnable()){
+        sounds.play(OptionOptions::Done);
+        list.getCurrent()->run();
+    }
+}
+
+void OptionOptions::cancel(){
+    sounds.play(OptionOptions::Cancel);
+}
+
 
 OptionArcade::OptionArcade(const string & name){
     if (name.empty()){

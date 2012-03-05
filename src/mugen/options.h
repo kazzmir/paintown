@@ -30,7 +30,7 @@ public:
     virtual const ListFont & operator=(const ListFont &);
     
     virtual void draw(int x, int y, const std::string &, const Graphics::Bitmap &) const;
-    virtual void draw(int x, int y, int position, const std::string &, const Graphics::Bitmap &) const;
+    virtual void draw(int x, int y, int positionOverride, const std::string &, const Graphics::Bitmap &) const;
     
     virtual int getHeight() const;
     virtual int getWidth(const std::string &) const;
@@ -47,10 +47,12 @@ public:
     //Ignore end of the line
     void draw(int x, int y, const Graphics::Bitmap &, const ::Font & font, int distance) const;
     int size(const ::Font & font) const;
-    
-    virtual void run() = 0;
+    virtual bool isRunnable() const;
+    virtual void run();
     virtual void draw(int x, int y, const Graphics::Bitmap &, const ListFont &) const = 0;
     virtual int getWidth(const ListFont &) = 0;
+    virtual bool next() = 0;
+    virtual bool previous() = 0;
     
 protected:
 };
@@ -80,12 +82,23 @@ public:
     
     //! Get current Index
     virtual unsigned int getCurrentIndex() const;
+    
+    //! Get current item
+    virtual inline const PaintownUtil::ReferenceCount<ListItem> getCurrent() const{
+        return this->text[current].convert<ListItem>();
+    }
 
     //! Next
     virtual bool next();
 
     //! Previous
-    virtual bool previous() ;
+    virtual bool previous();
+    
+    //! Value next
+    virtual bool valueNext();
+    
+    //! Value previous
+    virtual bool valuePrevious();
     
     //! Get max width of largest option
     virtual int getMaxWidth();
@@ -105,17 +118,25 @@ public:
     //! List Font
     virtual void setListFont(const ListFont &);
     
+    //! Get Font
+    virtual inline const ListFont & getFont() const {
+        return this->font;
+    }
+    
     //! Active Font
     virtual void setActiveFont(const ListFont &);
     
     //! Set visible items (defaults to 5)
     virtual inline void setVisibleItems(int items){
         this->visibleItems = items;
+        this->itemBottom = items-1;
     }
     
     //! Set autospacing (ignores set spacing)
     virtual inline void setAutoSpacing(bool spacing){
         this->autoSpacing = spacing;
+        this->spacingY = this->font.getHeight() + this->font.getHeight()/2;
+        setMargins(this->spacingY, this->spacingY);
     }
     
     //! Set Spacing
@@ -127,6 +148,19 @@ public:
     virtual inline void setLocation(int x, int y){
         this->startX = x;
         this->startY = y;
+    }
+    
+    virtual inline void setMargins(int top, int bottom){
+        this->marginTop = top;
+        this->marginBottom = bottom;
+    }
+    
+    virtual inline int getTopMargin() const {
+        return this->marginTop;
+    }
+    
+    virtual inline int getBottomMargin() const {
+        return this->marginBottom;
     }
     
     virtual inline void setShowCursor(bool cursor){
@@ -145,8 +179,6 @@ public:
     }
     
 protected:
-    //! Check the y offset
-    virtual void checkOffset();
     
     //! Is expanding enabled
     ExpandState expandState;
@@ -183,6 +215,12 @@ protected:
     int currentOffsetX;
     int offsetY;
     int currentOffsetY;
+    int scrollWaitX;
+    int scrollWaitY;
+    
+    //! Margins
+    int marginTop;
+    int marginBottom;
     
     //! Item list
     std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > text;
@@ -196,6 +234,8 @@ protected:
     int cursorX2;
     int cursorY1;
     int cursorY2;
+    int cursorAlpha;
+    int cursorAlphaMod;
     
 };
 
@@ -253,6 +293,13 @@ public:
     void act();
     void draw(const Graphics::Bitmap &);
     
+    void up();
+    void down();
+    void left();
+    void right();
+    void enter();
+    void cancel();
+    
     //! Sound types
     enum Sounds{
         Move,
@@ -261,10 +308,6 @@ public:
     };
 
 private:
-
-    std::vector<class Option *> options;
-    std::vector<class Option *>::const_iterator selectedOption;
-    
     //! Background
     PaintownUtil::ReferenceCount<Background> background;
     
@@ -276,7 +319,6 @@ private:
     
     //! 1st or 2nd font from system.def
     PaintownUtil::ReferenceCount<Font> font;
-    
 };
 
 /* For the top level paintown menu */
