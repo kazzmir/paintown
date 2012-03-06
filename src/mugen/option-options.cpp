@@ -1012,6 +1012,249 @@ bool OptionMenu::isDone(){
     return (fader.getState() == Gui::FadeTool::EndFade);
 }
 
+// Box
+class MenuLogic: public PaintownUtil::Logic {
+public:
+    MenuLogic(OptionMenu & menu, bool & escaped):
+    menu(menu),
+    escaped(escaped){
+        player1Input = getPlayer1Keys(20);
+        player2Input = getPlayer2Keys(20);
+    }
+    
+    OptionMenu & menu;
+
+    InputMap<Keys> player1Input;
+    InputMap<Keys> player2Input;
+
+    bool & escaped;
+    
+    double ticks(double system){
+    return Util::gameTicks(system);
+    }
+
+    void run(){
+        InputSource input1;
+        InputSource input2;
+        vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
+        vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
+        out1.insert(out1.end(), out2.begin(), out2.end());
+        for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+            const InputMap<Mugen::Keys>::InputEvent & event = *it;
+            if (!event.enabled){
+                continue;
+            }
+
+
+            if (event[Esc]){
+                if (!escaped){
+                    escaped = true;
+                    menu.cancel();
+                    InputManager::waitForRelease(player1Input, input1, Esc);
+                    InputManager::waitForRelease(player2Input, input2, Esc);
+                }
+            }
+
+            if (event[Up]){
+                menu.up();
+            }
+            if (event[Down]){
+                menu.down();
+            }
+            if (event[Left]){
+                menu.left();
+            }
+            if (event[Right]){
+                menu.right();
+            }
+            if (event[Start]){
+                try {
+                    menu.enter();
+                } catch (const Escape::EscapeException & ex){
+                    escaped = true;
+                    menu.cancel();
+                }
+            }
+        }
+        
+        // Act out
+        menu.act();
+    }
+
+    bool done(){
+        return menu.isDone();
+    }
+};
+
+class MenuDraw: public PaintownUtil::Draw {
+public:
+    MenuDraw(OptionMenu & menu):
+    menu(menu){
+    }
+
+    OptionMenu & menu;
+    
+    void draw(const Graphics::Bitmap & screen){
+        menu.draw(screen);
+        screen.BlitToScreen();
+    }
+};
+
+
+class Motif : public ListItem {
+public:
+    Motif(){
+        optionName = "Switch Motif";
+        currentValue = "(Enter)";
+    }
+
+    virtual ~Motif(){
+    }
+
+    bool next(){
+        return false;
+    }
+
+    bool previous(){
+        return false;
+    }
+    
+    bool isRunnable() const{
+        return true;
+    }
+    
+    static bool isMugenMotif(const Filesystem::AbsolutePath & path){
+        try{
+            string name = Util::probeDef(path, "info", "name");
+            return true;
+        } catch (...){
+            return false;
+        }
+    }
+
+    static vector<Filesystem::AbsolutePath> listMotifs(){
+        Filesystem::AbsolutePath data = Storage::instance().find(Filesystem::RelativePath("mugen/data"));
+        vector<Filesystem::AbsolutePath> defs = Storage::instance().getFilesRecursive(data, "system.def");
+        vector<Filesystem::AbsolutePath> good;
+        for (vector<Filesystem::AbsolutePath>::iterator it = defs.begin(); it != defs.end(); it++){
+            const Filesystem::AbsolutePath & file = *it;
+            if (isMugenMotif(file)){
+                Global::debug(1) << "Motif: " << file.path() << endl;
+                good.push_back(file);
+            }
+        }
+        return good;
+    }
+    
+    class Item : public ListItem{
+    public:
+        class SelectException : public std::exception{
+        public:
+            SelectException(){
+            }
+            ~SelectException() throw() {
+            }
+        };
+        Item(){
+        }
+        
+        bool next(){
+            return false;
+        }
+
+        bool previous(){
+            return false;
+        }
+        
+        bool isRunnable() const{
+            return true;
+        }
+
+        void run(){
+            throw SelectException();
+        }
+        
+        void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+            font.draw(x, y, 0, name, work);
+        }
+        
+        int getWidth(const ListFont & font){
+            return (font.getWidth(name));
+        }
+        
+        std::string name;
+        Filesystem::AbsolutePath path;
+ 
+    };
+
+    void run(){
+        class Context: public Loader::LoadingContext {
+        public:
+            Context(){
+                }
+
+            virtual void load(){
+                vector<Filesystem::AbsolutePath> paths = listMotifs();
+                for (unsigned int i = 0; i < paths.size(); i++){
+                    PaintownUtil::ReferenceCount<Item> motif = PaintownUtil::ReferenceCount<Item>(new Item());
+                    motif->name = Mugen::Util::probeDef(paths[i], "info", "name");
+                    motif->path = paths[i];
+                    list.push_back(motif.convert<Gui::ScrollItem>());
+                }
+            }
+            
+            Filesystem::AbsolutePath get(unsigned int index){
+                return list[index].convert<Item>()->path;
+            }
+
+            std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+        };
+
+        Context state;
+        /* an empty Info object, we don't really care about it */
+        Loader::Info level;
+        Loader::loadScreen(state, level, Loader::SimpleCircle);
+
+        if (state.list.size() <= 1){
+            return;
+        }
+        
+        OptionMenu menu(state.list);
+        menu.setName(optionName);
+        
+        try {
+            // Run options
+            bool escaped = false;
+
+            MenuLogic logic(menu, escaped);
+            MenuDraw draw(menu);
+            PaintownUtil::standardLoop(logic, draw);
+            
+            menu.reset();
+        } catch (const Item::SelectException & ex){
+            // Got our index otherwise don't change
+            Filesystem::RelativePath motif = Storage::instance().cleanse(state.get(menu.getSelected())).removeFirstDirectory();
+            Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
+            ::Configuration::setMugenMotif(motif.path());
+            Mugen::Data::getInstance().setMotif(motif);
+        } catch (const Escape::EscapeException & ex){
+            return;
+        }
+    }
+    
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
+    }
+    
+    int getWidth(const ListFont & font){
+        return (font.getWidth(optionName + "  " + currentValue));
+    }
+    
+    std::string optionName;
+    std::string currentValue;
+};
+
 OptionOptions::OptionOptions( const std::string &name ){
     if (name.empty()){
 	throw LoadException(__FILE__, __LINE__, "No name given to Options");
@@ -1027,6 +1270,7 @@ OptionOptions::OptionOptions( const std::string &name ){
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new OneVsTeam()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TeamLoseOnKO()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Motif()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
     
     optionMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
@@ -1038,105 +1282,11 @@ OptionOptions::~OptionOptions(){
 
 void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
-
     // Run options
-    bool done = false;
     bool escaped = false;
 
-    // Box
-    class Logic: public PaintownUtil::Logic {
-    public:
-        Logic(OptionMenu & menu, bool & escaped):
-        menu(menu),
-        escaped(escaped),
-        logic_done(false){
-            player1Input = getPlayer1Keys(20);
-            player2Input = getPlayer2Keys(20);
-        }
-        
-        OptionMenu & menu;
-
-        InputMap<Keys> player1Input;
-        InputMap<Keys> player2Input;
-
-        bool & escaped;
-        bool logic_done;
-        
-        double ticks(double system){
-        return Util::gameTicks(system);
-        }
-
-        void run(){
-            InputSource input1;
-            InputSource input2;
-            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
-            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
-            out1.insert(out1.end(), out2.begin(), out2.end());
-            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
-                const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                if (!event.enabled){
-                    continue;
-                }
-
-
-                if (event[Esc]){
-                    if (!escaped){
-                        //logic_done = escaped = true;
-                        escaped = true;
-                        menu.cancel();
-                        InputManager::waitForRelease(player1Input, input1, Esc);
-                        InputManager::waitForRelease(player2Input, input2, Esc);
-                    }
-                }
-
-                if (event[Up]){
-                    menu.up();
-                }
-                if (event[Down]){
-                    menu.down();
-                }
-                if (event[Left]){
-                    menu.left();
-                }
-                if (event[Right]){
-                    menu.right();
-                }
-                if (event[Start]){
-                    try {
-                        menu.enter();
-                    } catch (const Escape::EscapeException & ex){
-                        //logic_done = escaped = true;
-                        escaped = true;
-                        menu.cancel();
-                    }
-                }
-            }
-            
-            // Act out
-            menu.act();
-        }
-
-        bool done(){
-            return menu.isDone();//logic_done;
-        }
-    };
-
-    class Draw: public PaintownUtil::Draw {
-    public:
-        Draw(OptionMenu & menu):
-        menu(menu){
-        }
-
-        OptionMenu & menu;
-        
-        void draw(const Graphics::Bitmap & screen){
-            menu.draw(screen);
-            screen.BlitToScreen();
-        }
-    };
-
-    Logic logic(*optionMenu, escaped);
-    Draw draw(*optionMenu);
+    MenuLogic logic(*optionMenu, escaped);
+    MenuDraw draw(*optionMenu);
     PaintownUtil::standardLoop(logic, draw);
     
     optionMenu->reset();

@@ -318,6 +318,10 @@ public:
     
     virtual void reset();
     
+    virtual inline unsigned int getSelected() const {
+        return this->list.getCurrentIndex();
+    }
+    
     //! Sound types
     enum Sounds{
         Move,
