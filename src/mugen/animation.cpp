@@ -111,8 +111,9 @@ Frame & Frame::operator=(const Frame &copy){
 
 void Frame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (sprite != NULL){
+        /* Only flip the X offset, not Y */
         const int placex = x + (xoffset * effects.facing * effects.scalex);
-        const int placey = y + (yoffset * effects.vfacing * effects.scaley);
+        const int placey = y + (yoffset * effects.scaley);
         sprite->render(placex, placey, work, effects);
     }
 }
@@ -408,8 +409,27 @@ void Animation::render(bool facing, bool vfacing, const int xaxis, const int yax
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
+    /* FIXME: should horizontal facing follow the same logic as vfacing below? */
     effects.facing = (facing ? -1 : 1);
-    effects.vfacing = (vfacing ? -1 : 1);
+
+    int FLIPPED = -1;
+    int NOT_FLIPPED = 1;
+
+    /* case 1: explode vfacing is true and frame is normal. vfacing = -1
+     * case 2: explode vfacing is true and frame is flipped. vfacing = 1
+     * case 3: explode vfacing is false and frame is normal. vfacing = 1
+     * case 4: explode vfacing is false and frame is flipped. vfacing = -1
+     */
+    /* TODO: verify case 2 */
+    if (effects.vfacing == NOT_FLIPPED && vfacing){
+        effects.vfacing = FLIPPED;
+    } else if (effects.vfacing == FLIPPED && vfacing){
+        effects.vfacing = NOT_FLIPPED;
+    } else if (effects.vfacing == NOT_FLIPPED && !vfacing){
+        effects.vfacing = NOT_FLIPPED;
+    } else {
+        effects.vfacing = FLIPPED;
+    }
     effects.filter = filter;
 
     renderFrame(frame, xaxis, yaxis, work, effects);

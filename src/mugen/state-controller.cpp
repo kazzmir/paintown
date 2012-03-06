@@ -4156,6 +4156,7 @@ public:
         virtual void superPauseEnd(){
             /* Unfreeze no matter what */
             frozen = false;
+            superMoveTime = 0;
         }
 
         const Mugen::Stage & stage;
@@ -4202,8 +4203,9 @@ public:
             } else {
                 if (superMoveTime > 0){
                     superMoveTime -= 1;
+                    /* If we run out of super move time then we should freeze */
                     if (superMoveTime == 0){
-                        frozen = false;
+                        frozen = true;
                     }
                 }
             }
