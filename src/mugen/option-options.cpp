@@ -166,6 +166,7 @@ ScrollAction::~ScrollAction(){
 void ScrollAction::act(){
     if (autoSpacing){
         spacingY = font.getHeight() + font.getHeight()/2;
+        setMargins(spacingY, spacingY);
     }
     
     if (showCursor){
@@ -253,11 +254,11 @@ bool ScrollAction::next(){
         if (current > itemBottom){
             itemTop++;
             itemBottom++;
-            offsetY = (itemBottom+1 - visibleItems) * spacingY;
+            offsetY = (itemBottom+1 - getVisibleItems()) * spacingY;
         }
     } else {
         current = itemTop = 0;
-        itemBottom = visibleItems - 1;
+        itemBottom = getVisibleItems();
         offsetY = 0;
     }
     return true;
@@ -269,12 +270,12 @@ bool ScrollAction::previous(){
         if (current < itemTop){
             itemTop--;
             itemBottom--;
-            offsetY = (itemBottom+1 - visibleItems) * spacingY;
+            offsetY = (itemBottom+1 - getVisibleItems()) * spacingY;
         }
     } else {
         current = itemBottom = text.size()-1;
-        itemTop = text.size() - visibleItems;
-        offsetY = (itemBottom+1 - visibleItems) * spacingY;
+        itemTop = text.size() - getVisibleItems();
+        offsetY = (itemBottom+1 - getVisibleItems()) * spacingY;
     }
     return true;
 }
@@ -300,16 +301,13 @@ int ScrollAction::getMaxWidth(){
 }
 
 int ScrollAction::getMaxHeight(){
-    int height = 0;
-    unsigned int index = 0;
-    for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i, ++index){
-        if (index == visibleItems+1){
-            break;
-        }
-        const ListFont & useFont = (index != current) ? font : activeFont;
-        height += (autoSpacing ? useFont.getHeight() : spacingY);
-    }
-    return height;
+    Global::debug(0) << "Visible items: " << visibleItems << " | getVisibleItems: " << getVisibleItems() << std::endl;
+    return spacingY * getVisibleItems();
+}
+
+void ScrollAction::recalculateVisibleItems(int height){
+    int visible = (height/(spacingY)) + 1;
+    setVisibleItems(visible);
 }
 
 void ScrollAction::setExpandState(const ExpandState & state){
@@ -335,6 +333,13 @@ void ScrollAction::setListFont(const ListFont & f){
 
 void ScrollAction::setActiveFont(const ListFont & f){
     activeFont = f;
+}
+
+unsigned int ScrollAction::getVisibleItems(){
+    if (visibleItems > text.size()-1){
+        return text.size();
+    }
+    return visibleItems;
 }
 
 Option::Option():
@@ -929,7 +934,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
     list.setListFont(listFont);
     list.setActiveFont(listFont);
-    list.setVisibleItems(7);
+    list.setVisibleItems(3);
     list.setAutoSpacing(true);
     list.setLocation(160, 0);
     list.setShowCursor(true);
@@ -1040,6 +1045,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 void OptionOptions::act(){
     background->act();
     list.act();
+    list.recalculateVisibleItems(180);
 }
 
 void OptionOptions::draw(const Graphics::Bitmap & work){
@@ -1050,7 +1056,7 @@ void OptionOptions::draw(const Graphics::Bitmap & work){
     background->renderBackground(0, 0, workArea);
     
     const int width = list.getMaxWidth();
-    const int height = list.getMaxHeight() + list.getTopMargin() + list.getBottomMargin();
+    const int height = list.getMaxHeight();// + list.getTopMargin() + list.getBottomMargin();
     const int x = 160 - width/2;
     const int y = 120 - height/2;
     

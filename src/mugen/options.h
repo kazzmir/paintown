@@ -106,6 +106,9 @@ public:
     //! Get max height of the option area
     virtual int getMaxHeight();
     
+    //! Recalculate visibleItems given a specific height
+    virtual void recalculateVisibleItems(int height);
+    
     enum ExpandState{
         Disabled,
         Retract,
@@ -131,6 +134,9 @@ public:
         this->visibleItems = items;
         this->itemBottom = items-1;
     }
+    
+    //! Get visible items
+    virtual unsigned int getVisibleItems();
     
     //! Set autospacing (ignores set spacing)
     virtual inline void setAutoSpacing(bool spacing){
