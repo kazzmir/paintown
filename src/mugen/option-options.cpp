@@ -416,7 +416,7 @@ public:
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
         
     std::string getDifficultyName(int difficulty){
@@ -489,7 +489,7 @@ class Life : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
     
     std::string optionName;
@@ -550,7 +550,7 @@ class TimeLimit : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
     
     std::string optionName;
@@ -609,7 +609,7 @@ class Speed : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
     
     std::string optionName;
@@ -637,7 +637,7 @@ class OneVsTeam : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
     
     std::string optionName;
@@ -665,7 +665,7 @@ class TeamLoseOnKO : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
     
     std::string optionName;
@@ -737,7 +737,7 @@ class AutoSearch : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  select.def+auto"));
     }
     
     std::string optionName;
@@ -786,7 +786,7 @@ public:
     }
     
     int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "     " + currentValue));
+        return (font.getWidth(optionName + "  " + currentValue));
     }
     
     std::string optionName;

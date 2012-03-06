@@ -32,9 +32,9 @@ namespace Mugen{
     class Sprite;
 
 /* Makes the use of the sprite maps easier */
-typedef std::map< unsigned int, Sprite *> GroupMap;
+typedef std::map< unsigned int, PaintownUtil::ReferenceCount<Sprite> > GroupMap;
 typedef std::map< unsigned int, GroupMap> SpriteMap;
-typedef std::map< unsigned int, std::map< unsigned int, Sound * > > SoundMap;
+typedef std::map< unsigned int, std::map< unsigned int, PaintownUtil::ReferenceCount<Sound> > > SoundMap;
 
 /* FIXME: add descriptions of every function here */
 namespace Util{
@@ -82,13 +82,13 @@ namespace Util{
     // Get animation: The animation must be deleted if used outside of stage/animation (stage and character do the deletion in this case)
     PaintownUtil::ReferenceCount<Animation> getAnimation(Ast::Section *section, const Mugen::SpriteMap &sprites, bool mask);
     /* pull a sprite out of a const sprite map */
-    Sprite * getSprite(const Mugen::SpriteMap & sprites, int group, int item);
+    PaintownUtil::ReferenceCount<Sprite> getSprite(const Mugen::SpriteMap & sprites, int group, int item);
 
     /* if mask is true, then effects.mask will be true by default */
     std::map<int, PaintownUtil::ReferenceCount<Animation> > loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask);
 
     /* destroys raw pcx data in a Sprite */
-    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
+    void destroyRaw(const SpriteMap &);
 
     // const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
     
@@ -101,11 +101,11 @@ namespace Util{
      * whole sprite list
      * Throws exception if not found
      */
-    Sprite *probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
+    PaintownUtil::ReferenceCount<Sprite>probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile = Filesystem::AbsolutePath());
     /* similar to probeSff but searches for sprites 9000,0 and 9000,1 which are
      * the icon and the portrait respectively.
      */
-    void getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, Sprite ** icon, Sprite ** portrait);
+    void getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, PaintownUtil::ReferenceCount<Mugen::Sprite> * icon, PaintownUtil::ReferenceCount<Mugen::Sprite> * portrait);
 
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.
@@ -713,13 +713,13 @@ public:
     }
     ~SoundSystem(){
         // Get rid of sounds
-        for (std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
+        /*for (std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
             for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
                 if (j->second){
                     delete j->second;
                 }
             }
-        }
+        }*/
     }
     //! Init the sound system given a .snd file
     void init(const std::string & file){
@@ -728,8 +728,8 @@ public:
     }
     //! Play
     void play(const Type & type){
-        Sound * sound = sounds[soundLookup[type].group][soundLookup[type].index];
-        if (sound){
+        PaintownUtil::ReferenceCount<Mugen::Sound> sound = sounds[soundLookup[type].group][soundLookup[type].index];
+        if (sound != NULL){
             sound->play();
         }
     }

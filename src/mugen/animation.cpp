@@ -78,7 +78,7 @@ Frame
 */
 Frame::Frame(bool mask):
 loopstart(false),
-sprite(0),
+sprite(PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL)),
 xoffset(0),
 yoffset(0),
 time(0){
@@ -118,7 +118,7 @@ void Frame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Eff
     }
 }
         
-void Frame::setSprite(Sprite * sprite){
+void Frame::setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite){
     this->sprite = sprite;
 }
 
@@ -466,7 +466,7 @@ void Animation::backFrame(){
 void Animation::reloadBitmaps(){
     for( std::vector< Frame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
 	Frame *frame = *i;
-	if (frame->sprite){
+	if (frame->sprite != NULL){
 	   // if (frame->bmp) delete frame->bmp;
 	    //frame->bmp = new Bitmap(Bitmap::memoryPCX((unsigned char*) frame->sprite->pcx, frame->sprite->newlength));
 	    frame->sprite->reload();

@@ -412,13 +412,13 @@ Storyboard::~Storyboard(){
     }
 
     // sprites
-    for (SpriteMap::iterator i = sprites.begin(); i != sprites.end(); ++i){
+/*    for (SpriteMap::iterator i = sprites.begin(); i != sprites.end(); ++i){
         for (map<unsigned int, Sprite *>::iterator j = i->second.begin(); j != i->second.end(); ++j){
             if (j->second){
                 delete j->second;
             }
         }
-    }
+    }*/
 }
 
 void Storyboard::run(bool repeat){

@@ -352,7 +352,7 @@ sprite(NULL){
                     simple.view() >> group >> sprite;
                 } catch (const Ast::Exception & e){
                 }
-                Sprite * found = Util::getSprite(sprites, group, sprite);
+                PaintownUtil::ReferenceCount<Mugen::Sprite> found = Util::getSprite(sprites, group, sprite);
                 if (found == NULL){
                     ostringstream out;
                     out << simple.getLine() << ":" << simple.getColumn() << " spriteno: No sprite for " << group << ", " << sprite;
@@ -748,7 +748,7 @@ yscaleDelta(0){
                     simple.view() >> group >> sprite;
                 } catch (const Ast::Exception & e){
                 }
-                Sprite * found = Util::getSprite(sprites, group, sprite);
+                PaintownUtil::ReferenceCount<Mugen::Sprite> found = Util::getSprite(sprites, group, sprite);
                 if (found == NULL){
                     ostringstream out;
                     out << simple.getLine() << ":" << simple.getColumn() << " spriteno: No sprite for " << group << ", " << sprite;
@@ -797,7 +797,7 @@ void ParallaxElement::act(){
     getSinY().act();
 }
 
-static void doParallaxXScale(Sprite * bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta, const Mugen::Effects & effects){
+static void doParallaxXScale(PaintownUtil::ReferenceCount<Mugen::Sprite> bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, double yscaleDelta, const Mugen::Effects & effects){
     const int height = bmp->getHeight();
     const int width = bmp->getWidth();
 
@@ -845,7 +845,7 @@ static void doParallaxXScale(Sprite * bmp, const Graphics::Bitmap & work, int ca
 
 }
 
-static void doParallax(Sprite * bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, const Mugen::Effects & effects){
+static void doParallax(PaintownUtil::ReferenceCount<Mugen::Sprite> bmp, const Graphics::Bitmap & work, int cameraX, int cameraY, int offsetX, int offsetY, int extraX, int extraY, double xscale_top, double xscale_bottom, int centerX, int centerY, double deltaX, double deltaY, const Mugen::Effects & effects){
     const int height = bmp->getHeight();
     const int width = bmp->getWidth();
 
@@ -2080,10 +2080,10 @@ clearColor(Graphics::MaskColor()){
     destroyRaw(sprites);
 }
 
-void Background::destroyRaw(const map< unsigned int, std::map< unsigned int, Sprite * > > & sprites){
-    for (map< unsigned int, std::map< unsigned int, Sprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, Sprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            Sprite * sprite = j->second;
+void Background::destroyRaw(const Mugen::SpriteMap & sprites){
+    for (map< unsigned int, std::map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
             sprite->unloadRaw();
         }
     }
@@ -2091,11 +2091,11 @@ void Background::destroyRaw(const map< unsigned int, std::map< unsigned int, Spr
 
 Background::~Background(){
     // Get rid of sprites
-    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-	for( std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+    /*for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+	for( std::map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	    if( j->second )delete j->second;
 	}
-    }
+    }*/
      // Get rid of animation lists;
     /*
     for( std::map< int, Animation * >::iterator i = animations.begin() ; i != animations.end() ; ++i ){

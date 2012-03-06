@@ -348,7 +348,7 @@ protected:
     void physics(Character * o);
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
-    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
+    void destroyRaw(const Mugen::SpriteMap & sprites);
 
     int nextObjectId();
     
@@ -562,7 +562,7 @@ protected:
     //std::vector< MugenBackground * > foregrounds;
 
     /* Sounds */
-    std::map< unsigned int, std::map< unsigned int, Sound * > > sounds;
+    Mugen::SoundMap sounds;
 
     // MugenBackgroundManager *background;
     Background * background;

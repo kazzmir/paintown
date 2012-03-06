@@ -259,12 +259,12 @@ class NormalElement : public BackgroundElement {
 	virtual ~NormalElement();
 	virtual void act();
 	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
-	virtual inline void setSprite(Sprite *sprite){
+	virtual inline void setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite){
 	    this->sprite = sprite;
 	}
     private:
 	//! Sprite Based
-	Sprite *sprite;
+	PaintownUtil::ReferenceCount<Mugen::Sprite> sprite;
 };
 
 /*! Animation Element */
@@ -287,7 +287,7 @@ class ParallaxElement : public BackgroundElement {
 	virtual ~ParallaxElement();
 	virtual void act();
 	virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
-	virtual inline void setSprite(Sprite *sprite){
+	virtual inline void setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite){
 	    this->sprite = sprite;
 	}
 	virtual inline void setXScale(double x, double y){
@@ -313,7 +313,7 @@ class ParallaxElement : public BackgroundElement {
         }
     private:
 	//! Sprite Based
-	Sprite *sprite;
+	PaintownUtil::ReferenceCount<Mugen::Sprite> sprite;
 	//! xscale x = top y = bottom
 	double xscaleX;
 	double xscaleY;
@@ -435,7 +435,7 @@ class Background{
 
     protected:
 
-        void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
+        void destroyRaw(const Mugen::SpriteMap & sprites);
 
     private:
 	

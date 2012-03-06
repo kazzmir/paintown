@@ -75,12 +75,12 @@ class FightElement: public Element {
             return this->spriteData;
         }
 
-	virtual void setSprite(Sprite *);
+	virtual void setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite);
 	virtual void setFont(Font *, int bank, int position);
         virtual inline void setPosition(int position){
             this->position = position;
         }
-        virtual void setSound(Sound *);
+        virtual void setSound(PaintownUtil::ReferenceCount<Mugen::Sound> sound);
 	virtual int getWidth();
 	virtual int getHeight();
 	virtual inline void setOffset(int x, int y){ 
@@ -126,9 +126,9 @@ class FightElement: public Element {
 	ElementType type;
         PaintownUtil::ReferenceCount<Animation> action;
         Mugen::Point spriteData;
-	Sprite *sprite;
+	PaintownUtil::ReferenceCount<Mugen::Sprite> sprite;
 	Font *font;
-        Sound *sound;
+        PaintownUtil::ReferenceCount<Mugen::Sound> sound;
 	Mugen::Point offset;
 	int displaytime;
 	int soundtime;

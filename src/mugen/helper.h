@@ -41,8 +41,8 @@ public:
         return root;
     }
         
-    virtual Sound * getSound(int group, int item) const;
-    virtual Sound * getCommonSound(int group, int item) const;
+    virtual PaintownUtil::ReferenceCount<Mugen::Sound> getSound(int group, int item) const;
+    virtual PaintownUtil::ReferenceCount<Mugen::Sound> getCommonSound(int group, int item) const;
 
 protected:
     /* the character that spawned this helper */

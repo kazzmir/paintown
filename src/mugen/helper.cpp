@@ -72,18 +72,18 @@ const std::string Helper::getDisplayName() const {
     return name;
 }
     
-Sound * Helper::getSound(int group, int item) const {
+PaintownUtil::ReferenceCount<Mugen::Sound> Helper::getSound(int group, int item) const {
     if (owner != NULL){
         return owner->getSound(group, item);
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
 }
 
-Sound * Helper::getCommonSound(int group, int item) const {
+PaintownUtil::ReferenceCount<Mugen::Sound> Helper::getCommonSound(int group, int item) const {
     if (owner != NULL){
         return owner->getCommonSound(group, item);
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
 }
 
 /*

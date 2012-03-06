@@ -703,10 +703,10 @@ void Mugen::Stage::load(){
     loaded = true;
 }
 
-void Mugen::Stage::destroyRaw(const map< unsigned int, std::map< unsigned int, Sprite * > > & sprites){
-    for (map< unsigned int, std::map< unsigned int, Sprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, Sprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            Sprite * sprite = j->second;
+void Mugen::Stage::destroyRaw(const Mugen::SpriteMap & sprites){
+    for (Mugen::SpriteMap::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
             sprite->unloadRaw();
         }
     }
@@ -845,7 +845,7 @@ void Mugen::Stage::addSpark(int x, int y, const PaintownUtil::ReferenceCount<Ani
 */
 
 void Mugen::Stage::playSound(Character * owner, int group, int item, bool own){
-    Mugen::Sound * sound = NULL;
+    PaintownUtil::ReferenceCount<Mugen::Sound> sound = PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
     if (own){
         sound = owner->getSound(group, item);
     } else {
@@ -1829,13 +1829,14 @@ void Mugen::Stage::cleanup(){
 	    console = 0;
 	}
         */
-
+/*
         for (Mugen::SpriteMap::iterator it1 = effects.begin(); it1 != effects.end(); it1++){
             for (Mugen::GroupMap::iterator it2 = (*it1).second.begin(); it2 != (*it1).second.end(); it2++){
-                Sprite * sprite = (*it2).second;
+                PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = (*it2).second;
                 delete sprite;
             }
         }
+        */
         effects.clear();
 
         sparks.clear();
@@ -1844,13 +1845,14 @@ void Mugen::Stage::cleanup(){
             delete *it;
         }
         showSparks.clear();
-
+/*
         for (map<unsigned int, map<unsigned int, Mugen::Sound*> >::iterator it1 = sounds.begin(); it1 != sounds.end(); it1++){
             map<unsigned int, Mugen::Sound*> & group = (*it1).second;
             for (map<unsigned int, Mugen::Sound*>::iterator it2 = group.begin(); it2 != group.end(); it2++){
                 delete (*it2).second;
             }
         }
+        */
         sounds.clear();
 
         for (vector<Mugen::Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){

@@ -716,11 +716,11 @@ Character::~Character(){
     stopRecording();
 
      // Get rid of sprites
-    for (std::map< unsigned int, std::map< unsigned int, Sprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+    /*for (std::map< unsigned int, std::map< unsigned int, Sprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
-    }
+    }*/
     
      // Get rid of bitmaps
     /*
@@ -734,11 +734,12 @@ Character::~Character(){
     animations.clear();
     
     // Get rid of sounds
+    /*
     for( std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
       for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
-    }
+    }*/
 
     for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
         delete (*it);
@@ -2235,10 +2236,10 @@ void Character::load(int useAct){
     */
 }
 
-void Character::destroyRaw(const map< unsigned int, std::map< unsigned int, Sprite * > > & sprites){
-    for (map< unsigned int, std::map< unsigned int, Sprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, Sprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            Sprite * sprite = j->second;
+void Character::destroyRaw(const Mugen::SpriteMap & sprites){
+    for (Mugen::SpriteMap::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
             sprite->unloadRaw();
         }
     }
@@ -2570,8 +2571,8 @@ void Character::fixAssumptions(){
 
 // Render sprite
 void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp , const int flip, const double scalex, const double scaley ){
-    Sprite *sprite = sprites[group][image];
-    if (sprite){
+    PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = sprites[group][image];
+    if (sprite != NULL){
         Mugen::Effects effects;
         /* -1 in effects.facing means its flipped */
         effects.facing = (flip == 1) ? -1 : 1;
@@ -2623,11 +2624,11 @@ const Character * Character::getRoot() const {
     return this;
 }
 
-const Sprite * Character::getCurrentFrame() const {
+const PaintownUtil::ReferenceCount<Mugen::Sprite> Character::getCurrentFrame() const {
     if (getCurrentAnimation() != NULL){
         return getCurrentAnimation()->getCurrentFrame()->getSprite();
     } else {
-        return NULL;
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
     }
 }
 
@@ -3742,26 +3743,26 @@ void Character::setTransOverride(TransType type, int alphaFrom, int alphaTo){
     transOverride.alphaDestination = alphaTo;
 }
 
-static Sound * findSound(const Mugen::SoundMap & sounds, int group, int item){
+static PaintownUtil::ReferenceCount<Mugen::Sound> findSound(const Mugen::SoundMap & sounds, int group, int item){
     Mugen::SoundMap::const_iterator findGroup = sounds.find(group);
     if (findGroup != sounds.end()){
-        const map<unsigned int, Sound*> & found = (*findGroup).second;
-        map<unsigned int, Sound*>::const_iterator sound = found.find(item);
+        const map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sound> > & found = (*findGroup).second;
+        map<unsigned int, PaintownUtil::ReferenceCount<Mugen::Sound> >::const_iterator sound = found.find(item);
         if (sound != found.end()){
-            return (*sound).second;
+            return sound->second;
         }
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
 }
 
-Sound * Character::getCommonSound(int group, int item) const {
+PaintownUtil::ReferenceCount<Mugen::Sound> Character::getCommonSound(int group, int item) const {
     if (getCommonSounds() == NULL){
-        return NULL;
+        return PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
     }
     return findSound(*getCommonSounds(), group, item);
 }
         
-Sound * Character::getSound(int group, int item) const {
+PaintownUtil::ReferenceCount<Mugen::Sound> Character::getSound(int group, int item) const {
     return findSound(getSounds(), group, item);
 }
 
@@ -4059,8 +4060,8 @@ PaintownUtil::ReferenceCount<Animation> Character::replaceSprites(const Paintown
     const vector<Frame*> & frames = update->getFrames();
     for (vector<Frame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
         Frame * frame = *it;
-        Sprite * sprite = frame->getSprite();
-        Sprite * mySprite = getSprite(sprite->getGroupNumber(), sprite->getImageNumber());
+        PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = frame->getSprite();
+        PaintownUtil::ReferenceCount<Mugen::Sprite> mySprite = getSprite(sprite->getGroupNumber(), sprite->getImageNumber());
         if (mySprite != NULL){
             frame->setSprite(mySprite);
         }

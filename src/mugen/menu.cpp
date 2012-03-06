@@ -1045,11 +1045,11 @@ void MugenMenu::cleanup(){
     cleanupSprites();
 
     // Get rid of sounds
-    for( std::map< unsigned int, std::map< unsigned int, Mugen::Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
+    /*for( std::map< unsigned int, std::map< unsigned int, Mugen::Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
       for( std::map< unsigned int, Mugen::Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
-    }
+    }*/
 	
     for (vector<Mugen::Font *>::iterator it = fonts.begin(); it != fonts.end(); it++){
         delete *it;
@@ -1063,11 +1063,11 @@ void MugenMenu::cleanup(){
 
 void MugenMenu::cleanupSprites(){
     // Get rid of sprites
-    for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+    /*for( Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
       for( std::map< unsigned int, Mugen::Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second )delete j->second;
       }
-    }
+    }*/
 }
 
 // Move menu up

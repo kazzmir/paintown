@@ -44,7 +44,7 @@ class Sprite{
         void unloadRaw();
 
         /* just copies the bitmap */
-        void copyImage(const Sprite * copy);
+        void copyImage(const PaintownUtil::ReferenceCount<Mugen::Sprite> copy);
 
 	int getWidth() const;
 	int getHeight() const;

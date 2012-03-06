@@ -50,11 +50,11 @@ class Frame{
             return attackCollision;
         }
 
-        virtual inline Sprite * getSprite() const {
+        virtual inline PaintownUtil::ReferenceCount<Mugen::Sprite> getSprite() const {
             return sprite;
         }
 
-        virtual void setSprite(Sprite * sprite);
+        virtual void setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite);
 
 	// We'll keep them, but they probably won't be used
 	std::vector< Area > defenseCollision;
@@ -63,7 +63,7 @@ class Frame{
 	// Is this frame a loopstart position?
 	bool loopstart;
 	// This is the sprite 
-	Sprite *sprite;
+	PaintownUtil::ReferenceCount<Mugen::Sprite> sprite;
 	// Additional Offsets which are in character.air (ie x + sprite.x)
 	int xoffset;
 	int yoffset;

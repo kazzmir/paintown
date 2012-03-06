@@ -93,7 +93,7 @@ void FightElement::act(){
     switch (soundState){
 	case Waiting:
 	    if (soundTicker >= soundtime){
-		if (sound){
+		if (sound != NULL){
 		    sound->play();
 		}
 	    } else {
@@ -209,8 +209,8 @@ void FightElement::setAction(PaintownUtil::ReferenceCount<Animation> anim){
         action->setAsOneTime(true);
     }
 }
-void FightElement::setSprite(Sprite *spr){
-    if (spr){
+void FightElement::setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> spr){
+    if (spr != NULL){
 	setType(IS_SPRITE);
 	sprite = spr;
     }
@@ -228,8 +228,8 @@ void FightElement::setFont(Font *fnt, int bank, int position){
     }
 }
 
-void FightElement::setSound(Sound * sound){
-    if (sound){
+void FightElement::setSound(PaintownUtil::ReferenceCount<Mugen::Sound> sound){
+    if (sound != NULL){
 	setType(IS_SOUND);
 	this->sound = sound;
     }
@@ -1961,13 +1961,14 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
 
 GameInfo::~GameInfo(){
     // Get rid of sprites
+    /*
     for (Mugen::SpriteMap::iterator i = sprites.begin() ; i != sprites.end() ; ++i){
 	for (std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j){
 	    if (j->second){
                 delete j->second;
             }
 	}
-    }
+    }*/
 
     animations.clear();
 
@@ -1979,13 +1980,14 @@ GameInfo::~GameInfo(){
     }
     
     // Get rid of sounds
+    /*
     for( Mugen::SoundMap::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
       for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
 	  if( j->second ){
 	      delete j->second;
 	  }
       }
-    }
+    }*/
 }
 
 void GameInfo::act(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){

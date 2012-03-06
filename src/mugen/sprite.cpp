@@ -104,7 +104,7 @@ Sprite & Sprite::operator=( const Sprite &copy ){
     return *this;
 }
 
-void Sprite::copyImage(const Sprite * copy){
+void Sprite::copyImage(const PaintownUtil::ReferenceCount<Mugen::Sprite> copy){
     this->reallength = copy->reallength;
     this->newlength = copy->newlength;
 

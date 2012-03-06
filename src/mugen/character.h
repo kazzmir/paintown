@@ -17,6 +17,7 @@
 #include "util/bitmap.h"
 #include "object.h"
 #include "common.h"
+#include "sprite.h"
 
 namespace Ast{
     class KeyList;
@@ -411,19 +412,19 @@ public:
         }
         */
 	
-	virtual inline const std::map<unsigned int, std::map<unsigned int, Sound *> >& getSounds() const {
+	virtual inline const Mugen::SoundMap & getSounds() const {
             return sounds;
         }
 
-	virtual inline const std::map<unsigned int, std::map<unsigned int, Sound *> >* getCommonSounds() const {
+	virtual inline const Mugen::SoundMap * getCommonSounds() const {
             return commonSounds;
         }
 
-        virtual inline Sprite * getSprite(int group, int image){
+        virtual inline PaintownUtil::ReferenceCount<Mugen::Sprite> getSprite(int group, int image){
             return this->sprites[group][image];
         }
 
-        virtual const Sprite * getCurrentFrame() const;
+        virtual const PaintownUtil::ReferenceCount<Mugen::Sprite> getCurrentFrame() const;
         PaintownUtil::ReferenceCount<Animation> getCurrentAnimation() const;
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
@@ -896,8 +897,8 @@ public:
         /* recover after falling */
         virtual bool canRecover() const;
 
-        virtual Sound * getSound(int group, int item) const;
-        virtual Sound * getCommonSound(int group, int item) const;
+        virtual PaintownUtil::ReferenceCount<Mugen::Sound> getSound(int group, int item) const;
+        virtual PaintownUtil::ReferenceCount<Mugen::Sound> getCommonSound(int group, int item) const;
 
         virtual inline void setJugglePoints(int x){
             airjuggle = x;
@@ -915,7 +916,7 @@ public:
             return currentJuggle;
         }
 
-        virtual inline void setCommonSounds(const std::map< unsigned int, std::map< unsigned int, Sound * > > * sounds){
+        virtual inline void setCommonSounds(const Mugen::SoundMap * sounds){
             this->commonSounds = sounds;
         }
 
@@ -1111,7 +1112,7 @@ protected:
     virtual std::vector<std::string> doInput(const Mugen::Stage & stage);
     virtual bool doStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
 
-    void destroyRaw(const std::map< unsigned int, std::map< unsigned int, Sprite * > > & sprites);
+    void destroyRaw(const Mugen::SpriteMap & sprites);
         
     void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
@@ -1318,7 +1319,7 @@ protected:
         double crouchFrictionThreshold;
 
 	/* Sprites */
-	std::map< unsigned int, std::map< unsigned int, Sprite * > > sprites;
+	Mugen::SpriteMap sprites;
 	// Bitmaps of those sprites
 	// std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
 	
@@ -1326,9 +1327,9 @@ protected:
 	std::map< int, PaintownUtil::ReferenceCount<Animation> > animations;
 	
 	/* Sounds */
-	std::map< unsigned int, std::map< unsigned int, Sound * > > sounds;
+	Mugen::SoundMap sounds;
         /* sounds from the stage */
-        const std::map< unsigned int, std::map< unsigned int, Sound * > > * commonSounds;
+        const Mugen::SoundMap * commonSounds;
 	
 	/* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;

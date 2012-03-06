@@ -495,7 +495,7 @@ public:
     /* gets all the sprite headers without loading the pcx information */
     void quickReadSprites(bool mask){
         for (unsigned int index = 0; index < totalImages; index++){
-            Mugen::Sprite * sprite = new Mugen::Sprite(mask);
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = PaintownUtil::ReferenceCount<Mugen::Sprite>(new Mugen::Sprite(mask));
             sprite->read(sffStream, location);
             spriteIndex[index] = sprite;
             location = sprite->getNext();
@@ -503,10 +503,10 @@ public:
     }
 
     /* Actually loads the pcx data */
-    Mugen::Sprite * loadSprite(Mugen::Sprite * sprite, bool mask){
+    PaintownUtil::ReferenceCount<Mugen::Sprite> loadSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite, bool mask){
         if (!sprite->isLoaded()){
             if (sprite->getLength() == 0){
-                const Mugen::Sprite * temp = loadSprite(spriteIndex[sprite->getPrevious()], mask);
+                const PaintownUtil::ReferenceCount<Mugen::Sprite> temp = loadSprite(spriteIndex[sprite->getPrevious()], mask);
                 if (!temp){
                     ostringstream out;
                     out << "Unknown linked sprite " << sprite->getPrevious() << endl;
@@ -521,41 +521,41 @@ public:
         return sprite;
     }
 
-    Mugen::Sprite * findSprite(int group, int item, bool mask){
+    PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask){
         if (spriteIndex.size() == 0){
             quickReadSprites(mask);
         }
-        for (map<int, Mugen::Sprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
-            Mugen::Sprite * sprite = it->second;
+        for (map<int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second;
             if (sprite->getGroupNumber() == group &&
                 sprite->getImageNumber() == item){
                 /* make a deep copy */
-                return new Mugen::Sprite(*loadSprite(sprite, mask));
+                return PaintownUtil::ReferenceCount<Mugen::Sprite>(new Mugen::Sprite(*loadSprite(sprite, mask)));
             }
         }
-        return NULL;
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
     }
 
     /* deletes all sprites, only call this if you don't want them! */
     void cleanup(){
-        for (map<int, Mugen::Sprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
-            Mugen::Sprite * sprite = it->second;
+        /*for (map<int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second;
             delete sprite;
-        }
+        }*/
     }
 
-    Mugen::Sprite * readSprite(bool mask){
+    PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
         bool islinked = false;
         if (location > filesize){
             throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.", __FILE__, __LINE__);
         }
 
-        Mugen::Sprite * sprite = new Mugen::Sprite(mask);
+        PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = PaintownUtil::ReferenceCount<Mugen::Sprite>(new Mugen::Sprite(mask));
         sprite->read(sffStream, location);
         location = sprite->getNext();
 
         if (sprite->getLength() == 0){
-            const Mugen::Sprite * temp = spriteIndex[sprite->getPrevious()];
+            const PaintownUtil::ReferenceCount<Mugen::Sprite> temp = spriteIndex[sprite->getPrevious()];
             if (!temp){
                 ostringstream out;
                 out << "Unknown linked sprite " << sprite->getPrevious() << endl;
@@ -581,7 +581,7 @@ protected:
     ifstream sffStream;
     unsigned long currentSprite;
     int totalSprites;
-    map<int, Mugen::Sprite*> spriteIndex;
+    map<int, PaintownUtil::ReferenceCount<Mugen::Sprite> > spriteIndex;
     bool useact;
     int filesize;
     int location;
@@ -593,24 +593,25 @@ protected:
 }
 
 void Mugen::Util::destroySprites(const SpriteMap & sprites){
+    /*
     for (map<unsigned int, map< unsigned int, Mugen::Sprite * > >::const_iterator i = sprites.begin(); i != sprites.end(); ++i){
       for (map<unsigned int, Mugen::Sprite *>::const_iterator j = i->second.begin() ; j != i->second.end(); ++j){
           delete j->second;
       }
-    }
+    }*/
 }
 
 void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool mask){
     SffReader reader(filename, palette);
     /* where replaced sprites go */
-    vector<Mugen::Sprite*> unused;
+    vector< PaintownUtil::ReferenceCount<Mugen::Sprite> > unused;
     while (reader.moreSprites()){
         try{
-            Mugen::Sprite * sprite = reader.readSprite(mask);
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = reader.readSprite(mask);
 
             Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
             if (first_it != sprites.end()){
-                std::map< unsigned int, Mugen::Sprite * >::iterator it = first_it->second.find(sprite->getImageNumber());
+                std::map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::iterator it = first_it->second.find(sprite->getImageNumber());
                 if (it != first_it->second.end()){
                     Global::debug(0) << "Warning: replacing sprite in " << Storage::instance().cleanse(filename).path() << " group " << sprite->getGroupNumber() << " item " << sprite->getImageNumber() << endl;
                     unused.push_back(it->second);
@@ -623,9 +624,9 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
     }
 
     /* delete all replaced sprites */
-    for (vector<Mugen::Sprite*>::iterator it = unused.begin(); it != unused.end(); it++){
+    /*for (vector< PaintownUtil::ReferenceCount<Mugen::Sprite> >::iterator it = unused.begin(); it != unused.end(); it++){
         delete (*it);
-    }
+    }*/
 }
 
 /* TODO: turn this code into a class like SffReader */
@@ -654,7 +655,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
              // Go to next sound
              ifile.seekg(location, ios::beg);
              // next sprite
-             Mugen::Sound *temp = new Mugen::Sound();
+             PaintownUtil::ReferenceCount<Mugen::Sound> temp = PaintownUtil::ReferenceCount<Mugen::Sound>(new Mugen::Sound());
 
              /* FIXME: change 4 to sizeof(...) */
              temp->next = reader.readByte4();
@@ -711,10 +712,10 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
     return stuff;
 }
 
-Mugen::Sprite * Mugen::Util::getSprite(const Mugen::SpriteMap & sprites, int group, int item){
+PaintownUtil::ReferenceCount<Mugen::Sprite> Mugen::Util::getSprite(const Mugen::SpriteMap & sprites, int group, int item){
     Mugen::SpriteMap::const_iterator map = sprites.find(group);
     if (map == sprites.end()){
-        return NULL;
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
     }
 
     const Mugen::GroupMap & groupMap = (*map).second;
@@ -722,7 +723,7 @@ Mugen::Sprite * Mugen::Util::getSprite(const Mugen::SpriteMap & sprites, int gro
     if (it != groupMap.end()){
         return (*it).second;
     }
-    return NULL;
+    return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
 }
 
 PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Section * section, const Mugen::SpriteMap &sprites, bool mask){
@@ -1090,10 +1091,10 @@ const std::string Mugen::Util::probeDef(const AstRef & parsed, const std::string
     throw MugenException("Couldn't find '" + search + "' in section '" + section + "'", __FILE__, __LINE__);
 }
 
-void Mugen::Util::destroyRaw(const map< unsigned int, std::map< unsigned int, Mugen::Sprite * > > & sprites){
-    for (map< unsigned int, std::map< unsigned int, Mugen::Sprite * > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, Mugen::Sprite * >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            Mugen::Sprite * sprite = j->second;
+void Mugen::Util::destroyRaw(const map< unsigned int, std::map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> > > & sprites){
+    for (map< unsigned int, std::map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
+        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
             sprite->unloadRaw();
         }
     }
@@ -1103,9 +1104,9 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
     return probeDef(parseDef(file.path()), section, search);
 }
 
-Mugen::Sprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
+PaintownUtil::ReferenceCount<Mugen::Sprite>Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
     SffReader reader(file, actFile);
-    Mugen::Sprite * found = reader.findSprite(groupNumber, spriteNumber, mask);
+    PaintownUtil::ReferenceCount<Mugen::Sprite> found = reader.findSprite(groupNumber, spriteNumber, mask);
     reader.cleanup();
     if (found != NULL){
         return found;
@@ -1115,7 +1116,7 @@ Mugen::Sprite *Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int g
     throw MugenException(out.str(), __FILE__, __LINE__);
 }
         
-void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, Mugen::Sprite ** icon, Mugen::Sprite ** portrait){
+void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, PaintownUtil::ReferenceCount<Mugen::Sprite> * icon, PaintownUtil::ReferenceCount<Mugen::Sprite> * portrait){
     SffReader reader(sffPath, actPath);
     *icon = reader.findSprite(9000, 0, true);
     *portrait = reader.findSprite(9000, 1, true);
@@ -1123,9 +1124,9 @@ void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, c
     if (*icon == NULL || *portrait == NULL){
         bool failed_icon = *icon == NULL;
         bool failed_portrait = *portrait == NULL;
-        delete *icon;
+        //delete *icon;
         *icon = NULL;
-        delete *portrait;
+        //delete *portrait;
         *portrait = NULL;
         ostringstream out;
         if (failed_icon){
@@ -1339,8 +1340,8 @@ void Mugen::ArcadeData::CharacterInfo::loadImages(){
         Filesystem::AbsolutePath realSpriteFile = Storage::instance().findInsensitive(Storage::instance().cleanse(definition.getDirectory()).join(spriteFile));
 
         /* pull out the icon and the portrait from the sff */
-        Mugen::Sprite * iconCopy;
-        Mugen::Sprite * portraitCopy;
+        PaintownUtil::ReferenceCount<Mugen::Sprite> iconCopy;
+        PaintownUtil::ReferenceCount<Mugen::Sprite> portraitCopy;
         Util::getIconAndPortrait(realSpriteFile, definition.getDirectory().join(actCollection[act]), &iconCopy, &portraitCopy);
         icon = PaintownUtil::ReferenceCount<Mugen::Sprite>(iconCopy);
         portrait = PaintownUtil::ReferenceCount<Mugen::Sprite>(portraitCopy);
