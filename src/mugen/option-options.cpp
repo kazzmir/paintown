@@ -795,6 +795,10 @@ public:
 };
 
 OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items){
+    // Set the fade state
+    fader.setState(Gui::FadeTool::FadeIn);
+    fader.setFadeInTime(10);
+    fader.setFadeOutTime(10);
     list.addItems(items);
     Filesystem::AbsolutePath systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
     // Lets look for our def since some people think that all file systems are case insensitive
@@ -919,8 +923,12 @@ OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::Scro
     //list.setExpandState(ScrollAction::Expand);
 }
 
+OptionMenu::~OptionMenu(){
+}
+
 void OptionMenu::act(){
     background->act();
+    fader.act();
     list.act();
     list.recalculateVisibleItems(180);
 }
@@ -949,6 +957,10 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     
     // Foregrounds
     background->renderForeground(0, 0, workArea);
+    
+    // Fader
+    fader.draw(workArea);
+    
     workArea.finish();
     
 }
@@ -986,6 +998,18 @@ void OptionMenu::enter(){
 
 void OptionMenu::cancel(){
     sounds.play(Cancel);
+    fader.setState(Gui::FadeTool::FadeOut);
+}
+
+void OptionMenu::reset(){
+    // Set the fade state
+    fader.setState(Gui::FadeTool::FadeIn);
+    fader.setFadeInTime(10);
+    fader.setFadeOutTime(10);
+}
+
+bool OptionMenu::isDone(){
+    return (fader.getState() == Gui::FadeTool::EndFade);
 }
 
 OptionOptions::OptionOptions( const std::string &name ){
@@ -1057,7 +1081,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
                 if (event[Esc]){
                     if (!escaped){
-                        logic_done = escaped = true;
+                        //logic_done = escaped = true;
+                        escaped = true;
                         menu.cancel();
                         InputManager::waitForRelease(player1Input, input1, Esc);
                         InputManager::waitForRelease(player2Input, input2, Esc);
@@ -1080,7 +1105,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                     try {
                         menu.enter();
                     } catch (const Escape::EscapeException & ex){
-                        logic_done = escaped = true;
+                        //logic_done = escaped = true;
+                        escaped = true;
                         menu.cancel();
                     }
                 }
@@ -1091,7 +1117,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
 
         bool done(){
-            return logic_done;
+            return menu.isDone();//logic_done;
         }
     };
 
@@ -1112,6 +1138,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     Logic logic(*optionMenu, escaped);
     Draw draw(*optionMenu);
     PaintownUtil::standardLoop(logic, draw);
+    
+    optionMenu->reset();
 
     // **FIXME Hack figure something out
     if (escaped){

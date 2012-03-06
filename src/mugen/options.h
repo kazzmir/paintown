@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "util/menu/optionfactory.h"
 #include "util/gui/scroll-list.h"
+#include "util/gui/fadetool.h"
 #include "util/pointer.h"
 #include "util.h"
 
@@ -302,15 +303,20 @@ class OptionMenu{
 public:
     OptionMenu(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
     virtual ~OptionMenu();
-    void act();
-    void draw(const Graphics::Bitmap &);
     
-    void up();
-    void down();
-    void left();
-    void right();
-    void enter();
-    void cancel();
+    virtual void act();
+    virtual void draw(const Graphics::Bitmap &);
+    
+    virtual void up();
+    virtual void down();
+    virtual void left();
+    virtual void right();
+    virtual void enter();
+    virtual void cancel();
+    
+    virtual bool isDone();
+    
+    virtual void reset();
     
     //! Sound types
     enum Sounds{
@@ -338,6 +344,9 @@ private:
     
     //! 1st or 2nd font from system.def
     PaintownUtil::ReferenceCount<Font> font;
+    
+    //! Fade tool
+    Gui::FadeTool fader;
 };
 
 /*! Handles Mugen Options */
