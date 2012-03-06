@@ -301,7 +301,6 @@ int ScrollAction::getMaxWidth(){
 }
 
 int ScrollAction::getMaxHeight(){
-    Global::debug(0) << "Visible items: " << visibleItems << " | getVisibleItems: " << getVisibleItems() << std::endl;
     return spacingY * getVisibleItems();
 }
 
