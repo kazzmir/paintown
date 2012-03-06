@@ -45,11 +45,11 @@ public:
     ListItem();
     virtual ~ListItem();
     //Ignore end of the line
-    void draw(int x, int y, const Graphics::Bitmap &, const ::Font & font, int distance) const;
+    void draw(int x, int y, const Graphics::Bitmap &, const ::Font &, int distance) const;
     int size(const ::Font & font) const;
     virtual bool isRunnable() const;
     virtual void run();
-    virtual void draw(int x, int y, const Graphics::Bitmap &, const ListFont &) const = 0;
+    virtual void render(int x, int y, const Graphics::Bitmap &, const ListFont &) const = 0;
     virtual int getWidth(const ListFont &) = 0;
     virtual bool next() = 0;
     virtual bool previous() = 0;
@@ -127,7 +127,7 @@ public:
     virtual void setActiveFont(const ListFont &);
     
     //! Set visible items (defaults to 5)
-    virtual inline void setVisibleItems(int items){
+    virtual inline void setVisibleItems(unsigned int items){
         this->visibleItems = items;
         this->itemBottom = items-1;
     }
@@ -197,7 +197,7 @@ protected:
     unsigned int itemBottom;
     
     //! Set visible items
-    int visibleItems;
+    unsigned int visibleItems;
     
     //! Auto spacing
     bool autoSpacing;
