@@ -124,6 +124,13 @@ unsigned long int Projectile::getLastGuardTicks() const {
     return lastGuardTicks;
 }
 
+unsigned long int Projectile::getLastContactTicks() const {
+    if (lastHitTicks > lastGuardTicks){
+        return lastHitTicks;
+    }
+    return lastGuardTicks;
+}
+
 bool Projectile::canCollide() const {
     return !shouldRemove && activeMissTime == 0 && hits > 0;
 }

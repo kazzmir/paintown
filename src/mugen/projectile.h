@@ -49,7 +49,11 @@ public:
     /* Ticks since this projectile hit something */
     virtual unsigned long int getLastHitTicks() const;
 
+    /* Last time the projectile guarded */
     virtual unsigned long int getLastGuardTicks() const;
+
+    /* Last time the projectile either hit or guarded */
+    virtual unsigned long int getLastContactTicks() const;
 
     /* Ticks since this projectile was canceled */
     virtual int getLastCancelTicks() const;

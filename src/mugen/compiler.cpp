@@ -3391,29 +3391,51 @@ public:
         if (function == "projcontact"){
             class ProjContact: public Value {
             public:
-                ProjContact(Value * id, Value * value, Value * time):
-                id(id), value(value), time(time){
+                ProjContact(Value * id, Value * value, Value * compare):
+                id(id), value(value), compare(compare){
                 }
 
                 Value * id;
                 Value * value;
-                Value * time;
+                Value * compare;
 
                 virtual ~ProjContact(){
                     delete id;
                     delete value;
-                    delete time;
+                    delete compare;
+                }
+
+                bool didHit(const Environment & environment, Projectile * projectile, bool hit) const {
+                    unsigned long ticks = environment.getStage().getTicks() - projectile->getLastContactTicks();
+
+                    FullEnvironment use(environment.getStage(), environment.getCharacter(), environment.getCommands(), RuntimeValue((int) ticks));
+                    bool result = compare->evaluate(use).toBool();
+
+                    if (hit){
+                        return result;
+                    } else {
+                        return ! result;
+                    }
                 }
 
                 Value * copy() const {
                     return new ProjContact(Compiler::copy(id),
                                            Compiler::copy(value),
-                                           Compiler::copy(time));
+                                           Compiler::copy(compare));
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    /* TODO */
-                    return false;
+                    int id = (int) this->id->evaluate(environment).toNumber();
+                    bool hit = (int) this->value->evaluate(environment).toBool();
+                    
+                    vector<Projectile*> projectiles = environment.getStage().findProjectile(id, &environment.getCharacter());
+                    bool found = false;
+                    for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
+                        Projectile * projectile = *it;
+                        found = found || didHit(environment, projectile, hit);
+                    }
+                    return RuntimeValue(found);
+
                 }
             };
             
