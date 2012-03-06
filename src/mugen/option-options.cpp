@@ -45,8 +45,6 @@ namespace Mugen{
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 
-static const int ITEM_SPACER = 5;
-
 static std::string getString(int number){
     std::ostringstream str;
     str << number;
@@ -418,7 +416,7 @@ public:
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
         
     std::string getDifficultyName(int difficulty){
@@ -491,7 +489,7 @@ class Life : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
@@ -552,7 +550,7 @@ class TimeLimit : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
@@ -611,7 +609,7 @@ class Speed : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
@@ -639,7 +637,7 @@ class OneVsTeam : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
@@ -667,7 +665,7 @@ class TeamLoseOnKO : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
@@ -739,7 +737,7 @@ class AutoSearch : public ListItem {
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
@@ -788,7 +786,7 @@ public:
     }
     
     int getWidth(const ListFont & font){
-        return 240;
+        return (font.getWidth(optionName + "     " + currentValue));
     }
     
     std::string optionName;
