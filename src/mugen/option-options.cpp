@@ -148,6 +148,8 @@ scrollWaitX(5),
 scrollWaitY(2),
 marginTop(0),
 marginBottom(0),
+leftBoundary(0),
+rightBoundary(0),
 showCursor(false),
 autoCursor(false),
 cursorX1(0),
@@ -202,22 +204,22 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
             const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
             const ListFont & useFont = (index != current) ? font : activeFont;
             if (expandState == Disabled){
-                item->render(x, y, work, useFont);
+                item->render(x, y, work, useFont, leftBoundary, rightBoundary);
                 if (index == current && showCursor){
                     Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
                     if (autoCursor){
-                        const int width = item->getWidth(useFont)/2 + 5;
+                        //const int width = item->getWidth(useFont)/2 + 5;
                         const int height = useFont.getHeight()/2 + 5;
-                        work.translucent().rectangleFill(x - width, y - useFont.getHeight(), x + width, y, Graphics::makeColor(255,255,255));
+                        work.translucent().rectangleFill(leftBoundary-2, y - useFont.getHeight(), rightBoundary+2, y, Graphics::makeColor(255,255,255));
                     } else {
                         work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(255,255,255));
                     }
                 }
             } else {
                 if (moveLeft){
-                    item->render(x - currentOffsetX, y, work, useFont);
+                    item->render(x - currentOffsetX, y, work, useFont, leftBoundary, rightBoundary);
                 } else {
-                    item->render(x + currentOffsetX, y, work, useFont);
+                    item->render(x + currentOffsetX, y, work, useFont, leftBoundary, rightBoundary);
                 }
                 moveLeft = !moveLeft;
             }
@@ -406,9 +408,9 @@ public:
             return true;
     }
     
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -479,10 +481,9 @@ class Life : public ListItem {
         return true;
 	}
     
-    
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -540,10 +541,10 @@ class TimeLimit : public ListItem {
 	    currentValue = getString(time);
         return true;
 	}
-	
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -599,12 +600,10 @@ class Speed : public ListItem {
             }
             return std::string();
         }
-        
-    
-    
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+     
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -629,10 +628,10 @@ class OneVsTeam : public ListItem {
 	bool previous(){
         return false;
 	}
-	
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -658,9 +657,9 @@ class TeamLoseOnKO : public ListItem {
         return false;
 	}
 	
-	void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -730,9 +729,9 @@ class AutoSearch : public ListItem {
         return true;
     }
     
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -779,9 +778,9 @@ public:
         throw EscapeException();
     }
     
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font) const{
-        font.draw(60, y, 1, optionName, work);
-        font.draw(260, y, -1, currentValue, work);
+    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
     
     int getWidth(const ListFont & font){
@@ -922,13 +921,16 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         }
     }
     
+    if (font == NULL){
+        throw MugenException("Couldn't find suitable font to use in the Options Menu.", __FILE__, __LINE__);
+    }
+    
     ListFont listFont(font, 0, 0);
     
     list.setListFont(listFont);
     list.setActiveFont(listFont);
-    list.setVisibleItems(6);
+    list.setVisibleItems(7);
     list.setAutoSpacing(true);
-    //list.setLocation(160, 120);
     list.setLocation(160, 0);
     list.setShowCursor(true);
     list.setAutoCursor(true);
@@ -1059,6 +1061,7 @@ void OptionOptions::draw(const Graphics::Bitmap & work){
     workArea.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
     
     Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
+    list.setBoundaries(x-20, x+width+20);
     list.render(temp, ::Font::getDefaultFont());
     
     // Foregrounds

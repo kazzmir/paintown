@@ -49,7 +49,7 @@ public:
     int size(const ::Font & font) const;
     virtual bool isRunnable() const;
     virtual void run();
-    virtual void render(int x, int y, const Graphics::Bitmap &, const ListFont &) const = 0;
+    virtual void render(int x, int y, const Graphics::Bitmap &, const ListFont &, int left = 0, int right = 0) const = 0;
     virtual int getWidth(const ListFont &) = 0;
     virtual bool next() = 0;
     virtual bool previous() = 0;
@@ -163,6 +163,11 @@ public:
         return this->marginBottom;
     }
     
+    virtual inline void setBoundaries(int left, int right){
+        this->leftBoundary = left;
+        this->rightBoundary = right;
+    }
+    
     virtual inline void setShowCursor(bool cursor){
         this->showCursor = cursor;
     }
@@ -221,6 +226,10 @@ protected:
     //! Margins
     int marginTop;
     int marginBottom;
+    
+    //! Boundaries
+    int leftBoundary;
+    int rightBoundary;
     
     //! Item list
     std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > text;
