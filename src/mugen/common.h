@@ -1,6 +1,13 @@
 #ifndef _paintown_mugen_common_h
 #define _paintown_mugen_common_h
 
+/* FIXME: we only need this header to get Graphics::Bitmap::Filter but we can't
+ * just forward declare Filter because Bitmap is a class not a namespace.
+ * Move Filter to the Graphics namespace so we can forward declare it here
+ * and get rid of this include.
+ */
+#include "util/bitmap.h"
+
 namespace Mugen{
 
 enum Facing{
@@ -253,6 +260,63 @@ struct HitDefinition{
         int airFall;
         int forceNoFall;
     } fall;
+};
+
+enum TransType{
+    None = 0,
+    Add,
+    Add1,
+    Sub,
+    AddAlpha,
+    Translucent,
+    /* used by the Trans controller to specify the trans should not change */
+    Default
+};
+
+class Effects{
+    public:
+	Effects();
+        Effects(const Effects & copy);
+	const Effects &operator=(const Effects &e);
+	virtual ~Effects();
+
+        /* adds the mask from the parameter to this object */
+        Effects operator+(const Effects &) const;
+
+        /* adds the translucency */
+        Effects operator+(const TransType & translucent) const;
+
+        /* what kind of translucency to use */
+	TransType trans;
+
+        /* translucency values */
+	int alphaSource;
+	int alphaDest;
+
+        /* if the masking color should be shown or not, true is not shown */
+	bool mask;
+
+        /* horizontal flip */
+	int facing;
+
+        /* vertical flip */
+	int vfacing;
+
+        /* scale horizontally */
+	double scalex;
+
+        /* scale vertically */
+	double scaley;
+
+        /* clipping. -1 means dont alter clipping */
+        struct Dimension{
+            Dimension():x1(-1), x2(-1), y1(-1), y2(-1){}
+
+            int x1, x2;
+            int y1, y2;
+        } dimension;
+
+        Graphics::Bitmap::Filter * filter;
 };
 
 }

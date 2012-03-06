@@ -6,6 +6,7 @@
 #include <map>
 #include <math.h>
 #include "animation.h"
+#include "sprite.h"
 #include "util.h"
 #include "util/gui/rectarea.h"
 #include "ast/all.h"

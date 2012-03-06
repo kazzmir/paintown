@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "util.h"
+#include "common.h"
 
 namespace PaintownUtil = ::Util;
 
