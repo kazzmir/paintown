@@ -297,14 +297,11 @@ private:
     int alpha,alphaMod;
 };
 
-/*! Handles Mugen Options */
-class OptionOptions: public ItemOption {
+/*! The option menu */
+class OptionMenu{
 public:
-    OptionOptions(const std::string &name);
-    
-    virtual ~OptionOptions();
-    void executeOption(const Mugen::PlayerType &, bool & endGame);
-    
+    OptionMenu(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
+    virtual ~OptionMenu();
     void act();
     void draw(const Graphics::Bitmap &);
     
@@ -321,8 +318,15 @@ public:
         Done,
         Cancel,
     };
+    
+    virtual inline void setName(const std::string & name){
+        this->name = name;
+    }
 
 private:
+    //! Name
+    std::string name;
+    
     //! Background
     PaintownUtil::ReferenceCount<Background> background;
     
@@ -334,6 +338,19 @@ private:
     
     //! 1st or 2nd font from system.def
     PaintownUtil::ReferenceCount<Font> font;
+};
+
+/*! Handles Mugen Options */
+class OptionOptions: public ItemOption {
+public:
+    OptionOptions(const std::string &name);
+    
+    virtual ~OptionOptions();
+    void executeOption(const Mugen::PlayerType &, bool & endGame);
+    
+private:
+    //! Menu
+    PaintownUtil::ReferenceCount<OptionMenu> optionMenu;
 };
 
 /* For the top level paintown menu */

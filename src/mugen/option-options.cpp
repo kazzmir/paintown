@@ -232,7 +232,8 @@ void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> &
     text.push_back(item);
 }
 
-void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &){
+void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items){
+    text.insert(text.end(), items.begin(), items.end());
 }
 
 const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & ScrollAction::getItems() const{
@@ -793,28 +794,8 @@ public:
     std::string currentValue;
 };
 
-OptionOptions::OptionOptions( const std::string &name ):
-background(PaintownUtil::ReferenceCount<Background>(NULL)){
-    if (name.empty()){
-	throw LoadException(__FILE__, __LINE__, "No name given to Options");
-    }
-    this->setText(name);
-    
-    // Add options
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Difficulty()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Life()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TimeLimit()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Speed()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new OneVsTeam()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TeamLoseOnKO()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
-    list.addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
-}
-
-OptionOptions::~OptionOptions(){
-}
-
-void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
+OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items){
+    list.addItems(items);
     Filesystem::AbsolutePath systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
@@ -839,13 +820,13 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         if (head == "Files"){
             class FileWalker: public Ast::Walker {
             public:
-                FileWalker(OptionOptions & self, std::vector< PaintownUtil::ReferenceCount<Font> > & fonts, const Filesystem::AbsolutePath & baseDir):
+                FileWalker(OptionMenu & self, std::vector< PaintownUtil::ReferenceCount<Font> > & fonts, const Filesystem::AbsolutePath & baseDir):
                 self(self),
                 fonts(fonts),
                 baseDir(baseDir){
                 }
                 
-                OptionOptions & self;
+                OptionMenu & self;
                 std::vector< PaintownUtil::ReferenceCount<Font> > & fonts;
                 const Filesystem::AbsolutePath & baseDir;
 
@@ -867,30 +848,30 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         } else if (head == "Option Info"){
             class InfoWalker: public Ast::Walker{
             public:
-                InfoWalker(OptionOptions & self):
+                InfoWalker(OptionMenu & self):
                 self(self){
                 }
 
-                OptionOptions & self;
+                OptionMenu & self;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                     int group=0, sound=0;
                     if (simple == "cursor.move.snd"){
                         try{
                             simple.view() >> group >> sound;
-                            self.sounds.set(OptionOptions::Move, group, sound);
+                            self.sounds.set(OptionMenu::Move, group, sound);
                         } catch (const Ast::Exception & e){
                         }
                     } else if (simple == "cursor.done.snd"){
                         try{
                             simple.view() >> group >> sound;
-                            self.sounds.set(OptionOptions::Done, group, sound);
+                            self.sounds.set(OptionMenu::Done, group, sound);
                         } catch (const Ast::Exception & e){
                         }
                     } else if (simple == "cancel.snd"){
                         try{
                             simple.view() >> group >> sound;
-                            self.sounds.set(OptionOptions::Cancel, group, sound);
+                            self.sounds.set(OptionMenu::Cancel, group, sound);
                         } catch (const Ast::Exception & e){
                         }
                     } 
@@ -908,11 +889,8 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     if (background == NULL){
         throw MugenException("OptionBGDef was not specified", __FILE__, __LINE__);
     }
-
-    // Run options
-    bool done = false;
-    bool escaped = false;
-
+    
+    
     // Our Font
     for (std::vector<PaintownUtil::ReferenceCount<Font> >::iterator i = fonts.begin(); i != fonts.end(); ++i){
         PaintownUtil::ReferenceCount<Font> ourFont = *i;
@@ -927,6 +905,7 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         throw MugenException("Couldn't find suitable font to use in the Options Menu.", __FILE__, __LINE__);
     }
     
+    // Setup list
     ListFont listFont(font, 0, 0);
     
     list.setListFont(listFont);
@@ -938,19 +917,120 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     list.setAutoCursor(true);
     list.setCursorCoords(-20,-10,16,0);
     //list.setExpandState(ScrollAction::Expand);
+}
+
+void OptionMenu::act(){
+    background->act();
+    list.act();
+    list.recalculateVisibleItems(180);
+}
+
+void OptionMenu::draw(const Graphics::Bitmap & work){
+    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+    workArea.start();
+    
+    // Backgrounds
+    background->renderBackground(0, 0, workArea);
+    
+    const int width = list.getMaxWidth();
+    const int height = list.getMaxHeight();// + list.getTopMargin() + list.getBottomMargin();
+    const int x = 160 - width/2;
+    const int y = 120 - height/2;
+    
+    list.getFont().draw(160, 15, name, workArea);
+    
+    Graphics::Bitmap::transBlender(0,0,0,150);
+    workArea.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
+    workArea.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
+    
+    Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
+    list.setBoundaries(x-20, x+width+20);
+    list.render(temp, ::Font::getDefaultFont());
+    
+    // Foregrounds
+    background->renderForeground(0, 0, workArea);
+    workArea.finish();
+    
+}
+
+void OptionMenu::up(){
+    if (list.previous()){
+        sounds.play(Move);
+    }
+}
+
+void OptionMenu::down(){
+    
+    if (list.next()){
+        sounds.play(Move);
+    }
+}
+
+void OptionMenu::left(){
+    if (list.valuePrevious()){
+        // Play sound? not in this house!
+    }
+}
+
+void OptionMenu::right(){
+    if (list.valueNext()){
+    }
+}
+
+void OptionMenu::enter(){
+    if (list.getCurrent()->isRunnable()){
+        sounds.play(Done);
+        list.getCurrent()->run();
+    }
+}
+
+void OptionMenu::cancel(){
+    sounds.play(Cancel);
+}
+
+OptionOptions::OptionOptions( const std::string &name ){
+    if (name.empty()){
+	throw LoadException(__FILE__, __LINE__, "No name given to Options");
+    }
+    this->setText(name);
+    
+    // Add options
+    std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Difficulty()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Life()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TimeLimit()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Speed()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new OneVsTeam()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TeamLoseOnKO()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
+    
+    optionMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+    optionMenu->setName(name);
+}
+
+OptionOptions::~OptionOptions(){
+}
+
+void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
+    
+
+    // Run options
+    bool done = false;
+    bool escaped = false;
 
     // Box
     class Logic: public PaintownUtil::Logic {
     public:
-        Logic(OptionOptions & self, bool & escaped):
-        self(self),
+        Logic(OptionMenu & menu, bool & escaped):
+        menu(menu),
         escaped(escaped),
         logic_done(false){
             player1Input = getPlayer1Keys(20);
             player2Input = getPlayer2Keys(20);
         }
         
-        OptionOptions & self;
+        OptionMenu & menu;
 
         InputMap<Keys> player1Input;
         InputMap<Keys> player2Input;
@@ -978,36 +1058,36 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
                 if (event[Esc]){
                     if (!escaped){
                         logic_done = escaped = true;
-                        self.cancel();
+                        menu.cancel();
                         InputManager::waitForRelease(player1Input, input1, Esc);
                         InputManager::waitForRelease(player2Input, input2, Esc);
                     }
                 }
 
                 if (event[Up]){
-                    self.up();
+                    menu.up();
                 }
                 if (event[Down]){
-                    self.down();
+                    menu.down();
                 }
                 if (event[Left]){
-                    self.left();
+                    menu.left();
                 }
                 if (event[Right]){
-                    self.right();
+                    menu.right();
                 }
                 if (event[Start]){
                     try {
-                        self.enter();
+                        menu.enter();
                     } catch (const Escape::EscapeException & ex){
                         logic_done = escaped = true;
-                        self.cancel();
+                        menu.cancel();
                     }
                 }
             }
             
             // Act out
-            self.act();
+            menu.act();
         }
 
         bool done(){
@@ -1017,20 +1097,20 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
 
     class Draw: public PaintownUtil::Draw {
     public:
-        Draw(OptionOptions & self):
-        self(self){
+        Draw(OptionMenu & menu):
+        menu(menu){
         }
 
-        OptionOptions & self;
+        OptionMenu & menu;
         
         void draw(const Graphics::Bitmap & screen){
-            self.draw(screen);
+            menu.draw(screen);
             screen.BlitToScreen();
         }
     };
 
-    Logic logic(*this, escaped);
-    Draw draw(*this);
+    Logic logic(*optionMenu, escaped);
+    Draw draw(*optionMenu);
     PaintownUtil::standardLoop(logic, draw);
 
     // **FIXME Hack figure something out
@@ -1038,76 +1118,6 @@ void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
         throw Exception::Return(__FILE__, __LINE__);
     }
 }
-
-void OptionOptions::act(){
-    background->act();
-    list.act();
-    list.recalculateVisibleItems(180);
-}
-
-void OptionOptions::draw(const Graphics::Bitmap & work){
-    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
-    workArea.start();
-    
-    // Backgrounds
-    background->renderBackground(0, 0, workArea);
-    
-    const int width = list.getMaxWidth();
-    const int height = list.getMaxHeight();// + list.getTopMargin() + list.getBottomMargin();
-    const int x = 160 - width/2;
-    const int y = 120 - height/2;
-    
-    list.getFont().draw(160, 15, getText(), workArea);
-    
-    Graphics::Bitmap::transBlender(0,0,0,150);
-    workArea.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
-    workArea.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
-    
-    Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
-    list.setBoundaries(x-20, x+width+20);
-    list.render(temp, ::Font::getDefaultFont());
-    
-    // Foregrounds
-    background->renderForeground(0, 0, workArea);
-    workArea.finish();
-    
-}
-
-void OptionOptions::up(){
-    if (list.previous()){
-        sounds.play(OptionOptions::Move);
-    }
-}
-
-void OptionOptions::down(){
-    
-    if (list.next()){
-        sounds.play(OptionOptions::Move);
-    }
-}
-
-void OptionOptions::left(){
-    if (list.valuePrevious()){
-        // Play sound? not in this house!
-    }
-}
-
-void OptionOptions::right(){
-    if (list.valueNext()){
-    }
-}
-
-void OptionOptions::enter(){
-    if (list.getCurrent()->isRunnable()){
-        sounds.play(OptionOptions::Done);
-        list.getCurrent()->run();
-    }
-}
-
-void OptionOptions::cancel(){
-    sounds.play(OptionOptions::Cancel);
-}
-
 
 OptionArcade::OptionArcade(const string & name){
     if (name.empty()){
