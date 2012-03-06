@@ -460,7 +460,7 @@ void showFont(const string & ourFile){
 }
 
 void showSFF(const string & ourFile, const std::string &actFile){
-    std::map< unsigned int, std::map< unsigned int, Mugen::Sprite * > > sprites;
+    std::map< unsigned int, std::map< unsigned int, Util::ReferenceCount<Mugen::Sprite> > > sprites;
     int currentGroup = 0;
     int currentSprite = 0;
     Global::debug(0) << "Trying to load SFF File: " << ourFile << "..." << endl;
@@ -501,7 +501,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                             currentSprite = 0;
                             while (!found){
                                 group--;
-                                if (sprites[group][currentSprite]){
+                                if (sprites[group][currentSprite] != NULL){
                                     found = true;
                                     currentGroup = group;
                                 }
@@ -518,7 +518,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                             currentSprite = 0;
                             while (!found){
                                 group++;
-                                if (sprites[group][currentSprite]){
+                                if (sprites[group][currentSprite] != NULL){
                                     found = true;
                                     currentGroup = group;
                                 }
@@ -534,7 +534,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                             bool found = false;
                             while (!found){
                                 sprite--;
-                                if (sprites[currentGroup][sprite]){
+                                if (sprites[currentGroup][sprite] != NULL){
                                     found = true;
                                     currentSprite = sprite;
                                 }
@@ -550,7 +550,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                             bool found = false;
                             while (!found){
                                 sprite++;
-                                if (sprites[currentGroup][sprite]){
+                                if (sprites[currentGroup][sprite] != NULL){
                                     found = true;
                                     currentSprite = sprite;
                                 }
@@ -579,13 +579,13 @@ void showSFF(const string & ourFile, const std::string &actFile){
 
         if (draw){
 	    back.clear();
-            Mugen::Sprite *ourSprite = sprites[currentGroup][currentSprite];
+            PaintownUtil::ReferenceCount<Mugen::Sprite> ourSprite = sprites[currentGroup][currentSprite];
 
             back.rectangleFill(0, 0, back.getWidth(), back.getHeight() * 3 / 2, Graphics::makeColor(32, 32, 32));
             back.line(0, back.getHeight() / 2, back.getWidth(), back.getHeight() / 2, Graphics::makeColor(255, 255, 255));
             back.line(back.getWidth() / 2, 0, back.getWidth() / 2, back.getHeight(), Graphics::makeColor(255, 255, 255));
 
-	    if (ourSprite){
+	    if (ourSprite != NULL){
 		Mugen::Effects effects;
                 effects.mask = mask;
                 
