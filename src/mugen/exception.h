@@ -42,6 +42,12 @@ protected:
     int line;
 };
 
+class ReloadMugenException: public MugenException {
+public:
+    ReloadMugenException();
+    virtual ~ReloadMugenException() throw();
+};
+
 /* thrown from the compiler/state-controller when mugen code screws up */
 class MugenRuntimeException: public MugenException {
 protected:

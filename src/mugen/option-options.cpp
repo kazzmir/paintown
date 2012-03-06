@@ -1175,11 +1175,14 @@ public:
         }
         
         void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-            font.draw(x, y, 0, name, work);
+            //font.draw(x, y, 0, name, work);
+            font.draw(left, y, 1, name, work);
+            font.draw(right, y, -1, Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path(), work);
         }
         
         int getWidth(const ListFont & font){
-            return (font.getWidth(name));
+            //return (font.getWidth(name));
+            return (font.getWidth(name + "  " + Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path()));
         }
         
         std::string name;
@@ -1237,6 +1240,8 @@ public:
             Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
             ::Configuration::setMugenMotif(motif.path());
             Mugen::Data::getInstance().setMotif(motif);
+            // Reload
+            throw ReloadMugenException();
         } catch (const Escape::EscapeException & ex){
             return;
         }

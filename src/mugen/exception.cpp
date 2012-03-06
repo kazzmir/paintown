@@ -28,6 +28,12 @@ const std::string MugenException::getFullReason() const {
 	
 MugenException::~MugenException() throw() {
 }
+
+ReloadMugenException::ReloadMugenException(){
+}
+
+ReloadMugenException::~ReloadMugenException() throw(){
+}
     
 MugenRuntimeException::MugenRuntimeException(){
 }

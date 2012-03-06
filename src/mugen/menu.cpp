@@ -1273,6 +1273,8 @@ void run(){
                 } catch (const Exception::Return & re){
                     /* */
                 }
+            } catch (const ReloadMugenException & ex){
+                continue;
             }
         }
     } catch (const Exception::Return & re){
