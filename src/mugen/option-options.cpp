@@ -1264,6 +1264,7 @@ public:
         }
         
         while (true){
+            Filesystem::RelativePath currentMotif = Mugen::Data::getInstance().getMotif();
             try {
                 OptionMenu menu(state.list);
                 menu.setName(optionName);
@@ -1282,18 +1283,21 @@ public:
                 } catch (const Item::SelectException & ex){
                     // Got our index otherwise don't change
                     Filesystem::AbsolutePath path = state.get(menu.getSelected());
-                    // Test if the def is valid
+                    Filesystem::RelativePath motif = Storage::instance().cleanse(path).removeFirstDirectory();
+                    
+                    Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
+                    Mugen::Data::getInstance().setMotif(motif);
+                    
+                    // Test if the def is valid otherwise reset the motif
                     testMotif(path, state.error(menu.getSelected()));
                     
-                    Filesystem::RelativePath motif = Storage::instance().cleanse(path).removeFirstDirectory();
-                    Mugen::Data::getInstance().setMotif(motif);
-                    Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
                     // Reload
                     throw ReloadMugenException();
                 } catch (const Escape::EscapeException & ex){
                     return;
                 }
             } catch (const MotifException & ex){
+                Mugen::Data::getInstance().setMotif(currentMotif);
                 continue;
             }
         }
@@ -1301,68 +1305,39 @@ public:
     
     void testMotif(Filesystem::AbsolutePath & path, const std::string & errorInfo){
         try {
-            // Lets check the files
-            /*AstRef parsed(Mugen::Util::parseDef(path.path()));
-            Filesystem::AbsolutePath baseDir = path.getDirectory();
-            for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
-                Ast::Section * section = *section_it;
-                std::string head = section->getName();
-                head = Mugen::Util::fixCase(head);
-                if (head == "files"){
-                    class FileWalker: public Ast::Walker{
-                    public:
-                        FileWalker(const AbsolutePath & baseDir):
-                        baseDir(baseDir){
-                            }
-                            const AbsolutePath & baseDir;
-
-                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                            if (simple == "spr"){
-                                std::string file;
-                                simple.view() >> file;
-                                Filesystem::AbsolutePath joined = baseDir.join(Filesystem::RelativePath(file));
-                                Global::debug(1) << "Checking spr: " << joined.path() << std::endl;
-                                Filesystem::AbsolutePath check = Mugen::Util::findFile(baseDir, Filesystem::RelativePath(file));
-                            } else if (simple == "snd"){
-                                std::string file;
-                                simple.view() >> file;
-                                //Filesystem::AbsolutePath check = Mugen::Util::findFile(Filesystem::RelativePath(file));
-                                Filesystem::AbsolutePath joined = baseDir.join(Filesystem::RelativePath(file));
-                                Global::debug(1) << "Checking snd: " << joined.path() << std::endl;
-                                Filesystem::AbsolutePath check = Mugen::Util::findFile(baseDir, Filesystem::RelativePath(file));
-                            } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
-                                string temp;
-                                simple.view() >> temp;
-                                //Filesystem::AbsolutePath check = Mugen::Util::findFont(Filesystem::RelativePath(temp));
-                                Filesystem::AbsolutePath joined = baseDir.join(Filesystem::RelativePath(temp));
-                                Global::debug(1) << "Checking font: " << joined.path() << std::endl;
-                                Filesystem::AbsolutePath check = Mugen::Util::findFile(baseDir, Filesystem::RelativePath(temp));
-                            }
-                        }
-                    };
-
-                    FileWalker walker(baseDir);
-                    section->walk(walker);
-                }
-            }*/
             MugenMenu menu(Storage::instance().cleanse(path).removeFirstDirectory());
             menu.loadData();
         } catch (const Mugen::Def::ParseException & e){
-            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << e.getReason() << std::endl;
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(e.getReason(), __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            InputManager::waitForClear();
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(e.getReason() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            while (!InputManager::anyInput()){
+                InputManager::poll();
+            }
+            InputManager::waitForClear();
             throw MotifException();
         } catch (const Exception::Base & fail){
-            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), fail, "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            InputManager::waitForClear();
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(fail.getTrace() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            while (!InputManager::anyInput()){
+                InputManager::poll();
+            }
+            InputManager::waitForClear();
             throw MotifException();
         } catch (const MugenException & ex){
-            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << ex.getReason() << std::endl;
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), ex, "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            InputManager::waitForClear();
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(ex.getReason() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            while (!InputManager::anyInput()){
+                InputManager::poll();
+            }
+            InputManager::waitForClear();
             throw MotifException();
         } catch (const Filesystem::NotFound & fail){
-            //throw MugenRuntimeException("Problem setting the selected Motif: \n" + state.error(menu.getSelected()), __FILE__, __LINE__);
-            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), fail, "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            InputManager::waitForClear();
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(fail.getTrace() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
+            while (!InputManager::anyInput()){
+                InputManager::poll();
+            }
+            InputManager::waitForClear();
             throw MotifException();
         }
     }
