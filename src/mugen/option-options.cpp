@@ -1303,41 +1303,30 @@ public:
         }
     }
     
+    void runError(const std::string & reason, const std::string & error){
+        InputManager::waitForClear();
+        PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(reason + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + error + "\nReason: ");
+        while (!InputManager::anyInput()){
+            InputManager::poll();
+        }
+        InputManager::waitForClear();
+    }
+    
     void testMotif(Filesystem::AbsolutePath & path, const std::string & errorInfo){
         try {
             MugenMenu menu(Storage::instance().cleanse(path).removeFirstDirectory());
             menu.loadData();
         } catch (const Mugen::Def::ParseException & e){
-            InputManager::waitForClear();
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(e.getReason() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
-            while (!InputManager::anyInput()){
-                InputManager::poll();
-            }
-            InputManager::waitForClear();
+            runError(e.getReason(), errorInfo);
             throw MotifException();
         } catch (const Exception::Base & fail){
-            InputManager::waitForClear();
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(fail.getTrace() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
-            while (!InputManager::anyInput()){
-                InputManager::poll();
-            }
-            InputManager::waitForClear();
+            runError(fail.getTrace(), errorInfo);
             throw MotifException();
         } catch (const MugenException & ex){
-            InputManager::waitForClear();
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(ex.getReason() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
-            while (!InputManager::anyInput()){
-                InputManager::poll();
-            }
-            InputManager::waitForClear();
+            runError(ex.getReason(), errorInfo);
             throw MotifException();
         } catch (const Filesystem::NotFound & fail){
-            InputManager::waitForClear();
-            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(fail.getTrace() + "\n\nPress any key to continue...", __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
-            while (!InputManager::anyInput()){
-                InputManager::poll();
-            }
-            InputManager::waitForClear();
+            runError(fail.getTrace(), errorInfo);
             throw MotifException();
         }
     }
