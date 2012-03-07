@@ -393,10 +393,6 @@ public:
     virtual bool previous() = 0;
     
     virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        if (getWidth(font) >= 320){
-            displayInfo = true;
-        } 
-        
         if (displayInfo){
             font.draw(x, y, 0, optionName, work);
         } else {
@@ -895,6 +891,12 @@ void OptionMenu::act(){
     fader.act();
     list.act();
     list.recalculateVisibleItems(recalculateHeight);
+    // Check our base options
+    if (list.getMaxWidth()+25 >= DEFAULT_WIDTH){
+        BaseMenuItem::displayInfo = true;
+    } else {
+        BaseMenuItem::displayInfo = false;
+    }
 }
 
 void OptionMenu::draw(const Graphics::Bitmap & work){
@@ -922,7 +924,7 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     // Info
     const PaintownUtil::ReferenceCount<ListItem> item = list.getCurrent();
     if (!item->getInfo().empty()){
-    Graphics::Bitmap::transBlender(0,0,0,150);
+        Graphics::Bitmap::transBlender(0,0,0,150);
         const int infoWidth = list.getFont().getWidth(item->getInfo());
         const int infoHeight = list.getFont().getHeight();
         workArea.translucent().roundRectFill(5, 160-(infoWidth/2) -15, 220, 160+(infoWidth/2)+15, 240,Graphics::makeColor(0,0,60));
