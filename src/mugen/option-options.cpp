@@ -45,7 +45,8 @@ namespace Mugen{
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 
-static const std::string EMPTY_STRING = "";
+/* EMPTY_STRING is a macro in Allegro4, so just add an X to avoid a name collision */
+static const std::string EMPTY_STRINGX = "";
 
 static std::string getString(int number){
     std::ostringstream str;
@@ -130,7 +131,7 @@ bool ListItem::isRunnable() const {
 }
 
 const std::string & ListItem::getInfo() const{
-    return EMPTY_STRING;
+    return EMPTY_STRINGX;
 }
 
 ScrollAction::ScrollAction():
