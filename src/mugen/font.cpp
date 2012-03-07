@@ -209,7 +209,7 @@ void Font::printf(int x, int y, int bank, const Graphics::Bitmap & work, const s
             bmp->Blit(loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character);
             */
             Graphics::Bitmap character(*font, loc->second.startx, 0, loc->second.width, height);
-            character.draw(x + workoffsetx, y, work);
+            character.draw(x + workoffsetx + offsetx, y + offsety, work);
             workoffsetx += loc->second.width + spacingx;
         } else{
             // Couldn't find a position for this character draw nothing, assume width, and skip to the next character

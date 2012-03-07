@@ -421,36 +421,39 @@ void showFont(const string & ourFile){
             while (runCounter > 1){
                 InputManager::poll();
                 runCounter -= 1;
-
-                /*
-		InputMap<LocalKeyboard::Keys>::Output out = InputManager::getMap(input);    
                 draw = true;
-		if( out[LocalKeyboard::Down] ){
-                   if (font.getCurrentBank() != 0){
-		       currentBank--;
-		       font.changeBank(currentBank);
-		   }
+                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource());
+                for (vector<InputMap<LocalKeyboard::Keys>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
+                    const InputMap<LocalKeyboard::Keys>::InputEvent & event = *it;
+                    if (event.enabled){
+                        if (event.out == LocalKeyboard::Down || event.out == LocalKeyboard::Right){
+                            if (currentBank > 0){
+                                currentBank--;
+                            }
+                        } else if (event.out == LocalKeyboard::Up || event.out == LocalKeyboard::Left){
+                            if (currentBank < font.getTotalBanks()-1){
+                                currentBank++;
+                            }
+                        } else if (event.out == LocalKeyboard::Esc){
+                            quit = true;
+                        }
+                    }
                 }
-                if( out[LocalKeyboard::Up] ){
-                   if (font.getCurrentBank() != font.getTotalBanks()-1){
-		       currentBank++;
-		       font.changeBank(currentBank);
-		   }
-                }
-                quit |= out[LocalKeyboard::Esc];
-                */
             }
-            Global::speed_counter4 = 0;
+        
+        Global::speed_counter4 = 0;
         }
-
+        
         if (draw){
-	    work.clear();
-            font.printf( 1, 50, 0, work, "0123456789",0);
-	    font.printf( 1, 70, 0, work, "ABCDEFGHIJKLN",0);
-	    font.printf( 1, 90, 0, work, "MNOPQRSTUVWXYZ",0);
-	    font.printf( 1, 120, 0, work, "CURRENT BANK SET TO %i",0, currentBank);
-	    work.Stretch(back);
-            back.BlitToScreen();
+            work.clear();
+            font.render( 1, 50, 0, currentBank, work, "0123456789");
+            font.render( 1, 70, 0, currentBank, work, "ABCDEFGHIJKLN");
+            font.render( 1, 90, 0, currentBank, work, "MNOPQRSTUVWXYZ");
+            std::ostringstream out;
+            out << "CURRENT BANK SET TO " << currentBank;
+            font.render( 1, 120, 0, currentBank, work, out.str());
+            //work.Stretch(back);
+            work.BlitToScreen();
         }
 
         while (Global::speed_counter4 == 0){
