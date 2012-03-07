@@ -446,12 +446,12 @@ void showFont(const string & ourFile){
         
         if (draw){
             work.clear();
-            font.render( 1, 50, 0, currentBank, work, "0123456789");
-            font.render( 1, 70, 0, currentBank, work, "ABCDEFGHIJKLN");
-            font.render( 1, 90, 0, currentBank, work, "MNOPQRSTUVWXYZ");
+            font.render( 160, 50, 0, currentBank, work, "0123456789");
+            font.render( 160, 70, 0, currentBank, work, "ABCDEFGHIJKLN");
+            font.render( 160, 90, 0, currentBank, work, "MNOPQRSTUVWXYZ");
             std::ostringstream out;
             out << "CURRENT BANK SET TO " << currentBank;
-            font.render( 1, 120, 0, currentBank, work, out.str());
+            font.render( 160, 120, 0, currentBank, work, out.str());
             //work.Stretch(back);
             work.BlitToScreen();
         }
