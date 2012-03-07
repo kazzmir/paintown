@@ -311,7 +311,7 @@ int ScrollAction::getMaxHeight(){
 }
 
 void ScrollAction::recalculateVisibleItems(int height){
-    int visible = (height/(spacingY));
+    unsigned int visible = (height/(spacingY));
     if (visibleItems != visible){
         setVisibleItems(visible);
     }
@@ -383,7 +383,47 @@ int Option::getWidth(Mugen::Font & font){
     return font.textLength(optionName.c_str()) + font.textLength(currentValue.c_str());
 }
 
-class Difficulty: public ListItem {
+class BaseMenuItem : public ListItem {
+public:
+    BaseMenuItem(){
+    }
+    virtual ~BaseMenuItem(){
+    }
+    virtual bool next() = 0;
+    virtual bool previous() = 0;
+    
+    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        if (getWidth(font) >= 320){
+            displayInfo = true;
+        } 
+        
+        if (displayInfo){
+            font.draw(x, y, 0, optionName, work);
+        } else {
+            font.draw(left, y, 1, optionName, work);
+            font.draw(right, y, -1, currentValue, work);
+        }
+    }
+    
+    virtual int getWidth(const ListFont & font) const {
+        return (font.getWidth(optionName + "  " + currentValue));
+    }
+    
+    virtual const std::string & getInfo() const {
+        if (displayInfo){
+            return currentValue;
+        }
+        return EMPTY_STRINGX;
+    }
+    
+    std::string optionName;
+    std::string currentValue;
+    static bool displayInfo;
+};
+
+bool BaseMenuItem::displayInfo = false;
+
+class Difficulty: public BaseMenuItem {
 public:
     Difficulty(){
         optionName = "Difficulty";
@@ -419,15 +459,6 @@ public:
             currentValue = getDifficultyName(difficulty);
             return true;
     }
-    
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
         
     std::string getDifficultyName(int difficulty){
         
@@ -451,12 +482,9 @@ public:
         }
         return std::string();
     }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class Life : public ListItem {
+class Life : public BaseMenuItem {
     public:
 	Life(){
 	    optionName = "Life";
@@ -492,21 +520,9 @@ class Life : public ListItem {
         currentValue = getString(life)+"%%";
         return true;
 	}
-    
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class TimeLimit : public ListItem {
+class TimeLimit : public BaseMenuItem {
     public:
 	TimeLimit(){
 	    optionName = "Time Limit";
@@ -553,21 +569,9 @@ class TimeLimit : public ListItem {
 	    currentValue = getString(time);
         return true;
 	}
-
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class Speed : public ListItem {
+class Speed : public BaseMenuItem {
     public:
 	Speed(){
 	    optionName = "Speed";
@@ -612,21 +616,9 @@ class Speed : public ListItem {
             }
             return std::string();
         }
-     
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class OneVsTeam : public ListItem {
+class OneVsTeam : public BaseMenuItem {
     public:
 	OneVsTeam(){
 	    optionName = "1P VS Team Advantage";
@@ -640,21 +632,9 @@ class OneVsTeam : public ListItem {
 	bool previous(){
         return false;
 	}
-
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class TeamLoseOnKO : public ListItem {
+class TeamLoseOnKO : public BaseMenuItem {
     public:
 	TeamLoseOnKO(){
 	    optionName = "If player KOed";
@@ -668,21 +648,9 @@ class TeamLoseOnKO : public ListItem {
 	bool previous(){
         return false;
 	}
-	
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class AutoSearch : public ListItem {
+class AutoSearch : public BaseMenuItem {
     public:
     AutoSearch(){
         optionName = "Search Chars/Stages";
@@ -696,7 +664,7 @@ class AutoSearch : public ListItem {
                 currentValue = "select.def";
                 break;
             case Data::SelectDefAndAuto:
-                currentValue = "select.def+auto";
+                currentValue = "select.def + auto";
                 break;
             case Data::Auto:
                 currentValue = "auto";
@@ -741,20 +709,12 @@ class AutoSearch : public ListItem {
         return true;
     }
     
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
+    virtual int getWidth(const ListFont & font) const {
+        return (font.getWidth(optionName + "  select.def + auto"));
     }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  select.def+auto"));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
-class Escape: public ListItem {
+class Escape: public BaseMenuItem {
 public:
     
     class EscapeException : public std::exception{
@@ -789,22 +749,10 @@ public:
     void run(){
         throw EscapeException();
     }
-    
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
 OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items):
-recalculateHeight(170){
+recalculateHeight(160){
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(10);
@@ -909,7 +857,13 @@ recalculateHeight(170){
     for (std::vector<PaintownUtil::ReferenceCount<Font> >::iterator i = fonts.begin(); i != fonts.end(); ++i){
         PaintownUtil::ReferenceCount<Font> ourFont = *i;
         // NOTE This should keep it in a reasonable range, although I don't think it's correct
-        if (ourFont != NULL && (ourFont->getHeight() >= 8 && ourFont->getHeight() < 15)){
+        /*if (ourFont != NULL && (ourFont->getHeight() >= 8 && ourFont->getHeight() < 15)){
+            if (ourFont->textLength(" ") <= 15){
+                font = ourFont;
+                break;
+            }
+        }*/
+        if (ourFont != NULL && ourFont->getHeight() >= 8){
             font = ourFont;
             break;
         }
@@ -955,7 +909,7 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     const int x = 160 - width/2;
     const int y = 120 - height/2;
     
-    list.getFont().draw(160, 15, name, workArea);
+    list.getFont().draw(160, 20, name, workArea);
     
     Graphics::Bitmap::transBlender(0,0,0,150);
     workArea.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
@@ -1122,7 +1076,7 @@ public:
 };
 
 
-class Motif : public ListItem {
+class Motif : public BaseMenuItem {
 public:
     Motif(){
         optionName = "Switch Motif";
@@ -1201,7 +1155,7 @@ public:
             //font.draw(right, y, -1, Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path(), work);
         }
         
-        int getWidth(const ListFont & font){
+        int getWidth(const ListFont & font) const {
             return (font.getWidth(name));
             //return (font.getWidth(name + "  " + Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path()));
         }
@@ -1319,29 +1273,17 @@ public:
         } catch (const Mugen::Def::ParseException & e){
             runError(e.getReason(), errorInfo);
             throw MotifException();
-        } catch (const Exception::Base & fail){
-            runError(fail.getTrace(), errorInfo);
-            throw MotifException();
         } catch (const MugenException & ex){
             runError(ex.getReason(), errorInfo);
             throw MotifException();
         } catch (const Filesystem::NotFound & fail){
             runError(fail.getTrace(), errorInfo);
             throw MotifException();
+        } catch (const Exception::Base & fail){
+            runError(fail.getTrace(), errorInfo);
+            throw MotifException();
         }
     }
-    
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        font.draw(left, y, 1, optionName, work);
-        font.draw(right, y, -1, currentValue, work);
-    }
-    
-    int getWidth(const ListFont & font){
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    std::string optionName;
-    std::string currentValue;
 };
 
 class DummyItem : public ListItem{
@@ -1364,7 +1306,7 @@ public:
         return false;
     }
     
-    virtual int getWidth(const ListFont & font){
+    virtual int getWidth(const ListFont & font) const {
         return font.getWidth(name);
     }
     std::string name;

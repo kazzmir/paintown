@@ -52,7 +52,7 @@ public:
     virtual void run();
     virtual const std::string & getInfo() const;
     virtual void render(int x, int y, const Graphics::Bitmap &, const ListFont &, int left = 0, int right = 0) const = 0;
-    virtual int getWidth(const ListFont &) = 0;
+    virtual int getWidth(const ListFont &) const = 0;
     virtual bool next() = 0;
     virtual bool previous() = 0;
     
