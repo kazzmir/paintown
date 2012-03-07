@@ -1302,7 +1302,7 @@ public:
     void testMotif(Filesystem::AbsolutePath & path, const std::string & errorInfo){
         try {
             // Lets check the files
-            AstRef parsed(Mugen::Util::parseDef(path.path()));
+            /*AstRef parsed(Mugen::Util::parseDef(path.path()));
             Filesystem::AbsolutePath baseDir = path.getDirectory();
             for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
                 Ast::Section * section = *section_it;
@@ -1344,19 +1344,25 @@ public:
                     FileWalker walker(baseDir);
                     section->walk(walker);
                 }
-            }
+            }*/
+            MugenMenu menu(Storage::instance().cleanse(path).removeFirstDirectory());
+            menu.loadData();
         } catch (const Mugen::Def::ParseException & e){
-            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << e.getReason() << std::endl;
+            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << e.getReason() << std::endl;
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), MugenException(e.getReason(), __FILE__, __LINE__), "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
             throw MotifException();
         } catch (const Exception::Base & fail){
-            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
+            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), fail, "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
             throw MotifException();
         } catch (const MugenException & ex){
-            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << ex.getReason() << std::endl;
+            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << ex.getReason() << std::endl;
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), ex, "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
             throw MotifException();
         } catch (const Filesystem::NotFound & fail){
             //throw MugenRuntimeException("Problem setting the selected Motif: \n" + state.error(menu.getSelected()), __FILE__, __LINE__);
-            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
+            //Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
+            PaintownUtil::showError(*Graphics::getScreenBuffer(), fail, "Problem setting the selected Motif: \n" + errorInfo + "\nReason: ");
             throw MotifException();
         }
     }
