@@ -39,6 +39,8 @@
 #include "util/main.h"
 #include "mugen/config.h"
 
+#include <iostream>
+
 using std::vector;
 using std::endl;
 using std::string;
@@ -132,8 +134,14 @@ static void addArgs(vector<const char *> & args, const char * strings[], int num
 }
 
 static void setMugenMotif(const Filesystem::AbsolutePath & path){
-    if (Configuration::getMugenMotif() != "default"){
-        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(Configuration::getMugenMotif()));
+    std::string motif;
+    try {
+        *Mugen::Configuration::get("motif") >> motif;
+    } catch (const std::ios_base::failure & ex){
+        motif.clear();
+    }
+    if (!motif.empty()){
+        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
     } else {
         TokenReader reader;
         Token * head = reader.readToken(path.path());

@@ -222,6 +222,7 @@ Filesystem::AbsolutePath Data::getFileFromMotif(const Filesystem::RelativePath &
 
 void Data::setMotif(const Filesystem::RelativePath & motif){
     this->motif = motif;
+    Mugen::Configuration::set("motif", motif.path());
 }
 
 const Filesystem::RelativePath & Data::getMotif(){

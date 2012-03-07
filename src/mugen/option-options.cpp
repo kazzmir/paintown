@@ -264,7 +264,7 @@ bool ScrollAction::next(){
         }
     } else {
         current = itemTop = 0;
-        itemBottom = getVisibleItems();
+        itemBottom = getVisibleItems()-1;
         offsetY = 0;
     }
     return true;
@@ -311,8 +311,10 @@ int ScrollAction::getMaxHeight(){
 }
 
 void ScrollAction::recalculateVisibleItems(int height){
-    int visible = (height/(spacingY)) + 1;
-    setVisibleItems(visible);
+    int visible = (height/(spacingY));
+    if (visibleItems != visible){
+        setVisibleItems(visible);
+    }
 }
 
 void ScrollAction::setExpandState(const ExpandState & state){
@@ -802,7 +804,7 @@ public:
 };
 
 OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items):
-recalculateHeight(180){
+recalculateHeight(170){
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(10);
@@ -1007,7 +1009,7 @@ void OptionMenu::right(){
     if (list.valueNext()){
     }
 }
-
+   
 void OptionMenu::enter(){
     if (list.getCurrent()->isRunnable()){
         sounds.play(Done);
@@ -1213,6 +1215,14 @@ public:
  
     };
 
+    class MotifException : public std::exception{
+    public:
+        MotifException(){
+        }
+        ~MotifException() throw(){
+        }
+    };
+    
     void run(){
         class Context: public Loader::LoadingContext {
         public:
@@ -1232,6 +1242,14 @@ public:
             Filesystem::AbsolutePath get(unsigned int index){
                 return list[index].convert<Item>()->path;
             }
+            
+            const std::string & getName(unsigned int index){
+                return list[index].convert<Item>()->name;
+            }
+            
+            std::string error(unsigned int index){
+                return getName(index) + " at location '" + get(index).path() + "'";
+            }
 
             std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
         };
@@ -1245,29 +1263,101 @@ public:
             return;
         }
         
-        OptionMenu menu(state.list);
-        menu.setName(optionName);
-        menu.setRecalculateHeight(160);
-        
-        try {
-            // Run options
-            bool escaped = false;
+        while (true){
+            try {
+                OptionMenu menu(state.list);
+                menu.setName(optionName);
+                menu.setRecalculateHeight(160);
+                
+                try {
+                    // Run options
+                    bool escaped = false;
 
-            MenuLogic logic(menu, escaped);
-            MenuDraw draw(menu);
-            PaintownUtil::standardLoop(logic, draw);
-            
-            menu.reset();
-        } catch (const Item::SelectException & ex){
-            // Got our index otherwise don't change
-            Filesystem::RelativePath motif = Storage::instance().cleanse(state.get(menu.getSelected())).removeFirstDirectory();
-            Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
-            ::Configuration::setMugenMotif(motif.path());
-            Mugen::Data::getInstance().setMotif(motif);
-            // Reload
-            throw ReloadMugenException();
-        } catch (const Escape::EscapeException & ex){
-            return;
+                    MenuLogic logic(menu, escaped);
+                    MenuDraw draw(menu);
+                    PaintownUtil::standardLoop(logic, draw);
+                    
+                    menu.reset();
+                    return;
+                } catch (const Item::SelectException & ex){
+                    // Got our index otherwise don't change
+                    Filesystem::AbsolutePath path = state.get(menu.getSelected());
+                    // Test if the def is valid
+                    testMotif(path, state.error(menu.getSelected()));
+                    
+                    Filesystem::RelativePath motif = Storage::instance().cleanse(path).removeFirstDirectory();
+                    Mugen::Data::getInstance().setMotif(motif);
+                    Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
+                    // Reload
+                    throw ReloadMugenException();
+                } catch (const Escape::EscapeException & ex){
+                    return;
+                }
+            } catch (const MotifException & ex){
+                continue;
+            }
+        }
+    }
+    
+    void testMotif(Filesystem::AbsolutePath & path, const std::string & errorInfo){
+        try {
+            // Lets check the files
+            AstRef parsed(Mugen::Util::parseDef(path.path()));
+            Filesystem::AbsolutePath baseDir = path.getDirectory();
+            for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
+                Ast::Section * section = *section_it;
+                std::string head = section->getName();
+                head = Mugen::Util::fixCase(head);
+                if (head == "files"){
+                    class FileWalker: public Ast::Walker{
+                    public:
+                        FileWalker(const AbsolutePath & baseDir):
+                        baseDir(baseDir){
+                            }
+                            const AbsolutePath & baseDir;
+
+                        virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                            if (simple == "spr"){
+                                std::string file;
+                                simple.view() >> file;
+                                Filesystem::AbsolutePath joined = baseDir.join(Filesystem::RelativePath(file));
+                                Global::debug(1) << "Checking spr: " << joined.path() << std::endl;
+                                Filesystem::AbsolutePath check = Mugen::Util::findFile(baseDir, Filesystem::RelativePath(file));
+                            } else if (simple == "snd"){
+                                std::string file;
+                                simple.view() >> file;
+                                //Filesystem::AbsolutePath check = Mugen::Util::findFile(Filesystem::RelativePath(file));
+                                Filesystem::AbsolutePath joined = baseDir.join(Filesystem::RelativePath(file));
+                                Global::debug(1) << "Checking snd: " << joined.path() << std::endl;
+                                Filesystem::AbsolutePath check = Mugen::Util::findFile(baseDir, Filesystem::RelativePath(file));
+                            } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
+                                string temp;
+                                simple.view() >> temp;
+                                //Filesystem::AbsolutePath check = Mugen::Util::findFont(Filesystem::RelativePath(temp));
+                                Filesystem::AbsolutePath joined = baseDir.join(Filesystem::RelativePath(temp));
+                                Global::debug(1) << "Checking font: " << joined.path() << std::endl;
+                                Filesystem::AbsolutePath check = Mugen::Util::findFile(baseDir, Filesystem::RelativePath(temp));
+                            }
+                        }
+                    };
+
+                    FileWalker walker(baseDir);
+                    section->walk(walker);
+                }
+            }
+        } catch (const Mugen::Def::ParseException & e){
+            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << e.getReason() << std::endl;
+            throw MotifException();
+        } catch (const Exception::Base & fail){
+            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
+            throw MotifException();
+        } catch (const MugenException & ex){
+            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << ex.getReason() << std::endl;
+            throw MotifException();
+        } catch (const Filesystem::NotFound & fail){
+            //throw MugenRuntimeException("Problem setting the selected Motif: \n" + state.error(menu.getSelected()), __FILE__, __LINE__);
+            Global::debug(0) << "Problem setting the selected Motif: \n" << errorInfo << "\nReason: " << fail.getTrace() << std::endl;
+            throw MotifException();
         }
     }
     
@@ -1282,6 +1372,32 @@ public:
     
     std::string optionName;
     std::string currentValue;
+};
+
+class DummyItem : public ListItem{
+public:
+    DummyItem(const std::string name):
+    name(name){
+    }
+    virtual void run(){
+    }
+    
+    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        font.draw(x, y, name, work);
+    }
+    
+    virtual bool next(){
+        return false;
+    }
+    
+    virtual bool previous(){
+        return false;
+    }
+    
+    virtual int getWidth(const ListFont & font){
+        return font.getWidth(name);
+    }
+    std::string name;
 };
 
 OptionOptions::OptionOptions( const std::string &name ){
@@ -1301,6 +1417,9 @@ OptionOptions::OptionOptions( const std::string &name ){
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Motif()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
+    /* Testing 
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Dummy")));
+    */
     
     optionMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
     optionMenu->setName(name);
@@ -1399,10 +1518,16 @@ public:
                     tok->view() >> temp;
                     // Set the default motif
                     try{
-                        if (::Configuration::getMugenMotif() == "default"){
+                        std::string motif;
+                        try {
+                            *Mugen::Configuration::get("motif") >> motif;
+                        } catch (const std::ios_base::failure & ex){
+                            motif.clear();
+                        }
+                        if (motif.empty()){
                             Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
                         } else {
-                            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(::Configuration::getMugenMotif()));
+                            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
                         }
                     } catch (const Filesystem::NotFound & fail){
                         throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
@@ -1538,7 +1663,6 @@ public:
         if (state.index != -1){
             Filesystem::RelativePath motif = Storage::instance().cleanse(state.paths[state.index]).removeFirstDirectory();
             Global::debug(1) << "Set muge motif to " << motif.path() << endl;
-            ::Configuration::setMugenMotif(motif.path());
             Mugen::Data::getInstance().setMotif(motif);
         }
     }
