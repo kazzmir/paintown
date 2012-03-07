@@ -45,6 +45,8 @@ namespace Mugen{
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 
+static const std::string EMPTY_STRING = "";
+
 static std::string getString(int number){
     std::ostringstream str;
     str << number;
@@ -125,6 +127,10 @@ void ListItem::run(){
 
 bool ListItem::isRunnable() const {
     return false;
+}
+
+const std::string & ListItem::getInfo() const{
+    return EMPTY_STRING;
 }
 
 ScrollAction::ScrollAction():
@@ -794,7 +800,8 @@ public:
     std::string currentValue;
 };
 
-OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items){
+OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items):
+recalculateHeight(180){
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(10);
@@ -930,7 +937,7 @@ void OptionMenu::act(){
     background->act();
     fader.act();
     list.act();
-    list.recalculateVisibleItems(180);
+    list.recalculateVisibleItems(recalculateHeight);
 }
 
 void OptionMenu::draw(const Graphics::Bitmap & work){
@@ -954,6 +961,17 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
     list.setBoundaries(x-20, x+width+20);
     list.render(temp, ::Font::getDefaultFont());
+    
+    // Info
+    const PaintownUtil::ReferenceCount<ListItem> item = list.getCurrent();
+    if (!item->getInfo().empty()){
+    Graphics::Bitmap::transBlender(0,0,0,150);
+        const int infoWidth = list.getFont().getWidth(item->getInfo());
+        const int infoHeight = list.getFont().getHeight();
+        workArea.translucent().roundRectFill(5, 160-(infoWidth/2) -15, 220, 160+(infoWidth/2)+15, 240,Graphics::makeColor(0,0,60));
+        workArea.translucent().roundRect(5, 160-(infoWidth/2) -15, 220, 160+(infoWidth/2)+15, 240, Graphics::makeColor(0,0,20));
+        list.getFont().draw(160, 235, item->getInfo(), workArea);
+    }
     
     // Foregrounds
     background->renderForeground(0, 0, workArea);
@@ -1175,14 +1193,18 @@ public:
         }
         
         void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-            //font.draw(x, y, 0, name, work);
-            font.draw(left, y, 1, name, work);
-            font.draw(right, y, -1, Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path(), work);
+            font.draw(x, y, 0, name, work);
+            //font.draw(left, y, 1, name, work);
+            //font.draw(right, y, -1, Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path(), work);
         }
         
         int getWidth(const ListFont & font){
-            //return (font.getWidth(name));
-            return (font.getWidth(name + "  " + Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path()));
+            return (font.getWidth(name));
+            //return (font.getWidth(name + "  " + Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path()));
+        }
+        
+        const std::string & getInfo() const {
+            return path.path();
         }
         
         std::string name;
@@ -1224,6 +1246,7 @@ public:
         
         OptionMenu menu(state.list);
         menu.setName(optionName);
+        menu.setRecalculateHeight(160);
         
         try {
             // Run options

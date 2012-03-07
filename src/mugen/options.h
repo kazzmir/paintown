@@ -50,6 +50,7 @@ public:
     int size(const ::Font & font) const;
     virtual bool isRunnable() const;
     virtual void run();
+    virtual const std::string & getInfo() const;
     virtual void render(int x, int y, const Graphics::Bitmap &, const ListFont &, int left = 0, int right = 0) const = 0;
     virtual int getWidth(const ListFont &) = 0;
     virtual bool next() = 0;
@@ -332,6 +333,10 @@ public:
     virtual inline void setName(const std::string & name){
         this->name = name;
     }
+    
+    virtual inline void setRecalculateHeight(int height){
+        this->recalculateHeight = height;
+    }
 
 private:
     //! Name
@@ -351,6 +356,9 @@ private:
     
     //! Fade tool
     Gui::FadeTool fader;
+    
+    //! Recalculate height
+    int recalculateHeight;
 };
 
 /*! Handles Mugen Options */
