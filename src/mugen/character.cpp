@@ -3681,9 +3681,9 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
             effects.scaley *= drawAngleData.scaleY;
             if (getFacing() == FacingRight){
                 /* Counter clock wise if facing right */
-                effects.rotation = -drawAngleData.angle;
-            } else {
                 effects.rotation = drawAngleData.angle;
+            } else {
+                effects.rotation = -drawAngleData.angle;
             }
         }
 

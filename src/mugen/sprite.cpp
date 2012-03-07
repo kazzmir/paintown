@@ -481,7 +481,8 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
 
     if (rotated){
         /* FIXME: handle trans and flipping */
-        bmp->drawRotateCenter(normalX, normalY, (int) effects.rotation, where);
+        // bmp->drawRotate(normalX, normalY, (int) effects.rotation, where);
+        bmp->drawPivot(width / 2, height, xaxis, yaxis, (int) effects.rotation, where);
     } else {
         if (effects.facing && !effects.vfacing){
             if (effects.trans != None){
