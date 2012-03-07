@@ -116,7 +116,12 @@ demoMode(demoMode){
                             }
                         } else if (simple == "p1.facing"){
                             try{
-                                simple.view() >> self.effects1.facing;
+                                int face;
+                                simple.view() >> face;
+                                switch (face){
+                                    case 1: self.effects1.facing = false; break;
+                                    case -1: self.effects1.facing = true; break;
+                                }
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.scale"){
@@ -131,7 +136,12 @@ demoMode(demoMode){
                             }
                         } else if (simple == "p2.facing"){
                             try{
-                                simple.view() >> self.effects2.facing;
+                                int face;
+                                simple.view() >> face;
+                                switch (face){
+                                    case 1: self.effects2.facing = false; break;
+                                    case -1: self.effects2.facing = true; break;
+                                }
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.scale"){

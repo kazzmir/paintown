@@ -1633,7 +1633,7 @@ public:
         PaletteEffects paletteEffects;
 
         virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
-        void drawWithEffects(const PaintownUtil::ReferenceCount<Animation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work);
+        Graphics::Bitmap::Filter * getPaletteEffects(unsigned int time);
 
         double max_health;
         double health;
@@ -1699,6 +1699,21 @@ public:
          * an infinite recursion.
          */
         int maxChangeStates;
+
+        double drawAngle;
+        struct DrawAngleEffect{
+            DrawAngleEffect():
+                enabled(false),
+                angle(0),
+                scaleX(0),
+                scaleY(0){
+                }
+
+            bool enabled;
+            double angle;
+            double scaleX;
+            double scaleY;
+        } drawAngleData;
 };
 
 }

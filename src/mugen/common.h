@@ -296,17 +296,19 @@ class Effects{
         /* if the masking color should be shown or not, true is not shown */
 	bool mask;
 
-        /* horizontal flip */
-	int facing;
+        /* horizontal flip. true for flip, false for no flip */
+	bool facing;
 
         /* vertical flip */
-	int vfacing;
+	bool vfacing;
 
         /* scale horizontally */
 	double scalex;
 
         /* scale vertically */
 	double scaley;
+
+        double rotation;
 
         /* clipping. -1 means dont alter clipping */
         struct Dimension{

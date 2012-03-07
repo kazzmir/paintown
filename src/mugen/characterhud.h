@@ -106,11 +106,11 @@ class FightElement: public Element {
 	    this->soundState = SoundNotStarted;
 	}
 
-	virtual inline void setFacing(int f){ 
+	virtual inline void setFacing(bool f){ 
             effects.facing = f; 
         }
 
-	virtual inline void setVFacing(int f){ 
+	virtual inline void setVFacing(bool f){ 
             effects.vfacing = f; 
         }
 

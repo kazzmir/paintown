@@ -506,7 +506,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                                     currentGroup = group;
                                 }
                                 if (group < 0){
-                                    group = 9999;
+                                    group = 99999;
                                 }
                                 if (group == currentGroup){
                                     found = true;
@@ -522,7 +522,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                                     found = true;
                                     currentGroup = group;
                                 }
-                                if (group > 9999){
+                                if (group > 99999){
                                     group = -1;
                                 }
                                 if (group == currentGroup){

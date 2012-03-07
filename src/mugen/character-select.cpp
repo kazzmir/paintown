@@ -2305,7 +2305,12 @@ void CharacterSelect::init(){
                             }
                         } else if ( simple == "p1.face.facing"){
                             try{
-                                simple.view() >> player1Effects.facing;
+                                int face;
+                                simple.view() >> face;
+                                switch (face){
+                                    case 1: player1Effects.facing = false; break;
+                                    case -1: player1Effects.facing = true; break;
+                                }
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p2.face.offset"){
@@ -2323,7 +2328,12 @@ void CharacterSelect::init(){
                             }
                         } else if ( simple == "p2.face.facing"){
                             try{
-                                simple.view() >> player2Effects.facing;
+                                int face;
+                                simple.view() >> face;
+                                switch (face){
+                                    case 1: player2Effects.facing = false; break;
+                                    case -1: player2Effects.facing = true; break;
+                                }
                             } catch (const Ast::Exception & e){
                             }
                         } else if ( simple == "p1.name.offset"){

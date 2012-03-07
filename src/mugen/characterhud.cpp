@@ -114,7 +114,7 @@ void FightElement::render(int x, int y, const Graphics::Bitmap & bmp, Graphics::
     }
     switch (type){
 	case IS_ACTION:
-            action->render(effects.facing == -1, effects.vfacing == -1, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
+            action->render(effects.facing, effects.vfacing, x + offset.x, y+ offset.y , bmp, effects.scalex, effects.scaley);
             break;
 	case IS_SPRITE:
             sprite->render(x + offset.x, y + offset.y, bmp,effects);
@@ -141,7 +141,7 @@ void FightElement::render(const Element::Layer & layer, int x, int y, const Grap
     switch (type){
 	case IS_ACTION:
             if (layer == getLayer()){
-	        action->render(effects.facing == -1, effects.vfacing == -1, realX, realY, bmp, effects.scalex, effects.scaley);
+	        action->render(effects.facing, effects.vfacing, realX, realY, bmp, effects.scalex, effects.scaley);
             }
 	    break;
 	case IS_SPRITE:
@@ -515,11 +515,17 @@ static void getElementProperties(const Ast::AttributeSimple & simple, const std:
     } else if (simple == compCopy + elementName + ".facing"){
         int face;
         simple.view() >> face;
-        element.setFacing(face);
+        switch (face){
+            case 1: element.setFacing(false); break;
+            case -1: element.setFacing(true); break;
+        }
     } else if (simple == compCopy + elementName + ".vfacing"){
         int face;
         simple.view() >> face;
-        element.setVFacing(face);
+        switch (face){
+            case 1: element.setVFacing(false); break;
+            case -1: element.setVFacing(true); break;
+        }
     } else if (simple == compCopy + elementName + ".layerno"){
         int layer = 0;
         simple.view() >> layer;

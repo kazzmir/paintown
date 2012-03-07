@@ -790,10 +790,10 @@ PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Se
 
             if (flip == "h"){
                 //frame->flipHorizontal = true;
-                frame->effects.facing = -1;
+                frame->effects.facing = true;
             } else if (flip == "v"){
                 //frame->flipVertical = true;
-                frame->effects.vfacing = -1;
+                frame->effects.vfacing = true;
             }
 
             if (PaintownUtil::matchRegex(blend, "^a")){
@@ -1167,10 +1167,11 @@ trans(None),
 alphaSource(255),
 alphaDest(255),
 mask(false),
-facing(1),
-vfacing(1),
+facing(false),
+vfacing(false),
 scalex(1),
 scaley(1),
+rotation(0),
 filter(NULL){
 }
 
@@ -1184,6 +1185,7 @@ Mugen::Effects::Effects(const Mugen::Effects & copy){
     this->scalex = copy.scalex;
     this->scaley = copy.scaley;
     this->dimension = copy.dimension;
+    this->rotation = copy.rotation;
     this->filter = copy.filter;
 }
 
@@ -1197,6 +1199,7 @@ const Mugen::Effects &Mugen::Effects::operator=(const Mugen::Effects &e){
     this->scalex = e.scalex;
     this->scaley = e.scaley;
     this->dimension = e.dimension;
+    this->rotation = e.rotation;
     this->filter = e.filter;
     return *this;
 }
@@ -1209,8 +1212,9 @@ Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2) const {
     result.alphaDest = e2.alphaDest;
     result.scalex = e2.scalex;
     result.scaley = e2.scaley;
-    result.facing = e2.facing;
-    result.vfacing = e2.vfacing;
+    result.facing = result.facing ^ e2.facing;
+    result.vfacing = result.vfacing ^ e2.vfacing;
+    result.rotation = e2.rotation;
     return result;
 }
             

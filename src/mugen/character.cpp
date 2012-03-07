@@ -683,6 +683,7 @@ pushPlayer(0){
     combo = 0;
     hitCount = 0;
     blocking = false;
+    C(drawAngle);
     C(wins);
     C(matchWins);
     C(regenerateHealth);
@@ -760,6 +761,7 @@ void Character::initialize(){
     stateType = StateType::Stand;
     currentAnimation = Standing;
     ownPalette = false;
+    drawAngle = 0;
     /* FIXME: whats the default sprite priority? */
     spritePriority = 0;
     juggleRemaining = 0;
@@ -2574,8 +2576,7 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
     PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = sprites[group][image];
     if (sprite != NULL){
         Mugen::Effects effects;
-        /* -1 in effects.facing means its flipped */
-        effects.facing = (flip == 1) ? -1 : 1;
+        effects.facing = flip == 1;
         effects.scalex = scalex;
         effects.scaley = scaley;
 
@@ -2792,6 +2793,7 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     /* reset some stuff */
     widthOverride.enabled = false;
     transOverride.enabled = false;
+    drawAngleData.enabled = false;
 
     processAfterImages();
 
@@ -3468,10 +3470,9 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
     // frame.cache = Bitmap(fixed, true);
 }
 
-void Character::drawWithEffects(const PaintownUtil::ReferenceCount<Animation> & animation, int x, int y, unsigned int time, const Graphics::Bitmap & work){
-    class Effects: public Graphics::Bitmap::Filter {
+class PaletteFilter: public Graphics::Bitmap::Filter {
     public:
-        Effects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
+        PaletteFilter(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color):
         time(time),
         addRed(addRed),
         addGreen(addGreen),
@@ -3575,15 +3576,14 @@ void Character::drawWithEffects(const PaintownUtil::ReferenceCount<Animation> & 
         }
     };
 
-    Effects effects(time, paletteEffects.addRed,
+Graphics::Bitmap::Filter * Character::getPaletteEffects(unsigned int time){
+    return new PaletteFilter(time, paletteEffects.addRed,
                     paletteEffects.addGreen, paletteEffects.addBlue,
                     paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
                     paletteEffects.multiplyBlue, paletteEffects.sinRed,
                     paletteEffects.sinGreen, paletteEffects.sinBlue,
                     paletteEffects.period, paletteEffects.invert,
                     paletteEffects.color);
-
-    animation->render(getFacing() == FacingLeft, false, x, y, work, xscale, yscale, &effects);
 }
 
 /* FIXME: reimplement this method */
@@ -3663,23 +3663,37 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
             }
         }
 
-        if (paletteEffects.time > 0){
-            drawWithEffects(animation, x, y, paletteEffects.counter, *work);
-        } else {
-            if (transOverride.enabled){
-                Mugen::Effects effects;
-                effects.facing = getFacing() == FacingLeft;
-                effects.vfacing = false;
-                effects.scalex = xscale;
-                effects.scaley = yscale;
-                effects.alphaSource = transOverride.alphaSource;
-                effects.alphaDest = transOverride.alphaDestination;
-                effects.trans = transOverride.type;
-                animation->render(x, y, *work, effects);
+        Mugen::Effects effects;
+
+        effects.facing = getFacing() == FacingLeft;
+        effects.vfacing = false;
+        effects.scalex = xscale;
+        effects.scaley = yscale;
+
+        if (transOverride.enabled){
+            effects.alphaSource = transOverride.alphaSource;
+            effects.alphaDest = transOverride.alphaDestination;
+            effects.trans = transOverride.type;
+        }
+
+        if (drawAngleData.enabled){
+            effects.scalex *= drawAngleData.scaleX;
+            effects.scaley *= drawAngleData.scaleY;
+            if (getFacing() == FacingRight){
+                /* Counter clock wise if facing right */
+                effects.rotation = -drawAngleData.angle;
             } else {
-                animation->render(getFacing() == FacingLeft, false, x, y, *work, xscale, yscale);
+                effects.rotation = drawAngleData.angle;
             }
         }
+
+        PaintownUtil::ReferenceCount<Graphics::Bitmap::Filter> filter;
+        if (paletteEffects.time > 0){
+            filter = getPaletteEffects(paletteEffects.counter);
+            effects.filter = filter.raw();
+        }
+
+        animation->render(x, y, *work, effects);
     }
 
     if (debug && !isHelper()){
@@ -3930,16 +3944,21 @@ void Character::setAfterImageTime(int time){
 }
         
 void Character::updateAngleEffect(double angle){
-    /* TODO */
+    drawAngle = angle;
 }
 
 double Character::getAngleEffect() const {
-    /* FIXME */
-    return 0;
+    return drawAngle;
 }
         
 void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY){
-    /* TODO */
+    if (setAngle){
+        drawAngle = angle;
+    }
+    drawAngleData.angle = drawAngle;
+    drawAngleData.enabled = true;
+    drawAngleData.scaleX = scaleX;
+    drawAngleData.scaleY = scaleY;
 }
         
 void Character::assertSpecial(Specials special){

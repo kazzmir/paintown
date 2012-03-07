@@ -439,13 +439,12 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
         height = effects.dimension.y2;
     }
 
+    bool rotated = fabs(effects.rotation) > 0.1;
+
     const int normalX = (xaxis - x);
     const int normalY = (yaxis - y);
     const int flippedX = (xaxis - bmp->getWidth() + x);
     const int flippedY = (yaxis - bmp->getHeight() + y);
-
-    const int FLIPPED = -1;
-    const int NOT_FLIPPED = 1;
 
     switch (effects.trans){
 	case AddAlpha : {
@@ -480,35 +479,40 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
 	}
     }
 
-    if ((effects.facing == FLIPPED) && (effects.vfacing == NOT_FLIPPED)){
-        if (effects.trans != None){
-            bmp->translucent().drawHFlip(flippedX, normalY, effects.filter, where);
-        } else {
-            // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
-            bmp->drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
-        }
-    } else if ( (effects.vfacing == FLIPPED) && (effects.facing == NOT_FLIPPED)){
-        if (effects.trans != None){
-            bmp->translucent().drawVFlip(normalX, flippedY, effects.filter, where);
-        } else {
-            bmp->drawVFlip(normalX, flippedY, effects.filter, where);
-        }
-    } else if ((effects.vfacing == FLIPPED) && (effects.facing == FLIPPED)){
-        if (effects.trans != None){
-            bmp->translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
-        } else {
-            bmp->drawHVFlip(flippedX, flippedY, effects.filter, where);
-        }
+    if (rotated){
+        /* FIXME: handle trans and flipping */
+        bmp->drawRotateCenter(normalX, normalY, (int) effects.rotation, where);
     } else {
-        //if( effects.mask ){
-        if (effects.trans != None){
-            bmp->translucent().draw(normalX, normalY, effects.filter, where);
+        if (effects.facing && !effects.vfacing){
+            if (effects.trans != None){
+                bmp->translucent().drawHFlip(flippedX, normalY, effects.filter, where);
+            } else {
+                // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
+                bmp->drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
+            }
+        } else if (effects.vfacing && !effects.facing){ 
+            if (effects.trans != None){
+                bmp->translucent().drawVFlip(normalX, flippedY, effects.filter, where);
+            } else {
+                bmp->drawVFlip(normalX, flippedY, effects.filter, where);
+            }
+        } else if (effects.vfacing && effects.facing){
+            if (effects.trans != None){
+                bmp->translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
+            } else {
+                bmp->drawHVFlip(flippedX, flippedY, effects.filter, where);
+            }
         } else {
-            bmp->draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
+            //if( effects.mask ){
+            if (effects.trans != None){
+                bmp->translucent().draw(normalX, normalY, effects.filter, where);
+            } else {
+                bmp->draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
+            }
+            //} else {
+            //    bmp.Blit( placex, placey, where );
+            //	}
         }
-        //} else {
-        //    bmp.Blit( placex, placey, where );
-        //	}
     }
 }
 

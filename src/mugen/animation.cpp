@@ -112,7 +112,7 @@ Frame & Frame::operator=(const Frame &copy){
 void Frame::render(int x, int y, const Graphics::Bitmap & work, const Mugen::Effects & effects) const {
     if (sprite != NULL){
         /* Only flip the X offset, not Y */
-        const int placex = x + (xoffset * effects.facing * effects.scalex);
+        const int placex = x + (xoffset * (effects.facing ? -1 : 1) * effects.scalex);
         const int placey = y + (yoffset * effects.scaley);
         sprite->render(placex, placey, work, effects);
     }
@@ -336,11 +336,11 @@ void Animation::renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics:
     frame->render(xaxis, yaxis, work, effects);
 
     if (showDefense){
-        renderCollision(getDefenseBoxes(effects.facing == -1, effects.scalex, effects.scaley), work, xaxis, yaxis, Graphics::makeColor(0, 255, 0));
+        renderCollision(getDefenseBoxes(effects.facing, effects.scalex, effects.scaley), work, xaxis, yaxis, Graphics::makeColor(0, 255, 0));
     }
 
     if (showOffense){
-        renderCollision(getAttackBoxes(effects.facing == -1, effects.scalex, effects.scaley), work, xaxis, yaxis, Graphics::makeColor(255,0,0 ));
+        renderCollision(getAttackBoxes(effects.facing, effects.scalex, effects.scaley), work, xaxis, yaxis, Graphics::makeColor(255,0,0 ));
     }
 }
 
@@ -395,8 +395,8 @@ Mugen::Effects Animation::getCurrentEffects(bool facing, bool vfacing, double sc
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
-    effects.facing = (facing ? -1 : 1);
-    effects.vfacing = (vfacing ? -1 : 1);
+    effects.facing = facing;
+    effects.vfacing = vfacing;
     return effects;
 }
 
@@ -410,10 +410,7 @@ void Animation::render(bool facing, bool vfacing, const int xaxis, const int yax
     effects.scalex = scalex;
     effects.scaley = scaley;
     /* FIXME: should horizontal facing follow the same logic as vfacing below? */
-    effects.facing = (facing ? -1 : 1);
-
-    int FLIPPED = -1;
-    int NOT_FLIPPED = 1;
+    effects.facing = facing;
 
     /* case 1: explode vfacing is true and frame is normal. vfacing = -1
      * case 2: explode vfacing is true and frame is flipped. vfacing = 1
@@ -421,14 +418,14 @@ void Animation::render(bool facing, bool vfacing, const int xaxis, const int yax
      * case 4: explode vfacing is false and frame is flipped. vfacing = -1
      */
     /* TODO: verify case 2 */
-    if (effects.vfacing == NOT_FLIPPED && vfacing){
-        effects.vfacing = FLIPPED;
-    } else if (effects.vfacing == FLIPPED && vfacing){
-        effects.vfacing = NOT_FLIPPED;
-    } else if (effects.vfacing == NOT_FLIPPED && !vfacing){
-        effects.vfacing = NOT_FLIPPED;
+    if (!effects.vfacing && vfacing){
+        effects.vfacing = true;
+    } else if (effects.vfacing && vfacing){
+        effects.vfacing = false;
+    } else if (!effects.vfacing && !vfacing){
+        effects.vfacing = false;
     } else {
-        effects.vfacing = FLIPPED;
+        effects.vfacing = true;
     }
     effects.filter = filter;
 
@@ -442,8 +439,8 @@ void Animation::renderReflection(bool facing, bool vfacing, int alpha, const int
 
     Frame * frame = frames[position];
     Mugen::Effects effects = frame->effects;
-    effects.facing = (facing ? -1 : 1);
-    effects.vfacing = (vfacing ? -1 : 1);
+    effects.facing = facing;
+    effects.vfacing = vfacing;
     effects.trans = Mugen::Translucent;
     effects.alphaSource = alpha;
     effects.scalex = scalex;
