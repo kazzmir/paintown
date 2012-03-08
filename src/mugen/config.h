@@ -65,9 +65,9 @@ class Data{
 
         double getSuperTargetDefenceMultiplier();
 
-        void setGameSpeed(int speed);
+        void setGameSpeed(double speed);
         
-        int getGameSpeed();
+        double getGameSpeed();
 
         bool getDrawShadows();
         
@@ -142,7 +142,7 @@ class Data{
          
          /*;Set the game speed here. The default is 60 frames per second. The
           * ;larger the number, the faster it goes. Don't use a value less than 10.*/
-         int gameSpeed;
+         double gameSpeed;
          
          /*;Set to 1 to draw shadows (default). Set to 0 if you have a slow
           * ;machine, and want to improve speed by not drawing shadows.*/

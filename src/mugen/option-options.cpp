@@ -571,44 +571,42 @@ class Speed : public BaseMenuItem {
     public:
 	Speed(){
 	    optionName = "Speed";
-            int speed = Data::getInstance().getSpeed();
-            if (speed < -9){
-                speed = -9;
-                Data::getInstance().setSpeed(speed);
-            } else if (speed > 9){
-                speed = 9;
-                Data::getInstance().setSpeed(speed);
-            }
-	    currentValue = getSpeedName(speed);
+            double speed = checkSpeed(Data::getInstance().getGameSpeed());
+            currentValue = getSpeedName(speed);
 	}
 	~Speed(){
 	}
 	bool next(){
-            int speed = Data::getInstance().getSpeed() + 1;
-            if (speed > 9){
-                speed = 9;
-            }
-            Data::getInstance().setSpeed(speed);
+            double speed = checkSpeed(Data::getInstance().getGameSpeed() + 0.1);
+            Data::getInstance().setGameSpeed(speed);
 	    currentValue = getSpeedName(speed);
         return true;
 	}
 	bool previous(){
-            int speed = Data::getInstance().getSpeed() - 1;
-            if (speed < -9){
-                speed = -9;
-            }
-            Data::getInstance().setSpeed(speed);
+            double speed = checkSpeed(Data::getInstance().getGameSpeed() - 0.1);
+            Data::getInstance().setGameSpeed(speed);
 	    currentValue = getSpeedName(speed);
         return true;
 	}
+	
+	double checkSpeed(double speed){
+            if (speed < 0.1){
+                speed = 0.1;
+            } else if (speed > 0.9 && speed < 1.1){
+                speed = 1;
+            } else if (speed > 1.9){
+                speed = 1.9;
+            }
+            return speed;
+        }
 
-        std::string getSpeedName(int speed){
-            if (speed == 0){
+        std::string getSpeedName(double speed){
+            if (speed == 1){
                 return "Normal";
-            } else if (speed < 0){
-                return "Slow " + getString(abs(speed));
-            } else if (speed > 0){
-                return "Fast " + getString(speed);
+            } else if (speed < 1){
+                return "Slow " + getString(fabs(((speed-0.9)-0.1)*10));
+            } else if (speed > 1){
+                return "Fast " + getString((speed-1)*10);
             }
             return std::string();
         }

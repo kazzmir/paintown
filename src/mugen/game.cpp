@@ -147,7 +147,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
     public:
         LogicDraw(Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, bool displayFade, Gui::FadeTool & fader):
         endMatch(false),
-        gameSpeed(1.0),
+        gameSpeed(Data::getInstance().getGameSpeed()),
         stage(stage),
         show_fps(show_fps),
         console(console),

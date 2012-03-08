@@ -99,7 +99,7 @@ search(SelectDefAndAuto){
                         simple.view() >> self.life;
                     } else if (simple == "time"){
                         simple.view() >> self.time;
-                    } else if (simple == "gamespeed"){
+                    } else if (simple == "game-speed"){
                         simple.view() >> self.gameSpeed;
                     } else if (simple == "team.1vs2life"){
                         simple.view() >> self.team1vs2Life;
@@ -134,9 +134,9 @@ search(SelectDefAndAuto){
         Mugen::Configuration::set("time", time);
     }
     try {
-        *Mugen::Configuration::get("speed") >> gameSpeed;
+        *Mugen::Configuration::get("game-speed") >> gameSpeed;
     } catch (const ios_base::failure & ex){
-        Mugen::Configuration::set("speed", gameSpeed);
+        Mugen::Configuration::set("game-speed", gameSpeed);
     }
     try {
         *Mugen::Configuration::get("team1-vs-2-life") >> team1vs2Life;
@@ -299,12 +299,12 @@ double Data::getSuperTargetDefenceMultiplier(){
     return superTargetDefenceMultiplier;
 }
 
-void Data::setGameSpeed(int speed){
+void Data::setGameSpeed(double speed){
     this->gameSpeed = speed;
-    Mugen::Configuration::set("speed", speed);
+    Mugen::Configuration::set("game-speed", speed);
 }
 
-int Data::getGameSpeed(){
+double Data::getGameSpeed(){
     return gameSpeed;
 }
 
