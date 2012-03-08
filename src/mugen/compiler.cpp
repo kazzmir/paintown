@@ -964,8 +964,8 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getBackX();
                     switch (environment.getCharacter().getFacing()){
-                        case FacingRight: return x - environment.getStage().maximumLeft();
-                        case FacingLeft: return environment.getStage().maximumRight() - x;
+                        case FacingRight: return x - environment.getStage().maximumLeft(&environment.getCharacter());
+                        case FacingLeft: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
                     }
                 }
 
@@ -984,8 +984,8 @@ public:
                     int x = environment.getCharacter().getX();
                     /* FIXME: handle screenbound in case maximumLeft/Right don't */
                     switch (environment.getCharacter().getFacing()){
-                        case FacingRight: return x - environment.getStage().maximumLeft();
-                        case FacingLeft: return environment.getStage().maximumRight() - x;
+                        case FacingRight: return x - environment.getStage().maximumLeft(&environment.getCharacter());
+                        case FacingLeft: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
 
                     }
                 }
@@ -1004,8 +1004,8 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getFrontX();
                     switch (environment.getCharacter().getFacing()){
-                        case FacingLeft: return x - environment.getStage().maximumLeft();
-                        case FacingRight: return environment.getStage().maximumRight() - x;
+                        case FacingLeft: return x - environment.getStage().maximumLeft(&environment.getCharacter());
+                        case FacingRight: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
                     }
                 }
 
@@ -1023,8 +1023,8 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getX();
                     switch (environment.getCharacter().getFacing()){
-                        case FacingLeft: return x - environment.getStage().maximumLeft();
-                        case FacingRight: return environment.getStage().maximumRight() - x;
+                        case FacingLeft: return x - environment.getStage().maximumLeft(&environment.getCharacter());
+                        case FacingRight: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
                     }
                 }
 

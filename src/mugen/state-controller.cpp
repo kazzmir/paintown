@@ -4044,29 +4044,29 @@ public:
             }
             case Front: {
                 if (owner->getFacing() == FacingRight){
-                    x = stage.maximumRight() + posX;
+                    x = stage.maximumRight(owner) + posX;
                 } else {
-                    x = stage.maximumLeft() + posX;
+                    x = stage.maximumLeft(owner) + posX;
                 }
                 y = stage.maximumUp() + posY;
                 break;
             }
             case Back: {
                 if (owner->getFacing() == FacingLeft){
-                    x = stage.maximumRight() + posX;
+                    x = stage.maximumRight(owner) + posX;
                 } else {
-                    x = stage.maximumLeft() + posX;
+                    x = stage.maximumLeft(owner) + posX;
                 }
                 y = stage.maximumUp() + posY;
                 break;
             }
             case Left: {
-                x = stage.maximumLeft() + posX;
+                x = stage.maximumLeft(owner) + posX;
                 y = stage.maximumUp() + posY;
                 break;
             }
             case Right: {
-                x = stage.maximumRight() + posX;
+                x = stage.maximumRight(owner) + posX;
                 y = stage.maximumUp() + posY;
                 break;
             }
@@ -5723,7 +5723,7 @@ public:
         bool unbound = evaluateBool(value, environment, false) == false;
         bool cameraX = evaluateBool(moveCameraX, environment, false);
         bool cameraY = evaluateBool(moveCameraY, environment, false);
-        stage.enableScreenBound(unbound, cameraX, cameraY);
+        stage.enableScreenBound(&guy, unbound, cameraX, cameraY);
     }
 
     StateController * deepCopy() const {
@@ -6264,8 +6264,8 @@ public:
             case Front: {
                 double x = evaluateNumber(posX, environment, 0);
                 switch (guy.getFacing()){
-                    case FacingRight: x = environment.getStage().maximumRight() + x; break;
-                    case FacingLeft: x = environment.getStage().maximumLeft() - x; break;
+                    case FacingRight: x = environment.getStage().maximumRight(&guy) + x; break;
+                    case FacingLeft: x = environment.getStage().maximumLeft(&guy) - x; break;
                 }
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
@@ -6275,8 +6275,8 @@ public:
             case Back: {
                 double x = evaluateNumber(posX, environment, 0);
                 switch (guy.getFacing()){
-                    case FacingRight: x = environment.getStage().maximumRight() - x; break;
-                    case FacingLeft: x = environment.getStage().maximumLeft() + x; break;
+                    case FacingRight: x = environment.getStage().maximumRight(&guy) - x; break;
+                    case FacingLeft: x = environment.getStage().maximumLeft(&guy) + x; break;
                 }
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
@@ -6284,14 +6284,14 @@ public:
                 break;
             }
             case Left: {
-                double x = evaluateNumber(posX, environment, 0) + environment.getStage().maximumLeft();
+                double x = evaluateNumber(posX, environment, 0) + environment.getStage().maximumLeft(&guy);
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
                 helper->setY(y);
                 break;
             }
             case Right: {
-                double x = environment.getStage().maximumRight() - evaluateNumber(posX, environment, 0);
+                double x = environment.getStage().maximumRight(&guy) - evaluateNumber(posX, environment, 0);
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
                 helper->setY(y);
@@ -7285,25 +7285,25 @@ public:
             }
         } else if (check == "front"){
             if (guy.getFacing() == FacingRight){
-                x = stage.maximumRight() + offsetX;
+                x = stage.maximumRight(&guy) + offsetX;
             } else {
-                x = stage.maximumLeft() - offsetX;
+                x = stage.maximumLeft(&guy) - offsetX;
             }
             y = guy.getRY() + offsetY;
         } else if (check == "back"){
             if (guy.getFacing() == FacingLeft){
-                x = stage.maximumRight() - offsetX;
+                x = stage.maximumRight(&guy) - offsetX;
             } else {
-                x = stage.maximumLeft() + offsetX;
+                x = stage.maximumLeft(&guy) + offsetX;
             }
             y = guy.getRY() + offsetY;
         } else if (check == "left"){
-            x = stage.maximumLeft() + offsetX;
+            x = stage.maximumLeft(&guy) + offsetX;
             y = stage.maximumUp() + offsetY;
             /* FIXME: figure out if facing should change here */
             facing = FacingRight;
         } else if (check == "right"){
-            x = stage.maximumRight() - offsetX;
+            x = stage.maximumRight(&guy) - offsetX;
             y = stage.maximumUp() + offsetY;
             /* FIXME: figure out if facing should change here */
             facing = FacingLeft;

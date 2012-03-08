@@ -729,13 +729,8 @@ void Mugen::Stage::setCamera( const double x, const double y ){
     }
 }
 void Mugen::Stage::moveCamera(const double x, const double y){ 
-    if (!screenBound.enabled || screenBound.panX){
-        camerax += x;
-    }
-
-    if (!screenBound.enabled || screenBound.panY){
-        cameray += y; 
-    }
+    camerax += x;
+    cameray += y; 
 
     // Camera boundaries
     if (camerax < boundleft){
@@ -1035,17 +1030,21 @@ void Mugen::Stage::physics(Character * mugen){
                         */
                         const int playerCenter = mplayer->getX()+(mplayer->getWidth()/2);
                         const int enemyCenter = enemy->getX()+(enemy->getWidth()/2);
-                        if (enemy->getFacing() == FacingLeft && enemy->getX() == maximumRight() && playerCenter >= enemyCenter){
+                        if (enemy->getFacing() == FacingLeft &&
+                            enemy->getX() == maximumRight(enemy) &&
+                            playerCenter >= enemyCenter){
                             // Right hand side of stage
                             mplayer->moveLeftForce(1.5);
                             enemyMoved = true;
-                        } else if (enemy->getFacing() == FacingRight && enemy->getX() == maximumLeft() && playerCenter <= enemyCenter){
+                        } else if (enemy->getFacing() == FacingRight &&
+                                   enemy->getX() == maximumLeft(enemy) &&
+                                   playerCenter <= enemyCenter){
                             // Left hand side of stage
                             mplayer->moveRightForce(1.5);
                             enemyMoved = true;
                         } else if (enemy->getX() >= mplayer->getX()){
                             // Move character
-                            if (enemy->getX() >= maximumRight()){
+                            if (enemy->getX() >= maximumRight(enemy)){
                                 mplayer->moveLeftForce(0.5);
                                 enemyMoved = true;
                             } else {
@@ -1054,7 +1053,7 @@ void Mugen::Stage::physics(Character * mugen){
                             }
                         } else if (enemy->getX() < mplayer->getX()){
                             // Move character
-                            if (enemy->getX() <= maximumLeft()){
+                            if (enemy->getX() <= maximumLeft(enemy)){
                                 mplayer->moveRightForce(0.5);
                                 enemyMoved = true;
                             } else {
@@ -1113,7 +1112,7 @@ void Mugen::Stage::unbind(Mugen::Character * what){
 
 /* A main cycle of the game */
 void Mugen::Stage::runCycle(){
-    screenBound.enabled = false;
+    screenBound.clear();
 
     if (paletteEffects.time > 0){
         paletteEffects.time = 0;
@@ -1885,21 +1884,25 @@ bool Mugen::Stage::isaPlayer(Mugen::Character * o) const {
     return false;
 }
 
-int Mugen::Stage::maximumRight() const {
-    /* FIXME: screenbound should be per character I think */
-    if (screenBound.enabled && screenBound.offScreen){
+int Mugen::Stage::maximumRight(const Character * who) const {
+    map<const Character*, ScreenBound>::const_iterator find = screenBound.find(who);
+    if (find != screenBound.end() &&
+        find->second.enabled && find->second.offScreen){
         return boundright + DEFAULT_WIDTH / 2;
     }
     return (int)(camerax + DEFAULT_WIDTH / 2);
 }
 
-int Mugen::Stage::maximumLeft() const {
-    if (screenBound.enabled && screenBound.offScreen){
+int Mugen::Stage::maximumLeft(const Character * who) const {
+    map<const Character*, ScreenBound>::const_iterator find = screenBound.find(who);
+    if (find != screenBound.end() &&
+        find->second.enabled && find->second.offScreen){
         return boundleft - DEFAULT_WIDTH / 2;
     }
     return (int)(camerax - DEFAULT_WIDTH / 2);
 }
-    
+
+/* FIXME: I think screenbound should deal with maximumUp/Down */
 int Mugen::Stage::maximumUp() const {
     return cameray;
 }
@@ -1912,7 +1915,7 @@ void Mugen::Stage::addProjectile(Projectile * projectile){
     projectiles.push_back(projectile);
 }
 
-void Mugen::Stage::updatePlayer(Mugen::Object * player){
+void Mugen::Stage::updatePlayer(Mugen::Character * player){
 
     // Move X and Camera
     const double px = player->getX();
@@ -1922,8 +1925,8 @@ void Mugen::Stage::updatePlayer(Mugen::Object * player){
        const double screenLeft = camerax - DEFAULT_WIDTH / 2;
        const double screenRight = camerax + DEFAULT_WIDTH / 2;
        */
-    const double screenLeft = maximumLeft();
-    const double screenRight = maximumRight();
+    const double screenLeft = maximumLeft(player);
+    const double screenRight = maximumRight(player);
 
     /*
        const double screenLeft = abs(boundleft) + camerax;
@@ -2009,47 +2012,54 @@ void Mugen::Stage::updatePlayer(Mugen::Object * player){
     //Global::debug(0) << "Left Tension: " << inleft << " | Right Tension: "<< inright << endl;
     //Global::debug(0) << "Left Screen Edge: " << onLeftSide << " | Right Screen Edge: "<< onRightSide << endl;
 
-    if (playerInfo[player].leftTension){
-        if (pdiffx < 0){
-            if (!onRightSide){
-                moveCamera(pdiffx,0);
+    if (!screenBound[player].enabled ||
+        screenBound[player].panX){
+        if (playerInfo[player].leftTension){
+            if (pdiffx < 0){
+                if (!onRightSide){
+                    moveCamera(pdiffx, 0);
+                }
+            } else if (pdiffx > 0){
+                if (inright){
+                    moveCamera(pdiffx, 0);
+                }
             }
-        } else if (pdiffx > 0){
-            if (inright){
-                moveCamera(pdiffx,0);
-            }
-        }
-    } else if (playerInfo[player].rightTension){
-        if (pdiffx > 0){
-            if(!onLeftSide){
-                moveCamera(pdiffx,0);
-            }
-        } else if (pdiffx < 0){
-            if(inleft){
-                moveCamera(pdiffx,0);
+        } else if (playerInfo[player].rightTension){
+            if (pdiffx > 0){
+                if(!onLeftSide){
+                    moveCamera(pdiffx, 0);
+                }
+            } else if (pdiffx < 0){
+                if(inleft){
+                    moveCamera(pdiffx, 0);
+                }
             }
         }
     }
 
-    // Vertical movement of camera
-    if (playerInfo[player].oldy != py){
-        if (verticalfollow > 0){
-            const double pdiffy = playerInfo[player].oldy - py;
-            if (py > floortension){
-                if (!playerInfo[player].above){
-                    playerInfo[player].above = true;
-                    inabove++;
+    if (!screenBound[player].enabled ||
+        screenBound[player].panY){
+        // Vertical movement of camera
+        if (playerInfo[player].oldy != py){
+            if (verticalfollow > 0){
+                const double pdiffy = playerInfo[player].oldy - py;
+                if (py > floortension){
+                    if (!playerInfo[player].above){
+                        playerInfo[player].above = true;
+                        inabove++;
+                    }
+                } else if ( playerInfo[player].above){
+                    playerInfo[player].above = false;
+                    inabove--;
                 }
-            } else if ( playerInfo[player].above){
-                playerInfo[player].above = false;
-                inabove--;
-            }
-            if (playerInfo[player].above && pdiffy < 0){
-                moveCamera( 0, verticalfollow * -3.2 );
-            } else if (playerInfo[player].above && pdiffy > 0){
-                moveCamera( 0, verticalfollow * 3.2 );
+                if (playerInfo[player].above && pdiffy < 0){
+                    moveCamera( 0, verticalfollow * -3.2 );
+                } else if (playerInfo[player].above && pdiffy > 0){
+                    moveCamera( 0, verticalfollow * 3.2 );
+                }
             }
         }
+
     }
     //Global::debug(1) << "Our players Y: " << py << " | Above: "<< playerInfo[o].above << " | total inabove: " << inabove << endl;
 }
@@ -2525,10 +2535,10 @@ void Mugen::Stage::setPaletteEffects(int time, int addRed, int addGreen, int add
 void Mugen::Stage::Quake(int q){
     quake_time += q;
 }
-    
-void Mugen::Stage::enableScreenBound(bool offScreen, bool panX, bool panY){
-    screenBound.enabled = true;
-    screenBound.offScreen = offScreen;
-    screenBound.panX = panX;
-    screenBound.panY = panY;
+
+void Mugen::Stage::enableScreenBound(Character * who, bool offScreen, bool panX, bool panY){
+    screenBound[who].enabled = true;
+    screenBound[who].offScreen = offScreen;
+    screenBound[who].panX = panX;
+    screenBound[who].panY = panY;
 }

@@ -183,7 +183,7 @@ public:
         return gameHUD;
     }
 
-    virtual void enableScreenBound(bool offScreen, bool panX, bool panY);
+    virtual void enableScreenBound(Character * who, bool offScreen, bool panX, bool panY);
 
     virtual void Quake(int q);
 
@@ -260,8 +260,8 @@ public:
     };
 
     /* Edges of the visible screen */
-    int maximumRight() const;
-    int maximumLeft() const;
+    int maximumRight(const Character * who) const;
+    int maximumLeft(const Character * who) const;
     /* Highest visible point on the screen */
     int maximumUp() const;
     int maximumDown() const;
@@ -344,7 +344,7 @@ protected:
     void loadSectionReflection(Ast::Section * section);
     void loadSectionMusic(Ast::Section * section);
 
-    void updatePlayer(Object *o);
+    void updatePlayer(Character *o);
     void physics(Character * o);
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
@@ -688,14 +688,22 @@ private:
 
     struct ScreenBound{
         ScreenBound():
-            enabled(false){
+            enabled(false),
+            offScreen(false),
+            panX(false),
+            panY(false){
             }
 
         bool enabled;
         bool offScreen;
         bool panX;
         bool panY;
-    } screenBound;
+    };
+   
+    /* Screen bound is per character so make a map from character to their
+     * ScreenBound data
+     */
+    std::map<const Character*, ScreenBound> screenBound;
 
     int objectId;
 };
