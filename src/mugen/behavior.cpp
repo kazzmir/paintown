@@ -147,12 +147,14 @@ direction(Forward),
 difficulty(difficulty),
 dontMove(0){
     /* make walking more likely to begin with */
+    /*
     moves["holdfwd"].points -= 10;
     moves["holdfwd"].minimumDistance = 999999;
     moves["holdfwd"].maximumDistance = 0;
     moves["holdback"].points -= 10;
     moves["holdback"].minimumDistance = 999999;
     moves["holdback"].maximumDistance = 0;
+    */
 
     /* this is just to give the AI a starting move that does nothing, this is
      * basically a noop. eventualy the AI will learn other moves to do.
@@ -179,6 +181,15 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
 
     for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
         string name = (*it)->getName();
+
+        /* Skip movement keys */
+        if (name == "holdfwd" ||
+            name == "holdback" ||
+            name == "holddown" ||
+            name == "holdup"){
+            continue;
+        }
+
         Move & move = moves[name];
         double morePoints = move.points + PaintownUtil::rnd(10);
         if (move.minimumDistance != -1){
