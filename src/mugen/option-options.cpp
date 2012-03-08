@@ -592,7 +592,7 @@ class Speed : public BaseMenuItem {
 	double checkSpeed(double speed){
             if (speed < 0.1){
                 speed = 0.1;
-            } else if (speed > 0.9 && speed < 1.1){
+            } else if ((speed > 0.9) && (speed < 1.1)){
                 speed = 1;
             } else if (speed > 1.9){
                 speed = 1.9;
@@ -603,10 +603,12 @@ class Speed : public BaseMenuItem {
         std::string getSpeedName(double speed){
             if (speed == 1){
                 return "Normal";
-            } else if (speed < 1){
-                return "Slow " + getString(fabs(((speed-0.9)-0.1)*10));
-            } else if (speed > 1){
-                return "Fast " + getString((speed-1)*10);
+            } else if (speed <= 0.9){
+                int num = fabs(((speed-0.9)-0.1)*10);
+                return "Slow " + getString(num);
+            } else if (speed >= 1.1){
+                int num = ((speed-1)*10);
+                return "Fast " + getString(num);
             }
             return std::string();
         }

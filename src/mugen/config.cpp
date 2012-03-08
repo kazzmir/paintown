@@ -99,8 +99,17 @@ search(SelectDefAndAuto){
                         simple.view() >> self.life;
                     } else if (simple == "time"){
                         simple.view() >> self.time;
-                    } else if (simple == "game-speed"){
-                        simple.view() >> self.gameSpeed;
+                    } else if (simple == "gamespeed"){
+                        double speed;
+                        simple.view() >> speed;
+                        if (speed < 0){
+                            speed = ((speed*0.1)+0.9)+0.1;
+                        } else if (speed == 0){
+                            speed = 1.0;
+                        } else if (speed > 0){
+                            speed = (speed*0.1)+1;
+                        }
+                        self.gameSpeed = speed;
                     } else if (simple == "team.1vs2life"){
                         simple.view() >> self.team1vs2Life;
                     } else if (simple == "team.loseonko"){
