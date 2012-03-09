@@ -269,6 +269,9 @@ void VersusMenu::drawPortrait(const Mugen::ArcadeData::CharacterCollection & col
 
 /* indexes start at 1 */
 PaintownUtil::ReferenceCount<Mugen::Font> VersusMenu::getFont(int index) const {
+    if (index == -1){
+        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
+    }
     if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
         return fonts[index - 1];
     } else {
