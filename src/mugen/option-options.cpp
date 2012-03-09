@@ -1407,8 +1407,8 @@ public:
                     keyMap.push_back(Mugen::Y);
                     keyValues.push_back("Z");
                     keyMap.push_back(Mugen::Z);
-                    keyValues.push_back("Start");
-                    keyMap.push_back(Mugen::Start);
+                    //keyValues.push_back("Start");
+                    //keyMap.push_back(Mugen::Start);
                     //keyValues.push_back("Quit");
                     //keyMap.push_back(Mugen::Quit);
                 }
