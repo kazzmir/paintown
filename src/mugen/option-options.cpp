@@ -214,9 +214,7 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
                 if (index == current && showCursor){
                     Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
                     if (autoCursor){
-                        //const int width = item->getWidth(useFont)/2 + 5;
-                        const int height = useFont.getHeight()/2 + 5;
-                        work.translucent().rectangleFill(leftBoundary-2, y - useFont.getHeight(), rightBoundary+2, y, Graphics::makeColor(255,255,255));
+                        work.translucent().rectangleFill(leftBoundary-2, y - useFont.getHeight()-1, rightBoundary+2, y+1, Graphics::makeColor(255,255,255));
                     } else {
                         work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(255,255,255));
                     }
@@ -907,11 +905,12 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     background->renderBackground(0, 0, workArea);
     
     const int width = list.getMaxWidth();
-    const int height = list.getMaxHeight();// + list.getTopMargin() + list.getBottomMargin();
+    const int height = list.getMaxHeight();
     const int x = 160 - width/2;
     const int y = 120 - height/2;
     
-    list.getFont().draw(160, 20, name, workArea);
+    // Name of options
+    drawInfo(160, list.getFont().getHeight() + 2, name, workArea);
     
     Graphics::Bitmap::transBlender(0,0,0,150);
     workArea.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
@@ -924,12 +923,7 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     // Info
     const PaintownUtil::ReferenceCount<ListItem> item = list.getCurrent();
     if (!item->getInfo().empty()){
-        Graphics::Bitmap::transBlender(0,0,0,150);
-        const int infoWidth = list.getFont().getWidth(item->getInfo());
-        const int infoHeight = list.getFont().getHeight();
-        workArea.translucent().roundRectFill(5, 160-(infoWidth/2) -15, 220, 160+(infoWidth/2)+15, 240,Graphics::makeColor(0,0,60));
-        workArea.translucent().roundRect(5, 160-(infoWidth/2) -15, 220, 160+(infoWidth/2)+15, 240, Graphics::makeColor(0,0,20));
-        list.getFont().draw(160, 235, item->getInfo(), workArea);
+        drawInfo(160, 239, item->getInfo(), workArea);
     }
     
     // Foregrounds
@@ -940,6 +934,15 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     
     workArea.finish();
     
+}
+
+void OptionMenu::drawInfo(int x, int y, const std::string & text, const Graphics::Bitmap & work){
+    Graphics::Bitmap::transBlender(0,0,0,150);
+    const int infoWidth = list.getFont().getWidth(text);
+    const int infoHeight = list.getFont().getHeight();
+    work.translucent().roundRectFill(5, x-(infoWidth/2) -15, y-infoHeight-1, x+(infoWidth/2)+15, y,Graphics::makeColor(0,0,60));
+    work.translucent().roundRect(5, x-(infoWidth/2) -15, y-infoHeight-1, x+(infoWidth/2)+15, y, Graphics::makeColor(0,0,20));
+    list.getFont().draw(x, y, text, work);
 }
 
 void OptionMenu::up(){

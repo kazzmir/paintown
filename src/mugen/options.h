@@ -307,6 +307,7 @@ public:
     
     virtual void act();
     virtual void draw(const Graphics::Bitmap &);
+    virtual void drawInfo(int x, int y, const std::string &, const Graphics::Bitmap &);
     
     virtual void up();
     virtual void down();

@@ -31,6 +31,7 @@
 #include "mugen/parser/parse-exception.h"
 #include "mugen/background.h"
 #include "util/bitmap.h"
+#include "util/stretch-bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "factory/font_render.h"
@@ -403,7 +404,6 @@ void showFont(const string & ourFile){
     
     bool quit = false;
     
-    Graphics::Bitmap work( 320, 240 );
     Graphics::Bitmap back( 640, 480 );
     
     double gameSpeed = 1.0;
@@ -412,6 +412,9 @@ void showFont(const string & ourFile){
     int currentBank = 0;
      
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
+    
+    int backgroundChange = 1;
+    int backgroundColor = 0;
    
     while( !quit ){
         bool draw = false;
@@ -439,21 +442,38 @@ void showFont(const string & ourFile){
                         }
                     }
                 }
+                
+                backgroundColor += backgroundChange;
+                if (backgroundColor > 255){
+                    backgroundColor = 255;
+                    backgroundChange = -1;
+                } else if (backgroundColor < 0){
+                    backgroundColor = 0;
+                    backgroundChange = 1;
+                }
+                
             }
         
         Global::speed_counter4 = 0;
         }
         
         if (draw){
-            work.clear();
-            font.render( 160, 50, 0, currentBank, work, "0123456789");
-            font.render( 160, 70, 0, currentBank, work, "ABCDEFGHIJKLN");
-            font.render( 160, 90, 0, currentBank, work, "MNOPQRSTUVWXYZ");
+            back.clear();
+            Graphics::StretchedBitmap work(480, 480, back);
+            work.fill(Graphics::makeColor(backgroundColor,backgroundColor,backgroundColor));
+            work.start();
+            font.render( 240, 120, 0, currentBank, work, "0123456789");
+            work.line(0, 120, 480, 120, Graphics::makeColor(255,0,0));
+            font.render( 240, 120 + font.getHeight(), 0, currentBank, work, "ABCDEFGHIJKLN");
+            work.line(0, 120 + font.getHeight(), 480, 120 + font.getHeight(), Graphics::makeColor(255,0,0));
+            font.render( 240, 120 + font.getHeight() * 2, 0, currentBank, work, "MNOPQRSTUVWXYZ");
+            work.line(0, 120 + font.getHeight() * 2, 480, 120 + font.getHeight() * 2, Graphics::makeColor(255,0,0));
             std::ostringstream out;
             out << "CURRENT BANK SET TO " << currentBank;
-            font.render( 160, 120, 0, currentBank, work, out.str());
-            //work.Stretch(back);
-            work.BlitToScreen();
+            font.render( 240, 120 + font.getHeight() * 3, 0, currentBank, work, out.str());
+            work.line(0, 120 + font.getHeight() * 3, 480, 120 + font.getHeight() * 3, Graphics::makeColor(255,0,0));
+            work.finish();
+            back.BlitToScreen();
         }
 
         while (Global::speed_counter4 == 0){
