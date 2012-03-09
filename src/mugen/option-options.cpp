@@ -233,7 +233,7 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
     }
 }
 
-void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> & item){
+void ScrollAction::addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> item){
     text.push_back(item);
 }
 
@@ -243,6 +243,14 @@ void ScrollAction::addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::
 
 const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & ScrollAction::getItems() const{
     return text;
+}
+
+bool ScrollAction::updateItem(unsigned int index, const PaintownUtil::ReferenceCount<Gui::ScrollItem> item){
+    if (index >= text.size()){
+        return false;
+    }
+    text[index] = item;
+    return true;
 }
 
 void ScrollAction::clearItems(){
@@ -973,6 +981,10 @@ void OptionMenu::updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::
     list.addItems(newList);
 }
 
+void OptionMenu::updateItem(unsigned int index, PaintownUtil::ReferenceCount<Gui::ScrollItem> item){
+    list.updateItem(index, item);
+}
+
 void OptionMenu::up(){
     if (list.previous()){
         sounds.play(Move);
@@ -1379,9 +1391,10 @@ public:
             
             class Logic: public PaintownUtil::Logic {
             public:
-                Logic(OptionMenu & menu, int player):
+                Logic(OptionMenu & menu, int player, const std::string & playerName):
                 menu(menu),
                 player(player),
+                playerName(playerName),
                 escaped(false),
                 changingKeys(false),
                 currentValue(0){
@@ -1415,6 +1428,7 @@ public:
                 
                 OptionMenu & menu;
                 int player;
+                const std::string & playerName;
 
                 InputMap<Keys> player1Input;
                 InputMap<Keys> player2Input;
@@ -1541,19 +1555,25 @@ public:
                             if (event[Start]){
                                 changingKeys = true;
                                 InputManager::waitForClear();
+                                menu.toggleCursor();
+                                menu.setName("Update " + playerName + " Keys");
                             }
                         }
                     } else {
                         InputManager::poll();
                         if (InputManager::anyInput()){
                             setKey(player, keyMap[currentValue], InputManager::readKey());
+                            menu.updateItem(currentValue, getList(player)[currentValue].convert<Gui::ScrollItem>());
                             InputManager::waitForClear();
                             if (currentValue < keyValues.size()-1){
                                 currentValue++;
+                                menu.down();
                             } else {
                                 changingKeys = false;
-                                menu.updateList(getList(player));
                                 currentValue = 0;
+                                menu.toggleCursor();
+                                menu.down();
+                                menu.setName(playerName + " Keys (Enter to change)");
                             }
                         }
                     }
@@ -1582,10 +1602,9 @@ public:
                 Logic & logic;
                 
                 void draw(const Graphics::Bitmap & screen){
+                    menu.draw(screen);
                     if (logic.changingKeys){
-                        menu.drawInfoWithBackground("Update Keys", 160, 120, "Press new key for " + logic.keyValues[logic.currentValue], screen );
-                    } else {
-                        menu.draw(screen);
+                        menu.drawInfo(screen.getWidth()/2, screen.getHeight()/4, "Press new key for " + logic.keyValues[logic.currentValue], screen );
                     }
                     screen.BlitToScreen();
                 }
@@ -1595,7 +1614,7 @@ public:
                 OptionMenu menu(Logic::getList(player));
                 menu.setName(optionName + " Keys (Enter to change)");
                 menu.toggleCursor();
-                Logic logic(menu, player);
+                Logic logic(menu, player, optionName);
                 Draw draw(menu,logic);
                 PaintownUtil::standardLoop(logic, draw);
             } catch (const Escape::EscapeException & ex){

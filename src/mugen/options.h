@@ -71,13 +71,16 @@ public:
     virtual void render(const Graphics::Bitmap &, const ::Font &) const;
 
     //! Add item
-    virtual void addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> &);
+    virtual void addItem(const PaintownUtil::ReferenceCount<Gui::ScrollItem> item);
 
     //! Add vector of text
     virtual void addItems(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
     
     //! Get vector of text
     virtual const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & getItems() const;
+    
+    //! Update item
+    virtual bool updateItem(unsigned int index, const PaintownUtil::ReferenceCount<Gui::ScrollItem> item);
     
     //! Clear list
     virtual void clearItems();
@@ -320,6 +323,7 @@ public:
     virtual void drawInfoWithBackground(const std::string &, int x, int y, const std::string &, const Graphics::Bitmap &);
     
     virtual void updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
+    virtual void updateItem(unsigned int index, PaintownUtil::ReferenceCount<Gui::ScrollItem> item);
     
     virtual void up();
     virtual void down();
