@@ -180,6 +180,10 @@ public:
         this->showCursor = cursor;
     }
     
+    virtual inline bool getShowCursor() const {
+        return this->showCursor;
+    }
+    
     virtual inline void setAutoCursor(bool cursor){
         this->autoCursor = cursor;
     }
@@ -308,6 +312,14 @@ public:
     virtual void act();
     virtual void draw(const Graphics::Bitmap &);
     virtual void drawInfo(int x, int y, const std::string &, const Graphics::Bitmap &);
+    /*! Draws the background and some info
+     *  - 1st string - title
+     *  - x, y - location of info
+     *  - 2nd string - info text
+     */ 
+    virtual void drawInfoWithBackground(const std::string &, int x, int y, const std::string &, const Graphics::Bitmap &);
+    
+    virtual void updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
     
     virtual void up();
     virtual void down();
@@ -322,6 +334,10 @@ public:
     
     virtual inline unsigned int getSelected() const {
         return this->list.getCurrentIndex();
+    }
+    
+    virtual inline void toggleCursor(){
+        this->list.setShowCursor(!this->list.getShowCursor());
     }
     
     //! Sound types
