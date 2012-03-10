@@ -40,6 +40,8 @@
 #include "util/music.h"
 #include "config.h"
 
+#include "options.h"
+
 #include "versus.h"
 
 namespace PaintownUtil = ::Util;
@@ -140,7 +142,143 @@ enum MugenInput{
     QuitGame,
     SetHealth,
     ShowFps,
-    ToggleConsole
+    ToggleConsole,
+    EscapeUp,
+    EscapeDown,
+    EscapeLeft,
+    EscapeRight,
+    EscapeEnter,
+};
+
+class EscapeMenu{
+public:
+    class ResumeException : public std::exception{
+    public:
+        ResumeException(){
+        }
+        ~ResumeException() throw(){
+        }
+    };
+    EscapeMenu():
+    enabled(false){
+        class Resume : public BaseMenuItem {
+        public:
+            
+            Resume(){
+                optionName = "Resume";
+                currentValue = "(Esc)";
+            }
+
+            bool next(){
+                return false;
+            }
+
+            bool previous(){
+                return false;
+            }
+            
+            bool isRunnable() const{
+                return true;
+            }
+
+            void run(){
+                throw ResumeException();
+            }
+        };
+        class Exit : public BaseMenuItem {
+        public:
+            Exit(){
+                optionName = "Exit Match";
+                currentValue = "(Enter)";
+            }
+
+            bool next(){
+                return false;
+            }
+
+            bool previous(){
+                return false;
+            }
+            
+            bool isRunnable() const{
+                return true;
+            }
+
+            void run(){
+                throw QuitGameException();
+            }
+        };
+        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+    
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Resume()));
+        list.push_back(OptionMenu::getPlayerKeys(0, "Player 1"));
+        list.push_back(OptionMenu::getPlayerKeys(1, "Player 2"));
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit()));
+        
+        menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+        
+        menu->setName("PAUSED");
+        menu->setRenderBackground(false);
+        menu->setClearAlpha(128);
+    }
+    ~EscapeMenu(){
+    }
+    void act(){
+        if (enabled){
+            menu->act();
+        }
+    }
+    
+    void draw(const Graphics::Bitmap & work){
+        if (enabled){
+            menu->draw(work);
+        }
+    }
+    
+    void toggle(){
+        enabled = !enabled;
+        if (!enabled){
+            menu->reset();
+        }
+    }
+    
+    bool isActive() const {
+        return enabled;
+    }
+    
+    void up(){
+        if (enabled){
+            menu->up();
+        }
+    }
+    void down(){
+        if (enabled){
+            menu->down();
+        }
+    }
+    void left(){
+        if (enabled){
+            menu->left();
+        }
+    }
+    void right(){
+        if (enabled){
+            menu->right();
+        }
+    }
+    void enter(){
+        if (enabled){
+            try {
+                menu->enter();
+            } catch (const ResumeException & ex){
+                toggle();
+            }
+        }
+    }
+    
+protected:
+    bool enabled;
+    PaintownUtil::ReferenceCount<OptionMenu> menu; 
 };
 
 class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
@@ -170,6 +308,11 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_F5, SetHealth);
             gameInput.set(Keyboard::Key_F9, ShowFps);
             gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
+            gameInput.set(Keyboard::Key_UP, EscapeUp);
+            gameInput.set(Keyboard::Key_DOWN, EscapeDown);
+            gameInput.set(Keyboard::Key_LEFT, EscapeLeft);
+            gameInput.set(Keyboard::Key_RIGHT, EscapeRight);
+            gameInput.set(Keyboard::Key_ENTER, EscapeEnter);
 
             Global::registerInfo(&messages);
         }
@@ -195,6 +338,8 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         bool displayFade;
         Gui::FadeTool & fader;
         int showGameSpeed;
+        
+        EscapeMenu escapeMenu;
 
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
@@ -245,10 +390,33 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                                 break;
                             }
                             case QuitGame: {
-                                throw QuitGameException();
+                                //throw QuitGameException();
+                                logic.escapeMenu.toggle();
+                            }
+                            case EscapeUp: {
+                                logic.escapeMenu.up();
+                                break;
+                            }
+                            case EscapeDown: {
+                                logic.escapeMenu.down();
+                                break;
+                            }
+                            case EscapeLeft: {
+                                logic.escapeMenu.left();
+                                break;
+                            }
+                            case EscapeRight: {
+                                logic.escapeMenu.right();
+                                break;
+                            }
+                            case EscapeEnter: {
+                                logic.escapeMenu.enter();
+                                break;
                             }
                             case SetHealth: {
-                                logic.stage->setPlayerHealth(1);
+                                if (!logic.escapeMenu.isActive()){
+                                    logic.stage->setPlayerHealth(1);
+                                }
                                 break;
                             }
                             case ShowFps: {
@@ -256,7 +424,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                                 break;
                             }
                             case ToggleConsole: {
-                                logic.console.toggle();
+                                if (!logic.escapeMenu.isActive()){
+                                    logic.console.toggle();
+                                }
                                 break;
                             }
                         }
@@ -272,11 +442,14 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             // Do stage logic catch match exception to handle the next match
             while (gameTicks > 0){
                 gameTicks -= 1;
-                stage->logic();
+                if (!escapeMenu.isActive()){
+                    stage->logic();
+                }
             }
             while (messages.hasAny()){
                 console.addLine(messages.get());
             }
+            escapeMenu.act();
             console.act();
             endMatch = stage->isMatchOver();
 
@@ -338,6 +511,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             if (displayFade){
                 fader.draw(work);
             }
+            escapeMenu.draw(work);
             work.finish();
             FontRender * render = FontRender::getInstance();
             render->render(&screen);

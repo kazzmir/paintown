@@ -390,39 +390,31 @@ int Option::getWidth(Mugen::Font & font){
     return font.textLength(optionName.c_str()) + font.textLength(currentValue.c_str());
 }
 
-class BaseMenuItem : public ListItem {
-public:
-    BaseMenuItem(){
+BaseMenuItem::BaseMenuItem(){
+}
+
+BaseMenuItem::~BaseMenuItem(){
+}
+
+void BaseMenuItem::render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+    if (displayInfo){
+        font.draw(x, y, 0, optionName, work);
+    } else {
+        font.draw(left, y, 1, optionName, work);
+        font.draw(right, y, -1, currentValue, work);
     }
-    virtual ~BaseMenuItem(){
+}
+
+int BaseMenuItem::getWidth(const ListFont & font) const {
+    return (font.getWidth(optionName + "  " + currentValue));
+}
+
+const std::string & BaseMenuItem::getInfo() const {
+    if (displayInfo){
+        return currentValue;
     }
-    virtual bool next() = 0;
-    virtual bool previous() = 0;
-    
-    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-        if (displayInfo){
-            font.draw(x, y, 0, optionName, work);
-        } else {
-            font.draw(left, y, 1, optionName, work);
-            font.draw(right, y, -1, currentValue, work);
-        }
-    }
-    
-    virtual int getWidth(const ListFont & font) const {
-        return (font.getWidth(optionName + "  " + currentValue));
-    }
-    
-    virtual const std::string & getInfo() const {
-        if (displayInfo){
-            return currentValue;
-        }
-        return EMPTY_STRINGX;
-    }
-    
-    std::string optionName;
-    std::string currentValue;
-    static bool displayInfo;
-};
+    return EMPTY_STRINGX;
+}
 
 bool BaseMenuItem::displayInfo = false;
 
@@ -755,6 +747,9 @@ public:
 };
 
 OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items):
+renderBackground(true),
+clearColor(Graphics::makeColor(0,0,0)),
+clearAlpha(255),
 recalculateHeight(160){
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
@@ -911,7 +906,12 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     workArea.start();
     
     // Backgrounds
-    background->renderBackground(0, 0, workArea);
+    if (renderBackground){
+        background->renderBackground(0, 0, workArea);
+    } else if (clearAlpha > 0){
+        Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
+        workArea.translucent().fill(clearColor);
+    }
     
     const int width = list.getMaxWidth();
     const int height = list.getMaxHeight();
@@ -936,13 +936,49 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     }
     
     // Foregrounds
-    background->renderForeground(0, 0, workArea);
+    if (renderBackground){
+        background->renderForeground(0, 0, workArea);
+    }
     
     // Fader
     fader.draw(workArea);
     
     workArea.finish();
     
+}
+
+void OptionMenu::drawList(const Graphics::Bitmap & work){
+    
+    const int width = list.getMaxWidth();
+    const int height = list.getMaxHeight();
+    const int x = 160 - width/2;
+    const int y = 120 - height/2;
+    
+    // Background
+    if (clearAlpha > 0){
+        Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
+        work.translucent().fill(clearColor);
+    }
+    
+    // Name of options
+    drawInfo(160, list.getFont().getHeight() + 2, name, work);
+    
+    Graphics::Bitmap::transBlender(0,0,0,150);
+    work.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
+    work.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
+    
+    Graphics::Bitmap temp(work, 0, y, work.getWidth(), height);
+    list.setBoundaries(x-20, x+width+20);
+    list.render(temp, ::Font::getDefaultFont());
+    
+    // Info
+    const PaintownUtil::ReferenceCount<ListItem> item = list.getCurrent();
+    if (!item->getInfo().empty()){
+        drawInfo(160, 239, item->getInfo(), work);
+    }
+    
+    // Fader
+    fader.draw(work);
 }
 
 void OptionMenu::drawInfo(int x, int y, const std::string & text, const Graphics::Bitmap & work){
@@ -979,6 +1015,10 @@ void OptionMenu::drawInfoWithBackground(const std::string & title, int x, int y,
 void OptionMenu::updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & newList){
     list.clearItems();
     list.addItems(newList);
+}
+
+void OptionMenu::addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem> item){
+    list.addItem(item);
 }
 
 void OptionMenu::updateItem(unsigned int index, PaintownUtil::ReferenceCount<Gui::ScrollItem> item){
@@ -1360,7 +1400,10 @@ public:
 class PlayerKeys : public BaseMenuItem{
 public:
     PlayerKeys(int player, const std::string & playerName):
-    player(player){
+    player(player),
+    renderBackground(true),
+    clearColor(Graphics::makeColor(0,0,0)),
+    clearAlpha(0){
         currentValue = "(Enter)";
         optionName = playerName;
     }
@@ -1614,6 +1657,9 @@ public:
                 OptionMenu menu(Logic::getList(player));
                 menu.setName(optionName + " Keys (Enter to change)");
                 menu.toggleCursor();
+                menu.setRenderBackground(renderBackground);
+                menu.setClearColor(clearColor);
+                menu.setClearAlpha(clearAlpha);
                 Logic logic(menu, player, optionName);
                 Draw draw(menu,logic);
                 PaintownUtil::standardLoop(logic, draw);
@@ -1645,7 +1691,41 @@ public:
     }
     
     int player;
+    bool renderBackground;
+    Graphics::Color clearColor;
+    int clearAlpha;
 };
+
+PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int player, const std::string & text){
+    PaintownUtil::ReferenceCount<PlayerKeys> playerKeys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(player, text));
+    playerKeys->renderBackground = false;
+    playerKeys->clearAlpha = 0;
+    return playerKeys.convert<Gui::ScrollItem>();
+}
+
+/*
+PaintownUtil::ReferenceCount<OptionMenu> OptionMenu::getGameMenu(){
+    std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+    
+    PaintownUtil::ReferenceCount<PlayerKeys> player1Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(0, "Player1"));
+    PaintownUtil::ReferenceCount<PlayerKeys> player2Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(1, "Player2"));;
+    
+    player1Keys->renderBackground = false;
+    player1Keys->clearAlpha = 40;
+    player2Keys->renderBackground = false;
+    player2Keys->clearAlpha = 40;
+    
+    list.push_back(player1Keys.convert<Gui::ScrollItem>());
+    list.push_back(player2Keys.convert<Gui::ScrollItem>());
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
+    
+    PaintownUtil::ReferenceCount<OptionMenu> menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+    
+    menu->setRenderBackground(false);
+    menu->setClearAlpha(40);
+    
+    return menu;
+}*/
 
 OptionOptions::OptionOptions( const std::string &name ){
     if (name.empty()){

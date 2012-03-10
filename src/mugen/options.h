@@ -59,6 +59,25 @@ public:
 protected:
 };
 
+class BaseMenuItem : public ListItem {
+public:
+    BaseMenuItem();
+    virtual ~BaseMenuItem();
+    virtual bool next() = 0;
+    virtual bool previous() = 0;
+    
+    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const;
+    
+    virtual int getWidth(const ListFont & font) const;
+    
+    virtual const std::string & getInfo() const;
+    
+    static bool displayInfo;
+protected:
+    std::string optionName;
+    std::string currentValue;
+};
+
 class ScrollAction : public Gui::ScrollListInterface{
 public:
     ScrollAction();
@@ -314,6 +333,7 @@ public:
     
     virtual void act();
     virtual void draw(const Graphics::Bitmap &);
+    virtual void drawList(const Graphics::Bitmap &);
     virtual void drawInfo(int x, int y, const std::string &, const Graphics::Bitmap &);
     /*! Draws the background and some info
      *  - 1st string - title
@@ -323,6 +343,7 @@ public:
     virtual void drawInfoWithBackground(const std::string &, int x, int y, const std::string &, const Graphics::Bitmap &);
     
     virtual void updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
+    virtual void addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem> item);
     virtual void updateItem(unsigned int index, PaintownUtil::ReferenceCount<Gui::ScrollItem> item);
     
     virtual void up();
@@ -358,6 +379,34 @@ public:
     virtual inline void setRecalculateHeight(int height){
         this->recalculateHeight = height;
     }
+    
+    virtual inline void setRenderBackground(bool render){
+        this->renderBackground = render;
+    }
+    
+    virtual inline int getRenderBackground() const {
+        return this->renderBackground;
+    }
+    
+    virtual inline void setClearColor(const Graphics::Color & color){
+        this->clearColor = color;
+    }
+    
+    virtual inline const Graphics::Color & getClearColor() const {
+        return this->clearColor;
+    }
+     
+    virtual inline void setClearAlpha(int alpha){
+        this->clearAlpha = alpha;
+    }
+    
+    virtual inline int getClearAlpha() const {
+        return this->clearAlpha;
+    }
+    
+    static PaintownUtil::ReferenceCount<Gui::ScrollItem> getPlayerKeys(int player, const std::string &);
+    
+    //static PaintownUtil::ReferenceCount<OptionMenu> getGameMenu();
 
 private:
     //! Name
@@ -365,6 +414,15 @@ private:
     
     //! Background
     PaintownUtil::ReferenceCount<Background> background;
+    
+    //! Render Background
+    bool renderBackground;
+    
+    //! Clear color
+    Graphics::Color clearColor;
+    
+    //! Clear Alpha
+    int clearAlpha;
     
     //! List
     ScrollAction list;
