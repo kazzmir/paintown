@@ -467,7 +467,7 @@ public:
     virtual void startRecording(int filename);
     virtual void stopRecording();
 
-    virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
+    // virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs);
     /* If you just want to change to a state without any active inputs use this version */
     virtual void changeState(Mugen::Stage & stage, int state);
 
@@ -1714,6 +1714,9 @@ public:
             double scaleX;
             double scaleY;
         } drawAngleData;
+
+        /* Current set of commands, updated in act() */
+        std::vector<std::string> active;
 };
 
 }

@@ -2136,8 +2136,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
     double runCounter = 0;
 
     // Put character in continue state
-    std::vector<std::string> empty;
-    character->changeState(*this, Mugen::Continue, empty);
+    character->changeState(*this, Mugen::Continue);
 
     class Logic: public PaintownUtil::Logic {
     public:

@@ -91,7 +91,7 @@ public:
     virtual double getGravity() const = 0;
     virtual void setYVelocity(double y) = 0;
     virtual double getYVelocity() const = 0;
-    virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs) = 0;
+    // virtual void changeState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs) = 0;
     virtual double getXVelocity() const = 0;
     virtual void setXVelocity(double x) = 0;
     virtual bool canTurn() const = 0;

@@ -1148,12 +1148,14 @@ void Character::resetStateTime(){
     stateTime = 0;
 }
     
+/*
 void Character::changeState(Mugen::Stage & stage, int state){
     vector<string> empty;
     changeState(stage, state, empty);
 }
+*/
 
-void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<string> & inputs){
+void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
     maxChangeStates += 1;
     if (maxChangeStates > 100){
@@ -1189,16 +1191,17 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber, const vector<
     if (getState(currentState) != NULL){
         PaintownUtil::ReferenceCount<State> state = getState(currentState);
         state->transitionTo(stage, *this);
-        doStates(stage, inputs, currentState);
+        doStates(stage, active, currentState);
     } else {
         Global::debug(0, debug.str()) << "Unknown state " << currentState << endl;
     }
 }
 
+/* TODO: get rid of the inputs parameter */
 void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs){
     characterData.who = NULL;
     characterData.enabled = false;
-    changeState(stage, state, inputs);
+    changeState(stage, state);
 }
 
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
@@ -2292,24 +2295,27 @@ public:
     }
 };
 
+/* TODO: get rid of inputs */
 void Character::resetJump(Mugen::Stage & stage, const vector<string> & inputs){
     setSystemVariable(JumpIndex, RuntimeValue(0));
-    changeState(stage, JumpStart, inputs);
+    changeState(stage, JumpStart);
 }
 
+/* TODO: get rid of inputs */
 void Character::doubleJump(Mugen::Stage & stage, const vector<string> & inputs){
     setSystemVariable(JumpIndex, RuntimeValue(getSystemVariable(JumpIndex).toNumber() + 1));
-    changeState(stage, AirJumpStart, inputs);
+    changeState(stage, AirJumpStart);
 }
 
+/* TODO: get rid of inputs */
 void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs){
     guarding = false;
     if (stateType == StateType::Crouch){
-        changeState(stage, Crouching, inputs);
+        changeState(stage, Crouching);
     } else if (stateType == StateType::Air){
-        changeState(stage, 51, inputs);
+        changeState(stage, 51);
     } else {
-        changeState(stage, Standing, inputs);
+        changeState(stage, Standing);
     }
 }
 
@@ -2809,7 +2815,7 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     }
 
     /* active is the current set of commands */
-    vector<string> active = doInput(*stage);
+    active = doInput(*stage);
 
     recordCommands(active);
 
@@ -2867,7 +2873,7 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             getMoveType() == Move::Idle &&
             stage->getEnemy(this)->getMoveType() == Move::Attack &&
             withinGuardDistance(stage->getEnemy(this))){
-            changeState(*stage, Mugen::StartGuardStand, active);
+            changeState(*stage, Mugen::StartGuardStand);
         }
 
         /*
@@ -3041,9 +3047,8 @@ void Character::doMovement(const vector<Character*> & objects, Stage & stage){
             if (getY() > 0){
                 /* change to the landing state */
                 // mugen->setXVelocity(0);
-                vector<string> inputs;
                 /* FIXME: replace 52 with a constant */
-                changeState(stage, 52, inputs);
+                changeState(stage, 52);
             }
         }
 
@@ -3781,11 +3786,10 @@ PaintownUtil::ReferenceCount<Mugen::Sound> Character::getSound(int group, int it
 }
 
 void Character::doTurn(Mugen::Stage & stage){
-    vector<string> active;
     if (getCurrentState() != Mugen::Crouching){
-        changeState(stage, Mugen::StandTurning, active);
+        changeState(stage, Mugen::StandTurning);
     } else {
-        changeState(stage, Mugen::CrouchTurning, active);
+        changeState(stage, Mugen::CrouchTurning);
     }
     if (behavior != NULL){
         behavior->flip();

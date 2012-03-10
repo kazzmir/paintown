@@ -606,7 +606,7 @@ public:
         RuntimeValue result = value->evaluate(FullEnvironment(stage, guy));
         if (result.isDouble()){
             int value = (int) result.getDoubleValue();
-            guy.changeState(stage, value, commands);
+            guy.changeState(stage, value);
         }
     }
 
@@ -5635,10 +5635,9 @@ public:
         int state = (int) evaluateNumber(value, environment, 0);
         int id = (int) evaluateNumber(this->id, environment, -1);
         vector<Character*> targets = stage.getTargets(id, &guy);
-        vector<string> hisCommands;
         for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
             Character * target = *it;
-            target->changeState(stage, state, hisCommands);
+            target->changeState(stage, state);
         }
     }
 
@@ -6303,7 +6302,7 @@ public:
             }
         }
         stage.addObject(helper);
-        helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()), commands);
+        helper->changeState(stage, (int) evaluateNumber(state, environment, guy.getCurrentState()));
     }
 
     StateController * deepCopy() const {

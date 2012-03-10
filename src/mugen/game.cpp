@@ -449,9 +449,8 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
                 std::vector<Character*> players = stage->getPlayers();
                 int count = 0;
                 if (character < players.size()){
-                    std::vector<string> inputs;
                     Character * player = players[character];
-                    player->changeState(*stage, state, inputs);
+                    player->changeState(*stage, state);
                     std::ostringstream out;
                     out << "Changed state for " << player->getDisplayName() << " to " << state;
                     return out.str();
