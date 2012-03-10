@@ -261,6 +261,21 @@ unsigned int ScrollAction::getCurrentIndex() const{
     return current;
 }
 
+void ScrollAction::setCurrentIndex(unsigned int index){
+    if (index >= text.size() || index == current){
+        return;
+    }
+    if (index > current){
+        while (current != index){
+            next();
+        }
+    } else if (index < current){
+        while (current != index){
+            previous();
+        }
+    }
+}
+
 bool ScrollAction::next(){
     if (current < text.size()-1){
         current++;
@@ -882,6 +897,7 @@ recalculateHeight(160){
     list.setShowCursor(true);
     list.setAutoCursor(true);
     list.setCursorCoords(-20,-10,16,0);
+    list.setCurrentIndex(0);
     //list.setExpandState(ScrollAction::Expand);
 }
 
@@ -1066,6 +1082,7 @@ void OptionMenu::reset(){
     fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(10);
     fader.setFadeOutTime(10);
+    list.setCurrentIndex(0);
 }
 
 bool OptionMenu::isDone(){

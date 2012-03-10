@@ -224,9 +224,7 @@ public:
     ~EscapeMenu(){
     }
     void act(){
-        if (enabled){
-            menu->act();
-        }
+        menu->act();
     }
     
     void draw(const Graphics::Bitmap & work){
@@ -392,6 +390,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                             case QuitGame: {
                                 //throw QuitGameException();
                                 logic.escapeMenu.toggle();
+                                break;
                             }
                             case EscapeUp: {
                                 logic.escapeMenu.up();

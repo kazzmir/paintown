@@ -107,6 +107,9 @@ public:
     //! Get current Index
     virtual unsigned int getCurrentIndex() const;
     
+    //! Set current index
+    virtual void setCurrentIndex(unsigned int index);
+    
     //! Get current item
     virtual inline const PaintownUtil::ReferenceCount<ListItem> getCurrent() const{
         return this->text[current].convert<ListItem>();
