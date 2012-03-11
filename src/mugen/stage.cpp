@@ -1729,11 +1729,6 @@ void Mugen::Stage::toggleDebug(int choose){
     int count = 0;
     for (vector<Mugen::Character *>::iterator it = players.begin(); it != players.end(); it++, count++){
         Mugen::Character *player = *it;
-        /*if (choose == count || choose == -1){
-            player->enableDebug();
-        } else {
-            player->disableDebug();
-        }*/
         if (player != NULL){
             if (debugMode){
                 player->enableDebug();
