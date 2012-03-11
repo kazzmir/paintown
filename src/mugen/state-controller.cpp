@@ -3907,7 +3907,8 @@ private:
         Front, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
         Back, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
         Left, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
-        Right /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
+        Right, /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
+        
     };
 public:
     ControllerExplod(Ast::Section * section, const string & name, int state):
@@ -3968,7 +3969,7 @@ public:
     Value ownPalette;
 
     /* Returns true if the sprite should flip */
-    static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType){
+    static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType, int bindTime){
         switch (positionType){
             case Player1: {
                 if (facingPositive == 1){
@@ -3990,6 +3991,11 @@ public:
                 break;
             }
             case Front: {
+                /* Hm, is this a hack? */
+                if (bindTime == 0){
+                    return guy.getFacing() == FacingLeft;
+                }
+
                 if (facingPositive == -1){
                     return guy.getFacing() == FacingLeft;
                 } else {
@@ -4014,6 +4020,10 @@ public:
                 break;
             }
             case Right: {
+                if (bindTime == 0){
+                    return false;
+                }
+
                 if (facingPositive == 1){
                     return true;
                 } else {
@@ -4024,6 +4034,67 @@ public:
         }
 
         return true;
+    }
+    
+    /* Special case for when bindtime = 0, to replicate a bug in mugen
+     */
+    static void computePositionBind0(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, bool horizontalFlip, double & x, double & y){
+        /* at p1:
+         *  p1: relative to 0, 0. positive X
+         *  p2: relative to 0, 0. negative X
+         *  left: relative to the starting screen left, 0. positive X
+         *  right: relative to the starting screen right, 0. positive X
+         *  back: relative to the starting screen opposite facing, 0. X towards facing
+         *  front: like back, but towards facing. X towards facing
+         */
+
+        switch (positionType){
+            case Player1: {
+                x = stage.maximumLeft(owner) + posX;
+                y = posY;
+                break;
+            }
+            case Player2: {
+                /* FIXME: use the enemy for maximum left? */
+                x = stage.maximumLeft(owner) - posX;
+                y = posY;
+                break;
+            }
+            case Front: {
+                /* Means facing left */
+                if (horizontalFlip){
+                    x = stage.getStartingLeft() - posX;
+                    y = posY;
+                } else {
+                    x = stage.getStartingRight() + posX;
+                    y = posY;
+                }
+                break;
+            }
+            case Back: {
+                if (horizontalFlip){
+                    x = stage.getStartingRight() + posX;
+                    y = posY;
+                } else {
+                    x = stage.getStartingLeft() - posX;
+                    y = posY;
+                }
+                break;
+            }
+            case Left: {
+                x = stage.getStartingLeft() + posX;
+                y = posY;
+                break;
+            }
+            case Right: {
+                x = stage.getStartingRight() + posX;
+                y = posY;
+                break;
+            }
+            default: {
+                break;
+            }
+        }
     }
 
     static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, bool horizontalFlip, double & x, double & y){
@@ -4356,7 +4427,7 @@ public:
         bool superMove = evaluateBool(this->superMove, env, false);
         int superMoveTime = evaluateBool(this->superMoveTime, env, 0);
 
-        bool horizontalFlip = computeFacing(facing, guy, stage, positionType);
+        bool horizontalFlip = computeFacing(facing, guy, stage, positionType, bindTime_value);
         bool verticalFlip = (int) evaluateNumber(this->verticalFlip, env, 1) == -1;
 
         bool ownPalette = evaluateBool(this->ownPalette, env, false);
@@ -4376,7 +4447,19 @@ public:
 
         double x = 0;
         double y = 0;
-        computePosition(posX_value, posY_value, &guy, stage, positionType, horizontalFlip, x, y);
+
+        /* If bindtime is 0 and postype is p1 (either by default or specified)
+         * then the explod should be created relative to screen coordinates 0,
+         * 0. If the player is facing right then positive x means a positive x
+         * for the explod, if the player is facing left then a positive x means
+         * a negative x for the explod.
+         */
+
+        if (bindTime_value == 0){
+            computePositionBind0(posX_value, posY_value, &guy, stage, positionType, horizontalFlip, x, y);
+        } else {
+            computePosition(posX_value, posY_value, &guy, stage, positionType, horizontalFlip, x, y);
+        }
 
         /* FIXME: handle rest of the explod parameters
          */

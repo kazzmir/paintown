@@ -266,6 +266,16 @@ public:
     int maximumUp() const;
     int maximumDown() const;
 
+    /* These two methods are hacks to support the mugen bug in the Explod controller
+     * when bindtime is 0. If the postype is left, right, back, or front then the
+     * explod will be created at the maximumLeft/maximumRight that existed at the
+     * start of the match no matter what the current maximumLeft/Right are.
+     *
+     * Very strange but this is what I tested in the real mugen.
+     */
+    int getStartingLeft() const;
+    int getStartingRight() const;
+
     virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
     
     /* Remove references from this object to other objects, like through targetting */
@@ -385,6 +395,10 @@ protected:
     /*;Camera starting position: Usually 0 for both */
     int startx;
     int starty;
+
+    /* Starting x coordinates */
+    int originalMaxLeft;
+    int originalMaxRight;
 
     /*;Left and right bound of camera */
 

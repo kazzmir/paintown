@@ -1585,6 +1585,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 void Mugen::Stage::reset(){
     camerax = startx;
     cameray = starty;
+    originalMaxLeft = maximumLeft(NULL);
+    originalMaxRight = maximumRight(NULL);
     gameOver = false;
     /*for( std::vector< MugenBackground * >::iterator i = backgrounds.begin(); i != backgrounds.end(); ++i ){
 	// reset just reloads it to default
@@ -1886,6 +1888,14 @@ bool Mugen::Stage::isaPlayer(Mugen::Character * o) const {
     return false;
 }
 
+int Mugen::Stage::getStartingLeft() const {
+    return originalMaxLeft;
+}
+
+int Mugen::Stage::getStartingRight() const {
+    return originalMaxRight;
+}
+
 int Mugen::Stage::maximumRight(const Character * who) const {
     map<const Character*, ScreenBound>::const_iterator find = screenBound.find(who);
     if (find != screenBound.end() &&
@@ -2068,26 +2078,9 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
 
 void Mugen::Stage::initializeName(){
     try{
-#if 0
-        Filesystem::AbsolutePath str = this->location;
-	// Lets look for our def since some people think that all file systems are case insensitive
-	baseDir = Filesystem::find(Filesystem::RelativePath("mugen/stages/"));
-	Global::debug(1) << baseDir.path() << endl;
-
-        /* FIXME: this is ugly */
-	if (str.path().find(".def") == std::string::npos){
-	    str = Filesystem::AbsolutePath(str.path() + ".def");
-	}
-
-	// Get correct directory
-	baseDir = baseDir.join(str).getDirectory();
-	// str = str.getFilename();
-	const Filesystem::AbsolutePath ourDefFile = Mugen::Util::getCorrectFileLocation(baseDir, Filesystem::RelativePath(str.getFilename()).path());
-#endif
-	// Set name of map
 	name = Mugen::Util::probeDef(location, "info", "name");
     } catch (const MugenException &ex){
-	Global::debug(1) << "Couldn't find the name of the map!" << endl;
+	Global::debug(1) << "Couldn't find the name of the stage!" << endl;
 	Global::debug(1) << "Error was: " << ex.getReason() << endl;
     }
 }
