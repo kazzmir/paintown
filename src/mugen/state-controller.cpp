@@ -3907,7 +3907,7 @@ private:
         Front, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
         Back, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
         Left, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
-        Right, /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
+        Right /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
         
     };
 public:
@@ -4259,7 +4259,10 @@ public:
             if (!frozen){
                 Effect::logic();
 
-                if (bindTime == 0){
+                /* either stopped or not set at all.
+                 * FIXME: sort of a hack.. find a more elegant solution
+                 */
+                if (bindTime == 0 || bindTime == -2){
                     int reverse = horizontalFlip ? -1 : 1;
                     x += velocityX * reverse;
                     y += velocityY;
@@ -4287,7 +4290,13 @@ public:
                 if (bindTime > 0){
                     bindTime -= 1;
                 }
-                computePosition(posX, posY, owner, stage, positionType, horizontalFlip, x, y);
+
+                /* -2 is the default bindtime that means it wasn't set in the explod.
+                 * if the bindtime is -1 then it should act indefinetely.
+                 */
+                if (bindTime != -2){
+                    computePosition(posX, posY, owner, stage, positionType, horizontalFlip, x, y);
+                }
             }
         }
 	
@@ -4415,7 +4424,7 @@ public:
         double accelerationX_value = evaluateNumber(accelerationX, 0);
         double accelerationY_value = evaluateNumber(accelerationY, 0);
         int removeTime_value = (int) evaluateNumber(removeTime, -2);
-        int bindTime_value = (int) evaluateNumber(bindTime, 0);
+        int bindTime_value = (int) evaluateNumber(bindTime, -2);
         int spritePriority_value = (int) evaluateNumber(spritePriority, 0);
 #undef evaluateNumber
 
