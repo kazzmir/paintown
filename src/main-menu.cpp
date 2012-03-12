@@ -46,6 +46,35 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
+class Argument{
+public:
+    virtual vector<string> keywords() const = 0;
+    virtual vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end) = 0;
+    virtual string description() const = 0;
+};
+
+class WindowedArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("-w");
+        out.push_back("fullscreen");
+        out.push_back("nowindowed");
+        out.push_back("no-windowed");
+        return out;
+    }
+
+    string description() const {
+        return "Start in fullscreen mode";
+    }
+    
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        /* Just move to the next argument */
+        current++;
+        return current;
+    }
+};
+
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
 static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
@@ -62,13 +91,13 @@ static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
 static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
 
-static const char * closestMatch(const char * s1, vector<const char *> args){
+static const char * closestMatch(const string & s1, vector<const char *> args){
     const char * good = NULL;
     int minimum = -1;
     for (vector<const char *>::iterator it = args.begin(); it != args.end(); it++){
         const char * compare = *it;
         if (strlen(compare) > 2){
-            int distance = Util::levenshtein(s1, compare);
+            int distance = Util::levenshtein(s1.c_str(), compare);
             if (distance != -1 && (minimum == -1 || distance < minimum)){
                 minimum = distance;
                 good = compare;
@@ -79,9 +108,9 @@ static const char * closestMatch(const char * s1, vector<const char *> args){
     return good;
 }
 
-static bool isArg(const char * s1, const char * s2[], int num){
+static bool isArg(const string & s1, const char * s2[], int num){
     for (int i = 0; i < num; i++){
-        if (strcasecmp(s1, s2[i]) == 0){
+        if (strcasecmp(s1.c_str(), s2[i]) == 0){
             return true;
         }
     }
@@ -222,7 +251,7 @@ static vector<string> split(string input, char splitter){
     return out;
 }
 
-static void parseNetworkJoin(const char * input, string & port, string & host, string & name){
+static void parseNetworkJoin(const string & input, string & port, string & host, string & name){
     vector<string> args = split(input, ',');
     if (args.size() > 2){
         port = args[2];
@@ -469,39 +498,44 @@ int paintown_main(int argc, char ** argv){
     }
 #endif
 
+    vector<string> stringArgs;
+    for (int q = 1; q < argc; q++){
+        stringArgs.push_back(argv[q]);
+    }
+
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
      */
-    for ( int q = 1; q < argc; q++ ){
-        if (isArg(argv[q], WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG))){
+    for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
+        if (isArg(*it, WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG))){
             gfx = Global::FULLSCREEN;
-        } else if (isArg(argv[q], DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG))){
-            q += 1;
-            if (q < argc){
-                Util::setDataPath(argv[q]);
+        } else if (isArg(*it, DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG))){
+            it++;
+            if (it != stringArgs.end()){
+                Util::setDataPath(*it);
             }
-        } else if (isArg(argv[q], MUSIC_ARG, NUM_ARGS(MUSIC_ARG))){
+        } else if (isArg(*it, MUSIC_ARG, NUM_ARGS(MUSIC_ARG))){
             music_on = false;
-        } else if (isArg(argv[q], MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
+        } else if (isArg(*it, MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
             mugen = true;
-        } else if (isArg(argv[q], JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG))){
+        } else if (isArg(*it, JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG))){
             joystick_on = false;
-        } else if (isArg(argv[q], RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG))){
+        } else if (isArg(*it, RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG))){
             Global::rateLimit = false;
-        } else if (isArg(argv[q], MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){
-            q += 1;
-            if (q < argc){
-                mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+        } else if (isArg(*it, MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){
+            it++;
+            if (it != stringArgs.end()){
+                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
                 mugenInstant.kind = MugenInstant::Training;
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
             }
-        } else if (isArg(argv[q], DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG))){
+        } else if (isArg(*it, DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG))){
             allow_quit = false;
-        } else if (isArg(argv[q], MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG))){
-            q += 1;
-            if (q < argc){
-                mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+        } else if (isArg(*it, MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG))){
+            it++;
+            if (it != stringArgs.end()){
+                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
                 string player, script;
                 splitString(mugenInstant.player1, ':', player, script);
                 mugenInstant.player1 = player;
@@ -515,50 +549,50 @@ int paintown_main(int argc, char ** argv){
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:script kfm:kfm-script.txt,ken:ken-script.txt,falls" << endl;
             }
-        } else if (isArg(argv[q], MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){
-            q += 1;
-            if (q < argc){
-                mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+        } else if (isArg(*it, MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){
+            it++;
+            if (it != stringArgs.end()){
+                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
                 mugenInstant.kind = MugenInstant::Watch;
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
             }
 
-        } else if (isArg(argv[q], MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG))){
-            q += 1;
-            if (q < argc){
-                mugenInstant.enabled = parseMugenInstant(argv[q], &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
+        } else if (isArg(*it, MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG))){
+            it++;
+            if (it != stringArgs.end()){
+                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
                 mugenInstant.kind = MugenInstant::Arcade;
             } else {
                 Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
             }
 
-        } else if (isArg(argv[q], DEBUG_ARG, NUM_ARGS(DEBUG_ARG))){
-            q += 1;
-            if (q < argc){
-                istringstream i(argv[q]);
+        } else if (isArg(*it, DEBUG_ARG, NUM_ARGS(DEBUG_ARG))){
+            it++;
+            if (it != stringArgs.end()){
+                istringstream i(*it);
                 int f;
                 i >> f;
                 Global::setDebug(f);
             }
 #ifdef HAVE_NETWORKING
-        } else if (isArg(argv[q], NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
+        } else if (isArg(*it, NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
             just_network_server = true;
-        } else if (isArg(argv[q], NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG))){
+        } else if (isArg(*it, NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG))){
             networkJoin.enabled = true;
             string port;
             string host;
             string name;
-            q += 1;
-            if (q < argc){
-                parseNetworkJoin(argv[q], port, host, name);
+            it++;
+            if (it != stringArgs.end()){
+                parseNetworkJoin(*it, port, host, name);
                 networkJoin.port = port;
                 networkJoin.host = host;
                 networkJoin.name = name;
             }
 #endif
         } else {
-            const char * arg = argv[q];
+            const string & arg = *it;
             const char * closest = closestMatch(arg, all_args);
             if (closest == NULL){
                 Global::debug(0) << "I don't recognize option '" << arg << "'" << endl;
