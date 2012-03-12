@@ -1025,6 +1025,9 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     player2->setRegeneration(true);
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&player2Behavior);
+    
+    RunMatchOptions options;
+    options.setBehavior(&player1Behavior, NULL);
 
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
@@ -1040,7 +1043,7 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     stage.addPlayer1(player1.raw());
     stage.addPlayer2(player2.raw());
     stage.reset();
-    runMatch(&stage);
+    runMatch(&stage, "", options);
 }
 
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
@@ -1065,6 +1068,10 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     player2->setRegeneration(true);
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&dummyBehavior);
+    
+    RunMatchOptions options;
+    
+    options.setBehavior(&player1Behavior, NULL);
 
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
@@ -1080,7 +1087,7 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     stage.addPlayer1(player1.raw());
     stage.addPlayer2(player2.raw());
     stage.reset();
-    runMatch(&stage);
+    runMatch(&stage, "", options);
 }
 
 void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
