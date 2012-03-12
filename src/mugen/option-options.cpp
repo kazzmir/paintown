@@ -1420,7 +1420,8 @@ public:
     player(player),
     renderBackground(true),
     clearColor(Graphics::makeColor(0,0,0)),
-    clearAlpha(0){
+    clearAlpha(0),
+    throwable(false){
         currentValue = "(Enter)";
         optionName = playerName;
     }
@@ -1451,13 +1452,14 @@ public:
             
             class Logic: public PaintownUtil::Logic {
             public:
-                Logic(OptionMenu & menu, int player, const std::string & playerName):
+                Logic(OptionMenu & menu, int player, const std::string & playerName, bool throwable):
                 menu(menu),
                 player(player),
                 playerName(playerName),
                 escaped(false),
                 changingKeys(false),
-                currentValue(0){
+                currentValue(0),
+                throwable(throwable){
                     player1Input = getPlayer1Keys(20);
                     player2Input = getPlayer2Keys(20);
                     keyValues.push_back("Jump");
@@ -1496,6 +1498,7 @@ public:
                 bool escaped;
                 bool changingKeys;
                 unsigned int currentValue;
+                bool throwable;
                 std::vector< std::string > keyValues;
                 std::vector< Mugen::Keys > keyMap;
                 
@@ -1634,6 +1637,10 @@ public:
                                 menu.toggleCursor();
                                 menu.down();
                                 menu.setName(playerName + " Keys (Enter to change)");
+                                // Lets throw an exception if it is requested
+                                if (throwable){
+                                    throw OptionMenu::KeysChangedException( player == 0 ? Mugen::Player1 : Mugen::Player2 );
+                                }
                             }
                         }
                     }
@@ -1677,7 +1684,7 @@ public:
                 menu.setRenderBackground(renderBackground);
                 menu.setClearColor(clearColor);
                 menu.setClearAlpha(clearAlpha);
-                Logic logic(menu, player, optionName);
+                Logic logic(menu, player, optionName, throwable);
                 Draw draw(menu,logic);
                 PaintownUtil::standardLoop(logic, draw);
             } catch (const Escape::EscapeException & ex){
@@ -1711,38 +1718,23 @@ public:
     bool renderBackground;
     Graphics::Color clearColor;
     int clearAlpha;
+    bool throwable;
 };
 
 PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int player, const std::string & text){
     PaintownUtil::ReferenceCount<PlayerKeys> playerKeys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(player, text));
     playerKeys->renderBackground = false;
     playerKeys->clearAlpha = 0;
+    playerKeys->throwable = true;
     return playerKeys.convert<Gui::ScrollItem>();
 }
 
-/*
-PaintownUtil::ReferenceCount<OptionMenu> OptionMenu::getGameMenu(){
-    std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
-    
-    PaintownUtil::ReferenceCount<PlayerKeys> player1Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(0, "Player1"));
-    PaintownUtil::ReferenceCount<PlayerKeys> player2Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(1, "Player2"));;
-    
-    player1Keys->renderBackground = false;
-    player1Keys->clearAlpha = 40;
-    player2Keys->renderBackground = false;
-    player2Keys->clearAlpha = 40;
-    
-    list.push_back(player1Keys.convert<Gui::ScrollItem>());
-    list.push_back(player2Keys.convert<Gui::ScrollItem>());
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
-    
-    PaintownUtil::ReferenceCount<OptionMenu> menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
-    
-    menu->setRenderBackground(false);
-    menu->setClearAlpha(40);
-    
-    return menu;
-}*/
+OptionMenu::KeysChangedException::KeysChangedException(const Mugen::PlayerType & type):
+type(type){
+}
+
+OptionMenu::KeysChangedException::~KeysChangedException() throw(){
+}
 
 OptionOptions::OptionOptions( const std::string &name ){
     if (name.empty()){

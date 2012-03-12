@@ -53,6 +53,52 @@ using std::ostringstream;
 static const int DEFAULT_WIDTH = 320;
 static const int DEFAULT_HEIGHT = 240;
 
+class ScopedBehavior{
+public:
+    ScopedBehavior(){
+        updateAll();
+    }
+    ~ScopedBehavior(){
+    }
+    
+    PaintownUtil::ReferenceCount<HumanBehavior> get(const Mugen::PlayerType & player){
+        switch (player){
+            case Mugen::Player1:
+                update(player);
+                return player1;
+            case Mugen::Player2:
+                update(player);
+                return player2;
+            default:
+                break;
+        }
+        return player1;
+    }
+    
+    void update(const Mugen::PlayerType & player){
+        switch (player){
+            case Mugen::Player1:
+                player1 = PaintownUtil::ReferenceCount<HumanBehavior>(new HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft()));
+                break;
+            case Mugen::Player2:
+                player2 = PaintownUtil::ReferenceCount<HumanBehavior>(new HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft()));
+                break;
+            default:
+                break;
+        }
+    }
+    
+    void updateAll(){
+        update(Mugen::Player1);
+        update(Mugen::Player2);
+    }
+protected:
+    PaintownUtil::ReferenceCount<HumanBehavior> player1;
+    PaintownUtil::ReferenceCount<HumanBehavior> player2;
+};
+
+ScopedBehavior playerBehavior;
+
 Game::Game(const PlayerType & playerType, const GameType & gameType, const Filesystem::AbsolutePath & systemFile):
 playerType(playerType),
 gameType(gameType),
@@ -409,7 +455,13 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                                 break;
                             }
                             case EscapeEnter: {
-                                logic.escapeMenu.enter();
+                                try {
+                                    logic.escapeMenu.enter();
+                                } catch (const OptionMenu::KeysChangedException & ex){
+                                    
+                                    //FIXME fix the behavior update for player
+                                    //playerBehavior.update(ex.getType());
+                                }
                                 break;
                             }
                             case SetHealth: {
@@ -929,12 +981,13 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     player1 = makeCharacter(player1Name, random1, allCharacters);
     player2 = makeCharacter(player2Name, random2, allCharacters);
 
-    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+    //HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
     LearningAIBehavior player2Behavior(30);
     // Set regenerative health
     player1->setRegeneration(true);
     player2->setRegeneration(true);
-    player1->setBehavior(&player1Behavior);
+    //player1->setBehavior(&player1Behavior);
+    player1->setBehavior(playerBehavior.get(Player1).raw());
     player2->setBehavior(&player2Behavior);
 
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
@@ -969,12 +1022,13 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     player1 = makeCharacter(player1Name, random1, allCharacters);
     player2 = makeCharacter(player2Name, random2, allCharacters);
 
-    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+    //HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
     DummyBehavior dummyBehavior;
     // Set regenerative health
     player1->setRegeneration(true);
     player2->setRegeneration(true);
-    player1->setBehavior(&player1Behavior);
+    //player1->setBehavior(&player1Behavior);
+    player1->setBehavior(playerBehavior.get(Mugen::Player1).raw());
     player2->setBehavior(&dummyBehavior);
 
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
@@ -1087,12 +1141,12 @@ void Game::doTraining(Searcher & searcher){
         }
         InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
         InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
-        HumanBehavior behavior = HumanBehavior(keys1, keys2);
+        /*HumanBehavior behavior = HumanBehavior(keys1, keys2);
         if (playerType == Player1){
             behavior = HumanBehavior(keys1, getPlayer1InputLeft());
         } else {
             behavior = HumanBehavior(keys2, getPlayer2InputLeft());
-        }
+        }*/
         DummyBehavior dummyBehavior;
         PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
         PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
@@ -1129,11 +1183,11 @@ void Game::doTraining(Searcher & searcher){
             }
         }
         if (playerType == Player1){
-            player1.getFirst().setBehavior(&behavior);
+            player1.getFirst().setBehavior(playerBehavior.get(playerType).raw());
             player2.getFirst().setBehavior(&dummyBehavior);
         } else {
             player1.getFirst().setBehavior(&dummyBehavior);
-            player2.getFirst().setBehavior(&behavior);
+            player2.getFirst().setBehavior(playerBehavior.get(playerType).raw());
         }
         player1.getFirst().setRegeneration(true);
         player2.getFirst().setRegeneration(true);
@@ -1216,7 +1270,7 @@ void Game::doArcade(Searcher & searcher){
     InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
     InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
     InputMap<Mugen::Keys> playerKeys;
-    HumanBehavior behavior(keys1, keys2);
+    //HumanBehavior behavior(keys1, keys2);
     LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
     
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
@@ -1253,11 +1307,11 @@ void Game::doArcade(Searcher & searcher){
         if (playerType == Mugen::Player1){
             player1Collection = select.getPlayer1().getCollection();
             playerKeys = keys1;
-            behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+            //behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
         } else {
             player2Collection = select.getPlayer2().getCollection();
             playerKeys = keys2;
-            behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+            //behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
         }
         
         // Match data
@@ -1394,7 +1448,7 @@ void Game::doArcade(Searcher & searcher){
             }
                 
             ourPlayer = player1;
-            player1->getFirst().setBehavior(&behavior);
+            player1->getFirst().setBehavior(playerBehavior.get(playerType).raw());
             player2->getFirst().setBehavior(&AIBehavior);
             stagePath = player2Collection.getFirst().getStage();
         } else {
@@ -1410,7 +1464,7 @@ void Game::doArcade(Searcher & searcher){
             }
             
             ourPlayer = player2;
-            player2->getFirst().setBehavior(&behavior);
+            player2->getFirst().setBehavior(playerBehavior.get(playerType).raw());
             player1->getFirst().setBehavior(&AIBehavior);
             stagePath = player1Collection.getFirst().getStage();
         }
@@ -1530,8 +1584,8 @@ void Game::doVersus(Searcher & searcher){
         select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
         InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
         InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
-        HumanBehavior behavior1 = HumanBehavior(keys1, getPlayer1InputLeft());
-        HumanBehavior behavior2 = HumanBehavior(keys2, getPlayer2InputLeft());
+        //HumanBehavior behavior1 = HumanBehavior(keys1, getPlayer1InputLeft());
+        //HumanBehavior behavior2 = HumanBehavior(keys2, getPlayer2InputLeft());
         PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
         PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
         PaintownUtil::standardLoop(*logic, *draw);
@@ -1560,8 +1614,8 @@ void Game::doVersus(Searcher & searcher){
             }
         }
         
-        player1.getFirst().setBehavior(&behavior1);
-        player2.getFirst().setBehavior(&behavior2);
+        player1.getFirst().setBehavior(playerBehavior.get(Mugen::Player1).raw());
+        player2.getFirst().setBehavior(playerBehavior.get(Mugen::Player2).raw());
         Mugen::Stage stage(select.getStage());
         prepareStage(loader, stage);
         stage.reset();
@@ -1812,7 +1866,7 @@ void Game::doSurvival(Searcher & searcher){
     InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
     InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
     InputMap<Mugen::Keys> playerKeys;
-    HumanBehavior behavior(keys1, keys2);
+    //HumanBehavior behavior(keys1, keys2);
     LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
     
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
@@ -1845,12 +1899,12 @@ void Game::doSurvival(Searcher & searcher){
         if (playerType == Mugen::Player1){
             player1Collection = select.getPlayer1().getCollection();
             playerKeys = keys1;
-            behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+            //behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
             player2Collection = select.getPlayer1().getOpponentCollection();
         } else {
             player2Collection = select.getPlayer2().getCollection();
             playerKeys = keys2;
-            behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+            //behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
             player1Collection = select.getPlayer2().getOpponentCollection();
         }
         
@@ -1897,7 +1951,7 @@ void Game::doSurvival(Searcher & searcher){
             if (!playerLoaded){
                 player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
                 ourPlayer = player1;
-                player1->getFirst().setBehavior(&behavior);
+                player1->getFirst().setBehavior(playerBehavior.get(playerType).raw());
                 playerLoaded = true;
             }
             
@@ -1907,7 +1961,7 @@ void Game::doSurvival(Searcher & searcher){
             if (!playerLoaded){
                 player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
                 ourPlayer = player2;
-                player2->getFirst().setBehavior(&behavior);
+                player2->getFirst().setBehavior(playerBehavior.get(playerType).raw());
                 playerLoaded = true;
             }
             

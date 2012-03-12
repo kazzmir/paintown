@@ -1,6 +1,7 @@
 #ifndef _paintown_mugen_options_h
 #define _paintown_mugen_options_h
 
+#include "exception.h"
 #include "menu.h"
 #include "util/menu/optionfactory.h"
 #include "util/gui/scroll-list.h"
@@ -407,9 +408,19 @@ public:
         return this->clearAlpha;
     }
     
-    static PaintownUtil::ReferenceCount<Gui::ScrollItem> getPlayerKeys(int player, const std::string &);
+    class KeysChangedException : public MugenException{
+    public:
+        KeysChangedException(const Mugen::PlayerType &);
+        virtual ~KeysChangedException() throw();
+        
+        inline const Mugen::PlayerType & getType() const{
+            return this->type;
+        }
+    private:
+        Mugen::PlayerType type;
+    };
     
-    //static PaintownUtil::ReferenceCount<OptionMenu> getGameMenu();
+    static PaintownUtil::ReferenceCount<Gui::ScrollItem> getPlayerKeys(int player, const std::string &);
 
 private:
     //! Name
