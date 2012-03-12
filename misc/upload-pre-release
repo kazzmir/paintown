@@ -11,7 +11,7 @@ fi
 # rsync -e ssh file.zip jsmith,fooproject@frs.sourceforge.net:/home/frs/project/f/fo/fooproject/Rel_1/
 # http://sourceforge.net/apps/trac/sourceforge/wiki/Release files for download
 
-home=/home/frs/project/p/pa/paintown/paintown/pre-release
+home=/home/frs/project/paintown/paintown/pre-release
 rsync -avP -e ssh $* kazzmir,paintown@frs.sourceforge.net:$home
 
 # old way
