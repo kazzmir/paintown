@@ -34,13 +34,15 @@ public:
 
 class HumanBehavior: public Behavior {
 public:
-    HumanBehavior(const InputMap<Keys> & left, const InputMap<Keys> & right);
+    HumanBehavior(const InputMap<Keys> &, const InputMap<Keys> &);
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     
     virtual void flip();
 
     virtual ~HumanBehavior();
+    
+    virtual void updateKeys(const InputMap<Keys> &, const InputMap<Keys> &);
 
 protected:
     InputMap<Keys> & getInput(bool facing);

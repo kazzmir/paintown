@@ -116,6 +116,11 @@ vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Charac
 HumanBehavior::~HumanBehavior(){
 }
 
+void HumanBehavior::updateKeys(const InputMap<Keys> & right, const InputMap<Keys> & left){
+    this->right = right;
+    this->left = left;
+}
+
 RandomAIBehavior::RandomAIBehavior(){
 }
     

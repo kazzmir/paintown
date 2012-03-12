@@ -132,6 +132,99 @@ public:
     }
 };
 
+class RunMatchOptions{
+public:
+    RunMatchOptions():
+    ticker(0),
+    endTime(-1),
+    demoMode(false),
+    player1Behavior(NULL),
+    player2Behavior(NULL){
+        fader.setState(Gui::FadeTool::EndFade);
+    }
+    
+    // For demo mode
+    RunMatchOptions(int endTime):
+    ticker(0),
+    endTime(endTime),
+    demoMode(endTime != -1),
+    player1Behavior(NULL),
+    player2Behavior(NULL){
+        fader.setFadeInTime(1);
+        fader.setFadeOutTime(60);
+    }
+    
+    RunMatchOptions(const RunMatchOptions & copy):
+    ticker(copy.ticker),
+    endTime(copy.endTime),
+    demoMode(copy.demoMode),
+    player1Behavior(copy.player1Behavior),
+    player2Behavior(copy.player2Behavior){
+        fader.setFadeInTime(1);
+        fader.setFadeOutTime(60);
+    }
+    
+    const RunMatchOptions & operator=(const RunMatchOptions & copy){
+        ticker = copy.ticker;
+        endTime = copy.endTime;
+        demoMode = copy.demoMode;
+        player1Behavior = copy.player1Behavior;
+        player2Behavior = copy.player2Behavior;
+        fader.setFadeInTime(1);
+        fader.setFadeOutTime(60);
+        return *this;
+    }
+    
+    void act(){
+        if (demoMode){
+            if (InputManager::anyInput() && fader.getState() != Gui::FadeTool::FadeOut){
+                ticker = endTime;
+                fader.setState(Gui::FadeTool::FadeOut);
+            }
+            if (ticker < endTime){
+                ticker++;
+            }
+            if (ticker == endTime && fader.getState() != Gui::FadeTool::FadeOut){
+                fader.setState(Gui::FadeTool::FadeOut);
+            }
+            fader.act();
+            if (fader.getState() == Gui::FadeTool::EndFade){
+                throw QuitGameException();
+            }
+        }
+    }
+    
+    void draw(const Graphics::Bitmap & work){
+        if (demoMode){
+            fader.draw(work);
+        }
+    }
+    
+    bool isDemoMode() const{
+        return demoMode;
+    }
+    
+    void setBehavior(HumanBehavior * player1, HumanBehavior * player2){
+        player1Behavior = player1;
+        player2Behavior = player2;
+    }
+    
+    HumanBehavior * getPlayer1Behavior() const {
+        return player1Behavior;
+    }
+    
+    HumanBehavior * getPlayer2Behavior() const {
+        return player2Behavior;
+    }
+protected:
+    int ticker;
+    int endTime;
+    bool demoMode;
+    Gui::FadeTool fader;
+    HumanBehavior * player1Behavior;
+    HumanBehavior * player2Behavior;
+};
+
 enum MugenInput{
     SlowDown,
     SpeedUp,
@@ -159,8 +252,9 @@ public:
         ~ResumeException() throw(){
         }
     };
-    EscapeMenu():
-    enabled(false){
+    EscapeMenu(RunMatchOptions & options):
+    enabled(false),
+    options(options){
         class Resume : public BaseMenuItem {
         public:
             
@@ -211,8 +305,12 @@ public:
         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     
         list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Resume()));
-        list.push_back(OptionMenu::getPlayerKeys(0, "Player 1"));
-        list.push_back(OptionMenu::getPlayerKeys(1, "Player 2"));
+        if (options.getPlayer1Behavior() != NULL){
+            list.push_back(OptionMenu::getPlayerKeys(0, "Player 1"));
+        }
+        if (options.getPlayer2Behavior() != NULL){
+            list.push_back(OptionMenu::getPlayerKeys(1, "Player 2"));
+        }
         list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit()));
         
         menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
@@ -234,9 +332,11 @@ public:
     }
     
     void toggle(){
-        enabled = !enabled;
-        if (!enabled){
-            menu->reset();
+        if (!options.isDemoMode()){
+            enabled = !enabled;
+            if (!enabled){
+                menu->reset();
+            }
         }
     }
     
@@ -270,31 +370,44 @@ public:
                 menu->enter();
             } catch (const ResumeException & ex){
                 toggle();
+            } catch (const OptionMenu::KeysChangedException & ex){
+                switch (ex.getType()){
+                    case Player1:
+                        if (options.getPlayer1Behavior() != NULL){
+                            options.getPlayer1Behavior()->updateKeys(Mugen::getPlayer1Keys(), Mugen::getPlayer1InputLeft());
+                        }
+                        break;
+                    case Player2:
+                        if (options.getPlayer2Behavior() != NULL){
+                            options.getPlayer2Behavior()->updateKeys(Mugen::getPlayer2Keys(), Mugen::getPlayer2InputLeft());
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
     
 protected:
     bool enabled;
-    PaintownUtil::ReferenceCount<OptionMenu> menu; 
+    PaintownUtil::ReferenceCount<OptionMenu> menu;
+    RunMatchOptions & options;
 };
 
 class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
     public:
-        LogicDraw(Mugen::Stage * stage, bool & show_fps, Console::Console & console, int endTime, bool displayFade, Gui::FadeTool & fader):
+        LogicDraw(Mugen::Stage * stage, bool & show_fps, Console::Console & console, RunMatchOptions & options):
         endMatch(false),
         gameSpeed(Data::getInstance().getGameSpeed()),
         stage(stage),
         show_fps(show_fps),
         console(console),
         gameTicks(0),
-        endTime(endTime),
-        ticker(0),
-        demoMode((endTime != -1)),
+        options(options),
         show(true),
-        displayFade(displayFade),
-        fader(fader),
-        showGameSpeed(0){
+        showGameSpeed(0),
+        escapeMenu(options){
             gameInput.set(Keyboard::Key_F1, SlowDown);
             gameInput.set(Keyboard::Key_F2, SpeedUp);
             gameInput.set(Keyboard::Key_F3, NormalSpeed);
@@ -329,12 +442,8 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         MessageQueue messages;
 
         double gameTicks;
-        int endTime;
-        int ticker;
-        bool demoMode;
+        RunMatchOptions & options;
         bool show;
-        bool displayFade;
-        Gui::FadeTool & fader;
         int showGameSpeed;
         
         EscapeMenu escapeMenu;
@@ -409,11 +518,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                                 break;
                             }
                             case EscapeEnter: {
-                                try {
-                                    logic.escapeMenu.enter();
-                                } catch (const OptionMenu::KeysChangedException & ex){
-                                    // TODO do something useful to player behavior ex.getType()
-                                }
+                                logic.escapeMenu.enter();
                                 break;
                             }
                             case SetHealth: {
@@ -470,22 +575,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 doInput();
             }
 
-            if (demoMode){
-                if (InputManager::anyInput() && fader.getState() != Gui::FadeTool::FadeOut){
-                    ticker = endTime;
-                    fader.setState(Gui::FadeTool::FadeOut);
-                }
-                if (ticker < endTime){
-                    ticker++;
-                }
-                if (ticker == endTime && fader.getState() != Gui::FadeTool::FadeOut){
-                    fader.setState(Gui::FadeTool::FadeOut);
-                }
-                fader.act();
-                if (fader.getState() == Gui::FadeTool::EndFade){
-                    throw QuitGameException();
-                }
-            }
+            options.act();
         }
 
         virtual bool done(){
@@ -511,9 +601,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
             work.start();
             stage->render(&work);
-            if (displayFade){
-                fader.draw(work);
-            }
+            
+            options.draw(work);
+            
             escapeMenu.draw(work);
             work.finish();
             FontRender * render = FontRender::getInstance();
@@ -527,7 +617,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         }
 };
 
-static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", int endTime = -1){
+static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", RunMatchOptions options = RunMatchOptions()){
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;
@@ -669,12 +759,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
     bool show_fps = false;
 
-
-    Gui::FadeTool fader;
-    fader.setFadeInTime(1);
-    fader.setFadeOutTime(60);
-    LogicDraw all(stage, show_fps, console, endTime, (endTime != -1), fader);
-    // Draw draw(stage, show_fps, console, (endTime != -1), fader);
+    LogicDraw all(stage, show_fps, console, options);
 
     PaintownUtil::standardLoop(all, all);
 }
@@ -1132,12 +1217,17 @@ void Game::doTraining(Searcher & searcher){
                 continue;
             }
         }
+        
+        RunMatchOptions options;
+        
         if (playerType == Player1){
             player1.getFirst().setBehavior(&behavior);
             player2.getFirst().setBehavior(&dummyBehavior);
+            options.setBehavior(&behavior, NULL);
         } else {
             player1.getFirst().setBehavior(&dummyBehavior);
             player2.getFirst().setBehavior(&behavior);
+            options.setBehavior(NULL, &behavior);
         }
         player1.getFirst().setRegeneration(true);
         player2.getFirst().setRegeneration(true);
@@ -1146,7 +1236,7 @@ void Game::doTraining(Searcher & searcher){
         prepareStage(loader, stage);
         stage.reset();
         try {
-            runMatch(&stage);
+            runMatch(&stage, "", options);
         } catch (const Exception::Return & ex){
         } catch (const QuitGameException & ex){
         }
@@ -1237,6 +1327,8 @@ void Game::doArcade(Searcher & searcher){
     // Parsed
     AstRef parsed(Mugen::Util::parseDef(systemFile.path()));
     
+    RunMatchOptions options;
+    
     // Scoped so it doesn't persist
     {
         Mugen::CharacterSelect select(systemFile);
@@ -1258,10 +1350,12 @@ void Game::doArcade(Searcher & searcher){
             player1Collection = select.getPlayer1().getCollection();
             playerKeys = keys1;
             behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+            options.setBehavior(&behavior, NULL);
         } else {
             player2Collection = select.getPlayer2().getCollection();
             playerKeys = keys2;
             behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+            options.setBehavior(NULL, &behavior);
         }
         
         // Match data
@@ -1437,7 +1531,7 @@ void Game::doArcade(Searcher & searcher){
         prepareStage(loader, stage);
         stage.reset();
         try {
-            runMatch(&stage);
+            runMatch(&stage, "", options);
             if (ourPlayer->getFirst().getMatchWins() > wins){
                 wins = ourPlayer->getFirst().getMatchWins();
                 // Reset player for next match
@@ -1540,6 +1634,9 @@ void Game::doVersus(Searcher & searcher){
         PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
         PaintownUtil::standardLoop(*logic, *draw);
         
+        RunMatchOptions options;
+        options.setBehavior(&behavior1, &behavior2);
+        
         if (select.wasCanceled()){
             return;
         }
@@ -1570,7 +1667,7 @@ void Game::doVersus(Searcher & searcher){
         prepareStage(loader, stage);
         stage.reset();
         try {
-            runMatch(&stage);
+            runMatch(&stage, "", options);
         } catch (const Exception::Return & ex){
         } catch (const QuitGameException & ex){
         }
@@ -1801,7 +1898,8 @@ void Game::startDemo(Searcher & searcher){
     stage.reset();
     try {
         InputManager::waitForClear();
-        runMatch(&stage, "", endTime);
+        
+        runMatch(&stage, "", RunMatchOptions(endTime));
     } catch (const Exception::Return & ex){
     } catch (const QuitGameException & ex){
     }
@@ -1829,6 +1927,8 @@ void Game::doSurvival(Searcher & searcher){
     
     Filesystem::AbsolutePath stagePath;
     
+    RunMatchOptions options;
+    
     // Scoped so it doesn't persist
     {
         Mugen::CharacterSelect select(systemFile);
@@ -1851,11 +1951,13 @@ void Game::doSurvival(Searcher & searcher){
             playerKeys = keys1;
             behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
             player2Collection = select.getPlayer1().getOpponentCollection();
+            options.setBehavior(&behavior, NULL);
         } else {
             player2Collection = select.getPlayer2().getCollection();
             playerKeys = keys2;
             behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
             player1Collection = select.getPlayer2().getOpponentCollection();
+            options.setBehavior(NULL, &behavior);
         }
         
         characters = select.getCharacters();
@@ -1903,6 +2005,7 @@ void Game::doSurvival(Searcher & searcher){
                 ourPlayer = player1;
                 player1->getFirst().setBehavior(&behavior);
                 playerLoaded = true;
+                options.setBehavior(&behavior, NULL);
             }
             
             player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
@@ -1913,6 +2016,7 @@ void Game::doSurvival(Searcher & searcher){
                 ourPlayer = player2;
                 player2->getFirst().setBehavior(&behavior);
                 playerLoaded = true;
+                options.setBehavior(NULL, &behavior);
             }
             
             player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
@@ -1939,7 +2043,7 @@ void Game::doSurvival(Searcher & searcher){
         stage.getGameInfo()->setWins(1, 0);
         stage.reset();
         try {
-            runMatch(&stage);
+            runMatch(&stage, "", options);
             if (ourPlayer->getFirst().getMatchWins()> wins){
                 wins++;
                 // Reset player for next match
