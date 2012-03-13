@@ -1862,12 +1862,13 @@ public:
         
         class ResetDefault : public BaseMenuItem{
         public:
-            ResetDefault(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, bool renderBackground, Graphics::Color clearColor, int clearAlpha):
+            ResetDefault(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool throwable):
             parent(parent),
             player(player),
             renderBackground(renderBackground),
             clearColor(clearColor),
-            clearAlpha(clearAlpha){
+            clearAlpha(clearAlpha),
+            throwable(throwable){
                 optionName = "Default Values";
                 currentValue = "(Enter)";
             }
@@ -1891,6 +1892,9 @@ public:
                 if (confirmDialog("Reset to default?", parent, renderBackground, clearColor, clearAlpha)){
                     ::Configuration::setDefaultKeys(player);
                     ::Configuration::saveConfiguration();
+                    if (throwable){
+                        throw OptionMenu::KeysChangedException( player == 0 ? Mugen::Player1 : Mugen::Player2 );
+                    }
                 }
             }
             
@@ -1899,12 +1903,13 @@ public:
             bool renderBackground;
             Graphics::Color clearColor;
             int clearAlpha;
+            bool throwable;
         };
         try {
             
             std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
             list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ChangeKeys(parent, player, optionName, renderBackground, clearColor, clearAlpha, throwable)));
-            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(parent, player, renderBackground, clearColor, clearAlpha)));
+            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(parent, player, renderBackground, clearColor, clearAlpha, throwable)));
             OptionMenu menu(*parent);
             menu.updateList(list);
             menu.setName(optionName + " Key Configuration");
