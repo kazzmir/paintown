@@ -160,6 +160,64 @@ public:
     }
 };
 
+class RateLimitArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("fps");
+        out.push_back("rate-limit");
+        return out;
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        return current;
+    }
+
+    string description() const {
+        return " : Don't rate limit the game to the default fps (40). This is mainly useful for benchmarking graphics capabilities.";
+    }
+};
+
+class JoystickArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("joystick");
+        out.push_back("nojoystick");
+        out.push_back("no-joystick");
+        return out;
+    }
+
+    string description() const {
+        return " : Disable joystick input";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        return current;
+    }
+};
+
+class MugenArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen");
+        out.push_back("--mugen");
+        return out;
+    }
+
+    string description() const {
+        return " : Go directly to the mugen menu";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        return current;
+    }
+};
+
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
 // static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
 // static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
@@ -167,14 +225,14 @@ public:
 // static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
 static const char * NETWORK_JOIN_ARG[] = {"network-join"};
-static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
+// static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
 static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
 static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
 static const char * MUGEN_INSTANT_SCRIPT_ARG[] = {"mugen:script"};
 static const char * MUGEN_INSTANT_ARCADE_ARG[] = {"mugen:arcade"};
-static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
+// static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
-static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
+// static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
 
 static const char * closestMatch(const string & s1, vector<const char *> args){
     const char * good = NULL;
@@ -232,14 +290,17 @@ static void showOptions(){
 
     MusicArgument music;
     Global::debug(0) << " " << Util::join(music.keywords(), ", ") << music.description() << endl;
-    Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
+    MugenArgument mugen;
+    Global::debug(0) << " " << Util::join(mugen.keywords(), ", ") << mugen.description() << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG)) << " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players" << endl;
-    Global::debug(0) << " " << all(JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG)) << " : Disable joystick input" << endl;
+    JoystickArgument joystick;
+    Global::debug(0) << " " << Util::join(joystick.keywords(), ", ") << joystick.description() << endl;
     Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
-    Global::debug(0) << " " << all(RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG)) << " : Don't rate limit the game to the default fps (40). This is only useful for benchmarking graphics capabilities." << endl;
+    RateLimitArgument rateLimit;
+    Global::debug(0) << " " << Util::join(rateLimit.keywords(), ", ") << rateLimit.description() << endl;
 #ifdef HAVE_NETWORKING
     Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
     Global::debug(0) << " " << all(NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG)) << " [<name>,<server ip>,<port>]: Join a network game directly. If not given, ip and port will be read from the configuration file if one exists otherwise they default to 127.0.0.1:7887. The name will be randomly generated if not given. Do not put spaces between the commas in the optional arguments." << endl;
@@ -565,12 +626,12 @@ int paintown_main(int argc, char ** argv){
     // ADD_ARGS(DATAPATH_ARG);
     // ADD_ARGS(DEBUG_ARG);
     // ADD_ARGS(MUSIC_ARG);
-    ADD_ARGS(MUGEN_ARG);
+    // ADD_ARGS(MUGEN_ARG);
     ADD_ARGS(MUGEN_INSTANT_ARG);
     ADD_ARGS(MUGEN_INSTANT_WATCH_ARG);
     ADD_ARGS(MUGEN_INSTANT_SCRIPT_ARG);
     ADD_ARGS(MUGEN_INSTANT_ARCADE_ARG);
-    ADD_ARGS(RATE_LIMIT_ARG);
+    // ADD_ARGS(RATE_LIMIT_ARG);
 #ifdef HAVE_NETWORKING
     ADD_ARGS(NETWORK_SERVER_ARG);
     ADD_ARGS(NETWORK_JOIN_ARG);
@@ -598,6 +659,9 @@ int paintown_main(int argc, char ** argv){
     DataPathArgument dataPath;
     MusicArgument musicArgument;
     DebugArgument debug;
+    RateLimitArgument rateLimit;
+    JoystickArgument joystick;
+    MugenArgument mugenArgument;
 
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
@@ -609,11 +673,11 @@ int paintown_main(int argc, char ** argv){
             it = dataPath.parse(it, stringArgs.end());
         } else if (musicArgument.isArg(*it)){
             music_on = false;
-        } else if (isArg(*it, MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
+        } else if (mugenArgument.isArg(*it)){
             mugen = true;
-        } else if (isArg(*it, JOYSTICK_ARG, NUM_ARGS(JOYSTICK_ARG))){
+        } else if (joystick.isArg(*it)){
             joystick_on = false;
-        } else if (isArg(*it, RATE_LIMIT_ARG, NUM_ARGS(RATE_LIMIT_ARG))){
+        } else if (rateLimit.isArg(*it)){
             Global::rateLimit = false;
         } else if (isArg(*it, MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){
             it++;
