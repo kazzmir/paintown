@@ -51,6 +51,16 @@ public:
     virtual vector<string> keywords() const = 0;
     virtual vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end) = 0;
     virtual string description() const = 0;
+
+    bool isArg(const string & what) const {
+        vector<string> match = keywords();
+        for (vector<string>::iterator it = match.begin(); it != match.end(); it++){
+            if (strcasecmp(it->c_str(), what.c_str()) == 0){
+                return true;
+            }
+        }
+        return false;
+    }
 };
 
 class WindowedArgument: public Argument {
@@ -503,11 +513,13 @@ int paintown_main(int argc, char ** argv){
         stringArgs.push_back(argv[q]);
     }
 
+    WindowedArgument windowed;
+
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
      */
     for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
-        if (isArg(*it, WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG))){
+        if (windowed.isArg(*it)){
             gfx = Global::FULLSCREEN;
         } else if (isArg(*it, DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG))){
             it++;
