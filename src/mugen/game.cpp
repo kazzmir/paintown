@@ -304,16 +304,21 @@ public:
         };
         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     
+        // Add empty list for now
+        menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+        
+        // Create list
         list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Resume()));
         if (options.getPlayer1Behavior() != NULL){
-            list.push_back(OptionMenu::getPlayerKeys(0, "Player 1"));
+            list.push_back(OptionMenu::getPlayerKeys(0, "Player 1", menu));
         }
         if (options.getPlayer2Behavior() != NULL){
-            list.push_back(OptionMenu::getPlayerKeys(1, "Player 2"));
+            list.push_back(OptionMenu::getPlayerKeys(1, "Player 2", menu));
         }
         list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit()));
         
-        menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+        // Now update it
+        menu->updateList(list);
         
         menu->setName("PAUSED");
         menu->setRenderBackground(false);

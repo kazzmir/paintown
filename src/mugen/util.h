@@ -656,15 +656,16 @@ class SoundSystem{
 public:
     SoundSystem(){
     }
+    SoundSystem(const SoundSystem & copy):
+    sounds(copy.sounds),
+    soundLookup(copy.soundLookup){
+    }
     ~SoundSystem(){
-        // Get rid of sounds
-        /*for (std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i){
-            for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-                if (j->second){
-                    delete j->second;
-                }
-            }
-        }*/
+    }
+    const SoundSystem & operator=(const SoundSystem & copy){
+        sounds = copy.sounds;
+        soundLookup = copy.soundLookup;
+        return *this;
     }
     //! Init the sound system given a .snd file
     void init(const std::string & file){

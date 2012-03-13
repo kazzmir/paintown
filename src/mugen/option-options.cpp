@@ -901,6 +901,33 @@ recalculateHeight(160){
     //list.setExpandState(ScrollAction::Expand);
 }
 
+OptionMenu::OptionMenu(const OptionMenu & menu):
+name(menu.name),
+background(menu.background),
+renderBackground(menu.renderBackground),
+clearColor(menu.clearColor),
+clearAlpha(menu.clearAlpha),
+sounds(menu.sounds),
+font(menu.font),
+recalculateHeight(menu.recalculateHeight){
+    // Set the fade state
+    fader.setState(Gui::FadeTool::FadeIn);
+    fader.setFadeInTime(10);
+    fader.setFadeOutTime(10);
+    
+    // Setup list
+    ListFont listFont(font, 0, 0);
+    
+    list.setListFont(listFont);
+    list.setActiveFont(listFont);
+    list.setVisibleItems(3);
+    list.setAutoSpacing(true);
+    list.setLocation(160, 0);
+    list.setShowCursor(true);
+    list.setAutoCursor(true);
+    list.setCurrentIndex(0);
+}
+
 OptionMenu::~OptionMenu(){
 }
 
@@ -1101,9 +1128,9 @@ void OptionMenu::setLast(){
 // Box
 class MenuLogic: public PaintownUtil::Logic {
 public:
-    MenuLogic(OptionMenu & menu, bool & escaped):
+    MenuLogic(OptionMenu & menu):
     menu(menu),
-    escaped(escaped){
+    escaped(false){
         player1Input = getPlayer1Keys(20);
         player2Input = getPlayer2Keys(20);
     }
@@ -1113,7 +1140,7 @@ public:
     InputMap<Keys> player1Input;
     InputMap<Keys> player2Input;
 
-    bool & escaped;
+    bool escaped;
     
     double ticks(double system){
     return Util::gameTicks(system);
@@ -1331,7 +1358,9 @@ public:
         while (true){
             Filesystem::RelativePath currentMotif = Mugen::Data::getInstance().getMotif();
             try {
-                OptionMenu menu(state.list);
+                //OptionMenu menu(state.list);
+                OptionMenu menu(*parent);
+                menu.updateList(state.list);
                 menu.setName(optionName);
                 menu.setRecalculateHeight(160);
                 
@@ -1339,7 +1368,7 @@ public:
                     // Run options
                     bool escaped = false;
 
-                    MenuLogic logic(menu, escaped);
+                    MenuLogic logic(menu);
                     MenuDraw draw(menu);
                     PaintownUtil::standardLoop(logic, draw);
                     
@@ -1395,6 +1424,8 @@ public:
             throw MotifException();
         }
     }
+    
+    PaintownUtil::ReferenceCount<OptionMenu> parent;
 };
 
 class DummyItem : public ListItem{
@@ -1423,6 +1454,81 @@ public:
     std::string name;
 };
 
+static bool confirmDialog(const std::string & title, PaintownUtil::ReferenceCount<OptionMenu> parent, bool renderBackground, Graphics::Color clearColor, int clearAlpha){
+    class YesNo : public ListItem{
+    public:
+        class ResponseException : public std::exception{
+        public:
+            ResponseException(bool yes):
+            yes(yes){
+            }
+            ~ResponseException() throw(){
+            }
+            bool getConfirmation() const{
+                return yes;
+            }
+        private:
+            bool yes;
+        };
+        YesNo(bool yes):
+        yes(yes){
+            if (yes){
+                optionName = "Yes";
+            } else {
+                optionName = "No";
+            }
+        }
+        
+        virtual ~YesNo(){
+        }
+        
+        virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+            font.draw(x, y, optionName, work);
+        }
+        
+        virtual int getWidth(const ListFont & font) const {
+            return font.getWidth(optionName);
+        }
+        
+        bool next(){
+            return false;
+        }
+        
+        bool previous(){
+            return false;
+        }
+        
+        virtual bool isRunnable() const {
+            return true;
+        }
+        
+        virtual void run(){
+            throw ResponseException(yes);
+        }
+        bool yes;
+        std::string optionName;
+    };
+    try {
+        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new YesNo(true)));
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new YesNo(false)));
+        OptionMenu menu(*parent);
+        menu.updateList(list);
+        menu.setName(title);
+        menu.setRenderBackground(renderBackground);
+        menu.setClearColor(clearColor);
+        menu.setClearAlpha(clearAlpha);
+        
+        MenuLogic logic(menu);
+        MenuDraw draw(menu);
+        PaintownUtil::standardLoop(logic, draw);
+    } catch (const YesNo::ResponseException & ex){
+        return ex.getConfirmation();
+    } catch (const Escape::EscapeException & ex){
+    }
+    return false;
+}
+
 class PlayerKeys : public BaseMenuItem{
 public:
     PlayerKeys(int player, const std::string & playerName):
@@ -1442,312 +1548,375 @@ public:
     }
     
     virtual void run(){
-        while (true){
-            class Key : public BaseMenuItem{
-            public:
-                Key(const std::string & name, const std::string & key){
-                    optionName = name;
-                    currentValue = key;
-                }
-                
-                bool next(){
-                    return false;
-                }
-                
-                bool previous(){
-                    return false;
-                }
-            };
+        class ChangeKeys : public BaseMenuItem{
+        public:
+            ChangeKeys(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, std::string playerName, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool throwable):
+            parent(parent),
+            player(player),
+            playerName(playerName),
+            renderBackground(renderBackground),
+            clearColor(clearColor),
+            clearAlpha(clearAlpha),
+            throwable(throwable){
+                optionName = "Update/Change Keys";
+                currentValue = "(Enter)";
+            }
+            virtual ~ChangeKeys(){
+            }
+            bool next(){
+                return false;
+            }
             
-            class ResetDefault : public BaseMenuItem{
-            public:
-                ResetDefault(int player):
-                player(player){
-                    optionName = "Default Values";
-                    currentValue = "(Enter)";
-                }
-                
-                bool next(){
-                    return false;
-                }
-                
-                bool previous(){
-                    return false;
-                }
-                
-                bool inRunnable() const {
-                    return true;
-                }
-                
-                void run(){
-                    ::Configuration::setDefaultKeys(player);
-                }
-                
-                int player;
-            };
+            bool previous(){
+                return false;
+            }
             
-            class Logic: public PaintownUtil::Logic {
-            public:
-                Logic(OptionMenu & menu, int player, const std::string & playerName, bool throwable):
-                menu(menu),
-                player(player),
-                playerName(playerName),
-                escaped(false),
-                changingKeys(false),
-                highlightDefaultValue(false),
-                currentValue(0),
-                throwable(throwable){
-                    player1Input = getPlayer1Keys(20);
-                    player2Input = getPlayer2Keys(20);
-                    keyValues.push_back("Jump");
-                    keyMap.push_back(Mugen::Up);
-                    keyValues.push_back("Crouch");
-                    keyMap.push_back(Mugen::Down);
-                    keyValues.push_back("Left");
-                    keyMap.push_back(Mugen::Left);
-                    keyValues.push_back("Right");
-                    keyMap.push_back(Mugen::Right);
-                    keyValues.push_back("A");
-                    keyMap.push_back(Mugen::A);
-                    keyValues.push_back("B");
-                    keyMap.push_back(Mugen::B);
-                    keyValues.push_back("C");
-                    keyMap.push_back(Mugen::C);
-                    keyValues.push_back("X");
-                    keyMap.push_back(Mugen::X);
-                    keyValues.push_back("Y");
-                    keyMap.push_back(Mugen::Y);
-                    keyValues.push_back("Z");
-                    keyMap.push_back(Mugen::Z);
-                    //keyValues.push_back("Start");
-                    //keyMap.push_back(Mugen::Start);
-                    //keyValues.push_back("Quit");
-                    //keyMap.push_back(Mugen::Quit);
-                }
-                
-                OptionMenu & menu;
-                int player;
-                const std::string & playerName;
+            virtual bool isRunnable() const {
+                return true;
+            }
+            
+            virtual void run(){
+                class Key : public BaseMenuItem{
+                public:
+                    Key(const std::string & name, const std::string & key){
+                        optionName = name;
+                        currentValue = key;
+                    }
+                    
+                    bool next(){
+                        return false;
+                    }
+                    
+                    bool previous(){
+                        return false;
+                    }
+                };
+                class Logic: public PaintownUtil::Logic {
+                public:
+                    Logic(OptionMenu & menu, int player, const std::string & playerName, bool throwable):
+                    menu(menu),
+                    player(player),
+                    playerName(playerName),
+                    escaped(false),
+                    changingKeys(false),
+                    currentValue(0),
+                    scrollEnd(false),
+                    throwable(throwable){
+                        player1Input = getPlayer1Keys(20);
+                        player2Input = getPlayer2Keys(20);
+                        keyValues.push_back("Jump");
+                        keyMap.push_back(Mugen::Up);
+                        keyValues.push_back("Crouch");
+                        keyMap.push_back(Mugen::Down);
+                        keyValues.push_back("Left");
+                        keyMap.push_back(Mugen::Left);
+                        keyValues.push_back("Right");
+                        keyMap.push_back(Mugen::Right);
+                        keyValues.push_back("A");
+                        keyMap.push_back(Mugen::A);
+                        keyValues.push_back("B");
+                        keyMap.push_back(Mugen::B);
+                        keyValues.push_back("C");
+                        keyMap.push_back(Mugen::C);
+                        keyValues.push_back("X");
+                        keyMap.push_back(Mugen::X);
+                        keyValues.push_back("Y");
+                        keyMap.push_back(Mugen::Y);
+                        keyValues.push_back("Z");
+                        keyMap.push_back(Mugen::Z);
+                        //keyValues.push_back("Start");
+                        //keyMap.push_back(Mugen::Start);
+                        //keyValues.push_back("Quit");
+                        //keyMap.push_back(Mugen::Quit);
+                    }
+                    
+                    OptionMenu & menu;
+                    int player;
+                    const std::string & playerName;
 
-                InputMap<Keys> player1Input;
-                InputMap<Keys> player2Input;
+                    InputMap<Keys> player1Input;
+                    InputMap<Keys> player2Input;
 
-                bool escaped;
-                bool changingKeys;
-                bool highlightDefaultValue;
-                unsigned int currentValue;
-                bool throwable;
-                std::vector< std::string > keyValues;
-                std::vector< Mugen::Keys > keyMap;
-                
-                static std::string getKeyName(int player, const Mugen::Keys & key){
-                    switch(key){
-                        case Mugen::Up:
-                            return Keyboard::keyToName(::Configuration::config( player ).getUp());
-                        case Mugen::Down:
-                            return Keyboard::keyToName(::Configuration::config( player ).getDown());
-                        case Mugen::Left:
-                            return Keyboard::keyToName(::Configuration::config( player ).getLeft());
-                        case Mugen::Right:
-                            return Keyboard::keyToName(::Configuration::config( player ).getRight());
-                        case Mugen::A:
-                            return Keyboard::keyToName(::Configuration::config( player ).getAttack1());
-                        case Mugen::B:
-                            return Keyboard::keyToName(::Configuration::config( player ).getAttack2());
-                        case Mugen::C:
-                            return Keyboard::keyToName(::Configuration::config( player ).getAttack3());
-                        case Mugen::X:
-                            return Keyboard::keyToName(::Configuration::config(player).getAttack4());
-                        case Mugen::Y:
-                            return Keyboard::keyToName(::Configuration::config(player).getAttack5());
-                        case Mugen::Z:
-                            return Keyboard::keyToName(::Configuration::config(player).getAttack6());
-                        case Mugen::Start:
-                        case Mugen::Enter:
-                        case Mugen::Esc:
-                        default:
-                            break;
+                    bool escaped;
+                    bool changingKeys;
+                    unsigned int currentValue;
+                    bool scrollEnd;
+                    bool throwable;
+                    std::vector< std::string > keyValues;
+                    std::vector< Mugen::Keys > keyMap;
+                    
+                    static std::string getKeyName(int player, const Mugen::Keys & key){
+                        switch(key){
+                            case Mugen::Up:
+                                return Keyboard::keyToName(::Configuration::config( player ).getUp());
+                            case Mugen::Down:
+                                return Keyboard::keyToName(::Configuration::config( player ).getDown());
+                            case Mugen::Left:
+                                return Keyboard::keyToName(::Configuration::config( player ).getLeft());
+                            case Mugen::Right:
+                                return Keyboard::keyToName(::Configuration::config( player ).getRight());
+                            case Mugen::A:
+                                return Keyboard::keyToName(::Configuration::config( player ).getAttack1());
+                            case Mugen::B:
+                                return Keyboard::keyToName(::Configuration::config( player ).getAttack2());
+                            case Mugen::C:
+                                return Keyboard::keyToName(::Configuration::config( player ).getAttack3());
+                            case Mugen::X:
+                                return Keyboard::keyToName(::Configuration::config(player).getAttack4());
+                            case Mugen::Y:
+                                return Keyboard::keyToName(::Configuration::config(player).getAttack5());
+                            case Mugen::Z:
+                                return Keyboard::keyToName(::Configuration::config(player).getAttack6());
+                            case Mugen::Start:
+                            case Mugen::Enter:
+                            case Mugen::Esc:
+                            default:
+                                break;
+                        }
+
+                        return 0;
+                    }
+                    
+                    static std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > getList(int player){
+                        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Jump", getKeyName(player, Mugen::Up))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Crouch", getKeyName(player, Mugen::Down))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Left", getKeyName(player, Mugen::Left))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Right", getKeyName(player, Mugen::Right))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("A", getKeyName(player, Mugen::A))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("B", getKeyName(player, Mugen::B))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("C", getKeyName(player, Mugen::C))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("X", getKeyName(player, Mugen::X))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Y", getKeyName(player, Mugen::Y))));
+                        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Z", getKeyName(player, Mugen::Z))));
+                        //list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Start", getKeyName(player, Mugen::Start))));
+                        //list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(player)));
+                        return list;
+                    }
+                    
+                    double ticks(double system){
+                        return Util::gameTicks(system);
+                    }
+                    
+                    void setKey(int player, const Mugen::Keys & key, int code){
+                        switch(key){
+                            case Mugen::Up:
+                                ::Configuration::config(player).setUp(code);
+                                break;
+                            case Mugen::Down:
+                                ::Configuration::config(player).setDown(code);
+                                break;
+                            case Mugen::Left:
+                                ::Configuration::config(player).setLeft(code);
+                                break;
+                            case Mugen::Right:
+                                ::Configuration::config(player).setRight(code);
+                                break;
+                            case Mugen::A:
+                                ::Configuration::config(player).setAttack1(code);
+                                break;
+                            case Mugen::B:
+                                ::Configuration::config(player).setAttack2(code);
+                                break;
+                            case Mugen::C:
+                                ::Configuration::config(player).setAttack3(code);
+                                break;
+                            case Mugen::X:
+                                ::Configuration::config(player).setAttack4(code);
+                                break;
+                            case Mugen::Y:
+                                ::Configuration::config(player).setAttack5(code);
+                                break;
+                            case Mugen::Z:
+                                ::Configuration::config(player).setAttack6(code);
+                                break;
+                            case Mugen::Enter:
+                            case Mugen::Start:
+                            case Mugen::Esc:
+                            default:
+                                break;
+                        }
                     }
 
-                    return 0;
-                }
-                
-                static std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > getList(int player){
-                    std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Jump", getKeyName(player, Mugen::Up))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Crouch", getKeyName(player, Mugen::Down))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Left", getKeyName(player, Mugen::Left))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Right", getKeyName(player, Mugen::Right))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("A", getKeyName(player, Mugen::A))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("B", getKeyName(player, Mugen::B))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("C", getKeyName(player, Mugen::C))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("X", getKeyName(player, Mugen::X))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Y", getKeyName(player, Mugen::Y))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Z", getKeyName(player, Mugen::Z))));
-                    //list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Start", getKeyName(player, Mugen::Start))));
-                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(player)));
-                    return list;
-                }
-                
-                double ticks(double system){
-                    return Util::gameTicks(system);
-                }
-                
-                void setKey(int player, const Mugen::Keys & key, int code){
-                    switch(key){
-                        case Mugen::Up:
-                            ::Configuration::config(player).setUp(code);
-                            break;
-                        case Mugen::Down:
-                            ::Configuration::config(player).setDown(code);
-                            break;
-                        case Mugen::Left:
-                            ::Configuration::config(player).setLeft(code);
-                            break;
-                        case Mugen::Right:
-                            ::Configuration::config(player).setRight(code);
-                            break;
-                        case Mugen::A:
-                            ::Configuration::config(player).setAttack1(code);
-                            break;
-                        case Mugen::B:
-                            ::Configuration::config(player).setAttack2(code);
-                            break;
-                        case Mugen::C:
-                            ::Configuration::config(player).setAttack3(code);
-                            break;
-                        case Mugen::X:
-                            ::Configuration::config(player).setAttack4(code);
-                            break;
-                        case Mugen::Y:
-                            ::Configuration::config(player).setAttack5(code);
-                            break;
-                        case Mugen::Z:
-                            ::Configuration::config(player).setAttack6(code);
-                            break;
-                        case Mugen::Enter:
-                        case Mugen::Start:
-                        case Mugen::Esc:
-                        default:
-                            break;
-                    }
-                }
-
-                void run(){
-                    if (!changingKeys){
-                        InputSource input1;
-                        InputSource input2;
-                        vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
-                        vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
-                        out1.insert(out1.end(), out2.begin(), out2.end());
-                        for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
-                            const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                            if (!event.enabled){
-                                continue;
-                            }
-                            
-                            if (event[Esc]){
-                                if (!escaped){
-                                    escaped = true;
-                                    menu.cancel();
-                                    InputManager::waitForRelease(player1Input, input1, Esc);
-                                    InputManager::waitForRelease(player2Input, input2, Esc);
+                    void run(){
+                        if (!changingKeys){
+                            InputSource input1;
+                            InputSource input2;
+                            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
+                            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
+                            out1.insert(out1.end(), out2.begin(), out2.end());
+                            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                                if (!event.enabled){
+                                    continue;
                                 }
-                            }
-                            if (event[Start]){
-                                if (highlightDefaultValue){
-                                    menu.enter();
-                                    menu.updateList(getList(player));
-                                } else {
+                                
+                                if (event[Esc]){
+                                    if (!escaped){
+                                        escaped = true;
+                                        menu.cancel();
+                                        InputManager::waitForRelease(player1Input, input1, Esc);
+                                        InputManager::waitForRelease(player2Input, input2, Esc);
+                                    }
+                                }
+                                if (event[Start]){
                                     menu.setFirst();
                                     changingKeys = true;
                                     InputManager::waitForClear();
                                     menu.toggleCursor();
                                     menu.setName("Update " + playerName + " Keys");
                                 }
-                            }
-                            if (event[Up] || event[Down]){
-                                if (!changingKeys){
-                                    highlightDefaultValue = !highlightDefaultValue;
-                                    if (highlightDefaultValue){
-                                        menu.setLast();
-                                        menu.setName(playerName + " Keys (Enter to reset to default values)");
-                                    } else {
-                                        menu.setFirst();
-                                        menu.setName(playerName + " Keys (Enter to change)");
+                                if (event[Up] || event[Down]){
+                                    if (!changingKeys){
+                                        scrollEnd = !scrollEnd;
+                                        if (scrollEnd){
+                                            menu.setLast();
+                                        } else {
+                                            menu.setFirst();
+                                        }
                                     }
+                                }
+                            }
+                        } else {
+                            InputManager::poll();
+                            if (InputManager::anyInput()){
+                                setKey(player, keyMap[currentValue], InputManager::readKey());
+                                menu.updateItem(currentValue, getList(player)[currentValue].convert<Gui::ScrollItem>());
+                                InputManager::waitForClear();
+                                if (currentValue < keyValues.size()-1){
+                                    currentValue++;
+                                    menu.down();
+                                } else {
+                                    changingKeys = false;
+                                    currentValue = 0;
+                                    menu.setFirst();
                                     menu.toggleCursor();
+                                    menu.setName(playerName + " Keys (Enter to change)");
+                                    // Lets throw an exception if it is requested
+                                    if (throwable){
+                                        throw OptionMenu::KeysChangedException( player == 0 ? Mugen::Player1 : Mugen::Player2 );
+                                    }
                                 }
                             }
                         }
-                    } else {
-                        InputManager::poll();
-                        if (InputManager::anyInput()){
-                            setKey(player, keyMap[currentValue], InputManager::readKey());
-                            menu.updateItem(currentValue, getList(player)[currentValue].convert<Gui::ScrollItem>());
-                            InputManager::waitForClear();
-                            if (currentValue < keyValues.size()-1){
-                                currentValue++;
-                                menu.down();
-                            } else {
-                                changingKeys = false;
-                                currentValue = 0;
-                                menu.setFirst();
-                                menu.toggleCursor();
-                                menu.setName(playerName + " Keys (Enter to change)");
-                                // Lets throw an exception if it is requested
-                                if (throwable){
-                                    throw OptionMenu::KeysChangedException( player == 0 ? Mugen::Player1 : Mugen::Player2 );
-                                }
-                            }
+                        
+                        // Act out
+                        menu.act();
+                        
+                        if (menu.isDone()){
+                            throw Escape::EscapeException();
                         }
                     }
-                    
-                    // Act out
-                    menu.act();
-                    
-                    if (menu.isDone()){
-                        throw Escape::EscapeException();
+
+                    bool done(){
+                        return menu.isDone();
                     }
-                }
-
-                bool done(){
-                    return menu.isDone();
-                }
-            };
-            
-            class Draw: public PaintownUtil::Draw {
-            public:
-                Draw(OptionMenu & menu, Logic & logic):
-                menu(menu),
-                logic(logic){
-                }
-
-                OptionMenu & menu;
-                Logic & logic;
+                };
                 
-                void draw(const Graphics::Bitmap & screen){
-                    menu.draw(screen);
-                    if (logic.changingKeys){
-                        menu.drawInfo(screen.getWidth()/2, screen.getHeight()/4, "Press new key for " + logic.keyValues[logic.currentValue], screen );
+                class Draw: public PaintownUtil::Draw {
+                public:
+                    Draw(OptionMenu & menu, Logic & logic):
+                    menu(menu),
+                    logic(logic){
                     }
-                    screen.BlitToScreen();
+
+                    OptionMenu & menu;
+                    Logic & logic;
+                    
+                    void draw(const Graphics::Bitmap & screen){
+                        menu.draw(screen);
+                        if (logic.changingKeys){
+                            menu.drawInfo(screen.getWidth()/2, screen.getHeight()/4, "Press new key for " + logic.keyValues[logic.currentValue], screen );
+                        }
+                        screen.BlitToScreen();
+                    }
+                };
+                
+                while (true){
+                    try {
+                        //OptionMenu menu(Logic::getList(player));
+                        OptionMenu menu(*parent);
+                        menu.updateList(Logic::getList(player));
+                        menu.setName(playerName + " Keys (Enter to change)");
+                        menu.toggleCursor();
+                        menu.setRenderBackground(renderBackground);
+                        menu.setClearColor(clearColor);
+                        menu.setClearAlpha(clearAlpha);
+                        Logic logic(menu, player, playerName, throwable);
+                        Draw draw(menu,logic);
+                        PaintownUtil::standardLoop(logic, draw);
+                    } catch (const Escape::EscapeException & ex){
+                        break;
+                    }
                 }
-            };
-            
-            try {
-                OptionMenu menu(Logic::getList(player));
-                menu.setName(optionName + " Keys (Enter to change)");
-                menu.toggleCursor();
-                menu.setRenderBackground(renderBackground);
-                menu.setClearColor(clearColor);
-                menu.setClearAlpha(clearAlpha);
-                Logic logic(menu, player, optionName, throwable);
-                Draw draw(menu,logic);
-                PaintownUtil::standardLoop(logic, draw);
-            } catch (const Escape::EscapeException & ex){
-                break;
             }
+            
+            PaintownUtil::ReferenceCount<OptionMenu> parent;
+            int player;
+            std::string playerName;
+            bool renderBackground;
+            Graphics::Color clearColor;
+            int clearAlpha;
+            bool throwable;
+        };
+        
+        class ResetDefault : public BaseMenuItem{
+        public:
+            ResetDefault(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, bool renderBackground, Graphics::Color clearColor, int clearAlpha):
+            parent(parent),
+            player(player),
+            renderBackground(renderBackground),
+            clearColor(clearColor),
+            clearAlpha(clearAlpha){
+                optionName = "Default Values";
+                currentValue = "(Enter)";
+            }
+            
+            virtual ~ResetDefault(){
+            }
+            
+            bool next(){
+                return false;
+            }
+            
+            bool previous(){
+                return false;
+            }
+            
+            virtual bool isRunnable() const {
+                return true;
+            }
+            
+            virtual void run(){
+                if (confirmDialog("Reset to default?", parent, renderBackground, clearColor, clearAlpha)){
+                    ::Configuration::setDefaultKeys(player);
+                }
+            }
+            
+            PaintownUtil::ReferenceCount<OptionMenu> parent;
+            int player;
+            bool renderBackground;
+            Graphics::Color clearColor;
+            int clearAlpha;
+        };
+        try {
+            
+            std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ChangeKeys(parent, player, optionName, renderBackground, clearColor, clearAlpha, throwable)));
+            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(parent, player, renderBackground, clearColor, clearAlpha)));
+            OptionMenu menu(*parent);
+            menu.updateList(list);
+            menu.setName(optionName + " Key Configuration");
+            menu.setRenderBackground(renderBackground);
+            menu.setClearColor(clearColor);
+            menu.setClearAlpha(clearAlpha);
+            
+            MenuLogic logic(menu);
+            MenuDraw draw(menu);
+            PaintownUtil::standardLoop(logic, draw);
+            
+        } catch (const Escape::EscapeException & ex){
+            // Ok no prob
         }
     }
     
@@ -1777,13 +1946,15 @@ public:
     Graphics::Color clearColor;
     int clearAlpha;
     bool throwable;
+    PaintownUtil::ReferenceCount<OptionMenu> parent;
 };
 
-PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int player, const std::string & text){
+PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int player, const std::string & text, PaintownUtil::ReferenceCount<OptionMenu> menu){
     PaintownUtil::ReferenceCount<PlayerKeys> playerKeys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(player, text));
     playerKeys->renderBackground = false;
     playerKeys->clearAlpha = 0;
     playerKeys->throwable = true;
+    playerKeys->parent = menu;
     return playerKeys.convert<Gui::ScrollItem>();
 }
 
@@ -1809,15 +1980,22 @@ OptionOptions::OptionOptions( const std::string &name ){
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new OneVsTeam()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TeamLoseOnKO()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Motif()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new PlayerKeys(0, "Player1")));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new PlayerKeys(1, "Player2")));
+    PaintownUtil::ReferenceCount<Motif> motif = PaintownUtil::ReferenceCount<Motif>(new Motif());
+    list.push_back(motif.convert<Gui::ScrollItem>());
+    PaintownUtil::ReferenceCount<PlayerKeys> player1Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(0, "Player1"));
+    PaintownUtil::ReferenceCount<PlayerKeys> player2Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(1, "Player2"));
+    list.push_back(player1Keys.convert<Gui::ScrollItem>());
+    list.push_back(player2Keys.convert<Gui::ScrollItem>());
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
     /* Testing 
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Dummy")));
     */
     
     optionMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+    
+    // Setup parents so that we can borrow resources
+    motif->parent = player1Keys->parent = player2Keys->parent = optionMenu;
+    
     optionMenu->setName(name);
 }
 
@@ -1826,19 +2004,14 @@ OptionOptions::~OptionOptions(){
 
 void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
-    // Run options
-    bool escaped = false;
-
-    MenuLogic logic(*optionMenu, escaped);
+    MenuLogic logic(*optionMenu);
     MenuDraw draw(*optionMenu);
     PaintownUtil::standardLoop(logic, draw);
     
     optionMenu->reset();
 
     // **FIXME Hack figure something out
-    if (escaped){
-        throw Exception::Return(__FILE__, __LINE__);
-    }
+    throw Exception::Return(__FILE__, __LINE__);
 }
 
 OptionArcade::OptionArcade(const string & name){

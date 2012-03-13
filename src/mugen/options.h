@@ -333,6 +333,7 @@ private:
 class OptionMenu{
 public:
     OptionMenu(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
+    OptionMenu(const OptionMenu &);
     virtual ~OptionMenu();
     
     virtual void act();
@@ -424,7 +425,7 @@ public:
         Mugen::PlayerType type;
     };
     
-    static PaintownUtil::ReferenceCount<Gui::ScrollItem> getPlayerKeys(int player, const std::string &);
+    static PaintownUtil::ReferenceCount<Gui::ScrollItem> getPlayerKeys(int player, const std::string &, PaintownUtil::ReferenceCount<OptionMenu> menu);
 
 private:
     //! Name
