@@ -991,7 +991,6 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     fader.draw(workArea);
     
     workArea.finish();
-    
 }
 
 void OptionMenu::drawList(const Graphics::Bitmap & work){

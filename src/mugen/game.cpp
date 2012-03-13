@@ -329,6 +329,11 @@ public:
     void act(){
         menu->act();
     }
+
+    void drawFirst(const Graphics::Bitmap & work){
+        PaintownUtil::ReferenceCount<Graphics::Bitmap> copy = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(work, true));
+        menu->updateScreenCapture(copy);
+    }
     
     void draw(const Graphics::Bitmap & work){
         if (enabled){
@@ -341,10 +346,6 @@ public:
             enabled = !enabled;
             if (!enabled){
                 menu->reset();
-            } else {
-                // Update the screen capture
-                PaintownUtil::ReferenceCount<Graphics::Bitmap> copy = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Graphics::getScreenBuffer(), true));
-                menu->updateScreenCapture(copy);
             }
         }
     }
