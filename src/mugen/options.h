@@ -361,6 +361,10 @@ public:
     
     virtual void reset();
     
+    virtual void setFirst();
+    
+    virtual void setLast();
+    
     virtual inline unsigned int getSelected() const {
         return this->list.getCurrentIndex();
     }

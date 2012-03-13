@@ -182,6 +182,19 @@ Configuration & Configuration::config(int set){
     return *configs[set];
 }
 
+void Configuration::setDefaultKeys(int x){
+    switch (x){
+        case 0: {
+            config(x) = defaultPlayer1Keys();
+            break;
+        }
+        case 1: {
+            config(x) = defaultPlayer2Keys();
+            break;
+        }
+    }
+}
+
 /* hopefully this is only used right before setting all the values
  * since the key mappings are bogus in here'
  */

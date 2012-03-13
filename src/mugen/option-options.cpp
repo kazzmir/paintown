@@ -1089,6 +1089,15 @@ bool OptionMenu::isDone(){
     return (fader.getState() == Gui::FadeTool::EndFade);
 }
 
+void OptionMenu::setFirst(){
+    list.setCurrentIndex(0);
+}
+    
+void OptionMenu::setLast(){
+    list.setCurrentIndex(list.getItems().size()-1);
+}
+
+
 // Box
 class MenuLogic: public PaintownUtil::Logic {
 public:
@@ -1450,6 +1459,33 @@ public:
                 }
             };
             
+            class ResetDefault : public BaseMenuItem{
+            public:
+                ResetDefault(int player):
+                player(player){
+                    optionName = "Default Values";
+                    currentValue = "(Enter)";
+                }
+                
+                bool next(){
+                    return false;
+                }
+                
+                bool previous(){
+                    return false;
+                }
+                
+                bool inRunnable() const {
+                    return true;
+                }
+                
+                void run(){
+                    ::Configuration::setDefaultKeys(player);
+                }
+                
+                int player;
+            };
+            
             class Logic: public PaintownUtil::Logic {
             public:
                 Logic(OptionMenu & menu, int player, const std::string & playerName, bool throwable):
@@ -1458,6 +1494,7 @@ public:
                 playerName(playerName),
                 escaped(false),
                 changingKeys(false),
+                highlightDefaultValue(false),
                 currentValue(0),
                 throwable(throwable){
                     player1Input = getPlayer1Keys(20);
@@ -1497,6 +1534,7 @@ public:
 
                 bool escaped;
                 bool changingKeys;
+                bool highlightDefaultValue;
                 unsigned int currentValue;
                 bool throwable;
                 std::vector< std::string > keyValues;
@@ -1547,6 +1585,7 @@ public:
                     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Y", getKeyName(player, Mugen::Y))));
                     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Z", getKeyName(player, Mugen::Z))));
                     //list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Key("Start", getKeyName(player, Mugen::Start))));
+                    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(player)));
                     return list;
                 }
                 
@@ -1616,10 +1655,29 @@ public:
                                 }
                             }
                             if (event[Start]){
-                                changingKeys = true;
-                                InputManager::waitForClear();
-                                menu.toggleCursor();
-                                menu.setName("Update " + playerName + " Keys");
+                                if (highlightDefaultValue){
+                                    menu.enter();
+                                    menu.updateList(getList(player));
+                                } else {
+                                    menu.setFirst();
+                                    changingKeys = true;
+                                    InputManager::waitForClear();
+                                    menu.toggleCursor();
+                                    menu.setName("Update " + playerName + " Keys");
+                                }
+                            }
+                            if (event[Up] || event[Down]){
+                                if (!changingKeys){
+                                    highlightDefaultValue = !highlightDefaultValue;
+                                    if (highlightDefaultValue){
+                                        menu.setLast();
+                                        menu.setName(playerName + " Keys (Enter to reset to default values)");
+                                    } else {
+                                        menu.setFirst();
+                                        menu.setName(playerName + " Keys (Enter to change)");
+                                    }
+                                    menu.toggleCursor();
+                                }
                             }
                         }
                     } else {
@@ -1634,8 +1692,8 @@ public:
                             } else {
                                 changingKeys = false;
                                 currentValue = 0;
+                                menu.setFirst();
                                 menu.toggleCursor();
-                                menu.down();
                                 menu.setName(playerName + " Keys (Enter to change)");
                                 // Lets throw an exception if it is requested
                                 if (throwable){

@@ -21,6 +21,8 @@ public:
     typedef Joystick::Key JoystickInput;
 
     static Configuration & config(int x);
+    
+    static void setDefaultKeys(int x);
 
     static void loadConfigurations();
     static void saveConfiguration();
