@@ -75,7 +75,7 @@ public:
     }
 
     string description() const {
-        return "Start in fullscreen mode";
+        return " : Start in fullscreen mode";
     }
     
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
@@ -85,11 +85,86 @@ public:
     }
 };
 
+class DataPathArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("-d");
+        out.push_back("--data");
+        out.push_back("data");
+        out.push_back("datapath");
+        out.push_back("data-path");
+        out.push_back("path");
+        return out;
+    }
+
+    string description() const {
+        std::ostringstream out;
+        out << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path();
+        return out.str();
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        if (current != end){
+            Util::setDataPath(*current);
+        }
+        return current;
+    }
+};
+
+class MusicArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("-m");
+        out.push_back("music");
+        out.push_back("nomusic");
+        out.push_back("no-music");
+        return out;
+    }
+
+    string description() const {
+        return " : Turn off music";
+    }
+    
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        return current;
+    }
+};
+
+class DebugArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("-l");
+        out.push_back("--debug");
+        out.push_back("debug");
+        return out;
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        if (current != end){
+            istringstream i(*current);
+            int f;
+            i >> f;
+            Global::setDebug(f);
+        }
+        return current;
+    }
+    
+    string description() const {
+        return " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3";
+    }
+};
+
 #define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
-static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
-static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
-static const char * DEBUG_ARG[] = {"-l", "--debug", "debug"};
-static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
+// static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
+// static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
+// static const char * DEBUG_ARG[] = {"-l", "--debug", "debug"};
+// static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
 static const char * NETWORK_JOIN_ARG[] = {"network-join"};
 static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
@@ -147,10 +222,16 @@ static const char * all(const char * args[], const int num, const char separate 
 static void showOptions(){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
     Global::debug(0) << "Command line options" << endl;
-    Global::debug(0) << " " << all(WINDOWED_ARG, NUM_ARGS(WINDOWED_ARG), ',') << " : Fullscreen mode" << endl;
-    Global::debug(0) << " " << all(DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG)) << " <path> : Use data path of <path>. Default is " << Util::getDataPath2().path() << endl;
-    Global::debug(0) << " " << all(DEBUG_ARG, NUM_ARGS(DEBUG_ARG)) << " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3" << endl;
-    Global::debug(0) << " " << all(MUSIC_ARG, NUM_ARGS(MUSIC_ARG)) << " : Turn off music" << endl;
+    WindowedArgument windowed;
+    Global::debug(0) << " " << Util::join(windowed.keywords(), ",") << windowed.description() << endl;
+
+    DataPathArgument data;
+    Global::debug(0) << " " << Util::join(data.keywords(), ", ") << data.description() << endl;
+    DebugArgument debug;
+    Global::debug(0) << " " << Util::join(debug.keywords(), ", ") << debug.description() << endl;
+
+    MusicArgument music;
+    Global::debug(0) << " " << Util::join(music.keywords(), ", ") << music.description() << endl;
     Global::debug(0) << " " << all(MUGEN_ARG, NUM_ARGS(MUGEN_ARG)) << " : Go directly to the mugen menu" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
     Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
@@ -480,10 +561,10 @@ int paintown_main(int argc, char ** argv){
     vector<const char *> all_args;
 
 #define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
-    ADD_ARGS(WINDOWED_ARG);
-    ADD_ARGS(DATAPATH_ARG);
-    ADD_ARGS(DEBUG_ARG);
-    ADD_ARGS(MUSIC_ARG);
+    // ADD_ARGS(WINDOWED_ARG);
+    // ADD_ARGS(DATAPATH_ARG);
+    // ADD_ARGS(DEBUG_ARG);
+    // ADD_ARGS(MUSIC_ARG);
     ADD_ARGS(MUGEN_ARG);
     ADD_ARGS(MUGEN_INSTANT_ARG);
     ADD_ARGS(MUGEN_INSTANT_WATCH_ARG);
@@ -514,6 +595,9 @@ int paintown_main(int argc, char ** argv){
     }
 
     WindowedArgument windowed;
+    DataPathArgument dataPath;
+    MusicArgument musicArgument;
+    DebugArgument debug;
 
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
@@ -521,12 +605,9 @@ int paintown_main(int argc, char ** argv){
     for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
         if (windowed.isArg(*it)){
             gfx = Global::FULLSCREEN;
-        } else if (isArg(*it, DATAPATH_ARG, NUM_ARGS(DATAPATH_ARG))){
-            it++;
-            if (it != stringArgs.end()){
-                Util::setDataPath(*it);
-            }
-        } else if (isArg(*it, MUSIC_ARG, NUM_ARGS(MUSIC_ARG))){
+        } else if (dataPath.isArg(*it)){
+            it = dataPath.parse(it, stringArgs.end());
+        } else if (musicArgument.isArg(*it)){
             music_on = false;
         } else if (isArg(*it, MUGEN_ARG, NUM_ARGS(MUGEN_ARG))){
             mugen = true;
@@ -579,14 +660,9 @@ int paintown_main(int argc, char ** argv){
                 Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
             }
 
-        } else if (isArg(*it, DEBUG_ARG, NUM_ARGS(DEBUG_ARG))){
-            it++;
-            if (it != stringArgs.end()){
-                istringstream i(*it);
-                int f;
-                i >> f;
-                Global::setDebug(f);
-            }
+        } else if (debug.isArg(*it)){
+            it = debug.parse(it, stringArgs.end());
+            
 #ifdef HAVE_NETWORKING
         } else if (isArg(*it, NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
             just_network_server = true;
