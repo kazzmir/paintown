@@ -1535,7 +1535,7 @@ public:
     player(player),
     renderBackground(true),
     clearColor(Graphics::makeColor(0,0,0)),
-    clearAlpha(0),
+    clearAlpha(128),
     throwable(false){
         currentValue = "(Enter)";
         optionName = playerName;
@@ -1890,6 +1890,7 @@ public:
             virtual void run(){
                 if (confirmDialog("Reset to default?", parent, renderBackground, clearColor, clearAlpha)){
                     ::Configuration::setDefaultKeys(player);
+                    ::Configuration::saveConfiguration();
                 }
             }
             
@@ -1952,7 +1953,7 @@ public:
 PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int player, const std::string & text, PaintownUtil::ReferenceCount<OptionMenu> menu){
     PaintownUtil::ReferenceCount<PlayerKeys> playerKeys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(player, text));
     playerKeys->renderBackground = false;
-    playerKeys->clearAlpha = 0;
+    playerKeys->clearAlpha = 128;
     playerKeys->throwable = true;
     playerKeys->parent = menu;
     return playerKeys.convert<Gui::ScrollItem>();
