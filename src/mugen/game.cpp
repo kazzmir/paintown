@@ -1097,7 +1097,15 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     stage.addPlayer1(player1.raw());
     stage.addPlayer2(player2.raw());
     stage.reset();
-    runMatch(&stage, "", options);
+    int time = Mugen::Data::getInstance().getTime();
+    Mugen::Data::getInstance().setTime(-1);
+    try{
+        runMatch(&stage, "", options);
+    } catch (const QuitGameException & ex){
+    }
+    Mugen::Data::getInstance().setTime(time);
+    
+    throw QuitGameException();
 }
 
 void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
