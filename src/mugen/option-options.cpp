@@ -909,7 +909,8 @@ clearColor(menu.clearColor),
 clearAlpha(menu.clearAlpha),
 sounds(menu.sounds),
 font(menu.font),
-recalculateHeight(menu.recalculateHeight){
+recalculateHeight(menu.recalculateHeight),
+screenCapture(menu.screenCapture){
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(10);
@@ -952,6 +953,9 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     if (renderBackground){
         background->renderBackground(0, 0, workArea);
     } else if (clearAlpha > 0){
+        if (screenCapture != NULL){
+            screenCapture->drawStretched(workArea);
+        }
         Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
         workArea.translucent().fill(clearColor);
     }

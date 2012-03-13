@@ -413,6 +413,10 @@ public:
         return this->clearAlpha;
     }
     
+    virtual inline void updateScreenCapture(PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap){
+        this->screenCapture = bitmap;
+    }
+    
     class KeysChangedException : public MugenException{
     public:
         KeysChangedException(const Mugen::PlayerType &);
@@ -457,6 +461,10 @@ private:
     
     //! Recalculate height
     int recalculateHeight;
+    
+    //! Screen capture (can be updated and will render when Mugen::Background is disabled)
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> screenCapture;
+    
 };
 
 /*! Handles Mugen Options */
