@@ -417,6 +417,10 @@ public:
         this->screenCapture = bitmap;
     }
     
+    virtual inline void setFadeEnabled(bool fade){
+        this->fadeEnabled = false;        
+    }
+    
     class KeysChangedException : public MugenException{
     public:
         KeysChangedException(const Mugen::PlayerType &);
@@ -458,6 +462,9 @@ private:
     
     //! Fade tool
     Gui::FadeTool fader;
+    
+    //! Disabled/Enabled fader
+    bool fadeEnabled;
     
     //! Recalculate height
     int recalculateHeight;

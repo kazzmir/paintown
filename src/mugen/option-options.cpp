@@ -765,6 +765,7 @@ OptionMenu::OptionMenu(const std::vector< PaintownUtil::ReferenceCount<Gui::Scro
 renderBackground(true),
 clearColor(Graphics::makeColor(0,0,0)),
 clearAlpha(255),
+fadeEnabled(true),
 recalculateHeight(160){
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
@@ -909,6 +910,7 @@ clearColor(menu.clearColor),
 clearAlpha(menu.clearAlpha),
 sounds(menu.sounds),
 font(menu.font),
+fadeEnabled(menu.fadeEnabled),
 recalculateHeight(menu.recalculateHeight),
 screenCapture(menu.screenCapture){
     // Set the fade state
@@ -988,7 +990,9 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     }
     
     // Fader
-    fader.draw(workArea);
+    if (fadeEnabled){
+        fader.draw(workArea);
+    }
     
     workArea.finish();
 }
@@ -1024,7 +1028,9 @@ void OptionMenu::drawList(const Graphics::Bitmap & work){
     }
     
     // Fader
-    fader.draw(work);
+    if (fadeEnabled){
+        fader.draw(work);
+    }
 }
 
 void OptionMenu::drawInfo(int x, int y, const std::string & text, const Graphics::Bitmap & work){
@@ -1053,7 +1059,9 @@ void OptionMenu::drawInfoWithBackground(const std::string & title, int x, int y,
     background->renderForeground(0, 0, workArea);
     
     // Fader
-    fader.draw(workArea);
+    if (fadeEnabled){
+        fader.draw(workArea);
+    }
     
     workArea.finish();
 }
@@ -1457,7 +1465,7 @@ public:
     std::string name;
 };
 
-static bool confirmDialog(const std::string & title, PaintownUtil::ReferenceCount<OptionMenu> parent, bool renderBackground, Graphics::Color clearColor, int clearAlpha){
+static bool confirmDialog(const std::string & title, PaintownUtil::ReferenceCount<OptionMenu> parent, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade){
     class YesNo : public ListItem{
     public:
         class ResponseException : public std::exception{
@@ -1521,7 +1529,9 @@ static bool confirmDialog(const std::string & title, PaintownUtil::ReferenceCoun
         menu.setRenderBackground(renderBackground);
         menu.setClearColor(clearColor);
         menu.setClearAlpha(clearAlpha);
-        
+        if (disableFade){
+            menu.setFadeEnabled(false);
+        }
         MenuLogic logic(menu);
         MenuDraw draw(menu);
         PaintownUtil::standardLoop(logic, draw);
@@ -1539,6 +1549,7 @@ public:
     renderBackground(true),
     clearColor(Graphics::makeColor(0,0,0)),
     clearAlpha(128),
+    disableFade(false),
     throwable(false){
         currentValue = "(Enter)";
         optionName = playerName;
@@ -1553,13 +1564,14 @@ public:
     virtual void run(){
         class ChangeKeys : public BaseMenuItem{
         public:
-            ChangeKeys(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, std::string playerName, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool throwable):
+            ChangeKeys(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, std::string playerName, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, bool throwable):
             parent(parent),
             player(player),
             playerName(playerName),
             renderBackground(renderBackground),
             clearColor(clearColor),
             clearAlpha(clearAlpha),
+            disableFade(disableFade),
             throwable(throwable){
                 optionName = "Update/Change Keys";
                 currentValue = "(Enter)";
@@ -1845,6 +1857,9 @@ public:
                         menu.setRenderBackground(renderBackground);
                         menu.setClearColor(clearColor);
                         menu.setClearAlpha(clearAlpha);
+                        if (disableFade){
+                            menu.setFadeEnabled(false);
+                        }
                         Logic logic(menu, player, playerName, throwable);
                         Draw draw(menu,logic);
                         PaintownUtil::standardLoop(logic, draw);
@@ -1860,17 +1875,19 @@ public:
             bool renderBackground;
             Graphics::Color clearColor;
             int clearAlpha;
+            bool disableFade;
             bool throwable;
         };
         
         class ResetDefault : public BaseMenuItem{
         public:
-            ResetDefault(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool throwable):
+            ResetDefault(PaintownUtil::ReferenceCount<OptionMenu> parent, int player, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, bool throwable):
             parent(parent),
             player(player),
             renderBackground(renderBackground),
             clearColor(clearColor),
             clearAlpha(clearAlpha),
+            disableFade(disableFade),
             throwable(throwable){
                 optionName = "Default Values";
                 currentValue = "(Enter)";
@@ -1892,7 +1909,7 @@ public:
             }
             
             virtual void run(){
-                if (confirmDialog("Reset to default?", parent, renderBackground, clearColor, clearAlpha)){
+                if (confirmDialog("Reset to default?", parent, renderBackground, clearColor, clearAlpha, disableFade)){
                     ::Configuration::setDefaultKeys(player);
                     ::Configuration::saveConfiguration();
                     if (throwable){
@@ -1906,19 +1923,23 @@ public:
             bool renderBackground;
             Graphics::Color clearColor;
             int clearAlpha;
+            bool disableFade;
             bool throwable;
         };
         try {
             
             std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
-            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ChangeKeys(parent, player, optionName, renderBackground, clearColor, clearAlpha, throwable)));
-            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(parent, player, renderBackground, clearColor, clearAlpha, throwable)));
+            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ChangeKeys(parent, player, optionName, renderBackground, clearColor, clearAlpha, disableFade, throwable)));
+            list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new ResetDefault(parent, player, renderBackground, clearColor, clearAlpha, disableFade, throwable)));
             OptionMenu menu(*parent);
             menu.updateList(list);
             menu.setName(optionName + " Key Configuration");
             menu.setRenderBackground(renderBackground);
             menu.setClearColor(clearColor);
             menu.setClearAlpha(clearAlpha);
+            if (disableFade){
+                menu.setFadeEnabled(false);
+            }
             
             MenuLogic logic(menu);
             MenuDraw draw(menu);
@@ -1954,6 +1975,7 @@ public:
     bool renderBackground;
     Graphics::Color clearColor;
     int clearAlpha;
+    bool disableFade;
     bool throwable;
     PaintownUtil::ReferenceCount<OptionMenu> parent;
 };
@@ -1964,6 +1986,7 @@ PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int play
     playerKeys->clearAlpha = 128;
     playerKeys->throwable = true;
     playerKeys->parent = menu;
+    playerKeys->disableFade = true;
     return playerKeys.convert<Gui::ScrollItem>();
 }
 
