@@ -330,10 +330,11 @@ public:
         menu->act();
     }
 
+    /* Not a Util::Draw class
     void drawFirst(const Graphics::Bitmap & work){
         PaintownUtil::ReferenceCount<Graphics::Bitmap> copy = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(work, true));
         menu->updateScreenCapture(copy);
-    }
+    }*/
     
     void draw(const Graphics::Bitmap & work){
         if (enabled){
@@ -346,6 +347,9 @@ public:
             enabled = !enabled;
             if (!enabled){
                 menu->reset();
+            } else {
+                PaintownUtil::ReferenceCount<Graphics::Bitmap> copy = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Graphics::getScreenBuffer(), true));
+                menu->updateScreenCapture(copy);
             }
         }
     }
