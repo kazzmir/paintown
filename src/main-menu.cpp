@@ -61,6 +61,9 @@ public:
         }
         return false;
     }
+
+    virtual ~Argument(){
+    }
 };
 
 class WindowedArgument: public Argument {
@@ -107,6 +110,23 @@ public:
         if (current != end){
             Util::setDataPath(*current);
         }
+        return current;
+    }
+};
+
+class DisableQuitArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("disable-quit");
+        return out;
+    }
+    
+    string description() const {
+        return " : Don't allow the game to exit using the normal methods";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
         return current;
     }
 };
@@ -382,21 +402,91 @@ public:
     }
 };
 
-#define NUM_ARGS(d) (sizeof(d)/sizeof(char*))
-// static const char * WINDOWED_ARG[] = {"-w", "fullscreen", "nowindowed", "no-windowed"};
-// static const char * DATAPATH_ARG[] = {"-d", "--data", "data", "datapath", "data-path", "path"};
-// static const char * DEBUG_ARG[] = {"-l", "--debug", "debug"};
-// static const char * MUSIC_ARG[] = {"-m", "music", "nomusic", "no-music"};
-static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
-static const char * NETWORK_JOIN_ARG[] = {"network-join"};
-// static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
-// static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
-// static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
-// static const char * MUGEN_INSTANT_SCRIPT_ARG[] = {"mugen:script"};
-// static const char * MUGEN_INSTANT_ARCADE_ARG[] = {"mugen:arcade"};
-// static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
-static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
-// static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
+class NetworkServerArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("server");
+        out.push_back("network-server");
+        return out;
+    }
+
+    string description() const {
+        return " : Go straight to the network server";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        return current;
+    }
+
+};
+
+struct NetworkJoin{
+    NetworkJoin():
+        enabled(false){
+        }
+
+    bool enabled;
+    string name;
+    string host;
+    string port;
+}; 
+
+class NetworkJoinArgument: public Argument {
+public:
+    NetworkJoin data;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("network-join");
+        return out;
+    }
+
+    string description() const {
+        return " [<name>,<server ip>,<port>]: Join a network game directly. If not given, ip and port will be read from the configuration file if one exists otherwise they default to 127.0.0.1:7887. The name will be randomly generated if not given. Do not put spaces between the commas in the optional arguments.";
+    }
+
+    vector<string> split(string input, char splitter){
+        size_t find = input.find(splitter);
+        vector<string> out;
+        while (find != string::npos){
+            out.push_back(input.substr(0, find));
+            input.erase(0, find + 1);
+            find = input.find(splitter);
+        }
+        out.push_back(input);
+        return out;
+    }
+
+    void parseNetworkJoin(const string & input, string & port, string & host, string & name){
+        vector<string> args = split(input, ',');
+        if (args.size() > 2){
+            port = args[2];
+        }
+        if (args.size() > 1){
+            host = args[1];
+        }
+        if (args.size() > 0){
+            name = args[0];
+        }
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        data.enabled = true;
+        string port;
+        string host;
+        string name;
+        current++;
+        if (current != end){
+            parseNetworkJoin(*current, port, host, name);
+            data.port = port;
+            data.host = host;
+            data.name = name;
+        }
+
+        return current;
+    }
+};
 
 static const char * closestMatch(const string & s1, vector<const char *> args){
     const char * good = NULL;
@@ -444,39 +534,30 @@ static const char * all(const char * args[], const int num, const char separate 
 static void showOptions(){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
     Global::debug(0) << "Command line options" << endl;
-    WindowedArgument windowed;
-    Global::debug(0) << " " << Util::join(windowed.keywords(), ",") << windowed.description() << endl;
 
-    DataPathArgument data;
-    Global::debug(0) << " " << Util::join(data.keywords(), ", ") << data.description() << endl;
-    DebugArgument debug;
-    Global::debug(0) << " " << Util::join(debug.keywords(), ", ") << debug.description() << endl;
-
-    MusicArgument music;
-    Global::debug(0) << " " << Util::join(music.keywords(), ", ") << music.description() << endl;
-    MugenArgument mugen;
-    Global::debug(0) << " " << Util::join(mugen.keywords(), ", ") << mugen.description() << endl;
-    MugenTrainingArgument mugenTraining;
-    Global::debug(0) << " " << Util::join(mugenTraining.keywords(), ", ") << mugenTraining.description() << endl;
-
-    MugenWatchArgument mugenWatch;
-    Global::debug(0) << " " << Util::join(mugenWatch.keywords(), ", ") << mugenWatch.description() << endl;
-
-    MugenScriptArgument mugenScript;
-    Global::debug(0) << " " << Util::join(mugenScript.keywords(), ", ") << mugenScript.description() << endl;
-
-    MugenArcadeArgument mugenArcade;
-    Global::debug(0) << " " << Util::join(mugenArcade.keywords(), ", ") << mugenArcade.description() << endl;
-
-    JoystickArgument joystick;
-    Global::debug(0) << " " << Util::join(joystick.keywords(), ", ") << joystick.description() << endl;
-    Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
-    RateLimitArgument rateLimit;
-    Global::debug(0) << " " << Util::join(rateLimit.keywords(), ", ") << rateLimit.description() << endl;
+    vector<Util::ReferenceCount<Argument> > arguments;
+    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenTrainingArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenWatchArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenScriptArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArcadeArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument()));
 #ifdef HAVE_NETWORKING
-    Global::debug(0) << " " << all(NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG)) << " : Go straight to the network server" << endl;
-    Global::debug(0) << " " << all(NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG)) << " [<name>,<server ip>,<port>]: Join a network game directly. If not given, ip and port will be read from the configuration file if one exists otherwise they default to 127.0.0.1:7887. The name will be randomly generated if not given. Do not put spaces between the commas in the optional arguments." << endl;
+    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
 #endif
+
+    for (vector<Util::ReferenceCount<Argument> >::iterator it = arguments.begin(); it != arguments.end(); it++){
+        Util::ReferenceCount<Argument> argument = *it;
+        Global::debug(0) << " " << Util::join(argument->keywords(), ", ") << argument->description() << endl;
+    }
+
     Global::debug(0) << endl;
 }
 
@@ -543,30 +624,6 @@ static void runMugenWatch(const string & player1, const string & player2, const 
     Mugen::Game::startWatch(player1, player2, stage);
 }
 
-static vector<string> split(string input, char splitter){
-    size_t find = input.find(splitter);
-    vector<string> out;
-    while (find != string::npos){
-        out.push_back(input.substr(0, find));
-        input.erase(0, find + 1);
-        find = input.find(splitter);
-    }
-    out.push_back(input);
-    return out;
-}
-
-static void parseNetworkJoin(const string & input, string & port, string & host, string & name){
-    vector<string> args = split(input, ',');
-    if (args.size() > 2){
-        port = args[2];
-    }
-    if (args.size() > 1){
-        host = args[1];
-    }
-    if (args.size() > 0){
-        name = args[0];
-    }
-}
 
 class MainMenuOptionFactory: public Menu::OptionFactory {
 public:
@@ -610,17 +667,6 @@ static string systemMod(){
     }
     throw LoadException(__FILE__, __LINE__, "Could not get system mod");
 }
-
-struct NetworkJoin{
-    NetworkJoin():
-        enabled(false){
-        }
-
-    bool enabled;
-    string name;
-    string host;
-    string port;
-}; 
 
 /* dispatch to the top level function */
 static int startMain(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
@@ -744,23 +790,6 @@ int paintown_main(int argc, char ** argv){
     Global::setDebug(0);
     vector<const char *> all_args;
 
-#define ADD_ARGS(args) addArgs(all_args, args, NUM_ARGS(args))
-    // ADD_ARGS(WINDOWED_ARG);
-    // ADD_ARGS(DATAPATH_ARG);
-    // ADD_ARGS(DEBUG_ARG);
-    // ADD_ARGS(MUSIC_ARG);
-    // ADD_ARGS(MUGEN_ARG);
-    // ADD_ARGS(MUGEN_INSTANT_ARG);
-    // ADD_ARGS(MUGEN_INSTANT_WATCH_ARG);
-    // ADD_ARGS(MUGEN_INSTANT_SCRIPT_ARG);
-    // ADD_ARGS(MUGEN_INSTANT_ARCADE_ARG);
-    // ADD_ARGS(RATE_LIMIT_ARG);
-#ifdef HAVE_NETWORKING
-    ADD_ARGS(NETWORK_SERVER_ARG);
-    ADD_ARGS(NETWORK_JOIN_ARG);
-#endif
-#undef ADD_ARGS
-
 #ifdef PS3
     /* find the directory that contains the binary and set the data path
      * to that directory + our data path
@@ -789,6 +818,9 @@ int paintown_main(int argc, char ** argv){
     MugenScriptArgument mugenScriptArgument;
     MugenWatchArgument mugenWatchArgument;
     MugenArcadeArgument mugenArcadeArgument;
+    DisableQuitArgument disableQuit;
+    NetworkServerArgument networkServer;
+    NetworkJoinArgument networkJoinArgument;
 
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
@@ -809,7 +841,7 @@ int paintown_main(int argc, char ** argv){
         } else if (mugenTrainingArgument.isArg(*it)){
             it = mugenTrainingArgument.parse(it, stringArgs.end());
             mugenInstant = mugenTrainingArgument.data;
-        } else if (isArg(*it, DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG))){
+        } else if (disableQuit.isArg(*it)){
             allow_quit = false;
         } else if (mugenScriptArgument.isArg(*it)){
             it = mugenScriptArgument.parse(it, stringArgs.end());
@@ -824,20 +856,11 @@ int paintown_main(int argc, char ** argv){
             it = debug.parse(it, stringArgs.end());
             
 #ifdef HAVE_NETWORKING
-        } else if (isArg(*it, NETWORK_SERVER_ARG, NUM_ARGS(NETWORK_SERVER_ARG))){
+        } else if (networkServer.isArg(*it)){
             just_network_server = true;
-        } else if (isArg(*it, NETWORK_JOIN_ARG, NUM_ARGS(NETWORK_JOIN_ARG))){
-            networkJoin.enabled = true;
-            string port;
-            string host;
-            string name;
-            it++;
-            if (it != stringArgs.end()){
-                parseNetworkJoin(*it, port, host, name);
-                networkJoin.port = port;
-                networkJoin.host = host;
-                networkJoin.name = name;
-            }
+        } else if (networkJoinArgument.isArg(*it)){
+            it = networkJoinArgument.parse(it, stringArgs.end());
+            networkJoin = networkJoinArgument.data;
 #endif
         } else {
             const string & arg = *it;
@@ -849,7 +872,6 @@ int paintown_main(int argc, char ** argv){
             }
         }
     }
-#undef NUM_ARGS
 
     showOptions();
 
