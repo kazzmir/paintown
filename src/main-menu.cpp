@@ -79,8 +79,6 @@ public:
     }
     
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
-        /* Just move to the next argument */
-        current++;
         return current;
     }
 };
@@ -129,7 +127,6 @@ public:
     }
     
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
-        current++;
         return current;
     }
 };
@@ -170,7 +167,6 @@ public:
     }
 
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
-        current++;
         return current;
     }
 
@@ -194,7 +190,6 @@ public:
     }
 
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
-        current++;
         return current;
     }
 };
@@ -213,7 +208,176 @@ public:
     }
 
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        return current;
+    }
+};
+
+static bool parseMugenInstant(string input, string * player1, string * player2, string * stage){
+    unsigned int comma = input.find(',');
+    if (comma == string::npos){
+        Global::debug(0) << "Expected three arguments separated by a comma, only 1 was given: " << input << endl;
+        return false;
+    }
+    *player1 = input.substr(0, comma);
+    input.erase(0, comma + 1);
+    comma = input.find(',');
+
+    if (comma == string::npos){
+        Global::debug(0) << "Expected three arguments separated by a comma, only 2 were given: " << input << endl;
+        return false;
+    }
+
+    *player2 = input.substr(0, comma);
+    input.erase(0, comma + 1);
+    *stage = input;
+
+    return true;
+}
+
+struct MugenInstant{
+    enum Kind{
+        None,
+        Training,
+        Watch,
+        Arcade,
+        Script
+    };
+
+    MugenInstant():
+        enabled(false),
+        kind(None){
+        }
+
+    bool enabled;
+    string player1;
+    string player2;
+    string player1Script;
+    string player2Script;
+    string stage;
+    Kind kind;
+}; 
+
+class MugenTrainingArgument: public Argument {
+public:
+
+    MugenInstant data;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:training");
+        return out;
+    }
+
+    string description() const {
+        return " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
         current++;
+        if (current != end){
+            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
+            data.kind = MugenInstant::Training;
+        } else {
+            Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
+        }
+        return current;
+    }
+};
+
+static void splitString(const string & subject, char split, string & left, string & right){
+    size_t find = subject.find(split);
+    if (find != string::npos){
+        left = subject.substr(0, find);
+        right = subject.substr(find + 1);
+    }
+}
+
+class MugenScriptArgument: public Argument {
+public:
+    MugenInstant data;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:script");
+        return out;
+    }
+
+    string description() const {
+        return " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        if (current != end){
+            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
+            string player, script;
+            splitString(data.player1, ':', player, script);
+            data.player1 = player;
+            data.player1Script = script;
+
+            splitString(data.player2, ':', player, script);
+            data.player2 = player;
+            data.player2Script = script;
+
+            data.kind = MugenInstant::Script;
+        } else {
+            Global::debug(0) << "Expected an argument. Example: mugen:script kfm:kfm-script.txt,ken:ken-script.txt,falls" << endl;
+        }
+
+        return current;
+    }
+};
+
+class MugenWatchArgument: public Argument {
+public:
+    MugenInstant data;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:watch");
+        return out;
+    }
+
+    string description() const {
+        return " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        if (current != end){
+            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
+            data.kind = MugenInstant::Watch;
+        } else {
+            Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
+        }
+
+        return current;
+    }
+};
+
+class MugenArcadeArgument: public Argument {
+public:
+    MugenInstant data;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:arcade");
+        return out;
+    }
+
+    string description() const {
+        return " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+        current++;
+        if (current != end){
+            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
+            data.kind = MugenInstant::Arcade;
+        } else {
+            Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
+        }
+
         return current;
     }
 };
@@ -226,10 +390,10 @@ public:
 static const char * NETWORK_SERVER_ARG[] = {"server", "network-server"};
 static const char * NETWORK_JOIN_ARG[] = {"network-join"};
 // static const char * MUGEN_ARG[] = {"mugen", "--mugen"};
-static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
-static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
-static const char * MUGEN_INSTANT_SCRIPT_ARG[] = {"mugen:script"};
-static const char * MUGEN_INSTANT_ARCADE_ARG[] = {"mugen:arcade"};
+// static const char * MUGEN_INSTANT_ARG[] = {"mugen:training"};
+// static const char * MUGEN_INSTANT_WATCH_ARG[] = {"mugen:watch"};
+// static const char * MUGEN_INSTANT_SCRIPT_ARG[] = {"mugen:script"};
+// static const char * MUGEN_INSTANT_ARCADE_ARG[] = {"mugen:arcade"};
 // static const char * JOYSTICK_ARG[] = {"joystick", "nojoystick", "no-joystick"};
 static const char * DISABLE_QUIT_ARG[] = {"disable-quit"};
 // static const char * RATE_LIMIT_ARG[] = {"fps", "rate-limit"};
@@ -292,10 +456,18 @@ static void showOptions(){
     Global::debug(0) << " " << Util::join(music.keywords(), ", ") << music.description() << endl;
     MugenArgument mugen;
     Global::debug(0) << " " << Util::join(mugen.keywords(), ", ") << mugen.description() << endl;
-    Global::debug(0) << " " << all(MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage" << endl;
-    Global::debug(0) << " " << all(MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage" << endl;
-    Global::debug(0) << " " << all(MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG)) << " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts" << endl;
-    Global::debug(0) << " " << all(MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG)) << " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players" << endl;
+    MugenTrainingArgument mugenTraining;
+    Global::debug(0) << " " << Util::join(mugenTraining.keywords(), ", ") << mugenTraining.description() << endl;
+
+    MugenWatchArgument mugenWatch;
+    Global::debug(0) << " " << Util::join(mugenWatch.keywords(), ", ") << mugenWatch.description() << endl;
+
+    MugenScriptArgument mugenScript;
+    Global::debug(0) << " " << Util::join(mugenScript.keywords(), ", ") << mugenScript.description() << endl;
+
+    MugenArcadeArgument mugenArcade;
+    Global::debug(0) << " " << Util::join(mugenArcade.keywords(), ", ") << mugenArcade.description() << endl;
+
     JoystickArgument joystick;
     Global::debug(0) << " " << Util::join(joystick.keywords(), ", ") << joystick.description() << endl;
     Global::debug(0) << " " << all(DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG)) << " : Don't allow the game to exit using the normal methods" << endl;
@@ -349,27 +521,7 @@ static void hack(){
 }
 */
 
-static bool parseMugenInstant(string input, string * player1, string * player2, string * stage){
-    unsigned int comma = input.find(',');
-    if (comma == string::npos){
-        Global::debug(0) << "Expected three arguments separated by a comma, only 1 was given: " << input << endl;
-        return false;
-    }
-    *player1 = input.substr(0, comma);
-    input.erase(0, comma + 1);
-    comma = input.find(',');
 
-    if (comma == string::npos){
-        Global::debug(0) << "Expected three arguments separated by a comma, only 2 were given: " << input << endl;
-        return false;
-    }
-
-    *player2 = input.substr(0, comma);
-    input.erase(0, comma + 1);
-    *stage = input;
-
-    return true;
-}
 
 static void runMugenTraining(const string & player1, const string & player2, const string & stage){
     Global::debug(0) << "Mugen training mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
@@ -470,29 +622,6 @@ struct NetworkJoin{
     string port;
 }; 
 
-struct MugenInstant{
-    enum Kind{
-        None,
-        Training,
-        Watch,
-        Arcade,
-        Script
-    };
-
-    MugenInstant():
-        enabled(false),
-        kind(None){
-        }
-
-    bool enabled;
-    string player1;
-    string player2;
-    string player1Script;
-    string player2Script;
-    string stage;
-    Kind kind;
-}; 
-
 /* dispatch to the top level function */
 static int startMain(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
     while (true){
@@ -590,13 +719,7 @@ static int startMain(bool just_network_server, const NetworkJoin & networkJoin, 
     return 0;
 }
                 
-static void splitString(const string & subject, char split, string & left, string & right){
-    size_t find = subject.find(split);
-    if (find != string::npos){
-        left = subject.substr(0, find);
-        right = subject.substr(find + 1);
-    }
-}
+
 
 /* 1. parse arguments
  * 2. initialize environment
@@ -627,10 +750,10 @@ int paintown_main(int argc, char ** argv){
     // ADD_ARGS(DEBUG_ARG);
     // ADD_ARGS(MUSIC_ARG);
     // ADD_ARGS(MUGEN_ARG);
-    ADD_ARGS(MUGEN_INSTANT_ARG);
-    ADD_ARGS(MUGEN_INSTANT_WATCH_ARG);
-    ADD_ARGS(MUGEN_INSTANT_SCRIPT_ARG);
-    ADD_ARGS(MUGEN_INSTANT_ARCADE_ARG);
+    // ADD_ARGS(MUGEN_INSTANT_ARG);
+    // ADD_ARGS(MUGEN_INSTANT_WATCH_ARG);
+    // ADD_ARGS(MUGEN_INSTANT_SCRIPT_ARG);
+    // ADD_ARGS(MUGEN_INSTANT_ARCADE_ARG);
     // ADD_ARGS(RATE_LIMIT_ARG);
 #ifdef HAVE_NETWORKING
     ADD_ARGS(NETWORK_SERVER_ARG);
@@ -662,6 +785,10 @@ int paintown_main(int argc, char ** argv){
     RateLimitArgument rateLimit;
     JoystickArgument joystick;
     MugenArgument mugenArgument;
+    MugenTrainingArgument mugenTrainingArgument;
+    MugenScriptArgument mugenScriptArgument;
+    MugenWatchArgument mugenWatchArgument;
+    MugenArcadeArgument mugenArcadeArgument;
 
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
@@ -679,51 +806,20 @@ int paintown_main(int argc, char ** argv){
             joystick_on = false;
         } else if (rateLimit.isArg(*it)){
             Global::rateLimit = false;
-        } else if (isArg(*it, MUGEN_INSTANT_ARG, NUM_ARGS(MUGEN_INSTANT_ARG))){
-            it++;
-            if (it != stringArgs.end()){
-                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
-                mugenInstant.kind = MugenInstant::Training;
-            } else {
-                Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
-            }
+        } else if (mugenTrainingArgument.isArg(*it)){
+            it = mugenTrainingArgument.parse(it, stringArgs.end());
+            mugenInstant = mugenTrainingArgument.data;
         } else if (isArg(*it, DISABLE_QUIT_ARG, NUM_ARGS(DISABLE_QUIT_ARG))){
             allow_quit = false;
-        } else if (isArg(*it, MUGEN_INSTANT_SCRIPT_ARG, NUM_ARGS(MUGEN_INSTANT_SCRIPT_ARG))){
-            it++;
-            if (it != stringArgs.end()){
-                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
-                string player, script;
-                splitString(mugenInstant.player1, ':', player, script);
-                mugenInstant.player1 = player;
-                mugenInstant.player1Script = script;
-
-                splitString(mugenInstant.player2, ':', player, script);
-                mugenInstant.player2 = player;
-                mugenInstant.player2Script = script;
-
-                mugenInstant.kind = MugenInstant::Script;
-            } else {
-                Global::debug(0) << "Expected an argument. Example: mugen:script kfm:kfm-script.txt,ken:ken-script.txt,falls" << endl;
-            }
-        } else if (isArg(*it, MUGEN_INSTANT_WATCH_ARG, NUM_ARGS(MUGEN_INSTANT_WATCH_ARG))){
-            it++;
-            if (it != stringArgs.end()){
-                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
-                mugenInstant.kind = MugenInstant::Watch;
-            } else {
-                Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
-            }
-
-        } else if (isArg(*it, MUGEN_INSTANT_ARCADE_ARG, NUM_ARGS(MUGEN_INSTANT_ARCADE_ARG))){
-            it++;
-            if (it != stringArgs.end()){
-                mugenInstant.enabled = parseMugenInstant(*it, &mugenInstant.player1, &mugenInstant.player2, &mugenInstant.stage);
-                mugenInstant.kind = MugenInstant::Arcade;
-            } else {
-                Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
-            }
-
+        } else if (mugenScriptArgument.isArg(*it)){
+            it = mugenScriptArgument.parse(it, stringArgs.end());
+            mugenInstant = mugenScriptArgument.data;
+        } else if (mugenWatchArgument.isArg(*it)){
+            it = mugenWatchArgument.parse(it, stringArgs.end());
+            mugenInstant = mugenWatchArgument.data;
+        } else if (mugenArcadeArgument.isArg(*it)){
+            it = mugenArcadeArgument.parse(it, stringArgs.end());
+            mugenInstant = mugenArcadeArgument.data;
         } else if (debug.isArg(*it)){
             it = debug.parse(it, stringArgs.end());
             
