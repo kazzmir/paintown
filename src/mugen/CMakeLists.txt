@@ -8,6 +8,7 @@
 # Source directories containing all the necessary .cpp files
 # -------------------------------------------------------
 set(MUGEN_SRC
+argument.cpp
 background.cpp
 behavior.cpp
 characterhud.cpp

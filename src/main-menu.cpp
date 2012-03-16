@@ -9,10 +9,6 @@
 #include "util/network/network.h"
 #include "util/token_exception.h"
 #include "util/system.h"
-#include "mugen/exception.h"
-#include "mugen/menu.h"
-#include "mugen/game.h"
-#include "mugen/options.h"
 #include "util/music.h"
 #include "util/menu/menu.h"
 #include "util/menu/menu-exception.h"
@@ -38,7 +34,9 @@
 #include "util/init.h"
 #include "util/main.h"
 #include "util/argument.h"
-#include "mugen/config.h"
+
+#include "mugen/options.h"
+#include "mugen/argument.h"
 
 #include <iostream>
 
@@ -222,292 +220,6 @@ static Filesystem::AbsolutePath mainMenuPath(){
     string menu = Paintown::Mod::getCurrentMod()->getMenu();
     return Storage::instance().find(Filesystem::RelativePath(menu));
 }
-
-static void setMugenMotif(const Filesystem::AbsolutePath & path){
-    std::string motif;
-    try {
-        *Mugen::Configuration::get("motif") >> motif;
-    } catch (const std::ios_base::failure & ex){
-        motif.clear();
-    }
-    if (!motif.empty()){
-        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
-    } else {
-        TokenReader reader;
-        Token * head = reader.readToken(path.path());
-        const Token * motif = head->findToken("menu/option/mugen/motif");
-        if (motif != NULL){
-            string path;
-            motif->view() >> path;
-            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(path));
-        }
-    }
-}
-
-class MugenArgument: public Argument {
-public:
-    vector<string> keywords() const {
-        vector<string> out;
-        out.push_back("mugen");
-        out.push_back("--mugen");
-        return out;
-    }
-
-    string description() const {
-        return " : Go directly to the mugen menu";
-    }
-
-    class Run: public ArgumentAction {
-    public:
-        virtual void act(){
-            setMugenMotif(mainMenuPath());
-            Mugen::run();
-        }
-    };
-
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run()));
-        return current;
-    }
-};
-
-static bool parseMugenInstant(string input, string * player1, string * player2, string * stage){
-    unsigned int comma = input.find(',');
-    if (comma == string::npos){
-        Global::debug(0) << "Expected three arguments separated by a comma, only 1 was given: " << input << endl;
-        return false;
-    }
-    *player1 = input.substr(0, comma);
-    input.erase(0, comma + 1);
-    comma = input.find(',');
-
-    if (comma == string::npos){
-        Global::debug(0) << "Expected three arguments separated by a comma, only 2 were given: " << input << endl;
-        return false;
-    }
-
-    *player2 = input.substr(0, comma);
-    input.erase(0, comma + 1);
-    *stage = input;
-
-    return true;
-}
-
-struct MugenInstant{
-    enum Kind{
-        None,
-        Training,
-        Watch,
-        Arcade,
-        Script
-    };
-
-    MugenInstant():
-        enabled(false),
-        kind(None){
-        }
-
-    bool enabled;
-    string player1;
-    string player2;
-    string player1Script;
-    string player2Script;
-    string stage;
-    Kind kind;
-}; 
-
-class MugenTrainingArgument: public Argument {
-public:
-
-    MugenInstant data;
-
-    vector<string> keywords() const {
-        vector<string> out;
-        out.push_back("mugen:training");
-        return out;
-    }
-
-    string description() const {
-        return " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage";
-    }
-
-    class Run: public ArgumentAction {
-    public:
-
-        Run(MugenInstant data):
-            data(data){
-            }
-
-        MugenInstant data;
-
-        void act(){
-            setMugenMotif(mainMenuPath());
-            Global::debug(0) << "Mugen training mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
-            Mugen::Game::startTraining(data.player1, data.player2, data.stage);
-        }
-    };
-
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        current++;
-        if (current != end){
-            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
-            data.kind = MugenInstant::Training;
-            actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
-        } else {
-            Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
-        }
-        return current;
-    }
-};
-
-static void splitString(const string & subject, char split, string & left, string & right){
-    size_t find = subject.find(split);
-    if (find != string::npos){
-        left = subject.substr(0, find);
-        right = subject.substr(find + 1);
-    }
-}
-
-class MugenScriptArgument: public Argument {
-public:
-    MugenInstant data;
-
-    vector<string> keywords() const {
-        vector<string> out;
-        out.push_back("mugen:script");
-        return out;
-    }
-
-    string description() const {
-        return " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts";
-    }
-
-    class Run: public ArgumentAction {
-    public:
-
-        Run(MugenInstant data):
-            data(data){
-            }
-
-        MugenInstant data;
-
-        void act(){
-            setMugenMotif(mainMenuPath());
-            Global::debug(0) << "Mugen scripted mode player1 '" << data.player1 << "' with script '" << data.player1Script << "' player2 '" << data.player2 << "' with script '" << data.player2Script << "' stage '" << data.stage << "'" << endl;
-            Mugen::Game::startScript(data.player1, data.player1Script, data.player2, data.player2Script, data.stage);
-        }
-    };
-                
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        current++;
-        if (current != end){
-            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
-            string player, script;
-            splitString(data.player1, ':', player, script);
-            data.player1 = player;
-            data.player1Script = script;
-
-            splitString(data.player2, ':', player, script);
-            data.player2 = player;
-            data.player2Script = script;
-
-            data.kind = MugenInstant::Script;
-        } else {
-            Global::debug(0) << "Expected an argument. Example: mugen:script kfm:kfm-script.txt,ken:ken-script.txt,falls" << endl;
-        }
-
-        return current;
-    }
-};
-
-class MugenWatchArgument: public Argument {
-public:
-    MugenInstant data;
-
-    vector<string> keywords() const {
-        vector<string> out;
-        out.push_back("mugen:watch");
-        return out;
-    }
-
-    string description() const {
-        return " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage";
-    }
-
-    class Run: public ArgumentAction {
-    public:
-
-        Run(MugenInstant data):
-            data(data){
-            }
-
-        MugenInstant data;
-
-        void act(){
-            setMugenMotif(mainMenuPath());
-            Global::debug(0) << "Mugen watch mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
-            Mugen::Game::startWatch(data.player1, data.player2, data.stage);
-        }
-    };
-
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        current++;
-        if (current != end){
-            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
-            data.kind = MugenInstant::Watch;
-            actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
-        } else {
-            Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
-        }
-
-        return current;
-    }
-};
-
-class MugenArcadeArgument: public Argument {
-public:
-    MugenInstant data;
-
-    vector<string> keywords() const {
-        vector<string> out;
-        out.push_back("mugen:arcade");
-        return out;
-    }
-
-    string description() const {
-        return " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players";
-    }
-
-    class Run: public ArgumentAction {
-    public:
-
-        Run(MugenInstant data):
-            data(data){
-            }
-
-        MugenInstant data;
-
-        void act(){
-            setMugenMotif(mainMenuPath());
-            Global::debug(0) << "Mugen arcade mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
-            Mugen::Game::startArcade(data.player1, data.player2, data.stage);
-        }
-    };
-
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        current++;
-        if (current != end){
-            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
-            data.kind = MugenInstant::Arcade;
-
-            actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
-        } else {
-            Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
-        }
-
-        return current;
-    }
-};
 
 class NetworkServerArgument: public Argument {
 public:
@@ -697,37 +409,6 @@ static void showOptions(const vector<Util::ReferenceCount<Argument> > & argument
 
     Global::debug(0) << endl;
 }
-
-/*
-static void hack(){
-    Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
-    Global::debug(1, "hack") << "Font directory " << fontsDirectory.path() << endl;
-    vector<string> ttfFonts = Util::getFiles(fontsDirectory, "*.ttf");
-    Global::debug(1, "hack") << "Fonts: " << ttfFonts.size() << endl;
-}
-*/
-
-/*
-static void runMugenTraining(const string & player1, const string & player2, const string & stage){
-    Global::debug(0) << "Mugen training mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
-    Mugen::Game::startTraining(player1, player2, stage);
-}
-
-static void runMugenArcade(const string & player1, const string & player2, const string & stage){
-    Global::debug(0) << "Mugen arcade mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
-    Mugen::Game::startArcade(player1, player2, stage);
-}
-
-static void runMugenScript(const string & player1, const string & player1Script, const string & player2, const string & player2Script, const string & stage){
-    Global::debug(0) << "Mugen scripted mode player1 '" << player1 << "' with script '" << player1Script << "' player2 '" << player2 << "' with script '" << player2Script << "' stage '" << stage << "'" << endl;
-    Mugen::Game::startScript(player1, player1Script, player2, player2Script, stage);
-}
-
-static void runMugenWatch(const string & player1, const string & player2, const string & stage){
-    Global::debug(0) << "Mugen watch mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
-    Mugen::Game::startWatch(player1, player2, stage);
-}
-*/
 
 class MainMenuOptionFactory: public Menu::OptionFactory {
 public:
@@ -977,12 +658,9 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument())); /* done */
     arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument())); /* done */
     arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenTrainingArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenScriptArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenWatchArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArcadeArgument())); /* done */
     arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit))); /* done */
+    vector<Util::ReferenceCount<Argument> > mugenArguments = Mugen::arguments();
+    arguments.insert(arguments.end(), mugenArguments.begin(), mugenArguments.end());
 #ifdef HAVE_NETWORKING
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
