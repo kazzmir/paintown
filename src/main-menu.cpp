@@ -221,6 +221,7 @@ static Filesystem::AbsolutePath mainMenuPath(){
     return Storage::instance().find(Filesystem::RelativePath(menu));
 }
 
+/* FIXME: move the network arguments to the paintown-engine directory */
 class NetworkServerArgument: public Argument {
 public:
     vector<string> keywords() const {
@@ -502,105 +503,6 @@ static int startMain(const vector<Util::ReferenceCount<ArgumentAction> > & actio
     return 0;
 }
 
-#if 0
-/* dispatch to the top level function */
-static int startMain2(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
-    while (true){
-        bool normal_quit = false;
-        try{
-            /* fadein from white */
-            if (just_network_server){
-#ifdef HAVE_NETWORKING
-                Network::networkServer();
-#endif
-            } else if (networkJoin.enabled){
-#ifdef HAVE_NETWORKING
-                string port = networkJoin.port;
-                string host = networkJoin.host;
-                string name = networkJoin.name;
-                if (port == ""){
-                    /* FIXME: replace 7887 with a constant */
-                    port = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientPort, "7887");
-                }
-                if (host == ""){
-                    host = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientHost, "127.0.0.1");
-                }
-                if (name == ""){
-                    name = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientName, "player");
-                }
-                Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
-                try{
-                    Network::runClient(name, host, port);
-                } catch (const Network::NetworkException & fail){
-                    Global::debug(0) << "Error running the network client: " << fail.getMessage() << endl;
-                }
-#endif
-            } else if (mugen){
-                setMugenMotif(mainMenuPath());
-                Mugen::run();
-            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Script){
-                setMugenMotif(mainMenuPath());
-                runMugenScript(mugenInstant.player1, mugenInstant.player1Script, mugenInstant.player2, mugenInstant.player2Script, mugenInstant.stage);
-            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Arcade){
-                setMugenMotif(mainMenuPath());
-                runMugenArcade(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
-            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Training){
-                setMugenMotif(mainMenuPath());
-                runMugenTraining(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
-            } else if (mugenInstant.enabled && mugenInstant.kind == MugenInstant::Watch){
-                setMugenMotif(mainMenuPath());
-                runMugenWatch(mugenInstant.player1, mugenInstant.player2, mugenInstant.stage);
-            } else {
-                /* Start the intro for the current mod before the game starts */
-                Paintown::Mod::getCurrentMod()->playIntro();
-
-                MainMenuOptionFactory factory;
-                Menu::Menu game(mainMenuPath(), factory);
-                game.run(Menu::Context());
-            }
-            normal_quit = true;
-        } catch (const Filesystem::Exception & ex){
-            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
-        } catch (const TokenException & ex){
-            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getTrace() << endl;
-            return -1;
-        } catch (const LoadException & ex){
-            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
-            return -1;
-        } catch (const Exception::Return & ex){
-        } catch (const ShutdownException & shutdown){
-            Global::debug(1) << "Forced a shutdown. Cya!" << endl;
-        } catch (const MugenException & m){
-            Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
-        } catch (const ReloadMenuException & ex){
-            Global::debug(1) << "Menu Reload Requested. Restarting...." << endl;
-            continue;
-        } catch (const ftalleg::Exception & ex){
-            Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
-        } catch (const Exception::Base & base){
-            // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
-            Global::debug(0) << "Base exception: " << base.getTrace() << endl;
-/* android doesn't have bad_alloc for some reason */
-// #ifndef ANDROID
-        } catch (const std::bad_alloc & fail){
-            Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
-// #endif
-        } catch (...){
-            Global::debug(0) << "Uncaught exception!" << endl;
-        }
-
-        if (allow_quit && normal_quit){
-            break;
-        } else if (normal_quit && !allow_quit){
-        } else if (!normal_quit){
-            break;
-        }
-    }
-
-    return 0;
-}
-#endif
-
 class DefaultGame: public ArgumentAction {
 public:
     void act(){
@@ -621,9 +523,9 @@ int paintown_main(int argc, char ** argv){
     int gfx = -1;
 
     bool music_on = true;
-    bool joystick_on = true;
+    // bool joystick_on = true;
     // bool mugen = false;
-    bool just_network_server = false;
+    // bool just_network_server = false;
     bool allow_quit = true;
     Collector janitor;
     // NetworkJoin networkJoin;
@@ -737,14 +639,7 @@ int paintown_main(int argc, char ** argv){
     InputManager input;
     Music music(music_on);
 
-    /* Testing hack
-    mugenInstant.enabled = true;
-    mugenInstant.kind = MugenInstant::Watch;
-    mugenInstant.player1 = "kfm";
-    mugenInstant.player2 = "kfm";
-    mugenInstant.stage = "kfm";
-    */
-
+    /* If there are no actions then start the Paintown menu */
     if (actions.size() == 0){
         actions.push_back(Util::ReferenceCount<ArgumentAction>(new DefaultGame()));
     }
