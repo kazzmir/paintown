@@ -2112,29 +2112,6 @@ public:
                     std::string temp;
                     tok->view() >> temp;
                     this->setText(temp);
-                } else if (*tok == "motif"){
-                    // Load Motif from file
-                    std::string temp;
-                    // Filename
-                    tok->view() >> temp;
-                    // Set the default motif
-                    try{
-                        std::string motif;
-                        try {
-                            *Mugen::Configuration::get("motif") >> motif;
-                        } catch (const std::ios_base::failure & ex){
-                            motif.clear();
-                        }
-                        if (motif.empty()){
-                            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(temp));
-                        } else {
-                            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
-                        }
-                    } catch (const Filesystem::NotFound & fail){
-                        throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
-                    } catch (const MugenException & fail){
-                        throw LoadException(__FILE__, __LINE__, fail, "Can't load the MUGEN menu");
-                    }
                 } else {
                     Global::debug( 3 ) <<"Unhandled menu attribute: "<<endl;
                     if (Global::getDebug() >= 3){
@@ -2145,16 +2122,21 @@ public:
                 throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
             } 
         }
-
-        /*
-        // Load menu with default motif
-        _menu = new MugenMenu(Mugen::Data::getInstance().getMotif());
-        // Set this menu as an option
-        _menu->setAsOption(true);
-        */
-
-        // Lets check if this menu is going bye bye
-        //if ( _menu->checkRemoval() ) setForRemoval(true);
+    }
+    
+    virtual void loadMotif(){
+        std::string motif;
+        try {
+            *Mugen::Configuration::get("motif") >> motif;
+        } catch (const std::ios_base::failure & ex){
+            motif.clear();
+        }
+        if (!motif.empty()){
+            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
+        } else {
+            /* FIXME: search for a system.def file */
+            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath("data/system.def"));
+        }
     }
 
     // Do logic before run part
@@ -2165,6 +2147,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const Menu::Context & context){
         try{
+            loadMotif();
             Mugen::run();
         } catch (const LoadException & le){
             ostringstream out;
@@ -2185,98 +2168,12 @@ private:
     // MugenMenu *_menu;
 };
 
-class OptionMugenMotif: public MenuOption {
-public:
-    OptionMugenMotif(const Gui::ContextBox & parent, const Token * token):
-    MenuOption(parent, token){
-        readName(token);
-    }
-
-    virtual ~OptionMugenMotif(){
-    }
-
-    virtual void logic(){
-    }
-
-    static bool isMugenMotif(const Filesystem::AbsolutePath & path){
-        try{
-            string name = Util::probeDef(path, "info", "name");
-            return true;
-        } catch (...){
-            return false;
-        }
-    }
-
-    static vector<Filesystem::AbsolutePath> listMotifs(){
-        Filesystem::AbsolutePath data = Storage::instance().find(Filesystem::RelativePath("mugen/data"));
-        vector<Filesystem::AbsolutePath> defs = Storage::instance().getFilesRecursive(data, "system.def");
-        vector<Filesystem::AbsolutePath> good;
-        for (vector<Filesystem::AbsolutePath>::iterator it = defs.begin(); it != defs.end(); it++){
-            const Filesystem::AbsolutePath & file = *it;
-            if (isMugenMotif(file)){
-                Global::debug(1) << "Motif: " << file.path() << endl;
-                good.push_back(file);
-            }
-        }
-        return good;
-    }
-
-    virtual void run(const Menu::Context & context){
-        class Context: public Loader::LoadingContext {
-        public:
-            Context():
-                index(-1){
-                }
-
-            virtual void load(){
-                paths = listMotifs();
-                vector<Filesystem::AbsolutePath> paths = listMotifs();
-                const Gui::ContextBox & box = ((Menu::DefaultRenderer*) menu.getRenderer())->getBox();
-                for (unsigned int i = 0; i < paths.size(); i++){
-                    /* FIXME: its a hack/lazy to use OptionLevel here */
-                    OptionLevel *option = new OptionLevel(box, 0, &index, i);
-                    option->setText(Mugen::Util::probeDef(paths[i], "info", "name"));
-                    option->setInfoText(Storage::instance().cleanse(paths[i]).path());
-                    menu.addOption(option);
-                }
-            }
-
-            vector<Filesystem::AbsolutePath> paths;
-            int index;
-            Menu::Menu menu;
-        };
-
-        Context state;
-        /* an empty Info object, we don't really care about it */
-        Loader::Info level;
-        Loader::loadScreen(state, level, Loader::SimpleCircle);
-
-        if (state.paths.size() <= 1){
-            return;
-        }
-
-        try {
-            state.menu.run(context);
-        } catch (const Menu::MenuException & ex){
-        } catch (const Exception::Return & ok){
-        }
-
-        if (state.index != -1){
-            Filesystem::RelativePath motif = Storage::instance().cleanse(state.paths[state.index]).removeFirstDirectory();
-            Global::debug(1) << "Set muge motif to " << motif.path() << endl;
-            Mugen::Data::getInstance().setMotif(motif);
-        }
-    }
-};
-
 MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Token *token) const {
     const Token * child;
     token->view() >> child;
 
     if (*child == "mugen"){
         return new OptionMugenMenu(parent, child);
-    } else if (*child == "mugen-motif"){
-        return new OptionMugenMotif(parent, child);
     }
 
     return NULL;
