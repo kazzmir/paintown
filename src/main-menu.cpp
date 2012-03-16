@@ -72,6 +72,26 @@ public:
     }
 };
 
+class VersionArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("version");
+        out.push_back("--version");
+        out.push_back("-v");
+        return out;
+    }
+    
+    string description() const {
+        return " : Print the version of Paintown and exit.";
+    }
+    
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        Global::debug(0) << "Version " << Global::getVersionString() << endl;
+        exit(0);
+    }
+};
+
 class DataPathArgument: public Argument {
 public:
     vector<string> keywords() const {
@@ -554,13 +574,14 @@ int paintown_main(int argc, char ** argv){
     }
 
     vector<Util::ReferenceCount<Argument> > arguments;
-    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument(&gfx))); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument(&music_on))); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument())); /* done */
-    arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit))); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument(&gfx)));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument(&music_on)));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new VersionArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit)));
     vector<Util::ReferenceCount<Argument> > mugenArguments = Mugen::arguments();
     arguments.insert(arguments.end(), mugenArguments.begin(), mugenArguments.end());
 #ifdef HAVE_NETWORKING
