@@ -1407,7 +1407,7 @@ protected:
         int regenerateHealthDifference;
 
         /* used to communicate the need to guard in the engine */
-        bool needToGuard;
+        // bool needToGuard;
 
         /* true if the player is currently guarding an attack */
         bool guarding;

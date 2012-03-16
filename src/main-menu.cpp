@@ -46,10 +46,26 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
+class ArgumentAction{
+public:
+    virtual void act() = 0;
+    virtual ~ArgumentAction(){
+    }
+};
+
+typedef vector<Util::ReferenceCount<ArgumentAction> > ActionRefs;
+
 class Argument{
 public:
+    /* Keywords on the command line that should invoke this argument */
     virtual vector<string> keywords() const = 0;
-    virtual vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end) = 0;
+    
+    /* Parse more strings from the command line. Any actions that should take place
+     * after the command line has been parsed should be put into 'actions'
+     */
+    virtual vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions) = 0;
+
+    /* Description of what this argument does */
     virtual string description() const = 0;
 
     bool isArg(const string & what) const {
@@ -68,6 +84,12 @@ public:
 
 class WindowedArgument: public Argument {
 public:
+    WindowedArgument(int * gfx):
+    gfx(gfx){
+    }
+
+    int * gfx;
+
     vector<string> keywords() const {
         vector<string> out;
         out.push_back("-w");
@@ -81,7 +103,8 @@ public:
         return " : Start in fullscreen mode";
     }
     
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        *gfx = Global::FULLSCREEN;
         return current;
     }
 };
@@ -105,7 +128,7 @@ public:
         return out.str();
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         current++;
         if (current != end){
             Util::setDataPath(*current);
@@ -116,6 +139,12 @@ public:
 
 class DisableQuitArgument: public Argument {
 public:
+    DisableQuitArgument(bool * quit):
+    quit(quit){
+    }
+
+    bool * quit;
+
     vector<string> keywords() const {
         vector<string> out;
         out.push_back("disable-quit");
@@ -126,13 +155,20 @@ public:
         return " : Don't allow the game to exit using the normal methods";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        *quit = false;
         return current;
     }
 };
 
 class MusicArgument: public Argument {
 public:
+    MusicArgument(bool * enabled):
+        enabled(enabled){
+        }
+
+    bool * enabled;
+
     vector<string> keywords() const {
         vector<string> out;
         out.push_back("-m");
@@ -146,7 +182,8 @@ public:
         return " : Turn off music";
     }
     
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        *enabled = false;
         return current;
     }
 };
@@ -161,7 +198,7 @@ public:
         return out;
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         current++;
         if (current != end){
             istringstream i(*current);
@@ -186,7 +223,8 @@ public:
         return out;
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        Global::rateLimit = false;
         return current;
     }
 
@@ -209,10 +247,37 @@ public:
         return " : Disable joystick input";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & refs){
+        Configuration::setJoystickEnabled(false);
         return current;
     }
 };
+
+static Filesystem::AbsolutePath mainMenuPath(){
+    string menu = Paintown::Mod::getCurrentMod()->getMenu();
+    return Storage::instance().find(Filesystem::RelativePath(menu));
+}
+
+static void setMugenMotif(const Filesystem::AbsolutePath & path){
+    std::string motif;
+    try {
+        *Mugen::Configuration::get("motif") >> motif;
+    } catch (const std::ios_base::failure & ex){
+        motif.clear();
+    }
+    if (!motif.empty()){
+        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
+    } else {
+        TokenReader reader;
+        Token * head = reader.readToken(path.path());
+        const Token * motif = head->findToken("menu/option/mugen/motif");
+        if (motif != NULL){
+            string path;
+            motif->view() >> path;
+            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(path));
+        }
+    }
+}
 
 class MugenArgument: public Argument {
 public:
@@ -227,7 +292,16 @@ public:
         return " : Go directly to the mugen menu";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    class Run: public ArgumentAction {
+    public:
+        virtual void act(){
+            setMugenMotif(mainMenuPath());
+            Mugen::run();
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run()));
         return current;
     }
 };
@@ -292,11 +366,28 @@ public:
         return " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    class Run: public ArgumentAction {
+    public:
+
+        Run(MugenInstant data):
+            data(data){
+            }
+
+        MugenInstant data;
+
+        void act(){
+            setMugenMotif(mainMenuPath());
+            Global::debug(0) << "Mugen training mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
+            Mugen::Game::startTraining(data.player1, data.player2, data.stage);
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
             data.kind = MugenInstant::Training;
+            actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
         }
@@ -326,7 +417,23 @@ public:
         return " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    class Run: public ArgumentAction {
+    public:
+
+        Run(MugenInstant data):
+            data(data){
+            }
+
+        MugenInstant data;
+
+        void act(){
+            setMugenMotif(mainMenuPath());
+            Global::debug(0) << "Mugen scripted mode player1 '" << data.player1 << "' with script '" << data.player1Script << "' player2 '" << data.player2 << "' with script '" << data.player2Script << "' stage '" << data.stage << "'" << endl;
+            Mugen::Game::startScript(data.player1, data.player1Script, data.player2, data.player2Script, data.stage);
+        }
+    };
+                
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
@@ -362,11 +469,28 @@ public:
         return " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    class Run: public ArgumentAction {
+    public:
+
+        Run(MugenInstant data):
+            data(data){
+            }
+
+        MugenInstant data;
+
+        void act(){
+            setMugenMotif(mainMenuPath());
+            Global::debug(0) << "Mugen watch mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
+            Mugen::Game::startWatch(data.player1, data.player2, data.stage);
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
             data.kind = MugenInstant::Watch;
+            actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
         }
@@ -389,11 +513,29 @@ public:
         return " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    class Run: public ArgumentAction {
+    public:
+
+        Run(MugenInstant data):
+            data(data){
+            }
+
+        MugenInstant data;
+
+        void act(){
+            setMugenMotif(mainMenuPath());
+            Global::debug(0) << "Mugen arcade mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
+            Mugen::Game::startArcade(data.player1, data.player2, data.stage);
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
             data.kind = MugenInstant::Arcade;
+
+            actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
         }
@@ -415,7 +557,7 @@ public:
         return " : Go straight to the network server";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         return current;
     }
 
@@ -471,7 +613,7 @@ public:
         }
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         data.enabled = true;
         string port;
         string host;
@@ -531,29 +673,11 @@ static const char * all(const char * args[], const int num, const char separate 
     return buffer;
 }
 
-static void showOptions(){
+static void showOptions(const vector<Util::ReferenceCount<Argument> > & arguments){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
     Global::debug(0) << "Command line options" << endl;
 
-    vector<Util::ReferenceCount<Argument> > arguments;
-    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenTrainingArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenWatchArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenScriptArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArcadeArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument()));
-#ifdef HAVE_NETWORKING
-    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
-#endif
-
-    for (vector<Util::ReferenceCount<Argument> >::iterator it = arguments.begin(); it != arguments.end(); it++){
+    for (vector<Util::ReferenceCount<Argument> >::const_iterator it = arguments.begin(); it != arguments.end(); it++){
         Util::ReferenceCount<Argument> argument = *it;
         Global::debug(0) << " " << Util::join(argument->keywords(), ", ") << argument->description() << endl;
     }
@@ -561,37 +685,7 @@ static void showOptions(){
     Global::debug(0) << endl;
 }
 
-static void addArgs(vector<const char *> & args, const char * strings[], int num){
-    for (int i = 0; i < num; i++){
-        args.push_back(strings[i]);
-    }
-}
 
-static void setMugenMotif(const Filesystem::AbsolutePath & path){
-    std::string motif;
-    try {
-        *Mugen::Configuration::get("motif") >> motif;
-    } catch (const std::ios_base::failure & ex){
-        motif.clear();
-    }
-    if (!motif.empty()){
-        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
-    } else {
-        TokenReader reader;
-        Token * head = reader.readToken(path.path());
-        const Token * motif = head->findToken("menu/option/mugen/motif");
-        if (motif != NULL){
-            string path;
-            motif->view() >> path;
-            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(path));
-        }
-    }
-}
-
-static Filesystem::AbsolutePath mainMenuPath(){
-    string menu = Paintown::Mod::getCurrentMod()->getMenu();
-    return Storage::instance().find(Filesystem::RelativePath(menu));
-}
 
 /*
 static void hack(){
@@ -668,8 +762,57 @@ static string systemMod(){
     throw LoadException(__FILE__, __LINE__, "Could not get system mod");
 }
 
+static int startMain(const vector<Util::ReferenceCount<ArgumentAction> > & actions, bool allow_quit){
+    while (true){
+        bool normal_quit = false;
+        try{
+            for (vector<Util::ReferenceCount<ArgumentAction> >::const_iterator it = actions.begin(); it != actions.end(); it++){
+                Util::ReferenceCount<ArgumentAction> action = *it;
+                action->act();
+            }
+            normal_quit = true;
+        } catch (const Filesystem::Exception & ex){
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
+        } catch (const TokenException & ex){
+            Global::debug(0) << "There was a problem with the token. Error was:\n  " << ex.getTrace() << endl;
+            return -1;
+        } catch (const LoadException & ex){
+            Global::debug(0) << "There was a problem loading the main menu. Error was:\n  " << ex.getTrace() << endl;
+            return -1;
+        } catch (const Exception::Return & ex){
+        } catch (const ShutdownException & shutdown){
+            Global::debug(1) << "Forced a shutdown. Cya!" << endl;
+        } catch (const MugenException & m){
+            Global::debug(0) << "Mugen exception: " << m.getReason() << endl;
+        } catch (const ReloadMenuException & ex){
+            Global::debug(1) << "Menu Reload Requested. Restarting...." << endl;
+            continue;
+        } catch (const ftalleg::Exception & ex){
+            Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
+        } catch (const Exception::Base & base){
+            // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
+            Global::debug(0) << "Base exception: " << base.getTrace() << endl;
+/* android doesn't have bad_alloc for some reason */
+// #ifndef ANDROID
+        } catch (const std::bad_alloc & fail){
+            Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
+// #endif
+        } catch (...){
+            Global::debug(0) << "Uncaught exception!" << endl;
+        }
+
+        if (allow_quit && normal_quit){
+            break;
+        } else if (normal_quit && !allow_quit){
+        } else if (!normal_quit){
+            break;
+        }
+    }
+    return 0;
+}
+
 /* dispatch to the top level function */
-static int startMain(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
+static int startMain2(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
     while (true){
         bool normal_quit = false;
         try{
@@ -764,8 +907,16 @@ static int startMain(bool just_network_server, const NetworkJoin & networkJoin, 
 
     return 0;
 }
-                
 
+class DefaultGame: public ArgumentAction {
+public:
+    void act(){
+        Paintown::Mod::getCurrentMod()->playIntro();
+        MainMenuOptionFactory factory;
+        Menu::Menu game(mainMenuPath(), factory);
+        game.run(Menu::Context());
+    }
+};
 
 /* 1. parse arguments
  * 2. initialize environment
@@ -807,7 +958,38 @@ int paintown_main(int argc, char ** argv){
         stringArgs.push_back(argv[q]);
     }
 
-    WindowedArgument windowed;
+    vector<Util::ReferenceCount<Argument> > arguments;
+    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument(&gfx))); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument(&music_on))); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenTrainingArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenScriptArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenWatchArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new MugenArcadeArgument())); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit))); /* done */
+    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
+    
+    vector<Util::ReferenceCount<ArgumentAction> > actions;
+
+    for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
+        for (vector<Util::ReferenceCount<Argument> >::iterator arg = arguments.begin(); arg != arguments.end(); arg++){
+            Util::ReferenceCount<Argument> argument = *arg;
+            if (argument->isArg(*it)){
+                it = argument->parse(it, stringArgs.end(), actions);
+
+                /* Only parse one argument */
+                break;
+            }
+        }
+    }
+
+#if 0
+    WindowedArgument windowed(&gfx);
     DataPathArgument dataPath;
     MusicArgument musicArgument;
     DebugArgument debug;
@@ -822,14 +1004,15 @@ int paintown_main(int argc, char ** argv){
     NetworkServerArgument networkServer;
     NetworkJoinArgument networkJoinArgument;
 
+
     /* don't use the Configuration class here because its not loaded until init()
      * is called.
      */
     for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
         if (windowed.isArg(*it)){
-            gfx = Global::FULLSCREEN;
+            it = windowed.parse(it, stringArgs.end(), actions);
         } else if (dataPath.isArg(*it)){
-            it = dataPath.parse(it, stringArgs.end());
+            it = dataPath.parse(it, stringArgs.end(), actions);
         } else if (musicArgument.isArg(*it)){
             music_on = false;
         } else if (mugenArgument.isArg(*it)){
@@ -839,27 +1022,27 @@ int paintown_main(int argc, char ** argv){
         } else if (rateLimit.isArg(*it)){
             Global::rateLimit = false;
         } else if (mugenTrainingArgument.isArg(*it)){
-            it = mugenTrainingArgument.parse(it, stringArgs.end());
+            it = mugenTrainingArgument.parse(it, stringArgs.end(), actions);
             mugenInstant = mugenTrainingArgument.data;
         } else if (disableQuit.isArg(*it)){
             allow_quit = false;
         } else if (mugenScriptArgument.isArg(*it)){
-            it = mugenScriptArgument.parse(it, stringArgs.end());
+            it = mugenScriptArgument.parse(it, stringArgs.end(), actions);
             mugenInstant = mugenScriptArgument.data;
         } else if (mugenWatchArgument.isArg(*it)){
-            it = mugenWatchArgument.parse(it, stringArgs.end());
+            it = mugenWatchArgument.parse(it, stringArgs.end(), actions);
             mugenInstant = mugenWatchArgument.data;
         } else if (mugenArcadeArgument.isArg(*it)){
-            it = mugenArcadeArgument.parse(it, stringArgs.end());
+            it = mugenArcadeArgument.parse(it, stringArgs.end(), actions);
             mugenInstant = mugenArcadeArgument.data;
         } else if (debug.isArg(*it)){
-            it = debug.parse(it, stringArgs.end());
+            it = debug.parse(it, stringArgs.end(), actions);
             
 #ifdef HAVE_NETWORKING
         } else if (networkServer.isArg(*it)){
             just_network_server = true;
         } else if (networkJoinArgument.isArg(*it)){
-            it = networkJoinArgument.parse(it, stringArgs.end());
+            it = networkJoinArgument.parse(it, stringArgs.end(), actions);
             networkJoin = networkJoinArgument.data;
 #endif
         } else {
@@ -872,8 +1055,9 @@ int paintown_main(int argc, char ** argv){
             }
         }
     }
+#endif
 
-    showOptions();
+    showOptions(arguments);
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
 
@@ -927,8 +1111,6 @@ int paintown_main(int argc, char ** argv){
         }
     }
 
-    Configuration::setJoystickEnabled(joystick_on);
-
     InputManager input;
     Music music(music_on);
 
@@ -940,9 +1122,14 @@ int paintown_main(int argc, char ** argv){
     mugenInstant.stage = "kfm";
     */
 
+    if (actions.size() == 0){
+        actions.push_back(Util::ReferenceCount<ArgumentAction>(new DefaultGame()));
+    }
+
     Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
 
-    startMain(just_network_server, networkJoin, mugenInstant, mugen, allow_quit);
+    startMain(actions, allow_quit);
+    // startMain(just_network_server, networkJoin, mugenInstant, mugen, allow_quit);
 
     Configuration::saveConfiguration();
 

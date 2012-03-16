@@ -572,7 +572,6 @@ Character::Character(const Character & copy):
 Object(copy),
 commonSounds(copy.commonSounds),
 debug(false),
-needToGuard(false),
 frozen(false),
 pushPlayer(0){
     maxChangeStates = 0;
@@ -690,7 +689,6 @@ pushPlayer(0){
     C(regenerating);
     C(regenerateTime);
     C(regenerateHealthDifference);
-    needToGuard = false;
     guarding = false;
     C(afterImage);
     C(widthOverride);
@@ -783,8 +781,6 @@ void Character::initialize(){
 
     intpersistindex = 0;
     floatpersistindex = 0;
-
-    needToGuard = false;
 
     matchWins = 0;
 
@@ -3909,8 +3905,6 @@ void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinitio
     hitState.shakeTime = hit.guardPause.player2;
     hitState.spritePriority = hit.player2SpritePriority;
     enemy->addPower(hit.getPower.guarded);
-    /* the character will transition to the guard state when he next acts */
-    needToGuard = true;
     bool inAir = getY() > 0;
     if (inAir){
     } else {
