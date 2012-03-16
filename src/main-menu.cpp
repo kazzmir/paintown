@@ -45,6 +45,18 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
+static void showOptions(const vector<Util::ReferenceCount<Argument> > & arguments){
+    Global::debug(0) << "Paintown by Jon Rafkind" << endl;
+    Global::debug(0) << "Command line options" << endl;
+
+    for (vector<Util::ReferenceCount<Argument> >::const_iterator it = arguments.begin(); it != arguments.end(); it++){
+        Util::ReferenceCount<Argument> argument = *it;
+        Global::debug(0) << " " << Util::join(argument->keywords(), ", ") << argument->description() << endl;
+    }
+
+    Global::debug(0) << endl;
+}
+
 class WindowedArgument: public Argument {
 public:
     WindowedArgument(int * gfx):
@@ -69,6 +81,31 @@ public:
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         *gfx = Global::FULLSCREEN;
         return current;
+    }
+};
+
+class HelpArgument: public Argument {
+public:
+    HelpArgument(const vector<Util::ReferenceCount<Argument> > & arguments):
+        arguments(arguments){
+        }
+
+    const vector<Util::ReferenceCount<Argument> > & arguments;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("help");
+        out.push_back("--help");
+        return out;
+    }
+    
+    string description() const {
+        return " : Print the command line options and exit.";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        showOptions(arguments);
+        exit(0);
     }
 };
 
@@ -419,18 +456,6 @@ static const char * all(const char * args[], const int num, const char separate 
 }
 */
 
-static void showOptions(const vector<Util::ReferenceCount<Argument> > & arguments){
-    Global::debug(0) << "Paintown by Jon Rafkind" << endl;
-    Global::debug(0) << "Command line options" << endl;
-
-    for (vector<Util::ReferenceCount<Argument> >::const_iterator it = arguments.begin(); it != arguments.end(); it++){
-        Util::ReferenceCount<Argument> argument = *it;
-        Global::debug(0) << " " << Util::join(argument->keywords(), ", ") << argument->description() << endl;
-    }
-
-    Global::debug(0) << endl;
-}
-
 class MainMenuOptionFactory: public Menu::OptionFactory {
 public:
     MainMenuOptionFactory(){
@@ -582,6 +607,7 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new VersionArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit)));
+    arguments.push_back(Util::ReferenceCount<Argument>(new HelpArgument(arguments)));
     vector<Util::ReferenceCount<Argument> > mugenArguments = Mugen::arguments();
     arguments.insert(arguments.end(), mugenArguments.begin(), mugenArguments.end());
 #ifdef HAVE_NETWORKING
