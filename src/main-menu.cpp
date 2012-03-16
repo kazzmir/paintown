@@ -557,7 +557,17 @@ public:
         return " : Go straight to the network server";
     }
 
+    class Run: public ArgumentAction {
+    public:
+        void act(){
+#ifdef HAVE_NETWORKING
+            Network::networkServer();
+#endif
+        }
+    };
+
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run()));
         return current;
     }
 
@@ -613,6 +623,39 @@ public:
         }
     }
 
+    class Run: public ArgumentAction {
+    public:
+        Run(NetworkJoin join):
+            join(join){
+            }
+
+        NetworkJoin join;
+
+        void act(){
+#ifdef HAVE_NETWORKING
+            string port = join.port;
+            string host = join.host;
+            string name = join.name;
+            if (port == ""){
+                /* FIXME: replace 7887 with a constant */
+                port = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientPort, "7887");
+            }
+            if (host == ""){
+                host = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientHost, "127.0.0.1");
+            }
+            if (name == ""){
+                name = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientName, "player");
+            }
+            Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
+            try{
+                Network::runClient(name, host, port);
+            } catch (const Network::NetworkException & fail){
+                Global::debug(0) << "Error running the network client: " << fail.getMessage() << endl;
+            }
+#endif
+        }
+    };
+
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         data.enabled = true;
         string port;
@@ -626,6 +669,7 @@ public:
             data.name = name;
         }
 
+        actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
         return current;
     }
 };
@@ -929,12 +973,12 @@ int paintown_main(int argc, char ** argv){
 
     bool music_on = true;
     bool joystick_on = true;
-    bool mugen = false;
+    // bool mugen = false;
     bool just_network_server = false;
     bool allow_quit = true;
     Collector janitor;
-    NetworkJoin networkJoin;
-    MugenInstant mugenInstant;
+    // NetworkJoin networkJoin;
+    // MugenInstant mugenInstant;
 
     System::startMemoryUsage();
 
@@ -971,8 +1015,10 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new MugenWatchArgument())); /* done */
     arguments.push_back(Util::ReferenceCount<Argument>(new MugenArcadeArgument())); /* done */
     arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit))); /* done */
+#ifdef HAVE_NETWORKING
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
+#endif
     
     vector<Util::ReferenceCount<ArgumentAction> > actions;
 
