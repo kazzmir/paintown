@@ -621,7 +621,10 @@ int paintown_main(int argc, char ** argv){
     
     vector<Util::ReferenceCount<ArgumentAction> > actions;
 
-    for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
+    /* Sort of a hack but if we are already at the end of the argument list (because some
+     * argument already reached the end) then we don't increase the argument iterator
+     */
+    for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); (it != stringArgs.end()) ? it++ : it){
         for (vector<Util::ReferenceCount<Argument> >::iterator arg = arguments.begin(); arg != arguments.end(); arg++){
             Util::ReferenceCount<Argument> argument = *arg;
             if (argument->isArg(*it)){
