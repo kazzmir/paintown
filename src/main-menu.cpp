@@ -37,6 +37,7 @@
 #include "configuration.h"
 #include "util/init.h"
 #include "util/main.h"
+#include "util/argument.h"
 #include "mugen/config.h"
 
 #include <iostream>
@@ -45,42 +46,6 @@ using std::vector;
 using std::endl;
 using std::string;
 using std::istringstream;
-
-class ArgumentAction{
-public:
-    virtual void act() = 0;
-    virtual ~ArgumentAction(){
-    }
-};
-
-typedef vector<Util::ReferenceCount<ArgumentAction> > ActionRefs;
-
-class Argument{
-public:
-    /* Keywords on the command line that should invoke this argument */
-    virtual vector<string> keywords() const = 0;
-    
-    /* Parse more strings from the command line. Any actions that should take place
-     * after the command line has been parsed should be put into 'actions'
-     */
-    virtual vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions) = 0;
-
-    /* Description of what this argument does */
-    virtual string description() const = 0;
-
-    bool isArg(const string & what) const {
-        vector<string> match = keywords();
-        for (vector<string>::iterator it = match.begin(); it != match.end(); it++){
-            if (strcasecmp(it->c_str(), what.c_str()) == 0){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    virtual ~Argument(){
-    }
-};
 
 class WindowedArgument: public Argument {
 public:
@@ -691,6 +656,7 @@ static const char * closestMatch(const string & s1, vector<const char *> args){
     return good;
 }
 
+/*
 static bool isArg(const string & s1, const char * s2[], int num){
     for (int i = 0; i < num; i++){
         if (strcasecmp(s1.c_str(), s2[i]) == 0){
@@ -700,9 +666,11 @@ static bool isArg(const string & s1, const char * s2[], int num){
 
     return false;
 }
+*/
 
 /* {"a", "b", "c"}, 3, ',' => "a, b, c"
  */
+/*
 static const char * all(const char * args[], const int num, const char separate = ','){
     static char buffer[1<<10];
     strcpy(buffer, "");
@@ -716,6 +684,7 @@ static const char * all(const char * args[], const int num, const char separate 
     }
     return buffer;
 }
+*/
 
 static void showOptions(const vector<Util::ReferenceCount<Argument> > & arguments){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
@@ -729,8 +698,6 @@ static void showOptions(const vector<Util::ReferenceCount<Argument> > & argument
     Global::debug(0) << endl;
 }
 
-
-
 /*
 static void hack(){
     Filesystem::AbsolutePath fontsDirectory = Filesystem::find(Filesystem::RelativePath("fonts"));
@@ -740,8 +707,7 @@ static void hack(){
 }
 */
 
-
-
+/*
 static void runMugenTraining(const string & player1, const string & player2, const string & stage){
     Global::debug(0) << "Mugen training mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
     Mugen::Game::startTraining(player1, player2, stage);
@@ -761,7 +727,7 @@ static void runMugenWatch(const string & player1, const string & player2, const 
     Global::debug(0) << "Mugen watch mode player1 '" << player1 << "' player2 '" << player2 << "' stage '" << stage << "'" << endl;
     Mugen::Game::startWatch(player1, player2, stage);
 }
-
+*/
 
 class MainMenuOptionFactory: public Menu::OptionFactory {
 public:
@@ -855,6 +821,7 @@ static int startMain(const vector<Util::ReferenceCount<ArgumentAction> > & actio
     return 0;
 }
 
+#if 0
 /* dispatch to the top level function */
 static int startMain2(bool just_network_server, const NetworkJoin & networkJoin, const MugenInstant & mugenInstant, bool mugen, bool allow_quit){
     while (true){
@@ -951,6 +918,7 @@ static int startMain2(bool just_network_server, const NetworkJoin & networkJoin,
 
     return 0;
 }
+#endif
 
 class DefaultGame: public ArgumentAction {
 public:
@@ -1034,75 +1002,6 @@ int paintown_main(int argc, char ** argv){
         }
     }
 
-#if 0
-    WindowedArgument windowed(&gfx);
-    DataPathArgument dataPath;
-    MusicArgument musicArgument;
-    DebugArgument debug;
-    RateLimitArgument rateLimit;
-    JoystickArgument joystick;
-    MugenArgument mugenArgument;
-    MugenTrainingArgument mugenTrainingArgument;
-    MugenScriptArgument mugenScriptArgument;
-    MugenWatchArgument mugenWatchArgument;
-    MugenArcadeArgument mugenArcadeArgument;
-    DisableQuitArgument disableQuit;
-    NetworkServerArgument networkServer;
-    NetworkJoinArgument networkJoinArgument;
-
-
-    /* don't use the Configuration class here because its not loaded until init()
-     * is called.
-     */
-    for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); it++){
-        if (windowed.isArg(*it)){
-            it = windowed.parse(it, stringArgs.end(), actions);
-        } else if (dataPath.isArg(*it)){
-            it = dataPath.parse(it, stringArgs.end(), actions);
-        } else if (musicArgument.isArg(*it)){
-            music_on = false;
-        } else if (mugenArgument.isArg(*it)){
-            mugen = true;
-        } else if (joystick.isArg(*it)){
-            joystick_on = false;
-        } else if (rateLimit.isArg(*it)){
-            Global::rateLimit = false;
-        } else if (mugenTrainingArgument.isArg(*it)){
-            it = mugenTrainingArgument.parse(it, stringArgs.end(), actions);
-            mugenInstant = mugenTrainingArgument.data;
-        } else if (disableQuit.isArg(*it)){
-            allow_quit = false;
-        } else if (mugenScriptArgument.isArg(*it)){
-            it = mugenScriptArgument.parse(it, stringArgs.end(), actions);
-            mugenInstant = mugenScriptArgument.data;
-        } else if (mugenWatchArgument.isArg(*it)){
-            it = mugenWatchArgument.parse(it, stringArgs.end(), actions);
-            mugenInstant = mugenWatchArgument.data;
-        } else if (mugenArcadeArgument.isArg(*it)){
-            it = mugenArcadeArgument.parse(it, stringArgs.end(), actions);
-            mugenInstant = mugenArcadeArgument.data;
-        } else if (debug.isArg(*it)){
-            it = debug.parse(it, stringArgs.end(), actions);
-            
-#ifdef HAVE_NETWORKING
-        } else if (networkServer.isArg(*it)){
-            just_network_server = true;
-        } else if (networkJoinArgument.isArg(*it)){
-            it = networkJoinArgument.parse(it, stringArgs.end(), actions);
-            networkJoin = networkJoinArgument.data;
-#endif
-        } else {
-            const string & arg = *it;
-            const char * closest = closestMatch(arg, all_args);
-            if (closest == NULL){
-                Global::debug(0) << "I don't recognize option '" << arg << "'" << endl;
-            } else {
-                Global::debug(0) << "You gave option '" << arg << "'. Did you mean '" << closest << "'?" << endl;
-            }
-        }
-    }
-#endif
-
     showOptions(arguments);
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
@@ -1175,7 +1074,6 @@ int paintown_main(int argc, char ** argv){
     Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
 
     startMain(actions, allow_quit);
-    // startMain(just_network_server, networkJoin, mugenInstant, mugen, allow_quit);
 
     Configuration::saveConfiguration();
 
