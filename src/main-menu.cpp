@@ -38,6 +38,8 @@
 #include "mugen/options.h"
 #include "mugen/argument.h"
 
+#include "platformer/argument.h"
+
 #include <iostream>
 
 using std::vector;
@@ -610,6 +612,8 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new HelpArgument(arguments)));
     vector<Util::ReferenceCount<Argument> > mugenArguments = Mugen::arguments();
     arguments.insert(arguments.end(), mugenArguments.begin(), mugenArguments.end());
+    vector<Util::ReferenceCount<Argument> > platformArguments = Platformer::arguments();
+    arguments.insert(arguments.end(), platformArguments.begin(), platformArguments.end());
 #ifdef HAVE_NETWORKING
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));

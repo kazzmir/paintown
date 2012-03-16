@@ -25,6 +25,7 @@ src/util/allegro/loadpng/regpng.c
 src/util/allegro/loadpng/savepng.c)
 
 set(PLATFORMER_SRC
+src/platformer/argument.cpp
 src/platformer/game/animation.cpp
 src/platformer/game/background.cpp
 src/platformer/game/camera.cpp
