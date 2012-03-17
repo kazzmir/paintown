@@ -64,14 +64,20 @@ spritePriority(0){
                 int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
                 controller.addTrigger(trigger, Compiler::compile(simple.getValue()));
             } else if (simple == "persistent"){
-                simple.view() >> controller.persistent;
-                controller.currentPersistent = controller.persistent;
+                try{
+                    simple.view() >> controller.persistent;
+                    controller.currentPersistent = controller.persistent;
+                } catch (const Ast::Exception & fail){
+                    /* No values for persistent.. */
+                }
             } else if (simple == "debug"){
                 controller.debug = true;
             } else if (simple == "sprpriority"){
                 controller.spritePriority = Compiler::compile(simple.getValue());
             } else if (simple == "ignorehitpause"){
-                controller.ignoreHitPauseValue = Compiler::compile(simple.getValue());
+                if (simple.getValue() != NULL){
+                    controller.ignoreHitPauseValue = Compiler::compile(simple.getValue());
+                }
             }
         }
     };
