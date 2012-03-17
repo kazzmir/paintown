@@ -1372,7 +1372,7 @@ public:
         if (x != NULL){
             RuntimeValue result = x->evaluate(FullEnvironment(stage, guy));
             if (result.isDouble()){
-                guy.setXVelocity(guy.getXVelocity());
+                guy.setXVelocity(guy.getXVelocity() + result.getDoubleValue());
             }
         }
         if (y != NULL){
