@@ -346,7 +346,10 @@ void Sprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned
          * and don't use the palette for future sprites
          */
     } else {
-        if (samePalette){
+        /* It looks like the first sprite always uses whats in the palette. Subsequent
+         * sprites without samePalette can modify the palette.
+         */
+        if (samePalette || (useact && (groupNumber == 0 && imageNumber == 0))){
             memcpy(pcx + newlength - 768, palsave1, 768);
         } else {
             /* Otherwise copy our palette to palsave1 for future sprites */
