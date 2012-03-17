@@ -655,7 +655,7 @@ void MugenMenu::loadData(){
     }
     
     // FIXME remove later this is just to test the watch mode
-   addMenuOption(new Mugen::StartDemoOption("Run Demo"));
+   // addMenuOption(new Mugen::StartDemoOption("Run Demo"));
 }
 
 MugenMenu::~MugenMenu(){
