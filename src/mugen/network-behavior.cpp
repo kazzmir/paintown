@@ -28,9 +28,10 @@ static void sendCommands(const vector<string> & commands, Network::Socket socket
         total += command.size() + 1;
     }
 
-    /* Just send one packet */
-    char * buffer = new char[total];
+    /* Just send one packet. Add an extra 2 bytes for the packet size */
+    char * buffer = new char[total + sizeof(uint16_t)];
     char * position = buffer;
+    position = Network::dump16(position, total);
     position = Network::dump16(position, commands.size());
     for (vector<string>::const_iterator it = commands.begin(); it != commands.end(); it++){
         const string & command = *it;
@@ -38,7 +39,7 @@ static void sendCommands(const vector<string> & commands, Network::Socket socket
         position = Network::dumpStr(position, command);
     }
 
-    Network::sendBytes(socket, (uint8_t*) buffer, total);
+    Network::sendBytes(socket, (uint8_t*) buffer, total + sizeof(uint16_t));
 
     /*
     Network::send16(socket, commands.size());
@@ -88,11 +89,28 @@ static vector<string> readCommands(Network::Socket socket){
     timer.startTime();
     */
 #ifdef HAVE_NETWORKING
+    int16_t total = Network::read16(socket);
+    char * buffer = new char[total];
+    Network::readBytes(socket, (uint8_t*) buffer, total);
+    char * position = buffer;
+    uint16_t commands = 0;
+    position = Network::parse16(position, &commands);
+    for (int i = 0; i < commands; i++){
+        uint16_t length = 0;
+        position = Network::parse16(position, &length);
+        string command;
+        position = Network::parseString(position, &command, length + 1);
+        out.push_back(command);
+    }
+    delete[] buffer;
+
+    /*
     int16_t commands = Network::read16(socket);
     for (int i = 0; i < commands; i++){
         int16_t length = Network::read16(socket) + 1;
         out.push_back(Network::readStr(socket, length));
     }
+    */
 #endif
     /*
     timer.endTime();
