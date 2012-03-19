@@ -1119,7 +1119,7 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     runMatch(&stage, "", options);
 }
 
-void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName){
+void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, int port){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
@@ -1134,13 +1134,28 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     player1 = makeCharacter(player1Name, random1, allCharacters);
     player2 = makeCharacter(player2Name, random2, allCharacters);
 
-    HumanBehavior local1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
     Network::Socket socket = 0;
+#ifdef HAVE_NETWORKING
+    if (server){
+        Network::Socket remote = Network::open(port);
+        Network::listen(remote);
+        Global::debug(0) << "Waiting for a connection on port " << port << std::endl;
+        socket = Network::accept(remote);
+        Network::close(remote);
+        Global::debug(0) << "Got a connection" << std::endl;
+    } else {
+        Global::debug(0) << "Connecting to 127.0.0.1 on port " << port << std::endl;
+        socket = Network::connect("127.0.0.1", port); 
+        Global::debug(0) << "Connected" << std::endl;
+    }
+#endif
+
+    HumanBehavior local1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
     NetworkLocalBehavior player1Behavior(&local1Behavior, socket);
     NetworkRemoteBehavior player2Behavior(socket);
     // Set regenerative health
-    player1->setRegeneration(true);
-    player2->setRegeneration(true);
+    player1->setRegeneration(false);
+    player2->setRegeneration(false);
     player1->setBehavior(&player1Behavior);
     player2->setBehavior(&player2Behavior);
     
@@ -1169,6 +1184,10 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     } catch (const QuitGameException & ex){
     }
     Mugen::Data::getInstance().setTime(time);
+
+#ifdef HAVE_NETWORKING
+    Network::close(socket);
+#endif
     
     throw QuitGameException();
 

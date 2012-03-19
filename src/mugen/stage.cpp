@@ -1175,6 +1175,12 @@ void Mugen::Stage::runCycle(){
         }
     } else {
         background->act();
+        
+        /* Start input early for network mode */
+        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+            Mugen::Character * player = *it;
+            player->startInput(*this);
+        }
 
         // Players go in here
         std::vector<Mugen::Character *> add;

@@ -22,6 +22,9 @@ Behavior::Behavior(){
 Behavior::~Behavior(){
 }
     
+void Behavior::start(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+}
+    
 void Behavior::hit(Object * enemy){
 }
 

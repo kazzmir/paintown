@@ -24,7 +24,7 @@ class Game {
 
         /* just start a training match */
         static void startTraining(const std::string & player1, const std::string & player2, const std::string & stage);
-        static void startNetworkVersus(const std::string & player1Name, const std::string & player2Name, const std::string & stageName);
+        static void startNetworkVersus(const std::string & player1Name, const std::string & player2Name, const std::string & stageName, bool server, int port);
         /* start an arcade match */
         static void startArcade(const std::string & player1, const std::string & player2, const std::string & stage);
         /* start a watch match */

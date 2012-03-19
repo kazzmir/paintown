@@ -2669,6 +2669,12 @@ PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
     return NULL;
     */
 }
+        
+void Character::startInput(const Mugen::Stage & stage){
+    if (behavior != NULL){
+        behavior->start(stage, this, commands, getFacing() == FacingRight);
+    }
+}
 
 /* returns all the commands that are currently active */
 vector<string> Character::doInput(const Mugen::Stage & stage){

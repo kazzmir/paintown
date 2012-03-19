@@ -428,6 +428,8 @@ public:
         PaintownUtil::ReferenceCount<Animation> getCurrentAnimation() const;
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
+            
+        virtual void startInput(const Stage & stage);
 
     /*! This all the inherited members */
     virtual void act(std::vector<Mugen::Character*>*, Stage*, std::vector<Mugen::Character*>*);                       

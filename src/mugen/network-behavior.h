@@ -15,6 +15,7 @@ class NetworkLocalBehavior: public Behavior {
 public:
     NetworkLocalBehavior(Behavior * local, Network::Socket socket);
 
+    virtual void start(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     virtual void flip();
     
@@ -40,7 +41,6 @@ public:
     virtual ~NetworkRemoteBehavior();
 
 protected:
-    std::vector<std::string> commands;
     Network::Socket socket;
 };
 

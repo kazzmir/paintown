@@ -301,13 +301,66 @@ public:
     }
 };
 
+class MugenServerArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:server");
+        return out;
+    }
+
+    string description() const {
+        return " : Start a server on port 8473";
+    }
+
+    class Run: public ArgumentAction {
+    public:
+        void act(){
+            Game::startNetworkVersus("kfm", "kfm", "kfm", true, 8473);
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run()));
+        return current;
+    }
+};
+
+class MugenClientArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:client");
+        return out;
+    }
+
+    string description() const {
+        return " : Join a server on port 8473";
+    }
+
+    class Run: public ArgumentAction {
+    public:
+        void act(){
+            Game::startNetworkVersus("kfm", "kfm", "kfm", false, 8473);
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run()));
+        return current;
+    }
+};
+
 std::vector< ::Util::ReferenceCount<Argument> > arguments(){
     vector< ::Util::ReferenceCount<Argument> > all;
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenArgument())); /* done */
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenTrainingArgument())); /* done */
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenScriptArgument())); /* done */
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenWatchArgument())); /* done */
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenArcadeArgument())); /* done */
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenArgument()));
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenTrainingArgument()));
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenScriptArgument()));
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenWatchArgument()));
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenArcadeArgument()));
+
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenServerArgument()));
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenClientArgument()));
     return all;
 }
 

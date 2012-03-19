@@ -18,6 +18,11 @@ class Stage;
 class Behavior{
 public:
     Behavior();
+    
+    /* Called early by the engine to support network mode. Deefault behavior
+     * does nothing
+     */
+    virtual void start(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
 
