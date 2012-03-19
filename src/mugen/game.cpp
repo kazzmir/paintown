@@ -1156,8 +1156,13 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     // Set regenerative health
     player1->setRegeneration(false);
     player2->setRegeneration(false);
-    player1->setBehavior(&player1Behavior);
-    player2->setBehavior(&player2Behavior);
+    if (server){
+        player1->setBehavior(&player1Behavior);
+        player2->setBehavior(&player2Behavior);
+    } else {
+        player2->setBehavior(&player1Behavior);
+        player1->setBehavior(&player2Behavior);
+    }
     
     RunMatchOptions options;
     
