@@ -11,6 +11,7 @@ set(MUGEN_SRC
 argument.cpp
 background.cpp
 behavior.cpp
+network-behavior.cpp
 characterhud.cpp
 character.cpp
 character-select.cpp

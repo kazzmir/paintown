@@ -24,6 +24,7 @@
 #include "factory/font_render.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/exceptions/exception.h"
+#include "util/network/network.h"
 #include "search.h"
 #include "util/loading.h"
 
@@ -36,6 +37,7 @@
 #include "characterhud.h"
 #include "storyboard.h"
 #include "behavior.h"
+#include "network-behavior.h"
 #include "parse-cache.h"
 #include "util/music.h"
 #include "config.h"
@@ -1107,6 +1109,61 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     stage.addPlayer2(player2.raw());
     stage.reset();
     runMatch(&stage, "", options);
+}
+
+void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName){
+    /* This has its own parse cache because its started by the main menu and not
+     * by Game::run()
+     */
+    ParseCache cache;
+    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::random_shuffle(allCharacters.begin(), allCharacters.end());
+    bool random1 = player1Name == "_";
+    bool random2 = player2Name == "_";
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
+
+    player1 = makeCharacter(player1Name, random1, allCharacters);
+    player2 = makeCharacter(player2Name, random2, allCharacters);
+
+    HumanBehavior local1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+    Network::Socket socket = 0;
+    NetworkLocalBehavior player1Behavior(&local1Behavior, socket);
+    NetworkRemoteBehavior player2Behavior(socket);
+    // Set regenerative health
+    player1->setRegeneration(true);
+    player2->setRegeneration(true);
+    player1->setBehavior(&player1Behavior);
+    player2->setBehavior(&player2Behavior);
+    
+    RunMatchOptions options;
+    
+    options.setBehavior(&local1Behavior, NULL);
+
+    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    {
+        TimeDifference timer;
+        std::ostream & out = Global::debug(0);
+        out << "Loading stage " << stageName;
+        out.flush();
+        timer.startTime();
+        stage.load();
+        timer.endTime();
+        out << timer.printTime(" took") << std::endl;
+    }
+    stage.addPlayer1(player1.raw());
+    stage.addPlayer2(player2.raw());
+    stage.reset();
+    int time = Mugen::Data::getInstance().getTime();
+    Mugen::Data::getInstance().setTime(-1);
+    try{
+        runMatch(&stage, "", options);
+    } catch (const QuitGameException & ex){
+    }
+    Mugen::Data::getInstance().setTime(time);
+    
+    throw QuitGameException();
+
 }
 
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
