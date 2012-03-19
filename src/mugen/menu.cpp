@@ -247,6 +247,27 @@ public:
     }
 };
 
+class NetworkOption: public ItemOption {
+public:
+    NetworkOption(const std::string & name, bool server):
+    isServer(server){
+        this->setText(name);
+    }
+
+    virtual ~NetworkOption(){
+    }
+
+    void executeOption(const Mugen::PlayerType & player, bool & endGame){
+        /*
+        Mugen::Game game(player, Mugen::Training, Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif()));;
+        game.run(searcher);
+        */
+        throw StartGame(player, isServer ? Mugen::NetworkVersusServer : Mugen::NetworkVersusClient);
+    }
+    
+    bool isServer;
+};
+
 }
 
 MugenMenu::MugenMenu(const Filesystem::RelativePath &filename):
@@ -656,6 +677,10 @@ void MugenMenu::loadData(){
     
     // FIXME remove later this is just to test the watch mode
    // addMenuOption(new Mugen::StartDemoOption("Run Demo"));
+   
+   // Position or locate somewhere else
+   addMenuOption(new Mugen::NetworkOption("Network Server", true));
+   addMenuOption(new Mugen::NetworkOption("Network Client", false));
 }
 
 MugenMenu::~MugenMenu(){

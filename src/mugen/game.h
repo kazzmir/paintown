@@ -35,6 +35,7 @@ class Game {
         void doArcade(Searcher &);
         void doTraining(Searcher &);
         void doVersus(Searcher &);
+        void doNetworkVersus(bool isServer, Searcher &);
         void doWatch(Searcher &);
         void doSurvival(Searcher &);
         void startDemo(Searcher &);

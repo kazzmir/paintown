@@ -79,6 +79,14 @@ void Game::run(Searcher & searcher){
                 doVersus(searcher);
                 break;
             }
+            case NetworkVersusServer: {
+                doNetworkVersus(true, searcher);
+                break;
+            }
+            case NetworkVersusClient: {
+                doNetworkVersus(false, searcher);
+                break;
+            }
             case TeamArcade: {
                 //select.run("Team Arcade" , 1, true, &screen);
                 startDemo(searcher);
@@ -1806,6 +1814,73 @@ void Game::doVersus(Searcher & searcher){
         } catch (const Exception::Return & ex){
         } catch (const QuitGameException & ex){
         }
+    }
+}
+
+void Game::doNetworkVersus(bool isServer, Searcher & searcher){
+    // Keys
+    InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
+    InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
+    // Local behaviors
+    HumanBehavior behavior1 = HumanBehavior(keys1, getPlayer1InputLeft());
+    HumanBehavior behavior2 = HumanBehavior(keys2, getPlayer2InputLeft());
+    try {
+        /*! TODO Network Local Behavior
+            create or bind to socket */
+        Network::Socket ourSocket = isServer ? Network::open(8473) : Network::connect("localhost", 8473);
+        NetworkLocalBehavior player1NetworkBehavior(&behavior1, ourSocket);
+        NetworkRemoteBehavior player2NetworkBehavior(ourSocket);
+    
+        while (true){
+            Mugen::CharacterSelect select(systemFile);
+            select.init();
+            // FIXME Make characterselect network useable
+            select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
+            
+            PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
+            PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
+            PaintownUtil::standardLoop(*logic, *draw);
+            
+            RunMatchOptions options;
+            options.setBehavior(&behavior1, &behavior2);
+            
+            if (select.wasCanceled()){
+                return;
+            }
+            Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
+            Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
+            player1Collection = select.getPlayer1().getCollection();
+            player2Collection = select.getPlayer2().getCollection();
+            
+            // Prepares futures
+            CharacterTeam player1(player1Collection, Stage::Player1Side);
+            CharacterTeam player2(player2Collection, Stage::Player2Side);
+            PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(player1, player2);
+            
+            {
+                VersusMenu versus(systemFile);
+                versus.init(player1Collection, player2Collection);
+                PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+                PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+                PaintownUtil::standardLoop(*logic, *draw);
+                if (versus.wasCanceled()){
+                    continue;
+                }
+            }
+            
+            player1.getFirst().setBehavior(&behavior1);
+            player2.getFirst().setBehavior(&behavior2);
+            Mugen::Stage stage(select.getStage());
+            prepareStage(loader, stage);
+            stage.reset();
+            try {
+                runMatch(&stage, "", options);
+            } catch (const Exception::Return & ex){
+            } catch (const QuitGameException & ex){
+            }
+        }
+    } catch (const Network::NetworkException & ex){
+        Global::debug(0) << "Problem with network connection! Reason: " << ex.getMessage();
     }
 }
 

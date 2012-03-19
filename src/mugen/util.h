@@ -159,6 +159,8 @@ struct FontInfo{
 enum GameType {
     Arcade,
     Versus,
+    NetworkVersusServer,
+    NetworkVersusClient,
     TeamArcade,
     TeamVersus,
     TeamCoop,
