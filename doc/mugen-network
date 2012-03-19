@@ -1,0 +1,11 @@
+* Network mode for MUGEN *
+
+Network mode can use the same principle as the scripted mode where only non-deterministic events need to be sent -- basically just commands and random numbers. Both clients should remain in sync so commands sent at tick X from one client should have some effect at tick X on the other client. Since there are 60 ticks per second this leaves 16ms for the packet to travel from the first client to get to the other client and be included in the current tick.
+
+The most likely scenario will be that client 1 sends a command at tick 1 and it reaches client 2 at tick 5 or so. Since client 2's world will not know about client 1's command at tick 1 it will be out of sync. So each time a packet from client 1 shows up we could replay the world from that tick using the new set of commands. Replaying the stage is hard though, there are a ton of variables in the objects (characters, projectiles, etc).
+
+Each client's world should update asynchronously though, otherwise it will look to each player like their keys are delayed. So how can we update the local client's player as fast as possible but update the opponent as packets arrive? If we just update the opponent when packets show up then client 1 will have a different view of the world than client 2.
+
+That is, client 2 could issue some attack at tick 1. Client 1 could block from tick 1 to 3, but the attack from client 2 might not show up till tick 5. On client 2's machine client 1 would have blocked (assuming client 1's commands showed up instantly) but on client 1's machine he will be hit by an attack if client 2's packets show up at tick 5. Client 1 would have to rewrite history such that client 2's commands really took effect at tick 1.
+
+Since packets will always be delayed history will be constantly rewritten, most likely making for some very strange gameplay.
