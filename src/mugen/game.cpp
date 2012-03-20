@@ -1134,6 +1134,18 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     player1 = makeCharacter(player1Name, random1, allCharacters);
     player2 = makeCharacter(player2Name, random2, allCharacters);
 
+    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+    {
+        TimeDifference timer;
+        std::ostream & out = Global::debug(0);
+        out << "Loading stage " << stageName;
+        out.flush();
+        timer.startTime();
+        stage.load();
+        timer.endTime();
+        out << timer.printTime(" took") << std::endl;
+    }
+
     Network::Socket socket = 0;
 #ifdef HAVE_NETWORKING
     if (server){
@@ -1168,17 +1180,6 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     
     options.setBehavior(&local1Behavior, NULL);
 
-    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
-    {
-        TimeDifference timer;
-        std::ostream & out = Global::debug(0);
-        out << "Loading stage " << stageName;
-        out.flush();
-        timer.startTime();
-        stage.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    }
     stage.addPlayer1(player1.raw());
     stage.addPlayer2(player2.raw());
     stage.reset();

@@ -1112,6 +1112,15 @@ void Mugen::Stage::unbind(Mugen::Character * what){
 
 /* A main cycle of the game */
 void Mugen::Stage::runCycle(){
+    if (superPause.time == 0){
+        /* Start input early for network mode */
+        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+            Mugen::Character * player = *it;
+            player->startInput(*this);
+        }
+
+    }
+
     screenBound.clear();
 
     if (paletteEffects.time > 0){
@@ -1175,13 +1184,7 @@ void Mugen::Stage::runCycle(){
         }
     } else {
         background->act();
-        
-        /* Start input early for network mode */
-        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
-            Mugen::Character * player = *it;
-            player->startInput(*this);
-        }
-
+       
         // Players go in here
         std::vector<Mugen::Character *> add;
         /* Do all states first */
