@@ -27,7 +27,7 @@ from cpp_generator import CppGenerator
 from python_generator import PythonGenerator
 from ruby_generator import RubyGenerator
 from cpp_interpreter_generator import CppInterpreterGenerator
-import cpp_generator, python_generator, ruby_generator, cpp_header_generator
+import cpp_generator, python_generator, ruby_generator, cpp_header_generator, lua_generator
 
 # substitute variables in a string named by $foo
 # "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
@@ -1007,6 +1007,19 @@ end
 
     def generate_test(self, generator, peg):
         return self.choosePattern().generate_v2(generator, peg)
+
+    def generate_lua(self, peg):
+        def newPattern(pattern):
+            return pattern.generate_v3(lua_generator.LuaGenerator(), self, peg)
+
+        data = """
+function %(rule)s()
+  %(patterns)s
+end
+"""
+        return data % {'rule': self.name,
+                       'patterns' : '\n'.join([newPattern(pattern) for pattern in self.patterns])
+                       }
 
     def generate_python(self):
         def newPattern(pattern, stream, position):
@@ -2162,6 +2175,7 @@ def help():
     print "--bnf : Generate BNF description (grammar language)"
     print "--ruby : Generate Ruby parser"
     print "--python : Generate Python parser"
+    print "--lua : Generate Lua parser"
     print "--cpp,--c++ : Generate C++ parser"
     print "--h : Generate C++ header for the C++ functions"
     # print "--c++-interpreter : Generate a C++ parser that uses an interpreter"
@@ -2193,6 +2207,8 @@ if __name__ == '__main__':
     for arg in sys.argv[1:]:
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
+        elif arg == "--lua":
+            doit.append(lambda p: lua_generator.generate(p))
         elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: cpp_generator.generate(p, parallel[0], separate[0]))
         elif arg == '--h':
