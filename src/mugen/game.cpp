@@ -1185,6 +1185,13 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     stage.reset();
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);
+
+    if (server){
+        int sync = Network::read16(socket);
+    } else {
+        Network::send16(socket, 0);
+    }
+
     try{
         runMatch(&stage, "", options);
     } catch (const QuitGameException & ex){
