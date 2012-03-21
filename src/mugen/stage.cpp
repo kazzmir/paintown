@@ -15,6 +15,7 @@
 #include "util/init.h"
 #include "state.h"
 
+#include "util/system.h"
 #include "util/events.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
@@ -1113,9 +1114,11 @@ void Mugen::Stage::unbind(Mugen::Character * what){
 /* A main cycle of the game */
 void Mugen::Stage::runCycle(){
     if (superPause.time == 0){
+        // Global::debug(0) << "Stage " << ticker << " at " << System::currentMicroseconds() << std::endl;
         /* Start input early for network mode */
         for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
             Mugen::Character * player = *it;
+            // Global::debug(0) << " input " << player << " at " << System::currentMicroseconds() << std::endl;
             player->startInput(*this);
         }
 

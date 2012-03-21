@@ -1188,9 +1188,13 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
 
     if (server){
         int sync = Network::read16(socket);
+        Network::send16(socket, sync);
     } else {
         Network::send16(socket, 0);
+        Network::read16(socket);
     }
+
+    Network::blocking(socket, false);
 
     try{
         runMatch(&stage, "", options);
