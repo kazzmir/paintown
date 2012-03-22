@@ -4,7 +4,8 @@ src/globals.cpp
 src/main-menu.cpp)
 
 set(ASTEROIDS_SRC
-src/asteroids/game.cpp)
+src/asteroids/game.cpp
+src/asteroids/argument.cpp)
 
 set(FACTORY_SRC
 src/factory/font_factory.cpp

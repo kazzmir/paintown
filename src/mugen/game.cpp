@@ -1194,7 +1194,15 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Network::read16(socket);
     }
 
-    Network::blocking(socket, false);
+    if (!Network::blocking(socket, false)){
+        Global::debug(0) << "Could not set socket to be non-blocking" << std::endl;
+    }
+
+    /*
+    if (!Network::noDelay(socket, true)){
+        Global::debug(0) << "Could not set no delay!" << std::endl;
+    }
+    */
 
     try{
         runMatch(&stage, "", options);

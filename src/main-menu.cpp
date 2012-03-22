@@ -39,6 +39,7 @@
 #include "mugen/argument.h"
 
 #include "platformer/argument.h"
+#include "asteroids/argument.h"
 
 #include <iostream>
 
@@ -560,6 +561,11 @@ public:
     }
 };
 
+template <class X>
+static void appendVector(vector<X> & to, const vector<X> & from){
+    to.insert(to.end(), from.begin(), from.end());
+}
+
 /* 1. parse arguments
  * 2. initialize environment
  * 3. run main dispatcher
@@ -610,10 +616,11 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new VersionArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit)));
     arguments.push_back(Util::ReferenceCount<Argument>(new HelpArgument(arguments)));
-    vector<Util::ReferenceCount<Argument> > mugenArguments = Mugen::arguments();
-    arguments.insert(arguments.end(), mugenArguments.begin(), mugenArguments.end());
-    vector<Util::ReferenceCount<Argument> > platformArguments = Platformer::arguments();
-    arguments.insert(arguments.end(), platformArguments.begin(), platformArguments.end());
+
+    appendVector(arguments, Mugen::arguments());
+    appendVector(arguments, Platformer::arguments());
+    appendVector(arguments, Asteroids::arguments());
+
 #ifdef HAVE_NETWORKING
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
