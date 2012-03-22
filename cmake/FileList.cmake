@@ -38,3 +38,6 @@ src/platformer/object/object.cpp
 src/platformer/script/script.cpp
 )
 
+set(MDEFEND_SRC
+src/mdefend/mdefend.cpp
+)
