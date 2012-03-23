@@ -38,6 +38,7 @@ src/platformer/object/object.cpp
 src/platformer/script/script.cpp
 )
 
-set(MDEFEND_SRC
-src/mdefend/mdefend.cpp
+set(MISSILE_DEFEND_SRC
+src/missile-defend/argument.cpp
+src/missile-defend/game.cpp
 )

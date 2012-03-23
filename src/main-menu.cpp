@@ -40,6 +40,7 @@
 
 #include "platformer/argument.h"
 #include "asteroids/argument.h"
+#include "missile-defend/argument.h"
 
 #include <iostream>
 
@@ -620,6 +621,7 @@ int paintown_main(int argc, char ** argv){
     appendVector(arguments, Mugen::arguments());
     appendVector(arguments, Platformer::arguments());
     appendVector(arguments, Asteroids::arguments());
+    appendVector(arguments, MissileDefend::arguments());
 
 #ifdef HAVE_NETWORKING
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
