@@ -28,6 +28,7 @@ Do not try to make profit from this or you will surely die.
 #include "util/sound.h"
 #include "util/events.h"
 #include "util/init.h"
+#include "util/font.h"
 
 #include <math.h>
 #include <list>
@@ -98,7 +99,7 @@ static double getAngle(double x1, double y1, double x2, double y2)
     /* Get the angle between the two points. */
     angle = atan2 ((y2 - y1), (x2 - x1));
     
-    return angle;//(ftofix(angle*128/M_PI+64.0)& 0x00FFFFFF);
+    return (angle*128/M_PI+64.0);//(ftofix(angle*128/M_PI+64.0)& 0x00FFFFFF);
 }
 
 static bool moveDirection(double &x1, double &y1, double x2, double y2, double velocity)
@@ -119,6 +120,25 @@ static bool moveDirection(double &x1, double &y1, double x2, double y2, double v
     return false;
 }
 
+//! get font
+static const Font & getFont(){
+    return Font::getDefaultFont(8,8);
+}
+
+struct Mouse{
+    Mouse():
+    x(0),
+    y(0),
+    left(false),
+    mid(false),
+    right(false){
+    }
+    int x;
+    int y;
+    bool left;
+    bool mid;
+    bool right;
+};
 
 class Position{
 public:
@@ -270,7 +290,7 @@ void getPoint(const Graphics::Bitmap & bmp, int x, int y, int)
 void getCirclePoints(double x, double y, double radius, vector<Position> & pos)
 {
     getPointData.clear();
-    do_circle(NULL,(int)x,(int)y,(int)radius,0,getPoint);
+    do_circle(BLANK_BITMAP,(int)x,(int)y,(int)radius,0,getPoint);
     pos = getPointData;
 }
 
@@ -368,24 +388,28 @@ private:
         return -1;
     }
     
-    void printFormat(int seconds, int x, int y, int color, const Graphics::Bitmap & dest, string msg){
+    void printFormat(int seconds, int x, int y, Graphics::Color color, const Graphics::Bitmap & dest, string msg){
         int secs = unitConverter(TimerSeconds,seconds);
         int mins = unitConverter(Minutes,seconds);
         
         if(secs<10 && mins<10){
             //textprintf_ex(dest,font,x,y,color,-1, (string(msg+"0%d:0%d")).c_str(),mins,secs);
+            getFont().printf(x,y, color, dest, msg+"0%d:0%d",-1, mins,secs);
             return;
         }
         if(secs<10){
             //textprintf_ex(dest,font,x,y,color,-1, (string(msg+"%d:0%d")).c_str(),mins,secs);
+            getFont().printf(x,y, color, dest, msg+"%d:%d",-1, mins,secs);
             return;
         }
         if(mins<10){
             //textprintf_ex(dest,font,x,y,color,-1, (string(msg+"0%d:%d")).c_str(),mins,secs);
+            getFont().printf(x,y, color, dest, msg+"0%d:0%d",-1, mins,secs);
             return;
         }
         
         //textprintf_ex(dest,font,x,y,color,-1, (string(msg+"%d:%d")).c_str(),mins,secs);
+        getFont().printf(x,y, color, dest, msg+"%d:%d",-1, mins,secs);
     }
 };
 
@@ -462,7 +486,7 @@ class object
     double alpha;
     double decayRate;
     
-    Graphics::Bitmap bmp;
+    Util::ReferenceCount<Graphics::Bitmap> bmp;
     
     virtual bool checkCollision(object *obj)
     {
@@ -475,21 +499,21 @@ class object
         return true;
     }
     
-    bool checkClick(int mouse_x, int mouse_y)
+    bool checkClick(const Mouse & mouse)
     {
-        if(mouse_x > x+width) return false;
-        if(mouse_x < x) return false;
-        if(mouse_y > y+height) return false;
-        if(mouse_y < y) return false;
+        if(mouse.x > x+width) return false;
+        if(mouse.x < x) return false;
+        if(mouse.y > y+height) return false;
+        if(mouse.y < y) return false;
         return true;
     }
     
-    bool isHover(int mouse_x, int mouse_y)
+    bool isHover(const Mouse & mouse)
     {
-        if(mouse_x > x+width) return false;
-        if(mouse_x < x) return false;
-        if(mouse_y > y+height) return false;
-        if(mouse_y < y) return false;
+        if(mouse.x > x+width) return false;
+        if(mouse.x < x) return false;
+        if(mouse.y > y+height) return false;
+        if(mouse.y < y) return false;
         return true;
     }
     
@@ -518,7 +542,7 @@ class object
     virtual void draw(const Graphics::Bitmap & dest)=0;
     
     // Update the object
-    virtual void update(int mouse_x, int mouse_y)=0;
+    virtual void update(const Mouse & mouse)=0;
     
     // Use for doing anything before actually setting alive to false
     virtual void kill()=0;
@@ -535,15 +559,15 @@ class building : public object
     public:
     
     // Constructor
-    building(int setID, double setx, double sety,const Graphics::Bitmap & setAliveBmp, const Graphics::Bitmap & setDeadBmp)
+    building(int setID, double setx, double sety,Util::ReferenceCount<Graphics::Bitmap> setAliveBmp, Util::ReferenceCount<Graphics::Bitmap> setDeadBmp)
     {
         ID = setID;
         x = setx;
         y = sety;
         bmp = setAliveBmp;
         deadBmp = setDeadBmp;
-        width=bmp.getWidth();
-        height=bmp.getHeight();
+        width=bmp->getWidth();
+        height=bmp->getHeight();
         points = 0;
     }
     
@@ -553,9 +577,9 @@ class building : public object
         
     }
     
-    Graphics::Bitmap deadBmp;
+    Util::ReferenceCount<Graphics::Bitmap> deadBmp;
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
     }
     
@@ -563,11 +587,11 @@ class building : public object
     {
         if(alive)
         {
-            bmp.draw((int)x,(int)y, dest);
+            bmp->draw((int)x,(int)y, dest);
         }
         else
         {
-            deadBmp.draw((int)x,(int)y, dest);
+            deadBmp->draw((int)x,(int)y, dest);
         }
     }
     
@@ -586,15 +610,15 @@ class missleBase : public object
     public:
     
     // Constructor
-    missleBase(int setID, double setx, double sety,const Graphics::Bitmap & setAliveBmp, const Graphics::Bitmap & setDeadBmp)
+    missleBase(int setID, double setx, double sety,Util::ReferenceCount<Graphics::Bitmap> setAliveBmp, Util::ReferenceCount<Graphics::Bitmap> setDeadBmp)
     {
         ID = setID;
         x = setx;
         y = sety;
         bmp = setAliveBmp;
         deadBmp = setDeadBmp;
-        width=bmp.getWidth();
-        height=bmp.getHeight();
+        width=bmp->getWidth();
+        height=bmp->getHeight();
         points=0;
     }
     
@@ -604,9 +628,9 @@ class missleBase : public object
         
     }
     
-    Graphics::Bitmap deadBmp;
+    Util::ReferenceCount<Graphics::Bitmap> deadBmp;
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
     }
     
@@ -614,11 +638,11 @@ class missleBase : public object
     {
         if(alive)
         {
-            bmp.draw((int)x,(int)y, dest);
+            bmp->draw((int)x,(int)y, dest);
         }
         else
         {
-            deadBmp.draw((int)x,(int)y, dest);
+            deadBmp->draw((int)x,(int)y, dest);
         }
     }
     
@@ -637,15 +661,15 @@ class turret : public object
     public:
     
     // Constructor
-    turret(int setID, double setx, double sety,double setangle, const Graphics::Bitmap & setBmp)
+    turret(int setID, double setx, double sety,double setangle, Util::ReferenceCount<Graphics::Bitmap> setBmp)
     {
         ID = setID;
         x = setx;
         y = sety;
         angle = setangle;
         bmp = setBmp;
-        width=bmp.getWidth();
-        height=bmp.getHeight();
+        width=bmp->getWidth();
+        height=bmp->getHeight();
         points=0;
     }
     
@@ -655,15 +679,15 @@ class turret : public object
         
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
-        angle = getAngle(x,y,mouse_x,mouse_y);
+        angle = getAngle(x,y,mouse.x,mouse.y);
     }
     
     void draw(const Graphics::Bitmap & dest)
     {
         //if(alive)rotate_sprite(dest,bmp,(int)x,(int)y,angle);
-        if(alive)bmp.drawRotate((int)x,(int)y,angle,dest);
+        if(alive)bmp->drawRotate((int)x,(int)y,angle,dest);
     }
     
     void kill()
@@ -682,7 +706,7 @@ class moamBase : public object
     
     //Constructor
     
-    moamBase(int setID, double setx, double sety,vector<Graphics::Bitmap> bmpCollection)
+    moamBase(int setID, double setx, double sety,vector< Util::ReferenceCount<Graphics::Bitmap> > bmpCollection)
     {
         ID = setID;
         x = setx;
@@ -691,8 +715,8 @@ class moamBase : public object
         currentFrame=0;
         animForward=false;
         bmpAnim = bmpCollection;
-        width=bmpCollection[0].getWidth();
-        height=bmpCollection[0].getHeight();
+        width=bmpCollection[0]->getWidth();
+        height=bmpCollection[0]->getHeight();
         points=0;
     }
     
@@ -702,7 +726,7 @@ class moamBase : public object
         
     }
     
-    vector<Graphics::Bitmap> bmpAnim;
+    vector< Util::ReferenceCount<Graphics::Bitmap> > bmpAnim;
     int ticks;
     bool animForward;
     unsigned currentFrame;
@@ -712,7 +736,7 @@ class moamBase : public object
         SETANIMFRAME=0
     };
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
         ++ticks;
         if(ticks>30)
@@ -732,7 +756,7 @@ class moamBase : public object
     void draw(const Graphics::Bitmap & dest)
     {
         //draw_sprite(dest,bmpAnim[currentFrame],(int)x,(int)y);
-        bmpAnim[currentFrame].draw(int(x), int(y), dest);
+        bmpAnim[currentFrame]->draw(int(x), int(y), dest);
     }
 
     void kill()
@@ -760,7 +784,7 @@ class enemyMissle : public object
     double goy;
     
     public:
-    enemyMissle(int setID, double setx, double sety, double targetx, double targety, double setAngle, double setVelocity, double setSpeed, const Graphics::Bitmap & setBmp)
+    enemyMissle(int setID, double setx, double sety, double targetx, double targety, double setAngle, double setVelocity, double setSpeed, Util::ReferenceCount<Graphics::Bitmap> setBmp)
     {
         ID = setID;
         x = setx;
@@ -772,8 +796,8 @@ class enemyMissle : public object
         angle = setAngle;
         bmp = setBmp;
         points=15;
-        width=bmp.getWidth();
-        height=bmp.getHeight();
+        width=bmp->getWidth();
+        height=bmp->getHeight();
     }
     
     ~enemyMissle()
@@ -781,7 +805,7 @@ class enemyMissle : public object
         
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
         
         if(!moveDirection(x,y,gox,goy,velocity))
@@ -794,7 +818,7 @@ class enemyMissle : public object
     
     void draw(const Graphics::Bitmap & dest)
     {
-        if(alive)bmp.drawRotate((int)x,(int)y,angle,dest);//rotate_sprite(dest,bmp,(int)x,(int)y,angle);
+        if(alive)bmp->drawRotate((int)x,(int)y,angle,dest);//rotate_sprite(dest,bmp,(int)x,(int)y,angle);
     }
 
     void kill()
@@ -816,7 +840,7 @@ class playerMissle : public object
     double goy;
     
     public:
-    playerMissle(int setID, double setx, double sety, double targetx, double targety, double setAngle, double setVelocity, double setSpeed, const Graphics::Bitmap & setBmp)
+    playerMissle(int setID, double setx, double sety, double targetx, double targety, double setAngle, double setVelocity, double setSpeed, Util::ReferenceCount<Graphics::Bitmap> setBmp)
     {
         ID = setID;
         x = setx;
@@ -828,8 +852,8 @@ class playerMissle : public object
         angle = setAngle;
         bmp = setBmp;
         points=0;
-        width=bmp.getWidth();
-        height=bmp.getHeight();
+        width=bmp->getWidth();
+        height=bmp->getHeight();
     }
     
     ~playerMissle()
@@ -837,7 +861,7 @@ class playerMissle : public object
         
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
         if(!moveDirection(x,y,gox,goy,velocity))
         {
@@ -849,7 +873,7 @@ class playerMissle : public object
     
     void draw(const Graphics::Bitmap & dest)
     {
-        if(alive)bmp.drawRotate((int)x,(int)y,angle,dest);//rotate_sprite(dest,bmp,(int)x,(int)y,angle);
+        if(alive)bmp->drawRotate((int)x,(int)y,angle,dest);//rotate_sprite(dest,bmp,(int)x,(int)y,angle);
     }
     
     void kill()
@@ -869,7 +893,7 @@ class moam : public object
     double goy;
     
     public:
-    moam(int setID, double setx, double sety, const Graphics::Bitmap & setBmp)
+    moam(int setID, double setx, double sety, Util::ReferenceCount<Graphics::Bitmap> setBmp)
     {
         ID = setID;
         x = 305;
@@ -879,8 +903,8 @@ class moam : public object
         speedIncrement = .02;
         bmp = setBmp;
         points=0;
-        width=bmp.getWidth();
-        height=bmp.getHeight();
+        width=bmp->getWidth();
+        height=bmp->getHeight();
         loaded=false;
         launched=false;
         collidable=false;
@@ -891,7 +915,7 @@ class moam : public object
         
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
         if(!loaded)
         {
@@ -922,7 +946,7 @@ class moam : public object
         //if(alive)draw_sprite(dest,bmp,(int)x,(int)y);
         if(alive)
         {
-            bmp.draw((int)x,(int)y, dest);
+            bmp->draw((int)x,(int)y, dest);
         }
     }
     
@@ -958,7 +982,7 @@ class particle : public object
     int slowTicker;
     
     public:
-    particle(int setID, double setx, double sety, double targetx, double targety, double setVelocity, double setSpeed, int tickCount, double setDecay, bool noreverse=false, bool showInit=false, bool setCollide=true, const Graphics::Bitmap & setBmp = NULL)
+    particle(int setID, double setx, double sety, double targetx, double targety, double setVelocity, double setSpeed, int tickCount, double setDecay, bool noreverse=false, bool showInit=false, bool setCollide=true, Util::ReferenceCount<Graphics::Bitmap> setBmp = Util::ReferenceCount<Graphics::Bitmap>(NULL))
     {
         ID = setID;
         oldx = x = setx;
@@ -974,17 +998,17 @@ class particle : public object
         else slow=false;
         maxVelocity = setVelocity;
         speedIncrement = setSpeed;
-        /*if(setBmp==NULL)
+        if(setBmp==NULL)
         {
             hasSprite=false;
         }
         else
-        {*/
+        {
             hasSprite=true;
-            width=setBmp.getWidth();
-            height=setBmp.getHeight();
-        //}
-        bmp = setBmp;
+            width=setBmp->getWidth();
+            height=setBmp->getHeight();
+        }
+        localBmp = setBmp;
         reverse=false;
         dontReverse=noreverse;
         showInitial=showInit;
@@ -1002,7 +1026,7 @@ class particle : public object
         
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
         if(!slow)
         {
@@ -1062,7 +1086,7 @@ class particle : public object
         {
             if(hasSprite)
             {
-                if(ticks==maxTicks||showInitial)bmp.translucent().draw((int)x,(int)y,dest);//draw_trans_sprite(dest,bmp,(int)x,(int)y);
+                if(ticks==maxTicks||showInitial)localBmp->translucent().draw((int)x,(int)y,dest);//draw_trans_sprite(dest,bmp,(int)x,(int)y);
             }
             else
             {
@@ -1080,6 +1104,9 @@ class particle : public object
     {
     }
     
+    
+    Util::ReferenceCount<Graphics::Bitmap> localBmp;
+    
 };
 
 class explosionGroup : public object
@@ -1094,7 +1121,7 @@ class explosionGroup : public object
     double radius;
     
     public:
-    explosionGroup(int setID, double setx, double sety, double setVelocity, double setSpeed, double setRadius, bool setCollide=true, const Graphics::Bitmap & setBmp = NULL)
+    explosionGroup(int setID, double setx, double sety, double setVelocity, double setSpeed, double setRadius, bool setCollide=true, Util::ReferenceCount<Graphics::Bitmap> setBmp = Util::ReferenceCount<Graphics::Bitmap>(NULL))
     {
         ID = setID;
         x = setx;
@@ -1133,12 +1160,12 @@ class explosionGroup : public object
     {
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
         unsigned int partCounter=0,littCounter=0;
         for(list<particle *>::iterator i=particles.begin();i!=particles.end();++i)
         {
-            (*i)->update(mouse_x, mouse_y);
+            (*i)->update(mouse);
             if((rand()%500)>=499&&!toggleGfxThrottle)litter.push_back(new particle(litter.size(),(*i)->x+5,(*i)->y+5,(rand()%2<1 ? (*i)->x+5+rand()%40 : (*i)->x+5-rand()%40),
                             (rand()%2<1 ? (*i)->y+20+rand()%40 : (*i)->y+20-rand()%40),.5,.1,0,40,true,true,false));
             if((rand()%500)>=499&&!toggleGfxThrottle)litter.push_back(new particle(litter.size(),(*i)->x,(*i)->y,(*i)->x,
@@ -1158,7 +1185,7 @@ class explosionGroup : public object
         }
         for(list<particle *>::iterator i=litter.begin();i!=litter.end();++i)
         {
-            (*i)->update(mouse_x, mouse_y);
+            (*i)->update(mouse);
             if(!(*i)->alive)
             {
                 ++littCounter;
@@ -1221,25 +1248,25 @@ class window : public object
     window()
     {
     }
-    window(int setID, double setx, double sety, double setWidth, double setHeight, int setColor = BLACK, const Graphics::Bitmap & setBmp = BLANK_BITMAP,bool setButton=false, string setText="nothing")
+    window(int setID, double setx, double sety, double setWidth, double setHeight, int setColor = BLACK, Util::ReferenceCount<Graphics::Bitmap> setBmp = Util::ReferenceCount<Graphics::Bitmap>(NULL),bool setButton=false, string setText="nothing")
     {
         ID = setID;
         x = setx;
         y = sety;
         bmp = setBmp;
         color = setColor;
-        /*if(bmp==NULL)
+        if(bmp==NULL)
         {
             hasSprite=false;
             width = setWidth;
             height = setHeight;
         }
         else 
-        {*/
+        {
             hasSprite=true;
-            width=bmp.getWidth();
-            height=bmp.getHeight();
-        //}
+            width=bmp->getWidth();
+            height=bmp->getHeight();
+        }
         if(setText=="nothing")
         {
             displayText.clear();
@@ -1254,10 +1281,9 @@ class window : public object
         
     }
     
-    void update(int mouse_x, int mouse_y)
+    void update(const Mouse & mouse)
     {
-        this->mouse_x = mouse_x;
-        this->mouse_y = mouse_y;
+        this->mouse = mouse;
     }
     
     void draw(const Graphics::Bitmap & dest)
@@ -1265,7 +1291,7 @@ class window : public object
         if(hasSprite)
         {
             //draw_sprite(dest,bmp,(int)x,(int)y);
-            bmp.draw(int(x),int(y),dest);
+            bmp->draw(int(x),int(y),dest);
         }
         else
         {
@@ -1274,10 +1300,13 @@ class window : public object
             //if(isHover())rect(dest,(int)x,(int)y,(int)x+(int)width,(int)y+(int)height,RED);
             dest.rectangle((int)x,(int)y,(int)x+(int)width,(int)y+(int)height,WHITE);
             dest.rectangleFill((int)x+1,(int)y+1,(int)(x+(int)width)-1,(int)(y+(int)height)-1,color);
-            if(isHover(mouse_x, mouse_y))dest.rectangle((int)x,(int)y,(int)x+(int)width,(int)y+(int)height,RED);
+            if(isHover(mouse))dest.rectangle((int)x,(int)y,(int)x+(int)width,(int)y+(int)height,RED);
         }
         
-        //if(!displayText.empty())textout_centre_ex(dest,font,displayText.c_str(),(int)x+((int)width/2),(int)y+((int)height/2),WHITE,-1);
+        if(!displayText.empty()){
+            //textout_centre_ex(dest,font,displayText.c_str(),(int)x+((int)width/2),(int)y+((int)height/2),WHITE,-1);
+            getFont().printf((int)x+((int)width/2),(int)y+((int)height/2),WHITE, dest, displayText,-1);
+        }
     }
     
     void kill()
@@ -1290,8 +1319,7 @@ class window : public object
     
     string displayText;
     bool isButton;
-    int mouse_x, mouse_y;
-        
+    Mouse mouse;
 };
 
 //! Manager class
@@ -1302,15 +1330,6 @@ class Manager
     
     void loadBitmaps()
     {
-        /*DATAFILE *temp = load_datafile("games/mdefend/mdefend.dat");
-        for(int i=0;i<24;++i)
-        {
-            const Graphics::Bitmap & b = create_bitmap(((const Graphics::Bitmap & )temp[i].dat)->w,((const Graphics::Bitmap & )temp[i].dat)->h);
-            blit((const Graphics::Bitmap & )temp[i].dat,b,0,0,0,0,b->w,b->h);
-            gameBitmaps.insert(make_pair(i,(const Graphics::Bitmap & )b));
-        }
-        unload_datafile(temp);*/
-        
         gameBitmaps[0] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/background.png")).path()));
         gameBitmaps[1] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/city1.png")).path()));
         gameBitmaps[2] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/city2.png")).path()));
@@ -1332,70 +1351,47 @@ class Manager
         gameBitmaps[18] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/moambaseanim3.png")).path()));
         gameBitmaps[19] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/moambaseanim4.png")).path()));
         gameBitmaps[20] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/fireball.png")).path()));
-        gameBitmaps[21] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/crosshair.png")).path()));
-        gameBitmaps[22] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/hand.png")).path()));
+        gameBitmaps[21] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/smoke.png")).path()));
+        gameBitmaps[22] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/crosshair.png")).path()));
+        gameBitmaps[23] = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("missile-defend/images/hand.png")).path()));
     }
     void loadSamples()
     {
-        /*DATAFILE *temp = load_datafile("games/mdefend/mdefend.dat");
-        for(int i=24;i<29;++i)
-        {
-            SAMPLE *s = create_sample(((SAMPLE *)temp[i].dat)->bits,((SAMPLE *)temp[i].dat)->stereo,((SAMPLE *)temp[i].dat)->freq,((SAMPLE *)temp[i].dat)->len);
-            memcpy(s->data, ((SAMPLE *)temp[i].dat)->data,
-                ((SAMPLE *)temp[i].dat)->len * ((((SAMPLE *)temp[i].dat)->bits==8) ? 1 : sizeof(short)) * ((((SAMPLE *)temp[i].dat)->stereo) ? 2 : 1));
-            gameSamples.insert(make_pair(i,(SAMPLE *)s));
-        }
-        unload_datafile(temp);*/
+        gameSamples[24] = Util::ReferenceCount<Sound>(new Sound(Storage::instance().find(Filesystem::RelativePath("missile-defend/sounds/launch.wav")).path()));
+        gameSamples[25] = Util::ReferenceCount<Sound>(new Sound(Storage::instance().find(Filesystem::RelativePath("missile-defend/sounds/exploded.wav")).path()));
+        gameSamples[26] = Util::ReferenceCount<Sound>(new Sound(Storage::instance().find(Filesystem::RelativePath("missile-defend/sounds/explosion2.wav")).path()));
+        gameSamples[27] = Util::ReferenceCount<Sound>(new Sound(Storage::instance().find(Filesystem::RelativePath("missile-defend/sounds/ding.wav")).path()));
+        gameSamples[28] = Util::ReferenceCount<Sound>(new Sound(Storage::instance().find(Filesystem::RelativePath("missile-defend/sounds/tick.wav")).path()));
     }
     
     void destroyBitmaps()
     {
-        /*for(unsigned int i=0;i<gameBitmaps.size();++i)
-        {
-            map<int, const Graphics::Bitmap & >::iterator p;
-            p = gameBitmaps.find(i);
-            if(p != gameBitmaps.end())
-            {
-                destroy_bitmap(p->second);
-            }
-        }
-        gameBitmaps.clear();*/
     }
     void destroySamples()
     {
-        /*for(unsigned int i=0;i<gameSamples.size();++i)
-        {
-            map<int, SAMPLE *>::iterator p;
-            p = gameSamples.find(i);
-            if(p != gameSamples.end())
-            {
-                destroy_sample(p->second);
-            }
-        }
-        gameBitmaps.clear();*/
     }
     
-    const Graphics::Bitmap & bitmapLookup(int index)
+    Util::ReferenceCount<Graphics::Bitmap> bitmapLookup(int index)
     {
         map<int, Util::ReferenceCount<Graphics::Bitmap> >::iterator p;
         p = gameBitmaps.find(index);
         if(p != gameBitmaps.end())
         {
-            return *p->second;
+            return p->second;
         }
-        return BLANK_BITMAP;
+        return Util::ReferenceCount<Graphics::Bitmap>(NULL);
     }
     
-    /*SAMPLE *sampleLookup(int index)
+    Util::ReferenceCount<Sound> sampleLookup(int index)
     {
-        map<int, SAMPLE *>::iterator p;
+        map<int, Util::ReferenceCount<Sound> >::iterator p;
         p = gameSamples.find(index);
         if(p != gameSamples.end())
         {
-            return (SAMPLE *)p->second;
+            return p->second;
         }
-        return NULL;
-    }*/
+        return Util::ReferenceCount<Sound>(NULL);
+    }
     
     object *objectFactory(int oType, double x, double y, double angle=0, double velocity=0, double speed=0, int extra1=0, int extra2=0, int points=0)
     {
@@ -1425,7 +1421,7 @@ class Manager
                 break;
             case (MOAMBASE):
             {
-                vector<Graphics::Bitmap>tempBmps;
+                vector< Util::ReferenceCount<Graphics::Bitmap> >tempBmps;
                 tempBmps.push_back(bitmapLookup(CLOSEDMOAMBASE));
                 for(int i=16;i<20;++i)
                 {
@@ -1457,16 +1453,20 @@ class Manager
     void playSample(int oType, int frequency=1000)
     {
         //play_sample(sampleLookup(oType), maxVolume, 127, frequency, 0);
+        sampleLookup(oType)->play();
     }
     
-    void doMouse(int mouse_x, int mouse_y)
+    void doMouse(const Mouse & mouse)
     {
-        if(mouse_y<460&&!inMenu)mouseCursor=bitmapLookup(CROSSHAIR);
-        else mouseCursor=bitmapLookup(HAND);
+        if(mouse.y<460&&!inMenu){
+            mouseCursor=bitmapLookup(CROSSHAIR);
+        } else {
+            mouseCursor=bitmapLookup(HAND);
+        }
         
         leftClick=rightClick=midClick=false;
-        /*
-        if(mouse_b&1)
+        
+        if(mouse.left)
         {
             if(!mouseLeft)
             {
@@ -1474,7 +1474,7 @@ class Manager
             }
         }
         else mouseLeft=false;
-        if(mouse_b&2)
+        if(mouse.right)
         {
             if(!mouseRight)
             {
@@ -1482,7 +1482,7 @@ class Manager
             }
         }
         else mouseRight=false;
-        if(mouse_b&4)
+        if(mouse.mid)
         {
             if(!mouseMid)
             {
@@ -1490,7 +1490,7 @@ class Manager
             }
         }
         else mouseMid=false;
-        */
+        
     }
     
     void createEnemyMissle(double x1, double x2, double y1 = -15)
@@ -1622,18 +1622,18 @@ public:
         enemyExpRadius=15;
         
         //! Menu Related
-        openMenuButton = new window(0, 100, 462, 40, 15, BLUE, BLANK_BITMAP,true,"Shop");
-        toggleMoamButton = new window(0, 280, 462, 80, 15, BLUE, BLANK_BITMAP,true,"Open Base");
-        launchMoamButton = new window(0, 365, 462, 50, 15, RED, BLANK_BITMAP, true, "LAUNCH");
+        openMenuButton = new window(0, 100, 462, 40, 15, BLUE, Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Shop");
+        toggleMoamButton = new window(0, 280, 462, 80, 15, BLUE, Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Open Base");
+        launchMoamButton = new window(0, 365, 462, 50, 15, RED, Util::ReferenceCount<Graphics::Bitmap>(NULL), true, "LAUNCH");
         
-        windows.push_back(new window(windows.size(),120,50,400,350,BLACK,BLANK_BITMAP,false));
-        windows.push_back(new window(windows.size(),290,375,60,20,BLUE,BLANK_BITMAP,true,"Resume"));
-        windows.push_back(new window(windows.size(),440,100,60,15,BLUE,BLANK_BITMAP,true,"Add"));
-        windows.push_back(new window(windows.size(),440,120,60,15,BLUE,BLANK_BITMAP,true,"Add"));
-        windows.push_back(new window(windows.size(),440,160,60,15,BLUE,BLANK_BITMAP,true,"Buy"));
-        windows.push_back(new window(windows.size(),440,180,60,15,BLUE,BLANK_BITMAP,true,"Buy"));
-        windows.push_back(new window(windows.size(),440,200,60,15,BLUE,BLANK_BITMAP,true,"Fix"));
-        windows.push_back(new window(windows.size(),440,240,60,15,BLUE,BLANK_BITMAP,true,"Buy"));
+        windows.push_back(new window(windows.size(),120,50,400,350,BLACK,Util::ReferenceCount<Graphics::Bitmap>(NULL),false));
+        windows.push_back(new window(windows.size(),290,375,60,20,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Resume"));
+        windows.push_back(new window(windows.size(),440,100,60,15,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Add"));
+        windows.push_back(new window(windows.size(),440,120,60,15,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Add"));
+        windows.push_back(new window(windows.size(),440,160,60,15,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Buy"));
+        windows.push_back(new window(windows.size(),440,180,60,15,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Buy"));
+        windows.push_back(new window(windows.size(),440,200,60,15,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Fix"));
+        windows.push_back(new window(windows.size(),440,240,60,15,BLUE,Util::ReferenceCount<Graphics::Bitmap>(NULL),true,"Buy"));
         
         repair=false;
     }
@@ -1662,7 +1662,7 @@ public:
         return false;
     }
     
-    void doLogic(int mouse_x, int mouse_y)
+    void doLogic(const Mouse & mouse)
     {
         //! inital stuff and wait timer stuff
         if(initial)
@@ -1734,28 +1734,28 @@ public:
         }
         
         // Process mouse clicks and what not
-        doMouse(mouse_x, mouse_y);
+        doMouse(mouse);
         
-        if(mouse_y>360)warning=true;
+        if(mouse.y>360)warning=true;
         else warning=false;
         
         // Shoot those missles if any clicks
-        if(leftClick && mouse_y<460)
+        if(leftClick && mouse.y<460)
         {
             if(totalMisslesLeft>0&&turrets[0]->alive)
             {
                 pMissles.push_back(objectFactory(PMISSLE,turrets[0]->x+6,turrets[0]->y+12,
-                    turrets[0]->angle, missleVelocity, missleSpeedIncrement, mouse_x, mouse_y));
+                    turrets[0]->angle, missleVelocity, missleSpeedIncrement, mouse.x, mouse.y));
                 --totalMisslesLeft;
                 playSample(LAUNCHSND);
             }
         }
-        if(rightClick && mouse_y<460)
+        if(rightClick && mouse.y<460)
         {
             if(totalMisslesRight>0&&turrets[1]->alive)
             {
                 pMissles.push_back(objectFactory(PMISSLE,turrets[1]->x+6,turrets[1]->y+12,
-                    turrets[1]->angle, missleVelocity, missleSpeedIncrement, mouse_x, mouse_y));
+                    turrets[1]->angle, missleVelocity, missleSpeedIncrement, mouse.x, mouse.y));
                 --totalMisslesRight;
                 playSample(LAUNCHSND);
             }
@@ -1777,14 +1777,14 @@ public:
         
         if(leftClick || rightClick)
         {
-            if(openMenuButton->checkClick(mouse_x, mouse_y))
+            if(openMenuButton->checkClick(mouse))
             {
                 inMenu=true;
                 gameTime.pause(true);
                 playSample(TICKSND);
             }
             
-            if(toggleMoamButton->checkClick(mouse_x, mouse_y))
+            if(toggleMoamButton->checkClick(mouse))
             {
                 moamBase1->specialMethod(moamBase::SETANIMFRAME);
                 if(!((moamBase *)moamBase1)->animForward)
@@ -1800,7 +1800,7 @@ public:
                     playSample(TICKSND);
                 }
             }
-            if(launchMoamButton->checkClick(mouse_x, mouse_y)&&totalMoams>0)
+            if(launchMoamButton->checkClick(mouse)&&totalMoams>0)
             {
                 if(((moam *)moams)->loaded && ((moamBase *)moamBase1)->animForward)
                 {
@@ -1840,7 +1840,7 @@ public:
         {
             if(moams->alive)
             {
-                moams->update(mouse_x, mouse_y);
+                moams->update(mouse);
                 if(((moam *)moams)->loaded&&!((moam *)moams)->launched&&((moamBase *)moamBase1)->animForward)
                 {
                     moams->doCollisions(eMissles,scoreManager);
@@ -1877,7 +1877,7 @@ public:
             }
         }
         
-        moamBase1->update(mouse_x, mouse_y);
+        moamBase1->update(mouse);
         moamBase1->doCollisions(eMissles,scoreManager);
         moamBase1->doCollisions(pMissles,scoreManager);
         column1->doCollisions(eMissles,scoreManager);
@@ -1887,15 +1887,15 @@ public:
         
         for(unsigned int i=0;i<cities.size();++i)
         {
-            cities[i]->update(mouse_x, mouse_y);
+            cities[i]->update(mouse);
         }
         for(unsigned int i=0;i<mBases.size();++i)
         {
-            mBases[i]->update(mouse_x, mouse_y);
+            mBases[i]->update(mouse);
         }
         for(unsigned int i=0;i<turrets.size();++i)
         {
-            turrets[i]->update(mouse_x, mouse_y);
+            turrets[i]->update(mouse);
             if(mBases[i]->alive&&!turrets[i]->alive)
             {
                 effects.push_back(objectFactory(EEXPLOSIONS,turrets[i]->x,turrets[i]->y+2,0,.5,.2,40));
@@ -1907,7 +1907,7 @@ public:
         }
         for(unsigned int i=0;i<pMissles.size();++i)
         {
-            pMissles[i]->update(mouse_x, mouse_y);
+            pMissles[i]->update(mouse);
             // Smoke effect
             if(pMissles[i]->alive&&!toggleGfxThrottle)effects.push_back(objectFactory(SMOKE,pMissles[i]->x,pMissles[i]->y,0,.5,.2,5));
             pMissles[i]->doCollisions(eMissles,scoreManager);
@@ -1923,7 +1923,7 @@ public:
         }
         for(unsigned int i=0;i<eMissles.size();++i)
         {
-            eMissles[i]->update(mouse_x, mouse_y);
+            eMissles[i]->update(mouse);
             // Smoke effect
             if(rand()%200>100&&!toggleGfxThrottle)if(eMissles[i]->alive)effects.push_back(objectFactory(SMOKE,eMissles[i]->x,eMissles[i]->y,0,.5,.2,5));
             // Split missle into 2-3 others
@@ -1951,7 +1951,7 @@ public:
         }
         for(unsigned int i=0;i<effects.size();++i)
         {
-            effects[i]->update(mouse_x, mouse_y);
+            effects[i]->update(mouse);
             effects[i]->doCollisions(eMissles,scoreManager,true);
             effects[i]->doCollisions(pMissles,scoreManager,true);
             effects[i]->doCollisions(turrets,scoreManager,true,true);
@@ -1976,7 +1976,7 @@ public:
     {
         // Blit background
         //blit(backBMP,dest,0,0,0,0,SCREEN_W,SCREEN_H);
-        backBMP.drawStretched(dest);
+        backBMP->drawStretched(dest);
         // Blit moams and its base
         if(totalMoams>0)moams->draw(dest);
         moamBase1->draw(dest);
@@ -2014,7 +2014,7 @@ public:
         dest.rectangle(0,460,639,479,WHITE);
         // Draw time score and whatever else fits
         //draw_sprite(dest,bitmapLookup(PLAYERMISSLE),2,462);
-        bitmapLookup(PLAYERMISSLE).draw(2,462, dest);
+        bitmapLookup(PLAYERMISSLE)->draw(2,462, dest);
         /*textprintf_ex(dest,font,10,465,WHITE,-1, "%d", totalMisslesLeft);
         
         textprintf_centre_ex(dest,font,60,462,WHITE,-1,"Money");
@@ -2026,10 +2026,24 @@ public:
         textprintf_centre_ex(dest,font,445,462,WHITE,-1, "Wave");
         textprintf_centre_ex(dest,font,445,471,WHITE,-1, "%d", wave );
         textprintf_centre_ex(dest,font,540,462,WHITE,-1, "Game Time");*/
+        
+        getFont().printf(10, 465, WHITE, dest, "%d",-1, totalMisslesLeft);
+        
+        getFont().printf(60, 462, WHITE, dest, "Money",-1);
+        getFont().printf(60, 471, WHITE, dest, "$%d",-1, money);
+        
+        getFont().printf(210, 462, WHITE, dest, "Score",-1);
+        getFont().printf(210, 471, WHITE, dest, "%d",-1, totalScore);
+        
+        getFont().printf(445, 462, WHITE, dest, "Wave",-1);
+        getFont().printf(445, 471, WHITE, dest, "%d",-1, wave);
+        getFont().printf(540, 462, WHITE, dest, "Game Time",-1);
+        
         gameTime.print(Timer::Total,522,471,WHITE,dest,"");
         //draw_sprite(dest,bitmapLookup(PLAYERMISSLE),630,462);
-        bitmapLookup(PLAYERMISSLE).draw(630,462, dest);
+        bitmapLookup(PLAYERMISSLE)->draw(630,462, dest);
         //textprintf_right_ex(dest,font,628,465,WHITE,-1, "%d", totalMisslesRight);
+        getFont().printf(628, 465, WHITE, dest, "%d",-1, totalMisslesRight);
         
         // Draw buttons
         openMenuButton->draw(dest);
@@ -2041,6 +2055,9 @@ public:
         
         //! Show warning if near buildings or turrets
         //if(warning&&!initial)textprintf_centre_ex(dest,font,320,220,RED,-1, "WARNING!");
+        if (warning && !initial){
+            getFont().printf(320, 220, RED, dest, "WARNING!",-1);
+        }
         
         if(initial)
         {
@@ -2050,10 +2067,12 @@ public:
                 case 2:
                 case 4:
                     //textprintf_centre_ex(dest,font,320,220,RED,-1, "READY!");
+                    getFont().printf(320, 220, RED, dest, "READY!",-1);
                     break;
                 case 6:
                 case 7:
                     //textprintf_centre_ex(dest,font,320,220,GREEN,-1, "GO!");
+                    getFont().printf(320, 220, GREEN, dest, "GO!",-1);
                     break;
             }
         }
@@ -2064,12 +2083,15 @@ public:
                 case 0:
                 case 1:
                     //textprintf_centre_ex(dest,font,320,180,RANDOMCOLOR,-1, "WAVE CLEARED!");
+                    getFont().printf(320, 180, RANDOMCOLOR, dest, "WAVE CLEARED!",-1);
                     break;
                 case 2:
                 case 3:
                 case 4:
                     //textprintf_centre_ex(dest,font,320,180,BLUE,-1, "WAVE CLEARED!");
                     //textprintf_centre_ex(dest,font,320,220,WHITE,-1, "TOTAL CITIES SAVED: %d",waveClearTotalCities);
+                    getFont().printf(320, 180, BLUE, dest, "WAVE CLEARED!",-1);
+                    getFont().printf(320, 220, WHITE, dest, "TOTAL CITIES SAVED: $d",-1, waveClearTotalCities);
                     break;
                 case 5:
                 case 6:
@@ -2077,29 +2099,35 @@ public:
                     //textprintf_centre_ex(dest,font,320,180,BLUE,-1, "WAVE CLEARED!");
                     //textprintf_centre_ex(dest,font,320,220,WHITE,-1, "TOTAL CITIES SAVED: %d",waveClearTotalCities);
                     //textprintf_centre_ex(dest,font,320,260,WHITE,-1, "TOTAL MISSLES RETAINED: %d",waveClearTotalMissles);
+                    getFont().printf(320, 180, BLUE, dest, "WAVE CLEARED!",-1);
+                    getFont().printf(320, 220, WHITE, dest, "TOTAL CITIES SAVED: $d",-1, waveClearTotalCities);
+                    getFont().printf(320, 260, WHITE, dest, "TOTAL MISSILES RETAINED: $d",-1, waveClearTotalMissles);
                     break;
                 case 8:
                 case 9:
                     //textprintf_centre_ex(dest,font,320,220,WHITE,-1, "WAVE %d START",wave+1);
+                    getFont().printf(320, 220, WHITE, dest, "WAVE $d START",-1, wave+1);
                     break;
                 case 10:
                     //textprintf_centre_ex(dest,font,320,220,RED,-1, "READY!");
+                    getFont().printf(320, 220, RED, dest, "READY!",-1);
                     break;
                 case 12:
                 case 13:
                     //textprintf_centre_ex(dest,font,320,220,GREEN,-1, "GO!");
+                    getFont().printf(320, 220, GREEN, dest, "GO!",-1);
                     break;
             }
         }
     }
     
-    void doMenu(const Graphics::Bitmap & dest)
+    void doMenu(const Mouse & mouse, const Graphics::Bitmap & dest)
     {
-#if 0
         for(unsigned int i=0;i<windows.size();++i)
         {
             windows[i]->draw(dest);
         }
+        /*
         textprintf_centre_ex(dest,font,320,55,WHITE,-1, "SHOP");
         textprintf_centre_ex(dest,font,320,75,PURPLE,-1, "TOTAL BONUS MONEY: $%d",money);
         textprintf_ex(dest,font,125,105,YELLOW,-1,"ACCELERATION");
@@ -2111,14 +2139,26 @@ public:
         textprintf_centre_ex(dest,font,320,265,PURPLE,-1, "LEFT TURRET CAPACITY: %d",leftMissleCapacity);
         textprintf_centre_ex(dest,font,320,285,PURPLE,-1, "RIGHT TURRET CAPACITY: %d",rightMissleCapacity);
         textprintf_centre_ex(dest,font,320,305,PURPLE,-1, "TOTAL MOAMS: %d",totalMoams);
-            
-        
+        */
+        getFont().printf(320,55, WHITE, dest, "SHOP",-1);
+        getFont().printf(320,75, PURPLE, dest, "TOTAL BONUS MONEY: $%d",-1, money);
+        getFont().printf(125, 105, YELLOW, dest, "ACCELERATION",-1);
+        getFont().printf(125, 125, YELLOW, dest, "EXPLOSION RADIUS",-1);
+        getFont().printf(125, 165, YELLOW, dest, "INCREASE CAPACITY FOR LEFT TURRET",-1);
+        getFont().printf(125, 185, YELLOW, dest, "INCREASE CAPACITY FOR RIGHT TURRET",-1);
+        getFont().printf(125, 205, YELLOW, dest, "RESTORE TURRETS OR CITIES",-1);
+        getFont().printf(125, 245, YELLOW, dest, "MOTHER OF ALL MISSLES",-1);
+        getFont().printf(320, 265, PURPLE, dest, "LEFT TURRET CAPACITY: %d",-1, leftMissleCapacity);
+        getFont().printf(320, 285, PURPLE, dest, "RIGHT TURRET CAPACITY: %d",-1, rightMissleCapacity);
+        getFont().printf(320, 305, PURPLE, dest, "TOTAL MOAMS: %d",-1, totalMoams);
+          
         int temploc=280,tempinc=0, tempcolor=GREEN;
         for(int i=0;i<((missleSpeedIncrement-0.07)/.01);++i)
         {
             if(i>10)tempcolor=YELLOW;
             if(i>13)tempcolor=RED;
-            rectfill(dest,temploc+tempinc,100,temploc+tempinc+10,115,tempcolor);
+            //rectfill(dest,temploc+tempinc,100,temploc+tempinc+10,115,tempcolor);
+            dest.rectangleFill(temploc+tempinc,100,temploc+tempinc+10,115,tempcolor);
             tempinc+=10;
         }
         temploc=280;
@@ -2128,37 +2168,43 @@ public:
         {
             if(i>10)tempcolor=YELLOW;
             if(i>13)tempcolor=RED;
-            rectfill(dest,temploc+tempinc,120,temploc+tempinc+10,135,tempcolor);
+            //rectfill(dest,temploc+tempinc,120,temploc+tempinc+10,135,tempcolor);
+            dest.rectangleFill(temploc+tempinc,120,temploc+tempinc+10,135,tempcolor);
             tempinc+=10;
         }
-        rect(dest,280,100,430,115,WHITE);
-        rect(dest,280,120,430,135,WHITE);
+        //rect(dest,280,100,430,115,WHITE);
+        dest.rectangle(280,100,430,115,WHITE);
+        //rect(dest,280,120,430,135,WHITE);
+        dest.rectangle(280,120,430,135,WHITE);
         
         if(repair)
         {
-            textprintf_centre_ex(dest,font,320,225,PURPLE,-1, "SELECT CITY/TURRET TO REPAIR");
+            //textprintf_centre_ex(dest,font,320,225,PURPLE,-1, "SELECT CITY/TURRET TO REPAIR");
+            getFont().printf(320,225, PURPLE, dest, "SELECT CITY/TURRET TO REPAIR",-1);
             for(unsigned int i=0;i<cities.size();++i)
             {
-                if(!cities[i]->alive && cities[i]->isHover())
+                if(!cities[i]->alive && cities[i]->isHover(mouse))
                 {
-                    rect(dest,(int)cities[i]->x,(int)cities[i]->y,(int)cities[i]->x+(int)cities[i]->width,(int)cities[i]->y+(int)cities[i]->height,RED);
+                    //rect(dest,(int)cities[i]->x,(int)cities[i]->y,(int)cities[i]->x+(int)cities[i]->width,(int)cities[i]->y+(int)cities[i]->height,RED);
+                    dest.rectangle((int)cities[i]->x,(int)cities[i]->y,(int)cities[i]->x+(int)cities[i]->width,(int)cities[i]->y+(int)cities[i]->height,RED);
                 }
             }
             for(unsigned int i=0;i<mBases.size();++i)
             {
-                if(!mBases[i]->alive && mBases[i]->isHover())
+                if(!mBases[i]->alive && mBases[i]->isHover(mouse))
                 {
-                    rect(dest,(int)mBases[i]->x,(int)mBases[i]->y,(int)mBases[i]->x+(int)mBases[i]->width,(int)mBases[i]->y+(int)mBases[i]->height,RED);
+                    //rect(dest,(int)mBases[i]->x,(int)mBases[i]->y,(int)mBases[i]->x+(int)mBases[i]->width,(int)mBases[i]->y+(int)mBases[i]->height,RED);
+                    dest.rectangle((int)mBases[i]->x,(int)mBases[i]->y,(int)mBases[i]->x+(int)mBases[i]->width,(int)mBases[i]->y+(int)mBases[i]->height,RED);
                 }
             }
         }
-#endif
     }
     
-    void doMenuLogic(int mouse_x, int mouse_y)
+    void doMenuLogic(const Mouse & mouse)
     {
         //! Check mouse clicks
-        doMouse(mouse_x, mouse_y);
+        doMouse(mouse);
+        
         if(money==0)
         {
             windows[2]->color=GREY;
@@ -2190,14 +2236,14 @@ public:
         
         if(leftClick || rightClick)
         {
-            if(windows[1]->checkClick(mouse_x, mouse_y))
+            if(windows[1]->checkClick(mouse))
             {
                 inMenu=false;
                 gameTime.pause(false);
                 repair=false;
                 playSample(TICKSND);
             }
-            if(windows[2]->checkClick(mouse_x, mouse_y))
+            if(windows[2]->checkClick(mouse))
             {
                 if(windows[2]->color!=GREY)
                 {
@@ -2206,7 +2252,7 @@ public:
                     playSample(TICKSND);
                 }
             }
-            if(windows[3]->checkClick(mouse_x, mouse_y))
+            if(windows[3]->checkClick(mouse))
             {
                 if(windows[3]->color!=GREY)
                 {
@@ -2215,7 +2261,7 @@ public:
                     playSample(TICKSND);
                 }
             }
-            if(windows[4]->checkClick(mouse_x, mouse_y))
+            if(windows[4]->checkClick(mouse))
             {
                 if(windows[4]->color!=GREY)
                 {
@@ -2224,7 +2270,7 @@ public:
                     playSample(TICKSND);
                 }
             }
-            if(windows[5]->checkClick(mouse_x, mouse_y))
+            if(windows[5]->checkClick(mouse))
             {
                 if(windows[5]->color!=GREY)
                 {
@@ -2233,7 +2279,7 @@ public:
                     playSample(TICKSND);
                 }
             }
-            if(windows[6]->checkClick(mouse_x, mouse_y))
+            if(windows[6]->checkClick(mouse))
             {
                 if(windows[6]->color!=GREY)
                 {
@@ -2241,7 +2287,7 @@ public:
                     playSample(TICKSND);
                 }
             }
-            if(windows[7]->checkClick(mouse_x, mouse_y))
+            if(windows[7]->checkClick(mouse))
             {
                 if(windows[7]->color!=GREY)
                 {
@@ -2258,7 +2304,7 @@ public:
             {
                 for(unsigned int i=0;i<cities.size();++i)
                 {
-                    if(!cities[i]->alive && cities[i]->checkClick(mouse_x, mouse_y))
+                    if(!cities[i]->alive && cities[i]->checkClick(mouse))
                     {
                         cities[i]->alive=true;
                         cities[i]->collidable=true;
@@ -2269,7 +2315,7 @@ public:
                 }
                 for(unsigned int i=0;i<mBases.size();++i)
                 {
-                    if(!mBases[i]->alive && mBases[i]->checkClick(mouse_x, mouse_y))
+                    if(!mBases[i]->alive && mBases[i]->checkClick(mouse))
                     {
                         turrets[i]->alive=true;
                         turrets[i]->collidable=true;
@@ -2339,11 +2385,11 @@ public:
     
     //! Game bitmaps
     map<int, Util::ReferenceCount<Graphics::Bitmap> >gameBitmaps;
-    Graphics::Bitmap backBMP;
-    Graphics::Bitmap mouseCursor;
+    Util::ReferenceCount<Graphics::Bitmap> backBMP;
+    Util::ReferenceCount<Graphics::Bitmap> mouseCursor;
     
     //! Game Samples
-    //map<int,SAMPLE *>gameSamples;
+    map<int,Util::ReferenceCount<Sound> >gameSamples;
     
     //! Timers
     // main timer
@@ -2364,8 +2410,6 @@ public:
     bool inMenu;    
     
     //! Mouse stuff
-    int mouse_x;
-    int mouse_y;
     bool mouseRight;
     bool mouseLeft;
     bool mouseMid;
@@ -2566,28 +2610,28 @@ class MissileDefendGame
         //IGame::Deinit();
     }
 
-    void draw(int mouse_x, int mouse_y, const Graphics::Bitmap & canvas) 
+    void draw(const Mouse & mouse, const Graphics::Bitmap & canvas) 
     {
         // Do all the drawing here. Draw only to the canvas bitmap.
         // ...
         
         gameManager.doDrawing(canvas);
         if(gameManager.inMenu){
-            gameManager.doMenu(canvas);
+            gameManager.doMenu(mouse, canvas);
         }
         if(!gameManager.paused){
-            gameManager.mouseCursor.draw(mouse_x,mouse_y, canvas);
+            gameManager.mouseCursor->draw(mouse.x,mouse.y, canvas);
         }
     }
 
-    bool logic(int mouse_x, int mouse_y) 
+    bool logic(const Mouse & mouse) 
     {
         if(!gameManager.paused){
             if(!gameManager.inMenu){
-                gameManager.doLogic(mouse_x, mouse_y);
+                gameManager.doLogic(mouse);
             }
             else {
-                gameManager.doMenuLogic(mouse_x, mouse_y);
+                gameManager.doMenuLogic(mouse);
             }
         }
         if(gameManager.gameOver){
@@ -2658,30 +2702,39 @@ enum GameInput{
     Down,
     Left,
     Right,
-    Shoot,
+    ShootLeft,
+    Special,
+    ShootRight,
+    
 };
 
 class Game: public Util::Logic, public Util::Draw {
 public:
     Game():
     quit(false),
-    mouse_x(0),
-    mouse_y(0){
+    upheld(false),
+    downheld(false),
+    leftheld(false),
+    rightheld(false),
+    velocityX(0),
+    velocityY(0){
         input.set(Keyboard::Key_ESC, Quit);
         input.set(Keyboard::Key_UP, Up);
         input.set(Keyboard::Key_DOWN, Down);
         input.set(Keyboard::Key_LEFT, Left);
         input.set(Keyboard::Key_RIGHT, Right);
-        input.set(Keyboard::Key_SPACE, Shoot);
+        input.set(Keyboard::Key_LCONTROL, ShootLeft);
+        input.set(Keyboard::Key_ALT, Special);
+        input.set(Keyboard::Key_SPACE, ShootRight);
         
         input.set(Configuration::config(0).getJoystickUp(), Up);
         input.set(Configuration::config(0).getJoystickDown(), Down);
         input.set(Configuration::config(0).getJoystickLeft(), Left);
         input.set(Configuration::config(0).getJoystickRight(), Right);
-        input.set(Configuration::config(0).getJoystickAttack1(), Shoot);
-        input.set(Configuration::config(0).getJoystickAttack2(), Shoot);
-        input.set(Configuration::config(0).getJoystickAttack3(), Shoot);
-        input.set(Configuration::config(0).getJoystickAttack4(), Shoot);
+        input.set(Configuration::config(0).getJoystickAttack1(), ShootLeft);
+        input.set(Configuration::config(0).getJoystickAttack2(), ShootRight);
+        input.set(Configuration::config(0).getJoystickAttack3(), Special);
+        input.set(Configuration::config(0).getJoystickAttack4(), Special);
     }
 
     MissileDefendGame defend;
@@ -2689,8 +2742,41 @@ public:
     InputSource source;
 
     void run(){
-        quit = defend.logic(mouse_x, mouse_y);
+        quit = defend.logic(mouse);
         handleInput();
+        if (upheld){
+            up();
+        } else if (!upheld && velocityY > 0){
+            velocityY--;
+        }
+        if (downheld){
+            down();
+        } else if (!downheld && velocityY < 0){
+            velocityY++;
+        }
+        if (leftheld){
+            left();
+        } else if (!leftheld && velocityX < 0){
+            velocityX++;
+        }
+        if (rightheld){
+            right();
+        } else if (!rightheld && velocityX > 0){
+            velocityX--;
+        }
+        mouse.x += velocityX;
+        if (mouse.x < 0){
+            mouse.x = 0;
+        } else if (mouse.x > GFX_X){
+            mouse.x = GFX_X;
+        }
+        mouse.y += velocityY;
+        if (mouse.y < 0){
+            mouse.y = 0;
+        } else if (mouse.y > GFX_Y){
+            mouse.y = GFX_Y;
+        }
+        
     }
 
     void handleInput(){
@@ -2703,6 +2789,38 @@ public:
             Game & game;
 
             void release(const GameInput & input, Keyboard::unicode_t unicode){
+                switch (input){
+                    case Up: {
+                        game.upheld = false;
+                        break;
+                    }
+                    case Down: {
+                        game.downheld = false;
+                        break;
+                    }
+                    case Left: {
+                        game.leftheld = false;
+                        break;
+                    }
+                    case Right: {
+                        game.rightheld = false;
+                        break;
+                    }
+                    case ShootLeft: {
+                        game.mouse.left = false;
+                        break;
+                    }
+                    case Special: {
+                        game.mouse.mid = false;
+                        break;
+                    }
+                    case ShootRight: {
+                        game.mouse.right = false;
+                        break;
+                    }
+                    default:
+                        break;
+                }
             }
 
             void press(const GameInput & input, Keyboard::unicode_t unicode){
@@ -2712,23 +2830,31 @@ public:
                         break;
                     }
                     case Up: {
-                        game.up();
+                        game.upheld = true;
                         break;
                     }
                     case Down: {
-                        game.down();
+                        game.downheld = true;
                         break;
                     }
                     case Left: {
-                        game.left();
+                        game.leftheld = true;
                         break;
                     }
                     case Right: {
-                        game.right();
+                        game.rightheld = true;
                         break;
                     }
-                    case Shoot: {
-                        game.shoot();
+                    case ShootLeft: {
+                        game.mouse.left = true;
+                        break;
+                    }
+                    case Special: {
+                        game.mouse.mid = true;
+                        break;
+                    }
+                    case ShootRight: {
+                        game.mouse.right = true;
                         break;
                     }
                     default:
@@ -2753,42 +2879,52 @@ public:
         Graphics::StretchedBitmap work(GFX_X, GFX_Y, buffer);
         work.start();
         work.clear();
-        defend.draw(mouse_x, mouse_y, work);
+        defend.draw(mouse, work);
         work.finish();
         buffer.BlitToScreen();
     }
     
     void up(){
-        if (mouse_y > 0){
-            mouse_y--;
+        if (velocityY > -5){
+            velocityY-=2;
+        } else {
+            velocityY = -5;
         }
     }
     
     void down(){
-        if (mouse_y < GFX_Y){
-            mouse_y++;
+        if (velocityY < 5){
+            velocityY+=2;
+        } else {
+            velocityY = 5;
         }
     }
     
     void left(){
-        if (mouse_x > 0){
-            mouse_x--;
+        if (velocityX > -5){
+            velocityX-=2;
+        } else {
+            velocityX = -5;
         }
     }
     
     void right(){
-        if (mouse_x < GFX_X){
-            mouse_x++;
+        if (velocityX < 5){
+            velocityX+=2;
+        } else {
+            velocityX = 5;
         }
-    }
-    
-    void shoot(){
     }
 
 protected:
     bool quit;
-    int mouse_x;
-    int mouse_y;
+    Mouse mouse;
+    bool upheld;
+    bool downheld;
+    bool leftheld;
+    bool rightheld;
+    int velocityX;
+    int velocityY;
 };
 
 void run(){
