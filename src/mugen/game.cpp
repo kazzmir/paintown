@@ -1198,6 +1198,10 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Global::debug(0) << "Could not set socket to be non-blocking" << std::endl;
     }
 
+
+    player1Behavior.begin();
+    player2Behavior.begin();
+
     /*
     if (!Network::noDelay(socket, true)){
         Global::debug(0) << "Could not set no delay!" << std::endl;

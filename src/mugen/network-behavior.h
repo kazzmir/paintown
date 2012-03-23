@@ -3,7 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <deque>
 #include "util/network/network.h"
+#include "util/thread.h"
 #include "behavior.h"
 
 namespace Mugen{
@@ -14,6 +16,9 @@ namespace Mugen{
 class NetworkLocalBehavior: public Behavior {
 public:
     NetworkLocalBehavior(Behavior * local, Network::Socket socket);
+
+    /* Start some stuff */
+    virtual void begin();
 
     virtual void start(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
@@ -26,12 +31,15 @@ public:
 protected:
     Behavior * local;
     Network::Socket socket;
-    std::vector<std::string> commands;
+    // std::vector<std::string> commands;
+    std::deque<std::vector<std::string> > commands;
 };
 
 class NetworkRemoteBehavior: public Behavior {
 public:
     NetworkRemoteBehavior(Network::Socket socket);
+    
+    virtual void begin();
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
     virtual void flip();
@@ -40,8 +48,16 @@ public:
 
     virtual ~NetworkRemoteBehavior();
 
+    void pollCommands();
+
 protected:
+    std::vector<std::string> nextCommand();
+
     Network::Socket socket;
+    ::Util::Thread::LockObject lock;
+    ::Util::Thread::Id thread;
+    std::deque<std::vector<std::string> > commands;
+    bool polling;
 };
 
 }
