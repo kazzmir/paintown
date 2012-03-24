@@ -1248,7 +1248,7 @@ class window : public object
     window()
     {
     }
-    window(int setID, double setx, double sety, double setWidth, double setHeight, int setColor = BLACK, Util::ReferenceCount<Graphics::Bitmap> setBmp = Util::ReferenceCount<Graphics::Bitmap>(NULL),bool setButton=false, string setText="nothing")
+    window(int setID, double setx, double sety, double setWidth, double setHeight, Graphics::Color setColor = BLACK, Util::ReferenceCount<Graphics::Bitmap> setBmp = Util::ReferenceCount<Graphics::Bitmap>(NULL),bool setButton=false, string setText="nothing")
     {
         ID = setID;
         x = setx;
@@ -2152,7 +2152,8 @@ public:
         getFont().printf(320, 285, PURPLE, dest, "RIGHT TURRET CAPACITY: %d",-1, rightMissleCapacity);
         getFont().printf(320, 305, PURPLE, dest, "TOTAL MOAMS: %d",-1, totalMoams);
           
-        int temploc=280,tempinc=0, tempcolor=GREEN;
+        int temploc=280,tempinc=0;
+        Graphics::Color tempcolor=GREEN;
         for(int i=0;i<((missleSpeedIncrement-0.07)/.01);++i)
         {
             if(i>10)tempcolor=YELLOW;
