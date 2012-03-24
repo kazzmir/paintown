@@ -366,7 +366,7 @@ def wrapSymbols(env):
     env.Append(LINKFLAGS = map(wrap, wrapped_symbols))
 
 def checkAllegro(context):
-    context.Message("Checking for Allegro... ")
+    context.Message("Checking for Allegro 4... ")
 
     def testAllegro(context):
         return context.TryLink("""
