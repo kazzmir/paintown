@@ -66,7 +66,7 @@ const int GFX_X = 640;
 const int GFX_Y = 480;
 
 //! FIXME get rid of this crap when everything is working
-static Graphics::Bitmap BLANK_BITMAP(50,50);
+static Graphics::Bitmap * BLANK_BITMAP;
 
 //! Game settings
 /*GameSettings mdefendSettings[] =
@@ -290,7 +290,7 @@ void getPoint(const Graphics::Bitmap & bmp, int x, int y, int)
 void getCirclePoints(double x, double y, double radius, vector<Position> & pos)
 {
     getPointData.clear();
-    do_circle(BLANK_BITMAP,(int)x,(int)y,(int)radius,0,getPoint);
+    do_circle(*BLANK_BITMAP,(int)x,(int)y,(int)radius,0,getPoint);
     pos = getPointData;
 }
 
@@ -2929,6 +2929,9 @@ protected:
 };
 
 void run(){
+    if (BLANK_BITMAP != NULL){
+        BLANK_BITMAP = new Graphics::Bitmap(50, 50);
+    }
     Global::debug(0) << "Starting Missile Defend!" << std::endl;
     Music::changeSong();
     Keyboard::pushRepeatState(false);
