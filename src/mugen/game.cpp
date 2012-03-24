@@ -723,11 +723,19 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             string act(const string & line){
                 throw ShutdownException();
             }
+
+            string getDescription() const {
+                return "quit - quit the game entirely";
+            }
         };
 
         class CommandMemory: public Console::Command {
         public:
             CommandMemory(){
+            }
+
+            string getDescription() const {
+                return "memory - current memory usage";
             }
 
             string act(const string & line){
@@ -739,15 +747,23 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
         class CommandHelp: public Console::Command {
         public:
-            CommandHelp(){
+            CommandHelp(const Console::Console & console):
+            console(console){
+            }
+
+            const Console::Console & console;
+
+            string getDescription() const {
+                return "help - Show this help";
             }
 
             string act(const string & line){
                 ostringstream out;
-                out << "quit - quit the game entirely" << "\n";
-                out << "memory - current memory usage" << "\n";
-                out << "record - record character commands" << "\n";
-                out << "help - this help menu";
+                const std::vector<PaintownUtil::ReferenceCount<Console::Command> > commands = console.getCommands();
+                for (std::vector<PaintownUtil::ReferenceCount<Console::Command> >::const_iterator it = commands.begin(); it != commands.end(); it++){
+                    PaintownUtil::ReferenceCount<Console::Command> command = *it;
+                    out << command->getDescription() << "\n";
+                }
                 return out.str();
             }
         };
@@ -759,6 +775,10 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             }
 
             Mugen::Stage * stage;
+
+            string getDescription() const {
+                return "debug [#] - Enable/disable debug for player # starting from 0";
+            }
 
             string act(const string & line){
                 std::istringstream data(line);
@@ -779,6 +799,10 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             }
 
             Mugen::Stage * stage;
+
+            string getDescription() const {
+                return "change-state [player #] [state #] - Change player to a state";
+            }
 
             string act(const string & line){
                 std::istringstream input(line);
@@ -809,6 +833,10 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
             Mugen::Stage * stage;
 
+            string getDescription() const {
+                return "record - Record moves to a file"; 
+            }
+
             string act(const string & line){
                 std::vector<Character*> players = stage->getPlayers();
                 int count = 0;
@@ -823,7 +851,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
 
         console.addCommand("quit", PaintownUtil::ReferenceCount<Console::Command>(new CommandQuit()));
         console.addAlias("exit", "quit");
-        console.addCommand("help", PaintownUtil::ReferenceCount<Console::Command>(new CommandHelp()));
+        console.addCommand("help", PaintownUtil::ReferenceCount<Console::Command>(new CommandHelp(console)));
         console.addCommand("memory", PaintownUtil::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("record", PaintownUtil::ReferenceCount<Console::Command>(new CommandRecord(stage)));
         console.addCommand("debug", PaintownUtil::ReferenceCount<Console::Command>(new CommandDebug(stage)));

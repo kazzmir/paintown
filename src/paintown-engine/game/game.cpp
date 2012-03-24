@@ -256,6 +256,10 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             CommandQuit(){
             }
 
+            string getDescription() const {
+                return "quit - quit the game entirely";
+            }
+
             string act(const string & line){
                 throw ShutdownException();
             }
@@ -264,6 +268,10 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         class CommandMemory: public Console::Command {
         public:
             CommandMemory(){
+            }
+            
+            string getDescription() const {
+                return "memory - current memory usage";
             }
 
             string act(const string & line){
@@ -275,15 +283,23 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
         class CommandHelp: public Console::Command {
         public:
-            CommandHelp(){
+            CommandHelp(const Console::Console & console):
+            console(console){
+            }
+
+            const Console::Console & console;
+                
+            string getDescription() const {
+                return "help - this help menu";
             }
 
             string act(const string & line){
                 ostringstream out;
-                out << "quit - quit the game entirely" << "\n";
-                out << "memory - current memory usage" << "\n";
-                out << "god-mode [on] [off] - enable invincibility" << "\n";
-                out << "help - this help menu";
+                const vector<Util::ReferenceCount<Console::Command> > commands = console.getCommands();
+                for (vector<Util::ReferenceCount<Console::Command> >::const_iterator it = commands.begin(); it != commands.end(); it++){
+                    Util::ReferenceCount<Console::Command> command = *it;
+                    out << command->getDescription() << "\n";
+                }
                 return out.str();
             }
         };
@@ -296,11 +312,21 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             Console::Console & console;
 
+            string getDescription() const {
+                return "clear - Clear the console";
+            }
+
             string act(const string & line){
                 console.clear();
                 return "";
             }
         };
+
+        /*
+        class CommandStage: public Console::Command {
+        public:
+        };
+        */
 
         class CommandGodMode: public Console::Command {
         public:
@@ -311,6 +337,10 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             const vector<Paintown::Object*> & players;
             bool last;
+                
+            string getDescription() const {
+                return "god-mode [on] [off] - enable invincibility";
+            }
 
             void set(bool what){
                 last = what;
@@ -341,7 +371,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         };
 
         console.addCommand("quit", Util::ReferenceCount<Console::Command>(new CommandQuit()));
-        console.addCommand("help", Util::ReferenceCount<Console::Command>(new CommandHelp()));
+        console.addCommand("help", Util::ReferenceCount<Console::Command>(new CommandHelp(console)));
         console.addAlias("?", "help");
         console.addCommand("memory", Util::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("god-mode", Util::ReferenceCount<Console::Command>(new CommandGodMode(players)));
