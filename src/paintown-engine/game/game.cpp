@@ -247,6 +247,30 @@ static bool doMenu(const Token * data, const vector<Paintown::Player *> & player
     }
 }
 
+class StageNext: public std::exception {
+public:
+    virtual ~StageNext() throw () {
+    }
+};
+
+class StagePrevious: public std::exception {
+public:
+    virtual ~StagePrevious() throw () {
+    }
+};
+
+class StageIndex: public std::exception {
+public:
+    StageIndex(int index):
+        index(index){
+        }
+
+    int index;
+
+    virtual ~StageIndex() throw () {
+    }
+};
+
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
     /* 150 pixel tall console */
     Console::Console console(150);
@@ -322,11 +346,35 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
         };
 
-        /*
         class CommandStage: public Console::Command {
         public:
+            string getDescription() const {
+                return "stage [next] [previous] [#] - Move to the next stage, previous stage, or stage at the given index";
+            }
+            
+            string act(const string & line){
+                istringstream in(line);
+                string next;
+                /* first skip the 'stage' part */
+                in >> next >> next;
+                if (next == "next"){
+                    throw StageNext();
+                } else if (next == "previous"){
+                    throw StagePrevious();
+                } else {
+                    /* If the index is too large the game won't jump to that stage
+                     * but the current game will still be aborted.
+                     */
+                    int which = -1;
+                    istringstream number(next);
+                    number >> which;
+                    if (which != 0){
+                        throw StageIndex(which);
+                    }
+                }
+                return getDescription();
+            }
         };
-        */
 
         class CommandGodMode: public Console::Command {
         public:
@@ -376,6 +424,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         console.addCommand("memory", Util::ReferenceCount<Console::Command>(new CommandMemory()));
         console.addCommand("god-mode", Util::ReferenceCount<Console::Command>(new CommandGodMode(players)));
         console.addCommand("clear", Util::ReferenceCount<Console::Command>(new CommandClear(console)));
+        console.addCommand("stage", Util::ReferenceCount<Console::Command>(new CommandStage()));
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
@@ -869,6 +918,19 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         void (*setup_players)(const vector<Paintown::Object*> & players);
     };
 
+    /* Do some cleanup when this function leaves (either normally or due to an exception)
+     */
+    class Cleanup{
+    public:
+        virtual ~Cleanup(){
+            Keyboard::popRepeatState();
+            ObjectFactory::destroy();
+            HeartFactory::destroy();
+        }
+    };
+
+    Cleanup cleanup;
+
     bool gameState = true;
     { /* force scope so the context is destroyed before the factories */
         Global::clearInfo();
@@ -892,10 +954,6 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
 
         gameState = playLevel(context.getWorld(), context.getPlayers());
     }
-
-    Keyboard::popRepeatState();
-    ObjectFactory::destroy();
-    HeartFactory::destroy();
 
     if (! gameState){
         throw Exception::Return(__FILE__, __LINE__);
@@ -921,20 +979,42 @@ static void setupLocalPlayers(const vector<Paintown::Object*> & objects){
     }
 }
 
-void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, void (*setup_players)(const vector<Paintown::Object*> & players)){
     bool first = true;
+    const std::vector<std::string> & levels = levelInfo.getLevels();
+    for (int level = 0; level < levels.size(); level++){
+        try{
+            realGame(futurePlayers, levelInfo, levels[level], setup_players, first);
+            first = false;
+        } catch (const StageNext & next){
+            continue;
+        } catch (const StagePrevious & previous){
+            level -= 2;
+            if (level == -2){
+                level = -1;
+            }
+        } catch (const StageIndex & index){
+            /* Stage index starts at 1, so we need to subtract 2 to get a 0-based index */
+            if (index.index >= 1 && index.index <= levels.size()){
+                level = index.index - 2;
+            }
+        }
+    }
+
+    /*
     for (vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
-        realGame(futurePlayers, levelInfo, *it, doNothingSpecial, first);
+        realGame(futurePlayers, levelInfo, *it, setup_players, first);
         first = false;
     }
+    */
+}
+
+void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+    doRealGame(futurePlayers, levelInfo, doNothingSpecial);
 }
 
 void realGameLocal(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
-    bool first = true;
-    for (vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
-        realGame(futurePlayers, levelInfo, *it, setupLocalPlayers, first);
-        first = false;
-    }
+    doRealGame(futurePlayers, levelInfo, setupLocalPlayers);
 }
 
 void fadeOut( const Graphics::Bitmap & work, const string & message ){
