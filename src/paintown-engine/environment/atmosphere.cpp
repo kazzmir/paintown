@@ -186,7 +186,7 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * 
 
     if (draw_light){
         Graphics::Bitmap::transBlender(0, 0, 0, dark_alpha);
-        Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_TRANS);
+        // Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_TRANS);
         /*
         int top = -save.getHeight() / 3;
         top = 30;
@@ -197,13 +197,13 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * 
         int lamp_top = (int)(((double)lower_width * 2.0 / (double)lamp_height) * (double)upper_width);
 
         // int top = 0;
-        save.triangle(left, top, middle, top, left, save.getHeight(), black);
-        save.triangle(right, top, middle, top, right, save.getHeight(), black);
+        save.translucent().triangle(left, top, middle, top, left, save.getHeight(), black);
+        save.translucent().triangle(right, top, middle, top, right, save.getHeight(), black);
         int nwidth = (int)((double) lamp_top / ((double) lamp_height / (double) lower_width));
-        save.triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
+        save.translucent().triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
 
-        save.rectangleFill(0, 0, right, top, black);
-        Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_SOLID);
+        save.translucent().rectangleFill(0, 0, right, top, black);
+        // Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_SOLID);
         int xwidth = (int)((double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width));
         save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
         lamp->draw(middle - 8, top, save);

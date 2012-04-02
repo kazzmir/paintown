@@ -1,4 +1,5 @@
 #include "util/bitmap.h"
+#include "util/trans-bitmap.h"
 #include <string>
 #include <vector>
 #include <stdarg.h>
@@ -55,17 +56,27 @@ void FontRender::render(const Graphics::Bitmap * work, double scaleWidth, double
         const render_message & r = *it;
 
         /* FIXME: replace with work->translucent() */
+        /*
         if (r.translucency != -1){
             Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
             work->drawingMode( Graphics::Bitmap::MODE_TRANS );
         }
+        */
+
+        if (r.translucency != -1){
+            Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
+            r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, work->translucent(), r.str, 0);
+        } else {
+            r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, *work, r.str, 0);
+        }
 
         // work->printf( r.x, r.y, r.fg, r.r_font, r.str );
-        r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, *work, r.str, 0);
         // work->printf( ky + x1, y1, Bitmap::makeColor(255,255,255), player_font, getName() );
+        /*
         if (r.translucency != -1){
             work->drawingMode( Graphics::Bitmap::MODE_SOLID );
         }
+        */
     }
     messages.clear();
 }
