@@ -1268,12 +1268,14 @@ rsx
             return '%s%s' % (pre, x)
         
         path = '/opt/nacl_sdk'
-        bin_path = setup(path, '/toolchain/linux_x86/bin')
+        # Choices are 'glibc' and 'newlib'
+        toolchain_path = '/toolchain/linux_x86_newlib'
+        bin_path = setup(path, '%s/bin' % toolchain_path)
         env.PrependENVPath('PATH', bin_path)
         flags = []
         paths = []
         
-        libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime']
+        libs = ['srpc', 'ppapi_cpp', 'ppapi', 'ppruntime', 'nosys']
 
         env['PAINTOWN_NACL_ARCH'] = '32'
         
@@ -1281,15 +1283,15 @@ rsx
             prefix = 'x86_64-nacl-'
             flags += ['-m64']
             libs.append('')
-            paths.append([setup(path, '/toolchain/linux_x86/x86_64-nacl/usr/include/')])
-            usr_path = setup(path, '/toolchain/linux_x86/x86_64-nacl/usr')
+            paths.append([setup(path, '%s/x86_64-nacl/usr/include/' % toolchain_path)])
+            usr_path = setup(path, '%s/x86_64-nacl/usr' % toolchain_path)
             env['PAINTOWN_NACL_ARCH'] = '64'
         elif arch == '32bit' or arch_override == '32bit':
-            prefix = 'nacl-'
+            prefix = 'i686-nacl-'
             flags += ['-m32']
             libs.append('')
-            paths.append([setup(path, '/toolchain/linux_x86/i686-nacl/usr/include')])
-            usr_path = setup(path, '/toolchain/linux_x86/i686-nacl/usr')
+            paths.append([setup(path, '%s/i686-nacl/usr/include' % toolchain_path)])
+            usr_path = setup(path, '%s/i686-nacl/usr' % toolchain_path)
         
         env.PrependENVPath('PATH', usr_path)
         env.PrependENVPath('PKG_CONFIG_PATH', "%s/%s" % (usr_path, "lib/pkgconfig"))
@@ -1314,7 +1316,7 @@ rsx
         env.Append(CPPPATH = paths)
         env.Append(CCFLAGS = flags + compile_flags)
         env.Append(CXXFLAGS = flags + compile_flags)
-        env.Append(LIBPATH = setup(path, '/toolchain/linux_x86/lib'))
+        env.Append(LIBPATH = setup(path, '%s/lib' % toolchain_path))
         env.Append(LINKFLAGS = flags + ['-melf_nacl'])
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(LIBS = libs)

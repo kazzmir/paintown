@@ -763,6 +763,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     Draw drawer(console, world, state);
     // state.helpTime = helpTime;
 
+    /* FIXME: begin/destroy world in a constructor/destructor so we can handle
+     * exceptions being thrown, like StageNext.
+     */
     world.begin();
 
     try{

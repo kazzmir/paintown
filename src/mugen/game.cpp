@@ -1214,6 +1214,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);
 
+#ifdef HAVE_NETWORKING
     if (server){
         int sync = Network::read16(socket);
         Network::send16(socket, sync);
@@ -1225,7 +1226,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     if (!Network::blocking(socket, false)){
         Global::debug(0) << "Could not set socket to be non-blocking" << std::endl;
     }
-
+#endif
 
     player1Behavior.begin();
     player2Behavior.begin();
@@ -1894,6 +1895,7 @@ void Game::doVersus(Searcher & searcher){
 }
 
 void Game::doNetworkVersus(bool isServer, Searcher & searcher){
+#ifdef HAVE_NETWORKING
     // Keys
     InputMap<Mugen::Keys> keys1 = Mugen::getPlayer1Keys();
     InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
@@ -1958,6 +1960,7 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
     } catch (const Network::NetworkException & ex){
         Global::debug(0) << "Problem with network connection! Reason: " << ex.getMessage();
     }
+#endif
 }
 
 void Game::startDemo(Searcher & searcher){
