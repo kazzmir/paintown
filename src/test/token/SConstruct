@@ -1,12 +1,15 @@
 Import('use')
 
-source = Split("""test.cpp""")
+env = use.Clone()
 
-parse_source = Split("""parse.cpp""")
+env.VariantDir('main', '../..')
+source = Split("""test.cpp main/globals.cpp main/factory/font_factory.cpp""")
+
+parse_source = Split("""parse.cpp main/globals.cpp main/factory/font_factory.cpp""")
 
 x = []
-token_test = use.Program('test', source)
+token_test = env.Program('test', source)
 x.append(token_test)
-x.append(use.Program('parse', parse_source))
+x.append(env.Program('parse', parse_source))
 use.AddPostAction(token_test, use['PAINTOWN_TEST'])
 Return('x')
