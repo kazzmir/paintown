@@ -1,5 +1,6 @@
 #include "../../util/token.h"
 #include "../../util/tokenreader.h"
+#include "../../util/file-system.h"
 #include <exception>
 #include <iostream>
 #include <sstream>
@@ -150,6 +151,18 @@ static void test7(){
     test7_helper("enable", "disable");
 }
 
+static void test8(){
+    Storage::instance().addOverlay(Storage::instance().find(Filesystem::RelativePath("src/test/token/test.zip")), Storage::instance().find(Filesystem::RelativePath("src/test/token")));
+    Util::ReferenceCount<Storage::File> file = Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("src/test/token/x.txt")));
+    TokenReader reader;
+    Token * head = reader.readTokenFromFile(*file);
+    string words;
+    head->match("foo/bar", words);
+    if (words != "cheese"){
+        throw Failure(8);
+    }
+}
+
 int main(){
     try{
         test1();
@@ -159,6 +172,7 @@ int main(){
         test5();
         test6();
         test7();
+        test8();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){
