@@ -130,7 +130,7 @@ void Player::commonInitialize(){
 
 void Player::load(const Filesystem::AbsolutePath & path){
     TokenReader reader;
-    Token * token = reader.readTokenFromFile(path.path().c_str());
+    Token * token = reader.readTokenFromFile(*Storage::instance().open(path));
     if (token != NULL){
         string introPath;
         if (token->match("_/intro", introPath)){

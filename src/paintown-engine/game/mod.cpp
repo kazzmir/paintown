@@ -47,7 +47,7 @@ name(name){
 }
     
 Graphics::Bitmap * Mod::createBitmap(const Filesystem::RelativePath & path){
-    return new Graphics::Bitmap(Storage::instance().find(path).path());
+    return new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(path)));
 }
 
 Graphics::Bitmap Mod::makeBitmap(const Filesystem::RelativePath & path){

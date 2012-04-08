@@ -3,6 +3,7 @@
 
 #include "character.h"
 #include "util/load_exception.h"
+#include "util/file-system.h"
 #include <string>
 #include <vector>
 #include "util/thread.h"
@@ -16,7 +17,7 @@ namespace Paintown{
 class DisplayCharacterLoader;
 class DisplayCharacter: public Character {
 public:
-	DisplayCharacter(const std::string & str);
+	DisplayCharacter(const Filesystem::AbsolutePath & str);
 	virtual ~DisplayCharacter();
 
         virtual bool isLoaded();
@@ -27,7 +28,7 @@ protected:
         virtual void load();
         virtual void loadDone();
 
-        const std::string path;
+        const Filesystem::AbsolutePath path;
 private:
         bool loaded;
         Util::Thread::LockObject load_lock;

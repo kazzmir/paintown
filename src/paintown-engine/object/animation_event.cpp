@@ -214,7 +214,7 @@ life( 0 ){
             Filesystem::AbsolutePath full = Storage::instance().find(Filesystem::RelativePath(path));
             TokenReader reader;
             try{
-                projectile = new Projectile(reader.readTokenFromFile(full.path()));
+                projectile = new Projectile(reader.readTokenFromFile(*Storage::instance().open(full)));
             } catch (const TokenException & ex){
                 // cerr<< "Could not read " << full.path() <<" : " << ex.getReason() << endl;
                 // delete head;

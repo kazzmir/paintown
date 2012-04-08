@@ -45,7 +45,17 @@ void testZip(){
     }
 }
 
+static void testLastComponent(){
+    Filesystem::AbsolutePath foo("a/b/c/");
+    Global::debug(0) << "Last component of " << foo.path() << " is " << foo.getLastComponent() << std::endl;
+    if (foo.getLastComponent() != "c"){
+        Global::debug(0) << "Last component failed" << std::endl;
+        exit(1);
+    }
+}
+
 int main(){
     testGetFiles();
     testZip();
+    testLastComponent();
 }

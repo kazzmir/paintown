@@ -19,23 +19,23 @@ using namespace std;
 
 namespace Paintown{
 
-DisplayCharacter::DisplayCharacter(const string & path):
+DisplayCharacter::DisplayCharacter(const Filesystem::AbsolutePath & path):
 Character(ALLIANCE_NONE),
 path(path),
 loaded(false){
-    setName(Path::removeExtension(Path::stripDir(path)));
+    setName(Path::removeExtension(path.getFilename().path()));
     /* throws load-exception if the file can't be read */
     // Util::Thread::initializeLock(&load_lock);
     // TokenReader reader(path);
 }
 
 void DisplayCharacter::load(){
-    Global::debug(1) << "Loading " << path << endl;
+    Global::debug(1) << "Loading " << path.path() << endl;
     TokenReader reader;
     try{
-        Token * head = reader.readTokenFromFile(path);
+        Token * head = reader.readTokenFromFile(*Storage::instance().open(path));
         if ( *head != "character" ){
-            throw LoadException(__FILE__, __LINE__, "First token is not 'character' in " + path );
+            throw LoadException(__FILE__, __LINE__, "First token is not 'character' in " + path.path());
         }
 
         // map<string, Filesystem::AbsolutePath> remaps;
@@ -91,13 +91,13 @@ void DisplayCharacter::load(){
         */
     } catch (const TokenException & ex){
         // Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
-        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path );
+        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path.path());
     } catch (const Filesystem::NotFound & ex){
-        throw LoadException(__FILE__, __LINE__, ex, "Could not load character " + path);
+        throw LoadException(__FILE__, __LINE__, ex, "Could not load character " + path.path());
     }
 
     if ( getMovement( "idle" ) == NULL ){
-        throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path );
+        throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path.path());
     }
 
     animation_current = getMovement("idle");
@@ -135,6 +135,8 @@ void DisplayCharacterLoader::load(){
             character->loadDone();
         } catch (const LoadException & le){
             Global::debug(0) << "Problem loading character: " << le.getTrace() << endl;
+        } catch (const Graphics::BitmapException & fail){
+            Global::debug(0) << "Problem loading character: " << fail.getTrace() << endl;
         }
         /* yield the timeslice for slow systems */
         Util::rest(0);

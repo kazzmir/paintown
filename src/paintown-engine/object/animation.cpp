@@ -238,7 +238,7 @@ changedAttacks(false){
             } else if ( current == "contact" ){
                 string st;
                 current.view() >> st;
-                contact = new Sound(Storage::instance().find(Filesystem::RelativePath(st)).path());
+                contact = new Sound(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(st))));
             } else if ( current == "keys" ){
 
                 TokenView keyView = current.view();
@@ -345,7 +345,7 @@ changedAttacks(false){
                 current.view() >> st;
 
                 if (sounds.find(st) == sounds.end()){
-                    Sound * sp = new Sound(Storage::instance().find(Filesystem::RelativePath(st)).path());
+                    Sound * sp = new Sound(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(st))));
                     sounds[st] = sp;
                 }
 

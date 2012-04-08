@@ -897,6 +897,8 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
                 data = new GameData(players, Storage::instance().find(path));
             } catch (const LoadException & exception){
                 failed = new LoadException(exception);
+            } catch (const Exception::Base & exception){
+                failed = new LoadException(__FILE__, __LINE__, exception, "Could not load game data");
             }
         }
 

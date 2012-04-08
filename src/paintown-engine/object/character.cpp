@@ -247,14 +247,14 @@ spriteScale(chr.spriteScale){
     }
 
     if ( chr.die_sound != NULL ) 
-        die_sound = new Sound( *(chr.die_sound) );
+        die_sound = new Sound(*(chr.die_sound));
 
     if ( chr.landed_sound != NULL ){
-        landed_sound = new Sound( *(chr.landed_sound) );
+        landed_sound = new Sound(*(chr.landed_sound));
     }
 
     if ( chr.squish_sound != NULL ){
-        squish_sound = new Sound( *(chr.squish_sound) );
+        squish_sound = new Sound(*(chr.squish_sound));
     }
 
     for ( map<string,Util::ReferenceCount<Animation> >::const_iterator it = chr.movements.begin(); it != chr.movements.end(); it++ ){
@@ -328,7 +328,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
 
     Token * head = NULL;
     try{
-        head = tr.readTokenFromFile(filename.path());
+        head = tr.readTokenFromFile(*Storage::instance().open(filename));
     } catch( const TokenException & ex ){
         throw LoadException(__FILE__, __LINE__, ex, string("Could not open character file: ") + filename.path());
     }
@@ -386,15 +386,15 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
             } else if ( *n == "hit-sound" ){
                 string _snd;
                 n->view() >> _snd;
-                setHit(Sound(Storage::instance().find(Filesystem::RelativePath(_snd)).path()));
+                setHit(Sound(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(_snd)))));
             } else if ( *n == "die-sound" ){
                 string _snd;
                 n->view() >> _snd;
-                die_sound = new Sound(Storage::instance().find(Filesystem::RelativePath(_snd)).path());
+                die_sound = new Sound(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(_snd))));
             } else if ( *n == "landed" ){
                 string st;
                 n->view() >> st;
-                landed_sound = new Sound(Storage::instance().find(Filesystem::RelativePath(st)).path());
+                landed_sound = new Sound(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(st))));
             } else if ( *n == "speed" ){
                 n->view() >> speed;
             } else if ( *n == "type" ){
@@ -412,7 +412,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
                 string icon_path;
                 n->view() >> icon_path;
                 // cout<<"Loading icon "<<icon_path<<endl;
-                icon = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(icon_path)).path());
+                icon = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(icon_path))));
             } else if ( *n == "remap" ){
                 string first;
                 string second;
@@ -428,7 +428,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
 
         }
 
-        squish_sound = new Sound(Storage::instance().find(Filesystem::RelativePath("sounds/squish.wav")).path());
+        squish_sound = new Sound(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("sounds/squish.wav"))));
 
         if ( getMovement( "idle" ) == NULL ){
             throw LoadException(__FILE__, __LINE__, "No 'idle' movement");

@@ -39,26 +39,39 @@ struct playerInfo{
     }
 };
 
-static Util::ReferenceCount<playerInfo> getPlayer(const std::string & file){
-    Global::debug(1, DEBUG_CONTEXT) << "Checking " << file << std::endl;
-    if (Util::exists(file)){
-        Global::debug(1, DEBUG_CONTEXT) << "Loading " << file << std::endl;
-        return Util::ReferenceCount<playerInfo>(new playerInfo(Util::ReferenceCount<Paintown::DisplayCharacter>(new Paintown::DisplayCharacter(file)), Filesystem::AbsolutePath(file)));
+static Util::ReferenceCount<playerInfo> getPlayer(const Filesystem::AbsolutePath & file){
+    Global::debug(1, DEBUG_CONTEXT) << "Checking " << file.path() << std::endl;
+    if (Storage::instance().exists(file)){
+        Global::debug(1, DEBUG_CONTEXT) << "Loading " << file.path() << std::endl;
+        return Util::ReferenceCount<playerInfo>(new playerInfo(Util::ReferenceCount<Paintown::DisplayCharacter>(new Paintown::DisplayCharacter(file)), file));
     }
-    throw LoadException(__FILE__, __LINE__, "File '" + file + "' not found.");
+    throw LoadException(__FILE__, __LINE__, "File '" + file.path() + "' not found.");
+}
+
+static void overlayFiles(const std::string & path){
+    std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath(path + "/")), "*.zip");
+    Filesystem::AbsolutePath place = Storage::instance().find(Filesystem::RelativePath(path));
+    for (std::vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++ ){
+        Filesystem::AbsolutePath container = *it;
+        Storage::instance().addOverlay(container, place);
+    }
 }
 
 typedef std::vector<Util::ReferenceCount<playerInfo> > PlayerVector;
 static PlayerVector loadPlayers(const std::string & path){
     PlayerVector players;
+
+    overlayFiles(path);
+
     std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath(path + "/")), "*" );
     std::sort(files.begin(), files.end());
     for ( std::vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++ ){
         try{
-            std::string ourPath = (*it).path();
-            Global::debug(2, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
-            std::string file = ourPath + "/" + ourPath.substr(ourPath.find_last_of('/') + 1) + ".txt";
-            players.push_back(getPlayer(file));
+            // std::string ourPath = (*it).path();
+            Filesystem::AbsolutePath ourPath = it->join(Filesystem::RelativePath(it->getLastComponent() + ".txt"));
+            // Global::debug(2, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
+            // std::string file = ourPath + "/" + ourPath.substr(ourPath.find_last_of('/') + 1) + ".txt";
+            players.push_back(getPlayer(ourPath));
         } catch (const LoadException & le){
             Global::debug(0, DEBUG_CONTEXT) << "Could not load because " << le.getTrace() << std::endl;
         }
@@ -1030,7 +1043,7 @@ void CharacterSelect::load(const Token * token){
                     messages[message->getName()] = message;
                     messageOrder.push_back(message->getName());
                 } else if (tok->match("add", string_match)){
-                    players.push_back(getPlayer(Storage::instance().find(Filesystem::RelativePath(string_match)).path()));
+                    players.push_back(getPlayer(Storage::instance().find(Filesystem::RelativePath(string_match))));
                 } else if (tok->match("font", string_match, fontWidth, fontHeight)){
                     font = Filesystem::AbsolutePath(string_match);
                 } else if (tok->match("font-dimensions", fontWidth, fontHeight)){

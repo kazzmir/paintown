@@ -12,7 +12,7 @@ using namespace std;
 
 namespace Bor{
 
-DisplayCharacter::DisplayCharacter(PackReader & reader, std::string file):
+DisplayCharacter::DisplayCharacter(PackReader & reader, const Filesystem::AbsolutePath & file):
 Paintown::DisplayCharacter(file),
 reader(reader){
 }
@@ -50,8 +50,8 @@ static vector<Token> getAnimations(Token * head){
 }
     
 void DisplayCharacter::load(){
-    char * raw = reader.readFile(reader.getFile(path));
-    string data = Bor::doParse(raw, reader.getFileLength(path));
+    char * raw = reader.readFile(reader.getFile(path.path()));
+    string data = Bor::doParse(raw, reader.getFileLength(path.path()));
     // Global::debug(0) << "Bor input: '" << parsed << "'" << endl;
     delete[] raw;
 
@@ -92,13 +92,13 @@ void DisplayCharacter::load(){
         }
     } catch (const TokenException & ex){
         // Global::debug(0) << "Could not read " << path << " : " << ex.getReason() << endl;
-        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path);
+        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path.path());
     } catch (const Filesystem::NotFound & ex){
-        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path);
+        throw LoadException(__FILE__, __LINE__, ex, "Could not open character file: " + path.path());
     }
 
     if (getMovement( "idle" ) == NULL){
-        throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path );
+        throw LoadException(__FILE__, __LINE__, "No 'idle' animation given for " + path.path());
     }
 
     animation_current = getMovement("idle");
