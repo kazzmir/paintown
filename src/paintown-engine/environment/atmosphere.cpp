@@ -382,6 +382,8 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
     if ( ! playing ){
         rain_sound.playLoop();
         playing = true;
+    } else {
+        rain_sound.setVolume(1);
     }
 
     for (vector<Puddle*>::iterator it = puddles.begin(); it != puddles.end(); ){
