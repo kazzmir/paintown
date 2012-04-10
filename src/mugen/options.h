@@ -488,7 +488,7 @@ private:
 };
 
 /* For the top level paintown menu */
-class OptionFactory: public Menu::OptionFactory {
+class OptionFactory: public ::Menu::OptionFactory {
 public:
     OptionFactory();
     virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const;

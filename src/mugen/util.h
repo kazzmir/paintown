@@ -170,6 +170,8 @@ enum GameType {
     Watch,
     Demo,
     Undefined,
+    Options,
+    Quit,
 };
 
 /*! Key handler for keys for now change later*/

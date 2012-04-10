@@ -6,6 +6,7 @@
 
 #include "exception.h"
 #include "util/gui/fadetool.h"
+#include "util/gui/scroll-list.h"
 #include "util/language-string.h"
 #include "search.h"
 
@@ -299,7 +300,81 @@ class MugenMenu {
 };
 
 namespace Mugen{
-    /* run the mugen menu */
+    /*! ScrollAction options.h */
+    class ScrollAction;
+    
+    /*! Mugen Menu */
+    class Menu{
+    public:
+        Menu(const Filesystem::RelativePath &);
+        //! For Sub menus
+        Menu(const Menu &, const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
+        
+        virtual ~Menu();
+        
+        virtual void act();
+        virtual void draw(const Graphics::Bitmap &);
+    
+        virtual void up();
+        virtual void down();
+        virtual void enter();
+        virtual void cancel();
+        virtual bool isDone();
+        
+    protected:
+        //! Name of menu
+        std::string name;
+        
+        //! List position
+        int x;
+        int y;
+        
+        //! List
+        PaintownUtil::ReferenceCount<ScrollAction> list;
+        
+        //! List items
+        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > listItems;
+        
+        //! Background
+        PaintownUtil::ReferenceCount<Background> background;
+        
+        //! Sound types
+        enum Sounds{
+            Move,
+            Done,
+            Cancel,
+        };
+        
+        /*! Sprites */
+        Mugen::SpriteMap sprites;
+        
+        //! Sound system
+        Mugen::SoundSystem<Sounds> sounds;
+        
+        /*! Music files */
+        std::string introMusic;
+        std::string titleMusic;
+        std::string selectMusic;
+        std::string versusMusic;
+        
+        //! Fonts
+        std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
+        
+        //! Logo storyboard
+        PaintownUtil::ReferenceCount<Mugen::Storyboard> logo;
+        
+        //! Intro storyboard
+        PaintownUtil::ReferenceCount<Mugen::Storyboard> intro;
+        
+        //! Fade tool
+        Gui::FadeTool fader;
+        
+        //! Fade enabled
+        bool fadeEnabled;
+        
+    };
+
+    /*! run the mugen menu */
     void run();
 }
 

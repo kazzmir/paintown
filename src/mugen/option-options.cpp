@@ -2145,7 +2145,7 @@ public:
 
     // Finally it has been selected, this is what shall run 
     // endGame will be set true if it is a terminating option
-    virtual void run(const Menu::Context & context){
+    virtual void run(const ::Menu::Context & context){
         try{
             loadMotif();
             Mugen::run();
@@ -2157,7 +2157,7 @@ public:
             PaintownUtil::showError(le, out.str());
             InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
         }
-        throw Menu::Reload(__FILE__, __LINE__);
+        throw ::Menu::Reload(__FILE__, __LINE__);
         // throw Exception::Return(__FILE__, __LINE__);
     }
 
