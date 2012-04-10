@@ -372,6 +372,30 @@ namespace Mugen{
         //! Fade enabled
         bool fadeEnabled;
         
+        //! Menu state
+        enum State{
+            Intros,
+            MainMenu,
+            DemoMode,
+        };
+        
+        //! Current menu state
+        State state;
+        
+        //! Ticks (movement or action will reset ticks to 0)
+        int ticks;
+        
+        //! Demo mode
+        bool demoEnabled;
+        
+        //! Time till demo
+        int startDemoTime;
+        
+        //! Demo cycles
+        int demoCycles;
+        
+        //! Max cycles of demo before displaying next intro
+        int nextIntroCycle;
     };
 
     /*! run the mugen menu */

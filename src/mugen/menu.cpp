@@ -1332,9 +1332,28 @@ public:
     Mugen::GameType type;
 };
 
+static PaintownUtil::ReferenceCount<Mugen::Font> getFont(const std::vector< PaintownUtil::ReferenceCount<Mugen::Font> > & fonts, int index) {
+    if (index == -1){
+        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
+    }
+    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
+        return fonts[index - 1];
+    } else {
+        std::ostringstream out;
+        out << "No font for index " << index;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+}
+
 Menu::Menu(const Filesystem::RelativePath & path):
 list(PaintownUtil::ReferenceCount<ScrollAction>(new ScrollAction())),
-fadeEnabled(true){
+fadeEnabled(true),
+state(Intros),
+ticks(0),
+demoEnabled(false),
+startDemoTime(0),
+demoCycles(0),
+nextIntroCycle(0){
     Filesystem::AbsolutePath baseDir = Storage::instance().find(Mugen::Data::getInstance().getDirectory().join(path.getDirectory()));
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, path.getFilename().path());
     
@@ -1550,7 +1569,7 @@ fadeEnabled(true){
                                 simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
-                            ListFont font(menu.fonts[index], bank, position);
+                            ListFont font(getFont(menu.fonts, index), bank, position);
                             menu.list->setListFont(font);
                         } else if (simple == "menu.item.active.font"){
                             int index=0,bank=0,position=0;
@@ -1558,7 +1577,7 @@ fadeEnabled(true){
                                 simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
-                            ListFont font(menu.fonts[index], bank, position);
+                            ListFont font(getFont(menu.fonts, index), bank, position);
                             menu.list->setActiveFont(font);
                         } else if (simple == "menu.item.spacing"){
                             int x=0,y=0;
@@ -1729,22 +1748,66 @@ fadeEnabled(true){
    // Position or locate somewhere else
    //addMenuOption(new Mugen::NetworkOption("Network Server", true));
    //addMenuOption(new Mugen::NetworkOption("Network Client", false));
+   
+   list->addItems(listItems);
 }
 
 Menu::Menu(const Menu & copy, const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > & items):
 list(PaintownUtil::ReferenceCount<ScrollAction>(new ScrollAction())),
-fadeEnabled(false){
+fadeEnabled(false),
+state(MainMenu),
+ticks(0),
+demoEnabled(copy.demoEnabled),
+startDemoTime(copy.startDemoTime),
+demoCycles(copy.demoCycles),
+nextIntroCycle(copy.nextIntroCycle){
 }
 
 Menu::~Menu(){
 }
 
 void Menu::act(){
-    background->act();
-    if (fadeEnabled){
-        fader.act();
+    switch (state){
+        case Intros:{
+            if (logo != NULL){
+            }
+            if (intro != NULL){
+            }
+            state = MainMenu;
+            break;
+        }
+        case MainMenu:{
+            background->act();
+            if (fadeEnabled){
+                fader.act();
+            }
+            list->act();
+            
+            // Check demo
+            if (demoEnabled){
+                ticks++;
+                if (ticks >= startDemoTime){
+                    // Set state
+                    state = DemoMode;
+                }
+            }
+            break;
+        }
+        case DemoMode:{
+            // TODO Run demo
+            demoCycles++;
+            if (demoCycles > nextIntroCycle){
+                demoCycles = 0;
+                state = Intros;
+            } else {
+                state = MainMenu;
+            }
+            ticks = 0;
+            break;
+        }
+        default:
+            break;
     }
-    list->act();
 }
 
 void Menu::draw(const Graphics::Bitmap & work){
@@ -1773,23 +1836,27 @@ void Menu::draw(const Graphics::Bitmap & work){
 void Menu::up(){
     if (list->previous()){
         sounds.play(Move);
+        ticks = 0;
     }
 }
 
 void Menu::down(){
     if (list->next()){
         sounds.play(Move);
+        ticks = 0;
     }
 }
 
 void Menu::enter(){
     if (list->getCurrent()->isRunnable()){
+        ticks = 0;
         sounds.play(Done);
         list->getCurrent()->run();
     }
 }
 
 void Menu::cancel(){
+    ticks = 0;
     sounds.play(Cancel);
     if (fadeEnabled){
         fader.setState(Gui::FadeTool::FadeOut);
@@ -1803,6 +1870,138 @@ bool Menu::isDone(){
     return true;
 }
 
+static void runNewMenu(){
+    // Load er up and throw up a load box to inform the user
+    class Context: public Loader::LoadingContext {
+    public:
+        Context():
+        exception(NULL){
+        }
+
+        virtual void load(){
+            try{
+                menu = PaintownUtil::ReferenceCount<Menu>(new Menu(Mugen::Data::getInstance().getMotif()));
+            } catch (const MugenException & e){
+                exception = (MugenException*) e.copy();
+            } catch (const LoadException & e){
+                exception = new LoadException(e);
+            } catch (const Filesystem::NotFound & e){
+                exception = new Filesystem::NotFound(e);
+            }
+        }
+
+        virtual void failure(){
+            if (exception != NULL){
+                exception->throwSelf();
+            }
+        }
+
+        virtual ~Context(){
+            delete exception;
+        }
+
+        PaintownUtil::ReferenceCount<Menu> getMenu(){
+            return menu;
+        }
+
+        PaintownUtil::ReferenceCount<Menu> menu;
+        Exception::Base * exception;
+    };
+    
+    Loader::Info info;
+    info.setLoadingMessage("Loading M.U.G.E.N");
+    Context menuLoader;
+    Loader::loadScreen(menuLoader, info);
+
+    menuLoader.failure();
+    
+    // Box
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(PaintownUtil::ReferenceCount<Menu> menu):
+        menu(menu),
+        escaped(false){
+            player1Input = getPlayer1Keys(20);
+            player2Input = getPlayer2Keys(20);
+        }
+        
+        PaintownUtil::ReferenceCount<Menu> menu;
+
+        InputMap<Keys> player1Input;
+        InputMap<Keys> player2Input;
+
+        bool escaped;
+        
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+
+        void run(){
+            InputSource input1;
+            InputSource input2;
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
+            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
+            out1.insert(out1.end(), out2.begin(), out2.end());
+            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+
+                if (event[Esc]){
+                    if (!escaped){
+                        escaped = true;
+                        menu->cancel();
+                        InputManager::waitForRelease(player1Input, input1, Esc);
+                        InputManager::waitForRelease(player2Input, input2, Esc);
+                    }
+                }
+
+                if (event[Up]){
+                    menu->up();
+                }
+                if (event[Down]){
+                    menu->down();
+                }
+                if (event[Start]){
+                    try {
+                        menu->enter();
+                    } catch (const Item::TypeException & ex){
+                        // Handle option for player 1
+                    }
+                }
+            }
+            
+            // Act out
+            menu->act();
+        }
+
+        bool done(){
+            return menu->isDone();
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(PaintownUtil::ReferenceCount<Menu> menu):
+        menu(menu){
+        }
+
+        PaintownUtil::ReferenceCount<Menu> menu;
+        
+        void draw(const Graphics::Bitmap & screen){
+            menu->draw(screen);
+            screen.BlitToScreen();
+        }
+    };
+    
+    Logic logic(menuLoader.getMenu());
+    Draw draw(menuLoader.getMenu());
+    PaintownUtil::standardLoop(logic, draw);
+    throw  Exception::Return(__FILE__, __LINE__);
+}
+
 void run(){
     Searcher searcher;
     searcher.start();
@@ -1810,6 +2009,8 @@ void run(){
         while (true){
             try{
                 runMenu();
+                // Refactored menu
+                //runNewMenu();
             } catch (const Mugen::StartGame & game){
                 try{
                     Game versus(game.player, game.game, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
