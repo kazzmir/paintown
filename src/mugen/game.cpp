@@ -597,9 +597,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                                 break;
                             }
                             case QuitGame: {
-                                //throw QuitGameException();
-                                //logic.escapeMenu.toggle();
-                                runEscape(logic.escapeMenu);
+                                if (!logic.options.isDemoMode()){
+                                    runEscape(logic.escapeMenu);
+                                }
                                 break;
                             }
                             case SetHealth: {

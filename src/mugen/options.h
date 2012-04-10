@@ -157,6 +157,11 @@ public:
     //! Active Font
     virtual void setActiveFont(const ListFont &);
     
+    //! Get Active Font
+    virtual inline const ListFont & getActiveFont() const {
+        return this->activeFont;
+    }
+    
     //! Set visible items (defaults to 5)
     virtual inline void setVisibleItems(unsigned int items){
         this->visibleItems = items;
@@ -229,6 +234,19 @@ public:
         this->cursorY2 = y2;
     }
     
+    virtual inline int getCursorCoordsX1(){
+        return this->cursorX1;
+    }
+    virtual inline int getCursorCoordsX2(){
+        return this->cursorX2;
+    }
+    virtual inline int getCursorCoordsY1(){
+        return this->cursorY1;
+    }
+    virtual inline int getCursorCoordsY2(){
+        return this->cursorY2;
+    }
+    
 protected:
     
     //! Is expanding enabled
@@ -292,22 +310,6 @@ protected:
     int cursorAlpha;
     int cursorAlphaMod;
     
-};
-
-class OptionArcade: public ItemOption {
-public:
-    OptionArcade(const std::string &name);
-    virtual ~OptionArcade();
-    
-    void executeOption(const Mugen::PlayerType &, bool & endGame);
-};
-
-/*! Handles key reconfiguration */
-class OptionVersus: public Mugen::ItemOption {
-public:
-    OptionVersus(const std::string &name);
-    virtual ~OptionVersus();
-    void executeOption(const Mugen::PlayerType &, bool & endGame);
 };
 
 class Option{
@@ -482,17 +484,10 @@ private:
     
 };
 
-/*! Handles Mugen Options */
-class OptionOptions: public ItemOption {
+/*! Run Mugen Options Menu */
+class OptionsMenu{
 public:
-    OptionOptions(const std::string &name);
-    
-    virtual ~OptionOptions();
-    void executeOption(const Mugen::PlayerType &, bool & endGame);
-    
-private:
-    //! Menu
-    PaintownUtil::ReferenceCount<OptionMenu> optionMenu;
+    static void run(const std::string &);
 };
 
 /* For the top level paintown menu */

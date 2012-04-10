@@ -1419,8 +1419,9 @@ public:
     
     void testMotif(Filesystem::AbsolutePath & path, const std::string & errorInfo){
         try {
-            MugenMenu menu(Storage::instance().cleanse(path).removeFirstDirectory());
-            menu.loadData();
+            Searcher searcher;
+            Mugen::Menu menu(Storage::instance().cleanse(path).removeFirstDirectory(), searcher);
+            //menu.loadData();
         } catch (const Mugen::Def::ParseException & e){
             runError(e.getReason(), errorInfo);
             throw MotifException();
@@ -1997,97 +1998,42 @@ type(type){
 OptionMenu::KeysChangedException::~KeysChangedException() throw(){
 }
 
-OptionOptions::OptionOptions( const std::string &name ){
-    if (name.empty()){
-	throw LoadException(__FILE__, __LINE__, "No name given to Options");
-    }
-    this->setText(name);
-    
+void OptionsMenu::run(const std::string & name){
     // Add options
     std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Difficulty()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Life()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TimeLimit()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Speed()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new OneVsTeam()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new TeamLoseOnKO()));
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new AutoSearch()));
-    PaintownUtil::ReferenceCount<Motif> motif = PaintownUtil::ReferenceCount<Motif>(new Motif());
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::Difficulty()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::Life()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::TimeLimit()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::Speed()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::OneVsTeam()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::TeamLoseOnKO()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::AutoSearch()));
+    PaintownUtil::ReferenceCount<Mugen::Motif> motif = PaintownUtil::ReferenceCount<Mugen::Motif>(new Mugen::Motif());
     list.push_back(motif.convert<Gui::ScrollItem>());
-    PaintownUtil::ReferenceCount<PlayerKeys> player1Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(0, "Player1"));
-    PaintownUtil::ReferenceCount<PlayerKeys> player2Keys = PaintownUtil::ReferenceCount<PlayerKeys>(new PlayerKeys(1, "Player2"));
+    PaintownUtil::ReferenceCount<Mugen::PlayerKeys> player1Keys = PaintownUtil::ReferenceCount<Mugen::PlayerKeys>(new Mugen::PlayerKeys(0, "Player1"));
+    PaintownUtil::ReferenceCount<Mugen::PlayerKeys> player2Keys = PaintownUtil::ReferenceCount<Mugen::PlayerKeys>(new Mugen::PlayerKeys(1, "Player2"));
     list.push_back(player1Keys.convert<Gui::ScrollItem>());
     list.push_back(player2Keys.convert<Gui::ScrollItem>());
-    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Escape()));
+    list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::Escape()));
     /* Testing 
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Dummy")));
     */
     
-    optionMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
+    PaintownUtil::ReferenceCount<Mugen::OptionMenu> optionMenu = PaintownUtil::ReferenceCount<Mugen::OptionMenu>(new Mugen::OptionMenu(list));
     
     // Setup parents so that we can borrow resources
     motif->parent = player1Keys->parent = player2Keys->parent = optionMenu;
     
     optionMenu->setName(name);
-}
-
-OptionOptions::~OptionOptions(){
-}
-
-void OptionOptions::executeOption(const PlayerType & player, bool &endGame){
     
-    MenuLogic logic(*optionMenu);
-    MenuDraw draw(*optionMenu);
+    Mugen::MenuLogic logic(*optionMenu);
+    Mugen::MenuDraw draw(*optionMenu);
     PaintownUtil::standardLoop(logic, draw);
     
     optionMenu->reset();
 
     // **FIXME Hack figure something out
     throw Exception::Return(__FILE__, __LINE__);
-}
-
-OptionArcade::OptionArcade(const string & name){
-    if (name.empty()){
-	throw LoadException(__FILE__, __LINE__, "No name given to versus");
-    }
-
-    this->setText(name);
-}
-
-OptionArcade::~OptionArcade(){
-	// Nothing
-}
-
-/*
-static void runGame(const PlayerType & player, GameType kind, Searcher & searcher){
-    Game versus(player, kind, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
-    versus.run(searcher);
-}
-*/
-
-void OptionArcade::executeOption(const Mugen::PlayerType & player, bool &endGame){
-    /* Get default motif system.def */
-    /*
-    Game versus(player, Arcade, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
-    versus.run();
-    */
-    // runGame(player, Arcade, searcher);
-    throw StartGame(player, Arcade);
-}
-
-OptionVersus::OptionVersus(const std::string &name){
-    if (name.empty()){
-	throw LoadException(__FILE__, __LINE__, "No name given to versus");
-    }
-    this->setText(name);
-}
-
-OptionVersus::~OptionVersus(){
-	// Nothing
-}
-
-void OptionVersus::executeOption(const Mugen::PlayerType & player, bool &endGame){
-    throw StartGame(player, Versus);
 }
 
 OptionFactory::OptionFactory(){
