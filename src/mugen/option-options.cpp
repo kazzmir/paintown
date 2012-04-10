@@ -176,12 +176,12 @@ void ScrollAction::act(){
     
     if (showCursor){
         cursorAlpha+=cursorAlphaMod;
-        if (cursorAlpha > 128){
-            cursorAlpha = 128;
-            cursorAlphaMod = -6;
+        if (cursorAlpha > 42){
+            cursorAlpha = 42;
+            cursorAlphaMod = -2;
         } else if (cursorAlpha < 0){
             cursorAlpha = 0;
-            cursorAlphaMod = 6;
+            cursorAlphaMod = 2;
         }
     }
     
@@ -210,15 +210,15 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
             const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
             const ListFont & useFont = (index != current) ? font : activeFont;
             if (expandState == Disabled){
-                item->render(x, y, work, useFont, leftBoundary, rightBoundary);
                 if (index == current && showCursor){
                     Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
                     if (autoCursor){
-                        work.translucent().rectangleFill(leftBoundary-2, y - useFont.getHeight()-1, rightBoundary+2, y+1, Graphics::makeColor(255,255,255));
+                        work.translucent().rectangleFill(leftBoundary-2, y - useFont.getHeight()-1, rightBoundary+2, y+1, Graphics::makeColor(128,200,255));
                     } else {
-                        work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(255,255,255));
+                        work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(128,200,255));
                     }
                 }
+                item->render(x, y, work, useFont, leftBoundary, rightBoundary);
             } else {
                 if (moveLeft){
                     item->render(x - currentOffsetX, y, work, useFont, leftBoundary, rightBoundary);
