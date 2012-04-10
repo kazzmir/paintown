@@ -179,6 +179,14 @@ public:
         this->spacingY = y;
     }
     
+    virtual inline int getSpacingX() const {
+        return this->spacingX;
+    }
+    
+    virtual inline int getSpacingY() const {
+        return this->spacingY;
+    }
+    
     virtual inline void setLocation(int x, int y){
         this->startX = x;
         this->startY = y;

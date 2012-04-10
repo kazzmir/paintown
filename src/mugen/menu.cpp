@@ -1293,7 +1293,7 @@ public:
         }
         ~TypeException() throw(){
         }
-        const Mugen::GameType & getType(){
+        const Mugen::GameType & getType() const{
             return type;
         }
     private:
@@ -1723,11 +1723,6 @@ nextIntroCycle(0){
                 Global::debug(1, context.str()) << "Unhandled Section: " << head << endl;
             }
         } 
-
-        // Set defaults
-        //currentMenuPosition = position.y;
-        //menuRange.y = windowVisibleItems-1;
-
     } catch (const Mugen::Def::ParseException & e){
         ostringstream out;
         out << "Error loading data " << ourDefFile.path() << ": " << e.getReason();
@@ -1749,6 +1744,8 @@ nextIntroCycle(0){
    //addMenuOption(new Mugen::NetworkOption("Network Server", true));
    //addMenuOption(new Mugen::NetworkOption("Network Client", false));
    
+   
+   list->setLocation(x, 0);
    list->addItems(listItems);
 }
 
@@ -1817,9 +1814,11 @@ void Menu::draw(const Graphics::Bitmap & work){
     // Backgrounds
     background->renderBackground(0, 0, workArea);
     
-    const int width = list->getMaxWidth();
-    const int height = list->getMaxHeight();
-    Graphics::Bitmap temp(workArea, x, y, width, height);
+    // Top of the window
+    const int top = y - list->getTopMargin();
+    // Pretty accurate tested with 5 different screen packs and different settings
+    const int bottom = y + ((list->getVisibleItems()-1) * list->getSpacingY()) + list->getBottomMargin();
+    Graphics::Bitmap temp(workArea, 0, top, 320, bottom - top);
     list->render(temp, ::Font::getDefaultFont());
     
     // Foregrounds
@@ -1969,6 +1968,36 @@ static void runNewMenu(){
                         menu->enter();
                     } catch (const Item::TypeException & ex){
                         // Handle option for player 1
+                        switch (ex.getType()){
+                            case Arcade:
+                            case Versus:
+                            case NetworkVersusServer:
+                            case NetworkVersusClient:
+                            case Survival:
+                            case Training:
+                            case Watch:
+                                throw StartGame(Mugen::Player1, ex.getType());
+                                break;
+                            case Options:{
+                                try {
+                                    OptionOptions options("Options");
+                                    bool unused = false;
+                                    options.executeOption(Mugen::Player1, unused);
+                                } catch (const Exception::Return & ex){
+                                }
+                                break;
+                            }
+                            case Quit:
+                                throw  Exception::Return(__FILE__, __LINE__);
+                                break;
+                            case SurvivalCoop:
+                            case TeamArcade:
+                            case TeamVersus:
+                            case TeamCoop:
+                            case Undefined:
+                            default:
+                                break;
+                        }
                     }
                 }
             }
@@ -2008,9 +2037,9 @@ void run(){
     try{
         while (true){
             try{
-                runMenu();
+                //runMenu();
                 // Refactored menu
-                //runNewMenu();
+                runNewMenu();
             } catch (const Mugen::StartGame & game){
                 try{
                     Game versus(game.player, game.game, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
