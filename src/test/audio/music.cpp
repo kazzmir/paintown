@@ -6,6 +6,12 @@
 #include <string>
 #include <algorithm>
 
+/*
+#ifdef USE_SDL
+#include <SDL/SDL.h>
+#endif
+*/
+
 using std::string;
 
 int Configuration::getSoundVolume(){
@@ -48,8 +54,9 @@ string lowerCaseAll(std::string str){
 int main(){
     Sound::initialize();
     Music music(true);
+    // music.loadSong("data/music/Aurora.ogg");
     while (true){
-        music.loadSong("music/Aurora.ogg");
-        music.loadSong("music/Techtopia.ogg");
+        music.loadSong("data/music/Aurora.ogg");
+        music.loadSong("data/music/Techtopia.ogg");
     }
 }

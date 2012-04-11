@@ -52,6 +52,8 @@ if isLinux():
 
     musicEnv = env.Clone()
     musicEnv.VariantDir('build/music', '../../')
+    musicEnv.Append(CPPDEFINES = ['HAVE_OGG'])
+    musicEnv.ParseConfig('pkg-config vorbis vorbisfile --libs')
     musicEnv.Append(LIBS = [zipLibrary(env), 'z', sflLibrary(env)])
 
     program = env.Program('test', source)
