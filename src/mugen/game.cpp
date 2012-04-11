@@ -286,7 +286,8 @@ public:
         };
         class Exit : public BaseMenuItem {
         public:
-            Exit(){
+            Exit(PaintownUtil::ReferenceCount<OptionMenu> menu):
+            menu(menu){
                 optionName = "Exit Match";
                 currentValue = "(Enter)";
             }
@@ -304,8 +305,12 @@ public:
             }
 
             void run(){
-                throw QuitGameException();
+                if (menu->confirmDialog("Are you sure you want to exit?", false, Graphics::makeColor(0,0,0), 128, true)){
+                    throw QuitGameException();
+                }
             }
+            
+            PaintownUtil::ReferenceCount<OptionMenu> menu;
         };
         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     
@@ -320,7 +325,7 @@ public:
         if (options.getPlayer2Behavior() != NULL){
             list.push_back(OptionMenu::getPlayerKeys(1, "Player 2", menu));
         }
-        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit()));
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit(menu)));
         
         // Now update it
         menu->updateList(list);

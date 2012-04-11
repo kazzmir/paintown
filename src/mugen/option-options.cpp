@@ -1135,6 +1135,10 @@ void OptionMenu::setLast(){
     list.setCurrentIndex(list.getItems().size()-1);
 }
 
+bool OptionMenu::confirmDialog(const std::string & title, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade){
+    return OptionMenu::doConfirmDialog(title, renderBackground, clearColor, clearAlpha, disableFade, this);
+}
+
 
 // Box
 class MenuLogic: public PaintownUtil::Logic {
@@ -1465,83 +1469,6 @@ public:
     }
     std::string name;
 };
-
-static bool confirmDialog(const std::string & title, PaintownUtil::ReferenceCount<OptionMenu> parent, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade){
-    class YesNo : public ListItem{
-    public:
-        class ResponseException : public std::exception{
-        public:
-            ResponseException(bool yes):
-            yes(yes){
-            }
-            ~ResponseException() throw(){
-            }
-            bool getConfirmation() const{
-                return yes;
-            }
-        private:
-            bool yes;
-        };
-        YesNo(bool yes):
-        yes(yes){
-            if (yes){
-                optionName = "Yes";
-            } else {
-                optionName = "No";
-            }
-        }
-        
-        virtual ~YesNo(){
-        }
-        
-        virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
-            font.draw(x, y, optionName, work);
-        }
-        
-        virtual int getWidth(const ListFont & font) const {
-            return font.getWidth(optionName);
-        }
-        
-        bool next(){
-            return false;
-        }
-        
-        bool previous(){
-            return false;
-        }
-        
-        virtual bool isRunnable() const {
-            return true;
-        }
-        
-        virtual void run(){
-            throw ResponseException(yes);
-        }
-        bool yes;
-        std::string optionName;
-    };
-    try {
-        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
-        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new YesNo(true)));
-        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new YesNo(false)));
-        OptionMenu menu(*parent);
-        menu.updateList(list);
-        menu.setName(title);
-        menu.setRenderBackground(renderBackground);
-        menu.setClearColor(clearColor);
-        menu.setClearAlpha(clearAlpha);
-        if (disableFade){
-            menu.setFadeEnabled(false);
-        }
-        MenuLogic logic(menu);
-        MenuDraw draw(menu);
-        PaintownUtil::standardLoop(logic, draw);
-    } catch (const YesNo::ResponseException & ex){
-        return ex.getConfirmation();
-    } catch (const Escape::EscapeException & ex){
-    }
-    return false;
-}
 
 class PlayerKeys : public BaseMenuItem{
 public:
@@ -1910,7 +1837,7 @@ public:
             }
             
             virtual void run(){
-                if (confirmDialog("Reset to default?", parent, renderBackground, clearColor, clearAlpha, disableFade)){
+                if (parent->confirmDialog("Reset to default?", renderBackground, clearColor, clearAlpha, disableFade)){
                     ::Configuration::setDefaultKeys(player);
                     ::Configuration::saveConfiguration();
                     if (throwable){
@@ -1989,6 +1916,88 @@ PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int play
     playerKeys->parent = menu;
     playerKeys->disableFade = true;
     return playerKeys.convert<Gui::ScrollItem>();
+}
+
+bool OptionMenu::doConfirmDialog(const std::string & title, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent){
+    PaintownUtil::ReferenceCount<OptionMenu> backupMenu;
+    if (parent == NULL){
+        std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > dummyList;
+        backupMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(dummyList));
+    }
+    class YesNo : public ListItem{
+    public:
+        class ResponseException : public std::exception{
+        public:
+            ResponseException(bool yes):
+            yes(yes){
+            }
+            ~ResponseException() throw(){
+            }
+            bool getConfirmation() const{
+                return yes;
+            }
+        private:
+            bool yes;
+        };
+        YesNo(bool yes):
+        yes(yes){
+            if (yes){
+                optionName = "Yes";
+            } else {
+                optionName = "No";
+            }
+        }
+        
+        virtual ~YesNo(){
+        }
+        
+        virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+            font.draw(x, y, optionName, work);
+        }
+        
+        virtual int getWidth(const ListFont & font) const {
+            return font.getWidth(optionName);
+        }
+        
+        bool next(){
+            return false;
+        }
+        
+        bool previous(){
+            return false;
+        }
+        
+        virtual bool isRunnable() const {
+            return true;
+        }
+        
+        virtual void run(){
+            throw ResponseException(yes);
+        }
+        bool yes;
+        std::string optionName;
+    };
+    try {
+        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new YesNo(true)));
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new YesNo(false)));
+        OptionMenu menu((parent != NULL) ? *parent : *backupMenu);
+        menu.updateList(list);
+        menu.setName(title);
+        menu.setRenderBackground(renderBackground);
+        menu.setClearColor(clearColor);
+        menu.setClearAlpha(clearAlpha);
+        if (disableFade){
+            menu.setFadeEnabled(false);
+        }
+        MenuLogic logic(menu);
+        MenuDraw draw(menu);
+        PaintownUtil::standardLoop(logic, draw);
+    } catch (const YesNo::ResponseException & ex){
+        return ex.getConfirmation();
+    } catch (const Escape::EscapeException & ex){
+    }
+    return false;
 }
 
 OptionMenu::KeysChangedException::KeysChangedException(const Mugen::PlayerType & type):
