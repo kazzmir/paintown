@@ -33,37 +33,40 @@ def isLinux():
 
 # Just test this on linux for now
 if isLinux():
-    env.VariantDir('build', '../../')
-    env.Append(CPPPATH = ['#/src'])
-    source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
-    build/util/audio.cpp build/util/exceptions/exception.cpp""")
-    wav_source = Split("""wav.cpp build/util/audio.cpp build/util/debug.cpp build/util/exceptions/exception.cpp build/util/sound.cpp build/util/load_exception.cpp""")
-    music_source = Split("""music.cpp build/music/util/music-player.cpp build/music/util/audio.cpp build/music/util/exceptions/exception.cpp build/music/util/sound.cpp build/music/util/load_exception.cpp build/music/util/debug.cpp build/music/util/music.cpp build/music/util/file-system.cpp build/music/util/thread.cpp build/music/util/system.cpp""")
-
-    env.Append(CPPPATH = '../..')
-    env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MPG123'])
-    env.Append(CCFLAGS = ['-g3'])
-    #env.Append(CCFLAGS = ['-O2', '-pg'])
-    #env.Append(LINKFLAGS = ['-pg'])
-    # env.ParseConfig('sdl-config --libs --cflags')
-    env.ParseConfig('sdl-config --libs --cflags')
-
-    env.Append(LIBS = ['mpg123', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
-
-    musicEnv = env.Clone()
-    musicEnv.VariantDir('build/music', '../../')
-    musicEnv.Append(CPPDEFINES = ['HAVE_OGG'])
-    musicEnv.ParseConfig('pkg-config vorbis vorbisfile --libs')
-    musicEnv.Append(LIBS = [zipLibrary(env), 'z', sflLibrary(env)])
-
-    program = env.Program('test', source)
-    wav = env.Program('wav', wav_source)
-    music = musicEnv.Program('music', music_source)
     all = []
-    all.extend(program)
-    all.extend(wav)
-    all.extend(music)
-    # all = [program, wav]
+    try:
+        env.VariantDir('build', '../../')
+        env.Append(CPPPATH = ['#/src'])
+        source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
+        build/util/audio.cpp build/util/exceptions/exception.cpp""")
+        wav_source = Split("""wav.cpp build/util/audio.cpp build/util/debug.cpp build/util/exceptions/exception.cpp build/util/sound.cpp build/util/load_exception.cpp""")
+        music_source = Split("""music.cpp build/music/util/music-player.cpp build/music/util/audio.cpp build/music/util/exceptions/exception.cpp build/music/util/sound.cpp build/music/util/load_exception.cpp build/music/util/debug.cpp build/music/util/music.cpp build/music/util/file-system.cpp build/music/util/thread.cpp build/music/util/system.cpp""")
+
+        env.Append(CPPPATH = '../..')
+        env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MPG123'])
+        env.Append(CCFLAGS = ['-g3'])
+        #env.Append(CCFLAGS = ['-O2', '-pg'])
+        #env.Append(LINKFLAGS = ['-pg'])
+        # env.ParseConfig('sdl-config --libs --cflags')
+        env.ParseConfig('sdl-config --libs --cflags')
+
+        env.Append(LIBS = ['mpg123', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env)])
+
+        musicEnv = env.Clone()
+        musicEnv.VariantDir('build/music', '../../')
+        musicEnv.Append(CPPDEFINES = ['HAVE_OGG'])
+        musicEnv.ParseConfig('pkg-config vorbis vorbisfile --libs')
+        musicEnv.Append(LIBS = [zipLibrary(env), 'z', sflLibrary(env)])
+
+        program = env.Program('test', source)
+        wav = env.Program('wav', wav_source)
+        music = musicEnv.Program('music', music_source)
+        all.extend(program)
+        all.extend(wav)
+        all.extend(music)
+        # all = [program, wav]
+    except OSError:
+        print "Problem with music test!: "
     Return('all')
 else:
     all = []
