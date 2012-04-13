@@ -571,9 +571,8 @@ class Runner: public Util::Logic, public Util::Draw {
     public:
         Runner(MoveList & main, Gui::PopupBox & area):
             main(main),
-        area(area),
-        background(GFX_X, GFX_Y){
-            background.BlitFromScreen(0, 0);
+        area(area){
+            // background.BlitFromScreen(0, 0);
         }
 
         MoveList & main;
@@ -589,6 +588,12 @@ class Runner: public Util::Logic, public Util::Draw {
 
         bool done(){
             return main.done();
+        }
+
+        /* FIXME: the background shifts by one or two pixels when its shown */
+        void drawFirst(const Graphics::Bitmap & buffer){
+            background.resize(GFX_X, GFX_Y);
+            buffer.Stretch(background);
         }
 
         void draw(const Graphics::Bitmap & buffer){
