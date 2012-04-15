@@ -38,7 +38,7 @@ bank(0),
 position(0){
 }
 
-SelectFont::SelectFont(PaintownUtil::ReferenceCount<Font> font, int bank, int position):
+SelectFont::SelectFont(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position):
 font(font),
 bank(bank),
 position(position){
