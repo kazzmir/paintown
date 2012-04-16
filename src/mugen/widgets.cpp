@@ -1,6 +1,9 @@
 #include "widgets.h"
 
 #include "util/trans-bitmap.h"
+#include "util/network/network.h"
+#include "util/input/keyboard.h"
+#include "util/exceptions/exception.h"
 
 namespace Mugen{
 namespace Widgets{
@@ -30,7 +33,7 @@ void drawBox(int radius, int x, int y, int width, int height, const Graphics::Co
 InputBox::InputBox():
 body(Graphics::makeColor(0,0,60)),
 border(Graphics::makeColor(0,0,20)),
-alpha(255),
+alpha(150),
 width(0){
     input.enable();
 }
@@ -65,6 +68,46 @@ void InputBox::toggleEnabled(){
 
 void InputBox::addHook(int key, void (*callback)(void *), void * arg){
     input.addBlockingHandle(key, callback, arg);
+}
+
+static void submit(void * panel){
+    ChatPanel * chat = (ChatPanel *)panel;
+    if (!chat->getInput().getText().empty()){
+        chat->addMessage(chat->getInput().getText());
+    }
+}
+
+static void escape(void * panel){
+    throw Exception::Return(__FILE__, __LINE__);
+}
+
+ChatPanel::ChatPanel(int x, int y, int width, int height):
+x(x),
+y(y),
+width(width),
+height(height){
+    input.setWidth(width);
+    input.addHook(Keyboard::Key_ENTER, submit, this);
+    input.addHook(Keyboard::Key_ESC, escape, this);
+}
+
+ChatPanel::~ChatPanel(){
+}
+
+void ChatPanel::act(){
+    input.act();
+}
+
+void ChatPanel::draw(const Graphics::Bitmap & work){
+    drawBox(15, x, y, width, height - font.getHeight(), Graphics::makeColor(0,0,60), Graphics::makeColor(0,0,20), 150, work);
+    input.draw(x, y + (height - font.getHeight()), font, work); 
+}
+
+void ChatPanel::addMessage(const std::string & message){
+    buffer.push_back(message);
+    if ((buffer.size() * font.getHeight()) > height){
+        buffer.pop_front();
+    }
 }
 
 }

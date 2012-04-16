@@ -6,6 +6,7 @@
 #include "util/input/text-input.h"
 
 #include <string>
+#include <deque>
 
 namespace Mugen{
 namespace Widgets{
@@ -25,8 +26,16 @@ namespace Widgets{
         
         virtual void addHook(int key, void (*callback)(void *), void * arg);
         
+        virtual inline const std::string getText() const {
+            return this->input.getText();
+        }
+        
         virtual inline void setText(const std::string & text){
             this->input.setText(text);
+        }
+        
+        virtual inline void clear(){
+            this->input.clearInput();
         }
         
         virtual inline void setBodyColor(const Graphics::Color & color){
@@ -51,6 +60,34 @@ namespace Widgets{
         int alpha;
         int width;
         TextInput input;
+    };
+    
+    class ChatPanel{
+    public:
+        ChatPanel(int x, int y, int width, int height);
+        virtual ~ChatPanel();
+        
+        virtual void act();
+        virtual void draw(const Graphics::Bitmap &);
+        
+        virtual void addMessage(const std::string &);
+        
+        virtual inline InputBox & getInput(){
+            return this->input;
+        }
+        
+        virtual inline void setFont(const FontSystem::Font & font){
+            this->font = font;
+        }
+        
+    protected:
+        FontSystem::Font font;
+        InputBox input;
+        std::deque<std::string> buffer;
+        int x;
+        int y;
+        int width;
+        int height;
     };
 }
 }
