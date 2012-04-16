@@ -48,15 +48,13 @@ public:
     
 protected:
     //! Draw portrait
-    void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, int fontx, int fonty, const Mugen::FontInfo &, const Graphics::Bitmap &);
-    //! Get font
-    PaintownUtil::ReferenceCount<Font> getFont(int index) const;
+    void drawPortrait(const Mugen::ArcadeData::CharacterCollection &, const Mugen::Effects &, int x, int y, int fontx, int fonty, const Mugen::FontSystem::Font &, const Graphics::Bitmap &);
     //! Path
     const Filesystem::AbsolutePath & path;
     //! Sprites
     Mugen::SpriteMap sprites;
     //! Fonts
-    std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
+    Mugen::FontSystem fonts;
     //! Versus background
     PaintownUtil::ReferenceCount<Mugen::Background> background;
     //! Time to show screen
@@ -69,7 +67,8 @@ protected:
     Mugen::Effects effects1, effects2;
     //! Fonts
     int fontx1, fontx2, fonty1, fonty2;
-    Mugen::FontInfo font1, font2;
+    //Mugen::FontInfo font1, font2;
+    Mugen::FontSystem::Font font1, font2;
     //! CharacterCollection
     Mugen::ArcadeData::CharacterCollection player1;
     Mugen::ArcadeData::CharacterCollection player2;

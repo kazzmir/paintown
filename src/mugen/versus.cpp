@@ -70,9 +70,7 @@ demoMode(demoMode){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string fontPath;
                             simple.view() >> fontPath;
-                            self.fonts.push_back(PaintownUtil::ReferenceCount<Font>(new Font(Util::findFile(Filesystem::RelativePath(fontPath)))));
-                            Global::debug(1) << "Got Font File: '" << fontPath << "'" << std::endl;
-
+                            self.fonts.add(fontPath);
                         }
                     }
                 };
@@ -155,22 +153,26 @@ demoMode(demoMode){
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.name.font"){
+                            int index=-1, bank=0, position=0;
                             try {
-                                simple.view() >> self.font1.index >> self.font1.bank >> self.font1.position;
+                                simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.font1 = self.fonts.getFont(index, bank, position);
                         } else if (simple == "p2.name.pos"){
                             try {
                                 simple.view() >> self.fontx2 >> self.fonty2;
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.name.font"){
+                            int index=-1, bank=0, position=0;
                             try {
-                                simple.view() >> self.font2.index >> self.font2.bank >> self.font2.position;
+                                simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
+                            self.font2 = self.fonts.getFont(index, bank, position);
                         }
                     }
                 };
@@ -239,45 +241,35 @@ bool VersusMenu::isDone(){
     return (fader.getState() == Gui::FadeTool::EndFade);
 }
 
-void VersusMenu::drawPortrait(const Mugen::ArcadeData::CharacterCollection & collection, const Mugen::Effects & effects, int x, int y, int fontx, int fonty, const Mugen::FontInfo & fontInfo, const Graphics::Bitmap & work){
+void VersusMenu::drawPortrait(const Mugen::ArcadeData::CharacterCollection & collection, const Mugen::Effects & effects, int x, int y, int fontx, int fonty, const Mugen::FontSystem::Font & font, const Graphics::Bitmap & work){
     
-    PaintownUtil::ReferenceCount<Font> font;
+    //PaintownUtil::ReferenceCount<Font> font;
     
     int heightMod = 0;
     if (collection.getFirstSet()){
         const Mugen::ArcadeData::CharacterInfo & character = collection.getFirst();
         character.drawPortrait(x, y, work, effects);
-        font = getFont(fontInfo.index);
+        /*font = getFont(fontInfo.index);
         if (font == NULL){
             return;
-        }
-        font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getFirst().getName());
+        }*/
+        //font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getFirst().getName());
+        font.draw(fontx, fonty + heightMod, collection.getFirst().getName(), work);
         heightMod += 15;
     }
     if (collection.getSecondSet()){
-        font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getSecond().getName());
+        //font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getSecond().getName());
+        font.draw(fontx, fonty + heightMod, collection.getSecond().getName(), work);
         heightMod += 15;
     }
     if (collection.getThirdSet()){
-        font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getThird().getName());
+        //font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getThird().getName());
+        font.draw(fontx, fonty + heightMod, collection.getThird().getName(), work);
         heightMod += 15;
     }
     if (collection.getFourthSet()){
-        font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getFourth().getName());
-    }
-}
-
-/* indexes start at 1 */
-PaintownUtil::ReferenceCount<Mugen::Font> VersusMenu::getFont(int index) const {
-    if (index == -1){
-        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
-    }
-    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
-        return fonts[index - 1];
-    } else {
-        std::ostringstream out;
-        out << "No font for index " << index;
-        throw MugenException(out.str(), __FILE__, __LINE__);
+        //font->render(fontx, fonty + heightMod, fontInfo.position, fontInfo.bank, work, collection.getFourth().getName());
+        font.draw(fontx, fonty + heightMod, collection.getFourth().getName(), work);
     }
 }
 

@@ -18,21 +18,6 @@
 
 namespace Mugen{
     
-/*! Font */
-class SelectFont{
-public:
-    SelectFont();
-    SelectFont(PaintownUtil::ReferenceCount<Font> font, int bank, int position);
-    SelectFont(const SelectFont &);
-    ~SelectFont();
-    const SelectFont & operator=(const SelectFont &);
-    void draw(int x, int y, const std::string &, const Graphics::Bitmap &);
-private:
-    PaintownUtil::ReferenceCount<Font> font;
-    int bank;
-    int position;
-};
-    
 /*! Font Handling */
 class FontHandler{
     public:
@@ -76,13 +61,13 @@ class FontHandler{
         this->blinkTime = time;
     }
     
-    virtual inline void setActive(const SelectFont & font){
+    virtual inline void setActive(const FontSystem::Font & font){
         this->active = font;
     }
-    virtual inline void setActive2(const SelectFont & font){
+    virtual inline void setActive2(const FontSystem::Font & font){
         this->active2 = font;
     }
-    virtual inline void setDone(const SelectFont & font){
+    virtual inline void setDone(const FontSystem::Font & font){
         this->done = font;
     }
 private:
@@ -93,11 +78,11 @@ private:
     //! Position
     int x, y;
     //! active font
-    SelectFont active;
+    FontSystem::Font active;
     //! active font 2 for blinking
-    SelectFont active2;
+    FontSystem::Font active2;
     //! done font for when completed
-    SelectFont done;
+    FontSystem::Font done;
     //! ticker for font switching when blinking
     int ticker;
     //! blink time defaults to 10
@@ -566,8 +551,6 @@ public:
     }
     
 protected:
-    //! Get font
-    PaintownUtil::ReferenceCount<Font> getFont(int index) const;
     //! Parse select file
     void parseSelect();
     //! Path
@@ -587,7 +570,8 @@ protected:
     //! Select file
     Filesystem::AbsolutePath selectFile;
     //! Fonts
-    std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
+    //std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
+    Mugen::FontSystem fonts;
     
     //! Font Handlers
     FontHandler titleFont;

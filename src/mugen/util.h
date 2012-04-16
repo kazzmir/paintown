@@ -142,19 +142,6 @@ class Point{
 	~Point();
 };
 
-/* Use with fonts */
-struct FontInfo{
-    FontInfo():
-        index(0),
-        bank(0),
-        position(0){
-        }
-
-    int index;
-    int bank;
-    int position;
-};
-
 /*! Game types currently in M.U.G.E.N */
 enum GameType {
     Arcade,
@@ -653,8 +640,7 @@ PaintownUtil::ReferenceCount<std::istringstream> get(const std::string &);
 }
 // End namespace Configuration
 
-/*! Sound system to make playing and using sounds easier. 
- * FIXME make SoundMap use ReferenceCount
+/*! Sound system to make playing and using sounds easier.
  */
 template <typename Type>
 class SoundSystem{
@@ -700,6 +686,49 @@ protected:
         int index;
     };
     std::map<Type, IndexValue> soundLookup;
+};
+
+class Font;
+
+/*! Font system */
+class FontSystem{
+public:
+    FontSystem();
+    FontSystem(const FontSystem &);
+    virtual ~FontSystem();
+    
+    virtual const FontSystem & operator=(const FontSystem &);
+    
+    /*! Font */
+    class Font{
+    public:
+        Font();
+        Font(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position);
+        Font(const Font &);
+        virtual ~Font();
+        
+        virtual const Font & operator=(const Font &);
+        
+        virtual void draw(int x, int y, const std::string &, const Graphics::Bitmap &) const;
+        virtual void draw(int x, int y, int bank, int position, const std::string &, const Graphics::Bitmap &) const;
+        virtual void draw(int x, int y, int position, const std::string &, const Graphics::Bitmap &) const;
+        
+        virtual int getHeight() const;
+        virtual int getWidth(const std::string &) const;
+    protected:
+        PaintownUtil::ReferenceCount<Mugen::Font> font;
+        int bank;
+        int position;
+    };
+    
+    virtual void add(const std::string &);
+    virtual PaintownUtil::ReferenceCount<Mugen::Font> get(int index);
+    virtual const Font getFont(int index, int bank, int position);
+    virtual inline bool empty() const {
+        return this->fonts.empty();
+    }
+protected:
+    std::vector< PaintownUtil::ReferenceCount<Mugen::Font> > fonts;
 };
 
 }

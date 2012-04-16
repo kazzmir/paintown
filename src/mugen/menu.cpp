@@ -133,30 +133,17 @@ public:
         throw TypeException(name, type);
     }
     
-    void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+    void render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const{
         font.draw(x, y, 0, name, work);
     }
     
-    int getWidth(const ListFont & font) const {
+    int getWidth(const FontSystem::Font & font) const {
         return (font.getWidth(name));
     }
     
     std::string name;
     Mugen::GameType type;
 };
-
-static PaintownUtil::ReferenceCount<Mugen::Font> getFont(const std::vector< PaintownUtil::ReferenceCount<Mugen::Font> > & fonts, int index) {
-    if (index == -1){
-        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
-    }
-    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
-        return fonts[index - 1];
-    } else {
-        std::ostringstream out;
-        out << "No font for index " << index;
-        throw MugenException(out.str(), __FILE__, __LINE__);
-    }
-}
 
 Menu::Menu(const Filesystem::RelativePath & path, Searcher & searcher):
 list(PaintownUtil::ReferenceCount<ScrollAction>(new ScrollAction())),
@@ -281,19 +268,7 @@ done(false){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
                             string temp;
                             simple.view() >> temp;
-                            try{
-                                Filesystem::AbsolutePath path = Mugen::Util::findFont(Filesystem::RelativePath(temp));
-
-                                if (true){
-                                    menu.fonts.push_back(PaintownUtil::ReferenceCount<Mugen::Font>(new Mugen::Font(path)));
-                                    Global::debug(1) << "Got Font File: '" << temp << "'" << endl;
-                                }
-                            } catch (const Filesystem::NotFound & fail){
-                                Global::debug(0) << "Could not find font '" << temp << "' " << fail.getTrace() << endl;
-                            } catch (const LoadException & fail){
-                                Global::debug(0) << "Could not load font '" << temp << "' " << fail.getTrace() << endl;
-                            }
-
+                            menu.fonts.add(temp);
                         } else {
                             Global::debug(1) << "Unhandled option in Files Section: " << simple.toString() << " at " << __FILE__ << ":" << __LINE__ << endl;
                         }
@@ -384,16 +359,14 @@ done(false){
                                 simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
-                            ListFont font(getFont(menu.fonts, index), bank, position);
-                            menu.list->setListFont(font);
+                            menu.list->setListFont(menu.fonts.getFont(index, bank, position));
                         } else if (simple == "menu.item.active.font"){
                             int index=0,bank=0,position=0;
                             try{
                                 simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
-                            ListFont font(getFont(menu.fonts, index), bank, position);
-                            menu.list->setActiveFont(font);
+                            menu.list->setActiveFont(menu.fonts.getFont(index, bank, position));
                         } else if (simple == "menu.item.spacing"){
                             int x=0,y=0;
                             try{
@@ -578,7 +551,7 @@ done(false){
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
-    if (fonts.size() == 0){
+    if (fonts.empty()){
         throw MugenException("No fonts specified", __FILE__, __LINE__);
     }
    

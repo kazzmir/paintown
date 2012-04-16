@@ -94,7 +94,7 @@ namespace Mugen{
         std::string versusMusic;
         
         //! Fonts
-        std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
+        FontSystem fonts;
         
         //! Logo storyboard
         PaintownUtil::ReferenceCount<Mugen::Storyboard> logo;

@@ -39,6 +39,7 @@ util.cpp
 search.cpp
 state-controller.cpp
 option-options.cpp
+widgets.cpp
 ast/ast.cpp
 versus.cpp
 parse-cache.cpp

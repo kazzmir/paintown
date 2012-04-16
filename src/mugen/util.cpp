@@ -21,6 +21,7 @@
 #include "util/debug.h"
 #include "util/timedifference.h"
 
+#include "font.h"
 #include "util.h"
 #include "animation.h"
 #include "item.h"
@@ -1578,4 +1579,109 @@ PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const
         throw ios_base::failure("Not Set");
     }
     return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getRootConfiguration()->getNamespace("mugen")->getProperty(property, "null")));
+}
+
+Mugen::FontSystem::FontSystem(){
+}
+
+Mugen::FontSystem::FontSystem(const Mugen::FontSystem & copy):
+fonts(fonts){
+}
+
+Mugen::FontSystem::~FontSystem(){
+}
+
+const Mugen::FontSystem & Mugen::FontSystem::operator=(const Mugen::FontSystem & copy){
+    fonts = copy.fonts;
+    return *this;
+}
+
+Mugen::FontSystem::Font::Font():
+font(PaintownUtil::ReferenceCount<Mugen::Font>(NULL)),
+bank(-1),
+position(0){
+}
+
+Mugen::FontSystem::Font::Font(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position):
+font(font),
+bank(bank),
+position(position){
+}
+
+Mugen::FontSystem::Font::Font(const Font & copy):
+font(copy.font),
+bank(copy.bank),
+position(copy.position){
+}
+
+Mugen::FontSystem::Font::~Font(){
+}
+    
+const Mugen::FontSystem::Font & Mugen::FontSystem::Font::operator=(const Mugen::FontSystem::Font & copy){
+    font = copy.font;
+    bank = copy.bank;
+    position = copy.position;
+    return *this;
+}
+
+void Mugen::FontSystem::Font::draw(int x, int y, const std::string & message, const Graphics::Bitmap & work) const{
+    draw(x, y, bank, position, message, work);
+}
+
+void Mugen::FontSystem::Font::draw(int x, int y, int bank, int position, const std::string & message, const Graphics::Bitmap & work) const{
+    if (font != NULL){
+        font->render(x, y, position, bank, work, message);
+    }
+}
+
+void Mugen::FontSystem::Font::draw(int x, int y, int position, const std::string & message, const Graphics::Bitmap & work) const{
+    draw(x, y, bank, position, message, work);
+}
+
+int Mugen::FontSystem::Font::getHeight() const{
+    if (font != NULL){
+        return font->getHeight();
+    }
+    return 0;
+}
+
+int Mugen::FontSystem::Font::getWidth(const std::string & text) const{
+    if (font != NULL){
+        return font->textLength(text.c_str());
+    }
+    return 0;
+}
+
+void Mugen::FontSystem::add(const std::string & filename){
+    try{
+        Filesystem::AbsolutePath path = Mugen::Util::findFont(Filesystem::RelativePath(filename));
+        fonts.push_back(PaintownUtil::ReferenceCount<Mugen::Font>(new Mugen::Font(path)));
+        Global::debug(1) << "Got Font File: '" << filename << "'" << endl;
+    } catch (const Filesystem::NotFound & fail){
+        Global::debug(0) << "Could not find font '" << filename << "' " << fail.getTrace() << endl;
+    } catch (const LoadException & fail){
+        Global::debug(0) << "Could not load font '" << filename << "' " << fail.getTrace() << endl;
+    }
+}
+
+PaintownUtil::ReferenceCount<Mugen::Font> Mugen::FontSystem::get(int index){
+    if (index == -1){
+        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
+    }
+    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
+        return fonts[index - 1];
+    } else {
+        std::ostringstream out;
+        out << "No font for index " << index;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+}
+
+const Mugen::FontSystem::Font Mugen::FontSystem::getFont(int index, int bank, int position){
+    try{
+        PaintownUtil::ReferenceCount<Mugen::Font> font = get(index);
+        return FontSystem::Font(font, bank, position);
+    } catch (const MugenException & ex){
+    }
+    return FontSystem::Font();
 }

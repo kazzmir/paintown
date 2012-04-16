@@ -22,26 +22,6 @@ class Font;
 
 class Character;
 
-class ListFont{
-public:
-    ListFont();
-    ListFont(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position);
-    ListFont(const ListFont &);
-    virtual ~ListFont();
-    
-    virtual const ListFont & operator=(const ListFont &);
-    
-    virtual void draw(int x, int y, const std::string &, const Graphics::Bitmap &) const;
-    virtual void draw(int x, int y, int positionOverride, const std::string &, const Graphics::Bitmap &) const;
-    
-    virtual int getHeight() const;
-    virtual int getWidth(const std::string &) const;
-protected:
-    PaintownUtil::ReferenceCount<Mugen::Font> font;
-    int bank;
-    int position;
-};
-
 class ListItem : public Gui::ScrollItem{
 public:
     ListItem();
@@ -52,8 +32,8 @@ public:
     virtual bool isRunnable() const;
     virtual void run();
     virtual const std::string & getInfo() const;
-    virtual void render(int x, int y, const Graphics::Bitmap &, const ListFont &, int left = 0, int right = 0) const = 0;
-    virtual int getWidth(const ListFont &) const = 0;
+    virtual void render(int x, int y, const Graphics::Bitmap &, const FontSystem::Font &, int left = 0, int right = 0) const = 0;
+    virtual int getWidth(const FontSystem::Font &) const = 0;
     virtual bool next() = 0;
     virtual bool previous() = 0;
     
@@ -67,9 +47,9 @@ public:
     virtual bool next() = 0;
     virtual bool previous() = 0;
     
-    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const;
+    virtual void render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const;
     
-    virtual int getWidth(const ListFont & font) const;
+    virtual int getWidth(const FontSystem::Font & font) const;
     
     virtual const std::string & getInfo() const;
     
@@ -147,18 +127,18 @@ public:
     virtual void setExpandState(const ExpandState &);
     
     //! List Font
-    virtual void setListFont(const ListFont &);
+    virtual void setListFont(const FontSystem::Font &);
     
     //! Get Font
-    virtual inline const ListFont & getFont() const {
+    virtual inline const FontSystem::Font & getFont() const {
         return this->font;
     }
     
     //! Active Font
-    virtual void setActiveFont(const ListFont &);
+    virtual void setActiveFont(const FontSystem::Font &);
     
     //! Get Active Font
-    virtual inline const ListFont & getActiveFont() const {
+    virtual inline const FontSystem::Font & getActiveFont() const {
         return this->activeFont;
     }
     
@@ -253,10 +233,10 @@ protected:
     ExpandState expandState;
     
     //! Font
-    ListFont font;
+    FontSystem::Font font;
     
     //! Active font
-    ListFont activeFont;
+    FontSystem::Font activeFont;
     
     //! Current item
     unsigned int current;
@@ -431,6 +411,10 @@ public:
     
     virtual inline void setFadeEnabled(bool fade){
         this->fadeEnabled = false;        
+    }
+    
+    virtual inline const FontSystem::Font & getFont(){
+        return this->list.getFont();
     }
     
     class KeysChangedException : public MugenException{

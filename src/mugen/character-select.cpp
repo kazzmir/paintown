@@ -32,40 +32,6 @@ bool TeamMenu::wrapping = false;
 
 int Player::randomSwitchTime = 4;
 
-SelectFont::SelectFont():
-font(PaintownUtil::ReferenceCount<Font>(NULL)),
-bank(0),
-position(0){
-}
-
-SelectFont::SelectFont(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position):
-font(font),
-bank(bank),
-position(position){
-}
-
-SelectFont::SelectFont(const SelectFont & copy):
-font(copy.font),
-bank(copy.bank),
-position(copy.position){
-}
-
-SelectFont::~SelectFont(){
-}
-
-const SelectFont & SelectFont::operator=(const SelectFont & copy){
-    font = copy.font;
-    bank = copy.bank;
-    position = copy.position;
-    return * this;
-}
-
-void SelectFont::draw(int x, int y, const std::string & text, const Graphics::Bitmap & work){
-    if (font != NULL){
-        font->render(x, y, position, bank, work, text);
-    }
-}
-
 FontHandler::FontHandler():
 state(Normal),
 x(0),
@@ -1996,9 +1962,7 @@ void CharacterSelect::init(){
                         } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
                             std::string fontPath;
                             simple.view() >> fontPath;
-                            select.fonts.push_back(PaintownUtil::ReferenceCount<Font>(new Font(Util::findFile(Filesystem::RelativePath(fontPath)))));
-                            Global::debug(1) << "Got Font File: '" << fontPath << "'" << std::endl;
-
+                            select.fonts.add(fontPath);
                         } else {
                             throw MugenException("Unhandled option in Files Section: " + simple.toString(), __FILE__, __LINE__ );
                         }
@@ -2289,7 +2253,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.titleFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p1.face.offset"){
                             try{
                                 int x = 0, y = 0;
@@ -2350,7 +2314,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player1Font.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player1Font.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p2.name.offset"){
                             try{
                                 int x, y;
@@ -2364,7 +2328,7 @@ void CharacterSelect::init(){
                                 simple.view() >> index >> bank >> position;
                             } catch (const Ast::Exception & e){
                             }
-                            self.player2Font.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player2Font.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "stage.pos"){
                             try{
                                 int x, y;
@@ -2379,7 +2343,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.stages.font.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.stages.font.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "stage.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2387,7 +2351,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.stages.font.setActive2(SelectFont(self.getFont(index), bank, position));
+                            self.stages.font.setActive2(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "stage.done.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2395,7 +2359,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.stages.font.setDone(SelectFont(self.getFont(index), bank, position));
+                            self.stages.font.setDone(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "teammenu.move.wrapping"){
                             try {
                                 bool wrap;
@@ -2421,7 +2385,7 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player1TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                                self.player1TeamMenu.titleFont.setActive(self.fonts.getFont(index,bank,position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
@@ -2436,7 +2400,7 @@ void CharacterSelect::init(){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player1TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                                self.player1TeamMenu.enemyTitleFont.setActive(self.fonts.getFont(index,bank,position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
@@ -2489,7 +2453,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player1TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player1TeamMenu.itemFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p1.teammenu.item.active.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2497,12 +2461,12 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player1TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player1TeamMenu.itemCurrentFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p1.teammenu.item.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
                                 simple.view() >> index >> bank >> position;
-                                self.player1TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                                self.player1TeamMenu.itemCurrentFont.setActive2(self.fonts.getFont(index,bank,position));
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
@@ -2566,7 +2530,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player2TeamMenu.titleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player2TeamMenu.titleFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p2.teammenu.selftitle.text"){
                              std::string text;
                             try {
@@ -2581,7 +2545,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player2TeamMenu.enemyTitleFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player2TeamMenu.enemyTitleFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p2.teammenu.enemytitle.text"){
                              std::string text;
                             try {
@@ -2631,7 +2595,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player2TeamMenu.itemFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player2TeamMenu.itemFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p2.teammenu.item.active.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2639,7 +2603,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player2TeamMenu.itemCurrentFont.setActive(SelectFont(self.getFont(index), bank, position));
+                            self.player2TeamMenu.itemCurrentFont.setActive(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p2.teammenu.item.active2.font"){
                             int index=0, bank=0, position=0;
                             try {
@@ -2647,7 +2611,7 @@ void CharacterSelect::init(){
                             } catch (const Ast::Exception & e){
                                 //ignore for now
                             }
-                            self.player2TeamMenu.itemCurrentFont.setActive2(SelectFont(self.getFont(index), bank, position));
+                            self.player2TeamMenu.itemCurrentFont.setActive2(self.fonts.getFont(index,bank,position));
                         } else if ( simple == "p2.teammenu.item.cursor.offset"){
                             // TODO Not sure what this is, doesn't seem to do anything in mugen
                         } else if ( simple == "p2.teammenu.item.cursor.anim"){
@@ -3132,20 +3096,6 @@ const std::vector<Mugen::ArcadeData::CharacterInfo> & CharacterSelect::getCharac
 
 const std::vector<Filesystem::AbsolutePath> & CharacterSelect::getStages() const {
     return stages.getStages();
-}
-
-/* indexes start at 1 */
-PaintownUtil::ReferenceCount<Mugen::Font> CharacterSelect::getFont(int index) const {
-    if (index == -1){
-        return PaintownUtil::ReferenceCount<Mugen::Font>(NULL);
-    }
-    if (index - 1 >= 0 && index - 1 < (signed) fonts.size()){
-        return fonts[index - 1];
-    } else {
-        std::ostringstream out;
-        out << "No font for index " << index;
-        throw MugenException(out.str(), __FILE__, __LINE__);
-    }
 }
 
 void CharacterSelect::parseSelect(){

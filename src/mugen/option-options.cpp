@@ -17,6 +17,7 @@
 #include "background.h"
 #include "parse-cache.h"
 #include "search.h"
+#include "widgets.h"
 
 #include <ostream>
 #include <vector>
@@ -31,8 +32,6 @@
 #include "util/input/input-manager.h"
 #include "util/input/input-source.h"
 #include "util/exceptions/exception.h"
-
-#include "util/gui/box.h"
 
 #include "globals.h"
 
@@ -52,62 +51,6 @@ static std::string getString(int number){
     std::ostringstream str;
     str << number;
     return str.str();
-}
-
-ListFont::ListFont():
-font(PaintownUtil::ReferenceCount<Mugen::Font>(NULL)),
-bank(-1),
-position(0){
-}
-
-ListFont::ListFont(PaintownUtil::ReferenceCount<Mugen::Font> font, int bank, int position):
-font(font),
-bank(bank),
-position(position){
-}
-
-ListFont::ListFont(const ListFont & copy):
-font(copy.font),
-bank(copy.bank),
-position(copy.position){
-}
-
-ListFont::~ListFont(){
-}
-
-const ListFont & ListFont::operator=(const ListFont & copy){
-    font = copy.font;
-    bank = copy.bank;
-    position = copy.position;
-    
-    return *this;
-}
-
-void ListFont::draw(int x, int y, const std::string & message, const Graphics::Bitmap & work) const{
-    if (font != NULL){
-        font->render(x, y, position, bank, work, message);
-    }
-}
-
-void ListFont::draw(int x, int y, int positionOverride, const std::string & message, const Graphics::Bitmap & work) const{
-    if (font != NULL){
-        font->render(x, y, positionOverride, bank, work, message);
-    }
-}
-
-int ListFont::getHeight() const{
-    if (font != NULL){
-        return font->getHeight();
-    }
-    
-    return 0;
-}
-
-int ListFont::getWidth(const std::string & text) const{
-    if (font != NULL){
-        return font->textLength(text.c_str());
-    }
-    return 0;
 }
 
 ListItem::ListItem(){
@@ -208,7 +151,7 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
     for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i, ++index){
         //if (index >= itemTop-1 && index <= itemBottom+1){
             const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
-            const ListFont & useFont = (index != current) ? font : activeFont;
+            const FontSystem::Font & useFont = (index != current) ? font : activeFont;
             if (expandState == Disabled){
                 if (index == current && showCursor){
                     Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
@@ -356,11 +299,11 @@ void ScrollAction::setExpandState(const ExpandState & state){
     }
 }
 
-void ScrollAction::setListFont(const ListFont & f){
+void ScrollAction::setListFont(const FontSystem::Font & f){
     font = f;
 }
 
-void ScrollAction::setActiveFont(const ListFont & f){
+void ScrollAction::setActiveFont(const FontSystem::Font & f){
     activeFont = f;
 }
 
@@ -411,7 +354,7 @@ BaseMenuItem::BaseMenuItem(){
 BaseMenuItem::~BaseMenuItem(){
 }
 
-void BaseMenuItem::render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+void BaseMenuItem::render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const{
     if (displayInfo){
         font.draw(x, y, 0, optionName, work);
     } else {
@@ -420,7 +363,7 @@ void BaseMenuItem::render(int x, int y, const Graphics::Bitmap & work, const Lis
     }
 }
 
-int BaseMenuItem::getWidth(const ListFont & font) const {
+int BaseMenuItem::getWidth(const FontSystem::Font & font) const {
     return (font.getWidth(optionName + "  " + currentValue));
 }
 
@@ -719,7 +662,7 @@ class AutoSearch : public BaseMenuItem {
         return true;
     }
     
-    virtual int getWidth(const ListFont & font) const {
+    virtual int getWidth(const FontSystem::Font & font) const {
         return (font.getWidth(optionName + "  select.def + auto"));
     }
 };
@@ -888,7 +831,7 @@ recalculateHeight(160){
     }
     
     // Setup list
-    ListFont listFont(font, 0, 0);
+    FontSystem::Font listFont(font, 0, 0);
     
     list.setListFont(listFont);
     list.setActiveFont(listFont);
@@ -919,7 +862,7 @@ screenCapture(menu.screenCapture){
     fader.setFadeOutTime(10);
     
     // Setup list
-    ListFont listFont(font, 0, 0);
+    FontSystem::Font listFont(font, 0, 0);
     
     list.setListFont(listFont);
     list.setActiveFont(listFont);
@@ -970,9 +913,7 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
     // Name of options
     drawInfo(160, list.getFont().getHeight() + 2, name, workArea);
     
-    Graphics::Bitmap::transBlender(0,0,0,150);
-    workArea.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
-    workArea.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
+    Mugen::Widgets::drawBox(5,x-25,y-15,(x+width+25)-(x-25),(y+height+15)-(y-15),Graphics::makeColor(0,0,60),Graphics::makeColor(0,0,20),150,workArea);
     
     Graphics::Bitmap temp(workArea, 0, y, work.getWidth(), height);
     list.setBoundaries(x-20, x+width+20);
@@ -1013,9 +954,7 @@ void OptionMenu::drawList(const Graphics::Bitmap & work){
     // Name of options
     drawInfo(160, list.getFont().getHeight() + 2, name, work);
     
-    Graphics::Bitmap::transBlender(0,0,0,150);
-    work.translucent().roundRectFill(5, x-25, y-15, x+width+25, y+height+15,Graphics::makeColor(0,0,60));
-    work.translucent().roundRect(5, x-25, y-15, x+width+25, y+height+15, Graphics::makeColor(0,0,20));
+    Mugen::Widgets::drawBox(5,x-25,y-15,(x+width+25)-(x-25),(y+height+15)-(y-15),Graphics::makeColor(0,0,60),Graphics::makeColor(0,0,20),150,work);
     
     Graphics::Bitmap temp(work, 0, y, work.getWidth(), height);
     list.setBoundaries(x-20, x+width+20);
@@ -1034,11 +973,15 @@ void OptionMenu::drawList(const Graphics::Bitmap & work){
 }
 
 void OptionMenu::drawInfo(int x, int y, const std::string & text, const Graphics::Bitmap & work){
-    Graphics::Bitmap::transBlender(0,0,0,150);
     const int infoWidth = list.getFont().getWidth(text);
     const int infoHeight = list.getFont().getHeight();
-    work.translucent().roundRectFill(5, x-(infoWidth/2) -15, y-infoHeight-1, x+(infoWidth/2)+15, y,Graphics::makeColor(0,0,60));
-    work.translucent().roundRect(5, x-(infoWidth/2) -15, y-infoHeight-1, x+(infoWidth/2)+15, y, Graphics::makeColor(0,0,20));
+    const int posx = x-(infoWidth/2) -15;
+    const int posy = y-infoHeight-1;
+    const int width = (x+(infoWidth/2)+15)-posx;
+    const int height = y- posy;
+    
+    Mugen::Widgets::drawBox(5,posx,posy,width,height,Graphics::makeColor(0,0,60),Graphics::makeColor(0,0,20),150,work);
+    
     list.getFont().draw(x, y, text, work);
 }
 
@@ -1302,13 +1245,13 @@ public:
             throw SelectException();
         }
         
-        void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        void render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const{
             font.draw(x, y, 0, name, work);
             //font.draw(left, y, 1, name, work);
             //font.draw(right, y, -1, Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path(), work);
         }
         
-        int getWidth(const ListFont & font) const {
+        int getWidth(const FontSystem::Font & font) const {
             return (font.getWidth(name));
             //return (font.getWidth(name + "  " + Storage::instance().cleanse(path).removeFirstDirectory().getDirectory().path()));
         }
@@ -1425,7 +1368,6 @@ public:
         try {
             Searcher searcher;
             Mugen::Menu menu(Storage::instance().cleanse(path).removeFirstDirectory(), searcher);
-            //menu.loadData();
         } catch (const Mugen::Def::ParseException & e){
             runError(e.getReason(), errorInfo);
             throw MotifException();
@@ -1452,7 +1394,7 @@ public:
     virtual void run(){
     }
     
-    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+    virtual void render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const{
         font.draw(x, y, name, work);
     }
     
@@ -1464,7 +1406,7 @@ public:
         return false;
     }
     
-    virtual int getWidth(const ListFont & font) const {
+    virtual int getWidth(const FontSystem::Font & font) const {
         return font.getWidth(name);
     }
     std::string name;
@@ -1878,7 +1820,7 @@ public:
         }
     }
     
-    virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+    virtual void render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const{
         if (displayInfo){
             font.draw(x, y, 0, optionName + " Key Config", work);
         } else {
@@ -1887,7 +1829,7 @@ public:
         }
     }
     
-    virtual int getWidth(const ListFont & font) const {
+    virtual int getWidth(const FontSystem::Font & font) const {
         return (font.getWidth(optionName + " Key Config  " + currentValue));
     }
     
@@ -1951,11 +1893,11 @@ bool OptionMenu::doConfirmDialog(const std::string & title, bool renderBackgroun
         virtual ~YesNo(){
         }
         
-        virtual void render(int x, int y, const Graphics::Bitmap & work, const ListFont & font, int left, int right) const{
+        virtual void render(int x, int y, const Graphics::Bitmap & work, const FontSystem::Font & font, int left, int right) const{
             font.draw(x, y, optionName, work);
         }
         
-        virtual int getWidth(const ListFont & font) const {
+        virtual int getWidth(const FontSystem::Font & font) const {
             return font.getWidth(optionName);
         }
         
@@ -1999,6 +1941,134 @@ bool OptionMenu::doConfirmDialog(const std::string & title, bool renderBackgroun
     }
     return false;
 }
+
+#if 0
+static void set_to_true(void * b){
+    bool * what = (bool*) b;
+    *what = true;
+}
+
+static void doInputWidget(OptionMenu & menu){
+    class Logic: public PaintownUtil::Logic {
+    public:
+        Logic(OptionMenu & menu, Mugen::Widgets::InputBox & input):
+        menu(menu),
+        input(input),
+        escaped(false){
+            player1Input = getPlayer1Keys(20);
+            player2Input = getPlayer2Keys(20);
+            input.addHook(Keyboard::Key_ESC, set_to_true, &escaped);
+        }
+        
+        OptionMenu & menu;
+
+        InputMap<Keys> player1Input;
+        InputMap<Keys> player2Input;
+        
+        Mugen::Widgets::InputBox & input;
+
+        bool escaped;
+        
+        double ticks(double system){
+        return Util::gameTicks(system);
+        }
+
+        void run(){
+            InputSource input1;
+            InputSource input2;
+            vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
+            vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
+            out1.insert(out1.end(), out2.begin(), out2.end());
+            for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
+                const InputMap<Mugen::Keys>::InputEvent & event = *it;
+                if (!event.enabled){
+                    continue;
+                }
+
+
+                if (event[Esc]){
+                    if (!escaped){
+                        escaped = true;
+                        menu.cancel();
+                        InputManager::waitForRelease(player1Input, input1, Esc);
+                        InputManager::waitForRelease(player2Input, input2, Esc);
+                    }
+                }
+            }
+            
+            input.act();
+            
+            // Act out
+            menu.act();
+        }
+
+        bool done(){
+            return menu.isDone();
+        }
+    };
+
+    class Draw: public PaintownUtil::Draw {
+    public:
+        Draw(OptionMenu & menu, Mugen::Widgets::InputBox & input):
+        menu(menu),
+        input(input){
+        }
+
+        OptionMenu & menu;
+        Mugen::Widgets::InputBox & input;
+        
+        void draw(const Graphics::Bitmap & screen){
+            menu.draw(screen);
+            input.draw(60, 180, menu.getFont(), screen);
+            screen.BlitToScreen();
+        }
+    };
+    
+    try {
+        Mugen::Widgets::InputBox input;
+        input.setText("Test.");
+        input.setWidth(200);
+        Logic logic(menu, input);
+        Draw draw(menu, input);
+        PaintownUtil::standardLoop(logic, draw);
+    } catch (const Escape::EscapeException & ex){
+    }
+}
+
+class InputTest: public BaseMenuItem {
+public:
+    
+    InputTest(OptionMenu & menu):
+    menu(menu){
+        optionName = "Test Input Box";
+        currentValue = "(Enter)";
+    }
+
+    virtual ~InputTest(){
+    }
+
+    bool next(){
+        return false;
+    }
+
+    bool previous(){
+        return false;
+    }
+    
+    bool isRunnable() const{
+        return true;
+    }
+
+    void run(){
+        doInputWidget(menu);
+    }
+    
+    OptionMenu & menu;
+};
+
+PaintownUtil::ReferenceCount<Gui::ScrollItem> test = PaintownUtil::ReferenceCount<Gui::ScrollItem>(new InputTest(*optionMenu));
+optionMenu->addItem(test);
+#endif
 
 OptionMenu::KeysChangedException::KeysChangedException(const Mugen::PlayerType & type):
 type(type){
