@@ -135,6 +135,10 @@ def soxLibrary(env):
     use = env
     return SConscript('util/sox/SConscript', exports = ['use'])
 
+def lzmaLibrary7z(env):
+    use = env
+    return SConscript('util/7z/SConscript', exports = ['use'])
+
 def gmeLibrary(env):
     use = env
     return SConscript('util/gme/SConscript', exports = ['use'])
@@ -247,7 +251,7 @@ use.Prepend(ARCHIVES = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(ARCHIVES = [hawknlLibrary(use)])
 
-use.Prepend(ARCHIVES = [gmeLibrary(use), sflLibrary(use), pcreLibrary(use), minizipLibrary(use)])
+use.Prepend(ARCHIVES = [gmeLibrary(use), lzmaLibrary7z(use), sflLibrary(use), pcreLibrary(use), minizipLibrary(use)])
 if not useSDL() and not useAllegro5():
     use.Prepend(ARCHIVES = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
