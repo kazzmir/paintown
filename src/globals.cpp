@@ -44,7 +44,7 @@ string Global::getVersionString(){
 }
 
 void Global::showTitleScreen(){
-    Graphics::Bitmap s(Global::titleScreen().path());
+    Graphics::Bitmap s(*Storage::instance().open(titleScreen()));
     s.BlitToScreen();
 }
 

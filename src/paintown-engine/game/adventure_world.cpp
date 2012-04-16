@@ -313,9 +313,9 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
     Global::info("Loading scenery");
 	Scene * s = NULL;
         if (randomLevel()){
-            s = new RandomScene(path.path().c_str(), *cacher);
+            s = new RandomScene(path, *cacher);
         } else {
-            s = new Scene(path.path().c_str(), *cacher);
+            s = new Scene(path, *cacher);
         }
 	if ( scene != NULL ){
 		delete scene;

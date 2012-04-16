@@ -34,7 +34,7 @@ Panel::~Panel(){
     if (pic) delete pic;
 }
 
-Scene::Scene(const char * filename, const Level::Cacher & cacher):
+Scene::Scene(const Filesystem::AbsolutePath & filename, const Level::Cacher & cacher):
 background(NULL),
 block_length(0),
 minimum_z(0),
@@ -57,7 +57,7 @@ hasMusic(false){
     // char panel_num = 'a';
 
     try {
-        current = tr.readTokenFromFile(filename);
+        current = tr.readTokenFromFile(*Storage::instance().open(filename));
 
         if ( *current != "level" )
             throw LoadException(__FILE__, __LINE__, "Not a level");
@@ -85,7 +85,7 @@ hasMusic(false){
             } else if ( *tok == "background" ){
                 string n;
                 tok->view() >> n;
-                background = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(n)).path());
+                background = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(n))));
             } else if ( *tok == "background-parallax" ){
                 double d;
                 tok->view() >> d;
@@ -145,7 +145,7 @@ hasMusic(false){
                 Graphics::Bitmap * x_screen = NULL;
                 */
                 if (normal != "none"){
-                    x_normal = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(normal)).path());
+                    x_normal = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(normal))));
                 }
                 Panel * p = new Panel(x_normal);
                 panels[num] = p;
@@ -159,7 +159,7 @@ hasMusic(false){
             } else if ( *tok == "frontpanel" ){
                 string file;
                 tok->view() >> file;
-                Graphics::Bitmap * front = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(file)).path());
+                Graphics::Bitmap * front = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(file))));
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
@@ -190,12 +190,12 @@ hasMusic(false){
     current_block = level_blocks.front();
     level_blocks.pop_front();
 
-    arrow = new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png")).path());
+    arrow = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png"))));
     arrow_blink = 0;
 
     // delete current;
 
-    Global::debug(1) <<"Loaded level "<< filename << endl;
+    // Global::debug(1) <<"Loaded level "<< filename << endl;
 
     calculateLength();
 

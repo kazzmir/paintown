@@ -364,11 +364,11 @@ public:
     void logic(){
     }
 
-    static bool isModFile(const std::string & path){
+    static bool isModFile(const Util::ReferenceCount<Storage::File> & path){
         try{
             TokenReader reader;
-            Global::debug(1) << "Checking for a mod in " << path << endl;
-            if (*reader.readTokenFromFile(path) == "game"){
+            // Global::debug(1) << "Checking for a mod in " << path << endl;
+            if (*reader.readTokenFromFile(*path) == "game"){
                 return true;
             }
         } catch (const TokenException & e){
@@ -402,17 +402,48 @@ public:
         Kind type;
     };
 
-    static vector<ModType> findMods(){
+    /* Search for zip files with mods in them.
+     * For each zip file check what the top level directory is, then
+     * try to find a file ending with .txt that contains a mod description.
+     */
+    static vector<ModType> findZippedMods(){
         vector<ModType> mods;
+        const vector<Filesystem::AbsolutePath> zips = Storage::instance().getFiles(Filesystem::RelativePath("."), Filesystem::RelativePath("*.zip"), false);
+        for (vector<Filesystem::AbsolutePath>::const_iterator it = zips.begin(); it != zips.end(); it++){
+            Filesystem::AbsolutePath zip = *it;
+            Global::debug(0) << "Check zip file " << zip.path() << std::endl;
+            vector<string> files = Storage::instance().containerFileList(zip);
 
-        vector<Filesystem::AbsolutePath> directories = Storage::instance().findDirectories(Filesystem::RelativePath("."));
-        for (vector<Filesystem::AbsolutePath>::iterator dir = directories.begin(); dir != directories.end(); dir++){
-            string file = (*dir).path() + "/" + Storage::instance().cleanse(*dir).path() + ".txt";
-            if (isModFile(file)){
-                mods.push_back(ModType(Filesystem::AbsolutePath(file), ModType::Paintown));
+            Filesystem::AbsolutePath overlayed = Storage::instance().find(Filesystem::RelativePath("."));
+            Storage::instance().addOverlay(zip, overlayed);
+            bool found = false;
+
+            for (vector<string>::iterator file_it = files.begin(); file_it != files.end(); file_it++){
+                string file = *file_it;
+                if (file.find(".txt") != string::npos){
+                    Filesystem::RelativePath modFileRelative(file);
+                    try{
+                        Filesystem::AbsolutePath modFile = Storage::instance().find(modFileRelative);
+                        if (isModFile(Storage::instance().open(modFile))){
+                            mods.push_back(ModType(modFile, ModType::Paintown));
+                            found = true;
+                            /* Only find one file that works */
+                            break;
+                        }
+                    } catch (const Filesystem::NotFound & fail){
+                    }
+                }
+            }
+
+            if (!found){
+                Storage::instance().removeOverlay(zip, overlayed);
             }
         }
+        return mods;
+    }
 
+    static vector<ModType> findOpenborMods(){
+        vector<ModType> mods;
         try{
             vector<Filesystem::AbsolutePath> pakFiles = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath("paks")), "*", true);
             for (vector<Filesystem::AbsolutePath>::iterator it = pakFiles.begin(); it != pakFiles.end(); it++){
@@ -425,6 +456,37 @@ public:
         } catch (const Filesystem::NotFound & n){
             Global::debug(0) << "Could not find any pak files: " << n.getTrace() << endl;
         }
+
+        return mods;
+    }
+
+    static vector<ModType> findNormalMods(){
+        vector<ModType> mods;
+        vector<Filesystem::AbsolutePath> directories = Storage::instance().findDirectories(Filesystem::RelativePath("."));
+        for (vector<Filesystem::AbsolutePath>::iterator dir = directories.begin(); dir != directories.end(); dir++){
+            try{
+                /* FIXME: use join here..? */
+                string file = (*dir).path() + "/" + Storage::instance().cleanse(*dir).path() + ".txt";
+                if (Storage::instance().exists(Filesystem::AbsolutePath(file)) && isModFile(Storage::instance().open(Filesystem::AbsolutePath(file)))){
+                    mods.push_back(ModType(Filesystem::AbsolutePath(file), ModType::Paintown));
+                }
+            } catch (const Filesystem::NotFound & fail){
+            }
+        }
+        return mods;
+    }
+
+    static vector<ModType> findMods(){
+        vector<ModType> mods;
+
+        vector<ModType> normalMods = findNormalMods();
+        mods.insert(mods.end(), normalMods.begin(), normalMods.end());
+
+        vector<ModType> zippedMods = findZippedMods();
+        mods.insert(mods.end(), zippedMods.begin(), zippedMods.end());
+
+        vector<ModType> openBorMods = findOpenborMods();
+        mods.insert(mods.end(), openBorMods.begin(), openBorMods.end());
 
         return mods;
     }

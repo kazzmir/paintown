@@ -6,6 +6,7 @@
 
 #include "util/load_exception.h"
 #include "util/file-system.h"
+#include "util/pointer.h"
 
 namespace Level{
     class LevelInfo;
@@ -22,7 +23,7 @@ namespace Paintown{
 
 class Mod{
 public:
-    Mod(const std::string & name, const Filesystem::AbsolutePath & path);
+    Mod(const std::string & name, const Util::ReferenceCount<Storage::File> & path);
 
     virtual const std::string getMenu();
     /* use the heap */

@@ -8,7 +8,7 @@ class BlockObject;
 
 class RandomScene: public Scene {
 public:
-    RandomScene(const char * filename, const Level::Cacher & cacher);
+    RandomScene(const Filesystem::AbsolutePath & filename, const Level::Cacher & cacher);
 	
     virtual void advanceBlocks( int n );
 

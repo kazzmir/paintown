@@ -755,7 +755,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     };
     
     TokenReader reader;
-    Token * menuData = reader.readToken(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("menu/in-game.txt")).path());
+    Token * menuData = reader.readTokenFromFile(*Storage::instance().open(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("menu/in-game.txt"))));
 
     bool finish = true;
     GameState state;

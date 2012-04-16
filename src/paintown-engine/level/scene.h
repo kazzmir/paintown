@@ -35,7 +35,7 @@ struct Panel{
 
 class Scene{
 public:
-    Scene(const char * filename, const Level::Cacher & cacher);
+    Scene(const Filesystem::AbsolutePath & filename, const Level::Cacher & cacher);
 
     // void Draw( int x, Bitmap * work );
     void drawFront( int x, Graphics::Bitmap * work );

@@ -5,7 +5,7 @@
 
 using namespace std;
     
-RandomScene::RandomScene(const char * filename, const Level::Cacher & cacher):
+RandomScene::RandomScene(const Filesystem::AbsolutePath & filename, const Level::Cacher & cacher):
 Scene(filename, cacher){
     objects = collectObjects();
 }
