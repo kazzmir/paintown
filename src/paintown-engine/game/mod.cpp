@@ -16,13 +16,12 @@ using namespace std;
 namespace Paintown{
 
 Mod * Mod::currentMod = NULL;
-Mod::Mod(const string & name, const Util::ReferenceCount<Storage::File> & path):
-name(name){
+Mod::Mod(const Util::ReferenceCount<Storage::File> & path){
     try{
         TokenReader reader;
         Token * head = reader.readTokenFromFile(*path);
 
-        const Token * name = head->findToken("game/name");
+        head->match("game/name", name);
         const Token * token_menu = head->findToken("game/menu");
         if (token_menu == NULL){
             throw LoadException(__FILE__, __LINE__, "No game/menu token found. Add (menu some/path) to the mod file.");
@@ -42,7 +41,9 @@ name(name){
         }
 
     } catch (const TokenException & e){
-        Global::debug(0) << "Error while reading mod: " << e.getTrace() << endl;
+        std::ostringstream out;
+        out << "Error while reading mod";
+        throw LoadException(__FILE__, __LINE__, e, out.str());
     }
 }
     
@@ -83,7 +84,7 @@ const string Mod::getMenu(){
 }
 
 void Mod::loadDefaultMod(){
-    loadPaintownMod("paintown");
+    loadPaintownMod(Storage::instance().find(Filesystem::RelativePath("paintown/paintown.txt")));
 }
 
 void Mod::setMod(Mod * mod){
@@ -97,9 +98,8 @@ void Mod::loadOpenborMod(const Filesystem::AbsolutePath & path){
     setMod(new OpenborMod(path));
 }
 
-void Mod::loadPaintownMod(const string & name){
-   string path = name + "/" + name + ".txt"; 
-   setMod(new Mod(name, Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(path)))));
+void Mod::loadPaintownMod(const Filesystem::AbsolutePath & path){
+   setMod(new Mod(Storage::instance().open(path)));
 }
     
 Filesystem::AbsolutePath Mod::find(const Filesystem::RelativePath & path){

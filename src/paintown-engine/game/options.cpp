@@ -377,6 +377,26 @@ public:
         return false;
     }
 
+    static string getModName(const Filesystem::AbsolutePath & path){
+        try{
+            TokenReader reader;
+            // Global::debug(1) << "Checking for a mod in " << path << endl;
+            Token * token = reader.readTokenFromFile(*Storage::instance().open(path));
+            string name;
+            if (token->match("game/name", name)){
+                return name;
+            }
+            return "Unknown";
+        } catch (const TokenException & e){
+            return "Unknown";
+        }
+        return "Unknown";
+    }
+
+    static string getOpenborModName(const Filesystem::AbsolutePath & path){
+        return "Openbor mod";
+    }
+
     static bool isOpenBorPackfile(Filesystem::AbsolutePath path){
         try{
             Bor::PackReader reader(path);
@@ -393,12 +413,14 @@ public:
             Openbor
         };
 
-        ModType(const Filesystem::AbsolutePath & path, Kind type):
+        ModType(const Filesystem::AbsolutePath & path, string name, Kind type):
             path(path),
+            name(name),
             type(type){
             }
 
         Filesystem::AbsolutePath path; 
+        string name;
         Kind type;
     };
 
@@ -425,7 +447,7 @@ public:
                     try{
                         Filesystem::AbsolutePath modFile = Storage::instance().find(modFileRelative);
                         if (isModFile(Storage::instance().open(modFile))){
-                            mods.push_back(ModType(modFile, ModType::Paintown));
+                            mods.push_back(ModType(modFile, getModName(modFile), ModType::Paintown));
                             found = true;
                             /* Only find one file that works */
                             break;
@@ -450,7 +472,7 @@ public:
                 const Filesystem::AbsolutePath & path = *it;
                 if (isOpenBorPackfile(path)){
                     Global::debug(0) << "Found openbor pakfile " << path.path() << endl;
-                    mods.push_back(ModType(path, ModType::Openbor));
+                    mods.push_back(ModType(path, getOpenborModName(path), ModType::Openbor));
                 }
             }
         } catch (const Filesystem::NotFound & n){
@@ -466,9 +488,9 @@ public:
         for (vector<Filesystem::AbsolutePath>::iterator dir = directories.begin(); dir != directories.end(); dir++){
             try{
                 /* FIXME: use join here..? */
-                string file = (*dir).path() + "/" + Storage::instance().cleanse(*dir).path() + ".txt";
-                if (Storage::instance().exists(Filesystem::AbsolutePath(file)) && isModFile(Storage::instance().open(Filesystem::AbsolutePath(file)))){
-                    mods.push_back(ModType(Filesystem::AbsolutePath(file), ModType::Paintown));
+                Filesystem::AbsolutePath file((*dir).path() + "/" + Storage::instance().cleanse(*dir).path() + ".txt");
+                if (Storage::instance().exists(file) && isModFile(Storage::instance().open(file))){
+                    mods.push_back(ModType(file, getModName(file), ModType::Paintown));
                 }
             } catch (const Filesystem::NotFound & fail){
             }
@@ -491,6 +513,7 @@ public:
         return mods;
     }
 
+    /*
     static string modNamePaintown(const Filesystem::AbsolutePath & path){
         try{
             TokenReader reader;
@@ -510,28 +533,17 @@ public:
     static string modNameOpenbor(const Filesystem::AbsolutePath & path){
         return "OpenBor " + Storage::instance().cleanse(path).path();
     }
+    */
 
     static string modName(const ModType & mod){
-        switch (mod.type){
-            case ModType::Paintown : return modNamePaintown(mod.path);
-            case ModType::Openbor : return modNameOpenbor(mod.path);
-            default : return "unknown!!";
-        }
+        return mod.name;
     }
 
     static void changeMod(const ModType & mod){
         switch (mod.type){
             case ModType::Paintown : {
-                string path = mod.path.path();
-                size_t slash = path.rfind('/');
-                size_t txt = path.rfind(".txt");
-                if (slash != string::npos && txt != string::npos){
-                    string name = path.substr(slash + 1, path.length() - slash - 5);
-                    Configuration::setCurrentGame(name);
-                    Paintown::Mod::loadPaintownMod(name);
-                } else {
-                    Global::debug(0) << "Could not change mod to " << path << endl;
-                }
+                Configuration::getRootConfiguration()->getNamespace("paintown")->setProperty("mod", mod.path.path());
+                Paintown::Mod::loadPaintownMod(mod.path);
                 break;
             }
             case ModType::Openbor : {

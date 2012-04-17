@@ -490,13 +490,13 @@ public:
 };
 
 /* gets the mod name from system.txt */
-static string systemMod(){
+static Filesystem::AbsolutePath systemMod(){
     TokenReader reader;
-    Token * mod = reader.readTokenFromFile(Storage::instance().find(Filesystem::RelativePath("system.txt")).path().c_str());
+    Token * mod = reader.readTokenFromFile(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("system.txt"))));
     if (mod != NULL){
         string name;
         if (mod->match("_/default-mod", name)){
-            return name;
+            return Storage::instance().find(Filesystem::RelativePath(name));
         }
         throw LoadException(__FILE__, __LINE__, "No `default-mod' token");
     }
@@ -565,6 +565,42 @@ public:
 template <class X>
 static void appendVector(vector<X> & to, const vector<X> & from){
     to.insert(to.end(), from.begin(), from.end());
+}
+
+static void setupSystemMod(){
+    try{
+        /* load the mod listed in data/system.txt */
+        Paintown::Mod::loadPaintownMod(systemMod());
+    } catch (...){
+        try{
+            /* failed to find anything, pray that data/paintown is there */
+            Paintown::Mod::loadDefaultMod();
+        } catch (...){
+            Global::debug(0) << "Could not find the paintown default mod" << std::endl;
+            /* Maybe just set up some ultra default thing? */
+            throw LoadException(__FILE__, __LINE__, "Could not load any mods");
+        }
+    }
+
+}
+
+static void setupPaintownMod(){
+    /* set the game mod. check in this order
+     * 1. whatever is in the configuration under (current-game ...)
+     * 2. whatever is in data/system.txt
+     * 3. try to load 'paintown'
+     * 4. die
+     */
+    try{
+        Filesystem::AbsolutePath currentMod(Configuration::getRootConfiguration()->getNamespace("paintown")->getProperty("mod", ""));
+        if (currentMod.path() != ""){
+            Paintown::Mod::loadPaintownMod(currentMod);
+        }
+    } catch (const Exception::Base & fail){
+        Global::debug(0) << "Could not load mod " << fail.getTrace() << std::endl;
+    } catch (...){
+    }
+    setupSystemMod();
 }
 
 /* 1. parse arguments
@@ -672,33 +708,8 @@ int paintown_main(int argc, char ** argv){
     // Graphics::Bitmap screen(Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());
 
-    /* set the game mod. check in this order
-     * 1. whatever is in the configuration under (current-game ...)
-     * 2. whatever is in data/system.txt
-     * 3. try to load 'paintown'
-     * 4. die
-     */
-    try{
-        Paintown::Mod::loadPaintownMod(Configuration::getCurrentGame());
-    } catch (...){
-        if (Configuration::getCurrentGame() != ""){
-            Global::debug(0) << "Could not load mod " << Configuration::getCurrentGame() << std::endl;
-        }
-        try{
-            /* load the mod listed in data/system.txt */
-            Paintown::Mod::loadPaintownMod(systemMod());
-        } catch (...){
-            try{
-                /* failed to find anything, pray that data/paintown is there */
-                Paintown::Mod::loadDefaultMod();
-            } catch (...){
-                Global::debug(0) << "Could not find the paintown default mod" << std::endl;
-                /* Maybe just set up some ultra default thing? */
-                return 0;
-            }
-        }
-    }
-
+    setupPaintownMod();
+    
     InputManager input;
     Music music(music_on);
 

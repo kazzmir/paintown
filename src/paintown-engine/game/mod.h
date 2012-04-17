@@ -23,7 +23,7 @@ namespace Paintown{
 
 class Mod{
 public:
-    Mod(const std::string & name, const Util::ReferenceCount<Storage::File> & path);
+    Mod(const Util::ReferenceCount<Storage::File> & path);
 
     virtual const std::string getMenu();
     /* use the heap */
@@ -48,7 +48,7 @@ public:
      */
     virtual Filesystem::AbsolutePath find(const Filesystem::RelativePath & path);
 
-    static void loadPaintownMod(const std::string & path);
+    static void loadPaintownMod(const Filesystem::AbsolutePath & path);
     static void loadOpenborMod(const Filesystem::AbsolutePath & path);
     static void loadDefaultMod();
     static Mod * getCurrentMod();
