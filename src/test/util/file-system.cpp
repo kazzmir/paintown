@@ -54,8 +54,36 @@ static void testLastComponent(){
     }
 }
 
+static void testDirectory(){
+    Storage::Directory directory;
+    class EmptyDescriptor: public Storage::Descriptor {
+    public:
+         virtual Util::ReferenceCount<Storage::File> open(Storage::File::Access mode){
+             return Util::ReferenceCount<Storage::File>(NULL);
+         }
+    };
+
+    Util::ReferenceCount<Storage::Descriptor> test1(new EmptyDescriptor());
+    Util::ReferenceCount<Storage::Descriptor> test2(new EmptyDescriptor());
+    directory.addFile(Filesystem::AbsolutePath("a/b"), test1);
+    directory.addFile(Filesystem::AbsolutePath("b/a"), test2);
+    if (directory.lookup(Filesystem::AbsolutePath("a/b")) != test1){
+        Global::debug(0) << "[1] Directory test failed" << std::endl;
+        exit(1);
+    }
+    if (directory.lookup(Filesystem::AbsolutePath("a/../a/./b")) != test1){
+        Global::debug(0) << "[2] Directory test failed" << std::endl;
+        exit(1);
+    }
+    if (directory.lookup(Filesystem::AbsolutePath("b/a")) != test2){
+        Global::debug(0) << "[3] Directory test failed" << std::endl;
+        exit(1);
+    }
+}
+
 int main(){
     testGetFiles();
     testZip();
     testLastComponent();
+    testDirectory();
 }
