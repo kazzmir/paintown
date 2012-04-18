@@ -83,7 +83,7 @@ static void chatWidget(){
         Graphics::Bitmap buffer;
         
         void draw(const Graphics::Bitmap & screen){
-            buffer.clear();
+            buffer.fill(Graphics::makeColor(255,255,255));
             panel.draw(buffer);
             buffer.drawStretched(screen);
             screen.BlitToScreen();
@@ -91,10 +91,12 @@ static void chatWidget(){
     };
     
     try {
-        Mugen::Widgets::ChatPanel chat(10, 20, 310, 220);
+        Mugen::Widgets::ChatPanel chat(10, 20, 300, 200);
         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
         Mugen::OptionMenu menu(list);
         chat.setFont(menu.getFont());
+        chat.addMessage("<burgers> fckin n000b.");
+        chat.addMessage("<turkey> I agree it's what I would have said to ur bag.");
         Logic logic(chat);
         Draw draw(chat);
         PaintownUtil::standardLoop(logic, draw);

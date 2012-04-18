@@ -48,7 +48,7 @@ void InputBox::act(){
 
 void InputBox::draw(int x, int y, const FontSystem::Font & font, const Graphics::Bitmap & work){
     const int height = font.getHeight();
-    drawBox(15, x, y, width, height, body, border, alpha, work);
+    drawBox(10, x, y, width, height, body, border, alpha, work);
     
     Graphics::Bitmap temp(work, x, y, width, height);
     if (font.getWidth(input.getText()) >= width){
@@ -99,14 +99,22 @@ void ChatPanel::act(){
 }
 
 void ChatPanel::draw(const Graphics::Bitmap & work){
-    drawBox(15, x, y, width, height - font.getHeight(), Graphics::makeColor(0,0,60), Graphics::makeColor(0,0,20), 150, work);
-    input.draw(x, y + (height - font.getHeight()), font, work); 
+    drawBox(10, x, y, width, height - font.getHeight(), Graphics::makeColor(0,0,60), Graphics::makeColor(0,0,20), 150, work);
+    input.draw(x, y + (height - font.getHeight()), font, work);
+    int mod = height-(font.getHeight()+2);
+    
+     Graphics::Bitmap temp(work, x+5, y, width-10, height-(font.getHeight()+2));
+    for (std::deque<std::string>::iterator i = buffer.begin(); i != buffer.end(); ++i){
+        const std::string & text = *i;
+        font.draw(0, mod, 1, text, temp);
+        mod-=(font.getHeight()+2);
+    }
 }
 
 void ChatPanel::addMessage(const std::string & message){
-    buffer.push_back(message);
-    if ((buffer.size() * font.getHeight()) > height){
-        buffer.pop_front();
+    buffer.push_front(message);
+    if ((buffer.size() * (font.getHeight()+2)) > height){
+        buffer.pop_back();
     }
 }
 
