@@ -133,6 +133,8 @@ usePandora = makeUseEnvironment('pandora', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
 useNacl = makeUseEnvironment('nacl', False)
+useMpg123 = makeUseEnvironment('mpg123', False)
+useMad = makeUseEnvironment('mad', False)
 nativeCompile = makeUseEnvironment('native', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
@@ -1917,8 +1919,13 @@ else:
     #    config.CheckMpg123()
     # Prefer mpg123 over mad because mpg123 can stream from the disk and
     # libmad is not so great at this
-    if not config.CheckMpg123():
+    if useMpg123():
+        config.CheckMpg123()
+    elif useMad():
         config.CheckMad()
+    else:
+        if not config.CheckMpg123():
+            config.CheckMad()
 
     #if config.HasRuby():
     #    config.CheckRuby()
