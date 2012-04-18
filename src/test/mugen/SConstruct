@@ -95,6 +95,15 @@ common/timer.cpp
 versus.cpp
 """)
 
+widgets_source = Split("""
+common/init.cpp
+common/timer.cpp
+widgets.cpp
+test/mugen/option-options.cpp
+test/mugen/widgets.cpp
+test/util/exceptions/exception.cpp
+""")
+
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
@@ -123,5 +132,9 @@ x.extend(character_select)
 # Versus Test
 versus = testEnv.Program('versus', versus_source + most_game_source)
 x.extend(versus)
+
+# Widget Test
+widgets = testEnv.Program('widgets', widgets_source + most_game_source)
+x.extend(widgets)
 
 Return('x')
