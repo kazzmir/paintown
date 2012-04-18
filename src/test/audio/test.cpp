@@ -1,7 +1,40 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "util/music-player.h"
+#include "util/file-system.h"
 #include "util/debug.h"
+
+using std::string;
+
+namespace Util{
+
+Filesystem::AbsolutePath getDataPath2(){
+    return Filesystem::AbsolutePath("data");
+}
+
+void rest(int x){
+}
+
+static int lowerCase(int c){
+    return tolower(c);
+}
+
+static int upperCase(int c){
+    return toupper(c);
+}
+
+std::string upperCaseAll(std::string str){
+    std::transform(str.begin(), str.end(), str.begin(), upperCase);
+    return str;
+}
+
+std::string lowerCaseAll(std::string str){
+    std::transform(str.begin(), str.end(), str.begin(), lowerCase);
+    return str;
+}
+
+}
 
 class Sound{
 public:
@@ -26,7 +59,8 @@ Sound::SoundInfo Sound::Info;
 using namespace std;
 
 void play(const string & path){
-    Util::Mp3Player player(path);
+    Filesystem::AbsolutePath absolute(path);
+    Util::Mp3Player player(absolute);
     player.play();
 
     while (true){
