@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 
+#include "util/stretch-bitmap.h"
 #include "util/font.h"
 #include "util/debug.h"
 #include "util/load_exception.h"
@@ -27,12 +28,7 @@ static void chatWidget(){
         Logic(Mugen::Widgets::ChatPanel & panel):
         panel(panel),
         escaped(false){
-            player1Input = Mugen::getPlayer1Keys(20);
-            player2Input = Mugen::getPlayer2Keys(20);
         }
-        
-        InputMap<Mugen::Keys> player1Input;
-        InputMap<Mugen::Keys> player2Input;
         
         Mugen::Widgets::ChatPanel & panel;
 
@@ -43,27 +39,6 @@ static void chatWidget(){
         }
 
         void run(){
-            InputSource input1;
-            InputSource input2;
-            std::vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
-            std::vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
-            out1.insert(out1.end(), out2.begin(), out2.end());
-            for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){
-                const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                if (!event.enabled){
-                    continue;
-                }
-
-
-                if (event[Mugen::Esc]){
-                    if (!escaped){
-                        escaped = true;
-                        InputManager::waitForRelease(player1Input, input1, Mugen::Esc);
-                        InputManager::waitForRelease(player2Input, input2, Mugen::Esc);
-                    }
-                }
-            }
-            
             panel.act();
         }
 
@@ -75,17 +50,17 @@ static void chatWidget(){
     class Draw: public PaintownUtil::Draw {
     public:
         Draw(Mugen::Widgets::ChatPanel & panel):
-        panel(panel),
-        buffer(320,240){
+        panel(panel){
         }
 
         Mugen::Widgets::ChatPanel & panel;
-        Graphics::Bitmap buffer;
         
         void draw(const Graphics::Bitmap & screen){
-            buffer.fill(Graphics::makeColor(255,255,255));
-            panel.draw(buffer);
-            buffer.drawStretched(screen);
+            Graphics::StretchedBitmap stretch(320, 240, screen);
+            stretch.start();
+            stretch.fill(Graphics::makeColor(255,255,255));
+            panel.draw(stretch);
+            stretch.finish();
             screen.BlitToScreen();
         }
     };
@@ -97,6 +72,7 @@ static void chatWidget(){
         chat.setFont(menu.getFont());
         chat.addMessage("<burgers> fckin n000b.");
         chat.addMessage("<turkey> I agree it's what I would have said to ur bag.");
+        chat.setClient("err");
         Logic logic(chat);
         Draw draw(chat);
         PaintownUtil::standardLoop(logic, draw);

@@ -62,6 +62,7 @@ void Screen::realInit(int x, int y){
     //set_color_conversion(COLORCONV_NONE);
 #elif USE_SDL
     SDL_Init(SDL_INIT_EVERYTHING);
+    SDL_EnableUNICODE(1);
     Graphics::setGfxModeWindowed(x, y);
 #elif USE_ALLEGRO5
     al_init();

@@ -71,6 +71,7 @@ namespace Widgets{
         virtual void draw(const Graphics::Bitmap &);
         
         virtual void addMessage(const std::string &);
+        virtual void addMessage(const std::string &, const std::string &);
         
         virtual inline InputBox & getInput(){
             return this->input;
@@ -78,6 +79,14 @@ namespace Widgets{
         
         virtual inline void setFont(const FontSystem::Font & font){
             this->font = font;
+        }
+        
+        virtual inline void setClient(const std::string & name){
+            this->client = name;
+        }
+        
+        virtual inline const std::string & getClient() const {
+            return this->client;
         }
         
     protected:
@@ -88,6 +97,7 @@ namespace Widgets{
         int y;
         int width;
         int height;
+        std::string client;
     };
 }
 }

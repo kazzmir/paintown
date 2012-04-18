@@ -47,14 +47,14 @@ void InputBox::act(){
 }
 
 void InputBox::draw(int x, int y, const FontSystem::Font & font, const Graphics::Bitmap & work){
-    const int height = font.getHeight();
+    const int height = font.getHeight()+2;
     drawBox(10, x, y, width, height, body, border, alpha, work);
     
-    Graphics::Bitmap temp(work, x, y, width, height);
-    if (font.getWidth(input.getText()) >= width){
-        font.draw(width, height, -1, input.getText(), temp);
+    Graphics::Bitmap temp(work, x+5, y, width-10, height);
+    if (font.getWidth(input.getText()) >= width-10){
+        font.draw(width-10, height-1, -1, input.getText(), temp);
     } else {
-        font.draw(0, height, 1, input.getText(), temp);
+        font.draw(0, height-1, 1, input.getText(), temp);
     }
 }
 
@@ -73,7 +73,12 @@ void InputBox::addHook(int key, void (*callback)(void *), void * arg){
 static void submit(void * panel){
     ChatPanel * chat = (ChatPanel *)panel;
     if (!chat->getInput().getText().empty()){
-        chat->addMessage(chat->getInput().getText());
+        if (!chat->getClient().empty()){
+            chat->addMessage(chat->getClient(), chat->getInput().getText());
+        } else {
+            chat->addMessage(chat->getInput().getText());
+        }
+        chat->getInput().clear();
     }
 }
 
@@ -116,6 +121,10 @@ void ChatPanel::addMessage(const std::string & message){
     if ((buffer.size() * (font.getHeight()+2)) > height){
         buffer.pop_back();
     }
+}
+
+void ChatPanel::addMessage(const std::string & name, const std::string & message){
+    addMessage("<"+name+"> " + message);
 }
 
 }
