@@ -79,6 +79,7 @@ public:
             processMessages();
         } catch (const Exception::Return & ex){
             escaped = true;
+            Network::close(socket);
             ::Util::Thread::joinThread(thread);
             throw ex;
         }
@@ -89,16 +90,16 @@ public:
     }
     
     void sendMessages(){
+        ::Util::Thread::ScopedLock scope(lock);
         while (!sendable.empty()){
-            ::Util::Thread::ScopedLock scope(lock);
             sendMessage(sendable.front(), socket);
             sendable.pop();
         }
     }
     
     void processMessages(){
+        ::Util::Thread::ScopedLock scope(lock);
         while (!messages.empty()){
-            ::Util::Thread::ScopedLock scope(lock);
             panel.addMessage("remote", messages.front());
             messages.pop();
         }
@@ -118,6 +119,7 @@ public:
     }
     
     void listen(const std::string & message){
+        ::Util::Thread::ScopedLock scope(lock);
         sendable.push(message);
     }
 };
