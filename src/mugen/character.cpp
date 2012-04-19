@@ -836,8 +836,10 @@ void Character::loadSelectData(){
 	this->sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
         /* FIXME: replace 9000 with some readable constant */
-	this->sprites[9000][0] = Mugen::Util::probeSff(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 0, true);
-	this->sprites[9000][1] = Mugen::Util::probeSff(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile)), 9000, 1, true);
+        Filesystem::AbsolutePath absoluteSff = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile));
+        /* FIXME: use getIconAndPortrait so we only load the sff once */
+	this->sprites[9000][0] = Mugen::Util::probeSff(absoluteSff, 9000, 0, true);
+	this->sprites[9000][1] = Mugen::Util::probeSff(absoluteSff, 9000, 1, true);
 	
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't grab details for character!" << endl;
