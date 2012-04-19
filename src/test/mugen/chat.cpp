@@ -89,21 +89,19 @@ public:
     }
     
     void sendMessages(){
-        lock.acquire();
         while (!sendable.empty()){
+            ::Util::Thread::ScopedLock scope(lock);
             sendMessage(sendable.front(), socket);
             sendable.pop();
         }
-        lock.release();
     }
     
     void processMessages(){
-        lock.acquire();
         while (!messages.empty()){
+            ::Util::Thread::ScopedLock scope(lock);
             panel.addMessage("remote", messages.front());
             messages.pop();
         }
-        lock.release();
     }
     
     void pollMessages(){
@@ -120,9 +118,7 @@ public:
     }
     
     void listen(const std::string & message){
-        lock.acquire();
         sendable.push(message);
-        lock.release();
     }
 };
 
