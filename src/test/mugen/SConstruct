@@ -98,7 +98,6 @@ versus.cpp
 widgets_source = Split("""
 common/init.cpp
 common/timer.cpp
-widgets.cpp
 test/mugen/option-options.cpp
 test/mugen/widgets.cpp
 test/util/exceptions/exception.cpp
@@ -134,7 +133,11 @@ versus = testEnv.Program('versus', versus_source + most_game_source)
 x.extend(versus)
 
 # Widget Test
-widgets = testEnv.Program('widgets', widgets_source + most_game_source)
+widgets = testEnv.Program('widgets', ['widgets.cpp'] + widgets_source + most_game_source)
 x.extend(widgets)
+
+# Chat Test
+chat = testEnv.Program('chat',['chat.cpp'] + widgets_source + most_game_source)
+x.extend(chat)
 
 Return('x')

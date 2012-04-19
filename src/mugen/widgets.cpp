@@ -121,6 +121,9 @@ void ChatPanel::addMessage(const std::string & message){
     if ((buffer.size() * (font.getHeight()+2)) > height){
         buffer.pop_back();
     }
+    for (std::vector<Listener>::iterator i = listeners.begin(); i != listeners.end(); ++i){
+        (*i)(message);
+    }
 }
 
 void ChatPanel::addMessage(const std::string & name, const std::string & message){

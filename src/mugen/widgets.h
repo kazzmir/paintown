@@ -62,6 +62,8 @@ namespace Widgets{
         TextInput input;
     };
     
+    typedef void *(*Listener)(const std::string &);
+    
     class ChatPanel{
     public:
         ChatPanel(int x, int y, int width, int height);
@@ -72,6 +74,10 @@ namespace Widgets{
         
         virtual void addMessage(const std::string &);
         virtual void addMessage(const std::string &, const std::string &);
+        
+        virtual inline void connectListener(Listener listener){
+            this->listeners.push_back(listener);
+        }
         
         virtual inline InputBox & getInput(){
             return this->input;
@@ -98,6 +104,9 @@ namespace Widgets{
         int width;
         int height;
         std::string client;
+        
+        // Message poller
+        std::vector<Listener> listeners;
     };
 }
 }
