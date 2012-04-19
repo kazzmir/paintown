@@ -25,54 +25,30 @@
 #include "mugen/widgets.h"
 
 #include <queue>
-static void sendMessages(const std::vector<std::string> & messages, Network::Socket socket){
-    int total = sizeof(uint16_t);
-    for (std::vector<std::string>::const_iterator it = messages.begin(); it != messages.end(); it++){
-        const std::string & message = *it;
-        total += sizeof(uint16_t);
-        total += message.size() + 1;
-    }
-    char * buffer = new char[total + sizeof(uint16_t)];
+static void sendMessage(std::string message, Network::Socket socket){
+    int size = message.size()+1 + sizeof(uint16_t);
+    char * buffer = new char[size];
     char * position = buffer;
-    position = Network::dump16(position, total);
-    position = Network::dump16(position, messages.size());
-    for (std::vector<std::string>::const_iterator it = messages.begin(); it != messages.end(); it++){
-        const std::string & message = *it;
-        position = Network::dump16(position, message.size());
-        position = Network::dumpStr(position, message);
-    }
-    Network::sendBytes(socket, (uint8_t*) buffer, total + sizeof(uint16_t));
+    position = Network::dump16(position, size);
+    position = Network::dumpStr(position, message);
+    Network::sendBytes(socket, (uint8_t*) buffer, size + sizeof(uint16_t));
     delete[] buffer;
 }
 
-static std::vector<std::string> readMessages(Network::Socket socket){
-    std::vector<std::string> out;
-    int16_t total = Network::read16(socket);
-    char * buffer = new char[total];
-    Network::readBytes(socket, (uint8_t*) buffer, total);
+static std::string readMessage(Network::Socket socket){
+    int16_t size = Network::read16(socket);
+    char * buffer = new char[size];
+    Network::readBytes(socket, (uint8_t*) buffer, size);
     char * position = buffer;
-    uint16_t messages = 0;
-    position = Network::parse16(position, &messages);
-    for (int i = 0; i < messages; i++){
-        uint16_t length = 0;
-        position = Network::parse16(position, &length);
-        std::string message;
-        position = Network::parseString(position, &message, length + 1);
-        out.push_back(message);
-    }
+    std::string message;
+    position = Network::parseString(position, &message, size + 1);
+    
     delete[] buffer;
 
-    return out;
+    return message;
 }
 
-std::queue<std::string> sendable;
-
-static void * listenMessage(const std::string & message){
-    sendable.push(message);
-    return NULL;
-}
-
-class Logic: public PaintownUtil::Logic {
+class Logic: public PaintownUtil::Logic, public Mugen::Widgets::ChatPanel::ClassListener{
 public:
     Logic(Mugen::Widgets::ChatPanel & panel):
     panel(panel),
@@ -85,6 +61,8 @@ public:
     
     Network::Socket socket;
     
+
+    std::queue<std::string> sendable;
     std::queue<std::string> messages;
     
     ::Util::Thread::LockObject lock;
@@ -111,12 +89,12 @@ public:
     }
     
     void sendMessages(){
-        std::vector<std::string> messages;
+        lock.acquire();
         while (!sendable.empty()){
-            messages.push_back(sendable.front());
+            sendMessage(sendable.front(), socket);
             sendable.pop();
         }
-        sendMessages(messages, socket);
+        lock.release();
     }
     
     void processMessages(){
@@ -131,16 +109,20 @@ public:
     void pollMessages(){
         try{
             while (!escaped){
-                std::vector<std::string> more = readMessages(socket);
+                std::string message = readMessage(socket);
                 lock.acquire();
-                for (std::vector<std::string>::iterator i = more.begin(); i != more.end(); ++i){
-                    messages.push(*i);
-                }
+                messages.push(message);
                 lock.signal();
                 lock.release();
             }
         } catch (const Network::NetworkException & fail){
         }
+    }
+    
+    void listen(const std::string & message){
+        lock.acquire();
+        sendable.push(message);
+        lock.release();
     }
 };
 
@@ -174,8 +156,8 @@ static void doServer(int port){
     Mugen::OptionMenu menu(list);
     chat.setFont(menu.getFont());
     chat.setClient("You");
-    chat.connectListener(listenMessage);
     Logic logic(chat);
+    chat.connectClassListener(&logic);
     Draw draw(chat);
     
     Network::Socket remote = Network::open(port);
@@ -197,8 +179,8 @@ static void doClient(const std::string & host, int port){
     Mugen::OptionMenu menu(list);
     chat.setFont(menu.getFont());
     chat.setClient("You");
-    chat.connectListener(listenMessage);
     Logic logic(chat);
+    chat.connectClassListener(&logic);
     Draw draw(chat);
     
     Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;

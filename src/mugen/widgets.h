@@ -75,8 +75,20 @@ namespace Widgets{
         virtual void addMessage(const std::string &);
         virtual void addMessage(const std::string &, const std::string &);
         
+        virtual void notify(const std::string &);
+        
         virtual inline void connectListener(Listener listener){
             this->listeners.push_back(listener);
+        }
+        
+        class ClassListener{
+        public:
+            ClassListener();
+            virtual ~ClassListener();
+            virtual void listen(const std::string &) = 0;
+        };
+        virtual inline void connectClassListener(ClassListener * listener){
+            this->classListeners.push_back(listener);
         }
         
         virtual inline InputBox & getInput(){
@@ -107,6 +119,7 @@ namespace Widgets{
         
         // Message poller
         std::vector<Listener> listeners;
+        std::vector<ClassListener *> classListeners;
     };
 }
 }

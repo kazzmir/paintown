@@ -73,11 +73,13 @@ void InputBox::addHook(int key, void (*callback)(void *), void * arg){
 static void submit(void * panel){
     ChatPanel * chat = (ChatPanel *)panel;
     if (!chat->getInput().getText().empty()){
+        const std::string & text = chat->getInput().getText();
         if (!chat->getClient().empty()){
-            chat->addMessage(chat->getClient(), chat->getInput().getText());
+            chat->addMessage(chat->getClient(), text);
         } else {
-            chat->addMessage(chat->getInput().getText());
+            chat->addMessage(text);
         }
+        chat->notify(text);
         chat->getInput().clear();
     }
 }
@@ -94,6 +96,11 @@ height(height){
     input.setWidth(width);
     input.addHook(Keyboard::Key_ENTER, submit, this);
     input.addHook(Keyboard::Key_ESC, escape, this);
+}
+
+ChatPanel::ClassListener::ClassListener(){
+}
+ChatPanel::ClassListener::~ClassListener(){
 }
 
 ChatPanel::~ChatPanel(){
@@ -116,13 +123,20 @@ void ChatPanel::draw(const Graphics::Bitmap & work){
     }
 }
 
+void ChatPanel::notify(const std::string & message){
+    for (std::vector<Listener>::iterator i = listeners.begin(); i != listeners.end(); ++i){
+        (*i)(message);
+    }
+    
+    for (std::vector<ClassListener *>::iterator i = classListeners.begin(); i != classListeners.end(); ++i){
+        (*i)->listen(message);
+    }
+}
+
 void ChatPanel::addMessage(const std::string & message){
     buffer.push_front(message);
     if ((buffer.size() * (font.getHeight()+2)) > height){
         buffer.pop_back();
-    }
-    for (std::vector<Listener>::iterator i = listeners.begin(); i != listeners.end(); ++i){
-        (*i)(message);
     }
 }
 
