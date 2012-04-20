@@ -14,6 +14,7 @@
 #include "util/bitmap.h"
 #include "util/pointer.h"
 #include "ast/extra.h"
+#include "util/network/network.h"
 
 #include "util/input/input-manager.h"
 
@@ -737,6 +738,15 @@ public:
 protected:
     std::vector< PaintownUtil::ReferenceCount<Mugen::Font> > fonts;
 };
+
+/*! Network message utilities */
+namespace NetworkUtil{
+    //! Send message through socket
+    void sendMessage(std::string message, ::Network::Socket socket);
+    //! Read message from socket
+    std::string readMessage(::Network::Socket socket);
+}
+// End namespace Network
 
 }
 // End namespace Mugen

@@ -1910,44 +1910,94 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
     InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
     // Local behaviors
     HumanBehavior behavior1 = HumanBehavior(keys1, getPlayer1InputLeft());
-    HumanBehavior behavior2 = HumanBehavior(keys2, getPlayer2InputLeft());
+    PaintownUtil::ReferenceCount<NetworkLocalBehavior> player1LocalBehavior, player2LocalBehavior;
+    PaintownUtil::ReferenceCount<NetworkRemoteBehavior> player1RemoteBehavior, player2RemoteBehavior;
+    
     try {
         /*! TODO Network Local Behavior
             create or bind to socket */
         int port = 8473;
         std::string host = "localhost";
+        Network::Socket socket;
         if (isServer){
             port = getNumber(OptionMenu::doInputDialog("Enter Port", "8473", true, Graphics::makeColor(0,0,0), 128, true));
+            Network::Socket remote = Network::open(port);
+            Network::listen(remote);
+            Global::debug(0) << "Waiting for a connection on port " << port << std::endl;
+            socket = Network::accept(remote);
+            Network::close(remote);
+            Global::debug(0) << "Got a connection" << std::endl;
+            
+            player1LocalBehavior = PaintownUtil::ReferenceCount<NetworkLocalBehavior>(new NetworkLocalBehavior(&behavior1, socket));
+            player2RemoteBehavior = PaintownUtil::ReferenceCount<NetworkRemoteBehavior>(new NetworkRemoteBehavior(socket));
         } else {
             std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
             OptionMenu options(list);
             port = getNumber(OptionMenu::doInputDialog("Enter Port", "8473", true, Graphics::makeColor(0,0,0), 128, true, &options));
             host = OptionMenu::doInputDialog("Enter Hostname", "000.000.000.000", true, Graphics::makeColor(0,0,0), 128, true, &options);
+            Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;
+            socket = Network::connect(host, port); 
+            Global::debug(0) << "Connected" << std::endl;
+            player2LocalBehavior = PaintownUtil::ReferenceCount<NetworkLocalBehavior>(new NetworkLocalBehavior(&behavior1, socket));
+            player1RemoteBehavior = PaintownUtil::ReferenceCount<NetworkRemoteBehavior>(new NetworkRemoteBehavior(socket));
         }
-        Network::Socket ourSocket = isServer ? Network::open(port) : Network::connect(host, port);
-        NetworkLocalBehavior player1NetworkBehavior(&behavior1, ourSocket);
-        NetworkRemoteBehavior player2NetworkBehavior(ourSocket);
     
         while (true){
+            // Discuss before fight
+            
             Mugen::CharacterSelect select(systemFile);
             select.init();
             // FIXME Make characterselect network useable
-            select.setMode(Mugen::Versus, Mugen::CharacterSelect::Both);
+            select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+            select.overrideTitle((isServer ? "(Server Mode) " : "(Client Mode - Host: " + host + ") ") + " Select Player");
             
             PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
             PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
             PaintownUtil::standardLoop(*logic, *draw);
             
             RunMatchOptions options;
-            options.setBehavior(&behavior1, &behavior2);
             
             if (select.wasCanceled()){
                 return;
             }
+
+#ifdef HAVE_NETWORKING
+            if (isServer){
+                int sync = Network::read16(socket);
+                Network::send16(socket, sync);
+            } else {
+                Network::send16(socket, 0);
+                Network::read16(socket);
+            }
+
+            if (!Network::blocking(socket, false)){
+                Global::debug(0) << "Could not set socket to be non-blocking" << std::endl;
+            }
+#endif
+
             Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
             Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
-            player1Collection = select.getPlayer1().getCollection();
-            player2Collection = select.getPlayer2().getCollection();
+            if (isServer){
+                // Get remote character
+                const std::string & remotePath = Mugen::NetworkUtil::readMessage(socket);
+                Mugen::ArcadeData::CharacterInfo remoteCharacter(Storage::instance().find(Filesystem::RelativePath(remotePath)));
+                player2Collection.setFirst(remoteCharacter);
+                options.setBehavior(&behavior1, NULL);
+                // Send chosen character
+                player1Collection = select.getPlayer1().getCollection();
+                std::string localPath = Storage::instance().cleanse(player1Collection.getFirst().getDef()).path();
+                Mugen::NetworkUtil::sendMessage(localPath, socket);
+            } else {
+                // Send chosen character
+                player2Collection = select.getPlayer1().getCollection();
+                std::string localPath = Storage::instance().cleanse(player1Collection.getFirst().getDef()).path();
+                Mugen::NetworkUtil::sendMessage(localPath, socket);
+                // Get remote character
+                const std::string & remotePath = Mugen::NetworkUtil::readMessage(socket);
+                Mugen::ArcadeData::CharacterInfo remoteCharacter(Storage::instance().find(Filesystem::RelativePath(remotePath)));
+                player1Collection.setFirst(remoteCharacter);
+                options.setBehavior(NULL, &behavior1);
+            }
             
             // Prepares futures
             CharacterTeam player1(player1Collection, Stage::Player1Side);
@@ -1964,12 +2014,24 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
                     continue;
                 }
             }
-            
-            player1.getFirst().setBehavior(&behavior1);
-            player2.getFirst().setBehavior(&behavior2);
+            if (isServer){
+                player1.getFirst().setBehavior(player1LocalBehavior.raw());
+                player2.getFirst().setBehavior(player2RemoteBehavior.raw());
+            } else {
+                player1.getFirst().setBehavior(player1RemoteBehavior.raw());
+                player2.getFirst().setBehavior(player2LocalBehavior.raw());
+            }
             Mugen::Stage stage(select.getStage());
             prepareStage(loader, stage);
             stage.reset();
+            
+            if (isServer){
+                player1LocalBehavior->begin();
+                player2RemoteBehavior->begin();
+            } else {
+                player2LocalBehavior->begin();
+                player1RemoteBehavior->begin();
+            }
             try {
                 runMatch(&stage, "", options);
             } catch (const Exception::Return & ex){

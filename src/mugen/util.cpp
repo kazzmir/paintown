@@ -1685,3 +1685,26 @@ const Mugen::FontSystem::Font Mugen::FontSystem::getFont(int index, int bank, in
     }
     return FontSystem::Font();
 }
+
+void Mugen::NetworkUtil::sendMessage(std::string message, ::Network::Socket socket){
+    int size = message.size()+1 + sizeof(uint16_t);
+    char * buffer = new char[size];
+    char * position = buffer;
+    position = ::Network::dump16(position, size);
+    position = ::Network::dumpStr(position, message);
+    ::Network::sendBytes(socket, (uint8_t*) buffer, size + sizeof(uint16_t));
+    delete[] buffer;
+}
+
+std::string Mugen::NetworkUtil::readMessage(::Network::Socket socket){
+    int16_t size = ::Network::read16(socket);
+    char * buffer = new char[size];
+    ::Network::readBytes(socket, (uint8_t*) buffer, size);
+    char * position = buffer;
+    std::string message;
+    position = ::Network::parseString(position, &message, size + 1);
+    
+    delete[] buffer;
+
+    return message;
+}

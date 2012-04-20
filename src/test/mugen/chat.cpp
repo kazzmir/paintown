@@ -25,28 +25,6 @@
 #include "mugen/widgets.h"
 
 #include <queue>
-static void sendMessage(std::string message, Network::Socket socket){
-    int size = message.size()+1 + sizeof(uint16_t);
-    char * buffer = new char[size];
-    char * position = buffer;
-    position = Network::dump16(position, size);
-    position = Network::dumpStr(position, message);
-    Network::sendBytes(socket, (uint8_t*) buffer, size + sizeof(uint16_t));
-    delete[] buffer;
-}
-
-static std::string readMessage(Network::Socket socket){
-    int16_t size = Network::read16(socket);
-    char * buffer = new char[size];
-    Network::readBytes(socket, (uint8_t*) buffer, size);
-    char * position = buffer;
-    std::string message;
-    position = Network::parseString(position, &message, size + 1);
-    
-    delete[] buffer;
-
-    return message;
-}
 
 class Logic: public PaintownUtil::Logic, public Mugen::Widgets::ChatPanel::Event{
 public:
@@ -92,7 +70,7 @@ public:
     void sendMessages(){
         ::Util::Thread::ScopedLock scope(lock);
         while (!sendable.empty()){
-            sendMessage(sendable.front(), socket);
+            Mugen::NetworkUtil::sendMessage(sendable.front(), socket);
             sendable.pop();
         }
     }
@@ -108,7 +86,7 @@ public:
     void pollMessages(){
         try{
             while (!escaped){
-                std::string message = readMessage(socket);
+                std::string message = Mugen::NetworkUtil::readMessage(socket);
                 lock.acquire();
                 messages.push(message);
                 lock.signal();

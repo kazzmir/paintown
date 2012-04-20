@@ -550,6 +550,11 @@ public:
         return this->currentPlayer;
     }
     
+    //! Override title
+    inline void overrideTitle(const std::string & title){
+        this->titleOverride = title;
+    }
+    
 protected:
     //! Parse select file
     void parseSelect();
@@ -569,6 +574,8 @@ protected:
     Mugen::SoundSystem<SelectSoundType> sounds;
     //! Select file
     Filesystem::AbsolutePath selectFile;
+    //! Title override
+    std::string titleOverride;
     //! Fonts
     //std::vector< PaintownUtil::ReferenceCount<Font> > fonts;
     Mugen::FontSystem fonts;

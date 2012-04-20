@@ -2916,7 +2916,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     temp.draw(gridPositionX-1, gridPositionY-1, work);
     
     // render title based on Mugen::GameType
-    titleFont.draw(getGameType(currentGameType), work);
+    titleFont.draw((!titleOverride.empty() ? titleOverride : getGameType(currentGameType)), work);
     
     // Draw portrait and name
     player1.draw(work);
