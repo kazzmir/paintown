@@ -1082,6 +1082,10 @@ bool OptionMenu::confirmDialog(const std::string & title, bool renderBackground,
     return OptionMenu::doConfirmDialog(title, renderBackground, clearColor, clearAlpha, disableFade, this);
 }
 
+std::string OptionMenu::inputDialog(const std::string & title, const std::string & defaultText, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade){
+    return OptionMenu::doInputDialog(title, defaultText, renderBackground, clearColor, clearAlpha, disableFade);
+}
+
 
 // Box
 class MenuLogic: public PaintownUtil::Logic {
@@ -1940,6 +1944,111 @@ bool OptionMenu::doConfirmDialog(const std::string & title, bool renderBackgroun
     } catch (const Escape::EscapeException & ex){
     }
     return false;
+}
+
+class MessageException : public std::exception{
+public:
+    MessageException(const std::string & message):
+    message(message){
+    }
+    ~MessageException() throw(){
+    }
+    const std::string & getMessage() const{
+        return message;
+    }
+private:
+    std::string message;
+};
+
+static void submit(void * input){
+    Mugen::Widgets::InputBox * box = (Mugen::Widgets::InputBox *)input;
+    if (!box->getText().empty()){
+        throw MessageException(box->getText());
+    }
+}
+
+static void escape(void * input){
+    throw Escape::EscapeException();
+}
+
+std::string OptionMenu::doInputDialog(const std::string & title, const std::string & defaultText, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent){
+    PaintownUtil::ReferenceCount<OptionMenu> backupMenu;
+    if (parent == NULL){
+        std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > dummyList;
+        backupMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(dummyList));
+    }
+    
+    class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
+    public:
+        LogicDraw(OptionMenu & menu, const std::string & title, const std::string & defaultText):
+        menu(menu),
+        title(title),
+        escaped(false),
+        width(menu.getFont().getWidth(defaultText)+20),
+        height(menu.getFont().getHeight()){
+            input.setText(defaultText);
+            input.setWidth(width);
+            input.addHook(Keyboard::Key_ENTER, submit, &input);
+            input.addHook(Keyboard::Key_ESC, escape, &input);
+        }
+        
+        OptionMenu & menu;
+        
+        std::string title;
+
+        bool escaped;
+        
+        Mugen::Widgets::InputBox input;
+        
+        int width;
+        int height;
+        
+        double ticks(double system){
+            return Util::gameTicks(system);
+        }
+
+        void run(){
+            // Act out
+            menu.act();
+            
+            try {
+                input.act();
+            } catch (const Escape::EscapeException & ex){
+                throw ex;
+            }
+        }
+
+        bool done(){
+            return menu.isDone();
+        }
+        
+        void draw(const Graphics::Bitmap & screen){
+            Graphics::StretchedBitmap stretch(320,240, screen);
+            stretch.start();
+            menu.drawInfoWithBackground(title, 0,0, "", stretch);
+            input.draw(160-width/2, 120+height/2, menu.getFont(), stretch);
+            stretch.finish();
+            screen.BlitToScreen();
+        }
+    };
+    
+    try {
+        OptionMenu menu((parent != NULL) ? *parent : *backupMenu);
+        menu.setName(title);
+        menu.setRenderBackground(renderBackground);
+        menu.setClearColor(clearColor);
+        menu.setClearAlpha(clearAlpha);
+        if (disableFade){
+            menu.setFadeEnabled(false);
+        }
+        LogicDraw logicDraw(menu, title, defaultText);
+        PaintownUtil::standardLoop(logicDraw, logicDraw);
+    } catch (const MessageException & ex){
+        return ex.getMessage();
+    } catch (const Escape::EscapeException & ex){
+        throw Exception::Return(__FILE__,__LINE__);
+    }
+    return "";
 }
 
 OptionMenu::KeysChangedException::KeysChangedException(const Mugen::PlayerType & type):

@@ -34,7 +34,8 @@ InputBox::InputBox():
 body(Graphics::makeColor(0,0,60)),
 border(Graphics::makeColor(0,0,20)),
 alpha(150),
-width(0){
+width(0),
+cursorTime(0){
     input.enable();
 }
 
@@ -43,6 +44,10 @@ InputBox::~InputBox(){
 
 void InputBox::act(){
     if (input.doInput()){
+    }
+    cursorTime++;
+    if (cursorTime > 60){
+        cursorTime = 0;
     }
 }
 
@@ -53,8 +58,10 @@ void InputBox::draw(int x, int y, const FontSystem::Font & font, const Graphics:
     Graphics::Bitmap temp(work, x+5, y, width-10, height);
     if (font.getWidth(input.getText()) >= width-10){
         font.draw(width-10, height-1, -1, input.getText(), temp);
+        renderCursor(width-11, height-1, font, temp);
     } else {
         font.draw(0, height-1, 1, input.getText(), temp);
+        renderCursor(font.getWidth(input.getText())+1, height-1, font, temp);
     }
 }
 
@@ -68,6 +75,12 @@ void InputBox::toggleEnabled(){
 
 void InputBox::addHook(int key, void (*callback)(void *), void * arg){
     input.addBlockingHandle(key, callback, arg);
+}
+
+void InputBox::renderCursor(int x, int y, const FontSystem::Font & font, const Graphics::Bitmap & work){
+    if (cursorTime <= 30){
+        font.draw(x, y, 0, "|", work);
+    }
 }
 
 static void submit(void * panel){

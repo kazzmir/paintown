@@ -356,7 +356,9 @@ public:
     
     virtual void setLast();
     
-    virtual bool confirmDialog(const std::string & title, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade);
+    virtual bool confirmDialog(const std::string &, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade);
+    
+    virtual std::string inputDialog(const std::string &, const std::string &, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade);
     
     virtual inline unsigned int getSelected() const {
         return this->list.getCurrentIndex();
@@ -431,7 +433,8 @@ public:
     
     static PaintownUtil::ReferenceCount<Gui::ScrollItem> getPlayerKeys(int player, const std::string &, PaintownUtil::ReferenceCount<OptionMenu> menu);
     
-    static bool doConfirmDialog(const std::string & title, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent = NULL);
+    static bool doConfirmDialog(const std::string &, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent = NULL);
+    static std::string doInputDialog(const std::string &, const std::string &, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent = NULL); 
 
 private:
     //! Name

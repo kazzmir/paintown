@@ -1899,6 +1899,10 @@ void Game::doVersus(Searcher & searcher){
     }
 }
 
+static int getNumber(const std::string & number){
+    return atoi(number.c_str());
+}
+
 void Game::doNetworkVersus(bool isServer, Searcher & searcher){
 #ifdef HAVE_NETWORKING
     // Keys
@@ -1910,7 +1914,17 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
     try {
         /*! TODO Network Local Behavior
             create or bind to socket */
-        Network::Socket ourSocket = isServer ? Network::open(8473) : Network::connect("localhost", 8473);
+        int port = 8473;
+        std::string host = "localhost";
+        if (isServer){
+            port = getNumber(OptionMenu::doInputDialog("Enter Port", "8473", true, Graphics::makeColor(0,0,0), 128, true));
+        } else {
+            std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+            OptionMenu options(list);
+            port = getNumber(OptionMenu::doInputDialog("Enter Port", "8473", true, Graphics::makeColor(0,0,0), 128, true, &options));
+            host = OptionMenu::doInputDialog("Enter Hostname", "000.000.000.000", true, Graphics::makeColor(0,0,0), 128, true, &options);
+        }
+        Network::Socket ourSocket = isServer ? Network::open(port) : Network::connect(host, port);
         NetworkLocalBehavior player1NetworkBehavior(&behavior1, ourSocket);
         NetworkRemoteBehavior player2NetworkBehavior(ourSocket);
     

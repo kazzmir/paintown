@@ -55,11 +55,13 @@ namespace Widgets{
         }
         
     protected:
+        void renderCursor(int x, int y, const FontSystem::Font &, const Graphics::Bitmap &);
         Graphics::Color body;
         Graphics::Color border;
         int alpha;
         int width;
         TextInput input;
+        int cursorTime;
     };
     
     typedef void *(*EventCallback)(const std::string &);
