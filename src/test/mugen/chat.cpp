@@ -26,6 +26,158 @@
 
 #include <queue>
 
+static void * do_client_thread(void * c);
+static void * do_server_thread(void * s);
+
+class Client{
+public:
+    Client(int id, Network::Socket socket):
+    id(id),
+    socket(socket),
+    end(false){
+        ::Util::Thread::createThread(&thread, NULL, (::Util::Thread::ThreadFunction) do_client_thread, this);
+    }
+    ~Client();
+    
+    void run(){
+        while (!end){
+            std::string message = Mugen::NetworkUtil::readMessage(socket);
+            lock.acquire();
+            messages.push(message);
+            lock.signal();
+            lock.release();
+        }
+    }
+    
+    int getId() const {
+        return id;
+    }
+    
+    void sendMessage(const std::string & message){
+        ::Util::Thread::ScopedLock scope(lock);
+        Mugen::NetworkUtil::sendMessage(message, socket);
+    }
+    
+    bool hasMessages() const{
+        ::Util::Thread::ScopedLock scope(lock);
+        return !messages.empty();
+    }
+    
+    std::string nextMessage() const {
+        ::Util::Thread::ScopedLock scope(lock);
+        std::string message = messages.front();
+        messages.pop();
+        return message;
+    }
+    
+    void shutdown(){
+        ::Util::Thread::ScopedLock scope(lock);
+        end = true;
+        Network::close(socket);
+        ::Util::Thread::joinThread(thread);
+    }
+private:
+    int id;
+    Network::Socket socket;
+    ::Util::Thread::Id thread;
+    ::Util::Thread::LockObject lock;
+    bool end;
+    mutable std::queue<std::string> messages;
+};
+
+static void * do_client_thread(void * c){
+    Client * client = (Client *)c;
+    client->run();
+    return NULL;
+}
+
+class Server{
+public:
+    Server(int port):
+    end(false){
+        remote = Network::open(port);
+        Network::listen(remote);
+        Global::debug(0) << "Waiting for a connection on port " << port << std::endl;
+        ::Util::Thread::createThread(&remoteThread, NULL, (::Util::Thread::ThreadFunction) do_server_thread, this);
+    }
+    ~Server(){
+    }
+    
+    void run(){
+        int idList = 0;
+        while (!end){
+            clients.push_back(Client(idList++, Network::accept(remote)));
+            Global::debug(0) << "Got a connection" << std::endl;
+        }
+    }
+    
+    void poll(){
+        for (std::vector<Client>::const_iterator i = clients.begin(); i != clients.end(); ++i){
+            const Client & client = *i;
+            while(client.hasMessages()){
+                const std::string & message = client.nextMessage();
+                relay(client.getId(), message);
+                messages.push(message);
+            }
+        }
+    }
+    
+    bool hasMessages() const{
+        return !messages.empty();
+    }
+    
+    std::string nextMessage() const {
+        std::string message = messages.front();
+        messages.pop();
+        return message;
+    }
+    
+    void global(const std::string & message){
+        for (std::vector<Client>::iterator i = clients.begin(); i != clients.end(); ++i){
+            Client & client = *i;
+            client.sendMessage(message);
+        }
+    }
+    
+    void relay(int id, const std::string & message){
+        for (std::vector<Client>::iterator i = clients.begin(); i != clients.end(); ++i){
+            Client & client = *i;
+            if (client.getId() != id){
+                client.sendMessage(message);
+            }
+        }
+    }
+    
+    void shutdown(){
+        ::Util::Thread::ScopedLock scope(lock);
+        end = true;
+        for (std::vector<Client>::iterator i = clients.begin(); i != clients.end(); ++i){
+            Client & client = *i;
+            client.shutdown();
+        }
+        Network::close(remote);
+        ::Util::Thread::joinThread(remoteThread);
+    }
+    
+private:
+    Network::Socket remote;
+    std::vector<Client> clients;
+    
+    mutable std::queue<std::string> messages;
+    
+    ::Util::Thread::Id remoteThread;
+    
+    ::Util::Thread::LockObject lock;
+    
+    bool end;
+};
+
+void * do_server_thread(void * s){
+    Server * server = (Server *)s;
+    server->run();
+    return NULL;
+}
+
 class Logic: public PaintownUtil::Logic, public Mugen::Widgets::ChatPanel::Event{
 public:
     Logic(Mugen::Widgets::ChatPanel & panel):
