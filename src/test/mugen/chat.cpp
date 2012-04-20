@@ -48,7 +48,7 @@ static std::string readMessage(Network::Socket socket){
     return message;
 }
 
-class Logic: public PaintownUtil::Logic, public Mugen::Widgets::ChatPanel::ClassListener{
+class Logic: public PaintownUtil::Logic, public Mugen::Widgets::ChatPanel::Event{
 public:
     Logic(Mugen::Widgets::ChatPanel & panel):
     panel(panel),
@@ -118,7 +118,7 @@ public:
         }
     }
     
-    void listen(const std::string & message){
+    void addMessage(const std::string & message){
         ::Util::Thread::ScopedLock scope(lock);
         sendable.push(message);
     }
@@ -155,7 +155,7 @@ static void doServer(int port){
     chat.setFont(menu.getFont());
     chat.setClient("You");
     Logic logic(chat);
-    chat.connectClassListener(&logic);
+    chat.subscribe(&logic);
     Draw draw(chat);
     
     Network::Socket remote = Network::open(port);
@@ -178,7 +178,7 @@ static void doClient(const std::string & host, int port){
     chat.setFont(menu.getFont());
     chat.setClient("You");
     Logic logic(chat);
-    chat.connectClassListener(&logic);
+    chat.subscribe(&logic);
     Draw draw(chat);
     
     Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;

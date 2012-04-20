@@ -98,9 +98,9 @@ height(height){
     input.addHook(Keyboard::Key_ESC, escape, this);
 }
 
-ChatPanel::ClassListener::ClassListener(){
+ChatPanel::Event::Event(){
 }
-ChatPanel::ClassListener::~ClassListener(){
+ChatPanel::Event::~Event(){
 }
 
 ChatPanel::~ChatPanel(){
@@ -124,12 +124,12 @@ void ChatPanel::draw(const Graphics::Bitmap & work){
 }
 
 void ChatPanel::notify(const std::string & message){
-    for (std::vector<Listener>::iterator i = listeners.begin(); i != listeners.end(); ++i){
+    for (std::vector<EventCallback>::iterator i = callbacks.begin(); i != callbacks.end(); ++i){
         (*i)(message);
     }
     
-    for (std::vector<ClassListener *>::iterator i = classListeners.begin(); i != classListeners.end(); ++i){
-        (*i)->listen(message);
+    for (std::vector<Event *>::iterator i = subscribers.begin(); i != subscribers.end(); ++i){
+        (*i)->addMessage(message);
     }
 }
 

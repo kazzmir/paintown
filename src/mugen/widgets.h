@@ -62,7 +62,7 @@ namespace Widgets{
         TextInput input;
     };
     
-    typedef void *(*Listener)(const std::string &);
+    typedef void *(*EventCallback)(const std::string &);
     
     class ChatPanel{
     public:
@@ -77,18 +77,18 @@ namespace Widgets{
         
         virtual void notify(const std::string &);
         
-        virtual inline void connectListener(Listener listener){
-            this->listeners.push_back(listener);
+        virtual inline void subscribe(EventCallback subscriber){
+            this->callbacks.push_back(subscriber);
         }
         
-        class ClassListener{
+        class Event{
         public:
-            ClassListener();
-            virtual ~ClassListener();
-            virtual void listen(const std::string &) = 0;
+            Event();
+            virtual ~Event();
+            virtual void addMessage(const std::string &) = 0;
         };
-        virtual inline void connectClassListener(ClassListener * listener){
-            this->classListeners.push_back(listener);
+        virtual inline void subscribe(Event * subscriber){
+            this->subscribers.push_back(subscriber);
         }
         
         virtual inline InputBox & getInput(){
@@ -118,8 +118,8 @@ namespace Widgets{
         std::string client;
         
         // Message poller
-        std::vector<Listener> listeners;
-        std::vector<ClassListener *> classListeners;
+        std::vector<EventCallback> callbacks;
+        std::vector<Event *> subscribers;
     };
 }
 }
