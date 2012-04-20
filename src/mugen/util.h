@@ -647,22 +647,27 @@ class SoundSystem{
 public:
     SoundSystem(){
     }
+
     SoundSystem(const SoundSystem & copy):
     sounds(copy.sounds),
     soundLookup(copy.soundLookup){
     }
-    ~SoundSystem(){
+
+    virtual ~SoundSystem(){
     }
+
     const SoundSystem & operator=(const SoundSystem & copy){
         sounds = copy.sounds;
         soundLookup = copy.soundLookup;
         return *this;
     }
+
     //! Init the sound system given a .snd file
     void init(const std::string & file){
         Mugen::Util::readSounds(Util::findFile(Filesystem::RelativePath(file)), sounds);
         Global::debug(1) << "Got Sound File: '" << file << "'" << std::endl;
     }
+
     //! Play
     void play(const Type & type){
         PaintownUtil::ReferenceCount<Mugen::Sound> sound = sounds[soundLookup[type].group][soundLookup[type].index];
@@ -670,6 +675,7 @@ public:
             sound->play();
         }
     }
+
     //! Sets a sound
     virtual void set(const Type & type, int group, int sound){
         IndexValue values;
@@ -677,6 +683,7 @@ public:
         values.index = sound;
         soundLookup[type] = values;
     }
+
 protected:
     //! Sounds
     Mugen::SoundMap sounds;

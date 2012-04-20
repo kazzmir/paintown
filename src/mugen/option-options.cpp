@@ -1970,17 +1970,10 @@ static void submit(void * input){
 static void escape(void * input){
     throw Escape::EscapeException();
 }
-
-std::string OptionMenu::doInputDialog(const std::string & title, const std::string & defaultText, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent){
-    PaintownUtil::ReferenceCount<OptionMenu> backupMenu;
-    if (parent == NULL){
-        std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > dummyList;
-        backupMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(dummyList));
-    }
-    
-    class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
-    public:
-        LogicDraw(OptionMenu & menu, const std::string & title, const std::string & defaultText):
+ 
+class InputLogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
+public:
+    InputLogicDraw(OptionMenu & menu, const std::string & title, const std::string & defaultText):
         menu(menu),
         title(title),
         escaped(false),
@@ -1991,47 +1984,54 @@ std::string OptionMenu::doInputDialog(const std::string & title, const std::stri
             input.addHook(Keyboard::Key_ENTER, submit, &input);
             input.addHook(Keyboard::Key_ESC, escape, &input);
         }
-        
-        OptionMenu & menu;
-        
-        std::string title;
 
-        bool escaped;
-        
-        Mugen::Widgets::InputBox input;
-        
-        int width;
-        int height;
-        
-        double ticks(double system){
-            return Util::gameTicks(system);
-        }
+    OptionMenu & menu;
 
-        void run(){
-            // Act out
-            menu.act();
-            
-            try {
-                input.act();
-            } catch (const Escape::EscapeException & ex){
-                throw ex;
-            }
-        }
+    std::string title;
 
-        bool done(){
-            return menu.isDone();
+    bool escaped;
+
+    Mugen::Widgets::InputBox input;
+
+    int width;
+    int height;
+
+    double ticks(double system){
+        return Util::gameTicks(system);
+    }
+
+    void run(){
+        // Act out
+        menu.act();
+
+        try {
+            input.act();
+        } catch (const Escape::EscapeException & ex){
+            throw ex;
         }
-        
-        void draw(const Graphics::Bitmap & screen){
-            Graphics::StretchedBitmap stretch(320,240, screen);
-            stretch.start();
-            menu.drawInfoWithBackground(title, 0,0, "", stretch);
-            input.draw(160-width/2, 120+height/2, menu.getFont(), stretch);
-            stretch.finish();
-            screen.BlitToScreen();
-        }
-    };
-    
+    }
+
+    bool done(){
+        return menu.isDone();
+    }
+
+    void draw(const Graphics::Bitmap & screen){
+        Graphics::StretchedBitmap stretch(320,240, screen);
+        stretch.start();
+        menu.drawInfoWithBackground(title, 0,0, "", stretch);
+        input.draw(160-width/2, 120+height/2, menu.getFont(), stretch);
+        stretch.finish();
+        screen.BlitToScreen();
+    }
+};
+
+std::string OptionMenu::doInputDialog(const std::string & title, const std::string & defaultText, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent){
+    PaintownUtil::ReferenceCount<OptionMenu> backupMenu;
+    if (parent == NULL){
+        std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > dummyList;
+        backupMenu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(dummyList));
+    }
+       
     try {
         OptionMenu menu((parent != NULL) ? *parent : *backupMenu);
         menu.setName(title);
@@ -2041,7 +2041,7 @@ std::string OptionMenu::doInputDialog(const std::string & title, const std::stri
         if (disableFade){
             menu.setFadeEnabled(false);
         }
-        LogicDraw logicDraw(menu, title, defaultText);
+        InputLogicDraw logicDraw(menu, title, defaultText);
         PaintownUtil::standardLoop(logicDraw, logicDraw);
     } catch (const MessageException & ex){
         return ex.getMessage();
