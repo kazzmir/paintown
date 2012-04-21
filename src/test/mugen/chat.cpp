@@ -16,6 +16,7 @@
 #include "util/exceptions/exception.h"
 #include "util/network/network.h"
 #include "util/thread.h"
+#include "util/pointer.h"
 
 #include "mugen/util.h"
 #include "mugen/search.h"
@@ -34,18 +35,23 @@ public:
     Client(int id, Network::Socket socket):
     id(id),
     socket(socket),
-    end(false){
+    end(false),
+    valid(true){
         ::Util::Thread::createThread(&thread, NULL, (::Util::Thread::ThreadFunction) do_client_thread, this);
     }
     ~Client();
     
     void run(){
         while (!end){
-            std::string message = Mugen::NetworkUtil::readMessage(socket);
-            lock.acquire();
-            messages.push(message);
-            lock.signal();
-            lock.release();
+            try {
+                std::string message = Mugen::NetworkUtil::readMessage(socket);
+                lock.acquire();
+                messages.push(message);
+                lock.signal();
+                lock.release();
+            } catch (const Network::MessageEnd & ex){
+                valid = false;
+            }
         }
     }
     
@@ -76,6 +82,11 @@ public:
         Network::close(socket);
         ::Util::Thread::joinThread(thread);
     }
+    
+    bool isValid() const {
+        ::Util::Thread::ScopedLock scope(lock);
+        return valid;
+    }
 private:
     int id;
     Network::Socket socket;
@@ -83,6 +94,7 @@ private:
     ::Util::Thread::LockObject lock;
     bool end;
     mutable std::queue<std::string> messages;
+    bool valid;
 };
 
 static void * do_client_thread(void * c){
@@ -106,18 +118,28 @@ public:
     void run(){
         int idList = 0;
         while (!end){
-            clients.push_back(Client(idList++, Network::accept(remote)));
+            clients.push_back(PaintownUtil::ReferenceCount<Client>(new Client(idList++, Network::accept(remote))));
             Global::debug(0) << "Got a connection" << std::endl;
         }
     }
     
     void poll(){
-        for (std::vector<Client>::const_iterator i = clients.begin(); i != clients.end(); ++i){
-            const Client & client = *i;
-            while(client.hasMessages()){
-                const std::string & message = client.nextMessage();
-                relay(client.getId(), message);
+        for (std::vector< PaintownUtil::ReferenceCount<Client> >::iterator i = clients.begin(); i != clients.end(); ++i){
+            PaintownUtil::ReferenceCount<Client> client = *i;
+            while(client->hasMessages()){
+                const std::string & message = client->nextMessage();
+                relay(client->getId(), message);
                 messages.push(message);
+            }
+        }
+    }
+    
+    void cleanup(){
+        for (std::vector< PaintownUtil::ReferenceCount<Client> >::iterator i = clients.begin(); i != clients.end(); ++i){
+            PaintownUtil::ReferenceCount<Client> client = *i;
+            while(!client->isValid()){
+                client->shutdown();
+                i = clients.erase(i);
             }
         }
     }
@@ -133,17 +155,17 @@ public:
     }
     
     void global(const std::string & message){
-        for (std::vector<Client>::iterator i = clients.begin(); i != clients.end(); ++i){
-            Client & client = *i;
-            client.sendMessage(message);
+        for (std::vector< PaintownUtil::ReferenceCount<Client> >::iterator i = clients.begin(); i != clients.end(); ++i){
+            PaintownUtil::ReferenceCount<Client> client = *i;
+            client->sendMessage(message);
         }
     }
     
     void relay(int id, const std::string & message){
-        for (std::vector<Client>::iterator i = clients.begin(); i != clients.end(); ++i){
-            Client & client = *i;
-            if (client.getId() != id){
-                client.sendMessage(message);
+        for (std::vector< PaintownUtil::ReferenceCount<Client> >::iterator i = clients.begin(); i != clients.end(); ++i){
+            PaintownUtil::ReferenceCount<Client> client = *i;
+            if (client->getId() != id){
+                client->sendMessage(message);
             }
         }
     }
@@ -151,9 +173,9 @@ public:
     void shutdown(){
         ::Util::Thread::ScopedLock scope(lock);
         end = true;
-        for (std::vector<Client>::iterator i = clients.begin(); i != clients.end(); ++i){
-            Client & client = *i;
-            client.shutdown();
+        for (std::vector< PaintownUtil::ReferenceCount<Client> >::iterator i = clients.begin(); i != clients.end(); ++i){
+            PaintownUtil::ReferenceCount<Client> client = *i;
+            client->shutdown();
         }
         Network::close(remote);
         ::Util::Thread::joinThread(remoteThread);
@@ -161,7 +183,7 @@ public:
     
 private:
     Network::Socket remote;
-    std::vector<Client> clients;
+    std::vector< PaintownUtil::ReferenceCount<Client> > clients;
     
     mutable std::queue<std::string> messages;
     
@@ -178,22 +200,37 @@ void * do_server_thread(void * s){
     return NULL;
 }
 
-class Logic: public PaintownUtil::Logic, public Mugen::Widgets::ChatPanel::Event{
+class InputLogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw, public Mugen::Widgets::ChatPanel::Event{
 public:
-    Logic(Mugen::Widgets::ChatPanel & panel):
-    panel(panel),
+    InputLogicDraw(bool isServer, int port, const std::string & host = "127.0.0.1"):
+    panel(10, 20, 300, 200),
     escaped(false){
+        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+        Mugen::OptionMenu menu(list);
+        panel.setFont(menu.getFont());
+        panel.setClient("You");
+        panel.subscribe(this);
+        if (isServer){
+            server = PaintownUtil::ReferenceCount<Server>(new Server(port));
+        } else {
+            Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;
+            Network::Socket socket = Network::connect(host, port);
+            Global::debug(0) << "Connected" << std::endl;
+            client = PaintownUtil::ReferenceCount<Client>(new Client(0, socket));
+        }
     }
     
-    Mugen::Widgets::ChatPanel & panel;
+    Mugen::Widgets::ChatPanel panel;
 
     bool escaped;
     
     Network::Socket socket;
     
-
     std::queue<std::string> sendable;
     std::queue<std::string> messages;
+    
+    PaintownUtil::ReferenceCount<Client> client;
+    PaintownUtil::ReferenceCount<Server> server;
     
     ::Util::Thread::LockObject lock;
     ::Util::Thread::Id thread;
@@ -207,10 +244,16 @@ public:
             panel.act();
             sendMessages();
             processMessages();
+            if (server != NULL){
+                server->cleanup();
+            }
         } catch (const Exception::Return & ex){
             escaped = true;
-            Network::close(socket);
-            ::Util::Thread::joinThread(thread);
+            if (server != NULL){
+                server->shutdown();
+            } else {
+                client->shutdown();
+            }
             throw ex;
         }
     }
@@ -220,23 +263,32 @@ public:
     }
     
     void sendMessages(){
-        ::Util::Thread::ScopedLock scope(lock);
         while (!sendable.empty()){
-            Mugen::NetworkUtil::sendMessage(sendable.front(), socket);
+            const std::string & next = sendable.front();
+            if (server != NULL){
+                server->global(next);
+            } else {
+                client->sendMessage(next);
+            }
             sendable.pop();
         }
     }
     
     void processMessages(){
-        ::Util::Thread::ScopedLock scope(lock);
-        while (!messages.empty()){
-            panel.addMessage("remote", messages.front());
-            messages.pop();
+        if (server != NULL){
+            server->poll();
+            while (server->hasMessages()){
+                panel.addMessage("remote", server->nextMessage());
+            }
+        } else {
+            while (client->hasMessages()){
+                panel.addMessage("remote", client->nextMessage());
+            }
         }
     }
     
     void pollMessages(){
-        try{
+        /*try{
             while (!escaped){
                 std::string message = Mugen::NetworkUtil::readMessage(socket);
                 lock.acquire();
@@ -245,22 +297,13 @@ public:
                 lock.release();
             }
         } catch (const Network::NetworkException & fail){
-        }
+        }*/
     }
     
     void addMessage(const std::string & message){
         ::Util::Thread::ScopedLock scope(lock);
         sendable.push(message);
     }
-};
-
-class Draw: public PaintownUtil::Draw {
-public:
-    Draw(Mugen::Widgets::ChatPanel & panel):
-    panel(panel){
-    }
-
-    Mugen::Widgets::ChatPanel & panel;
     
     void draw(const Graphics::Bitmap & screen){
         Graphics::StretchedBitmap stretch(320, 240, screen);
@@ -271,14 +314,15 @@ public:
         screen.BlitToScreen();
     }
 };
-
+/*
 static void * do_thread(void * arg){
     Logic * logic = (Logic*) arg;
     logic->pollMessages();
     return NULL;
-}
+}*/
 
 static void doServer(int port){
+    /*
     Mugen::Widgets::ChatPanel chat(10, 20, 300, 200);
     std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     Mugen::OptionMenu menu(list);
@@ -296,12 +340,15 @@ static void doServer(int port){
     Global::debug(0) << "Got a connection" << std::endl;
     
     ::Util::Thread::createThread(&logic.thread, NULL, (::Util::Thread::ThreadFunction) do_thread, &logic);
-    
     PaintownUtil::standardLoop(logic, draw);
+    */
+    InputLogicDraw server(true, port);
+    PaintownUtil::standardLoop(server, server);
 }
 
 
-static void doClient(const std::string & host, int port){    
+static void doClient(const std::string & host, int port){
+    /*
     Mugen::Widgets::ChatPanel chat(10, 20, 300, 200);
     std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     Mugen::OptionMenu menu(list);
@@ -318,6 +365,10 @@ static void doClient(const std::string & host, int port){
     ::Util::Thread::createThread(&logic.thread, NULL, (::Util::Thread::ThreadFunction) do_thread, &logic);
     
     PaintownUtil::standardLoop(logic, draw);
+    */
+    
+    InputLogicDraw client(false, port, host);
+    PaintownUtil::standardLoop(client, client);
 }
 
 static void arguments(const std::string & application, int status){
