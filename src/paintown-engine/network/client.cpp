@@ -31,7 +31,7 @@
 #include "util/exceptions/exception.h"
 #include "util/loading.h"
 #include "chat_client.h"
-#include "util/network/network.h"
+#include "../network/network.h"
 #include "configuration.h"
 #include "util/system.h"
 #include <string>

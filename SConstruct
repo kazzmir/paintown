@@ -1819,7 +1819,7 @@ else:
         return q + "/SCons/Tool"
     if useGch():
         env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
-        if not getDebug():
+        if not getDebug() and not isVerbose():
             env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
 
     if isOSX104():

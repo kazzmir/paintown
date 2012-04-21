@@ -38,6 +38,7 @@ network/client.cpp
 network/chat_client.cpp
 network/chat_server.cpp
 network/chat-widget.cpp
+network/network.cpp
 network/network_world.cpp
 network/network_world_client.cpp
 network/server.cpp)

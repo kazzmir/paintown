@@ -2,7 +2,7 @@
 #define _game_object_h
 
 #include "util/sound.h"
-#include "util/network/network.h"
+#include "paintown-engine/network/network.h"
 #include "util/bitmap.h"
 #include <string>
 #include <vector>

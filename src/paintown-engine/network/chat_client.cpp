@@ -2,7 +2,7 @@
 
 #include "util/bitmap.h"
 #include "util/stretch-bitmap.h"
-#include "util/network/network.h"
+#include "../network/network.h"
 #include "util/trans-bitmap.h"
 #include "util/events.h"
 #include "chat_client.h"

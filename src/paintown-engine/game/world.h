@@ -20,7 +20,7 @@ class Bitmap;
 #include <string>
 
 #include "util/load_exception.h"
-#include "util/network/network.h"
+#include "../network/network.h"
 #include "../level/block.h"
 #include "util/pointer.h"
 

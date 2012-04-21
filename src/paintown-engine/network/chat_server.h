@@ -1,7 +1,7 @@
 #ifndef _paintown_chat_server_h
 #define _paintown_chat_server_h
 
-#include "util/network/network.h"
+#include "../network/network.h"
 #include "util/messages.h"
 #include "util/thread.h"
 #include "util/pointer.h"
