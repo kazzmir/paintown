@@ -69,6 +69,36 @@ void play(const string & path){
     // SDL_Delay(8000 * 3);
 }
 
+static bool isZip(const string & path){
+    return path.find(".zip") != string::npos;
+}
+
+static vector<string> filterMp3(const vector<string> & input){
+    vector<string> out;
+
+    for (vector<string>::const_iterator it = input.begin(); it != input.end(); it++){
+        if (it->find(".mp3") != string::npos){
+            out.push_back(*it);
+        }
+    }
+
+    return out;
+}
+
+static void playZip(const string & path, const string & what = ""){
+    Storage::instance().addOverlay(Filesystem::AbsolutePath(path), Filesystem::AbsolutePath("test/zip5"));
+    if (what == ""){
+        std::vector<string> mp3s = filterMp3(Storage::instance().containerFileList(Filesystem::AbsolutePath(path)));
+        if (mp3s.size() > 0){
+            play(string("test/zip5/") + mp3s[0]);
+        } else {
+            Global::debug(0) << "No mp3's found in " << path << std::endl;
+        }
+    } else {
+        play(string("test/zip5/") + what);
+    }
+}
+
 void initialize(int rate){
     SDL_Init(SDL_INIT_AUDIO);
     atexit(SDL_Quit);
@@ -102,8 +132,18 @@ int main(int argc, char ** argv){
     }
     initialize(48000);
     try{
-        play(argv[1]);
+        if (isZip(argv[1])){
+            if (argc > 2){
+                playZip(argv[1], argv[2]);
+            } else {
+                playZip(argv[1]);
+            }
+        } else {
+            play(argv[1]);
+        }
+    } catch (const Exception::Base & fail){
+        Global::debug(0) << "Failed: " << fail.getTrace() << endl;
     } catch (...){
-        Global::debug(0) << "Failed" << endl;
+        Global::debug(0) << "Failed" << std::endl;
     }
 }
