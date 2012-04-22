@@ -1585,7 +1585,7 @@ Mugen::FontSystem::FontSystem(){
 }
 
 Mugen::FontSystem::FontSystem(const Mugen::FontSystem & copy):
-fonts(fonts){
+fonts(copy.fonts){
 }
 
 Mugen::FontSystem::~FontSystem(){
