@@ -37,10 +37,10 @@ if isLinux():
     try:
         env.VariantDir('build', '../../')
         env.Append(CPPPATH = ['#/src'])
-        source = Split("""test.cpp build/util/music-player.cpp build/util/debug.cpp
+        source = Split("""test.cpp build/util/music-player.cpp build/util/music-renderer.cpp build/util/debug.cpp
         build/util/audio.cpp build/util/exceptions/exception.cpp build/util/file-system.cpp build/util/directory.cpp build/util/thread.cpp build/util/system.cpp""")
         wav_source = Split("""wav.cpp build/util/audio.cpp build/util/debug.cpp build/util/exceptions/exception.cpp build/util/sound.cpp build/util/load_exception.cpp""")
-        music_source = Split("""music.cpp build/music/util/music-player.cpp build/music/util/audio.cpp build/music/util/exceptions/exception.cpp build/music/util/sound.cpp build/music/util/load_exception.cpp build/music/util/debug.cpp build/music/util/music.cpp build/music/util/file-system.cpp build/music/util/directory.cpp build/music/util/thread.cpp build/music/util/system.cpp""")
+        music_source = Split("""music.cpp build/music/util/music-player.cpp build/music/util/music-renderer.cpp build/music/util/audio.cpp build/music/util/exceptions/exception.cpp build/music/util/sound.cpp build/music/util/load_exception.cpp build/music/util/debug.cpp build/music/util/music.cpp build/music/util/file-system.cpp build/music/util/directory.cpp build/music/util/thread.cpp build/music/util/system.cpp""")
 
         env.Append(CPPPATH = '../..')
         env.Append(CPPDEFINES = ['USE_SDL', 'HAVE_MP3_MPG123'])

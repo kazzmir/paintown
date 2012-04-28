@@ -5,6 +5,10 @@
 #include "util/file-system.h"
 #include "util/debug.h"
 
+#ifdef USE_SDL
+#include "util/sdl/mixer/SDL_mixer.h"
+#endif
+
 using std::string;
 
 namespace Util{
@@ -111,6 +115,7 @@ static void playZip(const string & path, const string & what = ""){
 }
 
 void initialize(int rate){
+#ifdef USE_SDL
     SDL_Init(SDL_INIT_AUDIO);
     atexit(SDL_Quit);
 
@@ -134,6 +139,7 @@ void initialize(int rate){
     Sound::Info.format = audio_format;
 
     Global::debug(0) << "Opened audio frequency " << audio_rate << " channels " << audio_channels << " format " << audio_format << endl;
+#endif
 }
 
 int main(int argc, char ** argv){

@@ -46,7 +46,7 @@ namespace Widgets{
             this->border = color;
         }
         
-        virtual inline void setAlpha(const Graphics::Color & color){
+        virtual inline void setAlpha(int color){
             this->alpha = color;
         }
         
