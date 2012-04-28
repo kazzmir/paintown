@@ -60,12 +60,23 @@ using namespace std;
 
 void play(const string & path){
     Filesystem::AbsolutePath absolute(path);
-    Util::Mp3Player player(absolute);
-    player.play();
-
-    while (true){
-        SDL_Delay(1);
+    if (path.find(".mp3") != string::npos){
+        Util::Mp3Player player(absolute);
+        player.play();
+        while (true){
+            SDL_Delay(1);
+        }
+    } else if (path.find(".s3m") != string::npos ||
+               path.find(".mod") != string::npos ||
+               path.find(".xm") != string::npos ||
+               path.find(".it") != string::npos){
+        Util::DumbPlayer player(absolute);
+        player.play();
+        while (true){
+            SDL_Delay(1);
+        }
     }
+
     // SDL_Delay(8000 * 3);
 }
 
