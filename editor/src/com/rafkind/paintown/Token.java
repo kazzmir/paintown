@@ -50,6 +50,10 @@ public class Token{
 		return tokens;
 	}
 
+    public int childrenCount(){
+        return tokens.size();
+    }
+
 	public Iterator iterator(){
 		Iterator i = tokens.iterator();
 		if ( i.hasNext() ){

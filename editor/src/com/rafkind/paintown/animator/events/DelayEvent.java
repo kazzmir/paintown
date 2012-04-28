@@ -32,11 +32,11 @@ public class DelayEvent extends AnimationEventNotifier implements AnimationEvent
     }
 
     private int parseType(String type){
-        if (type == "ticks"){
+        if (type.equals("ticks")){
             return Ticks;
-        } else if (type == "ms" || type == "milliseconds"){
+        } else if (type.equals("ms") || type.equals("milliseconds")){
             return Milliseconds;
-        } else if (type == "s" || type == "sec" || type == "seconds"){
+        } else if (type.equals("s") || type.equals("sec") || type.equals("seconds")){
             return Seconds;
         }
         return Ticks;
