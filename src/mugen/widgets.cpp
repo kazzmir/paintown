@@ -8,7 +8,7 @@
 namespace Mugen{
 namespace Widgets{
 
-void drawBox(int radius, int x, int y, int width, int height, const Graphics::Color & body, const Graphics::Color & border, Graphics::Color alpha, const Graphics::Bitmap & where){
+void drawBox(int radius, int x, int y, int width, int height, const Graphics::Color & body, const Graphics::Color & border, int alpha, const Graphics::Bitmap & where){
     if (radius > 0){
         if (alpha < 255){
             Graphics::Bitmap::transBlender(0,0,0,alpha);

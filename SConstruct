@@ -748,7 +748,8 @@ def useAllegro5():
         except KeyError:
             return False
 
-    return byEnv() or byArgument()
+    # FIXME: hack to specify android here
+    return byEnv() or byArgument() or useAndroid()
 
 def useAllegro():
     def byEnv():
@@ -1142,7 +1143,7 @@ rsx
             return '%s%s' % (pre, x)
         
         platform = 'android-9'
-        arch = 'armeabi'
+        arch = 'armeabi-v7a'
         path = '/opt/android/android-toolchain'
         # bin_path = setup(path, '/arm-linux-androideabi-4.4.3/bin')
         bin_path = setup(path, '/bin')
@@ -1159,7 +1160,8 @@ rsx
         base = setup(path, '/user/%(arch)s' % {'arch': arch})
 
         env.Append(CPPPATH = ['%s/include' % base,
-                              '%s/include/SDL' % base])
+                              # '%s/include/allegro5' % base
+                              ])
         
         #env.Append(CPPPATH = [setup(path, '/arm-linux-androideabi-4.4.3/include'), 
         #                      setup(path, '/platforms/%s/arch-arm/usr/include' % platform),
@@ -1176,7 +1178,7 @@ rsx
         # Copy the static stdc++ from gnu-libstdc++
         # gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
         # libs = Split("""freetype2-static png SDL m log c jnigraphics supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
-        libs = Split("""freetype2-static png SDL m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
+        libs = Split("""freetype2-static png allegro m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
@@ -1852,12 +1854,15 @@ else:
                 print "Install libsdl 1.2"
                 Exit(1)
             config.CheckSDLMain()
-        elif useMinpspw() or usePs3() or useNDS() or useAndroid() or useNacl():
+        elif useMinpspw() or usePs3() or useNDS() or useNacl():
             env.Append(CPPDEFINES = ['USE_SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
             config.CheckSDLMain()
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
+
+        if useAndroid():
+            config.CheckAllegro5()
         
         if not usePs3() and not useNacl() and not useAndroid():
             safeParseConfig(config.env, 'freetype-config --libs --cflags')
