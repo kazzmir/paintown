@@ -1,6 +1,6 @@
-diff -r f3c34d321289 include/SDL_thread.h
---- a/include/SDL_thread.h	Fri Dec 09 02:32:21 2011 -0500
-+++ b/include/SDL_thread.h	Tue Dec 20 16:00:48 2011 -0700
+diff -r 601b0e251822 include/SDL_thread.h
+--- a/include/SDL_thread.h	Mon Apr 09 23:55:43 2012 -0400
++++ b/include/SDL_thread.h	Sun Apr 29 11:23:12 2012 -0600
 @@ -144,6 +144,8 @@
  extern DECLSPEC SDL_Thread *SDLCALL
  SDL_CreateThread(SDL_ThreadFunction fn, const char *name, void *data);
@@ -10,9 +10,9 @@ diff -r f3c34d321289 include/SDL_thread.h
  #endif
  
  /**
-diff -r f3c34d321289 src/file/SDL_rwops.c
---- a/src/file/SDL_rwops.c	Fri Dec 09 02:32:21 2011 -0500
-+++ b/src/file/SDL_rwops.c	Tue Dec 20 16:00:48 2011 -0700
+diff -r 601b0e251822 src/file/SDL_rwops.c
+--- a/src/file/SDL_rwops.c	Mon Apr 09 23:55:43 2012 -0400
++++ b/src/file/SDL_rwops.c	Sun Apr 29 11:23:12 2012 -0600
 @@ -445,7 +445,7 @@
          SDL_SetError("SDL_RWFromFile(): No file or no mode specified");
          return NULL;
@@ -22,9 +22,9 @@ diff -r f3c34d321289 src/file/SDL_rwops.c
      rwops = SDL_AllocRW();
      if (!rwops)
          return NULL;            /* SDL_SetError already setup by SDL_AllocRW() */
-diff -r f3c34d321289 src/joystick/SDL_joystick.c
---- a/src/joystick/SDL_joystick.c	Fri Dec 09 02:32:21 2011 -0500
-+++ b/src/joystick/SDL_joystick.c	Tue Dec 20 16:00:48 2011 -0700
+diff -r 601b0e251822 src/joystick/SDL_joystick.c
+--- a/src/joystick/SDL_joystick.c	Mon Apr 09 23:55:43 2012 -0400
++++ b/src/joystick/SDL_joystick.c	Sun Apr 29 11:23:12 2012 -0600
 @@ -26,7 +26,6 @@
  #include "SDL_sysjoystick.h"
  #include "SDL_joystick_c.h"
@@ -33,20 +33,40 @@ diff -r f3c34d321289 src/joystick/SDL_joystick.c
  #if !SDL_EVENTS_DISABLED
  #include "../events/SDL_events_c.h"
  #endif
-diff -r f3c34d321289 src/joystick/android/SDL_sysjoystick.c
---- a/src/joystick/android/SDL_sysjoystick.c	Fri Dec 09 02:32:21 2011 -0500
-+++ b/src/joystick/android/SDL_sysjoystick.c	Tue Dec 20 16:00:48 2011 -0700
-@@ -88,6 +88,7 @@
+diff -r 601b0e251822 src/joystick/android/SDL_sysjoystick.c
+--- a/src/joystick/android/SDL_sysjoystick.c	Mon Apr 09 23:55:43 2012 -0400
++++ b/src/joystick/android/SDL_sysjoystick.c	Sun Apr 29 11:23:12 2012 -0600
+@@ -1,6 +1,6 @@
+ /*
+   Simple DirectMedia Layer
+-  Copyright (C) 1997-2012 Sam Lantinga <slouken@libsdl.org>
++  Copyright (C) 1997-2011 Sam Lantinga <slouken@libsdl.org>
+ 
+   This software is provided 'as-is', without any express or implied
+   warranty.  In no event will the authors be held liable for any damages
+@@ -86,14 +86,13 @@
+ SDL_SYS_JoystickUpdate(SDL_Joystick * joystick)
+ {
      int i;
+-    Sint16 value;
      float values[3];
  
+-    if (Android_JNI_GetAccelerometerValues(values)) {
+-        for ( i = 0; i < 3; i++ ) {
+-            value = (Sint16)(values[i] * 32767.0f);
+-            SDL_PrivateJoystickAxis(joystick, i, value);
+-        }
 +    return;
-     Android_JNI_GetAccelerometerValues(values);
++    Android_JNI_GetAccelerometerValues(values);
++
++    for ( i = 0; i < 3; i++ ) {
++        SDL_PrivateJoystickAxis(joystick, i, values[i]);
+     }
+ }
  
-     for ( i = 0; i < 3; i++ ) {
-diff -r f3c34d321289 src/render/SDL_render.c
---- a/src/render/SDL_render.c	Fri Dec 09 02:32:21 2011 -0500
-+++ b/src/render/SDL_render.c	Tue Dec 20 16:00:48 2011 -0700
+diff -r 601b0e251822 src/render/SDL_render.c
+--- a/src/render/SDL_render.c	Mon Apr 09 23:55:43 2012 -0400
++++ b/src/render/SDL_render.c	Sun Apr 29 11:23:12 2012 -0600
 @@ -52,12 +52,12 @@
  #if SDL_VIDEO_RENDER_OGL
      &GL_RenderDriver,

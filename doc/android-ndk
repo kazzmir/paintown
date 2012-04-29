@@ -13,7 +13,7 @@
             - Select the "Installed packages" on the right column and under "Description" hit "Update All..."
                 - A dialog should pop up for choosing packages, hit the radial "Accept All" and hit "Install" (this may take some time)
       - cd ../../
-      - ln -s android-sdk-linux_x86 /opt/android-sdk
+      - ln -s /full/path/to/android-sdk-linux_x86 /opt/android-sdk
       - wget http://dl.google.com/android/ndk/android-ndk-r7-linux-x86.tar.bz2
       - tar xvjf android-ndk-r7-linux-x86.tar.bz2
       - ln -s android-ndk-r7 /opt/android
