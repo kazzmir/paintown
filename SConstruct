@@ -429,6 +429,10 @@ def checkAllegro(context):
 
 def checkPthreads(context):
     context.Message("Checking for threads... ")
+    if useAndroid():
+        context.Message(" android threads")
+        context.Result(colorResult(1))
+        return 1
     if useAllegro():
         env = context.env
         env.Append(LIBS = ['pthread'])
