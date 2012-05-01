@@ -79,6 +79,12 @@ void play(const string & path){
         while (true){
             SDL_Delay(1);
         }
+    } else if (path.find(".ogg") != string::npos){
+        Util::OggPlayer player(absolute);
+        player.play();
+        while (true){
+            SDL_Delay(1);
+        }
     }
 
     // SDL_Delay(8000 * 3);
