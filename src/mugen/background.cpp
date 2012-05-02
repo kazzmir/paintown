@@ -660,7 +660,10 @@ animation(0){
                 all << "begin action " << action;
                 Ast::Section * section = parse->findSection(all.str());
                 if (section == NULL){
-                    throw MugenException("No action for actionno " + action, __FILE__, __LINE__);
+                    ostringstream out;
+                    out << "No action for actionno ";
+                    out << action;
+                    throw MugenException(out.str(), __FILE__, __LINE__);
                 }
                 self.setAnimation(Util::getAnimation(section, sprites, false));
             }
