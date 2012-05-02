@@ -305,7 +305,7 @@ startscene(0){
 
     TimeDifference diff;
     diff.startTime();
-    AstRef parsed(Util::parseDef(ourDefFile.path()));
+    AstRef parsed(Util::parseDef(ourDefFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
 

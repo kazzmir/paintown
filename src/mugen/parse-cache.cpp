@@ -35,14 +35,14 @@ static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::Abso
     return System::getModificationTime(path1.path()) >= System::getModificationTime(path2.path());
 }
 
-static AstRef loadCached(const string & path){
-    string converted = path;
-    std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
-    if (!Storage::instance().exists(Filesystem::AbsolutePath(path))){
+static AstRef loadCached(const Filesystem::AbsolutePath & path){
+    if (!Storage::instance().exists(path)){
         throw MugenException("Original file does not exist", __FILE__, __LINE__);
     }
+    string converted = Storage::instance().cleanse(path).path();
+    std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
     Filesystem::AbsolutePath fullPath = Storage::instance().userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE)).join(Filesystem::RelativePath(converted));
-    if (!newer(fullPath, Filesystem::AbsolutePath(path))){
+    if (!newer(fullPath, path)){
         throw MugenException("File is old", __FILE__, __LINE__);
     }
     TokenReader reader;
@@ -59,8 +59,8 @@ static void saveParse(const Filesystem::AbsolutePath & path, const PaintownUtil:
     delete serial;
 }
 
-static void saveCached(const Util::ReferenceCount<Ast::AstParse> & parse, const string & path){
-    string converted = path;
+static void saveCached(const Util::ReferenceCount<Ast::AstParse> & parse, const Filesystem::AbsolutePath & path){
+    string converted = Storage::instance().cleanse(path).path();
     std::transform(converted.begin(), converted.end(), converted.begin(), replaceSlash);
     Filesystem::AbsolutePath cache = Storage::instance().userDirectory().join(Filesystem::RelativePath(MUGEN_CACHE));
 
@@ -77,19 +77,19 @@ static void saveCached(const Util::ReferenceCount<Ast::AstParse> & parse, const 
 /* attempts to load from a file on disk. if the file doesn't exist then
  * parse it for real and save it to disk.
  */
-Util::ReferenceCount<Ast::AstParse> Parser::loadFile(const string & path){
+Util::ReferenceCount<Ast::AstParse> Parser::loadFile(const Filesystem::AbsolutePath & path){
     try{
         return loadCached(path);
     } catch (const TokenException & fail){
     } catch (const MugenException & e){
     }
 
-    Global::debug(1, "mugen-parse-cache") << "Parsing " << path << endl;
+    Global::debug(1, "mugen-parse-cache") << "Parsing " << path.path() << endl;
     Util::ReferenceCount<Ast::AstParse> out = doParse(path);
     try{
         saveCached(out, path);
     } catch (...){
-        Global::debug(0) << "Failed to save cached file " << path << endl;
+        Global::debug(0) << "Failed to save cached file " << path.path() << endl;
         /* failed for some reason */
     }
 
@@ -123,7 +123,7 @@ static list<Ast::Section*> * copy(list<Ast::Section*> * input){
  * then either load it from disk or parse it.
  * returns a new copy of the AST so you must delete it later.
  */
-Util::ReferenceCount<Ast::AstParse> Parser::parse(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> Parser::parse(const Filesystem::AbsolutePath & path){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     if (cache[path] == NULL){
         cache[path] = loadFile(path);
@@ -150,47 +150,47 @@ DefCache::DefCache(){
 DefCache::~DefCache(){
 }
 
-static list<Ast::Section*> * reallyParseCmd(const std::string & path){
-    return (list<Ast::Section*>*) Cmd::parse(path);
+static list<Ast::Section*> * reallyParseCmd(const Filesystem::AbsolutePath & path){
+    return (list<Ast::Section*>*) Cmd::parse(path.path());
 }
 
-static list<Ast::Section*> * reallyParseAir(const std::string & path){
-    return (list<Ast::Section*>*) Air::parse(path);
+static list<Ast::Section*> * reallyParseAir(const Filesystem::AbsolutePath & path){
+    return (list<Ast::Section*>*) Air::parse(path.path());
 }
 
-static list<Ast::Section*> * reallyParseDef(const std::string & path){
-    return (list<Ast::Section*>*) Def::parse(path);
+static list<Ast::Section*> * reallyParseDef(const Filesystem::AbsolutePath & path){
+    return (list<Ast::Section*>*) Def::parse(path.path());
 }
 
-Util::ReferenceCount<Ast::AstParse> CmdCache::doParse(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> CmdCache::doParse(const Filesystem::AbsolutePath & path){
     return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseCmd(path)));
 }
 
-Util::ReferenceCount<Ast::AstParse> AirCache::doParse(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> AirCache::doParse(const Filesystem::AbsolutePath & path){
     return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseAir(path)));
 }
 
-Util::ReferenceCount<Ast::AstParse> DefCache::doParse(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> DefCache::doParse(const Filesystem::AbsolutePath & path){
     return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseDef(path)));
 }
 
 ParseCache * ParseCache::cache = NULL;
 
-Util::ReferenceCount<Ast::AstParse> ParseCache::parseCmd(const string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::parseCmd(const Filesystem::AbsolutePath & path){
     if (cache == NULL){
         return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseCmd(path)));
     }
     return cache->doParseCmd(path);
 }
     
-Util::ReferenceCount<Ast::AstParse> ParseCache::parseAir(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::parseAir(const Filesystem::AbsolutePath & path){
     if (cache == NULL){
         return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseAir(path)));
     }
     return cache->doParseAir(path);
 }
 
-Util::ReferenceCount<Ast::AstParse> ParseCache::parseDef(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::parseDef(const Filesystem::AbsolutePath & path){
     if (cache == NULL){
         return Util::ReferenceCount<Ast::AstParse>(new Ast::AstParse(reallyParseDef(path)));
     }
@@ -221,15 +221,15 @@ ParseCache::~ParseCache(){
     cache = NULL;
 }
 
-Util::ReferenceCount<Ast::AstParse> ParseCache::doParseCmd(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::doParseCmd(const Filesystem::AbsolutePath & path){
     return cmdCache.parse(path);
 }
     
-Util::ReferenceCount<Ast::AstParse> ParseCache::doParseAir(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::doParseAir(const Filesystem::AbsolutePath & path){
     return airCache.parse(path);
 }
 
-Util::ReferenceCount<Ast::AstParse> ParseCache::doParseDef(const std::string & path){
+Util::ReferenceCount<Ast::AstParse> ParseCache::doParseDef(const Filesystem::AbsolutePath & path){
     return defCache.parse(path);
 }
 

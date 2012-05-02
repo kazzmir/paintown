@@ -1550,7 +1550,7 @@ void Game::doArcade(Searcher & searcher){
     Mugen::ArcadeData::MatchPath match;
     
     // Parsed
-    AstRef parsed(Mugen::Util::parseDef(systemFile.path()));
+    AstRef parsed(Mugen::Util::parseDef(systemFile));
     
     RunMatchOptions options;
     
@@ -1606,7 +1606,7 @@ void Game::doArcade(Searcher & searcher){
         file = player2Collection.getFirst().getDef();
     }
         
-    AstRef playerParsed(Mugen::Util::parseDef(file.path()));
+    AstRef playerParsed(Mugen::Util::parseDef(file));
     
     Filesystem::AbsolutePath baseDir = file.getDirectory();
     try{
@@ -2051,7 +2051,7 @@ void Game::startDemo(Searcher & searcher){
     bool showVersusScreen = false;
     int endTime = 1500;
     bool displayFightBars = false;
-    AstRef parsed(Mugen::Util::parseDef(systemFile.path()));
+    AstRef parsed(Mugen::Util::parseDef(systemFile));
     if (Util::probeDef(parsed, "demo mode", "select.enabled") == "1"){
         showSelectScreen = true;
     }

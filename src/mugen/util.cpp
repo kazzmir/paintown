@@ -957,41 +957,41 @@ static void parseException(const string & file, const string & error, int line, 
     throw MugenException(out.str(), __FILE__, __LINE__);
 }
 
-PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseAir(const string & filename){
+PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseAir(const Filesystem::AbsolutePath & filename){
     try{
         return ParseCache::parseAir(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Air::ParseException & e){
-        parseException(filename, e.getReason(), e.getLine(), e.getColumn());
+        parseException(filename.path(), e.getReason(), e.getLine(), e.getColumn());
         throw MugenException("won't get here", __FILE__, __LINE__);
     }
 }
 
-PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseDef(const string & filename){
+PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseDef(const Filesystem::AbsolutePath & filename){
     try{
         return ParseCache::parseDef(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Def::ParseException & e){
-        parseException(filename, e.getReason(), e.getLine(), e.getColumn());
+        parseException(filename.path(), e.getReason(), e.getLine(), e.getColumn());
         throw MugenException("won't get here", __FILE__, __LINE__);
     }
 }
 
-PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseCmd(const string & filename){
+PaintownUtil::ReferenceCount<Ast::AstParse> Mugen::Util::parseCmd(const Filesystem::AbsolutePath & filename){
     try{
         return ParseCache::parseCmd(filename);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Cmd::ParseException & e){
-        parseException(filename, e.getReason(), e.getLine(), e.getColumn());
+        parseException(filename.path(), e.getReason(), e.getLine(), e.getColumn());
         throw MugenException("won't get here", __FILE__, __LINE__);
     }
 }
 
 std::map<int, PaintownUtil::ReferenceCount<Mugen::Animation> > Mugen::Util::loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask){
-    AstRef parsed(parseAir(filename.path()));
+    AstRef parsed(parseAir(filename));
     // Global::debug(2, __FILE__) << "Parsing animations. Number of sections is " << parsed->getSections()->size() << endl;
     
     map<int, PaintownUtil::ReferenceCount<Mugen::Animation> > animations;
@@ -1102,7 +1102,7 @@ void Mugen::Util::destroyRaw(const map< unsigned int, std::map< unsigned int, Pa
 }
 
 const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, const std::string &section, const std::string &search){
-    return probeDef(parseDef(file.path()), section, search);
+    return probeDef(parseDef(file), section, search);
 }
 
 PaintownUtil::ReferenceCount<Mugen::Sprite>Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
@@ -1254,7 +1254,7 @@ act(0),
 icon(PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL)),
 portrait(PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL)){
     try{
-        AstRef parsed(Util::parseDef(file.path()));
+        AstRef parsed(Util::parseDef(file));
 
         name = Util::probeDef(parsed, "info", "name");
         displayName = Util::probeDef(parsed, "info", "displayname");
@@ -1320,7 +1320,7 @@ void Mugen::ArcadeData::CharacterInfo::drawPortrait(int x, int y, const Graphics
 
 void Mugen::ArcadeData::CharacterInfo::loadImages(){
     try{
-        AstRef parsed(Util::parseDef(definition.path()));
+        AstRef parsed(Util::parseDef(definition));
 
         /* Grab the act files, in mugen it's strictly capped at 12 so we'll do the same */
         std::vector<Filesystem::RelativePath> actCollection;

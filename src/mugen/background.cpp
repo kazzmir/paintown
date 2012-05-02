@@ -1718,7 +1718,7 @@ debug(false),
 clearColor(Graphics::MaskColor()){
     TimeDifference diff;
     diff.startTime();
-    AstRef parsed(Mugen::Util::parseDef(file.path()));
+    AstRef parsed(Mugen::Util::parseDef(file));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << endl;
     

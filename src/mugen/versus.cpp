@@ -39,7 +39,7 @@ demoMode(demoMode){
 
         TimeDifference diff;
         diff.startTime();
-        AstRef parsed(Util::parseDef(path.path()));
+        AstRef parsed(Util::parseDef(path));
         diff.endTime();
         Global::debug(1) << "Parsed mugen file " + path.path() + " in" + diff.printTime("") << std::endl;
 

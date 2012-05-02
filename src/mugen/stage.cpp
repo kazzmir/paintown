@@ -571,7 +571,7 @@ void Mugen::Stage::load(){
 
     TimeDifference diff;
     diff.startTime();
-    AstRef parsed(Mugen::Util::parseDef(ourDefFile.path()));
+    AstRef parsed(Mugen::Util::parseDef(ourDefFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
@@ -1817,7 +1817,7 @@ const std::string Mugen::Stage::getStageName(const std::string &filename){
     
     Global::debug(1) << "Got subdir: " << filesdir << endl;
     
-    AstRef parsed(Mugen::Util::parseDef(defFile.path()));
+    AstRef parsed(Mugen::Util::parseDef(defFile));
     return parsed->findSection("info")->findAttribute("name")->valueAsString();
         
     throw MugenException( "Cannot locate stage definition file for: " + fullname, __FILE__, __LINE__);

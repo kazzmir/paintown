@@ -727,7 +727,7 @@ recalculateHeight(160){
 
     TimeDifference diff;
     diff.startTime();
-    AstRef parsed(Util::parseDef(systemFile.path()));
+    AstRef parsed(Util::parseDef(systemFile));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + systemFile.path() + " in" + diff.printTime("") << endl;
 

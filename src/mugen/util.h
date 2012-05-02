@@ -113,9 +113,9 @@ namespace Util{
     /* convenient parser functions. throw MugenException on failure instead
      * of Ast::Exception.
      */
-    AstRef parseAir(const std::string & filename);
-    AstRef parseDef(const std::string & filename);
-    AstRef parseCmd(const std::string & filename);
+    AstRef parseAir(const Filesystem::AbsolutePath & filename);
+    AstRef parseDef(const Filesystem::AbsolutePath & filename);
+    AstRef parseCmd(const Filesystem::AbsolutePath & filename);
 
     /* returns the number of game ticks that have passed by.
      * speed adjusts the rate. lower values slow the game down,

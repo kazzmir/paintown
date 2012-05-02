@@ -829,7 +829,7 @@ void Character::loadSelectData(){
 	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
 	}
 	
-        AstRef parsed(Util::parseDef(ourDefFile.path()));
+        AstRef parsed(Util::parseDef(ourDefFile));
 	// Set name of character
 	this->name = Mugen::Util::probeDef(parsed, "info", "name");
 	this->displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
@@ -878,7 +878,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         int defaultTime = 15;
         int defaultBufferTime = 1;
 
-        AstRef parsed(Util::parseCmd(full.path()));
+        AstRef parsed(Util::parseCmd(full));
         PaintownUtil::ReferenceCount<State> currentState;
         for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
@@ -1206,7 +1206,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
     Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(baseDir).join(path));
     try{
         /* cns can use the Cmd parser */
-        AstRef parsed(Util::parseCmd(full.path()));
+        AstRef parsed(Util::parseCmd(full));
         for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
             Ast::Section * section = *section_it;
             std::string head = section->getName();
@@ -1788,7 +1788,7 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Storage::instance().cleanse(full));
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
-    AstRef parsed(Util::parseCmd(full.path()));
+    AstRef parsed(Util::parseCmd(full));
     map<int, PaintownUtil::ReferenceCount<State> > out;
     PaintownUtil::ReferenceCount<State> currentState;
     for (Ast::AstParse::section_iterator section_it = parsed->getSections()->begin(); section_it != parsed->getSections()->end(); section_it++){
@@ -1903,7 +1903,7 @@ void Character::load(int useAct){
     baseDir = location.getDirectory();
     // const std::string ourDefFile = location;
      
-    AstRef parsed(Util::parseDef(location.path()));
+    AstRef parsed(Util::parseDef(location));
     try{
         /* Every character should have a [Files] section at least. Possibly [Info] as well
          * but I'm not sure yet.

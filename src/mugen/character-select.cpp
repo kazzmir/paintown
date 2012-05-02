@@ -554,7 +554,7 @@ void StageMenu::add(const Filesystem::AbsolutePath & stage){
                 return;
             }
         }
-        AstRef parsed(Util::parseDef(stage.path()));
+        AstRef parsed(Util::parseDef(stage));
         const std::string & name = Util::probeDef(parsed, "info", "name");
         stages.push_back(stage);
         names.push_back(name);
@@ -1916,7 +1916,7 @@ void CharacterSelect::init(){
 
         TimeDifference diff;
         diff.startTime();
-        AstRef parsed(Util::parseDef(file.path()));
+        AstRef parsed(Util::parseDef(file));
         diff.endTime();
         Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << std::endl;
 
@@ -3103,7 +3103,7 @@ void CharacterSelect::parseSelect(){
     
     TimeDifference diff;
     diff.startTime();
-    AstRef parsed(Util::parseDef(file.path()));
+    AstRef parsed(Util::parseDef(file));
     diff.endTime();
     Global::debug(1) << "Parsed mugen file " + file.path() + " in" + diff.printTime("") << std::endl;
     
