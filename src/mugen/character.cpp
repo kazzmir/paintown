@@ -2020,9 +2020,16 @@ void Character::load(int useAct){
                                 Util::readSounds(Storage::instance().lookupInsensitive(self.baseDir, Filesystem::RelativePath(self.sndFile)), self.sounds);
                             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal([0-9]+)", 0).c_str());
-                                string what;
-                                simple.view() >> what;
-                                self.palFile[num] = what;
+                                try{
+                                    string what;
+                                    /* There could be no file listed, just
+                                     * pal2 =
+                                     */
+                                    simple.view() >> what;
+                                    self.palFile[num] = what;
+                                } catch (const Ast::Exception & fail){
+                                    Global::debug(1) << "No palette defined for " << num << std::endl;
+                                }
                             } else {
                                 Global::debug(0) << "Unhandled option in Files Section: " + simple.toString() << endl;
                             }
