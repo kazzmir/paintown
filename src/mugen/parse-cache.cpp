@@ -150,16 +150,35 @@ DefCache::DefCache(){
 DefCache::~DefCache(){
 }
 
+static list<Ast::Section*> * reallyParseX(const Filesystem::AbsolutePath & path, const void * (*parse)(const char * data, int length, bool stats)){
+    Util::ReferenceCount<Storage::File> file = Storage::instance().open(path);
+    char * data = new char[file->getSize()];
+    file->readLine(data, file->getSize());
+    list<Ast::Section*> * out = (list<Ast::Section*>*) parse(data, file->getSize(), false);
+    delete[] data;
+    return out;
+}
+
 static list<Ast::Section*> * reallyParseCmd(const Filesystem::AbsolutePath & path){
-    return (list<Ast::Section*>*) Cmd::parse(path.path());
+    return reallyParseX(path, Cmd::parse);
+    /*
+    Util::ReferenceCount<Storage::File> file = Storage::instance().open(path);
+    char * data = new char[file->getSize()];
+    file->readLine(data, file->getSize());
+    list<Ast::Section*> * out = (list<Ast::Section*>*) Cmd::parse(data, file->getSize());
+    delete[] data;
+    return out;
+    */
 }
 
 static list<Ast::Section*> * reallyParseAir(const Filesystem::AbsolutePath & path){
-    return (list<Ast::Section*>*) Air::parse(path.path());
+    return reallyParseX(path, Air::parse);
+    // return (list<Ast::Section*>*) Air::parse(path.path());
 }
 
 static list<Ast::Section*> * reallyParseDef(const Filesystem::AbsolutePath & path){
-    return (list<Ast::Section*>*) Def::parse(path.path());
+    return reallyParseX(path, Def::parse);
+    // return (list<Ast::Section*>*) Def::parse(path.path());
 }
 
 Util::ReferenceCount<Ast::AstParse> CmdCache::doParse(const Filesystem::AbsolutePath & path){

@@ -8,6 +8,7 @@
 namespace Mugen{
     namespace Def{
         extern const void * parse(const std::string & filename, bool stats = false);
+        extern const void * parse(const char * in, int length, bool stats = false);
 
         class ParseException: public std::exception {
         public:
@@ -20,6 +21,7 @@ namespace Mugen{
 
     namespace Air{
         extern const void * parse(const std::string & filename, bool stats = false);
+        extern const void * parse(const char * in, int length, bool stats = false);
 
         class ParseException: public std::exception {
         public:
@@ -33,6 +35,7 @@ namespace Mugen{
     namespace Cmd{
         extern const void * parse(const std::string & filename, bool stats = false);
         extern const void * parse(const char * data, bool stats = false);
+        extern const void * parse(const char * in, int length, bool stats = false);
 
         class ParseException: public std::exception {
         public:
