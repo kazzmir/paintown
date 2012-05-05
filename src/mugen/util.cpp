@@ -414,6 +414,7 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
 #endif
 
 /* maybe move this to Filesystem */
+/*
 static int computeFileSize(const string & path){
     // Lets get the filesize
     FILE * stream = fopen(path.c_str(), "r" );
@@ -422,6 +423,7 @@ static int computeFileSize(const string & path){
     fclose(stream);
     return filesize;
 }
+*/
 
 namespace Mugen{
     namespace Util{
@@ -431,13 +433,28 @@ public:
     SffReader(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette):
     filename(filename),
     currentSprite(0){
+        /* Must read the palette first because once the sff file is opened
+         * we can't open the same zip file twice.
+         */
+        // Palette related
+        useact = false;
+
+        //unsigned char colorsave[3]; // rgb pal save
+
+        memset(palsave1, 0, sizeof(palsave1));
+
+        // Load in first palette
+        if (readPalette(palette, palsave1)){
+            useact = true;
+        }
+
         /* 16 skips the header stuff */
         sffStream = Storage::instance().open(filename);
         if (!sffStream){
             throw MugenException("Could not open SFF file: '" + filename.path() + "'", __FILE__, __LINE__);
         }
 
-        filesize = computeFileSize(filename.path());
+        filesize = sffStream->getSize();
 
         /* TODO: read the first 16 bytes to get the version info.
          * Data starts at the 16th byte.
@@ -472,18 +489,6 @@ public:
         Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
         // spriteIndex = new Mugen::Sprite*[totalImages + 1];
-
-        // Palette related
-        useact = false;
-
-        //unsigned char colorsave[3]; // rgb pal save
-
-        memset(palsave1, 0, sizeof(palsave1));
-
-        // Load in first palette
-        if (readPalette(palette, palsave1)){
-            useact = true;
-        }
     }
 
     virtual ~SffReader(){
@@ -546,7 +551,9 @@ public:
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
         bool islinked = false;
         if (location > filesize){
-            throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.", __FILE__, __LINE__);
+            std::ostringstream out;
+            out << "Error in SFF file: " << filename.path() << ". Offset of image (" << location << ") beyond the end of the file (" << filesize << ").";
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
 
         PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = PaintownUtil::ReferenceCount<Mugen::Sprite>(new Mugen::Sprite(mask));
@@ -605,7 +612,7 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
     /* where replaced sprites go */
     vector< PaintownUtil::ReferenceCount<Mugen::Sprite> > unused;
     while (reader.moreSprites()){
-        try{
+        // try{
             PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = reader.readSprite(mask);
 
             Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
@@ -617,9 +624,12 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
                 }
             }
             sprites[sprite->getGroupNumber()][sprite->getImageNumber()] = sprite;
+        /* 5/5/2012: if a sprite can't be read then throw an error */
+        /*
         } catch (const MugenException & e){
             Global::debug(0) << e.getReason() << endl;
         }
+        */
     }
 
     /* delete all replaced sprites */

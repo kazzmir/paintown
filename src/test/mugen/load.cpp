@@ -34,6 +34,12 @@ static void showMemory(){
 }
 */
 
+static void mount(const char * path){
+    Filesystem::AbsolutePath container(path);
+    Filesystem::AbsolutePath where(container.getDirectory());
+    Storage::instance().addOverlay(container, where);
+}
+
 static int load(const char * path){
     // showMemory();
     for (int i = 0; i < 1; i++){
@@ -72,7 +78,12 @@ int main(int argc, char ** argv){
     if (argc < 2){
         die = load("mugen/chars/kfm/kfm.def");
     } else {
-        die = load(argv[1]);
+        if (argc > 2){
+            mount(argv[1]);
+            die = load(argv[2]);
+        } else {
+            die = load(argv[1]);
+        }
     }
 
     Screen::fakeFinish();
