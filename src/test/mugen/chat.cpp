@@ -50,9 +50,10 @@ public:
                 lock.signal();
                 lock.release();
             } catch (const Network::MessageEnd & ex){
-                valid = false;
+                end = true;
             }
         }
+        valid = false;
     }
     
     int getId() const {
