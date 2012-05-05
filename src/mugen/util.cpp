@@ -279,17 +279,15 @@ typedef struct {
 
 bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigned char * out){
     const int PALETTE_SIZE = 768;
-    ifstream file(filename.path().c_str());
-    if (!file){
+    PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(filename);
+    if (file == NULL){
         return false;
     }
     try{
-        file.seekg(0, std::ios::end);
-        int size = file.tellg();
-        file.seekg(0, std::ios::beg);
+        int size = file->getSize();
         if (size == PALETTE_SIZE){
-            file.read((char*) out, PALETTE_SIZE);
-            if (file.gcount() != PALETTE_SIZE){
+            int read = file->readLine((char*) out, PALETTE_SIZE);
+            if (read != PALETTE_SIZE){
                 throw MugenException("Didn't read 768 bytes", __FILE__, __LINE__);
             }
             unsigned char save[3];
@@ -303,7 +301,7 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
             throw MugenException("Not an ACT file or PCX file", __FILE__, __LINE__);
         } else {
             pcx_header pcxhead;
-            file.read((char*) &pcxhead, sizeof(pcx_header));
+            file->readLine((char*) &pcxhead, sizeof(pcx_header));
 
             bool valid_pcx = pcxhead.manufacturer == 10 && 
                              pcxhead.version >= 5 &&
@@ -312,11 +310,11 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
 
             if (valid_pcx){
                 /* Palette is at the end. Check to see if the PCX file uses an 8-bit palette. */
-                file.seekg(-769, std::ios::end);
+                file->seek(-769, SEEK_END);
                 unsigned char save;
-                file.read((char*) &save, 1);
+                file->readLine((char*) &save, 1);
                 if (save == 12){
-                    file.read((char*) out, PALETTE_SIZE);
+                    file->readLine((char*) out, PALETTE_SIZE);
                 } else {
                     Global::debug(0) << "File " << filename.path() << " is not a valid palette file. (Must be ACT or 8-bit PCX.)";
                     throw MugenException("Failed", __FILE__, __LINE__);
@@ -325,11 +323,11 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
         }
 
     } catch (const MugenException & e){
-        file.close();
+        // file.close();
         return false;
     }
 
-    file.close();
+    // file.close();
     return true;
 }
 
@@ -942,6 +940,9 @@ PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Se
 
 static void parseException(const string & file, const string & error, int line, int column){
     ifstream safe(file.c_str());
+    if (!safe){
+        throw MugenException("Could not open", __FILE__, __LINE__);
+    }
     char buffer[1024];
     int last = 0;
     for (int i = 0; i < line && safe.good(); i++){
