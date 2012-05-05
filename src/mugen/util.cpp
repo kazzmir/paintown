@@ -634,17 +634,18 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
 void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::SoundMap & sounds){
     /* 16 skips the header stuff */
     int location = 16;
-    ifstream ifile;
-    ifile.open(filename.path().c_str(), ios::binary);
-    if (!ifile){
+    PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(filename);
+    // ifstream ifile;
+    // ifile.open(filename.path().c_str(), ios::binary);
+    if (file == NULL){
         throw MugenException("Could not open SND file: " + filename.path(), __FILE__, __LINE__);
     }
     
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
-    ifile.seekg(location, ios::beg);
+    file->seek(location, SEEK_SET);
     int totalSounds;
     
-    Storage::LittleEndianReader reader(ifile);
+    Storage::LittleEndianReader reader(file);
     totalSounds = reader.readByte4();
     location = reader.readByte4();
     
@@ -654,7 +655,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
      if( totalSounds > 0){
          for( int i = 0; i < totalSounds; ++i ){
              // Go to next sound
-             ifile.seekg(location, ios::beg);
+             file->seek(location, SEEK_SET);
              // next sprite
              PaintownUtil::ReferenceCount<Mugen::Sound> temp = PaintownUtil::ReferenceCount<Mugen::Sound>(new Mugen::Sound());
 
@@ -664,7 +665,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
              temp->groupNumber = reader.readByte4();
              temp->sampleNumber = reader.readByte4();
              temp->sample = new char[temp->length];
-             ifile.read((char *)temp->sample, temp->length);
+             file->readLine((char *)temp->sample, temp->length);
 
              // Set the next file location
              location = temp->next;
@@ -674,7 +675,7 @@ void Mugen::Util::readSounds(const Filesystem::AbsolutePath & filename, Mugen::S
          }
      }
     
-    ifile.close();
+    // ifile.close();
 }
 
 vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::iterator & section_it, const list<Ast::Section*>::iterator & end, const std::string & name){
