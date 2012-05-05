@@ -11,6 +11,10 @@
 
 namespace PaintownUtil = ::Util;
 
+namespace Storage{
+    class File;
+}
+
 namespace Graphics{
 class Bitmap;
 }
@@ -28,7 +32,7 @@ class Sprite{
 	bool operator<(const Sprite &copy);
 	
 	// Reads in the sprite info from stream
-	void read(std::ifstream & ifile, const int loc);
+	void read(const PaintownUtil::ReferenceCount<Storage::File> & ifile, const int loc);
 	
 	// Render sprite
 	//void render(const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
@@ -66,7 +70,7 @@ class Sprite{
 	inline void setPrevious(const unsigned short p){ prev = p; }
 	inline void setSamePalette(const bool p){ samePalette = p; };
 	
-	void loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask);
+	void loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & file, bool islinked, bool useact, unsigned char palsave1[], bool mask);
 	
 	inline unsigned long getNext() const { return next; }
 	inline unsigned long getLocation() const { return location; }

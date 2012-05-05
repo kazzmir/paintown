@@ -434,7 +434,7 @@ public:
     filename(filename),
     currentSprite(0){
         /* 16 skips the header stuff */
-        sffStream.open(filename.path().c_str(), ios::binary);
+        sffStream = Storage::instance().open(filename);
         if (!sffStream){
             throw MugenException("Could not open SFF file: '" + filename.path() + "'", __FILE__, __LINE__);
         }
@@ -445,7 +445,7 @@ public:
          * Data starts at the 16th byte.
          */
         location = 16;
-        sffStream.seekg(location, ios::beg);
+        sffStream->seek(location, SEEK_SET);
         /* FIXME: change these to uint32 or whatever */
         uint32_t totalGroups = 0;
         totalImages = 0;
@@ -489,7 +489,7 @@ public:
     }
 
     virtual ~SffReader(){
-        sffStream.close();
+        // sffStream.close();
         // delete[] spriteIndex;
     }
 
@@ -579,7 +579,7 @@ public:
 
 protected:
     const Filesystem::AbsolutePath filename;
-    ifstream sffStream;
+    PaintownUtil::ReferenceCount<Storage::File> sffStream;
     unsigned long currentSprite;
     int totalSprites;
     map<int, PaintownUtil::ReferenceCount<Mugen::Sprite> > spriteIndex;

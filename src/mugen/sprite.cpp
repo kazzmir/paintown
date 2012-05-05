@@ -1,5 +1,6 @@
 #include "util/bitmap.h"
 #include "util/trans-bitmap.h"
+#include "util/file-system.h"
 #include <string.h>
 #include "sprite.h"
 #include "util/funcs.h"
@@ -152,9 +153,9 @@ Sprite::~Sprite(){
 }
 
 // Set sprite info
-void Sprite::read(std::ifstream & ifile, const int loc){
+void Sprite::read(const PaintownUtil::ReferenceCount<Storage::File> & ifile, const int loc){
     // Go to next sprite
-    ifile.seekg(loc, std::ios::beg);
+    ifile->seek(loc, SEEK_SET);
     
     // set the sprite location
     this->location = loc;
@@ -169,7 +170,7 @@ void Sprite::read(std::ifstream & ifile, const int loc){
     imageNumber = reader.readByte2();
     prev = reader.readByte2();
     samePalette = reader.readByte1();
-    ifile.read((char *)comments, sizeof(comments));
+    ifile->readLine((char *)comments, sizeof(comments));
     newlength = reallength = next - loc - 32;
      
     // Last sprite
@@ -311,10 +312,10 @@ static int littleEndian16(const char * input){
     return (((unsigned char) byte2) << 8) | (unsigned char) byte1;
 }
 
-void Sprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
+void Sprite::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile, bool islinked, bool useact, unsigned char palsave1[], bool mask){
     /* TODO: 768 is littered everywhere, replace with a constant */
-    ifile.seekg(location + 32, ios::beg);
-    ifile.clear();
+    ifile->seek(location + 32, SEEK_SET);
+    ifile->reset();
     if (samePalette){
         // Lets give it space for the palette
         Global::debug(2) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
@@ -328,9 +329,9 @@ void Sprite::loadPCX(std::ifstream & ifile, bool islinked, bool useact, unsigned
         }
         memset(pcx, 0, reallength);
     }
-    ifile.read((char *)pcx, reallength); 
-    if (ifile.eofbit || ifile.failbit){
-        int read = (int) ifile.tellg() - (location + 32);
+    ifile->readLine((char *)pcx, reallength); 
+    if (ifile->eof()){
+        int read = (int) ifile->tell() - (location + 32);
         if (read != (int) reallength){
             Global::debug(0) << "Warning: could not read " << reallength << " bytes from pcx file, only read " << read << endl;
         }
