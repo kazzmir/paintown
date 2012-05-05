@@ -152,6 +152,11 @@ DefCache::~DefCache(){
 
 static list<Ast::Section*> * reallyParseX(const Filesystem::AbsolutePath & path, const void * (*parse)(const char * data, int length, bool stats)){
     Util::ReferenceCount<Storage::File> file = Storage::instance().open(path);
+    /* The PEG interface doesn't know about Paintown's Storage::File interface and
+     * it never will so the next best thing is to read the entire file into
+     * memory and pass it along to the parser. The PEG will actually do this operation
+     * internally anyway given a filename so its not like this is has any overhead.
+     */
     char * data = new char[file->getSize()];
     file->readLine(data, file->getSize());
     list<Ast::Section*> * out = (list<Ast::Section*>*) parse(data, file->getSize(), false);
