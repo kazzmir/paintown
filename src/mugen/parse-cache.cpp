@@ -28,7 +28,7 @@ static int replaceSlash(int what){
     return what;
 }
 
-const char * MUGEN_CACHE = "mugen-cache";
+static const char * MUGEN_CACHE = "mugen-cache";
 
 /* true if path1 has a newer modification time than path2 */
 static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::AbsolutePath & path2){

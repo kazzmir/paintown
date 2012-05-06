@@ -888,16 +888,28 @@ static Filesystem::AbsolutePath maybeFindRandom(const std::string & name, std::v
 static Character * doLoad(const Filesystem::AbsolutePath & path){
     TimeDifference timer;
 
-    Character * guy = new Character(path, Stage::Player1Side);
-    Global::stream_type & out = Global::debug(0);
-    out << "Loading player " << path.path();
-    out.flush();
-    timer.startTime();
-    guy->load();
-    timer.endTime();
-    out << timer.printTime(" took") << std::endl;
+    Filesystem::AbsolutePath use = path;
+    if (path.getExtension() == "zip"){
+        Storage::instance().addOverlay(path, path.getDirectory());
+        use = Filesystem::AbsolutePath(Path::removeExtension(path.path()) + ".def");
+    }
 
-    return guy;
+    try{
+        Character * guy = new Character(use, Stage::Player1Side);
+        Global::stream_type & out = Global::debug(0);
+        out << "Loading player " << use.path();
+        out.flush();
+        timer.startTime();
+        guy->load();
+        timer.endTime();
+        out << timer.printTime(" took") << std::endl;
+        return guy;
+    } catch (const MugenException & fail){
+        Storage::instance().removeOverlay(path, path.getDirectory());
+        throw;
+    }
+
+    return NULL;
 }
 
 static Character * makeCharacter(const std::string & name, bool random, std::vector<Filesystem::AbsolutePath> & all){
@@ -916,6 +928,11 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
         }
         throw MugenException("No characters left to choose from!", __FILE__, __LINE__);
     } else {
+        try{
+            Filesystem::AbsolutePath zip = Storage::instance().find(Filesystem::RelativePath("mugen/chars/" + name + ".zip"));
+            Storage::instance().addOverlay(zip, zip.getDirectory());
+        } catch (const Filesystem::NotFound & fail){
+        }
         Filesystem::AbsolutePath path = Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
         return doLoad(path);
     }
@@ -1314,6 +1331,8 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
      */
     ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+    std::vector<Filesystem::AbsolutePath> zipCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.zip");
+    allCharacters.insert(allCharacters.end(), zipCharacters.begin(), zipCharacters.end());
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
     bool random2 = player2Name == "_";
