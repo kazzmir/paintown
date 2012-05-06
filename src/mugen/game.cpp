@@ -1185,10 +1185,6 @@ public:
     virtual void run(){
         HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
         LearningAIBehavior player2Behavior(30);
-        /*
-        player1->setRegeneration(true);
-        player2->setRegeneration(true);
-        */
         player1->setBehavior(&player1Behavior);
         player2->setBehavior(&player2Behavior);
 
@@ -1203,53 +1199,11 @@ public:
 };
 
 void Game::startArcade(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
-    /* This has its own parse cache because its started by the main menu and not
-     * by Game::run()
-     */
     StartArcade arcade(player1Name, player2Name, stageName);
     arcade.run();
-    /*
-    ParseCache cache;
-    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
-    std::random_shuffle(allCharacters.begin(), allCharacters.end());
-    bool random1 = player1Name == "_";
-    bool random2 = player2Name == "_";
-    PaintownUtil::ReferenceCount<Character> player1;
-    PaintownUtil::ReferenceCount<Character> player2;
-
-    player1 = makeCharacter(player1Name, random1, allCharacters);
-    player2 = makeCharacter(player2Name, random2, allCharacters);
-
-    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-    LearningAIBehavior player2Behavior(30);
-    // Set regenerative health
-    player1->setRegeneration(true);
-    player2->setRegeneration(true);
-    player1->setBehavior(&player1Behavior);
-    player2->setBehavior(&player2Behavior);
-    
-    RunMatchOptions options;
-    options.setBehavior(&player1Behavior, NULL);
-
-    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
-    {
-        TimeDifference timer;
-        std::ostream & out = Global::debug(0);
-        out << "Loading stage " << stageName;
-        out.flush();
-        timer.startTime();
-        stage.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    }
-    stage.addPlayer1(player1.raw());
-    stage.addPlayer2(player2.raw());
-    stage.reset();
-    runMatch(&stage, "", options);
-    */
-
 }
 
+/* FIXME: redo this as a StartGameMode class */
 void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, int port){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
@@ -1390,59 +1344,8 @@ public:
 };
 
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
-    /* This has its own parse cache because its started by the main menu and not
-     * by Game::run()
-     */
     StartTraining training(player1Name, player2Name, stageName);
     training.run();
-    /*
-    ParseCache cache;
-    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
-    std::random_shuffle(allCharacters.begin(), allCharacters.end());
-    bool random1 = player1Name == "_";
-    bool random2 = player2Name == "_";
-    PaintownUtil::ReferenceCount<Character> player1;
-    PaintownUtil::ReferenceCount<Character> player2;
-
-    player1 = makeCharacter(player1Name, random1, allCharacters);
-    player2 = makeCharacter(player2Name, random2, allCharacters);
-
-    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-    DummyBehavior dummyBehavior;
-    // Set regenerative health
-    player1->setRegeneration(true);
-    player2->setRegeneration(true);
-    player1->setBehavior(&player1Behavior);
-    player2->setBehavior(&dummyBehavior);
-    
-    RunMatchOptions options;
-    
-    options.setBehavior(&player1Behavior, NULL);
-
-    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
-    {
-        TimeDifference timer;
-        std::ostream & out = Global::debug(0);
-        out << "Loading stage " << stageName;
-        out.flush();
-        timer.startTime();
-        stage.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    }
-    stage.addPlayer1(player1.raw());
-    stage.addPlayer2(player2.raw());
-    stage.reset();
-    int time = Mugen::Data::getInstance().getTime();
-    Mugen::Data::getInstance().setTime(-1);
-    try{
-        runMatch(&stage, "", options);
-    } catch (const QuitGameException & ex){
-    }
-    Mugen::Data::getInstance().setTime(time);
-    
-    throw QuitGameException();
-    */
 }
 
 class StartWatch: public StartGameMode {
@@ -1467,48 +1370,8 @@ public:
 };
 
 void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
-    /* This has its own parse cache because its started by the main menu and not
-     * by Game::run()
-     */
     StartWatch watch(player1Name, player2Name, stageName);
     watch.run();
-    /*
-    ParseCache cache;
-    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
-    std::vector<Filesystem::AbsolutePath> zipCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.zip");
-    allCharacters.insert(allCharacters.end(), zipCharacters.begin(), zipCharacters.end());
-    std::random_shuffle(allCharacters.begin(), allCharacters.end());
-    bool random1 = player1Name == "_";
-    bool random2 = player2Name == "_";
-    PaintownUtil::ReferenceCount<Character> player1;
-    PaintownUtil::ReferenceCount<Character> player2;
-
-    player1 = makeCharacter(player1Name, random1, allCharacters);
-    player2 = makeCharacter(player2Name, random2, allCharacters);
-
-    LearningAIBehavior player1Behavior(30);
-    LearningAIBehavior player2Behavior(30);
-
-    // Set regenerative health
-    player1->setBehavior(&player1Behavior);
-    player2->setBehavior(&player2Behavior);
-
-    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
-    {
-        TimeDifference timer;
-        std::ostream & out = Global::debug(0);
-        out << "Loading stage " << stageName;
-        out.flush();
-        timer.startTime();
-        stage.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    }
-    stage.addPlayer1(player1.raw());
-    stage.addPlayer2(player2.raw());
-    stage.reset();
-    runMatch(&stage);
-    */
 }
 
 class StartScript: public StartGameMode {
@@ -1542,48 +1405,8 @@ public:
 };
 
 void Game::startScript(const std::string & player1Name, const string & player1Script, const std::string & player2Name, const string & player2Script, const std::string & stageName){
-    /* This has its own parse cache because its started by the main menu and not
-     * by Game::run()
-     */
     StartScript script(player1Name, player1Script, player2Name, player2Script, stageName);
     script.run();
-    /*
-    ParseCache cache;
-    std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
-    std::random_shuffle(allCharacters.begin(), allCharacters.end());
-    bool random1 = player1Name == "_";
-    bool random2 = player2Name == "_";
-    PaintownUtil::ReferenceCount<Character> player1;
-    PaintownUtil::ReferenceCount<Character> player2;
-
-    player1 = makeCharacter(player1Name, random1, allCharacters);
-    player2 = makeCharacter(player2Name, random2, allCharacters);
-
-    Filesystem::AbsolutePath player1Path(player1Script);
-    Filesystem::AbsolutePath player2Path(player2Script);
-    ScriptedBehavior player1Behavior(player1Path);
-    ScriptedBehavior player2Behavior(player2Path);
-
-    // Set regenerative health
-    player1->setBehavior(&player1Behavior);
-    player2->setBehavior(&player2Behavior);
-
-    Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
-    {
-        TimeDifference timer;
-        std::ostream & out = Global::debug(0);
-        out << "Loading stage " << stageName;
-        out.flush();
-        timer.startTime();
-        stage.load();
-        timer.endTime();
-        out << timer.printTime(" took") << std::endl;
-    }
-    stage.addPlayer1(player1.raw());
-    stage.addPlayer2(player2.raw());
-    stage.reset();
-    runMatch(&stage);
-    */
 }
 
 void Game::doTraining(Searcher & searcher){
