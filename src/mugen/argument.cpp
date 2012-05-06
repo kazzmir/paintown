@@ -204,6 +204,7 @@ public:
             data.player2Script = script;
 
             data.kind = MugenInstant::Script;
+            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:script kfm:kfm-script.txt,ken:ken-script.txt,falls" << endl;
         }

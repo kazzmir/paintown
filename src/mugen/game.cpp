@@ -1135,7 +1135,12 @@ public:
     }
 
     virtual void initialize(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+        /* Find regular files */
         std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+
+        /* Find zip files */
+        std::vector<Filesystem::AbsolutePath> zipCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.zip");
+        allCharacters.insert(allCharacters.end(), zipCharacters.begin(), zipCharacters.end());
         std::random_shuffle(allCharacters.begin(), allCharacters.end());
         bool random1 = player1Name == "_";
         bool random2 = player2Name == "_";
@@ -1190,6 +1195,7 @@ public:
         RunMatchOptions options;
         options.setBehavior(&player1Behavior, NULL);
 
+        /* Reset has to be called after addPlayer (done in initialize) */
         stage->reset();
 
         runMatch(stage.raw(), "", options);
@@ -1348,10 +1354,48 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
 
 }
 
+class StartTraining: public StartGameMode {
+public:
+    StartTraining(const std::string & player1Name,
+                const std::string & player2Name,
+                const std::string & stageName):
+    StartGameMode(player1Name, player2Name, stageName){
+    }
+
+    virtual void run(){
+        HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+        DummyBehavior dummyBehavior;
+        // Set regenerative health
+        player1->setRegeneration(true);
+        player2->setRegeneration(true);
+        player1->setBehavior(&player1Behavior);
+        player2->setBehavior(&dummyBehavior);
+
+        RunMatchOptions options;
+
+        options.setBehavior(&player1Behavior, NULL);
+
+        stage->reset();
+        int time = Mugen::Data::getInstance().getTime();
+        Mugen::Data::getInstance().setTime(-1);
+        try{
+            runMatch(stage.raw(), "", options);
+        } catch (const QuitGameException & ex){
+        }
+        Mugen::Data::getInstance().setTime(time);
+
+        // Is this exception needed?
+        // throw QuitGameException();
+    }
+};
+
 void Game::startTraining(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
+    StartTraining training(player1Name, player2Name, stageName);
+    training.run();
+    /*
     ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
@@ -1398,12 +1442,37 @@ void Game::startTraining(const std::string & player1Name, const std::string & pl
     Mugen::Data::getInstance().setTime(time);
     
     throw QuitGameException();
+    */
 }
+
+class StartWatch: public StartGameMode {
+public:
+    StartWatch(const std::string & player1Name,
+               const std::string & player2Name,
+               const std::string & stageName):
+    StartGameMode(player1Name, player2Name, stageName){
+    }
+
+    virtual void run(){
+        LearningAIBehavior player1Behavior(30);
+        LearningAIBehavior player2Behavior(30);
+
+        // Set regenerative health
+        player1->setBehavior(&player1Behavior);
+        player2->setBehavior(&player2Behavior);
+
+        stage->reset();
+        runMatch(stage.raw());
+    }
+};
 
 void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
+    StartWatch watch(player1Name, player2Name, stageName);
+    watch.run();
+    /*
     ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::vector<Filesystem::AbsolutePath> zipCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.zip");
@@ -1439,12 +1508,46 @@ void Game::startWatch(const std::string & player1Name, const std::string & playe
     stage.addPlayer2(player2.raw());
     stage.reset();
     runMatch(&stage);
+    */
 }
+
+class StartScript: public StartGameMode {
+public:
+    StartScript(const std::string & player1Name,
+                const std::string & player1Script,
+                const std::string & player2Name,
+                const std::string & player2Script,
+                const std::string & stageName):
+    StartGameMode(player1Name, player2Name, stageName),
+    player1Script(player1Script),
+    player2Script(player2Script){
+    }
+
+    std::string player1Script;
+    std::string player2Script;
+
+    virtual void run(){
+        Filesystem::AbsolutePath player1Path(player1Script);
+        Filesystem::AbsolutePath player2Path(player2Script);
+        ScriptedBehavior player1Behavior(player1Path);
+        ScriptedBehavior player2Behavior(player2Path);
+
+        // Set regenerative health
+        player1->setBehavior(&player1Behavior);
+        player2->setBehavior(&player2Behavior);
+
+        stage->reset();
+        runMatch(stage.raw());
+    }
+};
 
 void Game::startScript(const std::string & player1Name, const string & player1Script, const std::string & player2Name, const string & player2Script, const std::string & stageName){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
+    StartScript script(player1Name, player1Script, player2Name, player2Script, stageName);
+    script.run();
+    /*
     ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
@@ -1480,6 +1583,7 @@ void Game::startScript(const std::string & player1Name, const string & player1Sc
     stage.addPlayer2(player2.raw());
     stage.reset();
     runMatch(&stage);
+    */
 }
 
 void Game::doTraining(Searcher & searcher){
