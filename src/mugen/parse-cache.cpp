@@ -32,7 +32,12 @@ const char * MUGEN_CACHE = "mugen-cache";
 
 /* true if path1 has a newer modification time than path2 */
 static bool newer(const Filesystem::AbsolutePath & path1, const Filesystem::AbsolutePath & path2){
-    return System::getModificationTime(path1.path()) >= System::getModificationTime(path2.path());
+    PaintownUtil::ReferenceCount<Storage::File> file1 = Storage::instance().open(path1);
+    PaintownUtil::ReferenceCount<Storage::File> file2 = Storage::instance().open(path2);
+    int modTime1 = file1 != NULL ? file1->getModificationTime() : 0;
+    int modTime2 = file2 != NULL ? file2->getModificationTime() : 0;
+    return modTime1 >= modTime2;
+    // return System::getModificationTime(path1.path()) >= System::getModificationTime(path2.path());
 }
 
 static AstRef loadCached(const Filesystem::AbsolutePath & path){
