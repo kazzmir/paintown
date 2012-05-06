@@ -1126,10 +1126,83 @@ void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen
     }
 }
 
+/* Does the setup work to start a game (arcade, watch, training, etc)
+ */
+class StartGameMode{
+public:
+    StartGameMode(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+        initialize(player1Name, player2Name, stageName);
+    }
+
+    virtual void initialize(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+        std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
+        std::random_shuffle(allCharacters.begin(), allCharacters.end());
+        bool random1 = player1Name == "_";
+        bool random2 = player2Name == "_";
+
+        player1 = makeCharacter(player1Name, random1, allCharacters);
+        player2 = makeCharacter(player2Name, random2, allCharacters);
+
+        stage = new Stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
+        {
+            TimeDifference timer;
+            std::ostream & out = Global::debug(0);
+            out << "Loading stage " << stageName;
+            out.flush();
+            timer.startTime();
+            stage->load();
+            timer.endTime();
+            out << timer.printTime(" took") << std::endl;
+        }
+        stage->addPlayer1(player1.raw());
+        stage->addPlayer2(player2.raw());
+    }
+
+    virtual void run() = 0;
+
+    virtual ~StartGameMode(){
+    }
+
+    ParseCache cache;
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
+    PaintownUtil::ReferenceCount<Stage> stage;
+};
+
+class StartArcade: public StartGameMode {
+public:
+    StartArcade(const std::string & player1Name,
+                const std::string & player2Name,
+                const std::string & stageName):
+    StartGameMode(player1Name, player2Name, stageName){
+    }
+
+    virtual void run(){
+        HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+        LearningAIBehavior player2Behavior(30);
+        /*
+        player1->setRegeneration(true);
+        player2->setRegeneration(true);
+        */
+        player1->setBehavior(&player1Behavior);
+        player2->setBehavior(&player2Behavior);
+
+        RunMatchOptions options;
+        options.setBehavior(&player1Behavior, NULL);
+
+        stage->reset();
+
+        runMatch(stage.raw(), "", options);
+    }
+};
+
 void Game::startArcade(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
+    StartArcade arcade(player1Name, player2Name, stageName);
+    arcade.run();
+    /*
     ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
@@ -1167,6 +1240,8 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     stage.addPlayer2(player2.raw());
     stage.reset();
     runMatch(&stage, "", options);
+    */
+
 }
 
 void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, int port){
