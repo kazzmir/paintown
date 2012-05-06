@@ -79,6 +79,8 @@ namespace Widgets{
         
         virtual void notify(const std::string &);
         
+        virtual void handleCommand(const std::vector<std::string> &);
+        
         virtual inline void subscribe(EventCallback subscriber){
             this->callbacks.push_back(subscriber);
         }
@@ -87,7 +89,7 @@ namespace Widgets{
         public:
             Event();
             virtual ~Event();
-            virtual void addMessage(const std::string &) = 0;
+            virtual void sendMessage(const std::string &) = 0;
         };
         virtual inline void subscribe(Event * subscriber){
             this->subscribers.push_back(subscriber);

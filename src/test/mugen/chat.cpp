@@ -133,10 +133,16 @@ public:
         }
     }
     
-    void addMessage(const std::string & message){
+
+    void sendMessage(const std::string & message){
         ::Util::Thread::ScopedLock scope(lock);
-        ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, "remote", message);
-        sendable.push(ourMessage);
+        if (panel.getClient() == "You"){
+            ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, "remote", message);
+            sendable.push(ourMessage);
+        } else {
+            ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, panel.getClient(), message);
+            sendable.push(ourMessage);
+        }
     }
     
     void draw(const Graphics::Bitmap & screen){

@@ -5,6 +5,8 @@
 #include "util/input/keyboard.h"
 #include "util/exceptions/exception.h"
 
+#include <stdexcept>
+
 namespace Mugen{
 namespace Widgets{
 
@@ -83,16 +85,37 @@ void InputBox::renderCursor(int x, int y, const FontSystem::Font & font, const G
     }
 }
 
+static std::vector<std::string> split(std::string str, char splitter){
+    std::vector<std::string> strings;
+    size_t next = str.find(splitter);
+    while (next != std::string::npos){
+        strings.push_back(str.substr(0, next));
+        str = str.substr(next+1);
+        next = str.find(splitter);
+    }
+    if (str != ""){
+        strings.push_back(str);
+    }
+
+    return strings;
+}
+
 static void submit(void * panel){
     ChatPanel * chat = (ChatPanel *)panel;
     if (!chat->getInput().getText().empty()){
         const std::string & text = chat->getInput().getText();
-        if (!chat->getClient().empty()){
-            chat->addMessage(chat->getClient(), text);
+        // check if it's a command
+        if (PaintownUtil::matchRegex(text, "^/.*")){
+            const std::vector<std::string> & command = split(text.substr(1), ' ');
+            chat->handleCommand(command);
         } else {
-            chat->addMessage(text);
+            if (!chat->getClient().empty()){
+                chat->addMessage(chat->getClient(), text);
+            } else {
+                chat->addMessage(text);
+            }
+            chat->notify(text);
         }
-        chat->notify(text);
         chat->getInput().clear();
     }
 }
@@ -142,7 +165,7 @@ void ChatPanel::notify(const std::string & message){
     }
     
     for (std::vector<Event *>::iterator i = subscribers.begin(); i != subscribers.end(); ++i){
-        (*i)->addMessage(message);
+        (*i)->sendMessage(message);
     }
 }
 
@@ -155,6 +178,23 @@ void ChatPanel::addMessage(const std::string & message){
 
 void ChatPanel::addMessage(const std::string & name, const std::string & message){
     addMessage("<"+name+"> " + message);
+}
+
+void ChatPanel::handleCommand(const std::vector<std::string> & command){
+    try{
+        if (command.at(0) == "help"){
+            addMessage("* commands: help, nick");
+        } else if (command.at(0) == "nick"){
+            const std::string & nick = command.at(1);
+            if (!nick.empty()){
+                setClient(nick);
+                addMessage("* nick changed to " + nick);
+            }
+        } else {
+            addMessage("* Uknown command.");
+        }
+    } catch (const std::out_of_range & ex){
+    }
 }
 
 }
