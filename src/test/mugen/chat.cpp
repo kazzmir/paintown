@@ -17,6 +17,7 @@
 #include "util/exceptions/exception.h"
 #include "util/network/network.h"
 #include "util/network/chat.h"
+#include "util/network/irc.h"
 #include "util/thread.h"
 #include "util/pointer.h"
 
@@ -71,7 +72,7 @@ public:
             client = PaintownUtil::ReferenceCount< ::Network::Chat::Client >(new ::Network::Chat::Client(0, socket));
             client->start();
         } else if (type == IrcClient){
-            ircClient = PaintownUtil::ReferenceCount< ::Network::Chat::IRCClient >(new ::Network::Chat::IRCClient(host, port));
+            ircClient = PaintownUtil::ReferenceCount< ::Network::IRC::Client >(new ::Network::IRC::Client(host, port));
             ircClient->setName("paintown-test");
             ircClient->connect();
         }
@@ -88,7 +89,7 @@ public:
     
     PaintownUtil::ReferenceCount< ::Network::Chat::Client > client;
     PaintownUtil::ReferenceCount< ::Network::Chat::Server > server;
-    PaintownUtil::ReferenceCount< ::Network::Chat::IRCClient > ircClient;
+    PaintownUtil::ReferenceCount< ::Network::IRC::Client > ircClient;
     
     ::Util::Thread::LockObject lock;
     ::Util::Thread::Id thread;
@@ -153,20 +154,19 @@ public:
                 }
             }
         } else if (ircClient != NULL) {
-            while (ircClient->hasMessages()){
-                std::vector< std::string > message = ircClient->nextMessage();
+            while (ircClient->hasCommands()){
+                ::Network::IRC::Command command = ircClient->nextCommand();
                 try {
-                    if (message.at(1) == "ping"){
-                        message.erase(message.begin());
-                        message.at(0) = "pong";
-                        ircClient->sendMessage(unsplit(message));
-                        continue;
+                    if (command.getType() == ::Network::IRC::Command::Ping){
+                        ircClient->sendPong(command);
+                    } else if (command.getType() == ::Network::IRC::Command::PrivateMessage || 
+                              command.getType() == ::Network::IRC::Command::Notice){
+                        std::vector<std::string> params = command.getParameters();
+                        // Username and message 
+                        panel.addMessage(command.getOwner(), params.at(1));
                     }
                 } catch (const std::out_of_range & ex){
                 }
-                std::string next = unsplit(message);
-                Global::debug(0) << "Got message: " << next << std::endl;
-                panel.addMessage(next);
             }
         }
     }
