@@ -156,7 +156,13 @@ DefCache::~DefCache(){
 }
 
 static list<Ast::Section*> * reallyParseX(const Filesystem::AbsolutePath & path, const void * (*parse)(const char * data, int length, bool stats)){
+    if (!Storage::instance().exists(path)){
+        throw MugenException(path.path() + " does not exist", __FILE__, __LINE__);
+    }
     Util::ReferenceCount<Storage::File> file = Storage::instance().open(path);
+    if (file->getSize() < 1){
+        throw MugenException(path.path() + " contains no bytes", __FILE__, __LINE__);
+    }
     /* The PEG interface doesn't know about Paintown's Storage::File interface and
      * it never will so the next best thing is to read the entire file into
      * memory and pass it along to the parser. The PEG will actually do this operation

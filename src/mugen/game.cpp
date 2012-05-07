@@ -2137,10 +2137,9 @@ void Game::startDemo(Searcher & searcher){
                 try {
                     // Check for name of character ... if it doesn't find this it probably isn't a character
                     Util::probeDef(path, "info", "name");
+                    allCharacters.push_back(path);
                 } catch (const MugenException & ex){
-                    return;
                 }
-                allCharacters.push_back(path);
             }
             
             void addStage(const Filesystem::AbsolutePath & path){
@@ -2148,15 +2147,16 @@ void Game::startDemo(Searcher & searcher){
                 try {
                     // Just like character check for name of stage ... if it doesn't find this it probably isn't a stage
                     Util::probeDef(path, "info", "name");
+                    allStages.push_back(path);
                 } catch (const MugenException & ex){
-                    return;
                 }
-                allStages.push_back(path);
             }
+
             const Filesystem::AbsolutePath getCharacter(){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
                 return allCharacters[PaintownUtil::rnd(allCharacters.size())];
             }
+
             const Filesystem::AbsolutePath getStage(){
                 PaintownUtil::Thread::ScopedLock scoped(lock);
                 return allStages[PaintownUtil::rnd(allStages.size())];
@@ -2246,9 +2246,10 @@ void Game::startDemo(Searcher & searcher){
         int i = 0;
         while (collections.isEmpty()){
             if (System::currentSeconds() >= (currentTime + 4)){
-                Global::debug(1) << "Couldn't find characters or stages withnin a reasonable time, Aborting." << std::endl;
+                Global::debug(1) << "Couldn't find characters or stages within a reasonable time, Aborting." << std::endl;
                 return;
             }
+            PaintownUtil::rest(1);
             Global::debug(1) << "Time elapsed: " << i << std::endl;
         }
         

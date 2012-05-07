@@ -112,17 +112,17 @@ void Searcher::addStages(const std::vector<Filesystem::AbsolutePath> & files){
     publishStages(files);
 }
 
-static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::AbsolutePath & path){
+static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::AbsolutePath & path, const std::string & extension){
     try{
-        return Storage::instance().getFilesRecursive(path, "*.def");
+        return Storage::instance().getFilesRecursive(path, std::string("*.") + extension);
     } catch (const Filesystem::NotFound & fail){
         return vector<Filesystem::AbsolutePath>();
     }
 }
 
-static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath & path){
+static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath & path, const std::string & extension){
     try{
-        return findFiles(Storage::instance().find(path));
+        return findFiles(Storage::instance().find(path), extension);
     } catch (const Filesystem::NotFound & fail){
         return vector<Filesystem::AbsolutePath>();
     }
@@ -152,7 +152,8 @@ void * Searcher::searchForCharacters(void * arg){
          */
         for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !searcher->searchingCheck.get(); it++){
             Filesystem::AbsolutePath path = *it;
-            searcher->addCharacters(findFiles(path));
+            searcher->addCharacters(findFiles(path, "def"));
+            // searcher->addCharacters(findFiles(path, "zip"));
         }
         Global::debug(1) << "Done searching for characters" << endl;
     } catch (...){
@@ -185,7 +186,7 @@ void * Searcher::searchStages(void * arg){
          */
         for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !searcher->searchingCheck.get(); it++){
             Filesystem::AbsolutePath path = *it;
-            searcher->addStages(findFiles(path));
+            searcher->addStages(findFiles(path, "def"));
         }
 
         Global::debug(1) << "Done searching for stages" << endl;

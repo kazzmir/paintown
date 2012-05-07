@@ -3042,7 +3042,8 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
         characters.push_back(character);
         // Include stage if required
         if (character.getIncludeStage()){
-            addStage(character.getStage());
+            // addStage(character.getStage());
+            stages.add(character.getStage());
         }
         // Add to current cell
         cells[nextCell]->setCharacter(character);

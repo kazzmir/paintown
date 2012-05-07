@@ -1251,6 +1251,7 @@ Mugen::Element::~Element(){
 Mugen::ArcadeData::CharacterInfo::CharacterInfo():
 order(1),
 randomStage(true),
+/* <juvi-nb> ok yeah includestage should default to true */
 includeStage(true),
 act(0),
 icon(PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL)),
