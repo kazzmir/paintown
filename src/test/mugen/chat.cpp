@@ -73,7 +73,6 @@ public:
             client->start();
         } else if (type == IrcClient){
             ircClient = PaintownUtil::ReferenceCount< ::Network::IRC::Client >(new ::Network::IRC::Client(host, port));
-            ircClient->setName("paintown-test");
             ircClient->connect();
         }
     }
@@ -156,9 +155,11 @@ public:
         } else if (ircClient != NULL) {
             while (ircClient->hasCommands()){
                 ::Network::IRC::Command command = ircClient->nextCommand();
+                Global::debug(0) << "Got message: " << command.getSendable() << std::endl;
                 try {
                     if (command.getType() == ::Network::IRC::Command::Ping){
                         ircClient->sendPong(command);
+                        panel.addMessage("(Ping " + command.getSendable() + ")" );
                     } else if (command.getType() == ::Network::IRC::Command::PrivateMessage || 
                               command.getType() == ::Network::IRC::Command::Notice){
                         std::vector<std::string> params = command.getParameters();
@@ -174,12 +175,16 @@ public:
 
     void sendMessage(const std::string & message){
         ::Util::Thread::ScopedLock scope(lock);
-        if (panel.getClient() == "You"){
-            ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, "remote", message);
-            sendable.push(ourMessage);
-        } else {
-            ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, panel.getClient(), message);
-            sendable.push(ourMessage);
+        if (ircClient == NULL){
+            if (panel.getClient() == "You"){
+                ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, "remote", message);
+                sendable.push(ourMessage);
+            } else {
+                ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, panel.getClient(), message);
+                sendable.push(ourMessage);
+            }
+        } else if (ircClient != NULL){
+            ircClient->sendMessage(message);
         }
     }
     
