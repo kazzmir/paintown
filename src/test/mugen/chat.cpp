@@ -165,6 +165,9 @@ public:
                         std::vector<std::string> params = command.getParameters();
                         // Username and message 
                         panel.addMessage(command.getOwner(), params.at(1));
+                    } else if (command.getType() == ::Network::IRC::Command::Error){
+                        Global::debug(0) << "Received Error: " << command.getSendable() << "... Aborting." << std::endl;
+                        throw Exception::Return(__FILE__, __LINE__);
                     }
                 } catch (const std::out_of_range & ex){
                 }
