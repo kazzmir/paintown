@@ -3042,8 +3042,8 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
         characters.push_back(character);
         // Include stage if required
         if (character.getIncludeStage()){
-            // addStage(character.getStage());
-            stages.add(character.getStage());
+            /* We hold the lock so call doAddStage directly */
+            doAddStage(character.getStage());
         }
         // Add to current cell
         cells[nextCell]->setCharacter(character);
@@ -3070,9 +3070,19 @@ void CharacterSelect::addRandom(){
     }
 }
 
+/* Only call this if you hold the lock */
+void CharacterSelect::doAddStage(const Filesystem::AbsolutePath & stage){
+    try{
+        /* Make sure its a real stage */
+        Util::probeDef(stage, "info", "name");
+        stages.add(stage);
+    } catch (const MugenException & fail){
+    }
+}
+
 void CharacterSelect::addStage(const Filesystem::AbsolutePath & stage){
     PaintownUtil::Thread::ScopedLock scoped(lock);
-    stages.add(stage);
+    doAddStage(stage);
 }
 
 Mugen::ArcadeData::MatchPath CharacterSelect::getArcadePath(){
@@ -3368,10 +3378,29 @@ public:
     
     void addCharacter(const Filesystem::AbsolutePath & path){
         if (!done()){
-            try {
-                select.addCharacter(Mugen::ArcadeData::CharacterInfo(path));
-            } catch (...){
-                // Can't add character ignore
+            if (path.getExtension() == "zip"){
+                /* What exactly will happen if we add the same zip file twice?
+                 * The old zip entries will get overwritten by new ones
+                 * and the old zip container will go away once there are no
+                 * more entries pointing to it.
+                 */
+                Storage::instance().addOverlay(path, path.getDirectory());
+                try {
+                    /* Found mugen/chars/foo.zip or something
+                     * try to load mugen/chars/foo/foo.def
+                     */
+                    std::string where = Path::removeExtension(path.getFilename().path());
+                    Filesystem::AbsolutePath def = path.getDirectory().join(Filesystem::RelativePath(where)).join(Filesystem::RelativePath(where + ".def"));
+                    select.addCharacter(Mugen::ArcadeData::CharacterInfo(def));
+                } catch (...){
+                    Storage::instance().removeOverlay(path, path.getDirectory());
+                }
+            } else {
+                try {
+                    select.addCharacter(Mugen::ArcadeData::CharacterInfo(path));
+                } catch (...){
+                    // Can't add character ignore
+                }
             }
         }
     }

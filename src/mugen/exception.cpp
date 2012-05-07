@@ -10,7 +10,7 @@ line(0){
 }
 
 MugenException::MugenException(const std::string & reason, const std::string & where, int line):
-Exception::Base("", line),
+Exception::Base(where, line),
 reason(reason),
 where(where),
 line(line){

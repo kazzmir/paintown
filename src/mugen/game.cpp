@@ -1771,6 +1771,10 @@ void Game::doArcade(Searcher & searcher){
                 return;
             }
         }
+
+        if (stagePath.path() == ""){
+            throw MugenException("No stages available", __FILE__, __LINE__);
+        }
         
         // FIXME use override music later
         Mugen::Stage stage(stagePath);

@@ -556,6 +556,9 @@ public:
     }
     
 protected:
+    /* Adds a stage without taking the lock */
+    void doAddStage(const Filesystem::AbsolutePath & stage);
+
     //! Parse select file
     void parseSelect();
     //! Path
