@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 #include "util/stretch-bitmap.h"
 #include "util/font.h"
@@ -36,9 +37,23 @@ static bool isChatMessage(const ::Network::Chat::Message & message){
     return true;
 }
 
+enum ConnectionType{
+    Server,
+    Client,
+    IrcClient,
+};
+
+static std::string unsplit(const std::vector< std::string > & message){
+    std::string all;
+    for (unsigned int i = 0; i < message.size(); ++i){
+        all+=message[i] + (i < message.size()-1 ? " " : "");
+    }
+    return all;
+}
+
 class InputLogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw, public Mugen::Widgets::ChatPanel::Event{
 public:
-    InputLogicDraw(bool isServer, int port, const std::string & host = "127.0.0.1"):
+    InputLogicDraw(const ConnectionType & type, int port, const std::string & host = "127.0.0.1"):
     panel(10, 20, 300, 200),
     escaped(false){
         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
@@ -46,15 +61,19 @@ public:
         panel.setFont(menu.getFont());
         panel.setClient("You");
         panel.subscribe(this);
-        if (isServer){
+        if (type == Server){
             server = PaintownUtil::ReferenceCount< ::Network::Chat::Server >(new ::Network::Chat::Server(port));
             server->start();
-        } else {
+        } else if (type == Client){
             Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;
             Network::Socket socket = Network::connect(host, port);
             Global::debug(0) << "Connected" << std::endl;
             client = PaintownUtil::ReferenceCount< ::Network::Chat::Client >(new ::Network::Chat::Client(0, socket));
             client->start();
+        } else if (type == IrcClient){
+            ircClient = PaintownUtil::ReferenceCount< ::Network::Chat::IRCClient >(new ::Network::Chat::IRCClient(host, port));
+            ircClient->setName("paintown-test");
+            ircClient->connect();
         }
     }
     
@@ -69,6 +88,7 @@ public:
     
     PaintownUtil::ReferenceCount< ::Network::Chat::Client > client;
     PaintownUtil::ReferenceCount< ::Network::Chat::Server > server;
+    PaintownUtil::ReferenceCount< ::Network::Chat::IRCClient > ircClient;
     
     ::Util::Thread::LockObject lock;
     ::Util::Thread::Id thread;
@@ -80,7 +100,9 @@ public:
     void run(){
         try {
             panel.act();
-            sendMessages();
+            if (ircClient == NULL){
+                sendMessages();
+            }
             processMessages();
             if (server != NULL){
                 server->cleanup();
@@ -89,7 +111,7 @@ public:
             escaped = true;
             if (server != NULL){
                 server->shutdown();
-            } else {
+            } else if (client != NULL){
                 client->shutdown();
             }
             throw ex;
@@ -106,7 +128,7 @@ public:
             if (isChatMessage(next)){
                 if (server != NULL){
                     server->global(next);
-                } else {
+                } else if (client != NULL){
                     client->sendMessage(next);
                 }
             }
@@ -123,12 +145,28 @@ public:
                     panel.addMessage(message.getName(), message.getMessage());
                 }
             }
-        } else {
+        } else if (client != NULL) {
             while (client->hasMessages()){
                 ::Network::Chat::Message message = client->nextMessage();
                 if (isChatMessage(message)){
                     panel.addMessage(message.getName(), message.getMessage());
                 }
+            }
+        } else if (ircClient != NULL) {
+            while (ircClient->hasMessages()){
+                std::vector< std::string > message = ircClient->nextMessage();
+                try {
+                    if (message.at(1) == "ping"){
+                        message.erase(message.begin());
+                        message.at(0) = "pong";
+                        ircClient->sendMessage(unsplit(message));
+                        continue;
+                    }
+                } catch (const std::out_of_range & ex){
+                }
+                std::string next = unsplit(message);
+                Global::debug(0) << "Got message: " << next << std::endl;
+                panel.addMessage(next);
             }
         }
     }
@@ -156,19 +194,25 @@ public:
 };
 
 static void doServer(int port){
-    InputLogicDraw server(true, port);
+    InputLogicDraw server(Server, port);
     PaintownUtil::standardLoop(server, server);
 }
 
 
 static void doClient(const std::string & host, int port){
-    InputLogicDraw client(false, port, host);
+    InputLogicDraw client(Client, port, host);
+    PaintownUtil::standardLoop(client, client);
+}
+
+static void doIrc(const std::string & host, int port){
+    InputLogicDraw client(IrcClient, port, host);
     PaintownUtil::standardLoop(client, client);
 }
 
 static void arguments(const std::string & application, int status){
     std::cout << "Usage: ./" << application << " server port" << std::endl;
     std::cout << "       ./" << application << " client port [host]" << std::endl;
+    std::cout << "       ./" << application << " irc port [host]" << std::endl;
     exit(status);
 }
 
@@ -176,12 +220,13 @@ int main(int argc, char ** argv){
     if (argc > 2){
         bool server = (strcmp(argv[1],"server")==0) ? true : false;
         bool client = (strcmp(argv[1],"client")==0) ? true : false;
-        if (!server && !client){
+        bool irc = (strcmp(argv[1],"irc")==0) ? true : false;
+        if (!server && !client && !irc){
             arguments(argv[0], 1);
         }
         int port = atoi(argv[2]);
         std::string hostname = "127.0.0.1";
-        if (client && argc == 4){
+        if ((client || irc) && argc == 4){
             hostname = argv[3];
         }
         Screen::realInit();
@@ -203,8 +248,10 @@ int main(int argc, char ** argv){
         try {
             if (server){
                 doServer(port);
-            } else {
+            } else if (client){
                 doClient(hostname, port);
+            } else if (irc){
+                doIrc(hostname, port);
             }
         } catch (const Exception::Return & ex){
         } catch (const Network::NetworkException & ex){
