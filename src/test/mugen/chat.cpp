@@ -95,6 +95,9 @@ public:
     ::Util::Thread::LockObject lock;
     ::Util::Thread::Id thread;
     
+    // check ctcp reply
+    std::map<std::string, uint64_t> pingReply;
+    
     double ticks(double system){
         return system;
     }
@@ -181,6 +184,30 @@ public:
                     }
                 } catch (const std::out_of_range & ex){
                 }
+                // Check if we got any CTCP delimited messages
+                if (command.hasCtcp()){
+                    std::vector<std::string> ctcp = command.getCtcp();
+                    try {
+                        if (ctcp.at(0) == "PING"){
+                            Global::debug(0) << "Got a PING ctcp checking existing requests." << std::endl;
+                            // Lets check if there is an existing query otherwise send off request
+                            if (command.getType() == ::Network::IRC::Command::Notice){
+                                std::map<std::string, uint64_t>::iterator check = pingReply.find(command.getOwner());
+                                if (check != pingReply.end()){
+                                    // there is an existing entry lets display our ping
+                                    std::ostringstream difference;
+                                    difference << ((System::currentMicroseconds() - check->second)/1000000000);
+                                    panel.addMessage("[CTCP] Received CTCP-PING reply from " + check->first + ": " + difference.str() + "second(s)" );
+                                    pingReply.erase(check);
+                                }
+                            } else if (command.getType() == ::Network::IRC::Command::PrivateMessage){
+                                ircClient->sendCommand(::Network::IRC::Command::Notice, command.getOwner(), ":\001PING " + ctcp.at(1) + "\001");
+                                panel.addMessage("[CTCP] Received CTCP-PING request from " + command.getOwner() + ", sending answer.");
+                            }
+                        }
+                    } catch (const std::out_of_range & ex){
+                    }
+                }
             }
         }
     }
@@ -246,9 +273,12 @@ public:
                     const std::string & who = command.at(1);
                     if (!who.empty()){
                         std::ostringstream timestamp;
-                        timestamp << System::currentMicroseconds();
+                        uint64_t time = System::currentMicroseconds();
+                        timestamp << time;
                         ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
-                        panel.addMessage("[CTCP] Sending CTCP-PING request to " + who); 
+                        panel.addMessage("[CTCP] Sending CTCP-PING request to " + who);
+                        // Log user
+                        pingReply[who] = time;
                     }
                 } catch (const std::out_of_range & ex){
                     panel.addMessage("* /ping [nick]");
