@@ -155,16 +155,24 @@ public:
         } else if (ircClient != NULL) {
             while (ircClient->hasCommands()){
                 ::Network::IRC::Command command = ircClient->nextCommand();
-                Global::debug(0) << "Got message: " << command.getSendable() << std::endl;
+                std::vector<std::string> params = command.getParameters();
+                //Global::debug(0) << "Got message: " << command.getSendable() << std::endl;
                 try {
                     if (command.getType() == ::Network::IRC::Command::Ping){
                         ircClient->sendPong(command);
-                        panel.addMessage("(Ping " + command.getSendable() + ")" );
+                        panel.addMessage(command.getOwner(), "*** Ping!");
                     } else if (command.getType() == ::Network::IRC::Command::PrivateMessage || 
                               command.getType() == ::Network::IRC::Command::Notice){
-                        std::vector<std::string> params = command.getParameters();
                         // Username and message 
                         panel.addMessage(command.getOwner(), params.at(1));
+                    } else if (command.getType() == ::Network::IRC::Command::ReplyMOTD){
+                        panel.addMessage("*** MOTD - " + params.at(1));
+                    } else if (command.getType() == ::Network::IRC::Command::Join){
+                        panel.addMessage("*** You have joined the channel " + params.at(0) + ".");
+                    } else if (command.getType() == ::Network::IRC::Command::ReplyTopic){
+                        panel.addMessage("*** The channel topic is \"" + params.at(2) + "\".");
+                    } else if (command.getType() == ::Network::IRC::Command::ReplyNames){
+                        panel.addMessage("*** Current users on " + params.at(1) + " \"" + params.at(2) + "\".");
                     } else if (command.getType() == ::Network::IRC::Command::Error){
                         Global::debug(0) << "Received Error: " << command.getSendable() << "... Aborting." << std::endl;
                         throw Exception::Return(__FILE__, __LINE__);
