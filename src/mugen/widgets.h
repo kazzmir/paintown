@@ -90,6 +90,7 @@ namespace Widgets{
             Event();
             virtual ~Event();
             virtual void sendMessage(const std::string &) = 0;
+            virtual void handleCommand(const std::vector<std::string> &);
         };
         virtual inline void subscribe(Event * subscriber){
             this->subscribers.push_back(subscriber);

@@ -138,6 +138,8 @@ ChatPanel::Event::Event(){
 }
 ChatPanel::Event::~Event(){
 }
+void ChatPanel::Event::handleCommand(const std::vector<std::string> & command){
+}
 
 ChatPanel::~ChatPanel(){
 }
@@ -181,19 +183,8 @@ void ChatPanel::addMessage(const std::string & name, const std::string & message
 }
 
 void ChatPanel::handleCommand(const std::vector<std::string> & command){
-    try{
-        if (command.at(0) == "help"){
-            addMessage("* commands: help, nick");
-        } else if (command.at(0) == "nick"){
-            const std::string & nick = command.at(1);
-            if (!nick.empty()){
-                setClient(nick);
-                addMessage("* nick changed to " + nick);
-            }
-        } else {
-            addMessage("* Uknown command.");
-        }
-    } catch (const std::out_of_range & ex){
+    for (std::vector<Event *>::iterator i = subscribers.begin(); i != subscribers.end(); ++i){
+        (*i)->handleCommand(command);
     }
 }
 
