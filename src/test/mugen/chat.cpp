@@ -189,14 +189,13 @@ public:
                     std::vector<std::string> ctcp = command.getCtcp();
                     try {
                         if (ctcp.at(0) == "PING"){
-                            Global::debug(0) << "Got a PING ctcp checking existing requests." << std::endl;
                             // Lets check if there is an existing query otherwise send off request
                             if (command.getType() == ::Network::IRC::Command::Notice){
                                 std::map<std::string, uint64_t>::iterator check = pingReply.find(command.getOwner());
                                 if (check != pingReply.end()){
                                     // there is an existing entry lets display our ping
                                     std::ostringstream difference;
-                                    difference << ((System::currentMicroseconds() - check->second)/1000000000);
+                                    difference << (double)((System::currentMicroseconds() - check->second)/1000000000);
                                     panel.addMessage("[CTCP] Received CTCP-PING reply from " + check->first + ": " + difference.str() + "second(s)" );
                                     pingReply.erase(check);
                                 }
