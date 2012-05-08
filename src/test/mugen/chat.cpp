@@ -45,10 +45,13 @@ enum ConnectionType{
     IrcClient,
 };
 
-static std::string unsplit(const std::vector< std::string > & message){
+static std::string unsplit(const std::vector< std::string > & message, unsigned int start = 0){
     std::string all;
-    for (unsigned int i = 0; i < message.size(); ++i){
-        all+=message[i] + (i < message.size()-1 ? " " : "");
+    for (unsigned int i = start; i < message.size(); ++i){
+        try {
+            all+=message.at(i) + (i < message.size()-1 ? " " : "");
+        } catch (const std::out_of_range & ex){
+        }
     }
     return all;
 }
@@ -201,8 +204,8 @@ public:
     }
     
     void handleCommand(const std::vector<std::string> & command){
-        try{
-            if (ircClient == NULL){
+        if (ircClient == NULL){
+            try {
                 if (command.at(0) == "help"){
                     panel.addMessage("* commands: help, nick");
                 } else if (command.at(0) == "nick"){
@@ -214,49 +217,64 @@ public:
                 } else {
                     panel.addMessage("* Uknown command.");
                 }
-            } else if (ircClient != NULL){
-                if (command.at(0) == "help"){
-                    panel.addMessage("* commands: help, nick, whisper, ping, join, quit");
-                } else if (command.at(0) == "nick"){
+            } catch (const std::out_of_range & ex){
+            }
+        } else if (ircClient != NULL){
+            if (command.at(0) == "help"){
+                panel.addMessage("* commands: help, nick, whisper, ping, join, quit");
+            } else if (command.at(0) == "nick"){
+                try {
                     const std::string & nick = command.at(1);
                     if (!nick.empty()){
                         ircClient->setName(nick);
                         panel.setClient(nick);
                         panel.addMessage("* nick changed to " + nick);
-                    }
-                } else if (command.at(0) == "whisper"){
+                    } 
+                } catch (const std::out_of_range & ex){
+                    panel.addMessage("* /nick [name]");
+                }
+            } else if (command.at(0) == "whisper"){
+                try {
                     const std::string & who = command.at(1);
-                    const std::string & message = command.at(2);
+                    const std::string & message = unsplit(command, 2);
                     if (!who.empty() && !message.empty()){
                         ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":" + message);
-                        panel.addMessage("-> " + who + " " + message);
+                        panel.addMessage("-> " + who + " " + message); 
                     }
-                } else if (command.at(0) == "ping"){
-                    const std::string & who = command.at(1);
-                    if (!who.empty()){
-                        std::ostringstream timestamp;
-                        timestamp << System::currentMicroseconds();
-                        ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
-                        panel.addMessage("[CTCP] Sending CTCP-PING request to " + who);
-                    }
-                } else if (command.at(0) == "join"){
-                    const std::string & channel = command.at(1);
-                    if (!channel.empty()){
-                        ircClient->joinChannel(channel);
-                    }
-                } else if (command.at(0) == "quit"){
-                    const std::string & message = command.at(1);
-                    if (!message.empty()){
-                        ircClient->sendCommand(::Network::IRC::Command::Quit, ":"+message);
-                        Global::debug(0) << "Quit (" + message + "). Shutting down..." << std::endl;
-                        throw Exception::Return(__FILE__, __LINE__);
-                    }
-                } else {
-                    panel.addMessage("* Uknown command.");
+                } catch (const std::out_of_range & ex){
+                    panel.addMessage("* /whisper [nick] [message]");
                 }
+            } else if (command.at(0) == "ping"){
+                const std::string & who = command.at(1);
+                if (!who.empty()){
+                    std::ostringstream timestamp;
+                    timestamp << System::currentMicroseconds();
+                    ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
+                    panel.addMessage("[CTCP] Sending CTCP-PING request to " + who);
+                } else {
+                    panel.addMessage("* /ping [nick]");
+                }
+            } else if (command.at(0) == "join"){
+                const std::string & channel = command.at(1);
+                if (!channel.empty()){
+                    ircClient->joinChannel(channel);
+                } else {
+                    panel.addMessage("* /join [channel]");
+                }
+            } else if (command.at(0) == "quit"){
+                const std::string & message = unsplit(command, 1);
+                if (!message.empty()){
+                    ircClient->sendCommand(::Network::IRC::Command::Quit, ":" + message);
+                    Global::debug(0) << "Quit (" + message + "). Waiting for server to close connection..." << std::endl;
+                } else {
+                    ircClient->sendCommand(::Network::IRC::Command::Quit);
+                    Global::debug(0) << "Quit. Waiting for server to close connection..." << std::endl;
+                }
+            } else {
+                panel.addMessage("* Uknown command.");
             }
-        } catch (const std::out_of_range & ex){
         }
+    
     }
     
     void draw(const Graphics::Bitmap & screen){
