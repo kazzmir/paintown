@@ -45,13 +45,10 @@ enum ConnectionType{
     IrcClient,
 };
 
-static std::string unsplit(const std::vector< std::string > & message, unsigned int start = 0){
+static std::string join(const std::vector< std::string > & message, unsigned int start = 0){
     std::string all;
     for (unsigned int i = start; i < message.size(); ++i){
-        try {
-            all+=message.at(i) + (i < message.size()-1 ? " " : "");
-        } catch (const std::out_of_range & ex){
-        }
+        all+=message.at(i) + (i < message.size()-1 ? " " : "");
     }
     return all;
 }
@@ -236,7 +233,7 @@ public:
             } else if (command.at(0) == "whisper"){
                 try {
                     const std::string & who = command.at(1);
-                    const std::string & message = unsplit(command, 2);
+                    const std::string & message = join(command, 2);
                     if (!who.empty() && !message.empty()){
                         ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":" + message);
                         panel.addMessage("-> " + who + " " + message); 
@@ -245,24 +242,28 @@ public:
                     panel.addMessage("* /whisper [nick] [message]");
                 }
             } else if (command.at(0) == "ping"){
-                const std::string & who = command.at(1);
-                if (!who.empty()){
-                    std::ostringstream timestamp;
-                    timestamp << System::currentMicroseconds();
-                    ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
-                    panel.addMessage("[CTCP] Sending CTCP-PING request to " + who);
-                } else {
+                try {
+                    const std::string & who = command.at(1);
+                    if (!who.empty()){
+                        std::ostringstream timestamp;
+                        timestamp << System::currentMicroseconds();
+                        ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
+                        panel.addMessage("[CTCP] Sending CTCP-PING request to " + who); 
+                    }
+                } catch (const std::out_of_range & ex){
                     panel.addMessage("* /ping [nick]");
                 }
             } else if (command.at(0) == "join"){
-                const std::string & channel = command.at(1);
-                if (!channel.empty()){
-                    ircClient->joinChannel(channel);
-                } else {
+                try {
+                    const std::string & channel = command.at(1);
+                    if (!channel.empty()){
+                        ircClient->joinChannel(channel); 
+                    }
+                } catch (const std::out_of_range & ex){
                     panel.addMessage("* /join [channel]");
                 }
             } else if (command.at(0) == "quit"){
-                const std::string & message = unsplit(command, 1);
+                const std::string & message = join(command, 1);
                 if (!message.empty()){
                     ircClient->sendCommand(::Network::IRC::Command::Quit, ":" + message);
                     Global::debug(0) << "Quit (" + message + "). Waiting for server to close connection..." << std::endl;
