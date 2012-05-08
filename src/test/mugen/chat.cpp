@@ -236,7 +236,7 @@ public:
                     if (!who.empty()){
                         std::ostringstream timestamp;
                         timestamp << System::currentMicroseconds();
-                        ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, "\001PING " + timestamp.str() + "\001");
+                        ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
                         panel.addMessage("[CTCP] Sending CTCP-PING request to " + who);
                     }
                 } else if (command.at(0) == "join"){
