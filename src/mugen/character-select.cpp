@@ -3026,6 +3026,17 @@ void CharacterSelect::select(unsigned int cursor, int act){
     }
 }
 
+bool CharacterSelect::uniqueCharacter(const Filesystem::AbsolutePath definitionPath) const {
+    PaintownUtil::Thread::ScopedLock scoped(lock);
+    for (std::vector<PaintownUtil::ReferenceCount<Cell> >::const_iterator it = cells.begin(); it != cells.end(); it++){
+        PaintownUtil::ReferenceCount<Cell> cell = *it;
+        if (cell->getCharacter().getDef() == definitionPath){
+            return false;
+        }
+    }
+    return true;
+}
+
 bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & character){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     // Check if the character exists
@@ -3377,7 +3388,10 @@ public:
     WithSubscription withSubscription;
     
     void addCharacter(const Filesystem::AbsolutePath & path){
-        if (!done()){
+        /* We only care if the searcher adds the same def file twice. The user
+         * is free to add kfm multiple times in select.def
+         */
+        if (!done() && select.uniqueCharacter(path)){
             if (path.getExtension() == "zip"){
                 /* What exactly will happen if we add the same zip file twice?
                  * The old zip entries will get overwritten by new ones
@@ -3391,7 +3405,11 @@ public:
                      */
                     std::string where = Path::removeExtension(path.getFilename().path());
                     Filesystem::AbsolutePath def = path.getDirectory().join(Filesystem::RelativePath(where)).join(Filesystem::RelativePath(where + ".def"));
-                    select.addCharacter(Mugen::ArcadeData::CharacterInfo(def));
+                    if (!select.uniqueCharacter(def)){
+                        Storage::instance().removeOverlay(path, path.getDirectory());
+                    } else {
+                        select.addCharacter(Mugen::ArcadeData::CharacterInfo(def));
+                    }
                 } catch (...){
                     Storage::instance().removeOverlay(path, path.getDirectory());
                 }

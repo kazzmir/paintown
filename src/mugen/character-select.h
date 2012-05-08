@@ -555,6 +555,9 @@ public:
         this->titleOverride = title;
     }
     
+    /* true if no cell uses the given definitionPath */
+    bool uniqueCharacter(const Filesystem::AbsolutePath definitionPath) const;
+    
 protected:
     /* Adds a stage without taking the lock */
     void doAddStage(const Filesystem::AbsolutePath & stage);
