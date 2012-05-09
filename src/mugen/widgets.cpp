@@ -172,7 +172,50 @@ void ChatPanel::notify(const std::string & message){
 }
 
 void ChatPanel::addMessage(const std::string & message){
-    buffer.push_front(message);
+    // Check message if it exceeds the length of the box so we can split it
+    if (font.getWidth(message) > width-15){
+        unsigned int marker = 0;
+        unsigned int length = 0;
+        while ((marker+length) < message.size()){
+            //Global::debug(0) << "Substring: " << message.substr(marker, length) << " Marker: " << marker << " and Current length: " << length << std::endl;
+            if (font.getWidth(message.substr(marker, length)) < width-15){
+                length++;
+                continue;
+            } else {
+                if (message[marker+length] == ' '){
+                    buffer.push_front(message.substr(marker, length));
+                    marker += length+1;
+                    length = 0;
+                } else {
+                    // Search for previous space
+                    unsigned int cutoff = marker+length;
+                    while ((marker+length) > marker){
+                        if (message[marker+length] == ' '){
+                            break;
+                        }
+                        length--;
+                    }
+                    if ((marker+length) > marker){
+                        buffer.push_front(message.substr(marker, length));
+                        marker += length+1;
+                        length = 0;
+                    } else {
+                        buffer.push_front(message.substr(marker, cutoff));
+                        marker = cutoff+1;
+                        length = 0;
+                    }
+                }
+            }
+        }
+        // Add last item
+        if ((marker+length) > marker){
+            buffer.push_front(message.substr(marker, length));
+        }
+    } else {
+        buffer.push_front(message);
+    }
+    
+    // Drop out of sight
     if ((buffer.size() * (font.getHeight()+2)) > height){
         buffer.pop_back();
     }

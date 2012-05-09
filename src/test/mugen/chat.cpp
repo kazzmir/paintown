@@ -45,6 +45,21 @@ enum ConnectionType{
     IrcClient,
 };
 
+static std::vector<std::string> split(std::string str, char splitter){
+    std::vector<std::string> strings;
+    size_t next = str.find(splitter);
+    while (next != std::string::npos){
+        strings.push_back(str.substr(0, next));
+        str = str.substr(next+1);
+        next = str.find(splitter);
+    }
+    if (str != ""){
+        strings.push_back(str);
+    }
+
+    return strings;
+}
+
 static std::string join(const std::vector< std::string > & message, unsigned int start = 0){
     std::string all;
     for (unsigned int i = start; i < message.size(); ++i){
@@ -98,6 +113,9 @@ public:
     // check ctcp reply
     std::map<std::string, uint64_t> pingReply;
     
+    // Usernames
+    std::vector<std::string> currentNames;
+    
     double ticks(double system){
         return system;
     }
@@ -107,6 +125,11 @@ public:
             panel.act();
             if (ircClient == NULL){
                 sendMessages();
+            } else if (ircClient != NULL){
+                // Check nick and fix
+                if (ircClient->getName() != panel.getClient()){
+                    panel.setClient(ircClient->getName());
+                }
             }
             processMessages();
             if (server != NULL){
@@ -167,17 +190,35 @@ public:
                         ircClient->sendPong(command);
                         panel.addMessage(command.getOwner(), "*** Ping!");
                     } else if (command.getType() == ::Network::IRC::Command::PrivateMessage || 
-                              command.getType() == ::Network::IRC::Command::Notice){
+                               command.getType() == ::Network::IRC::Command::Notice){
                         // Username and message 
                         panel.addMessage(command.getOwner(), params.at(1));
-                    } else if (command.getType() == ::Network::IRC::Command::ReplyMOTD){
-                        panel.addMessage("*** MOTD - " + params.at(1));
+                    } else if (command.getType() == ::Network::IRC::Command::ReplyMOTD ||
+                               command.getType() == ::Network::IRC::Command::ReplyMOTDStart ||
+                               command.getType() == ::Network::IRC::Command::ReplyMOTDEndOf){
+                        panel.addMessage("*** MOTD " + params.at(1));
                     } else if (command.getType() == ::Network::IRC::Command::Join){
                         panel.addMessage("*** You have joined the channel " + params.at(0) + ".");
+                    } else if (command.getType() == ::Network::IRC::Command::ReplyNoTopic){
+                        panel.addMessage("*** The channel " + params.at(1) + " has no topic set.");
                     } else if (command.getType() == ::Network::IRC::Command::ReplyTopic){
-                        panel.addMessage("*** The channel topic is \"" + params.at(2) + "\".");
+                        panel.addMessage("*** The channel topic for " + params.at(1) + " is: \"" + params.at(2) + "\".");
                     } else if (command.getType() == ::Network::IRC::Command::ReplyNames){
-                        panel.addMessage("*** Current users on " + params.at(1) + " \"" + params.at(2) + "\".");
+                        //panel.addMessage("*** Current users on " + params.at(1) + " \"" + params.at(2) + "\".");
+                        std::vector<std::string> names = split(params.at(2), ' ');
+                        currentNames.insert(currentNames.end(), names.begin(), names.end());
+                    } else if (command.getType() == ::Network::IRC::Command::ReplyNamesEndOf){
+                        if (!currentNames.empty()){
+                            panel.addMessage("*** Current users on " + params.at(1) + " \"" + join(currentNames) + "\".");
+                            // Just clear list as it's not needed anymore
+                            currentNames.clear();
+                        }
+                    } else if (command.getType() == ::Network::IRC::Command::ErrorNickInUse){
+                        panel.addMessage("[Error] " + params.at(1) + ": Nick already in use.");
+                    } else if (command.getType() == ::Network::IRC::Command::ErrorNoSuchNick){
+                        panel.addMessage("[Error] " + params.at(1) + ": No such nick.");
+                    } else if (command.getType() == ::Network::IRC::Command::ErrorNoSuchChannel){
+                        panel.addMessage("[Error] " + params.at(1) + ": No such channel.");
                     } else if (command.getType() == ::Network::IRC::Command::Error){
                         Global::debug(0) << "Received Error: " << command.getSendable() << "... Aborting." << std::endl;
                         throw Exception::Return(__FILE__, __LINE__);
@@ -290,6 +331,24 @@ public:
                     }
                 } catch (const std::out_of_range & ex){
                     panel.addMessage("* /join [channel]");
+                }
+            } else if (command.at(0) == "names"){
+                try {
+                    const std::string & channel = command.at(1);
+                    if (!channel.empty()){
+                        ircClient->sendCommand(::Network::IRC::Command::Names, channel); 
+                    }
+                } catch (const std::out_of_range & ex){
+                    panel.addMessage("* /names [channel]");
+                }
+            } else if (command.at(0) == "topic"){
+                try {
+                    const std::string & channel = command.at(1);
+                    if (!channel.empty()){
+                        ircClient->sendCommand(::Network::IRC::Command::Topic, channel);
+                    }
+                } catch (const std::out_of_range & ex){
+                    ircClient->sendCommand(::Network::IRC::Command::Topic, ircClient->getChannel());
                 }
             } else if (command.at(0) == "quit"){
                 const std::string & message = join(command, 1);
