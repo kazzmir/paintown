@@ -71,8 +71,9 @@ static std::string join(const std::vector< std::string > & message, unsigned int
 class InputLogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw, public Mugen::Widgets::ChatPanel::Event{
 public:
     InputLogicDraw(const ConnectionType & type, int port, const std::string & host = "127.0.0.1"):
-    panel(10, 20, 300, 200),
+    panel(10, 20, 250, 200),
     escaped(false){
+        users.setWidth(45);
         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
         Mugen::OptionMenu menu(list);
         panel.setFont(menu.getFont());
@@ -95,6 +96,7 @@ public:
     }
     
     Mugen::Widgets::ChatPanel panel;
+    Mugen::Widgets::ListBox users;
 
     bool escaped;
     
@@ -113,9 +115,6 @@ public:
     // check ctcp reply
     std::map<std::string, uint64_t> pingReply;
     
-    // Usernames
-    std::vector<std::string> currentNames;
-    
     double ticks(double system){
         return system;
     }
@@ -128,7 +127,9 @@ public:
             } else if (ircClient != NULL){
                 // Check nick and fix
                 if (ircClient->getName() != panel.getClient()){
+                    users.remove(panel.getClient());
                     panel.setClient(ircClient->getName());
+                    users.add(ircClient->getName());
                 }
             }
             processMessages();
@@ -204,14 +205,11 @@ public:
                     } else if (command.getType() == ::Network::IRC::Command::ReplyTopic){
                         panel.addMessage("*** The channel topic for " + params.at(1) + " is: \"" + params.at(2) + "\".");
                     } else if (command.getType() == ::Network::IRC::Command::ReplyNames){
-                        //panel.addMessage("*** Current users on " + params.at(1) + " \"" + params.at(2) + "\".");
                         std::vector<std::string> names = split(params.at(2), ' ');
-                        currentNames.insert(currentNames.end(), names.begin(), names.end());
+                        users.add(names);
                     } else if (command.getType() == ::Network::IRC::Command::ReplyNamesEndOf){
-                        if (!currentNames.empty()){
-                            panel.addMessage("*** Current users on " + params.at(1) + " \"" + join(currentNames) + "\".");
-                            // Just clear list as it's not needed anymore
-                            currentNames.clear();
+                        if (!users.getList().empty()){
+                            panel.addMessage("*** Current users on " + params.at(1) + " \"" + join(users.getList()) + "\".");
                         }
                     } else if (command.getType() == ::Network::IRC::Command::ErrorNickInUse){
                         panel.addMessage("[Error] " + params.at(1) + ": Nick already in use.");
@@ -285,11 +283,13 @@ public:
             }
         } else if (ircClient != NULL){
             if (command.at(0) == "help"){
-                panel.addMessage("* commands: help, nick, whisper, ping, join, quit");
+                panel.addMessage("* commands: help, nick, whisper, ping, join, names, topic, quit");
             } else if (command.at(0) == "nick"){
                 try {
                     const std::string & nick = command.at(1);
                     if (!nick.empty()){
+                        users.remove(ircClient->getName());
+                        users.add(nick);
                         ircClient->setName(nick);
                         panel.setClient(nick);
                         panel.addMessage("* nick changed to " + nick);
@@ -327,7 +327,7 @@ public:
                 try {
                     const std::string & channel = command.at(1);
                     if (!channel.empty()){
-                        ircClient->joinChannel(channel); 
+                        ircClient->joinChannel(channel);
                     }
                 } catch (const std::out_of_range & ex){
                     panel.addMessage("* /join [channel]");
@@ -370,7 +370,12 @@ public:
         Graphics::StretchedBitmap stretch(320, 240, screen);
         stretch.start();
         stretch.fill(Graphics::makeColor(255,255,255));
+        if (ircClient != NULL){
+            // display channel
+            panel.getFont().draw(160, panel.getFont().getHeight()+10, 0, "(" + ircClient->getChannel() + ")", stretch);
+        }
         panel.draw(stretch);
+        users.draw(265, 20, panel.getFont(), stretch);
         stretch.finish();
         screen.BlitToScreen();
     }

@@ -64,6 +64,31 @@ namespace Widgets{
         int cursorTime;
     };
     
+    class ListBox{
+    public:
+        ListBox();
+        virtual ~ListBox();
+        
+        virtual void draw(int x, int y, const FontSystem::Font &, const Graphics::Bitmap &);
+        
+        virtual void add(const std::string &);
+        virtual void add(const std::vector<std::string> &);
+        virtual void remove(const std::string &);
+        virtual void replace(const std::vector<std::string> &);
+        virtual inline const std::vector<std::string> & getList() const {
+            return list;
+        }
+        virtual inline void clear(){
+            this->list.clear();
+        }
+        virtual inline void setWidth(int width){
+            this->width = width;
+        }
+    protected:
+        int width;
+        std::vector<std::string> list;
+    };
+    
     typedef void *(*EventCallback)(const std::string &);
     
     class ChatPanel{
@@ -102,6 +127,10 @@ namespace Widgets{
         
         virtual inline void setFont(const FontSystem::Font & font){
             this->font = font;
+        }
+        
+        virtual inline const FontSystem::Font & getFont(){
+            return this->font;
         }
         
         virtual inline void setClient(const std::string & name){

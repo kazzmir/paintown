@@ -120,6 +120,50 @@ static void submit(void * panel){
     }
 }
 
+ListBox::ListBox():
+width(0){
+}
+
+ListBox::~ListBox(){
+}
+
+void ListBox::draw(int x, int y, const FontSystem::Font & font, const Graphics::Bitmap & work){
+    int height = list.size() * (font.getHeight()+2);
+    
+    drawBox(10, x, y, width, height, Graphics::makeColor(0,0,60), Graphics::makeColor(0,0,20), 150, work);
+    
+    int mod = font.getHeight() + 2;
+    
+    Graphics::Bitmap temp(work, x+5, y, width-10, height);
+    for (std::vector<std::string>::iterator i = list.begin(); i != list.end(); ++i){
+        const std::string & text = *i;
+        font.draw(0, mod, 1, text, temp);
+        mod+=(font.getHeight()+2);
+    }
+}
+
+void ListBox::add(const std::string & text){
+    list.push_back(text);
+}
+
+void ListBox::add(const std::vector<std::string> & more){
+    list.insert(list.end(),more.begin(),more.end());
+}
+
+void ListBox::remove(const std::string & text){
+    for (std::vector<std::string>::iterator i = list.begin(); i != list.end(); ++i){
+        const std::string & match = *i;
+        if (text == match){
+            list.erase(i);
+            return;
+        }
+    }
+}
+
+void ListBox::replace(const std::vector<std::string> & replace){
+    list = replace;
+}
+
 static void escape(void * panel){
     throw Exception::Return(__FILE__, __LINE__);
 }
