@@ -791,6 +791,12 @@ def readExec( program ):
     except OSError:
         return ""
 
+def useDistcc():
+    try:
+        return int(os.environ['USE_DISTCC']) == 1
+    except KeyError:
+        return False
+        
 def getDebug():
     try:
         return int(os.environ[ 'DEBUG' ])
@@ -1331,6 +1337,9 @@ rsx
         wrapSymbols(env)
         return env
     def gcc(env):
+        if useDistcc():
+            env['CC'] = 'distcc'
+            env['CXX'] = 'distcc g++'
         if isOSX104():
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_FRAMEWORKS -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
         else:

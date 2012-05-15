@@ -27,9 +27,18 @@ def usingIcecream():
         return int(os.environ['USE_ICECC']) == 1
     except KeyError:
         return False
+        
+def usingDistcc():
+    import os
+    try:
+        return int(os.environ['USE_DISTCC']) == 1
+    except KeyError:
+        return False
 
 # if using the icecc distributed compiler stuff just set cores to 5
 if usingIcecream():
     print("5")
+if usingDistcc():
+    print("8")
 else:
     print(detectCPUs())
