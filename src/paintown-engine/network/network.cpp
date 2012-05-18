@@ -2,6 +2,7 @@
 #include "util/system.h"
 #include <vector>
 #include <string>
+#include <string.h>
 
 /* FIXME: these things should come from util/network/network.h */
 #ifdef HAVE_NETWORKING
