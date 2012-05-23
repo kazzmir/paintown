@@ -1430,9 +1430,9 @@ public:
 
             struct Image{
                 Image():
-                    sprite(NULL),
-                    life(0){
-                    }
+                sprite(false),
+                life(0){
+                }
 
                 Image(Frame sprite, Effects effects, int life, int x, int y, bool show):
                     sprite(sprite),
