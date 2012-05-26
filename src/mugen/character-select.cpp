@@ -3392,7 +3392,7 @@ public:
          * is free to add kfm multiple times in select.def
          */
         if (!done() && select.uniqueCharacter(path)){
-            if (path.getExtension() == "zip"){
+            if (Storage::isContainer(path)){
                 /* What exactly will happen if we add the same zip file twice?
                  * The old zip entries will get overwritten by new ones
                  * and the old zip container will go away once there are no
@@ -3404,6 +3404,7 @@ public:
                      * try to load mugen/chars/foo/foo.def
                      */
                     std::string where = Path::removeExtension(path.getFilename().path());
+                    /* path/where/where.def */
                     Filesystem::AbsolutePath def = path.getDirectory().join(Filesystem::RelativePath(where)).join(Filesystem::RelativePath(where + ".def"));
                     if (!select.uniqueCharacter(def)){
                         Storage::instance().removeOverlay(path, path.getDirectory());

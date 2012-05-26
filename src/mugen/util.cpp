@@ -1508,19 +1508,19 @@ Mugen::ArcadeData::MatchPath::MatchPath(const CharacterCollection::Type & type, 
                 std::vector<Mugen::ArcadeData::CharacterInfo> team = extractTeam(type, orderedCharacters);
                 
                 Mugen::ArcadeData::CharacterInfo first = team[0];
-                if (first.getRandomStage()){
+                if (first.getRandomStage() && stages.size() > 0){
                     first.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
                 Mugen::ArcadeData::CharacterInfo second = team[1];
-                if (second.getRandomStage()){
+                if (second.getRandomStage() && stages.size() > 0){
                     second.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
                 Mugen::ArcadeData::CharacterInfo third = team[2];
-                if (third.getRandomStage()){
+                if (third.getRandomStage() && stages.size() > 0){
                     third.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
                 Mugen::ArcadeData::CharacterInfo fourth = team[3];
-                if (fourth.getRandomStage()){
+                if (fourth.getRandomStage() && stages.size() > 0){
                     fourth.setStage(stages[PaintownUtil::rnd(0, stages.size())]);
                 }
                 

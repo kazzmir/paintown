@@ -153,6 +153,7 @@ void * Searcher::searchForCharacters(void * arg){
         for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !searcher->searchingCheck.get(); it++){
             Filesystem::AbsolutePath path = *it;
             searcher->addCharacters(findFiles(path, "def"));
+            /* FIXME: change this to add all container files */
             searcher->addCharacters(findFiles(path, "zip"));
         }
         Global::debug(1) << "Done searching for characters" << endl;

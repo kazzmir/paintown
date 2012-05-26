@@ -889,7 +889,7 @@ static Character * doLoad(const Filesystem::AbsolutePath & path){
     TimeDifference timer;
 
     Filesystem::AbsolutePath use = path;
-    if (path.getExtension() == "zip"){
+    if (Storage::isContainer(path)){
         Storage::instance().addOverlay(path, path.getDirectory());
         use = Filesystem::AbsolutePath(Path::removeExtension(path.path()) + ".def");
     }
@@ -929,6 +929,7 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
         throw MugenException("No characters left to choose from!", __FILE__, __LINE__);
     } else {
         try{
+            /* FIXME: change this to find any container */
             Filesystem::AbsolutePath zip = Storage::instance().find(Filesystem::RelativePath("mugen/chars/" + name + ".zip"));
             Storage::instance().addOverlay(zip, zip.getDirectory());
         } catch (const Filesystem::NotFound & fail){
@@ -1139,6 +1140,7 @@ public:
         std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
 
         /* Find zip files */
+        /* FIXME: change this to find any container files */
         std::vector<Filesystem::AbsolutePath> zipCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.zip");
         allCharacters.insert(allCharacters.end(), zipCharacters.begin(), zipCharacters.end());
         std::random_shuffle(allCharacters.begin(), allCharacters.end());
