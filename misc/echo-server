@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+# Listens for connections and prints all the data received
+# Like 'netcat -l' but keeps listening for new connections
+
+def handle(client):
+    data = client.recv(1024)
+    while data:
+        print data
+        data = client.recv(1024)
+    client.close()
+
+def run(port):
+    import socket
+    server = socket.socket()
+    server.bind(('0.0.0.0', port))
+    server.listen(5)
+    print "Running server on port %d" % port
+    
+    while True:
+        (client, address) = server.accept()
+        handle(client)
+
+import sys
+if len(sys.argv) > 1:
+    run(int(sys.argv[1]))
+else:
+    run(5670)

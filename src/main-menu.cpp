@@ -3,6 +3,11 @@
 #include <sstream>
 #include <vector>
 
+#ifdef PS3
+/* For network debugging */
+#include <net/net.h>
+#endif
+
 #include "util/bitmap.h"
 
 #include "factory/collector.h"
@@ -630,12 +635,16 @@ int paintown_main(int argc, char ** argv){
     /* find the directory that contains the binary and set the data path
      * to that directory + our data path
      */
+
     if (argc > 0){
         Path::AbsolutePath self(argv[0]);
         Util::setDataPath(self.getDirectory().join(Path::RelativePath(Util::getDataPath2().path())).path());
         /* set the home directory to wherever we started up from */
-        setenv("HOME", argv[0], 1);
+        setenv("HOME", self.getDirectory().path().c_str(), 1);
     }
+
+    /* Do network initialization early in case we need to use network debugging */
+    netInitialize();
 #endif
 
     vector<string> stringArgs;
