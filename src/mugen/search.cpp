@@ -19,42 +19,52 @@ Searcher::Subscriber::~Subscriber(){
 }
 
 Searcher::Searcher():
-characterSearchThread(PaintownUtil::Thread::uninitializedValue),
-stageSearchThread(PaintownUtil::Thread::uninitializedValue),
-quitSearching(false),
-searchingCheck(quitSearching, searchingLock.getLock()){
+characterSearch(*this),
+stageSearch(*this){
 }
 
 Searcher::~Searcher(){
-    pause();
+    characterSearch.pause();
 }
     
 void Searcher::start(){
-    searchingCheck.set(false);
+    characterSearch.start();
+    stageSearch.start();
+    /*
     if (characterSearchThread == PaintownUtil::Thread::uninitializedValue){
         if (!PaintownUtil::Thread::createThread(&characterSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchForCharacters, this)){
             Global::debug(0) << "Could not create character search thread" << endl;
         }
     }
+    */
 
+    /*
     if (stageSearchThread == PaintownUtil::Thread::uninitializedValue){
         if (!PaintownUtil::Thread::createThread(&stageSearchThread, NULL, (PaintownUtil::Thread::ThreadFunction) searchStages, this)){
             Global::debug(0) << "Could not create stage search thread" << endl;
         }
     }
+    */
 }
     
 void Searcher::pause(){
-    searchingCheck.set(true);
+    characterSearch.pause();
+    stageSearch.pause();
+
+    // searchingCheck.set(true);
+    /*
     if (characterSearchThread != PaintownUtil::Thread::uninitializedValue){
         PaintownUtil::Thread::joinThread(characterSearchThread);
         characterSearchThread = PaintownUtil::Thread::uninitializedValue;
     }
+    */
     
+    /*
     if (stageSearchThread != PaintownUtil::Thread::uninitializedValue){
         PaintownUtil::Thread::joinThread(stageSearchThread);
         stageSearchThread = PaintownUtil::Thread::uninitializedValue;
     }
+    */
 }
 
 /* hold the lock when this method is called */
@@ -127,75 +137,122 @@ static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath
         return vector<Filesystem::AbsolutePath>();
     }
 }   
-
-void * Searcher::searchForCharacters(void * arg){
+        
+Searcher::CharacterSearch::CharacterSearch(Searcher & owner):
+owner(owner),
+thread(PaintownUtil::Thread::uninitializedValue),
+searching(false),
+searchingCheck(searching, searchingLock.getLock()){
     try{
-        Searcher * searcher = (Searcher*) arg;
-        vector<Filesystem::AbsolutePath> searchPaths;
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getCharDirectory()));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        /* TODO: use a callback to add new characters to be processed instead
-         * of processing all files after they have been found.
-         */
-        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !searcher->searchingCheck.get(); it++){
-            Filesystem::AbsolutePath path = *it;
-            searcher->addCharacters(findFiles(path, "def"));
-            /* FIXME: change this to add all container files */
-            searcher->addCharacters(findFiles(path, "zip"));
-        }
-        Global::debug(1) << "Done searching for characters" << endl;
-    } catch (...){
-        Global::debug(0) << "Search thread died for some reason" << endl;
+        paths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
+    } catch (const Filesystem::NotFound & fail){
     }
+
+    try{
+        paths.push_back(Storage::instance().find(Data::getInstance().getCharDirectory()));
+    } catch (const Filesystem::NotFound & fail){
+    }
+
+    try{
+        paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+    } catch (const Filesystem::NotFound & fail){
+    }
+}
+
+void Searcher::CharacterSearch::search(){
+    /* Quit if either we run out of paths to process or if the searcher
+     * is paused
+     */
+    while (paths.size() > 0 && searchingCheck.get()){
+        Filesystem::AbsolutePath path = paths.front();
+        paths.erase(paths.begin());
+        owner.addCharacters(findFiles(path, "def"));
+        /* FIXME: change this to add all container files */
+        owner.addCharacters(findFiles(path, "zip"));
+    }
+}
+
+void * Searcher::CharacterSearch::runSearch(void * self_){
+    Searcher::CharacterSearch * self = (Searcher::CharacterSearch*) self_;
+    self->search();
     return NULL;
 }
 
-void * Searcher::searchStages(void * arg){
+void Searcher::CharacterSearch::start(){
+    if (!searchingCheck.get()){
+        searchingCheck.set(true);
+        if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) runSearch, this)){
+            searchingCheck.set(false);
+        }
+    }
+}
+
+void Searcher::CharacterSearch::pause(){
+    searchingCheck.set(false);
+    if (thread != PaintownUtil::Thread::uninitializedValue){
+        PaintownUtil::Thread::joinThread(thread);
+        thread = PaintownUtil::Thread::uninitializedValue;
+    }
+}
+        
+Searcher::CharacterSearch::~CharacterSearch(){
+    pause();
+}
+
+Searcher::StageSearch::StageSearch(Searcher & owner):
+owner(owner),
+thread(PaintownUtil::Thread::uninitializedValue),
+searching(false),
+searchingCheck(searching, searchingLock.getLock()){
     try{
-        Searcher * searcher = (Searcher*) arg;
-        vector<Filesystem::AbsolutePath> searchPaths;
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages"))));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().find(Data::getInstance().getStageDirectory()));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        try{
-            searchPaths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
-        } catch (const Filesystem::NotFound & fail){
-        }
-
-        /* TODO: use a callback to add new characters to be processed instead
-         * of processing all files after they have been found.
-         */
-        for (vector<Filesystem::AbsolutePath>::iterator it = searchPaths.begin(); it != searchPaths.end() && !searcher->searchingCheck.get(); it++){
-            Filesystem::AbsolutePath path = *it;
-            searcher->addStages(findFiles(path, "def"));
-        }
-
-        Global::debug(1) << "Done searching for stages" << endl;
-    } catch (...){
-        Global::debug(0) << "Stage search thread died for some reason" << endl;
+        paths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages"))));
+    } catch (const Filesystem::NotFound & fail){
     }
 
+    try{
+        paths.push_back(Storage::instance().find(Data::getInstance().getStageDirectory()));
+    } catch (const Filesystem::NotFound & fail){
+    }
+
+    try{
+        paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+    } catch (const Filesystem::NotFound & fail){
+    }
+}
+
+void Searcher::StageSearch::start(){
+    if (!searchingCheck.get()){
+        searchingCheck.set(true);
+        if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) runSearch, this)){
+            searchingCheck.set(false);
+        }
+    }
+}
+
+void Searcher::StageSearch::pause(){
+    searchingCheck.set(false);
+    if (thread != PaintownUtil::Thread::uninitializedValue){
+        PaintownUtil::Thread::joinThread(thread);
+        thread = PaintownUtil::Thread::uninitializedValue;
+    }
+}
+
+Searcher::StageSearch::~StageSearch(){
+    pause();
+}
+
+void * Searcher::StageSearch::runSearch(void * self_){
+    Searcher::StageSearch * self = (Searcher::StageSearch*) self_;
+    self->search();
     return NULL;
+}
+
+void Searcher::StageSearch::search(){
+    while (paths.size() > 0 && searchingCheck.get()){
+        Filesystem::AbsolutePath path = paths.front();
+        paths.erase(paths.begin());
+        owner.addCharacters(findFiles(path, "def"));
+    }
 }
 
 }

@@ -40,6 +40,47 @@ public:
     // std::vector<Filesystem::AbsolutePath> characters
 
 protected:
+
+    /* Saves the search state so it can be paused/resumed */
+    class CharacterSearch{
+    public:
+        CharacterSearch(Searcher & owner);
+        void start();
+        void pause();
+        virtual ~CharacterSearch();
+
+        Searcher & owner;
+        PaintownUtil::Thread::Id thread;
+        std::vector<Filesystem::AbsolutePath> paths;
+        volatile bool searching;
+        PaintownUtil::ThreadBoolean searchingCheck;
+        PaintownUtil::Thread::LockObject searchingLock;
+
+        static void * runSearch(void * self_);
+        void search();
+    };
+
+    class StageSearch{
+    public:
+        StageSearch(Searcher & owner);
+        void start();
+        void pause();
+        virtual ~StageSearch();
+
+        Searcher & owner;
+        PaintownUtil::Thread::Id thread;
+        std::vector<Filesystem::AbsolutePath> paths;
+        volatile bool searching;
+        PaintownUtil::ThreadBoolean searchingCheck;
+        PaintownUtil::Thread::LockObject searchingLock;
+
+        static void * runSearch(void * self_);
+        void search();
+    };
+
+    CharacterSearch characterSearch;
+    StageSearch stageSearch;
+
     static void * searchForCharacters(void * arg);
     static void * searchStages(void * arg);
     void addCharacters(const std::vector<Filesystem::AbsolutePath> & files);
@@ -49,13 +90,6 @@ protected:
     void publishCharacters(const std::vector<Filesystem::AbsolutePath> & files);
     void publishStages(const std::vector<Filesystem::AbsolutePath> & files);
         
-    PaintownUtil::Thread::Id characterSearchThread;
-    PaintownUtil::Thread::Id stageSearchThread;
-
-    PaintownUtil::Thread::LockObject searchingLock;
-    volatile bool quitSearching;
-    PaintownUtil::ThreadBoolean searchingCheck;
-
     PaintownUtil::Thread::LockObject addCharactersLock;
     std::vector<Filesystem::AbsolutePath> characters;
     

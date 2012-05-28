@@ -3296,8 +3296,6 @@ public:
     input2(input2),
     select(select),
     search(search),
-    quitSearching(false),
-    searchingCheck(quitSearching, searchingLock.getLock()),
     // characterAddThread(PaintownUtil::Thread::uninitializedValue),
     subscription(*this),
     withSubscription(search, subscription){
@@ -3310,10 +3308,6 @@ public:
     
     PaintownUtil::Thread::LockObject lock;
     
-    PaintownUtil::Thread::LockObject searchingLock;
-    volatile bool quitSearching;
-    PaintownUtil::ThreadBoolean searchingCheck;
-
     // PaintownUtil::Thread::Id characterAddThread;
     PaintownUtil::Thread::LockObject addCharacterLock;
     // std::deque<Filesystem::AbsolutePath> addCharacters;
@@ -3445,7 +3439,6 @@ public:
                         if (!canceled){
                             select.cancel();
                             canceled = true;
-                            searchingCheck.set(true);
                         }
                     }
                     if (event.out == Left){
@@ -3481,7 +3474,8 @@ public:
                 }
             }
         }
-        if (select.getCurrentPlayer() == CharacterSelect::Player2 || select.getCurrentPlayer() == CharacterSelect::Both){
+        if (select.getCurrentPlayer() == CharacterSelect::Player2 ||
+            select.getCurrentPlayer() == CharacterSelect::Both){
             std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input2, InputSource());
             for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
@@ -3489,7 +3483,6 @@ public:
                     if (event.out == Esc){
                         if (!canceled){
                             select.cancel();
-                            searchingCheck.set(true);
                             canceled = true;
                         }
                     }
@@ -3531,7 +3524,6 @@ public:
             if (InputManager::anyInput()){
                 if (!canceled){
                     select.cancel();
-                    searchingCheck.set(true);
                     canceled = true;
                 }
             }
@@ -3539,9 +3531,6 @@ public:
         {
             PaintownUtil::Thread::ScopedLock scoped(lock);
             is_done = select.isDone();
-        }
-        if (is_done){
-            searchingCheck.set(is_done);
         }
     }
 

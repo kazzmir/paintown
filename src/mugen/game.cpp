@@ -67,6 +67,8 @@ Game::~Game(){
 
 void Game::run(Searcher & searcher){
     ParseCache cache;
+    /* Make sure searcher is running */
+    searcher.start();
 
     try{
         switch (gameType){
@@ -130,6 +132,9 @@ void Game::run(Searcher & searcher){
         PaintownUtil::showError(screen, e, out.str());
         InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
     }
+
+    /* Continue the searcher */
+    searcher.start();
 }
 
 class QuitGameException: public MugenException {
@@ -1483,6 +1488,7 @@ void Game::doTraining(Searcher & searcher){
         // Prepares stage
         prepareStage(loader, stage);
         stage.reset();
+        searcher.pause();
         try {
             runMatch(&stage, "", options);
         } catch (const Exception::Return & ex){
@@ -1545,6 +1551,7 @@ void Game::doWatch(Searcher & searcher){
         // Prepare stage
         prepareStage(loader, stage);
         stage.reset();
+        searcher.pause();
         try {
             runMatch(&stage);
         } catch (const Exception::Return & ex){
@@ -1783,6 +1790,7 @@ void Game::doArcade(Searcher & searcher){
         prepareStage(loader, stage);
         stage.reset();
         try {
+            searcher.pause();
             runMatch(&stage, "", options);
             if (ourPlayer->getFirst().getMatchWins() > wins){
                 wins = ourPlayer->getFirst().getMatchWins();
@@ -1918,6 +1926,7 @@ void Game::doVersus(Searcher & searcher){
         Mugen::Stage stage(select.getStage());
         prepareStage(loader, stage);
         stage.reset();
+        searcher.pause();
         try {
             runMatch(&stage, "", options);
         } catch (const Exception::Return & ex){
@@ -2059,11 +2068,13 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
                 player2LocalBehavior->begin();
                 player1RemoteBehavior->begin();
             }
+            searcher.pause();
             try {
                 runMatch(&stage, "", options);
             } catch (const Exception::Return & ex){
             } catch (const QuitGameException & ex){
             }
+            searcher.start();
         }
     } catch (const Network::NetworkException & ex){
         Global::debug(0) << "Problem with network connection! Reason: " << ex.getMessage();
@@ -2294,6 +2305,7 @@ void Game::startDemo(Searcher & searcher){
     Mugen::Stage stage(stagePath);
     prepareStage(loader, stage);
     stage.reset();
+    searcher.pause();
     try {
         InputManager::waitForClear();
         
@@ -2441,6 +2453,7 @@ void Game::doSurvival(Searcher & searcher){
         stage.getGameInfo()->setWins(1, 0);
         stage.reset();
         try {
+            searcher.pause();
             runMatch(&stage, "", options);
             if (ourPlayer->getFirst().getMatchWins()> wins){
                 wins++;
