@@ -251,7 +251,7 @@ void Searcher::StageSearch::search(){
     while (paths.size() > 0 && searchingCheck.get()){
         Filesystem::AbsolutePath path = paths.front();
         paths.erase(paths.begin());
-        owner.addCharacters(findFiles(path, "def"));
+        owner.addStages(findFiles(path, "def"));
     }
 }
 
