@@ -3080,6 +3080,11 @@ void CharacterSelect::addRandom(){
         nextCell++;
     }
 }
+    
+int CharacterSelect::stageCount() const {
+    PaintownUtil::Thread::ScopedLock scoped(lock);
+    return stages.getStages().size();
+}
 
 /* Only call this if you hold the lock */
 void CharacterSelect::doAddStage(const Filesystem::AbsolutePath & stage){
@@ -3315,27 +3320,104 @@ public:
     class Subscriber: public Searcher::Subscriber {
     public:
         Subscriber(SelectLogic & owner):
-        owner(owner){
-        }
-
-        virtual ~Subscriber(){
-        }
-    
-        virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
-            for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
-                const Filesystem::AbsolutePath & path = *it;
-                owner.addCharacter(path);
+        owner(owner),
+        going(true),
+        check(going, lock.getLock()),
+        thread(PaintownUtil::Thread::uninitializedValue){
+            if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) doProcess, this)){
+                Global::debug(0) << "Could not create processing thread" << std::endl;
             }
         }
 
+        void stop(){
+            check.set(false);
+            if (!PaintownUtil::Thread::isUninitialized(thread)){
+                PaintownUtil::Thread::joinThread(thread);
+                thread = PaintownUtil::Thread::uninitializedValue;
+            }
+        }
+
+        virtual ~Subscriber(){
+            stop();
+        }
+    
+        virtual void receiveCharacters(const std::vector<Filesystem::AbsolutePath> & paths){
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            characters.insert(characters.end(), paths.begin(), paths.end());
+        }
+
         virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths){
-            for (std::vector<Filesystem::AbsolutePath>::const_iterator it = paths.begin(); it != paths.end(); it++){
-                const Filesystem::AbsolutePath & path = *it;
-                owner.addStage(path);
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            stages.insert(stages.end(), paths.begin(), paths.end());
+        }
+
+        static void * doProcess(void * self_){
+            Subscriber * self = (Subscriber*) self_;
+            self->process();
+            return NULL;
+        }
+
+        bool maybeAddCharacter(){
+            Filesystem::AbsolutePath path;
+            {
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                if (characters.size() > 0){
+                    path = characters.front();
+                    characters.erase(characters.begin());
+                } else {
+                    return false;
+                }
+            }
+            owner.addCharacter(path);
+            return true;
+        }
+
+        bool maybeAddStage(){
+            Filesystem::AbsolutePath path;
+            {
+                PaintownUtil::Thread::ScopedLock scoped(lock);
+                if (stages.size() > 0){
+                    path = stages.front();
+                    stages.erase(stages.begin());
+                } else {
+                    return false;
+                }
+            }
+            owner.addStage(path);
+            return true;
+        }
+
+        /* Actually process the characters/stages. Interleave them
+         * so we don't end up delaying stages for too long
+         */
+        void process(){
+            while (check.get()){
+                bool didWork = maybeAddCharacter();
+                
+                /* Maybe quit early */
+                if (!check.get()){
+                    continue;
+                }
+
+                didWork |= maybeAddStage();
+
+                /* Didn't do anything so wait for more work to appear.
+                 * Might be able to use a condition variable instead..
+                 */
+                if (!didWork){
+                    PaintownUtil::rest(1);
+                }
             }
         }
 
         SelectLogic & owner;
+
+        volatile bool going;
+        PaintownUtil::ThreadBoolean check;
+        PaintownUtil::Thread::LockObject lock;
+        PaintownUtil::Thread::Id thread;
+        std::vector<Filesystem::AbsolutePath> characters;
+        std::vector<Filesystem::AbsolutePath> stages;
     };
 
     Subscriber subscription;
@@ -3385,7 +3467,8 @@ public:
         /* We only care if the searcher adds the same def file twice. The user
          * is free to add kfm multiple times in select.def
          */
-        if (!done() && select.uniqueCharacter(path)){
+        // if (!done() && select.uniqueCharacter(path)){
+        if (select.uniqueCharacter(path)){
             if (Storage::isContainer(path)){
                 /* What exactly will happen if we add the same zip file twice?
                  * The old zip entries will get overwritten by new ones
@@ -3419,9 +3502,7 @@ public:
     }
     
     void addStage(const Filesystem::AbsolutePath & path){
-        if (!done()){
-            select.addStage(path);
-        }
+        select.addStage(path);
     }
     
     bool done(){
@@ -3429,96 +3510,62 @@ public:
         return is_done;
     }
 
-    void run(){
-        if (select.getCurrentPlayer() == CharacterSelect::Player1 || select.getCurrentPlayer() == CharacterSelect::Both){
-            std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
-            for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                if (event.enabled){
-                    if (event.out == Esc){
-                        if (!canceled){
-                            select.cancel();
-                            canceled = true;
-                        }
+    void doInput(int side){
+        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
+        for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
+            const InputMap<Mugen::Keys>::InputEvent & event = *it;
+            if (event.enabled){
+                if (event.out == Esc){
+                    if (!canceled){
+                        select.cancel();
+                        canceled = true;
                     }
-                    if (event.out == Left){
-                        select.left(0);
-                    }
-                    if (event.out == Down){
-                        select.down(0);
-                    }
-                    if (event.out == Right){
-                        select.right(0);
-                    }
-                    if (event.out == Up){
-                        select.up(0);
-                    }
-                    if (event.out == A){
-                        select.select(0, 0);
-                    }
-                    if (event.out == B){
-                        select.select(0, 1);
-                    }
-                    if (event.out == C){
-                        select.select(0, 2);
-                    }
-                    if (event.out == X){
-                        select.select(0, 3);
-                    }
-                    if (event.out == Y){
-                        select.select(0, 4);
-                    }
-                    if (event.out == Z){
-                        select.select(0, 5);
-                    }
+                }
+                if (event.out == Left){
+                    select.left(side);
+                }
+                if (event.out == Down){
+                    select.down(side);
+                }
+                if (event.out == Right){
+                    select.right(side);
+                }
+                if (event.out == Up){
+                    select.up(side);
+                }
+                if (event.out == A){
+                    select.select(side, 0);
+                }
+                if (event.out == B){
+                    select.select(side, 1);
+                }
+                if (event.out == C){
+                    select.select(side, 2);
+                }
+                if (event.out == X){
+                    select.select(side, 3);
+                }
+                if (event.out == Y){
+                    select.select(side, 4);
+                }
+                if (event.out == Z){
+                    select.select(side, 5);
                 }
             }
         }
+    }
+
+    void run(){
+        if (select.getCurrentPlayer() == CharacterSelect::Player1 ||
+            select.getCurrentPlayer() == CharacterSelect::Both){
+            doInput(0);
+        }
+
         if (select.getCurrentPlayer() == CharacterSelect::Player2 ||
             select.getCurrentPlayer() == CharacterSelect::Both){
-            std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input2, InputSource());
-            for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-                const InputMap<Mugen::Keys>::InputEvent & event = *it;
-                if (event.enabled){
-                    if (event.out == Esc){
-                        if (!canceled){
-                            select.cancel();
-                            canceled = true;
-                        }
-                    }
-                    if (event.out == Left){
-                        select.left(1);
-                    }
-                    if (event.out == Down){
-                        select.down(1);
-                    }
-                    if (event.out == Right){
-                        select.right(1);
-                    }
-                    if (event.out == Up){
-                        select.up(1);
-                    }
-                    if (event.out == A){
-                        select.select(1, 0);
-                    }
-                    if (event.out == B){
-                        select.select(1, 1);
-                    }
-                    if (event.out == C){
-                        select.select(1, 2);
-                    }
-                    if (event.out == X){
-                        select.select(1, 3);
-                    }
-                    if (event.out == Y){
-                        select.select(1, 4);
-                    }
-                    if (event.out == Z){
-                        select.select(1, 5);
-                    }
-                }
-            }
+            doInput(1);
         }
+
         select.act();
         if (select.getCurrentPlayer() == CharacterSelect::Demo){
             if (InputManager::anyInput()){
@@ -3528,6 +3575,7 @@ public:
                 }
             }
         }
+
         {
             PaintownUtil::Thread::ScopedLock scoped(lock);
             is_done = select.isDone();

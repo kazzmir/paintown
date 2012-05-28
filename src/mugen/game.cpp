@@ -1600,6 +1600,13 @@ void Game::doArcade(Searcher & searcher){
         if (select.wasCanceled()){
             return;
         }
+
+        /* Wait for at least 1 stage to be found */
+        while (Data::getInstance().autoSearch() &&
+               select.stageCount() == 0 &&
+               !searcher.stagesDone()){
+            PaintownUtil::rest(1);
+        }
     
         if (playerType == Mugen::Player1){
             player1Collection = select.getPlayer1().getCollection();
@@ -1792,6 +1799,7 @@ void Game::doArcade(Searcher & searcher){
         try {
             searcher.pause();
             runMatch(&stage, "", options);
+            searcher.start();
             if (ourPlayer->getFirst().getMatchWins() > wins){
                 wins = ourPlayer->getFirst().getMatchWins();
                 // Reset player for next match

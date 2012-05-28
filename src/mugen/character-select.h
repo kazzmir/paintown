@@ -510,6 +510,8 @@ public:
     virtual void addRandom();
     //! Add stage
     virtual void addStage(const Filesystem::AbsolutePath &);
+    /* Number of stages */
+    virtual int stageCount() const;
     //! Get Arcade Match
     virtual Mugen::ArcadeData::MatchPath getArcadePath();
     //! Get Team Arcade Match

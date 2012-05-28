@@ -47,6 +47,10 @@ void Searcher::start(){
     */
 }
     
+bool Searcher::stagesDone(){
+    return stageSearch.done();
+}
+
 void Searcher::pause(){
     characterSearch.pause();
     stageSearch.pause();
@@ -203,7 +207,8 @@ Searcher::StageSearch::StageSearch(Searcher & owner):
 owner(owner),
 thread(PaintownUtil::Thread::uninitializedValue),
 searching(false),
-searchingCheck(searching, searchingLock.getLock()){
+searchingCheck(searching, searchingLock.getLock()),
+isDone(false){
     try{
         paths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages"))));
     } catch (const Filesystem::NotFound & fail){
@@ -246,6 +251,11 @@ void * Searcher::StageSearch::runSearch(void * self_){
     self->search();
     return NULL;
 }
+        
+bool Searcher::StageSearch::done(){
+    PaintownUtil::Thread::ScopedLock scoped1(searchingLock);
+    return isDone;
+}
 
 void Searcher::StageSearch::search(){
     while (paths.size() > 0 && searchingCheck.get()){
@@ -253,6 +263,9 @@ void Searcher::StageSearch::search(){
         paths.erase(paths.begin());
         owner.addStages(findFiles(path, "def"));
     }
+
+    PaintownUtil::Thread::ScopedLock scoped1(searchingLock);
+    isDone = paths.size() == 0;
 }
 
 }

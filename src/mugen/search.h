@@ -29,6 +29,8 @@ public:
         virtual void receiveStages(const std::vector<Filesystem::AbsolutePath> & paths) = 0;
     };
 
+    bool stagesDone();
+
     /* either start searching or unpause */
     void start();
     /* pause searching */
@@ -65,6 +67,8 @@ protected:
         StageSearch(Searcher & owner);
         void start();
         void pause();
+        /* True if there are no more paths to search */
+        bool done();
         virtual ~StageSearch();
 
         Searcher & owner;
@@ -73,6 +77,7 @@ protected:
         volatile bool searching;
         PaintownUtil::ThreadBoolean searchingCheck;
         PaintownUtil::Thread::LockObject searchingLock;
+        bool isDone;
 
         static void * runSearch(void * self_);
         void search();
