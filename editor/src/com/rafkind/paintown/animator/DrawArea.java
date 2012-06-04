@@ -33,6 +33,7 @@ public final class DrawArea extends JComponent {
     private double overlayAlphaLevel = 1;
     private boolean resizedOnce = false;
 
+    private java.util.List<String> helpText = new ArrayList<String>();
     private java.util.List<Lambda0> scaleListeners = new ArrayList<Lambda0>();
 
     public DrawArea(final Lambda0 loader){
@@ -368,8 +369,27 @@ public final class DrawArea extends JComponent {
         overlayAnimation.draw(translucent, x, y);
     }
 
-    public void paintComponent(Graphics g){
+    public void addHelpText(String... lines){
+        for (String line: lines){
+            this.helpText.add(line);
+        }
+    }
 
+    public void removeHelpText(){
+        this.helpText = new ArrayList<String>();
+    }
+
+    public void drawHelpText(Graphics2D graphics){
+        graphics.setColor(new Color(255, 255, 255));
+        int height = graphics.getFontMetrics(graphics.getFont()).getHeight();
+        int y = height + 2;
+        for (String line: helpText){
+            graphics.drawString(line, 2, y);
+            y += height + 2;
+        }
+    }
+
+    public void paintComponent(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
         g2d.scale(getScale(), getScale());
 
@@ -391,6 +411,10 @@ public final class DrawArea extends JComponent {
         if (! overlayBehind && overlayAnimation != null){
             drawOverlay(g2d, x, y);
         }
+
+        /* Undo the scale to get back to 1x1 */
+        g2d.scale(1 / getScale(), 1 / getScale());
+        drawHelpText(g2d);
     }
 
     public void setCenterX(int x){

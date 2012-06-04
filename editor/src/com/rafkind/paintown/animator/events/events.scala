@@ -14,6 +14,7 @@ import com.rafkind.paintown.animator.Animation;
 import com.rafkind.paintown.animator.DrawArea;
 import com.rafkind.paintown.animator.BoundingBox;
 import com.rafkind.paintown.Token;
+import com.rafkind.paintown.Undo;
 import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.animator.events.AnimationEvent;
 import com.rafkind.paintown.animator.NewAnimator
@@ -283,24 +284,66 @@ class AttackEvent extends AnimationEventNotifier with AnimationEvent {
             def calculateY(y:Integer) = (y / area.getScale() - area.getCenterY() - (animation.getY() + animation.getOffsetY() - animation.getHeight())).toInt
       
             val listener = new MouseInputAdapter(){
+              def leftClick(e:MouseEvent):Boolean = e.getButton() == MouseEvent.BUTTON1
+              def rightClick(e:MouseEvent):Boolean = e.getButton() == MouseEvent.BUTTON2
+              var movingLeft = false
+
+              var oldX1 = 0
+              var oldY1 = 0
+              var oldX2 = 0
+              var oldY2 = 0
+
                 override def mousePressed(e:MouseEvent){
+                  val oldX1 = attack.x1
+                  val oldY1 = attack.y1
+                  val oldX2 = attack.x2
+                  val oldY2 = attack.y2
+                  Undo.addUndo("Set attack box", () => {
+                    attack.x1 = oldX1
+                    attack.x2 = oldX2
+                    attack.y1 = oldY1
+                    attack.y2 = oldY2
+                    x1spin.setValue(new Integer(attack.x1))
+                    x2spin.setValue(new Integer(attack.x2))
+                    y1spin.setValue(new Integer(attack.y1))
+                    y2spin.setValue(new Integer(attack.y2))
+                  })
+
+                  if (leftClick(e)){
                     attack.x1 = calculateX(e.getX())
                     attack.y1 = calculateY(e.getY())
                     x1spin.setValue(new Integer(attack.x1));
                     y1spin.setValue(new Integer(attack.y1));
-                    updateListeners()
-                    interact(animation);
-                    animation.forceRedraw();
-                }
-
-                override def mouseDragged(e:MouseEvent){
+                    movingLeft = true
+                  } else {
                     attack.x2 = calculateX(e.getX())
                     attack.y2 = calculateY(e.getY())
                     x2spin.setValue(new Integer(attack.x2));
                     y2spin.setValue(new Integer(attack.y2));
-                    updateListeners()
-                    interact(animation);
-                    animation.forceRedraw();
+                    movingLeft = false
+                  }
+
+                  updateListeners()
+                  interact(animation);
+                  animation.forceRedraw();
+                }
+
+                override def mouseDragged(e:MouseEvent){
+                  if (movingLeft){
+                    attack.x1 = calculateX(e.getX())
+                    attack.y1 = calculateY(e.getY())
+                    x1spin.setValue(new Integer(attack.x1));
+                    y1spin.setValue(new Integer(attack.y1));
+                  } else {
+                    attack.x2 = calculateX(e.getX())
+                    attack.y2 = calculateY(e.getY())
+                    x2spin.setValue(new Integer(attack.x2));
+                    y2spin.setValue(new Integer(attack.y2));
+                  }
+
+                  updateListeners()
+                  interact(animation);
+                  animation.forceRedraw();
                 }
             };
 
@@ -310,12 +353,14 @@ class AttackEvent extends AnimationEventNotifier with AnimationEvent {
                     area.enableMovement();
                     area.removeMouseListener(listener);
                     area.removeMouseMotionListener(listener);
+                    area.removeHelpText()
                     onDestroy = () => {}
                 } else {
                     toggle.setText("Stop drawing");
                     area.disableMovement();
                     area.addMouseListener(listener);
                     area.addMouseMotionListener(listener);
+                    area.addHelpText("Left click to change X1/Y1", "Right click to change X2/Y2")
                     onDestroy = () => {
                       area.removeMouseListener(listener);
                       area.removeMouseMotionListener(listener);
