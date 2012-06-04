@@ -49,7 +49,7 @@ public class Animation implements Runnable {
     private int onionSkins = 1;
     private boolean onionSkinFront = true;
 	
-	private Vector keys;
+	private Vector<String> keys;
 	private HashMap remapData;
 
 	public Animation(){
@@ -147,9 +147,11 @@ public class Animation implements Runnable {
 		return range;
 	}
 
-	public void addKey( String key ){
-		keys.add( key );
+    /* Returns the index of the added key */
+	public int addKey(String key){
+		keys.add(key);
 		updateAll();
+        return keys.size() - 1;
 	}
 
 	public void setMap( HashMap remap ){
@@ -170,11 +172,11 @@ public class Animation implements Runnable {
 	}
 
 	public void removeKey(int index){
-		keys.remove( index );
+		keys.remove(index);
 		updateAll();
 	}
 
-	public Vector getKeys(){
+	public Vector<String> getKeys(){
 		return keys;
 	}
 

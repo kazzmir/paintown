@@ -32,22 +32,11 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
+                    
+import scala.runtime.AbstractFunction0;
+import scala.runtime.BoxedUnit;
 
 public class CharacterAnimation extends JPanel {
-
-    /*
-    private SwingEngine animEditor;
-    private JTextField nameField;
-    private BasicObject save;
-    */
-
-    /*
-    public SpecialPanel getEditor(){	
-        return new SpecialPanel((JPanel)animEditor.getRootComponent(),nameField, save );
-    }
-    */
-
-
     private boolean loaded = false;
     private Lambda0 loader;
     private final Animation animation;
@@ -150,15 +139,16 @@ public class CharacterAnimation extends JPanel {
                 public void actionPerformed(ActionEvent event){
                     final String old = animation.getType();
                     final ActionListener self = this;
-                    Undo.addUndo(new scala.runtime.AbstractFunction0<scala.runtime.BoxedUnit>(){
-                        public scala.runtime.BoxedUnit apply(){
+                    Undo.addUndo("Revert animation type to " + old,
+                        new AbstractFunction0<BoxedUnit>(){
+                        public BoxedUnit apply(){
                             animation.setType(old);
                             typeCombo.removeActionListener(self);
                             typeCombo.setSelectedItem(old);
                             typeCombo.addActionListener(self);
                             return null;
                         }
-                    }, "Revert animation type to " + old);
+                    });
                     animation.setType((String) typeCombo.getSelectedItem());
                 }
             });
@@ -188,17 +178,35 @@ public class CharacterAnimation extends JPanel {
 
             JButton keyAdd = (JButton) contextEditor.find("add-key");
             keyAdd.addActionListener(new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    animation.addKey((String) keySelect.getSelectedItem());
+                public void actionPerformed(ActionEvent event){
+                    final int index = animation.addKey((String) keySelect.getSelectedItem());
                     keyList.setListData(animation.getKeys());
+
+                    Undo.addUndo("Remove key " + animation.getKeys().get(index),
+                        new AbstractFunction0<BoxedUnit>(){
+                        public BoxedUnit apply(){
+                            animation.removeKey(index);
+                            keyList.setListData(animation.getKeys());
+                            return null;
+                        }
+                    });
                 }
             });
             JButton keyRemove = (JButton) contextEditor.find("remove-key");
             keyRemove.addActionListener(new AbstractAction(){
                 public void actionPerformed(ActionEvent event){
                     if (! animation.getKeys().isEmpty()){
+                        final String key = animation.getKeys().get(keyList.getSelectedIndex());
                         animation.removeKey(keyList.getSelectedIndex());
                         keyList.setListData(animation.getKeys());
+
+                        Undo.addUndo("Add key " + key, new AbstractFunction0<BoxedUnit>(){
+                            public BoxedUnit apply(){
+                                animation.addKey(key);
+                                keyList.setListData(animation.getKeys());
+                                return null;
+                            }
+                        });
                     }
                 }
             });
@@ -206,15 +214,25 @@ public class CharacterAnimation extends JPanel {
             keyUp.addActionListener( new AbstractAction(){
                 public void actionPerformed(ActionEvent event){
                     if (! animation.getKeys().isEmpty()){
-                        int index1 = keyList.getSelectedIndex()-1 < 0 ? 0 : keyList.getSelectedIndex() - 1;
-                        int index2 = keyList.getSelectedIndex();
-                        String temp1 = (String) animation.getKeys().elementAt( index1 );
-                        String temp2 = (String) animation.getKeys().elementAt( index2 );
+                        final int index1 = keyList.getSelectedIndex()-1 < 0 ? 0 : keyList.getSelectedIndex() - 1;
+                        final int index2 = keyList.getSelectedIndex();
+                        final String temp1 = (String) animation.getKeys().elementAt(index1);
+                        final String temp2 = (String) animation.getKeys().elementAt(index2);
 
                         animation.getKeys().setElementAt(temp1,index2);
                         animation.getKeys().setElementAt(temp2,index1);
                         keyList.setListData(animation.getKeys());
                         keyList.setSelectedIndex(index1);
+
+                        Undo.addUndo("Move key down", new AbstractFunction0<BoxedUnit>(){
+                            public BoxedUnit apply(){
+                                /* FIXME: if the keys were deleted then this will break */
+                                animation.getKeys().setElementAt(temp1, index1);
+                                animation.getKeys().setElementAt(temp2, index2);
+                                keyList.setListData(animation.getKeys());
+                                return null;
+                            }
+                        });
                     }
                 }
             });
@@ -223,15 +241,26 @@ public class CharacterAnimation extends JPanel {
             keyDown.addActionListener(new AbstractAction(){
                 public void actionPerformed(ActionEvent event ){
                     if (! animation.getKeys().isEmpty()){
-                        int index1 = keyList.getSelectedIndex() + 1 > animation.getKeys().size() ? animation.getKeys().size() : keyList.getSelectedIndex() + 1;
-                        int index2 = keyList.getSelectedIndex();
-                        String temp1 = (String) animation.getKeys().elementAt(index1);
-                        String temp2 = (String) animation.getKeys().elementAt(index2);
+                        final int index1 = keyList.getSelectedIndex() + 1 > animation.getKeys().size() ? animation.getKeys().size() : keyList.getSelectedIndex() + 1;
+                        final int index2 = keyList.getSelectedIndex();
+                        final String temp1 = (String) animation.getKeys().elementAt(index1);
+                        final String temp2 = (String) animation.getKeys().elementAt(index2);
 
                         animation.getKeys().setElementAt(temp1,index2);
                         animation.getKeys().setElementAt(temp2,index1);
                         keyList.setListData(animation.getKeys());
                         keyList.setSelectedIndex(index1);
+
+                        Undo.addUndo("Move key up", new AbstractFunction0<BoxedUnit>(){
+                            public BoxedUnit apply(){
+                                /* FIXME: if the keys were deleted then this will break */
+                                animation.getKeys().setElementAt(temp1, index1);
+                                animation.getKeys().setElementAt(temp2, index2);
+                                keyList.setListData(animation.getKeys());
+                                return null;
+                            }
+                        });
+
                     }
                 }
             });
@@ -240,6 +269,19 @@ public class CharacterAnimation extends JPanel {
             rangeSpinner.setValue(new Integer(animation.getRange()));
             rangeSpinner.addChangeListener(new ChangeListener(){
                 public void stateChanged(ChangeEvent changeEvent){
+                    final int range = animation.getRange();
+                    final ChangeListener self = this;
+                    Undo.addUndo("Set range to " + range, new AbstractFunction0<BoxedUnit>(){
+                        public BoxedUnit apply(){
+                            animation.setRange(range);
+                            animation.forceRedraw();
+                            rangeSpinner.removeChangeListener(self);
+                            rangeSpinner.setValue(new Integer(range));
+                            rangeSpinner.addChangeListener(self);
+                            return null;
+                        }
+                    });
+
                     animation.setRange(((Integer)rangeSpinner.getValue()).intValue());
                     animation.forceRedraw();
                 }
@@ -369,12 +411,13 @@ public class CharacterAnimation extends JPanel {
                }
                }
                */
-            sequence.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
-                    animation.setSequence( (String) sequence.getSelectedItem() );
+            sequence.addActionListener(new AbstractAction(){
+                public void actionPerformed(ActionEvent event){
+                    /* TODO: add an undo action here */
+                    animation.setSequence((String) sequence.getSelectedItem());
                 }
             });
-            sequence.setSelectedItem( animation.getSequence() );
+            sequence.setSelectedItem(animation.getSequence());
 
             final JTextField basedirField = (JTextField) contextEditor.find("basedir");
             {
@@ -389,6 +432,16 @@ public class CharacterAnimation extends JPanel {
                     RelativeFileChooser chooser = NewAnimator.getNewFileChooser(object.getPath());
                     int ret = chooser.open();
                     if (ret == RelativeFileChooser.OK){
+
+                        final String base = animation.getBaseDirectory();
+                        Undo.addUndo("Set base directory to " + base, new AbstractFunction0<BoxedUnit>(){
+                            public BoxedUnit apply(){
+                                animation.setBaseDirectory(base);
+                                basedirField.setText(base);
+                                return null;
+                            }
+                        });
+
                         final String path = chooser.getPath();
                         basedirField.setText(path);
                         animation.setBaseDirectory(path);

@@ -4,9 +4,13 @@ package com.rafkind.paintown.animator;
  * all the widgets associated with it.
  */
 
+import com.rafkind.paintown.Undo;
 import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.Lambda1;
 import com.rafkind.paintown.Lambda2;
+
+import scala.runtime.AbstractFunction0;
+import scala.runtime.BoxedUnit;
 
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
@@ -159,15 +163,15 @@ public abstract class AnimationCanvas extends JPanel {
         });
 
         JButton stopAnim = (JButton) animEditor.find("stop");
-        stopAnim.addActionListener( new AbstractAction(){
+        stopAnim.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){
                 animation.stopRunning();
             }
         });
 
         JButton playAnim = (JButton) animEditor.find("play");
-        playAnim.addActionListener( new AbstractAction(){
-            public void actionPerformed( ActionEvent event ){
+        playAnim.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
                 animation.startRunning();
             }
         });
@@ -917,11 +921,15 @@ public abstract class AnimationCanvas extends JPanel {
         final SwingEngine optionsEngine = new SwingEngine("animator/adjust-offsets.xml");
 
         class OffsetAction extends AbstractAction {
-            public OffsetAction(Lambda1 doOffset){
+            public OffsetAction(Lambda1 doOffset, Lambda1 undoOffset, String undoMessage){
                 this.doOffset = doOffset;
+                this.undoOffset = undoOffset;
+                this.undoMessage = undoMessage;
             }
 
             Lambda1 doOffset;
+            Lambda1 undoOffset;
+            String undoMessage;
 
             public List<OffsetEvent> getOffsets(Vector<AnimationEvent> events){
                 List<OffsetEvent> offsets = new ArrayList<OffsetEvent>();
@@ -936,10 +944,10 @@ public abstract class AnimationCanvas extends JPanel {
                 return offsets;
             }
 
-            private void updateOffsets(){
+            private void updateOffsets(Lambda1 doit){
                 for (OffsetEvent offset: getOffsets(animation.getEvents())){
                     try{
-                        doOffset.invoke(offset);
+                        doit.invoke(offset);
                     } catch (Exception e){
                         System.out.println(e);
                     }
@@ -947,9 +955,18 @@ public abstract class AnimationCanvas extends JPanel {
             }
 
             public void actionPerformed(ActionEvent event){
-                updateOffsets();
+                updateOffsets(doOffset);
                 animation.applyEvents();
                 animation.forceRedraw();
+
+                Undo.addUndo(undoMessage, new AbstractFunction0<BoxedUnit>(){
+                    public BoxedUnit apply(){
+                        updateOffsets(undoOffset);
+                        animation.applyEvents();
+                        animation.forceRedraw();
+                        return null;
+                    }
+                });
             }
         };
 
@@ -964,7 +981,13 @@ public abstract class AnimationCanvas extends JPanel {
                 offset.setX(offset.getX() - 1);
                 return null;
             }
-        }));
+        }, new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setX(offset.getX() + 1);
+                return null;
+            }
+        }, "X offset"));
 
         right.addActionListener(new OffsetAction(new Lambda1(){
             public Object invoke(Object o){
@@ -972,7 +995,13 @@ public abstract class AnimationCanvas extends JPanel {
                 offset.setX(offset.getX() + 1);
                 return null;
             }
-        }));
+        }, new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setX(offset.getX() - 1);
+                return null;
+            }
+        }, "X offset"));
 
         up.addActionListener(new OffsetAction(new Lambda1(){
             public Object invoke(Object o){
@@ -980,7 +1009,13 @@ public abstract class AnimationCanvas extends JPanel {
                 offset.setY(offset.getY() - 1);
                 return null;
             }
-        }));
+        }, new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setY(offset.getY() - 1);
+                return null;
+            }
+        }, "Y offset"));
 
         down.addActionListener(new OffsetAction(new Lambda1(){
             public Object invoke(Object o){
@@ -988,7 +1023,13 @@ public abstract class AnimationCanvas extends JPanel {
                 offset.setY(offset.getY() + 1);
                 return null;
             }
-        }));
+        }, new Lambda1(){
+            public Object invoke(Object o){
+                OffsetEvent offset = (OffsetEvent) o;
+                offset.setY(offset.getY() - 1);
+                return null;
+            }
+        }, "Y offset"));
 
         return (JPanel) optionsEngine.getRootComponent();
     }

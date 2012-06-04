@@ -67,7 +67,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     val menuBar = new swing.JMenuBar()
     val menuProgram = new swing.JMenu("Program")
     val undo = new swing.JMenuItem("Undo last action");
-    val redo = new swing.JMenuItem("Redo last undo");
+    // val redo = new swing.JMenuItem("Redo last undo");
     val levelEditor = new swing.JMenuItem("Run the level editor")
     val quit = new swing.JMenuItem("Quit")
     val clearCache = new swing.JMenuItem("Clear image cache")
@@ -76,13 +76,15 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     val closeTab = new swing.JMenuItem("Close Tab")
     menuProgram.add(levelEditor)
     menuProgram.add(undo)
-    menuProgram.add(redo)
+    // menuProgram.add(redo)
     menuProgram.add(data)
     menuProgram.add(gameSpeed)
     menuProgram.add(clearCache)
     menuProgram.add(closeTab)
     menuProgram.add(quit)
     menuBar.add(menuProgram)
+
+    Undo.setUndoMenuItem(undo)
 
     val menuProjectile = new swing.JMenu("Projectile")
     menuBar.add(menuProjectile)
@@ -109,8 +111,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     undo.setMnemonic(awt.event.KeyEvent.VK_U)
     undo.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_Z, awt.Event.CTRL_MASK))
     
-    redo.setMnemonic(awt.event.KeyEvent.VK_R)
-    redo.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_R, awt.Event.CTRL_MASK))
+    // redo.setMnemonic(awt.event.KeyEvent.VK_R)
+    // redo.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_R, awt.Event.CTRL_MASK))
 
     menuProgram.setMnemonic(awt.event.KeyEvent.VK_P)
     data.setMnemonic(awt.event.KeyEvent.VK_D)
@@ -141,11 +143,13 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       }
     })
 
+    /*
     redo.addActionListener(new swing.AbstractAction(){
       override def actionPerformed(event:awt.event.ActionEvent){
         Undo.popRedo()
       }
     })
+    */
 
     levelEditor.addActionListener(new swing.AbstractAction(){
       override def actionPerformed(event:awt.event.ActionEvent){

@@ -9,18 +9,41 @@ package com.rafkind.paintown
 object Undo{
   type thunk = () => Unit
 
+  /* Keep track of the menu item that will display the latest undo thing */
+  var undoMenuItem:javax.swing.JMenuItem = null
+
   var undos = List[Undo]()
   var redos = List[Undo]()
-  def addUndo(undo: thunk, what:String):Unit = {
-    undos = Undo(undo, what) :: undos
+
+  def setUndoMenuItem(menu:javax.swing.JMenuItem):Unit = {
+    undoMenuItem = menu
+  }
+
+  def addUndo(what:String, undo: thunk):Unit = {
+    undos.synchronized{
+      if (undoMenuItem != null){
+        undoMenuItem.setText("Undo: " + what)
+      }
+      undos = Undo(undo, what) :: undos
+    }
   }
 
   def popUndo():Unit = {
-    if (! undos.isEmpty){
-      val first = undos.head
-      undos = undos.tail
-      first.doit()
-      redos = first :: redos
+    undos.synchronized{
+      if (! undos.isEmpty){
+        val first = undos.head
+        undos = undos.tail
+        first.doit()
+        redos = first :: redos
+        if (undoMenuItem != null){
+          if (! undos.isEmpty){
+            val newFirst = undos.head
+            undoMenuItem.setText("Undo: " + newFirst.what)
+          } else {
+            undoMenuItem.setText("Undo last action")
+          }
+        }
+      }
     }
   }
 
@@ -30,6 +53,9 @@ object Undo{
       redos = redos.tail
       first.doit()
       undos = first :: undos
+      if (undoMenuItem != null){
+        undoMenuItem.setText("Undo: " + first.what)
+      }
     }
   }
 }

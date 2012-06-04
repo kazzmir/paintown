@@ -4,6 +4,7 @@ import javax.swing._
 import java.awt.Color
 import javax.swing.event.ChangeListener
 import javax.swing.event.ChangeEvent
+import com.rafkind.paintown.Undo
 import org.swixml.SwingEngine;
 
 object Tools{
@@ -13,9 +14,19 @@ object Tools{
     color.setPreviewPanel(new JPanel());
     panel.add(color);
     color.getSelectionModel().addChangeListener(new ChangeListener(){
+      val self = this
       def stateChanged(change:ChangeEvent){
-        character.getDrawProperties().setBackgroundColor(color.getSelectionModel().getSelectedColor());
-        area.repaint();
+        val old = character.getDrawProperties().getBackgroundColor()
+        character.getDrawProperties().setBackgroundColor(color.getSelectionModel().getSelectedColor())
+        area.repaint()
+
+        Undo.addUndo("Set color to " + old, () => {
+          color.getSelectionModel().removeChangeListener(self)
+          character.getDrawProperties().setBackgroundColor(old)
+          color.getSelectionModel().setSelectedColor(old)
+          area.repaint()
+          color.getSelectionModel().addChangeListener(self)
+        })
       }
     });
 
