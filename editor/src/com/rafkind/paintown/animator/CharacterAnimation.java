@@ -9,6 +9,7 @@ import java.io.*;
 
 import org.swixml.SwingEngine;
 
+import com.rafkind.paintown.Undo;
 import com.rafkind.paintown.Lambda0;
 import com.rafkind.paintown.Lambda1;
 import com.rafkind.paintown.Lambda2;
@@ -144,12 +145,23 @@ public class CharacterAnimation extends JPanel {
             final JComboBox typeCombo = (JComboBox) contextEditor.find("type");
             typeCombo.addItem("none");
             typeCombo.addItem("attack");
+            typeCombo.setSelectedItem(animation.getType());
             typeCombo.addActionListener( new AbstractAction(){
-                public void actionPerformed( ActionEvent event ){
+                public void actionPerformed(ActionEvent event){
+                    final String old = animation.getType();
+                    final ActionListener self = this;
+                    Undo.addUndo(new scala.runtime.AbstractFunction0<scala.runtime.BoxedUnit>(){
+                        public scala.runtime.BoxedUnit apply(){
+                            animation.setType(old);
+                            typeCombo.removeActionListener(self);
+                            typeCombo.setSelectedItem(old);
+                            typeCombo.addActionListener(self);
+                            return null;
+                        }
+                    }, "Revert animation type to " + old);
                     animation.setType((String) typeCombo.getSelectedItem());
                 }
             });
-            typeCombo.setSelectedItem(animation.getType());
 
             final JList keyList = (JList) contextEditor.find("keys");
             final JComboBox keySelect = (JComboBox) contextEditor.find("key-select");

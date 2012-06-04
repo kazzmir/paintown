@@ -54,7 +54,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     }
     out
   }
-        
+
   val pane = new swing.JTabbedPane()
 
   def construct(){
@@ -66,6 +66,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
 
     val menuBar = new swing.JMenuBar()
     val menuProgram = new swing.JMenu("Program")
+    val undo = new swing.JMenuItem("Undo last action");
+    val redo = new swing.JMenuItem("Redo last undo");
     val levelEditor = new swing.JMenuItem("Run the level editor")
     val quit = new swing.JMenuItem("Quit")
     val clearCache = new swing.JMenuItem("Clear image cache")
@@ -73,6 +75,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     val gameSpeed = new swing.JMenuItem("Game ticks")
     val closeTab = new swing.JMenuItem("Close Tab")
     menuProgram.add(levelEditor)
+    menuProgram.add(undo)
+    menuProgram.add(redo)
     menuProgram.add(data)
     menuProgram.add(gameSpeed)
     menuProgram.add(clearCache)
@@ -102,6 +106,12 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     val saveCharacterAs = new swing.JMenuItem("Save Character As")
     menuCharacter.add(saveCharacterAs)
 
+    undo.setMnemonic(awt.event.KeyEvent.VK_U)
+    undo.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_Z, awt.Event.CTRL_MASK))
+    
+    redo.setMnemonic(awt.event.KeyEvent.VK_R)
+    redo.setAccelerator(swing.KeyStroke.getKeyStroke(awt.event.KeyEvent.VK_R, awt.Event.CTRL_MASK))
+
     menuProgram.setMnemonic(awt.event.KeyEvent.VK_P)
     data.setMnemonic(awt.event.KeyEvent.VK_D)
     closeTab.setMnemonic(awt.event.KeyEvent.VK_C)
@@ -122,6 +132,18 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     this.addWindowListener(new awt.event.WindowAdapter(){
       override def windowClosing(e:awt.event.WindowEvent){
         Closer.close();
+      }
+    })
+    
+    undo.addActionListener(new swing.AbstractAction(){
+      override def actionPerformed(event:awt.event.ActionEvent){
+        Undo.popUndo()
+      }
+    })
+
+    redo.addActionListener(new swing.AbstractAction(){
+      override def actionPerformed(event:awt.event.ActionEvent){
+        Undo.popRedo()
       }
     })
 
