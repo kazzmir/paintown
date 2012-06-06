@@ -376,6 +376,118 @@ class AttackEvent extends AnimationEventNotifier with AnimationEvent {
     }
 }
 
+case class EffectPoint(var name:String, var x:Int, var y:Int)
+
+/* Names an arbitrary point relative to the character. */
+class EffectEvent extends AnimationEventNotifier with AnimationEvent {
+  var point = EffectPoint("", 0, 0)
+    
+  def loadToken(token:Token){
+    point.name = token.findToken("name").readString(0)
+    point.x = token.findToken("x").readInt(0)
+    point.y = token.findToken("y").readInt(0)
+  }
+
+  override def copy() = {
+    val event = new EffectEvent()
+    event.point.name = point.name
+    event.point.x = point.x
+    event.point.y = point.y
+    event
+  } 
+
+  def getDescription() = "Gives a name to an arbitrary point"
+
+  def getName():String = {
+    getToken().toString()
+  }
+    
+  def interact(animation:Animation){
+    animation.addEffectPoint(point)
+  }
+    
+  def getEditor(animation:Animation, area2:DrawArea):JPanel = {
+    val engine = new SwingEngine("animator/event-effect.xml");
+        
+    val draw = engine.find("point").asInstanceOf[JButton]
+    val nameText = engine.find("name").asInstanceOf[JTextField]
+    val xspin = engine.find("x").asInstanceOf[JSpinner]
+    val yspin = engine.find("y").asInstanceOf[JSpinner]
+
+    nameText.setText(point.name)
+    def updateName(name:String){
+        point.name = name
+        updateListeners()
+        animation.forceRedraw();
+    }
+
+    nameText.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        updateName(nameText.getText())
+      }
+    })
+
+    nameText.getDocument().addDocumentListener(new DocumentListener(){
+      def changedUpdate(e:DocumentEvent){
+        updateName(nameText.getText())
+      }
+
+      def insertUpdate(e:DocumentEvent){
+        updateName(nameText.getText())
+      }
+
+      def removeUpdate(e:DocumentEvent){
+        updateName(nameText.getText())
+      }
+    })
+
+    xspin.setValue(new Integer(point.x))
+    xspin.addChangeListener(new ChangeListener(){
+      def stateChanged(changeEvent:ChangeEvent){
+        point.x = xspin.getValue().asInstanceOf[Integer].intValue()
+        updateListeners()
+        animation.forceRedraw()
+      }
+    })
+
+    yspin.setValue(new Integer(point.y))
+    yspin.addChangeListener(new ChangeListener(){
+      def stateChanged(changeEvent:ChangeEvent){
+        point.y = yspin.getValue().asInstanceOf[Integer].intValue()
+        updateListeners()
+        animation.forceRedraw()
+      }
+    })
+
+    engine.getRootComponent().asInstanceOf[JPanel]
+  }
+
+  def getToken():Token = {
+    val temp = new Token("effect");
+    temp.addToken(new Token("effect"))
+    val nameToken = new Token("name")
+    nameToken.addToken(new Token("name"))
+    temp.addToken(nameToken)
+    nameToken.addToken(new Token(point.name))
+
+    val xToken = new Token("x")
+    xToken.addToken(new Token("x"))
+    temp.addToken(xToken)
+    xToken.addToken(new Token(point.x.toString()))
+
+    val yToken = new Token("y")
+    yToken.addToken(new Token("y"))
+    temp.addToken(yToken)
+    yToken.addToken(new Token(point.y.toString()))
+
+    temp
+  }
+
+  def destroy(){
+  }
+
+}
+
 class FrameEvent extends AnimationEventNotifier with AnimationEvent {
     var frame:String = ""
 

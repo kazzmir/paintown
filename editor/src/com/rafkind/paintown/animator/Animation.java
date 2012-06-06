@@ -7,6 +7,7 @@ import java.util.Vector;
 import java.util.HashMap;
 
 import com.rafkind.paintown.animator.events.*;
+import com.rafkind.paintown.animator.events.scala.EffectPoint;
 
 import com.rafkind.paintown.Token;
 import com.rafkind.paintown.exception.*;
@@ -48,6 +49,8 @@ public class Animation implements Runnable {
     private boolean onionSkinning = false;
     private int onionSkins = 1;
     private boolean onionSkinFront = true;
+
+    private List<EffectPoint> effectPoints = new ArrayList<EffectPoint>();
 	
 	private Vector<String> keys;
 	private HashMap remapData;
@@ -70,22 +73,22 @@ public class Animation implements Runnable {
 		name = "New Animation";
 	}
 
-	public Animation( String name ){
+	public Animation(String name){
 		this();
 		this.name = name;
 	}
 
-	public Animation( Vector events ){
+	public Animation(Vector events){
 		this();
 		this.events = events;
 	}
 
-	public Animation( Token data ) throws LoadException {
+	public Animation(Token data) throws LoadException {
 		this();
 		loadData( data );
 	}
 
-	public void setType( String s ){
+	public void setType(String s){
 		type = s;
 
 		updateAll();
@@ -94,6 +97,14 @@ public class Animation implements Runnable {
 	public String getType(){
 		return type;
 	}
+
+    public void addEffectPoint(EffectPoint point){
+        effectPoints.add(point);
+    }
+
+    public void clearEffectPoints(){
+        effectPoints = new ArrayList<EffectPoint>();
+    }
 
     public void setOnionSkinning(boolean what){
         this.onionSkinning = what;
@@ -217,15 +228,15 @@ public class Animation implements Runnable {
         loopers.remove(lambda);
     }
 	
-	public void addEventNotifier( Lambda1 lambda ){
+	public void addEventNotifier(Lambda1 lambda){
 		notifiers.add(lambda);
 	}
 	
-	public void removeEventNotifier( Lambda1 lambda ){
+	public void removeEventNotifier(Lambda1 lambda){
 		notifiers.remove(lambda);
 	}
 
-	public synchronized void setImage( BufferedImage image ){
+	public synchronized void setImage(BufferedImage image){
 		this.image = image;
 		updateDrawables();
 		updateAll();
@@ -235,18 +246,18 @@ public class Animation implements Runnable {
 		updateDrawables();
 	}
 
-	public void addChangeUpdate( Lambda1 update ){
+	public void addChangeUpdate(Lambda1 update){
 		listeners.add(update);
 	}
 
-	public void removeChangeUpdate( Lambda1 update ){
+	public void removeChangeUpdate(Lambda1 update){
 		listeners.remove(update);
 	}
 
 	private void updateAll(){
 		for (Iterator it = listeners.iterator(); it.hasNext();){
 			Lambda1 update = (Lambda1) it.next();
-			update.invoke_( this );
+			update.invoke_(this);
 		}
 	}
 
@@ -402,6 +413,22 @@ public class Animation implements Runnable {
         this.offsetY = 0;
     }
 
+    private void drawEffectPoints(Graphics graphics, int x, int y){
+        Graphics2D g2d = (Graphics2D) graphics.create();
+        int height = g2d.getFontMetrics(g2d.getFont()).getHeight();
+        for (EffectPoint effect: effectPoints){
+            g2d.setColor(new Color(0, 0, 255));
+            g2d.fillOval(x + effect.x(), y + effect.y(), 1, 1);
+            g2d.setColor(new Color(255, 255, 255));
+            g2d.drawOval(x + effect.x() - 2, y + effect.y() - 2, 4, 4);
+
+            int width = g2d.getFontMetrics(g2d.getFont()).stringWidth(effect.name());
+            g2d.drawString(effect.name(),
+                           x - width / 2 + effect.x(),
+                           y - height / 2 + effect.y());
+        }
+    }
+
 	public synchronized void draw(Graphics g, int x, int y){
 		int trueX = x + this.x + this.offsetX - getWidth() / 2;
 		int trueY = y + this.y + this.offsetY - getHeight();
@@ -432,6 +459,8 @@ public class Animation implements Runnable {
         if (! defenseArea.empty()){
 			defenseArea.render(g, trueX, trueY, new Color(51, 133, 243));
 		}
+
+        drawEffectPoints(g, trueX + getWidth() / 2, trueY + getHeight());
 	}
 
 	public synchronized void setImageX( int x ){
@@ -508,6 +537,7 @@ public class Animation implements Runnable {
 
     private void findNextFrame(int direction){
         int last = eventIndex;
+        clearEffectPoints();
         synchronized (events){
             eventIndex = (eventIndex + direction + events.size()) % events.size();
             while (eventIndex != last && !isFrameEvent((AnimationEvent) events.get(eventIndex))){
@@ -554,6 +584,10 @@ public class Animation implements Runnable {
 	public void previousEvent(){
 		synchronized (events){
 			if (! events.isEmpty()){
+                if (isFrameEvent((AnimationEvent) events.get(eventIndex))){
+                    clearEffectPoints();
+                }
+
 				eventIndex = previous(eventIndex, events.size());
 				if (eventIndex == 0){
 					setImageX(0);
@@ -575,6 +609,10 @@ public class Animation implements Runnable {
 	public void nextEvent(){
 		synchronized (events){
 			if ( ! events.isEmpty() ){
+                if (isFrameEvent((AnimationEvent) events.get(eventIndex))){
+                    clearEffectPoints();
+                }
+
 				eventIndex = next(eventIndex, events.size());
 				if (eventIndex == 0){
 					setImageX(0);

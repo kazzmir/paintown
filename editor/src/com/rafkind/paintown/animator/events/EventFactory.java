@@ -19,6 +19,7 @@ public class EventFactory{
         events.put( "coords", new Lambda0(){public Object invoke(){return new CoordsEvent();}});
         events.put( "delay", new Lambda0(){public Object invoke(){return new DelayEvent();}});
         events.put( "defense", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.DefenseEvent();}});
+        events.put( "effect", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.EffectEvent();}});
         events.put( "face", new Lambda0(){public Object invoke(){return new FaceEvent();}});
         events.put( "frame", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.FrameEvent();}});
         events.put( "hittable", new Lambda0(){public Object invoke(){return new com.rafkind.paintown.animator.events.scala.HittableEvent();}});
@@ -36,13 +37,13 @@ public class EventFactory{
         events.put( "status", new Lambda0(){public Object invoke(){return new StatusEvent();}});
         events.put( "z-distance", new Lambda0(){public Object invoke(){return new ZDistanceEvent();}});
 
-        ignoreEvents.add( "basedir" );
-        ignoreEvents.add( "range" );
-        ignoreEvents.add( "keys" );
-        ignoreEvents.add( "type" );
-        ignoreEvents.add( "name" );
-        ignoreEvents.add( "loop" );
-        ignoreEvents.add( "sequence" );
+        ignoreEvents.add("basedir");
+        ignoreEvents.add("range");
+        ignoreEvents.add("keys");
+        ignoreEvents.add("type");
+        ignoreEvents.add("name");
+        ignoreEvents.add("loop");
+        ignoreEvents.add("sequence");
     }
 
     static{

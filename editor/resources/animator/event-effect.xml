@@ -1,0 +1,28 @@
+<panel layout="GridBagLayout">
+    <vbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="1"
+            weightx="1"
+            weighty="0.1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.HORIZONTAL"
+            />
+
+        <button id="point" text="Set point" />
+        <hbox>
+            <label text="Name" />
+            <textfield id="name" />
+            <glue />
+        </hbox>
+        <hbox>
+            <label text="X" />
+            <spinner id="x" />
+        </hbox>
+        <hbox>
+            <label text="Y" />
+            <spinner id="y" />
+        </hbox>
+    </vbox>
+</panel>
