@@ -5,7 +5,10 @@
         <button id="white-background" text="White background" />
     </panel>
     <panel id="grid">
-        <label text="Grid size" />
-        <slider id="guide" minimum="0" maximum="10" />
+        <vbox>
+            <label text="Grid size" />
+            <slider id="guide" minimum="0" maximum="10" />
+            <label text="Hold ctrl-left click to snap to grid" />
+        </vbox>
     </panel>
 </panel>
