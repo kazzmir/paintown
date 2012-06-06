@@ -381,6 +381,7 @@ case class EffectPoint(var name:String, var x:Int, var y:Int)
 /* Names an arbitrary point relative to the character. */
 class EffectEvent extends AnimationEventNotifier with AnimationEvent {
   var point = EffectPoint("", 0, 0)
+  var onDestroy = () => null
     
   def loadToken(token:Token){
     point.name = token.findToken("name").readString(0)
@@ -406,10 +407,10 @@ class EffectEvent extends AnimationEventNotifier with AnimationEvent {
     animation.addEffectPoint(point)
   }
     
-  def getEditor(animation:Animation, area2:DrawArea):JPanel = {
+  def getEditor(animation:Animation, area:DrawArea):JPanel = {
     val engine = new SwingEngine("animator/event-effect.xml");
         
-    val draw = engine.find("point").asInstanceOf[JButton]
+    val toggle = engine.find("point").asInstanceOf[JButton]
     val nameText = engine.find("name").asInstanceOf[JTextField]
     val xspin = engine.find("x").asInstanceOf[JSpinner]
     val yspin = engine.find("y").asInstanceOf[JSpinner]
@@ -459,6 +460,55 @@ class EffectEvent extends AnimationEventNotifier with AnimationEvent {
       }
     })
 
+    toggle.addActionListener(new AbstractAction(){
+      var toggled = false
+
+      def calculateX(x:Integer) = (x / area.getScale() - area.getCenterX() - (animation.getX() + animation.getOffsetX())).toInt
+      def calculateY(y:Integer) = (y / area.getScale() - area.getCenterY() - (animation.getY() + animation.getOffsetY())).toInt
+
+      val listener = new MouseInputAdapter(){
+        override def mousePressed(e:MouseEvent){
+          point.x = calculateX(e.getX())
+          point.y = calculateY(e.getY())
+          xspin.setValue(new Integer(point.x));
+          yspin.setValue(new Integer(point.y));
+          updateListeners()
+          animation.forceRedraw();
+        }
+
+        override def mouseDragged(e:MouseEvent){
+          point.x = calculateX(e.getX())
+          point.y = calculateY(e.getY())
+          xspin.setValue(new Integer(point.x));
+          yspin.setValue(new Integer(point.y));
+          updateListeners()
+          animation.forceRedraw();
+        }
+      };
+
+      def actionPerformed(event:ActionEvent){
+        if (toggled){
+          toggle.setText("Set point")
+          area.enableMovement()
+          area.removeMouseListener(listener)
+          area.removeMouseMotionListener(listener)
+          onDestroy = () => null
+        } else {
+          toggle.setText("Setting point")
+          area.disableMovement()
+          area.addMouseListener(listener)
+          area.addMouseMotionListener(listener)
+          onDestroy = () => {
+            area.removeMouseListener(listener)
+            area.removeMouseMotionListener(listener)
+            area.enableMovement()
+            null
+           }
+        }
+        toggled = ! toggled
+      }
+     })
+
     engine.getRootComponent().asInstanceOf[JPanel]
   }
 
@@ -484,6 +534,7 @@ class EffectEvent extends AnimationEventNotifier with AnimationEvent {
   }
 
   def destroy(){
+    onDestroy()
   }
 
 }
