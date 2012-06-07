@@ -1175,8 +1175,7 @@ public:
     }
 };
 
-
-class Motif : public BaseMenuItem {
+class Motif: public BaseMenuItem {
 public:
     Motif(){
         optionName = "Switch Motif";
@@ -1221,15 +1220,17 @@ public:
         return good;
     }
     
-    class Item : public ListItem{
+    class Item: public ListItem{
     public:
-        class SelectException : public std::exception{
+        class SelectException: public std::exception {
         public:
             SelectException(){
             }
-            ~SelectException() throw() {
+
+            virtual ~SelectException() throw() {
             }
         };
+
         Item(){
         }
         
@@ -1269,11 +1270,12 @@ public:
  
     };
 
-    class MotifException : public std::exception{
+    class MotifException: public std::exception {
     public:
         MotifException(){
         }
-        ~MotifException() throw(){
+
+        virtual ~MotifException() throw() {
         }
     };
     
@@ -1281,7 +1283,7 @@ public:
         class Context: public Loader::LoadingContext {
         public:
             Context(){
-                }
+            }
 
             virtual void load(){
                 vector<Filesystem::AbsolutePath> paths = listMotifs();

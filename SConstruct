@@ -124,6 +124,7 @@ isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
 useMinpspw = makeUseEnvironment('minpspw', False)
 useAndroid = makeUseEnvironment('android', False)
+useAndroidX86 = makeUseEnvironment('androidx86', False)
 useIos = makeUseEnvironment('ios', False)
 usePs3 = makeUseEnvironment('ps3', False)
 useNDS = makeUseEnvironment('nds', False)
@@ -429,7 +430,7 @@ def checkAllegro(context):
 
 def checkPthreads(context):
     context.Message("Checking for threads... ")
-    if useAndroid():
+    if useAndroid() or useAndroidX86():
         context.Message(" android threads")
         context.Result(colorResult(1))
         return 1
@@ -753,7 +754,7 @@ def useAllegro5():
             return False
 
     # FIXME: hack to specify android here
-    return byEnv() or byArgument() or useAndroid()
+    return byEnv() or byArgument() or useAndroid() or useAndroidX86()
 
 def useAllegro():
     def byEnv():
@@ -1147,6 +1148,66 @@ rsx
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', ogc_bin_path)
         return env
+
+    def androidX86(env):
+        # Sets up the environment for Google Android
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        
+        platform = 'android-9'
+        arch = 'x86'
+        path = '/opt/android/android-toolchain-x86'
+        # bin_path = setup(path, '/arm-linux-androideabi-4.4.3/bin')
+        bin_path = setup(path, '/bin')
+        prefix = 'i686-android-linux-'
+        def set_prefix(x):
+            return '%s%s' % (prefix, x)
+        env['CC'] = set_prefix('gcc')
+        env['LD'] = set_prefix('ld')
+        env['CXX'] = set_prefix('g++')
+        env['AS'] = set_prefix('as')
+        env['AR'] = set_prefix('ar')
+        env['OBJCOPY'] = set_prefix('objcopy')
+
+        base = setup(path, '/user/%(arch)s' % {'arch': arch})
+
+        env.Append(CPPPATH = ['%s/include' % base,
+                              # '%s/include/allegro5' % base
+                              ])
+        
+        #env.Append(CPPPATH = [setup(path, '/arm-linux-androideabi-4.4.3/include'), 
+        #                      setup(path, '/platforms/%s/arch-arm/usr/include' % platform),
+        #                      setup(path, '/platforms/%s/arch-arm/usr/include/SDL' % platform),
+        #                      setup(path, '/platforms/%s/arch-arm/usr/include/freetype' % platform),
+        #                      setup(path, '/sources/cxx-stl/gnu-libstdc++/include')
+        #                     ])
+        env.Append(CPPDEFINES = Split("""ANDROID"""))
+        # flags = ['-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-fstack-protector',  '-Wno-psabi', '-march=armv5te', '-mtune=xscale', '-msoft-float', '-mthumb', '-Os', '-fomit-frame-pointer', '-fno-strict-aliasing', '-finline-limit=64',]
+        flags = ['-shared', '-fpic', '-fexceptions', '-ffunction-sections', '-funwind-tables', '-Wno-psabi', '-O2', '-fno-strict-aliasing']
+        # linkflags = flags + ['-Wl,--allow-shlib-undefined']
+        linkflags = flags + ['-Wl,--no-undefined']
+        # libs = ['freetype', 'png', 'SDL', 'm', 'log', 'jnigraphics', 'c', 'm', 'supc++',]
+        # Copy the static stdc++ from gnu-libstdc++
+        # gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
+        # libs = Split("""freetype2-static png SDL m log c jnigraphics supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
+        # libs = Split("""freetype2-static allegro m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
+        libs = Split("""freetype2-static allegro log z""")
+        env.Append(CCFLAGS = flags)
+        env.Append(CXXFLAGS = flags)
+        env.Append(LINKFLAGS = linkflags)
+        env.Append(CPPPATH = ['#src/android'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS -Wl,--start-group $SOURCES $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        # Hack to put libstdc++ at the end
+        # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS /opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a -o $TARGET'
+        # env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+        env.Append(LIBS = libs)
+        env.Append(LIBPATH = ['%s/lib' % base,
+             #setup(path, '/platforms/%s/arch-arm/usr/lib' % platform),
+                              ])
+        
+        env.PrependENVPath('PATH', bin_path)
+        return env
+
     def android(env):
         # Sets up the environment for Google Android
         def setup(pre, x):
@@ -1418,6 +1479,8 @@ rsx
                 return wii(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useMinpspw():
                 return minpspw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
+            elif useAndroidX86():
+                return androidX86(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useAndroid():
                 return android(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags, tools = ['mingw']))
             elif useIos():
@@ -1598,7 +1661,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useIos():
+if not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useAndroidX86() and not useIos():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1611,7 +1674,7 @@ def getDataPath():
         if useWii():
             # consistent with homebrew
             return '/apps/paintown/data'
-        if useAndroid():
+        if useAndroid() or useAndroidX86():
             return '/sdcard/paintown/data'
         if useMinpspw():
             return 'ms0:/psp/game150/paintown/data'
@@ -1681,6 +1744,8 @@ def buildType(env):
             properties.append('sdl')
         if useMinpspw():
             properties.append('psp')
+    if useAndroidX86():
+        properties.append('android-x86')
     if useAndroid():
         properties.append('android')
     if useIos():
@@ -1755,7 +1820,9 @@ def display_build_properties(env):
     if useXenon():
         properties.append(colorize("Xenon", color))
     if useAndroid():
-        properties.append(colorize("ANDROID", color))
+        properties.append(colorize("Android", color))
+    if useAndroidX86():
+        properties.append(colorize("Android X86", color))
     if useIos():
         properties.append(colorize("IOS", color))
     if usePs3():
@@ -1841,7 +1908,7 @@ else:
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useNacl() and not useXenon():
+    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useAndroidX86() and not useNacl() and not useXenon():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -1862,7 +1929,7 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useAndroid() and not useNacl():
+        if useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useAndroid() and not useAndroidX86() and not useNacl():
             if not config.CheckSDL():
                 print "Install libsdl 1.2"
                 Exit(1)
@@ -1874,10 +1941,10 @@ else:
             #env.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
             #staticEnv.Append(CPPDEFINES = ['USE_SDL', 'USE_SDL_MAIN'])
 
-        if useAndroid():
+        if useAndroid() or useAndroidX86():
             config.CheckAllegro5()
         
-        if not usePs3() and not useNacl() and not useAndroid():
+        if not usePs3() and not useNacl() and not useAndroid() and not useAndroidX86():
             safeParseConfig(config.env, 'freetype-config --libs --cflags')
             safeParseConfig(config.env, 'libpng-config --libs --ldflags --cflags')
         
@@ -1925,7 +1992,7 @@ else:
     if not config.CheckHeader('ft2build.h'):
         print "You need freetype. Install freetype and/or X11"
         Exit( 1 )
-    if not config.CheckHeader('png.h'):
+    if not (useAndroid() or useAndroidX86()) and not config.CheckHeader('png.h'):
         print "You need libpng. Get it from http://www.libpng.org/pub/png/libpng.html"
         Exit(1)
     config.CheckRTTI()
