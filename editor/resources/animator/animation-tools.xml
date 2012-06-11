@@ -32,9 +32,21 @@
             </hbox>
 
             <buttongroup>
-                <radiobutton id="overlay:front" text="Show in front of current animation" />
-                <radiobutton id="overlay:back" selected="true" text="Show behind current animation" />
+                <radiobutton id="overlay:front" selected="true" text="Show in front of current animation" />
+                <radiobutton id="overlay:back" text="Show behind current animation" />
             </buttongroup>
+
+            <hbox>
+                <label text="X offset" />
+                <spinner id="overlay:x" />
+                <glue />
+            </hbox>
+
+            <hbox>
+                <label text="Y offset" />
+                <spinner id="overlay:y" />
+                <glue />
+            </hbox>
 
             <label id="overlay:alpha-text" text="Translucency" />
             <slider id="overlay:alpha" minimum="1" maximum="100" />

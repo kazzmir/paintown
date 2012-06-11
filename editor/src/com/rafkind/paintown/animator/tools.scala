@@ -6,6 +6,8 @@ import java.awt.Color
 import java.io.File
 import javax.swing.event.ChangeListener
 import javax.swing.event.ChangeEvent
+import javax.swing.event.DocumentListener
+import javax.swing.event.DocumentEvent
 import com.rafkind.paintown.Undo
 import com.rafkind.paintown.MaskedImage
 import org.swixml.SwingEngine;
@@ -67,10 +69,15 @@ object Tools{
       if (enableButton.isSelected()){
         try{
           area.setOverlayImage(MaskedImage.load(path))
+        } catch {
+          case e:Exception => {
+            area.setOverlayImage(null)
+          }
         }
       } else {
         area.setOverlayImage(null)
       }
+      area.repaint()
     }
     
     enableButton.addActionListener(new AbstractAction(){
@@ -98,6 +105,64 @@ object Tools{
         }
       }
     })
+
+    filename.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        update(filename.getText())
+      }
+    })
+
+    val offsetx = context.find("overlay:x").asInstanceOf[JSpinner]
+    val offsety = context.find("overlay:y").asInstanceOf[JSpinner]
+
+    offsetx.setValue(new Integer(area.getOverlayImageOffsetY()))
+    offsetx.addChangeListener(new ChangeListener(){
+      def stateChanged(event:ChangeEvent){
+        area.setOverlayImageOffsetX(offsetx.getValue().asInstanceOf[Integer].intValue())
+        area.repaint()
+      }
+    })
+
+    offsety.setValue(new Integer(area.getOverlayImageOffsetY()))
+    offsety.addChangeListener(new ChangeListener(){
+      def stateChanged(event:ChangeEvent){
+        area.setOverlayImageOffsetY(offsety.getValue().asInstanceOf[Integer].intValue())
+        area.repaint()
+      }
+    })
+
+    val alphaText = context.find("overlay:alpha-text").asInstanceOf[JLabel]
+    val alpha = context.find("overlay:alpha").asInstanceOf[JSlider]
+
+    alpha.setValue((area.getOverlayImageAlpha() * alpha.getMaximum()).toInt);
+    alphaText.setText("Transparency " + area.getOverlayImageAlpha());
+    alpha.addChangeListener(new ChangeListener(){
+      def stateChanged(change:ChangeEvent){
+        area.setOverlayImageAlpha(alpha.getValue().asInstanceOf[Double].doubleValue() /
+        alpha.getMaximum().asInstanceOf[Double].doubleValue())
+        alphaText.setText("Transparency " + area.getOverlayImageAlpha())
+        area.repaint();
+      }
+    })
+
+    val front = context.find("overlay:front").asInstanceOf[JRadioButton];
+    val back = context.find("overlay:back").asInstanceOf[JRadioButton];
+    front.setActionCommand("front");
+    back.setActionCommand("back");
+
+    val change = new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        if (event.getActionCommand().equals("front")){
+          area.setOverlayImageFront();
+        } else {
+          area.setOverlayImageBehind();
+        }
+        area.repaint();
+      }
+    }
+
+    front.addActionListener(change);
+    back.addActionListener(change);
 
     context.find("overlay-image").asInstanceOf[JPanel]
   }

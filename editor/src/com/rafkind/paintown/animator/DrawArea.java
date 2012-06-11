@@ -41,14 +41,55 @@ public final class DrawArea extends JComponent {
             return front;
         }
 
+        public void setFront(){
+            front = true;
+        }
+
+        public void setBehind(){
+            front = false;
+        }
+
+        public void setOffsetX(int x){
+            offsetX = x;
+        }
+        
+        public int getOffsetX(){
+            return offsetX;
+        }
+
+        public void setOffsetY(int y){
+            offsetY = y;
+        }
+        
+        public int getOffsetY(){
+            return offsetY;
+        }
+        
+        public double getAlpha(){
+            return alpha;
+        }
+
+        public void setAlpha(double alpha){
+            this.alpha = alpha;
+        }
+
         public void draw(Graphics2D graphics, double x, double y){
             if (image != null){
-                graphics.drawImage(image, (int) x, (int) y, null);
+                Graphics2D translucent = (Graphics2D) graphics.create();
+                AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)alpha);
+                translucent.setComposite(composite);
+
+                double fx = x - image.getWidth(null) / 2 + offsetX;
+                double fy = y - image.getHeight(null) + offsetY;
+                translucent.drawImage(image, (int) fx, (int) fy, null);
             }
         }
 
         public MaskedImage image;
         public boolean front = true;
+        int offsetX;
+        int offsetY;
+        double alpha = 1;
     }
 
     private OverlayImage overlayImage = new OverlayImage();
@@ -262,6 +303,38 @@ public final class DrawArea extends JComponent {
 
     public void setOverlayImage(MaskedImage image){
         overlayImage.image = image;
+    }
+    
+    public void setOverlayImageFront(){
+        overlayImage.setFront();
+    }
+    
+    public void setOverlayImageBehind(){
+        overlayImage.setBehind();
+    }
+
+    public void setOverlayImageAlpha(double alpha){
+        overlayImage.setAlpha(alpha);
+    }
+    
+    public double getOverlayImageAlpha(){
+        return overlayImage.getAlpha();
+    }
+    
+    public void setOverlayImageOffsetX(int x){
+        overlayImage.setOffsetX(x);
+    }
+
+    public int getOverlayImageOffsetY(){
+        return overlayImage.getOffsetY();
+    }
+    
+    public int getOverlayImageOffsetX(){
+        return overlayImage.getOffsetX();
+    }
+    
+    public void setOverlayImageOffsetY(int y){
+        overlayImage.setOffsetY(y);
     }
 
     private double getGuideRatio(){
