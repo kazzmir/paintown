@@ -3161,7 +3161,8 @@ void CharacterSelect::parseSelect(){
                         self.addRandom();
                     } else {
                         // Only add characters if we auto search is off
-                        if (Data::getInstance().getSearchType() == Data::SelectDef || Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
+                        if (Data::getInstance().getSearchType() == Data::SelectDef ||
+                            Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
                             Filesystem::AbsolutePath tempPath;
                             try {
                                 tempPath = Util::findCharacterDef(temp);
@@ -3178,7 +3179,11 @@ void CharacterSelect::parseSelect(){
                                 } else if (temp == "random"){
                                     character.setRandomStage(true);
                                 } else {
-                                    character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
+                                    try{
+                                        character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
+                                    } catch (const Filesystem::NotFound & ex){
+                                        Global::debug(0) << "Could not find stage " << temp << ": " << ex.getTrace() << std::endl;
+                                    }
                                 }
                                 // Grab options
                                 /* TODO: make the parser turn these into better AST nodes.
@@ -3227,11 +3232,14 @@ void CharacterSelect::parseSelect(){
                         Global::debug(1) << "stage: " << temp << std::endl;
                         self.addStage(Util::findFile(Filesystem::RelativePath(temp)));
                     } catch (const Ast::Exception & e){
+                    } catch (const Filesystem::NotFound & ex){
+                        Global::debug(0) << "Could not find extra stage: " << ex.getTrace() << std::endl;
                     }
                 }
             };
             // Only add stages if auto search is off
-            if (Data::getInstance().getSearchType() == Data::SelectDef || Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
+            if (Data::getInstance().getSearchType() == Data::SelectDef ||
+                Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
                 StageWalker walk(*this);
                 section->walk(walk);
             }
