@@ -11,4 +11,35 @@
             <label text="Hold ctrl-left click to snap to grid" />
         </vbox>
     </panel>
+    <panel id="overlay-image" layout="GridBagLayout">
+        <vbox>
+            <gridbagconstraints
+                gridx="0"
+                gridy="0"
+                weightx="1"
+                weighty="1"
+                gridheight="1"
+                gridwidth="1"
+                anchor="GridBagConstraints.NORTHWEST"
+                fill="GridBagConstraints.BOTH"
+                />
+            <checkbox id="overlay:enable" text="Enabled" selected="true" />
+
+            <hbox>
+                <label text="File" />
+                <textfield id="overlay:file" />
+                <button id="overlay:choose" text="Select file" />
+            </hbox>
+
+            <buttongroup>
+                <radiobutton id="overlay:front" text="Show in front of current animation" />
+                <radiobutton id="overlay:back" selected="true" text="Show behind current animation" />
+            </buttongroup>
+
+            <label id="overlay:alpha-text" text="Translucency" />
+            <slider id="overlay:alpha" minimum="1" maximum="100" />
+
+            <label id="overlay:image" />
+        </vbox>
+    </panel>
 </panel>

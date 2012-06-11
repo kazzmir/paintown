@@ -30,10 +30,10 @@ public class MaskedImage extends BufferedImage {
 		}
 	}
 
-	public static MaskedImage load( String s ) throws IOException {
-		synchronized( images ){
-			if ( images.get( s ) != null ){
-				return (MaskedImage) images.get( s );
+	public static MaskedImage load(String s) throws IOException {
+		synchronized (images){
+			if (images.get(s) != null){
+				return (MaskedImage) images.get(s);
 			}
 		}
 		BufferedImage temp = ImageIO.read( new File( s ) );
@@ -48,23 +48,23 @@ public class MaskedImage extends BufferedImage {
 				image.setRGB( x, y, pixel );
 			}
 		}
-		synchronized( images ){
-			images.put( s, image );
+		synchronized (images){
+			images.put(s, image);
 		}
 		return image;
 	}
 
 	public static MaskedImage load( String s, HashMap remap ) throws IOException {
 		String full = s + "\n" + String.valueOf( remap.hashCode() );
-		synchronized( images ){
-			if ( images.containsKey( full ) ){
-				return (MaskedImage) images.get( full );
+		synchronized (images){
+			if (images.containsKey(full)){
+				return (MaskedImage) images.get(full);
 			}
 		}
 
-		MaskedImage image = new MaskedImage( load( s ) );
-		for ( int x = 0; x < image.getWidth(); x++ ){
-			for ( int y = 0; y < image.getHeight(); y++ ){
+		MaskedImage image = new MaskedImage(load(s));
+		for (int x = 0; x < image.getWidth(); x++){
+			for (int y = 0; y < image.getHeight(); y++){
 				int pixel = image.getRGB( x, y );
 				if ( remap.containsKey( new Integer( pixel ) ) ){
 					Integer mapped = (Integer) remap.get( new Integer( pixel ) );
@@ -73,8 +73,8 @@ public class MaskedImage extends BufferedImage {
 			}
 		}
 
-		synchronized( images ){
-			images.put( full, image );
+		synchronized (images){
+			images.put(full, image);
 		}
 
 		return image;

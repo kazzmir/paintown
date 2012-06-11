@@ -28,6 +28,31 @@ public final class DrawArea extends JComponent {
 
     private Animation currentAnimation;
     private Animation overlayAnimation;
+
+    private static class OverlayImage{
+        public OverlayImage(){
+        }
+
+        public boolean isBehind(){
+            return ! front;
+        }
+
+        public boolean isFront(){
+            return front;
+        }
+
+        public void draw(Graphics2D graphics, double x, double y){
+            if (image != null){
+                graphics.drawImage(image, (int) x, (int) y, null);
+            }
+        }
+
+        public MaskedImage image;
+        public boolean front = true;
+    }
+
+    private OverlayImage overlayImage = new OverlayImage();
+
     /* true for behind, false for in front */
     private boolean overlayBehind = true;
     private double overlayAlphaLevel = 1;
@@ -235,6 +260,10 @@ public final class DrawArea extends JComponent {
         scaleListeners.add(update);
     }
 
+    public void setOverlayImage(MaskedImage image){
+        overlayImage.image = image;
+    }
+
     private double getGuideRatio(){
         if (guideSize > 0){
             return 10 * getMaxGuideSize() / guideSize;
@@ -400,6 +429,10 @@ public final class DrawArea extends JComponent {
         g.drawLine(0, y, (int) (getWidth() / getScale()), y);
         g.drawLine(x, 0, x, (int) (getHeight() / getScale()));
 
+        if (overlayImage.isBehind()){
+            overlayImage.draw(g2d, x, y);
+        }
+
         if (overlayBehind && overlayAnimation != null){
             drawOverlay(g2d, x, y);
         }
@@ -410,6 +443,10 @@ public final class DrawArea extends JComponent {
 
         if (! overlayBehind && overlayAnimation != null){
             drawOverlay(g2d, x, y);
+        }
+        
+        if (overlayImage.isFront()){
+            overlayImage.draw(g2d, x, y);
         }
 
         /* Undo the scale to get back to 1x1 */

@@ -1,10 +1,13 @@
 package com.rafkind.paintown.animator
 
 import javax.swing._
+import java.awt.event._
 import java.awt.Color
+import java.io.File
 import javax.swing.event.ChangeListener
 import javax.swing.event.ChangeEvent
 import com.rafkind.paintown.Undo
+import com.rafkind.paintown.MaskedImage
 import org.swixml.SwingEngine;
 
 object Tools{
@@ -52,6 +55,51 @@ object Tools{
     });
 
     context.find("grid").asInstanceOf[JPanel]
+  }
+
+  def makeOverlayImageTool(parent:JPanel, area:DrawArea):JPanel = {
+    val context = new SwingEngine("animator/animation-tools.xml")
+    val enableButton = context.find("overlay:enable").asInstanceOf[JCheckBox]
+    var lastFile:String = ""
+
+    def update(path:String){
+      lastFile = path
+      if (enableButton.isSelected()){
+        try{
+          area.setOverlayImage(MaskedImage.load(path))
+        }
+      } else {
+        area.setOverlayImage(null)
+      }
+    }
+    
+    enableButton.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        if (enableButton.isSelected()){
+          enableButton.setText("Enabled")
+        } else {
+          enableButton.setText("Disabled")
+        }
+
+        update(lastFile)
+      }
+    })
+
+    val filename = context.find("overlay:file").asInstanceOf[JTextField]
+    val choose = context.find("overlay:choose").asInstanceOf[JButton]
+    choose.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        val file = new JFileChooser()
+        val value = file.showOpenDialog(parent)
+        if (value == JFileChooser.APPROVE_OPTION){
+          val selected = file.getSelectedFile()
+          filename.setText(selected.getPath())
+          update(selected.getPath())
+        }
+      }
+    })
+
+    context.find("overlay-image").asInstanceOf[JPanel]
   }
 
 }

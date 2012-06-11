@@ -205,12 +205,14 @@ public abstract class AnimationCanvas extends JPanel {
         final String chooseBackground = "Background Color";
         final String chooseGrid = "Grid";
         final String chooseOverlayAnimation = "Overlay Animation";
+        final String chooseOverlayImage = "Overlay Image";
         final String chooseSpeedAndScale = "Speed and Scale";
         tools.addItem(chooseNone);
         tools.addItem(chooseSpeedAndScale);
         tools.addItem(chooseBackground);
         tools.addItem(chooseGrid);
         tools.addItem(chooseOverlayAnimation);
+        tools.addItem(chooseOverlayImage);
 
         tools.addActionListener(new AbstractAction(){
             /* TODO: If there are too many tools then create them lazily so we
@@ -220,6 +222,7 @@ public abstract class AnimationCanvas extends JPanel {
             final JPanel toolBackground = Tools.makeBackgroundTool(object, area);
             final JPanel toolGrid = Tools.makeGridTool(area);
             final JPanel toolOverlay = makeOverlayAnimation(object, area);
+            final JPanel toolOverlayImage = Tools.makeOverlayImageTool(AnimationCanvas.this, area);
             final JPanel toolSpeedAndScale = makeSpeedAndScale(animation, area);
 
             private JPanel getTool(String name){
@@ -231,6 +234,9 @@ public abstract class AnimationCanvas extends JPanel {
                 }
                 if (name.equals(chooseBackground)){
                     return toolBackground;
+                }
+                if (name.equals(chooseOverlayImage)){
+                    return toolOverlayImage;
                 }
                 if (name.equals(chooseOverlayAnimation)){
                     return toolOverlay;
@@ -253,6 +259,7 @@ public abstract class AnimationCanvas extends JPanel {
                 constraints.anchor = GridBagConstraints.NORTHWEST;
                 toolPane.add(getTool((String) tools.getSelectedItem()), constraints);
                 toolPane.revalidate();
+                AnimationCanvas.this.revalidate();
             }
         });
     }
