@@ -240,6 +240,8 @@ done(false){
                                         Global::debug(1) << "Got Logo Storyboard File: '" << logoFile << "'" << endl;
                                     } catch (const MugenException &ex){
                                         Global::debug(0) << "Error loading logo storyboard " << logoFile << ": " << ex.getFullReason() << std::endl;
+                                    } catch (const Filesystem::NotFound & ex){
+                                        Global::debug(0) << "Error loading logo storyboard " << logoFile << ": " << ex.getTrace() << std::endl;
                                     }
                                 }
                             } catch (const Ast::Exception & e){
@@ -255,6 +257,8 @@ done(false){
                                         Global::debug(1) << "Got Intro Storyboard File: '" << introFile << "'" << endl;
                                     } catch (const MugenException &ex){
                                         Global::debug(0) << "Error loading intro storyboard " << introFile << ": " << ex.getFullReason() << std::endl;
+                                    } catch (const Filesystem::NotFound & ex){
+                                        Global::debug(0) << "Error loading intro storyboard " << introFile << ": " << ex.getTrace() << std::endl;
                                     }
                                 }
                             } catch (const Ast::Exception & e){
