@@ -21,6 +21,12 @@ using namespace Gui;
 
 namespace Mugen{
 
+/* Sets the default window sizes of elements. Make this variable to
+ * support hi-res screenpacks.
+ */
+static const int DEFAULT_WINDOW_WIDTH = 320;
+static const int DEFAULT_WINDOW_HEIGHT = 240;
+
 static double interpolate(double f1, double f2, double p){
     return (f1 * (1.0 - p)) + (f2 * p);
 }
@@ -91,7 +97,7 @@ x(0),
 y(0),
 deltaX(1),
 deltaY(1),
-window(0,0,319,239),
+window(0,0,DEFAULT_WINDOW_WIDTH-1,DEFAULT_WINDOW_HEIGHT-1),
 windowDeltaX(0),
 windowDeltaY(0),
 positionLink(false),

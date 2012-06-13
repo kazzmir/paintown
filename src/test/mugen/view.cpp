@@ -616,6 +616,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                 int y = 400;
 		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s Own (P)alette %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off"); y += Font::getDefaultFont().getHeight() + 3;
 		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Same palette? %s Real Length %d New Length %d", 0, ourSprite->getSamePalette() ? "yes" : "no", ourSprite->getRealLength(), ourSprite->getNewLength()); y += Font::getDefaultFont().getHeight() + 3;
+		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Width %d Height %d", 0, ourSprite->getWidth(), ourSprite->getHeight());
 	    } else {
 		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
 	    }

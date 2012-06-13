@@ -15,6 +15,10 @@
 
 using namespace Mugen;
 
+/* Default size of the select screen. Make these variables to support hi-res */
+static const int DEFAULT_SELECT_WIDTH = 320;
+static const int DEFAULT_SELECT_HEIGHT = 240;
+
 // Cell static members
 PaintownUtil::ReferenceCount<Sprite> Cell::background;
 PaintownUtil::ReferenceCount<Sprite> Cell::randomIcon;
@@ -3039,8 +3043,6 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
 
-    drawCursors(gridPositionX - 1, gridPositionY - 1, work);
-
     // render title based on Mugen::GameType
     titleFont.draw((!titleOverride.empty() ? titleOverride : getGameType(currentGameType)), work);
     
@@ -3054,6 +3056,8 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     
     // Stages
     stages.draw(work);
+    
+    drawCursors(gridPositionX - 1, gridPositionY - 1, work);
     
     background->renderForeground(0, 0, work);
     
@@ -3747,7 +3751,7 @@ public:
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
-        Graphics::StretchedBitmap work(320, 240, buffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+        Graphics::StretchedBitmap work(DEFAULT_SELECT_WIDTH, DEFAULT_SELECT_HEIGHT, buffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
         work.start();
         select.draw(work);
         work.finish();
