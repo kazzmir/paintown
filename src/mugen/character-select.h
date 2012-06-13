@@ -117,15 +117,12 @@ public:
         return this->character;
     }
     
+    /* Why are all these things static? Shouldn't the CharacterSelect class
+     * just own these objects?
+     */
     static void setBackground(PaintownUtil::ReferenceCount<Sprite> background);
     static void setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon);
-    static void setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
-    static void setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
-    static void setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
-    static void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor);
-    static inline void setBlinkCursor(bool blink){
-        Cell::blinkCursor = blink;
-    }
+
     static inline void setEffects(const Mugen::Effects & effects){
         Cell::effects = effects;
     }
@@ -137,19 +134,9 @@ public:
 protected:
     static PaintownUtil::ReferenceCount<Sprite> background;
     static PaintownUtil::ReferenceCount<Sprite> randomIcon;
-    static PaintownUtil::ReferenceCount<Sprite> player1ActiveCursor;
-    static PaintownUtil::ReferenceCount<Sprite> player1DoneCursor;
-    static PaintownUtil::ReferenceCount<Sprite> player2ActiveCursor;
-    static PaintownUtil::ReferenceCount<Sprite> player2DoneCursor;
-    
-    static bool blinkCursor;
-    static int blinkTime;
-    
+        
     static Mugen::Effects effects;
     static int offsetX, offsetY;
-    
-    void drawPlayer1Cursor(int x, int y, const Graphics::Bitmap &) const;
-    void drawPlayer2Cursor(int x, int y, const Graphics::Bitmap &, bool blink=false) const;
     
     unsigned int index;
     const Gui::SelectListInterface * parent;
@@ -559,8 +546,23 @@ public:
     
     /* true if no cell uses the given definitionPath */
     bool uniqueCharacter(const Filesystem::AbsolutePath definitionPath) const;
+
+    void setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Animation> cursor);
+    void setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Animation> cursor);
+    void setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Animation> cursor);
+    void setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Animation> cursor);
+    void cursorsAct();
+
+    inline void setBlinkCursor(bool blink){
+        blinkCursor = blink;
+    }
     
 protected:
+
+    void drawPlayer1Cursor(int x, int y, Gui::SelectListInterface::CursorState state, const Graphics::Bitmap &) const;
+    void drawPlayer2Cursor(int x, int y, Gui::SelectListInterface::CursorState state, const Graphics::Bitmap &, bool blink=false) const;
+    void drawCursors(int xOffset, int yOffset, const Graphics::Bitmap & work) const;
+
     /* Adds a stage without taking the lock */
     void doAddStage(const Filesystem::AbsolutePath & stage);
 
@@ -623,6 +625,14 @@ protected:
     //! Demo moves left
     int demoLeftTime, demoRightTime;
     int demoLeftRemaining, demoRightRemaining;
+
+    PaintownUtil::ReferenceCount<Animation> player1ActiveCursor;
+    PaintownUtil::ReferenceCount<Animation> player1DoneCursor;
+    PaintownUtil::ReferenceCount<Animation> player2ActiveCursor;
+    PaintownUtil::ReferenceCount<Animation> player2DoneCursor;
+    
+    bool blinkCursor;
+    int blinkTime;
 };
 
 }

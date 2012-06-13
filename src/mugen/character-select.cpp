@@ -16,14 +16,8 @@
 using namespace Mugen;
 
 // Cell static members
-PaintownUtil::ReferenceCount<Sprite> Cell::background = PaintownUtil::ReferenceCount<Sprite>(NULL);
-PaintownUtil::ReferenceCount<Sprite> Cell::randomIcon = PaintownUtil::ReferenceCount<Sprite>(NULL);
-PaintownUtil::ReferenceCount<Sprite> Cell::player1ActiveCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
-PaintownUtil::ReferenceCount<Sprite> Cell::player1DoneCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
-PaintownUtil::ReferenceCount<Sprite> Cell::player2ActiveCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
-PaintownUtil::ReferenceCount<Sprite> Cell::player2DoneCursor = PaintownUtil::ReferenceCount<Sprite>(NULL);
-bool Cell::blinkCursor = false;
-int Cell::blinkTime = 0;
+PaintownUtil::ReferenceCount<Sprite> Cell::background;
+PaintownUtil::ReferenceCount<Sprite> Cell::randomIcon;
 Mugen::Effects Cell::effects = Mugen::Effects();
 int Cell::offsetX = 0;
 int Cell::offsetY = 0;
@@ -112,15 +106,20 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
         character.drawIcon(x + offsetX, y + offsetY, work, effects);
     }
     
-    if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) && parent->getCurrentIndex(0) == index){
+    /*
+    if (parent->getCurrentIndex(0) == parent->getCurrentIndex(1) &&
+        parent->getCurrentIndex(0) == index){
         // Blink cursors
-        if (parent->getCurrentState(0) == Gui::SelectListInterface::Active && parent->getCurrentState(1) == Gui::SelectListInterface::Active){
+        if (parent->getCurrentState(0) == Gui::SelectListInterface::Active &&
+            parent->getCurrentState(1) == Gui::SelectListInterface::Active){
             drawPlayer1Cursor(x, y, work);
             drawPlayer2Cursor(x, y, work, true);
-        } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Active && parent->getCurrentState(1) == Gui::SelectListInterface::Done){
+        } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Active &&
+                   parent->getCurrentState(1) == Gui::SelectListInterface::Done){
             drawPlayer2Cursor(x, y, work);
             drawPlayer1Cursor(x, y, work);
-        } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Done && parent->getCurrentState(1) == Gui::SelectListInterface::Active){
+        } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Done &&
+                   parent->getCurrentState(1) == Gui::SelectListInterface::Active){
             drawPlayer1Cursor(x, y, work);
             drawPlayer2Cursor(x, y, work);
         } else {
@@ -132,6 +131,7 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     } else if (parent->getCurrentIndex(1) == index){
         drawPlayer2Cursor(x, y, work);
     }
+    */
     
     // Flash
     if (flash){
@@ -141,7 +141,7 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     }
 }
 
-bool Cell::isEmpty() const{
+bool Cell::isEmpty() const {
     return empty;
 }
 
@@ -167,22 +167,7 @@ void Cell::setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon){
     Cell::randomIcon = randomIcon;
 }
 
-void Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
-    Cell::player1ActiveCursor = cursor;
-}
-
-void Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
-    Cell::player1DoneCursor = cursor;
-}
-
-void Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
-    Cell::player2ActiveCursor = cursor;
-}
-
-void Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Sprite> cursor){
-    Cell::player2DoneCursor = cursor;
-}
-
+/*
 void Cell::drawPlayer1Cursor(int x, int y, const Graphics::Bitmap & work) const {
     if (parent->getCurrentState(0) == Gui::SelectListInterface::Disabled){
     } else if (parent->getCurrentState(0) == Gui::SelectListInterface::Active){
@@ -220,7 +205,7 @@ void Cell::drawPlayer2Cursor(int x, int y, const Graphics::Bitmap & work, bool b
         }
     }
 }
-
+*/
 
 TeamMenu::TeamMenu():
 current(Mugen::ArcadeData::CharacterCollection::Simultaneous),
@@ -1895,7 +1880,9 @@ canceled(false),
 demoLeftTime(0),
 demoRightTime(0),
 demoLeftRemaining(0),
-demoRightRemaining(0){
+demoRightRemaining(0),
+blinkCursor(false),
+blinkTime(0){
     Global::debug(1) << "Got file: " << file.path() << std::endl;
 }
 
@@ -1975,19 +1962,33 @@ void CharacterSelect::init(){
                 /* Nothing */
             } else if (PaintownUtil::matchRegex(head, "^titlebg")){
                 /* Nothing */
-            } else if (head == "select info"){ 
+            } else if (head == "select info"){
                 class SelectInfoWalker: public Ast::Walker{
                 public:
-                    SelectInfoWalker(CharacterSelect & self, Mugen::SpriteMap & sprites):
+                    SelectInfoWalker(const AstRef & parsed, CharacterSelect & self, Mugen::SpriteMap & sprites):
+                        parsed(parsed),
                         self(self),
                         sprites(sprites){
                         }
 
+                    const AstRef & parsed;
                     CharacterSelect & self;
                     Mugen::SpriteMap & sprites;
                     
                     Mugen::Effects player1Effects;
                     Mugen::Effects player2Effects;
+
+                    PaintownUtil::ReferenceCount<Animation> findAnimation(const AstRef & parse, int animation){
+                        std::ostringstream all;
+                        all << "begin action " << animation;
+                        Ast::Section * section = parse->findSection(all.str());
+                        if (section == NULL){
+                            std::ostringstream out;
+                            out << "No action for anim " << animation;
+                            throw MugenException(out.str(), __FILE__, __LINE__);
+                        }
+                        return Util::getAnimation(section, sprites, true);
+                    }
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "fadein.time" ){
@@ -2104,18 +2105,32 @@ void CharacterSelect::init(){
                                 self.player2.setOpponentCursorPosition(index);
                             } catch (const Ast::Exception & e){
                             }
+                        } else if (simple == "p1.cursor.active.anim"){
+                            try{
+                                int animation;
+                                simple.view() >> animation;
+                                self.setPlayer1ActiveCursor(findAnimation(parsed, animation));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p1.cursor.done.anim"){
+                            try{
+                                int animation;
+                                simple.view() >> animation;
+                                self.setPlayer1DoneCursor(findAnimation(parsed, animation));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if (simple == "p1.cursor.active.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
+                                self.setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Animation>(new Animation(sprites[group][sprite], true)));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.done.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
+                                self.setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Animation>(new Animation(sprites[group][sprite], true)));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p1.cursor.move.snd"){
@@ -2153,25 +2168,39 @@ void CharacterSelect::init(){
                                 self.player1.setOpponentCursorPosition(index);
                             } catch (const Ast::Exception & e){
                             }
+                        } else if (simple == "p2.cursor.active.anim"){
+                            try{
+                                int animation;
+                                simple.view() >> animation;
+                                self.setPlayer2ActiveCursor(findAnimation(parsed, animation));
+                            } catch (const Ast::Exception & e){
+                            }
+                        } else if (simple == "p2.cursor.done.anim"){
+                            try{
+                                int animation;
+                                simple.view() >> animation;
+                                self.setPlayer2DoneCursor(findAnimation(parsed, animation));
+                            } catch (const Ast::Exception & e){
+                            }
                         } else if (simple == "p2.cursor.active.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
+                                self.setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Animation>(new Animation(sprites[group][sprite], true)));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.done.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
+                                self.setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Animation>(new Animation(sprites[group][sprite], true)));
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "p2.cursor.blink"){
                             try{
                                 bool blink;
                                 simple.view() >> blink;
-                                Cell::setBlinkCursor(blink);
+                                self.setBlinkCursor(blink);
                             } catch (const Ast::Exception & e){
                             }
                         } 
@@ -2655,7 +2684,7 @@ void CharacterSelect::init(){
                     }
                 };
 
-                SelectInfoWalker walker(*this, sprites);
+                SelectInfoWalker walker(parsed, *this, sprites);
                 section->walk(walker);
                 player1.setPortraitEffects(walker.player1Effects, walker.player2Effects);
                 player2.setPortraitEffects(walker.player2Effects, walker.player1Effects);
@@ -2671,19 +2700,19 @@ void CharacterSelect::init(){
                 //Mugen::Background *manager = new Mugen::Background(systemFile, "versusbg");
                 //versus.setBackground(manager);
             }
-            else if (head.find("versusbg" ) != std::string::npos ){ /* Ignore for now */ }
-            else if (head == "demo mode" ){ /* Ignore for now */ }
-            else if (head == "continue screen" ){ /* Ignore for now */ }
-            else if (head == "game over screen" ){ /* Ignore for now */ }
-            else if (head == "win screen" ){ /* Ignore for now */ }
-            else if (head == "default ending" ){ /* Ignore for now */ }
-            else if (head == "end credits" ){ /* Ignore for now */ }
-            else if (head == "survival results screen" ){ /* Ignore for now */ }
-            else if (head == "option info" ){ /* Ignore for now */ }
-            else if (head == "optionbgdef" ){ /* Ignore for now */ }
+            else if (head.find("versusbg") != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "demo mode"){ /* Ignore for now */ }
+            else if (head == "continue screen"){ /* Ignore for now */ }
+            else if (head == "game over screen"){ /* Ignore for now */ }
+            else if (head == "win screen"){ /* Ignore for now */ }
+            else if (head == "default ending"){ /* Ignore for now */ }
+            else if (head == "end credits"){ /* Ignore for now */ }
+            else if (head == "survival results screen"){ /* Ignore for now */ }
+            else if (head == "option info"){ /* Ignore for now */ }
+            else if (head == "optionbgdef"){ /* Ignore for now */ }
             else if (head.find("optionbg") != std::string::npos ){ /* Ignore for now */ }
-            else if (head == "music" ){ /* Ignore for now */ }
-            else if (head.find("begin action") != std::string::npos ){ /* Ignore for now */ }
+            else if (head == "music"){ /* Ignore for now */ }
+            else if (head.find("begin action") != std::string::npos){ /* Ignore for now */ }
             else {
                 // throw MugenException("Unhandled Section in '" + systemFile.path() + "': " + head, __FILE__, __LINE__ ); 
                 std::ostringstream context;
@@ -2731,12 +2760,35 @@ bool CharacterSelect::isDone() {
     return (fader.getState() == Gui::FadeTool::EndFade);
 }
 
+void CharacterSelect::cursorsAct(){
+    if (player1ActiveCursor != NULL){
+        player1ActiveCursor->logic();
+    }
+    if (player1DoneCursor != NULL){
+        player1DoneCursor->logic();
+    }
+    if (player2ActiveCursor != NULL){
+        player2ActiveCursor->logic();
+    }
+    if (player2DoneCursor != NULL){
+        player2DoneCursor->logic();
+    }
+            
+    blinkTime++;
+    if (blinkTime >= 20){
+        blinkTime = 0;
+    }
+}
+
 void CharacterSelect::act(){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     for (std::vector< PaintownUtil::ReferenceCount<Cell> >::iterator i = cells.begin(); i != cells.end(); ++i){
         PaintownUtil::ReferenceCount<Cell> cell = *i;
         cell->act();
     }
+
+    cursorsAct();
+
     background->act();
     grid.act();
     
@@ -2903,10 +2955,82 @@ static std::string getGameType(const Mugen::GameType & game){
     }
 }
 
+void CharacterSelect::drawPlayer1Cursor(int x, int y, Gui::SelectListInterface::CursorState state, const Graphics::Bitmap & work) const {
+    if (state == Gui::SelectListInterface::Disabled){
+    } else if (state == Gui::SelectListInterface::Active){
+        if (player1ActiveCursor != NULL){
+            player1ActiveCursor->render(x, y, work);
+        }
+    } else if (state == Gui::SelectListInterface::Done){
+        if (player1DoneCursor != NULL){
+            player1DoneCursor->render(x, y, work);
+        }
+    }
+}
+
+void CharacterSelect::drawPlayer2Cursor(int x, int y, Gui::SelectListInterface::CursorState state, const Graphics::Bitmap & work, bool blink) const {
+    if (state == Gui::SelectListInterface::Disabled){
+    } else if (state == Gui::SelectListInterface::Active){
+        if (blinkCursor && blink){
+            if (blinkTime < 10){
+                if (player2ActiveCursor != NULL){
+                    player2ActiveCursor->render(x, y, work);
+                }
+            }
+        } else {
+            if (player2ActiveCursor != NULL){
+                player2ActiveCursor->render(x, y, work);
+            }
+        }
+    } else if (state == Gui::SelectListInterface::Done){
+        if (player2DoneCursor != NULL){
+            player2DoneCursor->render(x, y, work);
+        }
+    }
+}
+
+void CharacterSelect::drawCursors(int xOffset, int yOffset, const Graphics::Bitmap & work) const {
+    int cursorX1, cursorY1;
+    int cursorX2, cursorY2;
+
+    PaintownUtil::ReferenceCount<Gui::SelectItem> item1 = grid.getItemByCursor(0);
+    PaintownUtil::ReferenceCount<Gui::SelectItem> item2 = grid.getItemByCursor(1);
+
+    const Gui::SelectListInterface::CursorState state1 = grid.getCurrentState(0);
+    const Gui::SelectListInterface::CursorState state2 = grid.getCurrentState(1);
+
+    grid.getDrawLocation(item1, &cursorX1, &cursorY1);
+    grid.getDrawLocation(item2, &cursorX2, &cursorY2);
+
+    cursorX1 += xOffset;
+    cursorX2 += xOffset;
+    cursorY1 += yOffset;
+    cursorY2 += yOffset;
+
+    /* Overlapping */
+    if (state1 == Gui::SelectListInterface::Active &&
+        state2 == Gui::SelectListInterface::Active &&
+        item1 == item2){
+        drawPlayer1Cursor(cursorX1, cursorY1, state1, work);
+        drawPlayer2Cursor(cursorX2, cursorY2, state2, work, true);
+    } else if (state1 == Gui::SelectListInterface::Active &&
+               state2 == Gui::SelectListInterface::Done){
+        drawPlayer2Cursor(cursorX2, cursorY2, state2, work);
+        drawPlayer1Cursor(cursorX1, cursorY1, state1, work);
+    } else if (state1 == Gui::SelectListInterface::Done &&
+               state2 == Gui::SelectListInterface::Active){
+        drawPlayer1Cursor(cursorX1, cursorY1, state1, work);
+        drawPlayer2Cursor(cursorX2, cursorY2, state2, work);
+    } else {
+        drawPlayer2Cursor(cursorX2, cursorY2, state2, work);
+        drawPlayer1Cursor(cursorX1, cursorY1, state1, work);
+    }
+}
+
 void CharacterSelect::draw(const Graphics::Bitmap & work){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     // Render Background
-    background->renderBackground(0,0,work);
+    background->renderBackground(0, 0, work);
     
     // Temporary bitmap for grid
     const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
@@ -2914,7 +3038,9 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     grid.render(temp, ::Font::getDefaultFont());
     // Minus 1 since it's been offset
     temp.draw(gridPositionX-1, gridPositionY-1, work);
-    
+
+    drawCursors(gridPositionX - 1, gridPositionY - 1, work);
+
     // render title based on Mugen::GameType
     titleFont.draw((!titleOverride.empty() ? titleOverride : getGameType(currentGameType)), work);
     
@@ -2929,7 +3055,7 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     // Stages
     stages.draw(work);
     
-    background->renderForeground(0,0,work);
+    background->renderForeground(0, 0, work);
     
     // Fader
     fader.draw(work);
@@ -3298,6 +3424,22 @@ void CharacterSelect::parseSelect(){
             Global::debug(0, context.str()) << "Warning: Unhandled Section in '" + file.path() + "': " + head << std::endl;
         }
     }
+}
+
+void CharacterSelect::setPlayer1ActiveCursor(PaintownUtil::ReferenceCount<Animation> cursor){
+    player1ActiveCursor = cursor;
+}
+
+void CharacterSelect::setPlayer1DoneCursor(PaintownUtil::ReferenceCount<Animation> cursor){
+    player1DoneCursor = cursor;
+}
+
+void CharacterSelect::setPlayer2ActiveCursor(PaintownUtil::ReferenceCount<Animation> cursor){
+    player2ActiveCursor = cursor;
+}
+
+void CharacterSelect::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Animation> cursor){
+    player2DoneCursor = cursor;
 }
 
 class SelectLogic: public PaintownUtil::Logic {

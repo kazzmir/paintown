@@ -35,6 +35,7 @@ Frame
 class Frame{
     public:
 	Frame(bool defaultMask);
+        Frame(const PaintownUtil::ReferenceCount<Mugen::Sprite> & sprite, bool mask);
 	Frame(const Frame &copy);
 	virtual ~Frame();
 	
@@ -100,7 +101,9 @@ class Frame{
 class Animation{
     public:
 	Animation();
-	Animation( const Animation &copy );
+	Animation(const Animation &copy);
+        /* Make an animation out of a single sprite */
+        Animation(const PaintownUtil::ReferenceCount<Sprite> & sprite, bool mask);
 	virtual ~Animation();
 	
 	// Get next Frame
@@ -128,9 +131,11 @@ class Animation{
 	
 	// Update logic | go through frames
 	void logic();
+
         /* Normal logic won't occur for characters that are in a hit state
          * but we need to make sure the animation "keeps going" so that
-         * an AnimElem doesn't get stuck.
+         * an AnimElem doesn't get stuck. Basically if logic() isn't going
+         * to be called during some engine tick then call this method instead.
          */
         void virtualTick();
 	

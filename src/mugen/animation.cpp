@@ -85,6 +85,15 @@ time(0){
     effects.mask = mask;
 }
 
+Frame::Frame(const PaintownUtil::ReferenceCount<Mugen::Sprite> & sprite, bool mask):
+loopstart(false),
+sprite(sprite),
+xoffset(0),
+yoffset(0),
+time(0){
+    effects.mask = mask;
+}
+
 Frame::Frame(const Frame &copy){
     this->loopstart = copy.loopstart;
     this->sprite = copy.sprite;
@@ -143,6 +152,20 @@ showOffense(false),
 ticks(0),
 virtual_ticks(0){
 }
+        
+Animation::Animation(const PaintownUtil::ReferenceCount<Sprite> & sprite, bool mask):
+loopPosition(0),
+position(0),
+playOnce(false),
+looped(false),
+started(false),
+type(Mugen::Unknown),
+showDefense(false),
+showOffense(false),
+ticks(0),
+virtual_ticks(0){
+    frames.push_back(new Frame(sprite, mask));
+}
 
 Animation::Animation(const Animation &copy):
 playOnce(copy.playOnce),
@@ -169,7 +192,7 @@ Animation::~Animation(){
     }
 }
 
-void Animation::addFrame( Frame *frame ){
+void Animation::addFrame(Frame *frame){
     if (frame->loopstart){
 	loopPosition = frames.size();
     }
