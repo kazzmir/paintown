@@ -3191,6 +3191,20 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
         // Increment cell
         nextCell++;
         return true;
+    } else {
+        /* Otherwise find a cell set as 'randomselect' and use that instead.
+         * Don't use blank cells because those are used to create open spaces
+         * in the select screen where extra images can go.
+         */
+        for (std::vector<PaintownUtil::ReferenceCount<Cell> >::iterator it = cells.begin(); it != cells.end(); it++){
+            PaintownUtil::ReferenceCount<Cell> cell = *it;
+            if (cell->getRandom()){
+                cell->setRandom(false);
+                cell->setEmpty(false);
+                cell->setCharacter(character);
+                return true;
+            }
+        }
     }
     return false;
 }
