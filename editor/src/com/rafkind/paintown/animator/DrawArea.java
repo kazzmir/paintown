@@ -27,7 +27,6 @@ public final class DrawArea extends JComponent {
     private DrawProperties drawProperties;
 
     private Animation currentAnimation;
-    private Animation overlayAnimation;
 
     private static class OverlayImage{
         public OverlayImage(){
@@ -124,9 +123,47 @@ public final class DrawArea extends JComponent {
 
     private OverlayImage overlayImage = new OverlayImage();
 
+    private static class OverlayAnimation{
+        public OverlayAnimation(){
+        }
+
+        public void setAnimation(Animation what){
+            this.animation = what;
+        }
+
+        public void setAlpha(double level){
+            this.alpha = level;
+            alpha = alpha;
+            if (alpha < 0){
+                alpha = 0;
+            }
+            if (alpha > 1){
+                alpha = 1;
+            }
+        }
+
+        public double getAlpha(){
+            return alpha;
+        }
+
+        public void draw(Graphics graphics, int x, int y){
+            if (animation != null){
+                Graphics2D translucent = (Graphics2D) graphics.create();
+                AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)this.alpha);
+                translucent.setComposite(alpha);
+                animation.draw(translucent, x, y);
+                translucent.dispose();
+            }
+        }
+
+        private Animation animation;
+        private double alpha = 1;
+    }
+
+    private OverlayAnimation overlayAnimation = new OverlayAnimation();
+
     /* true for behind, false for in front */
     private boolean overlayBehind = true;
-    private double overlayAlphaLevel = 1;
     private boolean resizedOnce = false;
 
     private java.util.List<String> helpText = new ArrayList<String>();
@@ -462,21 +499,15 @@ public final class DrawArea extends JComponent {
      * anything in between will be partially transparent
      */
     public void setOverlayAlpha(double alpha){
-        overlayAlphaLevel = alpha;
-        if (overlayAlphaLevel < 0){
-            overlayAlphaLevel = 0;
-        }
-        if (overlayAlphaLevel > 1){
-            overlayAlphaLevel = 1;
-        }
+        overlayAnimation.setAlpha(alpha);
     }
 
     public double getOverlayAlpha(){
-        return overlayAlphaLevel;
+        return overlayAnimation.getAlpha();
     }
 
     public void setOverlay(Animation animation){
-        this.overlayAnimation = animation;
+        this.overlayAnimation.setAnimation(animation);
     }
     
     public Color backgroundColor(){
@@ -503,11 +534,7 @@ public final class DrawArea extends JComponent {
     }
 
     private void drawOverlay(Graphics2D g, int x, int y){
-        Graphics2D translucent = (Graphics2D) g.create();
-        AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)overlayAlphaLevel);
-        translucent.setComposite(alpha);
-        overlayAnimation.draw(translucent, x, y);
-        translucent.dispose();
+        overlayAnimation.draw(g, x, y);
     }
 
     public void addHelpText(String... lines){
@@ -545,7 +572,7 @@ public final class DrawArea extends JComponent {
             overlayImage.draw(g2d, x, y);
         }
 
-        if (overlayBehind && overlayAnimation != null){
+        if (overlayBehind){
             drawOverlay(g2d, x, y);
         }
 
@@ -553,7 +580,7 @@ public final class DrawArea extends JComponent {
             currentAnimation.draw(g, x, y);
         }
 
-        if (! overlayBehind && overlayAnimation != null){
+        if (! overlayBehind){
             drawOverlay(g2d, x, y);
         }
         
