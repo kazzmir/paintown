@@ -112,6 +112,23 @@ object Tools{
       }
     })
 
+    val flipx = context.find("overlay:flip-x").asInstanceOf[JCheckBox]
+    val flipy = context.find("overlay:flip-y").asInstanceOf[JCheckBox]
+
+    flipx.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        area.setOverlayFlipX(flipx.isSelected());
+        area.repaint();
+      }
+    })
+
+    flipy.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        area.setOverlayFlipY(flipy.isSelected());
+        area.repaint();
+      }
+    })
+
     val offsetx = context.find("overlay:x").asInstanceOf[JSpinner]
     val offsety = context.find("overlay:y").asInstanceOf[JSpinner]
 

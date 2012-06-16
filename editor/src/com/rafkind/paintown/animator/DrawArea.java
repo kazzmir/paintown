@@ -64,6 +64,22 @@ public final class DrawArea extends JComponent {
         public int getOffsetY(){
             return offsetY;
         }
+
+        public void setFlipX(boolean what){
+            flipX = what;
+        }
+
+        public boolean getFlipX(){
+            return flipX;
+        }
+
+        public void setFlipY(boolean what){
+            flipY = what;
+        }
+
+        public boolean getFlipY(){
+            return flipY;
+        }
         
         public double getAlpha(){
             return alpha;
@@ -81,7 +97,19 @@ public final class DrawArea extends JComponent {
 
                 double fx = x - image.getWidth(null) / 2 + offsetX;
                 double fy = y - image.getHeight(null) + offsetY;
-                translucent.drawImage(image, (int) fx, (int) fy, null);
+                int width = image.getWidth(null);
+                int height = image.getHeight(null);
+                if (flipX && flipY){
+                    translucent.drawImage(image, (int) fx, (int) fy, (int) fx + width, (int) fy + height, width, height, 0, 0, null);
+                } else if (flipX){
+                    translucent.drawImage(image, (int) fx, (int) fy, (int) fx + width, (int) fy + height, width, 0, 0, height, null);
+                } else if (flipY){
+                    translucent.drawImage(image, (int) fx, (int) fy, (int) fx + width, (int) fy + height, 0, height, width, 0, null);  
+                } else {
+                    translucent.drawImage(image, (int) fx, (int) fy, null);
+                }
+
+                translucent.dispose();
             }
         }
 
@@ -89,6 +117,8 @@ public final class DrawArea extends JComponent {
         public boolean front = true;
         int offsetX;
         int offsetY;
+        boolean flipX = false;
+        boolean flipY = false;
         double alpha = 1;
     }
 
@@ -304,6 +334,14 @@ public final class DrawArea extends JComponent {
     public void setOverlayImage(MaskedImage image){
         overlayImage.image = image;
     }
+        
+    public void setOverlayFlipX(boolean what){
+        overlayImage.setFlipX(what);
+    }
+    
+    public void setOverlayFlipY(boolean what){
+        overlayImage.setFlipY(what);
+    }
     
     public void setOverlayImageFront(){
         overlayImage.setFront();
@@ -469,6 +507,7 @@ public final class DrawArea extends JComponent {
         AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)overlayAlphaLevel);
         translucent.setComposite(alpha);
         overlayAnimation.draw(translucent, x, y);
+        translucent.dispose();
     }
 
     public void addHelpText(String... lines){

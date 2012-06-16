@@ -37,15 +37,24 @@
             </buttongroup>
 
             <hbox>
-                <label text="X offset" />
-                <spinner id="overlay:x" />
-                <glue />
-            </hbox>
+                <vbox>
+                    <hbox>
+                        <label text="X offset" />
+                        <spinner id="overlay:x" />
+                        <glue />
+                    </hbox>
 
-            <hbox>
-                <label text="Y offset" />
-                <spinner id="overlay:y" />
-                <glue />
+                    <hbox>
+                        <label text="Y offset" />
+                        <spinner id="overlay:y" />
+                        <glue />
+                    </hbox>
+                </vbox>
+
+                <vbox>
+                    <checkbox id="overlay:flip-x" text="Flip horizontal" />
+                    <checkbox id="overlay:flip-y" text="Flip vertical" />
+                </vbox>
             </hbox>
 
             <label id="overlay:alpha-text" text="Translucency" />
