@@ -27,7 +27,7 @@ public class Animation implements Runnable {
 	private boolean running;
 	private List drawables;
 	private List notifiers;
-	private Vector events;
+	private Vector<AnimationEvent> events;
 	private String sequence;
 	private BufferedImage image;
 	private BoundingBox attackArea;
@@ -57,7 +57,7 @@ public class Animation implements Runnable {
 
 	public Animation(){
 		drawables = new ArrayList();
-		events = new Vector();
+		events = new Vector<AnimationEvent>();
 		/* give the animation something so it rests a little bit */
 		events.add( new NopEvent() );
 		notifiers = new ArrayList();
@@ -72,6 +72,26 @@ public class Animation implements Runnable {
 		type = "none";
 		name = "New Animation";
 	}
+
+    public Animation(final Animation copy){
+        this.name = copy.name;
+        this.baseDirectory = copy.baseDirectory;
+
+        animationSpeed = copy.animationSpeed;
+        sequence = copy.sequence;
+        drawables = new ArrayList();
+        events = new Vector();
+        /* give the animation something so it rests a little bit */
+        notifiers = new ArrayList();
+        listeners = new ArrayList();
+        keys = new Vector();
+        keys.addAll(copy.keys);
+        attackArea = new BoundingBox(0, 0, 0, 0);
+        defenseArea = new BoundingBox(0, 0, 0, 0);
+        for (AnimationEvent event: copy.events){
+            events.add(event.copy());
+        }
+    }
 
 	public Animation(String name){
 		this();
@@ -315,9 +335,9 @@ public class Animation implements Runnable {
 
 	/* swap position of e1 and e2 within event structure */
 	public void swapEvents(int e1, int e2){
-		synchronized( events ){
-			Object a1 = events.get(e1);
-			Object a2 = events.get(e2);
+		synchronized(events){
+			AnimationEvent a1 = events.get(e1);
+			AnimationEvent a2 = events.get(e2);
 			events.set(e1, a2);
 			events.set(e2, a1);
 		}

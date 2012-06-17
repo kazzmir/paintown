@@ -112,6 +112,21 @@ public final class Player{
             }
         });
 
+        final JButton copyAnimation = (JButton) playerEditor.find("copy-animation");
+        copyAnimation.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                CharacterAnimation current = (CharacterAnimation) animations.getSelectedComponent();
+                if (current != null){
+                    Animation animation = new Animation(current.getAnimation());
+                    character.addAnimation(animation);
+                    new Thread(animation).start();
+                    JComponent tab = new CharacterAnimation(character, animation, changeName, detacher);
+                    animations.add(animation.getName(), tab);
+                    animations.setSelectedComponent(tab);
+                }
+            }
+        });
+
         final JButton removeAnimButton = (JButton) playerEditor.find("remove-animation");
         removeAnimButton.addActionListener( new AbstractAction(){
             public void actionPerformed(ActionEvent event){
@@ -120,9 +135,11 @@ public final class Player{
                      * really mean to remove the animation
                      */
                     CharacterAnimation tab = (CharacterAnimation) animations.getSelectedComponent();
-                    tab.getAnimation().kill();
-                    character.removeAnimation(tab.getAnimation());
-                    animations.remove(tab);
+                    if (tab != null){
+                        tab.getAnimation().kill();
+                        character.removeAnimation(tab.getAnimation());
+                        animations.remove(tab);
+                    }
                 }
             }
         });
@@ -451,7 +468,6 @@ public final class Player{
                 return this;
             }
         });
-
 
         final Lambda1 nextAnimation = new Lambda1(){
             public Object invoke(Object self){

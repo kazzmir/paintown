@@ -47,6 +47,7 @@
                 <hbox>
                     <button text="Add animation" id="add-animation" />
                     <button text="Remove animation" id="remove-animation" />
+                    <button text="Copy animation" id="copy-animation" />
                     <glue />
                 </hbox>
 
