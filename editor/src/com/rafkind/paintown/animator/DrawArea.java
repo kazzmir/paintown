@@ -28,6 +28,20 @@ public final class DrawArea extends JComponent {
 
     private Animation currentAnimation;
 
+    private static void drawImage(Graphics graphics, Image image, int x, int y, boolean flipX, boolean flipY){
+        int width = image.getWidth(null);
+        int height = image.getHeight(null);
+        if (flipX && flipY){
+            graphics.drawImage(image, x, y, x + width, y + height, width, height, 0, 0, null);
+        } else if (flipX){
+            graphics.drawImage(image, x, y, x + width, y + height, width, 0, 0, height, null);
+        } else if (flipY){
+            graphics.drawImage(image, x, y, x + width, y + height, 0, height, width, 0, null);  
+        } else {
+            graphics.drawImage(image, x, y, null);
+        }
+    }
+
     private static class OverlayImage{
         public OverlayImage(){
         }
@@ -96,6 +110,8 @@ public final class DrawArea extends JComponent {
 
                 double fx = x - image.getWidth(null) / 2 + offsetX;
                 double fy = y - image.getHeight(null) + offsetY;
+                drawImage(translucent, image, (int) fx, (int) fy, flipX, flipY);
+                /*
                 int width = image.getWidth(null);
                 int height = image.getHeight(null);
                 if (flipX && flipY){
@@ -107,6 +123,7 @@ public final class DrawArea extends JComponent {
                 } else {
                     translucent.drawImage(image, (int) fx, (int) fy, null);
                 }
+                */
 
                 translucent.dispose();
             }
@@ -146,18 +163,60 @@ public final class DrawArea extends JComponent {
             return alpha;
         }
 
-        public void draw(Graphics graphics, int x, int y){
+        public void setFlipX(boolean what){
+            flipX = what;
+        }
+        
+        public void setFlipY(boolean what){
+            flipY = what;
+        }
+        
+        public void setOffsetX(int x){
+            this.offsetX = x;
+        }
+
+        public int getOffsetX(){
+            return this.offsetX;
+        }
+        
+        public void setOffsetY(int x){
+            this.offsetY = x;
+        }
+        
+        public int getOffsetY(){
+            return this.offsetY;
+        }
+
+        public void draw(Graphics graphics, int x, int y, double scale){
             if (animation != null){
                 Graphics2D translucent = (Graphics2D) graphics.create();
                 AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)this.alpha);
                 translucent.setComposite(alpha);
-                animation.draw(translucent, x, y);
+                AffineTransform flipper = new AffineTransform();
+                double xscale = 1;
+                double yscale = 1;
+                if (flipX){
+                    xscale = -1;
+                }
+                if (flipY){
+                    yscale = -1;
+                }
+
+                flipper.scale(xscale * scale, yscale * scale);
+                flipper.translate(xscale * (x + offsetX), yscale * (y + offsetY));
+
+                translucent.setTransform(flipper);
+                animation.draw(translucent, 0, 0);
                 translucent.dispose();
             }
         }
 
         private Animation animation;
         private double alpha = 1;
+        private boolean flipX = false;
+        private boolean flipY = false;
+        private int offsetX = 0;
+        private int offsetY = 0;
     }
 
     private OverlayAnimation overlayAnimation = new OverlayAnimation();
@@ -372,11 +431,11 @@ public final class DrawArea extends JComponent {
         overlayImage.image = image;
     }
         
-    public void setOverlayFlipX(boolean what){
+    public void setOverlayImageFlipX(boolean what){
         overlayImage.setFlipX(what);
     }
     
-    public void setOverlayFlipY(boolean what){
+    public void setOverlayImageFlipY(boolean what){
         overlayImage.setFlipY(what);
     }
     
@@ -502,6 +561,30 @@ public final class DrawArea extends JComponent {
         overlayAnimation.setAlpha(alpha);
     }
 
+    public void setOverlayAnimationOffsetX(int x){
+        overlayAnimation.setOffsetX(x);
+    }
+
+    public int getOverlayAnimationOffsetX(){
+        return overlayAnimation.getOffsetX();
+    }
+    
+    public void setOverlayAnimationOffsetY(int y){
+        overlayAnimation.setOffsetY(y);
+    }
+
+    public int getOverlayAnimationOffsetY(){
+        return overlayAnimation.getOffsetY();
+    }
+
+    public void setOverlayAnimationFlipX(boolean what){
+        overlayAnimation.setFlipX(what);
+    }
+    
+    public void setOverlayAnimationFlipY(boolean what){
+        overlayAnimation.setFlipY(what);
+    }
+
     public double getOverlayAlpha(){
         return overlayAnimation.getAlpha();
     }
@@ -534,7 +617,7 @@ public final class DrawArea extends JComponent {
     }
 
     private void drawOverlay(Graphics2D g, int x, int y){
-        overlayAnimation.draw(g, x, y);
+        overlayAnimation.draw(g, x, y, getScale());
     }
 
     public void addHelpText(String... lines){
@@ -577,7 +660,14 @@ public final class DrawArea extends JComponent {
         }
 
         if (currentAnimation != null){
-            currentAnimation.draw(g, x, y);
+            Graphics2D blah = (Graphics2D) g2d.create();
+            AffineTransform transform = new AffineTransform();
+            transform.scale(getScale(), getScale());
+            transform.translate(x, y);
+            blah.setTransform(transform);
+            currentAnimation.draw(blah, 0, 0);
+            // currentAnimation.draw(g, x, y);
+            blah.dispose();
         }
 
         if (! overlayBehind){

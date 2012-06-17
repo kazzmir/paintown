@@ -378,6 +378,42 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
+        final JSpinner offsetx = (JSpinner) context.find("x-offset");
+        final JSpinner offsety = (JSpinner) context.find("y-offset");
+
+        offsetx.setValue(new Integer(area.getOverlayAnimationOffsetX()));
+        offsetx.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent event){
+                area.setOverlayAnimationOffsetX(((Integer) offsetx.getValue()).intValue());
+                area.repaint();
+            }
+        });
+
+        offsety.setValue(new Integer(area.getOverlayAnimationOffsetY()));
+        offsety.addChangeListener(new ChangeListener(){
+            public void stateChanged(ChangeEvent event){
+                area.setOverlayAnimationOffsetY(((Integer) offsety.getValue()).intValue());
+                area.repaint();
+            }
+        });
+
+        final JCheckBox flipx = (JCheckBox) context.find("flip-x");
+        final JCheckBox flipy = (JCheckBox) context.find("flip-y");
+
+        flipx.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                area.setOverlayAnimationFlipX(flipx.isSelected());
+                area.repaint();
+            }
+        });
+
+        flipy.addActionListener(new AbstractAction(){
+            public void actionPerformed(ActionEvent event){
+                area.setOverlayAnimationFlipY(flipy.isSelected());
+                area.repaint();
+            }
+        });
+
         JButton stop = (JButton) context.find("stop");
         stop.addActionListener(new AbstractAction(){
             public void actionPerformed(ActionEvent event){

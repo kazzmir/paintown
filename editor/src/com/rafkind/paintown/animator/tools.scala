@@ -117,14 +117,14 @@ object Tools{
 
     flipx.addActionListener(new AbstractAction(){
       def actionPerformed(event:ActionEvent){
-        area.setOverlayFlipX(flipx.isSelected());
+        area.setOverlayImageFlipX(flipx.isSelected());
         area.repaint();
       }
     })
 
     flipy.addActionListener(new AbstractAction(){
       def actionPerformed(event:ActionEvent){
-        area.setOverlayFlipY(flipy.isSelected());
+        area.setOverlayImageFlipY(flipy.isSelected());
         area.repaint();
       }
     })
@@ -132,7 +132,7 @@ object Tools{
     val offsetx = context.find("overlay:x").asInstanceOf[JSpinner]
     val offsety = context.find("overlay:y").asInstanceOf[JSpinner]
 
-    offsetx.setValue(new Integer(area.getOverlayImageOffsetY()))
+    offsetx.setValue(new Integer(area.getOverlayImageOffsetX()))
     offsetx.addChangeListener(new ChangeListener(){
       def stateChanged(event:ChangeEvent){
         area.setOverlayImageOffsetX(offsetx.getValue().asInstanceOf[Integer].intValue())

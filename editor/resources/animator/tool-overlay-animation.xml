@@ -9,6 +9,27 @@
             <radiobutton id="front" text="Show in front of current animation" />
             <radiobutton id="back" selected="true" text="Show behind current animation" />
         </buttongroup>
+        <hbox>
+            <vbox>
+                <hbox>
+                    <label text="X offset" />
+                    <spinner id="x-offset" />
+                    <glue />
+                </hbox>
+
+                <hbox>
+                    <label text="Y offset" />
+                    <spinner id="y-offset" />
+                    <glue />
+                </hbox>
+            </vbox>
+
+            <vbox>
+                <checkbox id="flip-x" text="Flip horizontal" />
+                <checkbox id="flip-y" text="Flip vertical" />
+            </vbox>
+        </hbox>
+
         <label id="alpha-text" text="Translucency" />
         <slider id="alpha" minimum="1" maximum="100" />
         <hbox>
