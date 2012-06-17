@@ -193,11 +193,42 @@ public abstract class AnimationCanvas extends JPanel {
             }
         });
 
-        setupTools((JComboBox) contextEditor.find("tools"), (JPanel) contextEditor.find("tool-area"), object, area, animation);
+        tabs.addTab("Tools", makeTools(object, area, animation));
+
+        // setupTools((JComboBox) contextEditor.find("tools"), (JPanel) contextEditor.find("tool-area"), object, area, animation);
 
         area.animate(animation);
 
         return (JPanel) animEditor.getRootComponent();
+    }
+
+    private void addTool(Box box, String name, JComponent tool){
+        final JPanel panel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+        constraints.weightx = 1;
+        constraints.weighty = 1;
+        constraints.fill = GridBagConstraints.NONE;
+        constraints.anchor = GridBagConstraints.NORTHWEST;
+        box.add(panel);
+        panel.add(tool, constraints);
+        panel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createTitledBorder(name),
+                        BorderFactory.createEmptyBorder(5,5,5,5)));
+    }
+
+    private JScrollPane makeTools(final AnimatedObject object, final DrawArea area, final Animation animation){
+        final Box box = Box.createVerticalBox(); 
+        final JScrollPane tools = new JScrollPane(box);
+
+        addTool(box, "Background Color", Tools.makeBackgroundTool(object, area));
+        addTool(box, "Grid", Tools.makeGridTool(area));
+        addTool(box, "Overlay Animation", makeOverlayAnimation(object, area));
+        addTool(box, "Overlay Image", Tools.makeOverlayImageTool(AnimationCanvas.this, area));
+        addTool(box, "Speed and Scale", makeSpeedAndScale(animation, area));
+
+        return tools;
     }
 
     private void setupTools(final JComboBox tools, final JPanel toolPane, final AnimatedObject object, final DrawArea area, final Animation animation){

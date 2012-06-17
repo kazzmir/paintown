@@ -45,6 +45,7 @@
                     anchor="GridBagConstraints.NORTHWEST"
                     fill="GridBagConstraints.BOTH"
                     />
+                <!--
                 <vbox>
                     <gridbagconstraints
                         gridx="0"
@@ -60,6 +61,7 @@
                     <combobox id="tools" />
                     <panel id="tool-area" layout="GridBagLayout" />
                 </vbox>
+                -->
                 <hbox>
                     <button id="previous-frame" text="Previous Frame" />
                     <glue size="1" />
