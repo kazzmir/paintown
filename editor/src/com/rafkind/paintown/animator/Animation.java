@@ -75,6 +75,7 @@ public class Animation implements Runnable {
 
     public Animation(final Animation copy){
         this.name = copy.name;
+        this.type = copy.type;
         this.baseDirectory = copy.baseDirectory;
 
         animationSpeed = copy.animationSpeed;
