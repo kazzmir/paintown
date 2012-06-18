@@ -243,6 +243,25 @@ public:
     }
 };
 
+class DebugFileArgument: public Argument {
+public:
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("debug-log");
+        return out;
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        current++;
+        Global::logToFile();
+        return current;
+    }
+    
+    string description() const {
+        return " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3";
+    }
+};
+
 class RateLimitArgument: public Argument {
 public:
     vector<string> keywords() const {
@@ -657,6 +676,7 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument(&music_on)));
     arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument>(new DebugFileArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new VersionArgument()));
@@ -734,6 +754,7 @@ int paintown_main(int argc, char ** argv){
     Configuration::saveConfiguration();
 
     Global::debug(0) << "Bye!" << endl;
+    Global::closeLog();
 
     return 0;
 }
