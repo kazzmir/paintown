@@ -4,8 +4,6 @@
 #include "util/debug.h"
 #include "util/menu/menu_option.h"
 #include "util/menu/menu.h"
-/* FIXME: only needed for OptionLevel */
-#include "util/menu/options.h"
 #include "util/loading.h"
 #include "configuration.h"
 #include "options.h"
@@ -603,14 +601,16 @@ class TeamLoseOnKO : public BaseMenuItem {
 	}
 };
 
-class AutoSearch : public BaseMenuItem {
+class AutoSearch: public BaseMenuItem {
     public:
     AutoSearch(){
         optionName = "Search Chars/Stages";
         setValue();
     }
-    ~AutoSearch(){
+
+    virtual ~AutoSearch(){
     }
+
     void setValue(){
         switch (Data::getInstance().getSearchType()){
             case Data::SelectDef:
@@ -1217,10 +1217,36 @@ public:
                 good.push_back(file);
             }
         }
+
+        vector<Filesystem::AbsolutePath> containers = Storage::instance().getContainerFilesRecursive(data);
+        int count = 0;
+        for (vector<Filesystem::AbsolutePath>::iterator it = containers.begin(); it != containers.end(); it++, count++){
+            try{
+                const Filesystem::AbsolutePath & path = *it;
+                Global::debug(1) << "Check container path " << path.path() << std::endl;
+                /* Generate a path like 'motifs/x0' for each new container */
+                std::ostringstream name;
+                name << "motifs/x" << count;
+                Filesystem::AbsolutePath where(data.join(Filesystem::RelativePath(name.str())));
+                Storage::instance().addOverlay(path, where);
+
+                vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(where, "system.def");
+                for (vector<Filesystem::AbsolutePath>::iterator it2 = more.begin(); it2 != more.end(); it2++){
+                    const Filesystem::AbsolutePath & file = *it2;
+                    Global::debug(1) << "Check system file " << file.path() << std::endl;
+                    if (isMugenMotif(file)){
+                        Global::debug(1) << "Motif: " << file.path() << endl;
+                        good.push_back(file);
+                    }
+                }
+            } catch (const Filesystem::Exception & fail){
+            }
+        }
+
         return good;
     }
     
-    class Item: public ListItem{
+    class Item: public ListItem {
     public:
         class SelectException: public std::exception {
         public:
