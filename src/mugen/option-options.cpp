@@ -1219,21 +1219,23 @@ public:
         }
 
         vector<Filesystem::AbsolutePath> containers = Storage::instance().getContainerFilesRecursive(data);
-        int count = 0;
-        for (vector<Filesystem::AbsolutePath>::iterator it = containers.begin(); it != containers.end(); it++, count++){
+        for (vector<Filesystem::AbsolutePath>::iterator it = containers.begin(); it != containers.end(); it++){
             try{
                 const Filesystem::AbsolutePath & path = *it;
                 Global::debug(1) << "Check container path " << path.path() << std::endl;
-                /* Generate a path like 'motifs/x0' for each new container */
+                /* Generate a path like 'motifs/big.zip/' for each new container.
+                 * We need to use some new top level directory, like 'motifs', because
+                 * data/big.zip already exists as a file but we want to create
+                 * a directory with the same name so we need a new path.
+                 */
                 std::ostringstream name;
-                name << "motifs/x" << count;
+                name << "motifs/" << path.getFilename().path();
                 Filesystem::AbsolutePath where(data.join(Filesystem::RelativePath(name.str())));
                 Storage::instance().addOverlay(path, where);
 
                 vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(where, "system.def");
                 for (vector<Filesystem::AbsolutePath>::iterator it2 = more.begin(); it2 != more.end(); it2++){
                     const Filesystem::AbsolutePath & file = *it2;
-                    Global::debug(1) << "Check system file " << file.path() << std::endl;
                     if (isMugenMotif(file)){
                         Global::debug(1) << "Motif: " << file.path() << endl;
                         good.push_back(file);
