@@ -258,7 +258,7 @@ public:
     }
     
     string description() const {
-        return " # : Enable debug statements. Higher numbers gives more debugging. Default is 0. Negative numbers are allowed. Example: -l 3";
+        return " # : Send debug output to a file.";
     }
 };
 
