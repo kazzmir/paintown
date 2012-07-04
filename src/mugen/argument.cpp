@@ -19,8 +19,9 @@ static void splitString(const string & subject, char split, string & left, strin
     }
 }
 
+/*
 static void setMugenMotif(){
-    /* FIXME: parse the motif properly */
+    / * FIXME: parse the motif properly * /
     std::string motif;
     try {
         *Mugen::Configuration::get("motif") >> motif;
@@ -30,9 +31,9 @@ static void setMugenMotif(){
     if (!motif.empty()){
         Mugen::Data::getInstance().setMotif(Filesystem::AbsolutePath(motif));
     } else {
-        /* FIXME: search for a system.def file */
+        / * FIXME: search for a system.def file * /
         Mugen::Data::getInstance().setMotif(Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def")));
-        /*
+        / *
         TokenReader reader;
         Token * head = reader.readToken(path.path());
         const Token * motif = head->findToken("menu/option/mugen/motif");
@@ -41,9 +42,10 @@ static void setMugenMotif(){
             motif->view() >> path;
             Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(path));
         }
-        */
+        * /
     }
 }
+*/
 
 class MugenArgument: public Argument {
 public:
@@ -61,7 +63,7 @@ public:
     class Run: public ArgumentAction {
     public:
         virtual void act(){
-            setMugenMotif();
+            Util::loadMotif();
             Mugen::run();
         }
     };
@@ -142,7 +144,7 @@ public:
         MugenInstant data;
 
         void act(){
-            setMugenMotif();
+            Util::loadMotif();
             Global::debug(0) << "Mugen training mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
             Mugen::Game::startTraining(data.player1, data.player2, data.stage);
         }
@@ -185,7 +187,7 @@ public:
         MugenInstant data;
 
         void act(){
-            setMugenMotif();
+            Util::loadMotif();
             Global::debug(0) << "Mugen scripted mode player1 '" << data.player1 << "' with script '" << data.player1Script << "' player2 '" << data.player2 << "' with script '" << data.player2Script << "' stage '" << data.stage << "'" << endl;
             Mugen::Game::startScript(data.player1, data.player1Script, data.player2, data.player2Script, data.stage);
         }
@@ -238,7 +240,7 @@ public:
         MugenInstant data;
 
         void act(){
-            setMugenMotif();
+            Util::loadMotif();
             Global::debug(0) << "Mugen watch mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
             Mugen::Game::startWatch(data.player1, data.player2, data.stage);
         }
@@ -282,7 +284,7 @@ public:
         MugenInstant data;
 
         void act(){
-            setMugenMotif();
+            Util::loadMotif();
             Global::debug(0) << "Mugen arcade mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' stage '" << data.stage << "'" << endl;
             Mugen::Game::startArcade(data.player1, data.player2, data.stage);
         }

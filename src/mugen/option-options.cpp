@@ -1229,6 +1229,7 @@ public:
                  * a directory with the same name so we need a new path.
                  */
                 std::ostringstream name;
+                /* FIXME: check if motifs/ exists and choose a different name if so */
                 name << "motifs/" << path.getFilename().path();
                 Filesystem::AbsolutePath where(data.join(Filesystem::RelativePath(name.str())));
                 Storage::instance().addOverlay(path, where);
@@ -2159,22 +2160,6 @@ public:
             } 
         }
     }
-    
-    virtual void loadMotif(){
-        /* FIXME: read motif properly */
-        std::string motif;
-        try {
-            *Mugen::Configuration::get("motif") >> motif;
-        } catch (const std::ios_base::failure & ex){
-            motif.clear();
-        }
-        if (!motif.empty()){
-            Mugen::Data::getInstance().setMotif(Filesystem::AbsolutePath(motif));
-        } else {
-            /* FIXME: search for a system.def file */
-            Mugen::Data::getInstance().setMotif(Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def")));
-        }
-    }
 
     // Do logic before run part
     virtual void logic(){
@@ -2184,7 +2169,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const ::Menu::Context & context){
         try{
-            loadMotif();
+            Util::loadMotif();
             Mugen::run();
         } catch (const LoadException & le){
             ostringstream out;

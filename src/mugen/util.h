@@ -122,6 +122,9 @@ namespace Util{
      * higher values speed it up.
      */
     double gameTicks(double ticks, double speed = 1);
+
+    /* Load a motif from the configuration file or load the default system.def */
+    void loadMotif();
 }
 // End namespace Util
 

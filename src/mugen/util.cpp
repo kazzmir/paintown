@@ -1593,6 +1593,22 @@ PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const
     }
     return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getRootConfiguration()->getNamespace("mugen")->getProperty(property, "null")));
 }
+ 
+void Mugen::Util::loadMotif(){
+    /* FIXME: read motif properly */
+    std::string motif;
+    try {
+        *Mugen::Configuration::get("motif") >> motif;
+    } catch (const std::ios_base::failure & ex){
+        motif.clear();
+    }
+    if (!motif.empty()){
+        Mugen::Data::getInstance().setMotif(Filesystem::AbsolutePath(motif));
+    } else {
+        /* FIXME: search for a system.def file */
+        Mugen::Data::getInstance().setMotif(Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def")));
+    }
+}
 
 Mugen::FontSystem::FontSystem(){
 }
