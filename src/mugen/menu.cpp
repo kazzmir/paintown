@@ -70,20 +70,25 @@ static const int DEFAULT_SCREEN_Y_AXIS = 0;
 static const int CURSOR_ALPHA_MOVE = 3;
 
 static Filesystem::AbsolutePath findSound(const Filesystem::RelativePath & music){
-    try{
-        /* First search by prepending sound to the path */
-        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("sound")).join(music));
-    } catch (const Filesystem::NotFound & fail){
-        /* Then search for the plain file */
-        return Storage::instance().find(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(music));
+    /* First search by prepending sound to the path */
+    Filesystem::AbsolutePath path = Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("sound")).join(music);
+    if (Storage::instance().exists(path)){
+        return path;
+    } else {
+        path = Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(music);
+        if (Storage::instance().exists(path)){
+            return path;
+        } else {
+            throw MugenException("Cannot find music", __FILE__, __LINE__);
+        }
     }
 }
 
 static void changeMusic(const Filesystem::RelativePath & music){
     try {
-    Music::loadSong(findSound(Filesystem::RelativePath(music)).path());
-    Music::pause();
-    Music::play();
+        Music::loadSong(findSound(Filesystem::RelativePath(music)).path());
+        Music::pause();
+        Music::play();
     } catch (const MugenException & ex){
     } catch (const Filesystem::NotFound & fail){
         Global::debug(0) << "Could not load music: " << fail.getTrace() << endl;
@@ -145,7 +150,7 @@ public:
     Mugen::GameType type;
 };
 
-Menu::Menu(const Filesystem::RelativePath & path, Searcher & searcher):
+Menu::Menu(const Filesystem::AbsolutePath & path, Searcher & searcher):
 list(PaintownUtil::ReferenceCount<ScrollAction>(new ScrollAction())),
 fadeEnabled(true),
 state(Intros),
@@ -156,7 +161,7 @@ demoCycles(0),
 nextIntroCycle(0),
 searcher(searcher),
 done(false){
-    Filesystem::AbsolutePath baseDir = Storage::instance().find(Mugen::Data::getInstance().getDirectory().join(path.getDirectory()));
+    Filesystem::AbsolutePath baseDir = path.getDirectory();
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, path.getFilename().path());
     
     Global::debug(1) << baseDir.path() << endl;
@@ -631,7 +636,7 @@ void Menu::act(){
         case DemoMode:{
             if (fader.getState() == Gui::FadeTool::EndFade){
                 try{
-                    Game demo(Mugen::Player1, Mugen::Demo, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
+                    Game demo(Mugen::Player1, Mugen::Demo, Data::getInstance().getMotif());
                     demo.run(searcher);
                 } catch (const Exception::Return & re){
                     /* */
@@ -949,7 +954,7 @@ void run(){
                 runNewMenu(searcher);
             } catch (const Mugen::StartGame & game){
                 try{
-                    Game versus(game.player, game.game, Data::getInstance().getFileFromMotif(Data::getInstance().getMotif()));
+                    Game versus(game.player, game.game, Data::getInstance().getMotif());
                     versus.run(searcher);
                 } catch (const Exception::Return & re){
                     /* */

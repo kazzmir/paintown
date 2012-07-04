@@ -17,7 +17,7 @@ class Data{
         Filesystem::RelativePath getDirectory();
         Filesystem::RelativePath getDataDirectory();
         /* gets the directory that stores the system.def motif file */
-        Filesystem::RelativePath getMotifDirectory();
+        Filesystem::AbsolutePath getMotifDirectory();
         Filesystem::RelativePath getCharDirectory();
         Filesystem::RelativePath getFontDirectory();
         Filesystem::RelativePath getStageDirectory();
@@ -28,10 +28,10 @@ class Data{
 	//! Gets a file from the current motif, if it doesn't exist then check the default motif
         Filesystem::AbsolutePath getFileFromMotif(const Filesystem::RelativePath & file);
         
-        void setMotif(const Filesystem::RelativePath & motif);
+        void setMotif(const Filesystem::AbsolutePath & motif);
 
         /* path to the system.def file */
-        const Filesystem::RelativePath & getMotif();
+        const Filesystem::AbsolutePath & getMotif();
 
         void setDifficulty(int difficulty);
 
@@ -98,7 +98,7 @@ class Data{
 	static Data * data;
 
         //! Current Set Motif
-        Filesystem::RelativePath motif;
+        Filesystem::AbsolutePath motif;
         
         //! Current set Difficulty (default 4)
         int difficulty;

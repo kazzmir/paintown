@@ -117,7 +117,8 @@ search(SelectDefAndAuto){
                     } else if (simple == "motif"){
                         string out;
                         simple.view() >> out;
-                        self.motif = Filesystem::RelativePath(out);
+                        /* FIXME: read the motif properly */
+                        self.motif = Filesystem::AbsolutePath(out);
                     } 
                 }  
             };
@@ -126,7 +127,7 @@ search(SelectDefAndAuto){
             section->walk(walk);
         }
     }
-    // Now Load from the configuration file if not set then itialize them to the defaults in mugen.cfg
+    // Now Load from the configuration file if not set then initialize them to the defaults in mugen.cfg
     try {
         *Mugen::Configuration::get("difficulty") >> difficulty;
     } catch (const ios_base::failure & ex){
@@ -160,7 +161,8 @@ search(SelectDefAndAuto){
     try {
         string out;
         *Mugen::Configuration::get("motif") >> out;
-        motif = Filesystem::RelativePath(out);
+        /* FIXME: read motif properly */
+        motif = Filesystem::AbsolutePath(out);
     } catch (const ios_base::failure & ex){
         Mugen::Configuration::set("motif", motif.path());
     }
@@ -201,9 +203,9 @@ Filesystem::RelativePath Data::getDataDirectory(){
     return getDirectory().join(Filesystem::RelativePath("data/"));
 }
 
-Filesystem::RelativePath Data::getMotifDirectory(){
+Filesystem::AbsolutePath Data::getMotifDirectory(){
     // return Filesystem::find(getDirectory() + Util::getFileDir(getMotif()));
-    return getDirectory().join(getMotif().getDirectory());
+    return getMotif().getDirectory();
 }
 
 Filesystem::RelativePath Data::getCharDirectory(){
@@ -223,18 +225,18 @@ Filesystem::RelativePath Data::getStageDirectory(){
 
 Filesystem::AbsolutePath Data::getFileFromMotif(const Filesystem::RelativePath & file){
     try{
-        return Storage::instance().find(getMotifDirectory().join(file.getFilename()));
+        return getMotifDirectory().join(file.getFilename());
     } catch (const Filesystem::NotFound & nf){
 	return Storage::instance().find(getDataDirectory().join(file.getFilename()));
     }
 }
 
-void Data::setMotif(const Filesystem::RelativePath & motif){
+void Data::setMotif(const Filesystem::AbsolutePath & motif){
     this->motif = motif;
     Mugen::Configuration::set("motif", motif.path());
 }
 
-const Filesystem::RelativePath & Data::getMotif(){
+const Filesystem::AbsolutePath & Data::getMotif(){
     return motif;
 }
 

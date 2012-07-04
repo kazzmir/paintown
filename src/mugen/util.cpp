@@ -82,7 +82,7 @@ std:string getHeadDir( const std::string & dir ){
 
 static const Filesystem::AbsolutePath findCharacterDefMotif(const string & name){
     /* maybe pass in the motif directory instead of just magically getting it here? */
-    Filesystem::AbsolutePath chars = Storage::instance().findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory().join(Filesystem::RelativePath("chars")));
+    Filesystem::AbsolutePath chars = Storage::instance().lookupInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory(), Filesystem::RelativePath("chars"));
     Filesystem::AbsolutePath base = Storage::instance().lookupInsensitive(chars, Filesystem::RelativePath(name));
     return Storage::instance().lookupInsensitive(base, Filesystem::RelativePath(name + ".def"));
 }
@@ -124,9 +124,9 @@ const Filesystem::AbsolutePath Mugen::Util::findStageDef(const Filesystem::Relat
 /* search in <motif> and then <motif>/.. */
 static const Filesystem::AbsolutePath findFileMotif(const Filesystem::RelativePath & path){
     try{
-        return Storage::instance().lookupInsensitive(Storage::instance().findInsensitive(Mugen::Data::getInstance().getMotifDirectory()), path);
+        return Storage::instance().lookupInsensitive(Mugen::Data::getInstance().getMotifDirectory(), path);
     } catch (const Filesystem::NotFound & fail){
-        Filesystem::AbsolutePath top = Storage::instance().findInsensitive(Mugen::Data::getInstance().getMotifDirectory().getDirectory());
+        Filesystem::AbsolutePath top = Mugen::Data::getInstance().getMotifDirectory().getDirectory();
         return Storage::instance().lookupInsensitive(top, path);
     }
 }

@@ -715,7 +715,7 @@ recalculateHeight(160){
     fader.setFadeInTime(10);
     fader.setFadeOutTime(10);
     list.addItems(items);
-    Filesystem::AbsolutePath systemFile = Data::getInstance().getFileFromMotif(Data::getInstance().getMotif());
+    Filesystem::AbsolutePath systemFile = Data::getInstance().getMotif();
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath baseDir = systemFile.getDirectory();
 
@@ -1348,7 +1348,7 @@ public:
         }
         
         while (true){
-            Filesystem::RelativePath currentMotif = Mugen::Data::getInstance().getMotif();
+            Filesystem::AbsolutePath currentMotif = Mugen::Data::getInstance().getMotif();
             try {
                 //OptionMenu menu(state.list);
                 OptionMenu menu(*parent);
@@ -1369,10 +1369,10 @@ public:
                 } catch (const Item::SelectException & ex){
                     // Got our index otherwise don't change
                     Filesystem::AbsolutePath path = state.get(menu.getSelected());
-                    Filesystem::RelativePath motif = Storage::instance().cleanse(path).removeFirstDirectory();
+                    // Filesystem::RelativePath motif = Storage::instance().cleanse(path).removeFirstDirectory();
                     
-                    Global::debug(1) << "Set mugen motif to " << motif.path() << endl;
-                    Mugen::Data::getInstance().setMotif(motif);
+                    Global::debug(1) << "Set mugen motif to " << path.path() << endl;
+                    Mugen::Data::getInstance().setMotif(path);
                     
                     // Test if the def is valid otherwise reset the motif
                     testMotif(path, state.error(menu.getSelected()));
@@ -1401,7 +1401,7 @@ public:
     void testMotif(Filesystem::AbsolutePath & path, const std::string & errorInfo){
         try {
             Searcher searcher;
-            Mugen::Menu menu(Storage::instance().cleanse(path).removeFirstDirectory(), searcher);
+            Mugen::Menu menu(path, searcher);
         } catch (const Mugen::Def::ParseException & e){
             runError(e.getReason(), errorInfo);
             throw MotifException();
@@ -2161,6 +2161,7 @@ public:
     }
     
     virtual void loadMotif(){
+        /* FIXME: read motif properly */
         std::string motif;
         try {
             *Mugen::Configuration::get("motif") >> motif;
@@ -2168,10 +2169,10 @@ public:
             motif.clear();
         }
         if (!motif.empty()){
-            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
+            Mugen::Data::getInstance().setMotif(Filesystem::AbsolutePath(motif));
         } else {
             /* FIXME: search for a system.def file */
-            Mugen::Data::getInstance().setMotif(Filesystem::RelativePath("data/system.def"));
+            Mugen::Data::getInstance().setMotif(Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def")));
         }
     }
 

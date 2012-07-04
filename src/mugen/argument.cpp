@@ -20,6 +20,7 @@ static void splitString(const string & subject, char split, string & left, strin
 }
 
 static void setMugenMotif(){
+    /* FIXME: parse the motif properly */
     std::string motif;
     try {
         *Mugen::Configuration::get("motif") >> motif;
@@ -27,10 +28,10 @@ static void setMugenMotif(){
         motif.clear();
     }
     if (!motif.empty()){
-        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath(motif));
+        Mugen::Data::getInstance().setMotif(Filesystem::AbsolutePath(motif));
     } else {
         /* FIXME: search for a system.def file */
-        Mugen::Data::getInstance().setMotif(Filesystem::RelativePath("data/system.def"));
+        Mugen::Data::getInstance().setMotif(Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def")));
         /*
         TokenReader reader;
         Token * head = reader.readToken(path.path());

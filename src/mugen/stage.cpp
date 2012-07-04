@@ -2106,7 +2106,7 @@ void Mugen::Stage::setGameRate(double rate){
 
 //! Do continue screen return true to continue playing, false to end
 bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Keys> & input){
-    Filesystem::AbsolutePath systemFile = Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+    Filesystem::AbsolutePath systemFile = Mugen::Data::getInstance().getMotif();
     
     // Check if we have the continue screen enabled
     std::string enabled = Mugen::Util::probeDef(systemFile, "Continue Screen", "enabled");

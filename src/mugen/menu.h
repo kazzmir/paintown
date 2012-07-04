@@ -42,7 +42,7 @@ namespace Mugen{
     /*! Mugen Menu */
     class Menu{
     public:
-        Menu(const Filesystem::RelativePath &, Searcher &);
+        Menu(const Filesystem::AbsolutePath &, Searcher &);
         //! For Sub menus
         Menu(const Menu &, const std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
         

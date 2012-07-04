@@ -148,7 +148,7 @@ thread(PaintownUtil::Thread::uninitializedValue),
 searching(false),
 searchingCheck(searching, searchingLock.getLock()){
     try{
-        paths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars"))));
+        paths.push_back(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars")));
     } catch (const Filesystem::NotFound & fail){
     }
 
@@ -210,7 +210,7 @@ searching(false),
 searchingCheck(searching, searchingLock.getLock()),
 isDone(false){
     try{
-        paths.push_back(Storage::instance().find(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages"))));
+        paths.push_back(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("stages")));
     } catch (const Filesystem::NotFound & fail){
     }
 
