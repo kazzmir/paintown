@@ -1562,36 +1562,36 @@ Mugen::ArcadeData::CharacterCollection Mugen::ArcadeData::MatchPath::next(){
 }
 
 void Mugen::Configuration::set(const std::string & property, const std::string & value){
-    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, value);
+    ::Configuration::setProperty("mugen/" + property, value);
 }
 
 void Mugen::Configuration::set(const std::string & property, bool value){
     std::ostringstream out;
     out << value;
-    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, out.str());
+    ::Configuration::setProperty("mugen/" + property, out.str());
 }
 
 void Mugen::Configuration::set(const std::string & property, int value){
     std::ostringstream out;
     out << value;
-    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, out.str());
+    ::Configuration::setProperty("mugen/" + property, out.str());
 }
 
 void Mugen::Configuration::set(const std::string & property, double value){
     std::ostringstream out;
     out << value;
-    ::Configuration::getRootConfiguration()->getNamespace("mugen")->setProperty(property, out.str());
+    ::Configuration::setProperty("mugen/" + property, out.str());
 }
 
 bool Mugen::Configuration::check(const std::string & property){
-    return (::Configuration::getRootConfiguration()->getNamespace("mugen")->getProperty(property, "null") != "null");
+    return (::Configuration::getProperty("mugen/" + property, "null") != "null");
 }
 
 PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const std::string & property){
     if (!Mugen::Configuration::check(property)){
         throw ios_base::failure("Not Set");
     }
-    return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getRootConfiguration()->getNamespace("mugen")->getProperty(property, "null")));
+    return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getProperty("mugen/" + property, "null")));
 }
  
 void Mugen::Util::loadMotif(){

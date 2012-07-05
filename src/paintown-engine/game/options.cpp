@@ -542,7 +542,7 @@ public:
     static void changeMod(const ModType & mod){
         switch (mod.type){
             case ModType::Paintown : {
-                Configuration::getRootConfiguration()->getNamespace("paintown")->setProperty("mod", mod.path.path());
+                Configuration::setProperty("paintown/mod", mod.path.path());
                 Paintown::Mod::loadPaintownMod(mod.path);
                 break;
             }

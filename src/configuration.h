@@ -132,28 +132,32 @@ public:
     static bool isJoystickEnabled();
     static void setJoystickEnabled(bool enabled);
 
-    void setProperty(const std::string & path, const std::string & value);
-    std::string getProperty(const std::string & path, const std::string & defaultValue);
+    static void setProperty(const std::string & path, const std::string & value);
+    static std::string getProperty(const std::string & path, const std::string & defaultValue);
 
     static void disableSave();
     static void setSave(bool what);
     static bool getSave();
     
+    /*
     Util::ReferenceCount<Configuration> getNamespace(const std::string & name);
     static Util::ReferenceCount<Configuration> getRootConfiguration();
+    */
 
 protected:
     Configuration();
-    Configuration( const Configuration & config );
+    Configuration(const Configuration & config);
     // Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump );
 
-    Configuration & operator=( const Configuration & config );
+    Configuration & operator=(const Configuration & config);
 
     static Configuration defaultPlayer1Keys();
     static Configuration defaultPlayer2Keys();
 
     static Token * saveKeyboard( int num, Configuration * configuration );
     static Token * saveJoystick( int num, Configuration * configuration );
+
+    static void updateToken(const std::string & path, const std::string & value);
 
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);
@@ -232,6 +236,8 @@ private:
 
     static std::string language;
     static std::string mugenMotif;
+
+    static Util::ReferenceCount<Token> data;
 
     /* Top level property that contains all other configuration objects */
     static Util::ReferenceCount<Configuration> rootProperty;

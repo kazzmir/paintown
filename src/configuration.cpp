@@ -30,6 +30,7 @@ static const std::string INPUT_TYPE = "Allegro5";
 #endif
 
 bool Configuration::save = true;
+Util::ReferenceCount<Token> Configuration::data;
 
 /* text that appears in the config file */
 #define define_config(n,str) static const char * config_##n = str
@@ -617,13 +618,21 @@ bool Configuration::getSave(){
 void Configuration::loadConfigurations(){
     Disable disable;
 
+    data = new Token();
+    *data << config_configuration;
+
     try{
         Filesystem::AbsolutePath file = Storage::instance().configFile();
         TokenReader tr;
         Token * head = tr.readTokenFromFile(file.path());
+
         if (*head != config_configuration){
             throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not use the configuration format" );
         }
+
+        /* Store the entire configuration tree */
+        data = head->copy();
+
         TokenView view = head->view();
         while (view.hasMore()){
             const Token * n;
@@ -849,8 +858,10 @@ void Configuration::loadConfigurations(){
             } else {
                 // string value;
                 try{
+                    /*
                     Util::ReferenceCount<Configuration> root = getRootConfiguration();
                     root->parseProperty(n);
+                    */
                     /*
                     n->view() >> value;
                     root->setProperty(n->getName(), value);
@@ -868,6 +879,7 @@ void Configuration::loadConfigurations(){
 }
 
 void Configuration::parseProperty(const Token * token){
+#if 0
     /* Its either plain data or its a nested node which means its a namespace */
     string value;
     if (token->match("_", value)){
@@ -887,6 +899,7 @@ void Configuration::parseProperty(const Token * token){
             module->parseProperty(next);
         }
     }
+#endif
 }
 
 std::string Configuration::getMugenMotif(){
@@ -1001,6 +1014,7 @@ void Configuration::saveConfiguration(){
         return;
     }
 
+#if 0
     /* head will delete all these tokens in its destructor */
     Token head;
     head << config_configuration;
@@ -1090,12 +1104,15 @@ void Configuration::saveConfiguration(){
 
     Token * npc = new Token();
     *npc << config_npc_buddies << Configuration::getNpcBuddies();
-    head.addToken( npc );
+    head.addToken(npc);
 
+    /*
     vector<Token*> propertyTokens = getRootConfiguration()->getPropertyTokens();
     for (vector<Token*>::iterator it = propertyTokens.begin(); it != propertyTokens.end(); it++){
         head.addToken(*it);
     }
+    */
+
     /*
     for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
         string name = (*it).first;
@@ -1105,10 +1122,11 @@ void Configuration::saveConfiguration(){
         head.addToken(property);
     }
     */
+#endif
 
-    ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out );
+    ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out);
     if (! out.bad()){
-        head.toString( out, string("") );
+        data->toString(out, string(""));
         out << endl;
         out.close();
     }
@@ -1150,23 +1168,108 @@ int Configuration::fps = 40;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
+/*
 Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::string & name){
     if (namespaces[name] == NULL){
         namespaces[name] = Util::ReferenceCount<Configuration>(new Configuration());
     }
     return namespaces[name];
 }
+*/
+
+/* FIXME: move this to some utils module */
+static std::vector<std::string> split(std::string str, char splitter){
+    std::vector<std::string> strings;
+    size_t next = str.find(splitter);
+    while (next != std::string::npos){
+        strings.push_back(str.substr(0, next));
+        str = str.substr(next+1);
+        next = str.find(splitter);
+    }
+    if (str != ""){
+        strings.push_back(str);
+    }
+
+    return strings;
+}
+
+static Token * createToken(const string & path, const string & value){
+    vector<string> paths = split(path, '/');
+    Token * out = new Token();
+    Token * current = out;
+    for (vector<string>::iterator it = paths.begin(); it != paths.end(); it++){
+        current->addToken(new Token(*it, false));
+        if (paths.end() - it > 1){
+            Token * next = new Token();
+            current->addToken(next);
+            current = next;
+        }
+    }
+    *current << value;
+    Global::debug(1) << "Create token: " << out->toString() << endl;
+    return out;
+}
+
+void Configuration::updateToken(const string & path, const string & value){
+    if (data == NULL){
+        return;
+    }
+
+    Token * found = data->findToken(path);
+    /* See if the token already exists. If it does then remove it from its
+     * parent and add a new token to the parent with the updated value.
+     */
+    if (found != NULL){
+        Token * parent = found->getParent();
+        string name = found->getName();
+        parent->removeToken(found);
+        parent->addToken(createToken(name, value));
+    }
+
+    const vector<string> paths = split(path, '/');
+    Token * start = data.raw();
+    for (int index = 1; index < paths.size() - 1; index++){
+        string where = paths[index];
+        Token * next = start->findToken(string("_/") + where);
+        if (next == NULL){
+            ostringstream out;
+            bool first = true;
+            for (int from = index; from < paths.size(); from++){
+                if (!first){
+                    out << "/";
+                }
+                out << paths[from];
+                first = false;
+            }
+            start->addToken(createToken(out.str(), value));
+            return;
+        } else {
+            start = next;
+        }
+    }
+    start->addToken(createToken(paths[paths.size() - 1], value));
+}
 
 void Configuration::setProperty(const string & name, const string & value){
-    properties[name] = value;
+    updateToken(string(config_configuration) + "/" + name, value);
+    // properties[name] = value;
     saveConfiguration();
 }
 
 std::string Configuration::getProperty(const std::string & path, const std::string & defaultValue){
+    std::string out;
+    if (data->match(string(config_configuration) + "/" + path, out)){
+        return out;
+    }
+    updateToken(string(config_configuration) + "/" + path, defaultValue);
+    return defaultValue;
+
+    /*
     if (properties.find(path) == properties.end()){
         properties[path] = defaultValue;
     }
     return properties[path];
+    */
 }
 
 double Configuration::getGameSpeed(){
@@ -1215,20 +1318,31 @@ void Configuration::setNpcBuddies( int i ){
 }
         
 Configuration::PlayMode Configuration::getPlayMode(){
-    return play_mode;
+    string mode = getProperty("play-mode", config_cooperative);
+    if (mode == config_cooperative){
+        return Cooperative;
+    }
+    if (mode == config_free_for_all){
+        return FreeForAll;
+    }
+    return Cooperative;
 }
 
 void Configuration::setPlayMode(Configuration::PlayMode mode){
-    play_mode = mode;
-    saveConfiguration();
+    if (mode == Configuration::Cooperative){
+        setProperty("play-mode", config_cooperative);
+    } else if (mode == Configuration::FreeForAll){
+        setProperty("play-mode", config_free_for_all);
+    }
 }
     
 std::string Configuration::getLanguage(){
-    return language;
+    return getProperty("language", "English");
 }
 
 void Configuration::setLanguage(const std::string & str){
-    language = str;
+    setProperty("language", str);
+    // language = str;
     saveConfiguration();
 }
 
@@ -1295,6 +1409,7 @@ void Configuration::setFps(int what){
     saveConfiguration();
 }
     
+/*
 Util::ReferenceCount<Configuration> Configuration::getRootConfiguration(){
     if (rootProperty == NULL){
         rootProperty = Util::ReferenceCount<Configuration>(new Configuration());
@@ -1302,3 +1417,4 @@ Util::ReferenceCount<Configuration> Configuration::getRootConfiguration(){
 
     return rootProperty;
 }
+*/

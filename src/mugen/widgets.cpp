@@ -85,6 +85,7 @@ void InputBox::renderCursor(int x, int y, const FontSystem::Font & font, const G
     }
 }
 
+/* FIXME: move this to some utils module */
 static std::vector<std::string> split(std::string str, char splitter){
     std::vector<std::string> strings;
     size_t next = str.find(splitter);

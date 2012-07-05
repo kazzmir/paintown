@@ -401,13 +401,13 @@ public:
             string name = join.name;
             if (port == ""){
                 /* FIXME: replace 7887 with a constant */
-                port = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientPort, "7887");
+                port = Configuration::getProperty(Network::propertyLastClientPort, "7887");
             }
             if (host == ""){
-                host = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientHost, "127.0.0.1");
+                host = Configuration::getProperty(Network::propertyLastClientHost, "127.0.0.1");
             }
             if (name == ""){
-                name = Configuration::getRootConfiguration()->getProperty(Network::propertyLastClientName, "player");
+                name = Configuration::getProperty(Network::propertyLastClientName, "player");
             }
             Global::debug(1) << "Client " << name << " " << host << " " << port << endl;
             try{
@@ -616,9 +616,10 @@ static void setupPaintownMod(){
      * 4. die
      */
     try{
-        Filesystem::AbsolutePath currentMod(Configuration::getRootConfiguration()->getNamespace("paintown")->getProperty("mod", ""));
+        Filesystem::AbsolutePath currentMod(Configuration::getProperty("paintown/mod", ""));
         if (currentMod.path() != ""){
             Paintown::Mod::loadPaintownMod(currentMod);
+            return;
         }
     } catch (const Exception::Base & fail){
         Global::debug(0) << "Could not load mod " << fail.getTrace() << std::endl;
