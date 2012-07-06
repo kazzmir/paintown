@@ -1160,7 +1160,6 @@ int Configuration::musicVolume = 70;
 bool Configuration::joystickEnabled = true;
 std::string Configuration::currentGameDir = "";
 // std::map<std::string, std::string> Configuration::properties;
-std::string Configuration::language = "";
 std::string Configuration::mugenMotif = "default";
 std::string Configuration::qualityFilter = "none";
 /* Original default was 40 */
@@ -1193,7 +1192,8 @@ static std::vector<std::string> split(std::string str, char splitter){
     return strings;
 }
 
-static Token * createToken(const string & path, const string & value){
+template <class Value>
+static Token * createToken(const string & path, const Value & value){
     vector<string> paths = split(path, '/');
     Token * out = new Token();
     Token * current = out;
@@ -1210,7 +1210,8 @@ static Token * createToken(const string & path, const string & value){
     return out;
 }
 
-void Configuration::updateToken(const string & path, const string & value){
+template <class Value>
+static void updateToken(Token * data, const string & path, const Value & value){
     if (data == NULL){
         return;
     }
@@ -1224,45 +1225,73 @@ void Configuration::updateToken(const string & path, const string & value){
         string name = found->getName();
         parent->removeToken(found);
         parent->addToken(createToken(name, value));
-    }
-
-    const vector<string> paths = split(path, '/');
-    Token * start = data.raw();
-    for (int index = 1; index < paths.size() - 1; index++){
-        string where = paths[index];
-        Token * next = start->findToken(string("_/") + where);
-        if (next == NULL){
-            ostringstream out;
-            bool first = true;
-            for (int from = index; from < paths.size(); from++){
-                if (!first){
-                    out << "/";
+    } else {
+        const vector<string> paths = split(path, '/');
+        Token * start = data;
+        for (int index = 1; index < paths.size() - 1; index++){
+            string where = paths[index];
+            Token * next = start->findToken(string("_/") + where);
+            if (next == NULL){
+                ostringstream out;
+                bool first = true;
+                for (int from = index; from < paths.size(); from++){
+                    if (!first){
+                        out << "/";
+                    }
+                    out << paths[from];
+                    first = false;
                 }
-                out << paths[from];
-                first = false;
+                start->addToken(createToken(out.str(), value));
+                return;
+            } else {
+                start = next;
             }
-            start->addToken(createToken(out.str(), value));
-            return;
-        } else {
-            start = next;
         }
+        start->addToken(createToken(paths[paths.size() - 1], value));
     }
-    start->addToken(createToken(paths[paths.size() - 1], value));
 }
 
 void Configuration::setProperty(const string & name, const string & value){
-    updateToken(string(config_configuration) + "/" + name, value);
-    // properties[name] = value;
+    updateToken(data.raw(), string(config_configuration) + "/" + name, value);
+    saveConfiguration();
+}
+
+template <class Out>
+static Out getPropertyX(Token * data, const std::string & path, const Out & defaultValue){
+    Out out;
+    if (data->match(string(config_configuration) + "/" + path, out)){
+        return out;
+    }
+    updateToken(data, string(config_configuration) + "/" + path, defaultValue);
+    return defaultValue;
+
+    /*
+    if (properties.find(path) == properties.end()){
+        properties[path] = defaultValue;
+    }
+    return properties[path];
+    */
+}
+
+int Configuration::getProperty(const std::string & path, int defaultValue){
+    return getPropertyX(data.raw(), path, defaultValue);
+}
+
+void Configuration::setProperty(const std::string & path, int value){
+    updateToken(data.raw(), string(config_configuration) + "/" + path, value);
     saveConfiguration();
 }
 
 std::string Configuration::getProperty(const std::string & path, const std::string & defaultValue){
+    return getPropertyX(data.raw(), path, defaultValue);
+    /*
     std::string out;
     if (data->match(string(config_configuration) + "/" + path, out)){
         return out;
     }
     updateToken(string(config_configuration) + "/" + path, defaultValue);
     return defaultValue;
+    */
 
     /*
     if (properties.find(path) == properties.end()){
@@ -1337,7 +1366,7 @@ void Configuration::setPlayMode(Configuration::PlayMode mode){
 }
     
 std::string Configuration::getLanguage(){
-    return getProperty("language", "English");
+    return getProperty("language", "");
 }
 
 void Configuration::setLanguage(const std::string & str){
@@ -1365,11 +1394,11 @@ int Configuration::getScreenHeight(){
 }
 
 int Configuration::getSoundVolume(){
-    return soundVolume;
+    return getProperty(config_sound, 70);
 }
 
 void Configuration::setSoundVolume(int volume){
-    soundVolume = volume;
+    setProperty(config_sound, volume);
     saveConfiguration();
 }
 

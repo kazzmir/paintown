@@ -135,6 +135,9 @@ public:
     static void setProperty(const std::string & path, const std::string & value);
     static std::string getProperty(const std::string & path, const std::string & defaultValue);
 
+    static void setProperty(const std::string & path, int value);
+    static int getProperty(const std::string & path, int value);
+
     static void disableSave();
     static void setSave(bool what);
     static bool getSave();
@@ -157,7 +160,7 @@ protected:
     static Token * saveKeyboard( int num, Configuration * configuration );
     static Token * saveJoystick( int num, Configuration * configuration );
 
-    static void updateToken(const std::string & path, const std::string & value);
+    // static void updateToken(const std::string & path, const std::string & value);
 
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);
@@ -234,7 +237,6 @@ private:
     /* directory of current game/mod */
     static std::string currentGameDir;
 
-    static std::string language;
     static std::string mugenMotif;
 
     static Util::ReferenceCount<Token> data;
