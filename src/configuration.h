@@ -108,8 +108,10 @@ public:
     static void setScreenHeight(int i);
     static int getScreenHeight();
 
+    /*
     static std::string getMugenMotif();
     static void setMugenMotif(const std::string & motif);
+    */
 
     static std::string getQualityFilter();
     static void setQualityFilter(const std::string & filter);
@@ -124,8 +126,11 @@ public:
     static int getMenuFontHeight();
     static void setMenuFontWidth(int x);
     static void setMenuFontHeight(int x);
+
+    /* directory of current game/mod */
     static std::string getCurrentGame();
     static void setCurrentGame(const std::string & str);
+
     static std::string getLanguage();
     static void setLanguage(const std::string & str);
 
@@ -137,6 +142,12 @@ public:
 
     static void setProperty(const std::string & path, int value);
     static int getProperty(const std::string & path, int value);
+    
+    static void setProperty(const std::string & path, double value);
+    static double getProperty(const std::string & path, double value);
+    
+    static void setProperty(const std::string & path, bool value);
+    static bool getProperty(const std::string & path, bool value);
 
     static void disableSave();
     static void setSave(bool what);
@@ -203,12 +214,6 @@ private:
     /* whether to save the configuration or not */
     static bool save;
 
-    //! Game speed
-    static double gamespeed;
-
-    //! Invincibility
-    static bool invincible;
-
     //! Fullscreen
     static bool fullscreen;
 
@@ -220,24 +225,12 @@ private:
 
     static std::string qualityFilter;
 
-    static int fps;
-
     static int screen_width;
     static int screen_height;
 
     static Util::ReferenceCount<Menu::FontInfo> menuFont;
-    static int menuFontWidth;
-    static int menuFontHeight;
-
-    static int soundVolume;
-    static int musicVolume;
 
     static bool joystickEnabled;
-
-    /* directory of current game/mod */
-    static std::string currentGameDir;
-
-    static std::string mugenMotif;
 
     static Util::ReferenceCount<Token> data;
 

@@ -616,7 +616,7 @@ static void setupPaintownMod(){
      * 4. die
      */
     try{
-        Filesystem::AbsolutePath currentMod(Configuration::getProperty("paintown/mod", ""));
+        Filesystem::AbsolutePath currentMod(Configuration::getProperty("paintown/mod", string()));
         if (currentMod.path() != ""){
             Paintown::Mod::loadPaintownMod(currentMod);
             return;

@@ -291,8 +291,6 @@ Configuration & Configuration::operator=(const Configuration & config){
     setJoystickQuit(config.getJoystickQuit());
 
     setMenuFont(config.getMenuFont());
-    setMenuFontWidth(config.getMenuFontWidth());
-    setMenuFontHeight(config.getMenuFontHeight());
     return *this;
 }
 	
@@ -363,21 +361,21 @@ void Configuration::setMenuFont(const Util::ReferenceCount<Menu::FontInfo> & inf
 }
 
 void Configuration::setMenuFontWidth(int x){
-    menuFontWidth = x;
+    setProperty(config_menu_font_width, x);
     saveConfiguration();
 }
 
 int Configuration::getMenuFontWidth(){
-    return menuFontWidth;
+    return getProperty(config_menu_font_width, 24);
 }
 
 void Configuration::setMenuFontHeight(int x){
-    menuFontHeight = x;
+    setProperty(config_menu_font_height, x);
     saveConfiguration();
 }
 
 int Configuration::getMenuFontHeight(){
-    return menuFontHeight;
+    return getProperty(config_menu_font_height, 24);
 }
 
 void Configuration::setKey(int * key, int value){
@@ -579,12 +577,13 @@ Configuration::JoystickInput Configuration::getJoystickQuit() const {
 }
 
 string Configuration::getCurrentGame(){
-    return currentGameDir;
+    return getProperty(config_current_game, string(""));
 }
 
 /* assumes the directory is readable and has a dir/dir.txt in it */
 void Configuration::setCurrentGame(const std::string & str){
-    currentGameDir = str;
+    setProperty(config_current_game, str);
+    saveConfiguration();
 }
 
 /* this nonsense is just to convert a regular integer into an enum */
@@ -633,6 +632,7 @@ void Configuration::loadConfigurations(){
         /* Store the entire configuration tree */
         data = head->copy();
 
+#if 0
         TokenView view = head->view();
         while (view.hasMore()){
             const Token * n;
@@ -812,10 +812,12 @@ void Configuration::loadConfigurations(){
                 int x;
                 n->view() >> x;
                 setMusicVolume(x);
+                /*
             } else if (*n == config_mugen_motif){
                 string motif;
                 n->view() >> motif;
                 setMugenMotif(motif);
+                */
             } else if (*n == config_quality_filter){
                 string filter;
                 n->view() >> filter;
@@ -871,6 +873,7 @@ void Configuration::loadConfigurations(){
                 }
             }
         }
+#endif
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Notice: Could not load configuration file " << Storage::instance().configFile().path() << ": " << le.getTrace() << endl;
     } catch ( const TokenException & t ){
@@ -902,6 +905,7 @@ void Configuration::parseProperty(const Token * token){
 #endif
 }
 
+/*
 std::string Configuration::getMugenMotif(){
     return mugenMotif;
 }
@@ -910,6 +914,7 @@ void Configuration::setMugenMotif(const std::string & motif){
     mugenMotif = motif;
     saveConfiguration();
 }
+*/
 
 /* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
@@ -1133,8 +1138,6 @@ void Configuration::saveConfiguration(){
 }
 
 /* Defaults for all configuration options */
-double Configuration::gamespeed = 1.0;
-bool Configuration::invincible = false;
 #if defined(PS3) || defined(ANDROID) || defined(IPHONE)
 bool Configuration::fullscreen = true;
 #else
@@ -1153,17 +1156,11 @@ int Configuration::screen_width = 640;
 int Configuration::screen_height = 480;
 #endif
 Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont;
-int Configuration::menuFontWidth = 24;
-int Configuration::menuFontHeight = 24;
-int Configuration::soundVolume = 70;
-int Configuration::musicVolume = 70;
 bool Configuration::joystickEnabled = true;
-std::string Configuration::currentGameDir = "";
 // std::map<std::string, std::string> Configuration::properties;
-std::string Configuration::mugenMotif = "default";
+// std::string Configuration::mugenMotif = "default";
 std::string Configuration::qualityFilter = "none";
 /* Original default was 40 */
-int Configuration::fps = 40;
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
 
@@ -1264,13 +1261,6 @@ static Out getPropertyX(Token * data, const std::string & path, const Out & defa
     }
     updateToken(data, string(config_configuration) + "/" + path, defaultValue);
     return defaultValue;
-
-    /*
-    if (properties.find(path) == properties.end()){
-        properties[path] = defaultValue;
-    }
-    return properties[path];
-    */
 }
 
 int Configuration::getProperty(const std::string & path, int defaultValue){
@@ -1282,40 +1272,43 @@ void Configuration::setProperty(const std::string & path, int value){
     saveConfiguration();
 }
 
+double Configuration::getProperty(const std::string & path, double defaultValue){
+    return getPropertyX(data.raw(), path, defaultValue);
+}
+
+void Configuration::setProperty(const std::string & path, double value){
+    updateToken(data.raw(), string(config_configuration) + "/" + path, value);
+    saveConfiguration();
+}
+
+bool Configuration::getProperty(const std::string & path, bool defaultValue){
+    return getPropertyX(data.raw(), path, defaultValue);
+}
+
+void Configuration::setProperty(const std::string & path, bool value){
+    updateToken(data.raw(), string(config_configuration) + "/" + path, value);
+    saveConfiguration();
+}
+
 std::string Configuration::getProperty(const std::string & path, const std::string & defaultValue){
     return getPropertyX(data.raw(), path, defaultValue);
-    /*
-    std::string out;
-    if (data->match(string(config_configuration) + "/" + path, out)){
-        return out;
-    }
-    updateToken(string(config_configuration) + "/" + path, defaultValue);
-    return defaultValue;
-    */
-
-    /*
-    if (properties.find(path) == properties.end()){
-        properties[path] = defaultValue;
-    }
-    return properties[path];
-    */
 }
 
 double Configuration::getGameSpeed(){
-    return gamespeed;
+    return getProperty(config_game_speed, 1.0);
 }
 
 void Configuration::setGameSpeed(double s){
-    gamespeed = s;
+    setProperty(config_game_speed, s);
     saveConfiguration();
 }
 
 bool Configuration::getInvincible(){
-    return invincible;
+    return getProperty(config_invincible, false);
 }
 
 void Configuration::setInvincible(bool i){
-    invincible = i;
+    setProperty(config_invincible, i);
     saveConfiguration();
 }
 
@@ -1347,7 +1340,7 @@ void Configuration::setNpcBuddies( int i ){
 }
         
 Configuration::PlayMode Configuration::getPlayMode(){
-    string mode = getProperty("play-mode", config_cooperative);
+    string mode = getProperty("play-mode", string(config_cooperative));
     if (mode == config_cooperative){
         return Cooperative;
     }
@@ -1366,7 +1359,7 @@ void Configuration::setPlayMode(Configuration::PlayMode mode){
 }
     
 std::string Configuration::getLanguage(){
-    return getProperty("language", "");
+    return getProperty("language", string());
 }
 
 void Configuration::setLanguage(const std::string & str){
@@ -1403,11 +1396,11 @@ void Configuration::setSoundVolume(int volume){
 }
 
 int Configuration::getMusicVolume(){
-    return musicVolume;
+    return getProperty(config_music, 70);
 }
 
 void Configuration::setMusicVolume(int volume){
-    musicVolume = volume;
+    setProperty(config_music, volume);
     saveConfiguration();
 }
 
@@ -1430,11 +1423,11 @@ void Configuration::setQualityFilter(const std::string & filter){
 }
     
 int Configuration::getFps(){
-    return fps;
+    return getProperty(config_fps, 50);
 }
 
 void Configuration::setFps(int what){
-    fps = what;
+    setProperty(config_fps, what);
     saveConfiguration();
 }
     

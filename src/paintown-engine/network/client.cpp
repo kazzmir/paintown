@@ -507,8 +507,8 @@ void networkClient(){
     // Global::speed_counter = 0;
     
     TextInput nameInput(Configuration::getProperty(propertyLastClientName, string("player") + getANumber() + getANumber()));
-    TextInput hostInput(Configuration::getProperty(propertyLastClientHost, "localhost"));
-    TextInput portInput(Configuration::getProperty(propertyLastClientPort, "7887"));
+    TextInput hostInput(Configuration::getProperty(propertyLastClientHost, string("localhost")));
+    TextInput portInput(Configuration::getProperty(propertyLastClientPort, string("7887")));
 
     Focus focus = Name;
     nameInput.enable();

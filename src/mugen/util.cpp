@@ -1584,14 +1584,14 @@ void Mugen::Configuration::set(const std::string & property, double value){
 }
 
 bool Mugen::Configuration::check(const std::string & property){
-    return (::Configuration::getProperty("mugen/" + property, "null") != "null");
+    return (::Configuration::getProperty("mugen/" + property, string("null")) != string("null"));
 }
 
 PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const std::string & property){
     if (!Mugen::Configuration::check(property)){
         throw ios_base::failure("Not Set");
     }
-    return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getProperty("mugen/" + property, "null")));
+    return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getProperty("mugen/" + property, string("null"))));
 }
  
 void Mugen::Util::loadMotif(){
