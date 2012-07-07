@@ -214,17 +214,6 @@ private:
     /* whether to save the configuration or not */
     static bool save;
 
-    //! Fullscreen
-    static bool fullscreen;
-
-    //! Lives
-    static int lives;
-
-    static int npc_buddies;
-    static PlayMode play_mode;
-
-    static std::string qualityFilter;
-
     static int screen_width;
     static int screen_height;
 

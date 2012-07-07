@@ -1137,16 +1137,6 @@ void Configuration::saveConfiguration(){
     }
 }
 
-/* Defaults for all configuration options */
-#if defined(PS3) || defined(ANDROID) || defined(IPHONE)
-bool Configuration::fullscreen = true;
-#else
-bool Configuration::fullscreen = false;
-#endif
-int Configuration::lives = 4;
-int Configuration::npc_buddies = 1;
-Configuration::PlayMode Configuration::play_mode = Configuration::Cooperative;
-
 #ifdef MINPSPW
 /* default resolution for the psp is 480x272 */
 int Configuration::screen_width = 480;
@@ -1159,7 +1149,6 @@ Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont;
 bool Configuration::joystickEnabled = true;
 // std::map<std::string, std::string> Configuration::properties;
 // std::string Configuration::mugenMotif = "default";
-std::string Configuration::qualityFilter = "none";
 /* Original default was 40 */
 // std::string Configuration::menuFont = "fonts/arial.ttf";
 // Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
@@ -1313,29 +1302,34 @@ void Configuration::setInvincible(bool i){
 }
 
 bool Configuration::getFullscreen(){
-    return fullscreen;
+/* Defaults for all configuration options */
+#if defined(PS3) || defined(ANDROID) || defined(IPHONE)
+    return getProperty(config_fullscreen, true);
+#else
+    return getProperty(config_fullscreen, false);
+#endif
 }
 
 void Configuration::setFullscreen(bool f){
-    fullscreen = f;
+    setProperty(config_fullscreen, f);
     saveConfiguration();
 }
 
 int Configuration::getLives(){
-    return lives;
+    return getProperty(config_lives, 4);
 }
 
 void Configuration::setLives(int l){
-    lives = l;
+    setProperty(config_lives, l);
     saveConfiguration();
 }
 	
 int Configuration::getNpcBuddies(){
-    return npc_buddies;
+    return getProperty(config_npc_buddies, 1);
 }
 
-void Configuration::setNpcBuddies( int i ){
-    npc_buddies = i;
+void Configuration::setNpcBuddies(int i){
+    setProperty(config_npc_buddies,i);
     saveConfiguration();
 }
         
@@ -1414,11 +1408,11 @@ void Configuration::setJoystickEnabled(bool enabled){
 }
     
 std::string Configuration::getQualityFilter(){
-    return qualityFilter;
+    return getProperty(config_quality_filter, string("none"));
 }
 
 void Configuration::setQualityFilter(const std::string & filter){
-    qualityFilter = filter;
+    setProperty(config_quality_filter, filter);
     saveConfiguration();
 }
     
