@@ -187,11 +187,63 @@ Configuration & Configuration::config(int set){
 }
 */
 
-void Configuration::setDefaultKeys(int x){
-    /* FIXME */
-    /* Probably what we should do is set input/x/keys to an empty token and call all the
-     * get() methods to reset the key to their default
-     */
+/* FIXME: move this to some utils module */
+static std::vector<std::string> split(std::string str, char splitter){
+    std::vector<std::string> strings;
+    size_t next = str.find(splitter);
+    while (next != std::string::npos){
+        strings.push_back(str.substr(0, next));
+        str = str.substr(next+1);
+        next = str.find(splitter);
+    }
+    if (str != ""){
+        strings.push_back(str);
+    }
+
+    return strings;
+}
+
+
+/* Create a token that contains the entire path.
+ * path = "foo/bar/baz"
+ * out = (foo (bar (baz)))
+ */
+static Token * createToken(const string & path){
+    vector<string> paths = split(path, '/');
+    Token * out = new Token();
+    Token * current = out;
+    for (vector<string>::iterator it = paths.begin(); it != paths.end(); it++){
+        current->addToken(new Token(*it, false));
+        if (paths.end() - it > 1){
+            Token * next = new Token();
+            current->addToken(next);
+            current = next;
+        }
+    }
+    return out;
+}
+
+
+
+void Configuration::setDefaultKeys(int config){
+    /* Set the keys token to an empty value */
+    ostringstream path;
+    path << config_input << "/" << config << "/keys";
+    setProperty(path.str(), createToken("keys"));
+
+    /* Call the get methods to reset the defaults */
+    int ignore;
+    ignore = getRight(config);
+    ignore = getLeft(config);
+    ignore = getUp(config);
+    ignore = getDown(config);
+    ignore = getAttack1(config);
+    ignore = getAttack2(config);
+    ignore = getAttack3(config);
+    ignore = getAttack4(config);
+    ignore = getAttack5(config);
+    ignore = getAttack6(config);
+    ignore = getJump(config);
 }
 
 /* hopefully this is only used right before setting all the values
@@ -1105,41 +1157,6 @@ Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::strin
 
 static std::string last(const vector<string> & what){
     return what.at(what.size() - 1);
-}
-
-/* FIXME: move this to some utils module */
-static std::vector<std::string> split(std::string str, char splitter){
-    std::vector<std::string> strings;
-    size_t next = str.find(splitter);
-    while (next != std::string::npos){
-        strings.push_back(str.substr(0, next));
-        str = str.substr(next+1);
-        next = str.find(splitter);
-    }
-    if (str != ""){
-        strings.push_back(str);
-    }
-
-    return strings;
-}
-
-/* Create a token that contains the entire path.
- * path = "foo/bar/baz"
- * out = (foo (bar (baz)))
- */
-static Token * createToken(const string & path){
-    vector<string> paths = split(path, '/');
-    Token * out = new Token();
-    Token * current = out;
-    for (vector<string>::iterator it = paths.begin(); it != paths.end(); it++){
-        current->addToken(new Token(*it, false));
-        if (paths.end() - it > 1){
-            Token * next = new Token();
-            current->addToken(next);
-            current = next;
-        }
-    }
-    return out;
 }
 
 /* Create a token with the given path and give it a value */
