@@ -1137,14 +1137,6 @@ void Configuration::saveConfiguration(){
     }
 }
 
-#ifdef MINPSPW
-/* default resolution for the psp is 480x272 */
-int Configuration::screen_width = 480;
-int Configuration::screen_height = 272;
-#else
-int Configuration::screen_width = 640;
-int Configuration::screen_height = 480;
-#endif
 Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont;
 bool Configuration::joystickEnabled = true;
 // std::map<std::string, std::string> Configuration::properties;
@@ -1162,6 +1154,10 @@ Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::strin
 }
 */
 
+static std::string last(const vector<string> & what){
+    return what.at(what.size() - 1);
+}
+
 /* FIXME: move this to some utils module */
 static std::vector<std::string> split(std::string str, char splitter){
     std::vector<std::string> strings;
@@ -1178,8 +1174,11 @@ static std::vector<std::string> split(std::string str, char splitter){
     return strings;
 }
 
-template <class Value>
-static Token * createToken(const string & path, const Value & value){
+/* Create a token that contains the entire path.
+ * path = "foo/bar/baz"
+ * out = (foo (bar (baz)))
+ */
+static Token * createToken(const string & path){
     vector<string> paths = split(path, '/');
     Token * out = new Token();
     Token * current = out;
@@ -1191,15 +1190,28 @@ static Token * createToken(const string & path, const Value & value){
             current = next;
         }
     }
-    *current << value;
-    Global::debug(1) << "Create token: " << out->toString() << endl;
     return out;
 }
 
+/* Create a token with the given path and give it a value */
 template <class Value>
-static void updateToken(Token * data, const string & path, const Value & value){
+static Token * createToken(const string & path, const Value & value){
+    Token * out = createToken(path);
+    *out << value;
+    return out;
+}
+
+template <class Value, class Value2>
+static Token * createToken(const string & path, const Value & value, const Value2 & value2){
+    Token * out = createToken(path);
+    *out << value;
+    *out << value2;
+    return out;
+}
+
+static void updateToken(Token * data, const std::string & path, Token * add){
     if (data == NULL){
-        return;
+        delete add;
     }
 
     Token * found = data->findToken(path);
@@ -1208,9 +1220,8 @@ static void updateToken(Token * data, const string & path, const Value & value){
      */
     if (found != NULL){
         Token * parent = found->getParent();
-        string name = found->getName();
         parent->removeToken(found);
-        parent->addToken(createToken(name, value));
+        parent->addToken(add);
     } else {
         const vector<string> paths = split(path, '/');
         Token * start = data;
@@ -1227,19 +1238,43 @@ static void updateToken(Token * data, const string & path, const Value & value){
                     out << paths[from];
                     first = false;
                 }
-                start->addToken(createToken(out.str(), value));
+
+                /* If we run out of found paths then create a token with an empty
+                 * value for the unfound paths we have so far and call updateToken
+                 * again. This time the entire path will be there
+                 * so the 'found = ...' logic will work.
+                 */
+                start->addToken(createToken(out.str(), string("")));
+                updateToken(data, path, add);
                 return;
             } else {
                 start = next;
             }
         }
-        start->addToken(createToken(paths[paths.size() - 1], value));
+
+        /* It probably shouldn't be possible to get here. If the entire
+         * path was there then the findToken() logic above should have worked.
+         */
+        start->addToken(add);
     }
+}
+
+template <class Value>
+static void updateToken(Token * data, const string & path, const Value & value){
+    if (data == NULL){
+        return;
+    }
+
+    updateToken(data, path, createToken(last(split(path, '/')), value));
 }
 
 void Configuration::setProperty(const string & name, const string & value){
     updateToken(data.raw(), string(config_configuration) + "/" + name, value);
     saveConfiguration();
+}
+
+static Token * getPropertyX(Token * data, const std::string & path){
+    return data->findToken(string(config_configuration) + "/" + path);
 }
 
 template <class Out>
@@ -1257,6 +1292,11 @@ int Configuration::getProperty(const std::string & path, int defaultValue){
 }
 
 void Configuration::setProperty(const std::string & path, int value){
+    updateToken(data.raw(), string(config_configuration) + "/" + path, value);
+    saveConfiguration();
+}
+
+void Configuration::setProperty(const std::string & path, Token * value){
     updateToken(data.raw(), string(config_configuration) + "/" + path, value);
     saveConfiguration();
 }
@@ -1362,22 +1402,78 @@ void Configuration::setLanguage(const std::string & str){
     saveConfiguration();
 }
 
+
+/* In case this is ever useful again */
+/*
+#ifdef MINPSPW
+// default resolution for the psp is 480x272
+int Configuration::screen_width = 480;
+int Configuration::screen_height = 272;
+#else
+int Configuration::screen_width = 640;
+int Configuration::screen_height = 480;
+#endif
+*/
+
+/* TODO: All the screen width/height stuff shares a lot of code. Refactor */
 void Configuration::setScreenWidth(int i){
-    screen_width = i;
+    int width = 640;
+    int height = 480;
+    Token * screen = getPropertyX(data.raw(), config_screen_size);
+    if (screen != NULL){
+        try{
+            screen->view() >> width >> height;
+        } catch (const TokenException & fail){
+        }
+    }
+    width = i;
+    setProperty(config_screen_size, createToken(config_screen_size, width, height));
     saveConfiguration();
 }
 
 int Configuration::getScreenWidth(){
-    return screen_width;
+    int width = 640;
+    int height = 480;
+    Token * screen = getPropertyX(data.raw(), config_screen_size);
+    if (screen != NULL){
+        try{
+            screen->view() >> width >> height;
+        } catch (const TokenException & fail){
+        }
+    } else {
+        setProperty(config_screen_size, createToken(config_screen_size, width, height));
+    }
+    return width;
 }
 
 void Configuration::setScreenHeight(int i){
-    screen_height = i;
+    int width = 640;
+    int height = 480;
+    Token * screen = getPropertyX(data.raw(), config_screen_size);
+    if (screen != NULL){
+        try{
+            screen->view() >> width >> height;
+        } catch (const TokenException & fail){
+        }
+    }
+    height = i;
+    setProperty(config_screen_size, createToken(config_screen_size, width, height));
     saveConfiguration();
 }
 
 int Configuration::getScreenHeight(){
-    return screen_height;
+    int width = 640;
+    int height = 480;
+    Token * screen = getPropertyX(data.raw(), config_screen_size);
+    if (screen != NULL){
+        try{
+            screen->view() >> width >> height;
+        } catch (const TokenException & fail){
+        }
+    } else {
+        setProperty(config_screen_size, createToken(config_screen_size, width, height));
+    }
+    return height;
 }
 
 int Configuration::getSoundVolume(){

@@ -149,6 +149,8 @@ public:
     static void setProperty(const std::string & path, bool value);
     static bool getProperty(const std::string & path, bool value);
 
+    static void setProperty(const std::string & path, Token * value);
+
     static void disableSave();
     static void setSave(bool what);
     static bool getSave();
