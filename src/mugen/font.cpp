@@ -68,15 +68,9 @@ pcxsize(0){
     std::string temp = file.path();
     temp = Mugen::Util::invertSlashes(temp);
     Global::debug(1) << "[mugen font] Opening file '" << temp << "'" << endl;
-    ifile.open(temp.c_str());
-    if (!ifile){
-        std::ostringstream out;
-        out << "Can't find font file " << temp;
-        throw LoadException(__FILE__, __LINE__, out.str());
-    }
     myfile = temp;
     
-    load();
+    load(Filesystem::AbsolutePath(temp));
 }
 
 #if 0
@@ -285,7 +279,32 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> Font::changeBank(int bank){
     return banks[bank];
 }
 
-void Font::load(){
+static void getline(PaintownUtil::ReferenceCount<Storage::File> file, string & out){
+    ostringstream more;
+
+    while (true){
+        if (file->eof()){
+            break;
+        }
+        char next;
+        file->readLine(&next, 1);
+        if (next == '\n'){
+            break;
+        }
+        more << next;
+    }
+
+    out = more.str();
+}
+
+void Font::load(const Filesystem::AbsolutePath & path){
+    PaintownUtil::ReferenceCount<Storage::File> ifile = Storage::instance().open(path);
+    if (ifile == NULL){
+        std::ostringstream out;
+        out << "Can't find font file " << path.path();
+        throw LoadException(__FILE__, __LINE__, out.str());
+    }
+
     /* 16 skips the header stuff */
     /*
     int location = 16;
@@ -309,9 +328,9 @@ void Font::load(){
     Global::debug(3) << "TXT Location: " << txtlocation << " | TXT Actual location: " << pcxlocation + pcxsize << " | TXT Size: " << txtsize << endl;
 
     // Get the pcx load our bitmap
-    ifile.seekg(pcxlocation, ios::beg);
+    ifile->seek(pcxlocation, ios::beg);
     pcx = new unsigned char[pcxsize];
-    ifile.read((char *)pcx, pcxsize);
+    ifile->readLine((char *)pcx, pcxsize);
     memcpy(palette, pcx+(pcxsize)-768, 768);
 
     /*
@@ -320,16 +339,16 @@ void Font::load(){
     */
 
     // Get the text
-    ifile.seekg(pcxlocation+pcxsize, ios::beg);
+    ifile->seek(pcxlocation+pcxsize, ios::beg);
     std::vector<std::string> ourText;
-    while (!ifile.eof()){
+    while (!ifile->eof()){
         std::string line;
         getline(ifile, line);
         ourText.push_back(line);
     }
 
     /* FIXME!! Replace with peg parser */
-    MugenReader reader( ourText );
+    MugenReader reader(ourText);
     
     std::vector< MugenSection * > collection = reader.getCollection();
 
@@ -408,9 +427,6 @@ void Font::load(){
             }
         }
     }
-
-    ifile.close();
-
 }
 
 }

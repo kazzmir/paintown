@@ -1561,6 +1561,13 @@ Mugen::ArcadeData::CharacterCollection Mugen::ArcadeData::MatchPath::next(){
     return returnable;
 }
 
+void Mugen::Configuration::set(const std::string & property, Token * value){
+    Token * container = new Token();
+    *container << property;
+    container->addToken(value);
+    ::Configuration::setProperty("mugen/" + property, container);
+}
+
 void Mugen::Configuration::set(const std::string & property, const std::string & value){
     ::Configuration::setProperty("mugen/" + property, value);
 }
@@ -1594,19 +1601,28 @@ PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const
     return PaintownUtil::ReferenceCount<std::istringstream>(new std::istringstream(::Configuration::getProperty("mugen/" + property, string("null"))));
 }
  
-void Mugen::Util::loadMotif(){
+Filesystem::AbsolutePath Mugen::Util::loadMotif(){
     /* FIXME: read motif properly */
     std::string motif;
     try {
-        *Mugen::Configuration::get("motif") >> motif;
+        Token * all = ::Configuration::getProperty("mugen/motif");
+        if (all != NULL){
+            Global::debug(0) << "Motif is " << all->toString() << std::endl;
+            string zip, mount;
+            if (all->match("motif/file", motif)){
+            } else if (all->match("motif/container", zip, mount, motif)){
+                Storage::instance().addOverlay(Filesystem::AbsolutePath(zip),
+                                               Filesystem::AbsolutePath(mount));
+            }
+        }
     } catch (const std::ios_base::failure & ex){
         motif.clear();
     }
     if (!motif.empty()){
-        Mugen::Data::getInstance().setMotif(Filesystem::AbsolutePath(motif));
+        return Filesystem::AbsolutePath(motif);
     } else {
         /* FIXME: search for a system.def file */
-        Mugen::Data::getInstance().setMotif(Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def")));
+        return Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def"));
     }
 }
 

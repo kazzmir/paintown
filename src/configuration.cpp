@@ -666,6 +666,10 @@ void Configuration::setProperty(const std::string & path, Token * value){
     updateToken(data.raw(), string(config_configuration) + "/" + path, value);
     saveConfiguration();
 }
+    
+Token * Configuration::getProperty(const std::string & path){
+    return getPropertyX(data.raw(),path);
+}
 
 double Configuration::getProperty(const std::string & path, double defaultValue){
     return getPropertyX(data.raw(), path, defaultValue);

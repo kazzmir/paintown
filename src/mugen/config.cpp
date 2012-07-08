@@ -158,14 +158,19 @@ search(SelectDefAndAuto){
     } catch (const ios_base::failure & ex){
         Mugen::Configuration::set("team-lose-on-ko", teamLoseOnKO);
     }
+
+#if 0
     try {
-        string out;
+        Token * out;
         *Mugen::Configuration::get("motif") >> out;
         /* FIXME: read motif properly */
         motif = Filesystem::AbsolutePath(out);
     } catch (const ios_base::failure & ex){
         Mugen::Configuration::set("motif", motif.path());
     }
+#endif
+    setMotif(Util::loadMotif());
+
     try {
         string out;
         *Mugen::Configuration::get("search") >> out;
@@ -233,7 +238,11 @@ Filesystem::AbsolutePath Data::getFileFromMotif(const Filesystem::RelativePath &
 
 void Data::setMotif(const Filesystem::AbsolutePath & motif){
     this->motif = motif;
-    Mugen::Configuration::set("motif", motif.path());
+    ::Util::ReferenceCount<Storage::File> opened = Storage::instance().open(motif);
+    if (opened != NULL){
+        Global::debug(1) << "Motif path '" << opened->location()->toString() << "'" << std::endl;
+        Mugen::Configuration::set("motif", opened->location());
+    }
 }
 
 const Filesystem::AbsolutePath & Data::getMotif(){

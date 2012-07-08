@@ -124,7 +124,7 @@ namespace Util{
     double gameTicks(double ticks, double speed = 1);
 
     /* Load a motif from the configuration file or load the default system.def */
-    void loadMotif();
+    Filesystem::AbsolutePath loadMotif();
 }
 // End namespace Util
 
@@ -639,6 +639,7 @@ void set(const std::string &, const std::string &);
 void set(const std::string &, bool value);
 void set(const std::string &, int value);
 void set(const std::string &, double value);
+void set(const std::string &, Token * value);
 bool check(const std::string &);
 PaintownUtil::ReferenceCount<std::istringstream> get(const std::string &);
 }

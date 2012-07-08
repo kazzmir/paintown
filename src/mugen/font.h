@@ -65,7 +65,7 @@ protected:
     
 protected:
     // File
-    std::ifstream ifile;
+    PaintownUtil::ReferenceCount<Storage::File> ifile;
     std::string myfile;
     
     // defaults from mugen font file
@@ -86,7 +86,7 @@ protected:
     
     // int currentBank;
     
-    void load();
+    void load(const Filesystem::AbsolutePath & path);
 };
 
 }

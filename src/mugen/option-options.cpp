@@ -2169,7 +2169,7 @@ public:
     // endGame will be set true if it is a terminating option
     virtual void run(const ::Menu::Context & context){
         try{
-            Util::loadMotif();
+            Mugen::Data::getInstance().setMotif(Util::loadMotif());
             Mugen::run();
         } catch (const LoadException & le){
             ostringstream out;
