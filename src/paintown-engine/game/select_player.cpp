@@ -69,15 +69,15 @@ class Selecter: public Util::Logic, public Util::Draw {
             }
 
             if (source.useJoystick()){
-                Configuration & configuration = Configuration::config(source.getJoystick());
-                input.set(configuration.getJoystickUp(), Select::Up);
-                input.set(configuration.getJoystickDown(), Select::Down);
-                input.set(configuration.getJoystickLeft(), Select::Left);
-                input.set(configuration.getJoystickRight(), Select::Right);
-                input.set(configuration.getJoystickAttack1(), Select::Choose);
-                input.set(configuration.getJoystickAttack2(), Select::Choose);
-                input.set(configuration.getJoystickAttack3(), Select::Remap);
-                input.set(configuration.getJoystickQuit(), Select::Quit);
+                int joystick = source.getJoystick();
+                input.set(Configuration::getJoystickUp(joystick), Select::Up);
+                input.set(Configuration::getJoystickDown(joystick), Select::Down);
+                input.set(Configuration::getJoystickLeft(joystick), Select::Left);
+                input.set(Configuration::getJoystickRight(joystick), Select::Right);
+                input.set(Configuration::getJoystickAttack1(joystick), Select::Choose);
+                input.set(Configuration::getJoystickAttack2(joystick), Select::Choose);
+                input.set(Configuration::getJoystickAttack3(joystick), Select::Remap);
+                input.set(Configuration::getJoystickQuit(joystick), Select::Quit);
             }
 
             Util::ReferenceCount<MessageCollection> messages = select.getMessages("select");

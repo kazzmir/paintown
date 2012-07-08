@@ -6,8 +6,10 @@
 #include "util/input/input.h"
 #include "globals.h"
 #include "util/debug.h"
+/*
 #include "paintown-engine/object/animation.h"
 #include "paintown-engine/object/object.h"
+*/
 #include <sstream>
 #include <fstream>
 #include <stdlib.h>
@@ -94,6 +96,7 @@ public:
     bool last;
 };
 
+#if 0
 Configuration Configuration::defaultPlayer1Keys(){
     Disable disable;
     Configuration config;
@@ -161,9 +164,11 @@ Configuration Configuration::defaultPlayer2Keys(){
 
     return config;
 }
+#endif
 
-static map< int, Configuration * > configs;
+// static map< int, Configuration * > configs;
 
+/*
 Configuration & Configuration::config(int set){
     if (configs[set] == NULL ){
         configs[set] = new Configuration();
@@ -180,63 +185,22 @@ Configuration & Configuration::config(int set){
     }
     return *configs[set];
 }
+*/
 
 void Configuration::setDefaultKeys(int x){
-    switch (x){
-        case 0: {
-            config(x) = defaultPlayer1Keys();
-            break;
-        }
-        case 1: {
-            config(x) = defaultPlayer2Keys();
-            break;
-        }
-    }
+    /* FIXME */
+    /* Probably what we should do is set input/x/keys to an empty token and call all the
+     * get() methods to reset the key to their default
+     */
 }
 
 /* hopefully this is only used right before setting all the values
  * since the key mappings are bogus in here'
  */
-Configuration::Configuration():
-right(InvalidKey),
-left(InvalidKey),
-up(InvalidKey),
-down(InvalidKey),
-attack1(InvalidKey),
-attack2(InvalidKey),
-attack3(InvalidKey),
-attack4(InvalidKey),
-attack5(InvalidKey),
-attack6(InvalidKey),
-jump(InvalidKey),
-joystick_right(Joystick::Right),
-joystick_left(Joystick::Left),
-joystick_up(Joystick::Up),
-joystick_down(Joystick::Down),
-joystick_attack1(Joystick::Button1),
-joystick_attack2(Joystick::Button2),
-joystick_attack3(Joystick::Button3),
-joystick_attack4(Joystick::Button4),
-joystick_attack5(Joystick::Button5),
-joystick_attack6(Joystick::Button6),
-joystick_jump(Joystick::Button4),
-joystick_quit(Joystick::Quit){
+Configuration::Configuration(){
 }
 
-Configuration::Configuration(const Configuration & config):
-joystick_right(config.getJoystickRight()),
-joystick_left(config.getJoystickLeft()),
-joystick_up(config.getJoystickUp()),
-joystick_down(config.getJoystickDown()),
-joystick_attack1(config.getJoystickAttack1()),
-joystick_attack2(config.getJoystickAttack2()),
-joystick_attack3(config.getJoystickAttack3()),
-joystick_attack4(config.getJoystickAttack4()),
-joystick_attack5(config.getJoystickAttack5()),
-joystick_attack6(config.getJoystickAttack6()),
-joystick_jump(config.getJoystickJump()),
-joystick_quit(config.getJoystickQuit())
-{
+Configuration::Configuration(const Configuration & config){
     menuFont = config.menuFont;
 }
 
@@ -255,16 +219,6 @@ jump( jump ){
 	
 Configuration & Configuration::operator=(const Configuration & config){
     Disable disable;
-    setJoystickRight(config.getJoystickRight());
-    setJoystickLeft(config.getJoystickLeft());
-    setJoystickUp(config.getJoystickUp());
-    setJoystickDown(config.getJoystickDown());
-    setJoystickAttack1(config.getJoystickAttack1());
-    setJoystickAttack2(config.getJoystickAttack2());
-    setJoystickAttack3(config.getJoystickAttack3());
-    setJoystickJump(config.getJoystickJump());
-    setJoystickQuit(config.getJoystickQuit());
-
     setMenuFont(config.getMenuFont());
     return *this;
 }
@@ -272,6 +226,7 @@ Configuration & Configuration::operator=(const Configuration & config){
 Configuration::~Configuration(){
 }
 
+/*
 Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput which, int facing) const {
     switch (which){
         case Input::Forward : {
@@ -296,7 +251,9 @@ Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput 
         default : return Joystick::Invalid;
     }
 }
+*/
 
+/*
 int Configuration::getKey( Input::PaintownInput which, int facing ) const {
     switch (which){
         case Input::Forward : {
@@ -321,6 +278,7 @@ int Configuration::getKey( Input::PaintownInput which, int facing ) const {
         default : return -1;
     }
 }
+*/
         
 Util::ReferenceCount<Menu::FontInfo> Configuration::getMenuFont(){
     return menuFont;
@@ -360,54 +318,76 @@ void Configuration::setKey(int * key, int value){
     }
 }
 
-void Configuration::setRight( int i ){
-    setKey(&right, i);
+void Configuration::setRight(int i){
+    // setKey(&right, i);
 }
 
 void Configuration::setLeft( int i ){
-    setKey(&left, i);
+    // setKey(&left, i);
 }
 
 void Configuration::setUp( int i ){
-    setKey(&up, i);
+    // setKey(&up, i);
 }
 
 void Configuration::setDown( int i ){
-    setKey(&down, i);
+    // setKey(&down, i);
 }
 
 void Configuration::setAttack1( int i ){
-    setKey(&attack1, i);
+    // setKey(&attack1, i);
 }
 
 void Configuration::setAttack2( int i ){
-    setKey(&attack2, i);
+    // setKey(&attack2, i);
 }
 
 void Configuration::setAttack3( int i ){
-    setKey(&attack3, i);
+    // setKey(&attack3, i);
 }
 
 void Configuration::setAttack4( int i ){
-    setKey(&attack4, i);
+    // setKey(&attack4, i);
 }
 
 void Configuration::setAttack5( int i ){
-    setKey(&attack5, i);
+    // setKey(&attack5, i);
 }
 
 void Configuration::setAttack6( int i ){
-    setKey(&attack6, i);
+    // setKey(&attack6, i);
 }
 
 void Configuration::setJump( int i ){
-    setKey(&jump, i);
+    // setKey(&jump, i);
 }
 
 int Configuration::getKey(int config, const string & name, int defaultValue){
     ostringstream path;
     path << config_input << "/" << config << "/keys/" << name;
     return getProperty(path.str(), defaultValue);
+}
+
+/* this nonsense is just to convert a regular integer into an enum */
+static Configuration::JoystickInput intToJoystick(int a){
+    switch (a){
+        case Joystick::Up : return Joystick::Up;
+        case Joystick::Down : return Joystick::Down;
+        case Joystick::Left : return Joystick::Left;
+        case Joystick::Right : return Joystick::Right;
+        case Joystick::Button1 : return Joystick::Button1;
+        case Joystick::Button2 : return Joystick::Button2;
+        case Joystick::Button3 : return Joystick::Button3;
+        case Joystick::Button4 : return Joystick::Button4;
+        case Joystick::Quit : return Joystick::Quit;
+    }
+    return Joystick::Invalid;
+}
+
+Configuration::JoystickInput Configuration::getJoystickKey(int config, const string & name, JoystickInput defaultValue){
+    ostringstream path;
+    path << config_input << "/" << config << "/joystick/" << name;
+    return intToJoystick(getProperty(path.str(), defaultValue));
 }
 
 int Configuration::getRight(int config){
@@ -518,99 +498,99 @@ void Configuration::setJoystickKey(JoystickInput & key, const JoystickInput & wh
 }
 
 void Configuration::setJoystickRight(Configuration::JoystickInput i){
-    setJoystickKey(joystick_right, i);
+    // setJoystickKey(joystick_right, i);
 }
 
 void Configuration::setJoystickLeft(Configuration::JoystickInput i){
-    setJoystickKey(joystick_left, i);
+    // setJoystickKey(joystick_left, i);
 }
 
 void Configuration::setJoystickUp(Configuration::JoystickInput i){
-    setJoystickKey(joystick_up, i);
+    // setJoystickKey(joystick_up, i);
 }
 
 void Configuration::setJoystickDown(Configuration::JoystickInput i){
-    setJoystickKey(joystick_down, i);
+    // setJoystickKey(joystick_down, i);
 }
 
 void Configuration::setJoystickAttack1(Configuration::JoystickInput i){
-    setJoystickKey(joystick_attack1, i);
+    // setJoystickKey(joystick_attack1, i);
 }
 
 void Configuration::setJoystickAttack2(Configuration::JoystickInput i){
-    setJoystickKey(joystick_attack2, i);
+    // setJoystickKey(joystick_attack2, i);
 }
 
 void Configuration::setJoystickAttack3(Configuration::JoystickInput i){
-    setJoystickKey(joystick_attack3, i);
+    // setJoystickKey(joystick_attack3, i);
 }
 
 void Configuration::setJoystickAttack4(Configuration::JoystickInput i){
-    setJoystickKey(joystick_attack4, i);
+    // setJoystickKey(joystick_attack4, i);
 }
 
 void Configuration::setJoystickAttack5(Configuration::JoystickInput i){
-    setJoystickKey(joystick_attack5, i);
+    // setJoystickKey(joystick_attack5, i);
 }
 
 void Configuration::setJoystickAttack6(Configuration::JoystickInput i){
-    setJoystickKey(joystick_attack6, i);
+    // setJoystickKey(joystick_attack6, i);
 }
 
 void Configuration::setJoystickJump(Configuration::JoystickInput i){
-    setJoystickKey(joystick_jump, i);
+    // setJoystickKey(joystick_jump, i);
 }
 
 void Configuration::setJoystickQuit(Configuration::JoystickInput i){
-    setJoystickKey(joystick_quit, i);
+    // setJoystickKey(joystick_quit, i);
 }
 
-Configuration::JoystickInput Configuration::getJoystickRight() const {
-    return joystick_right;
+Configuration::JoystickInput Configuration::getJoystickRight(int config){
+    return getJoystickKey(config, "right", Joystick::Right);
 }
 
-Configuration::JoystickInput Configuration::getJoystickLeft() const {
-    return joystick_left;
+Configuration::JoystickInput Configuration::getJoystickLeft(int config){
+    return getJoystickKey(config, "left", Joystick::Left);
 }
 
-Configuration::JoystickInput Configuration::getJoystickUp() const {
-    return joystick_up;
+Configuration::JoystickInput Configuration::getJoystickUp(int config){
+    return getJoystickKey(config, "up", Joystick::Up);
 }
 
-Configuration::JoystickInput Configuration::getJoystickDown() const {
-    return joystick_down;
+Configuration::JoystickInput Configuration::getJoystickDown(int config){
+    return getJoystickKey(config, "down", Joystick::Down);
 }
 
-Configuration::JoystickInput Configuration::getJoystickAttack1() const {
-    return joystick_attack1;
+Configuration::JoystickInput Configuration::getJoystickAttack1(int config){
+    return getJoystickKey(config, "attack1", Joystick::Button1);
 }
 
-Configuration::JoystickInput Configuration::getJoystickAttack2() const {
-    return joystick_attack2;
+Configuration::JoystickInput Configuration::getJoystickAttack2(int config){
+    return getJoystickKey(config, "attack2", Joystick::Button2);
 }
 
-Configuration::JoystickInput Configuration::getJoystickAttack3() const {
-    return joystick_attack3;
+Configuration::JoystickInput Configuration::getJoystickAttack3(int config){
+    return getJoystickKey(config, "attack3", Joystick::Button3);
 }
 
-Configuration::JoystickInput Configuration::getJoystickAttack4() const {
-    return joystick_attack4;
+Configuration::JoystickInput Configuration::getJoystickAttack4(int config){
+    return getJoystickKey(config, "attack4", Joystick::Button4);
 }
 
-Configuration::JoystickInput Configuration::getJoystickAttack5() const {
-    return joystick_attack5;
+Configuration::JoystickInput Configuration::getJoystickAttack5(int config){
+    return getJoystickKey(config, "attack5", Joystick::Button5);
 }
 
-Configuration::JoystickInput Configuration::getJoystickAttack6() const {
-    return joystick_attack6;
+Configuration::JoystickInput Configuration::getJoystickAttack6(int config){
+    return getJoystickKey(config, "attack6", Joystick::Button6);
 }
 
-Configuration::JoystickInput Configuration::getJoystickJump() const {
-    return joystick_jump;
+Configuration::JoystickInput Configuration::getJoystickJump(int config){
+    return getJoystickKey(config, "jump", Joystick::Button4);
 }
 
-Configuration::JoystickInput Configuration::getJoystickQuit() const {
-    return joystick_quit;
+Configuration::JoystickInput Configuration::getJoystickQuit(int config){
+    return getJoystickKey(config, "quit", Joystick::Quit);
 }
 
 string Configuration::getCurrentGame(){
@@ -621,22 +601,6 @@ string Configuration::getCurrentGame(){
 void Configuration::setCurrentGame(const std::string & str){
     setProperty(config_current_game, str);
     saveConfiguration();
-}
-
-/* this nonsense is just to convert a regular integer into an enum */
-static Configuration::JoystickInput intToJoystick(int a){
-    switch (a){
-        case Joystick::Up : return Joystick::Up;
-        case Joystick::Down : return Joystick::Down;
-        case Joystick::Left : return Joystick::Left;
-        case Joystick::Right : return Joystick::Right;
-        case Joystick::Button1 : return Joystick::Button1;
-        case Joystick::Button2 : return Joystick::Button2;
-        case Joystick::Button3 : return Joystick::Button3;
-        case Joystick::Button4 : return Joystick::Button4;
-        case Joystick::Quit : return Joystick::Quit;
-    }
-    return Joystick::Invalid;
 }
 
 void Configuration::disableSave(){
@@ -924,8 +888,8 @@ void Configuration::loadConfigurations(){
 }
 
 /* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
+/*
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
-    /*
     typedef int (Configuration::*get_func)() const;
     Token * config = new Token();
 
@@ -956,10 +920,11 @@ Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
     }
 
     return config;
-    */
     return NULL;
 }
+*/
 
+/*
 Token * Configuration::saveJoystick( int num, Configuration * configuration ){
     typedef JoystickInput (Configuration::*get_func)() const;
     Token * config = new Token();
@@ -993,6 +958,7 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
 
     return config;
 }
+*/
 
 void Configuration::saveConfiguration(){
 

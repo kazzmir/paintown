@@ -184,6 +184,35 @@ const InputSource & Player::getInput() const {
     throw std::exception();
 }
 
+static Configuration::JoystickInput getJoystickKey(int player, Input::PaintownInput which, int facing){
+    switch (which){
+        case Input::Forward : {
+            if (facing == Paintown::Object::FACING_LEFT){ 
+                return Configuration::getJoystickLeft(player);
+            } else {
+                return Configuration::getJoystickRight(player);
+            }
+        }
+        case Input::Back : {
+            if (facing == Paintown::Object::FACING_LEFT){
+                return Configuration::getJoystickRight(player);
+            } else {
+                return Configuration::getJoystickLeft(player);
+            }
+        }
+        case Input::Up: return Configuration::getJoystickUp(player);
+        case Input::Down: return Configuration::getJoystickDown(player);
+        case Input::Attack1: return Configuration::getJoystickAttack1(player);
+        case Input::Attack2: return Configuration::getJoystickAttack2(player);
+        case Input::Attack3: return Configuration::getJoystickAttack3(player);
+        case Input::Attack4: return Configuration::getJoystickAttack4(player);
+        case Input::Attack5: return Configuration::getJoystickAttack5(player);
+        case Input::Attack6: return Configuration::getJoystickAttack6(player);
+        case Input::Jump: return Configuration::getJoystickJump(player);
+        default: return Joystick::Invalid;
+    }
+}
+
 static int getKey(int player, Input::PaintownInput which, int facing){
     switch (which){
         case Input::Forward: {
@@ -235,7 +264,6 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     int facing = getFacing();
     /* set up keyboard */
     if (useSource.useKeyboard()){
-        Configuration & configuration = Configuration::config(useSource.getKeyboard());
         enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
         for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
             input.set(getKey(useSource.getKeyboard(), all[i], facing), 0, false, all[i]);
@@ -244,10 +272,9 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
 
     /* set up joystick */
     if (useSource.useJoystick()){
-        Configuration & configuration = Configuration::config(useSource.getJoystick());
         enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
         for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
-            input.set(configuration.getJoystickKey(all[i], facing), 0, false, all[i]);
+            input.set(getJoystickKey(useSource.getJoystick(), all[i], facing), 0, false, all[i]);
         }
     }
 
@@ -296,7 +323,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
             inputHold.set(getKey(useSource.getKeyboard(), allHold[i], facingHold), 0, false, allHold[i]);
         }
         if (useSource.useJoystick()){
-            inputHold.set(Configuration::config(useSource.getJoystick()).getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
+            inputHold.set(getJoystickKey(useSource.getJoystick(), allHold[i], facingHold), 0, false, allHold[i]);
         }
     }
 

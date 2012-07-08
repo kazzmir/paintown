@@ -2728,14 +2728,14 @@ public:
         input.set(Keyboard::Key_ALT, Special);
         input.set(Keyboard::Key_SPACE, ShootRight);
         
-        input.set(Configuration::config(0).getJoystickUp(), Up);
-        input.set(Configuration::config(0).getJoystickDown(), Down);
-        input.set(Configuration::config(0).getJoystickLeft(), Left);
-        input.set(Configuration::config(0).getJoystickRight(), Right);
-        input.set(Configuration::config(0).getJoystickAttack1(), ShootLeft);
-        input.set(Configuration::config(0).getJoystickAttack2(), ShootRight);
-        input.set(Configuration::config(0).getJoystickAttack3(), Special);
-        input.set(Configuration::config(0).getJoystickAttack4(), Special);
+        input.set(Configuration::getJoystickUp(0), Up);
+        input.set(Configuration::getJoystickDown(0), Down);
+        input.set(Configuration::getJoystickLeft(0), Left);
+        input.set(Configuration::getJoystickRight(0), Right);
+        input.set(Configuration::getJoystickAttack1(0), ShootLeft);
+        input.set(Configuration::getJoystickAttack2(0), ShootRight);
+        input.set(Configuration::getJoystickAttack3(0), Special);
+        input.set(Configuration::getJoystickAttack4(0), Special);
     }
 
     MissileDefendGame defend;

@@ -214,10 +214,10 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Configuration::getRight(0), delay, false, Mugen::Right);
     input.set(Configuration::getLeft(0), delay, false, Mugen::Left);
 
-    input.set(Configuration::config(0).getJoystickUp(), delay, false, Mugen::Up);
-    input.set(Configuration::config(0).getJoystickLeft(), delay, false, Mugen::Left);
-    input.set(Configuration::config(0).getJoystickRight(), delay, false, Mugen::Right);
-    input.set(Configuration::config(0).getJoystickDown(), delay, false, Mugen::Down);
+    input.set(Configuration::getJoystickUp(0), delay, false, Mugen::Up);
+    input.set(Configuration::getJoystickLeft(0), delay, false, Mugen::Left);
+    input.set(Configuration::getJoystickRight(0), delay, false, Mugen::Right);
+    input.set(Configuration::getJoystickDown(0), delay, false, Mugen::Down);
 
     input.set(Configuration::getAttack1(0), delay, false, Mugen::A);
     input.set(Configuration::getAttack2(0), delay, false, Mugen::B);
@@ -229,13 +229,13 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Keyboard::Key_ENTER, delay, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
 
-    input.set(Configuration::config(0).getJoystickQuit(), 0, true, Mugen::Esc);
-    input.set(Configuration::config(0).getJoystickAttack1(), delay, false, Mugen::A);
-    input.set(Configuration::config(0).getJoystickAttack2(), delay, false, Mugen::B);
-    input.set(Configuration::config(0).getJoystickAttack3(), delay, false, Mugen::C);
-    input.set(Configuration::config(0).getJoystickAttack4(), delay, false, Mugen::X);
-    input.set(Configuration::config(0).getJoystickAttack5(), delay, false, Mugen::Y);
-    input.set(Configuration::config(0).getJoystickAttack6(), delay, false, Mugen::Z);
+    input.set(Configuration::getJoystickQuit(0), 0, true, Mugen::Esc);
+    input.set(Configuration::getJoystickAttack1(0), delay, false, Mugen::A);
+    input.set(Configuration::getJoystickAttack2(0), delay, false, Mugen::B);
+    input.set(Configuration::getJoystickAttack3(0), delay, false, Mugen::C);
+    input.set(Configuration::getJoystickAttack4(0), delay, false, Mugen::X);
+    input.set(Configuration::getJoystickAttack5(0), delay, false, Mugen::Y);
+    input.set(Configuration::getJoystickAttack6(0), delay, false, Mugen::Z);
 
     return input;
 }
@@ -249,10 +249,10 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Configuration::getLeft(0), delay, false, Mugen::Right);
     input.set(Configuration::getRight(0), delay, false, Mugen::Left);
 
-    input.set(Configuration::config(0).getJoystickUp(), delay, false, Mugen::Up);
-    input.set(Configuration::config(0).getJoystickRight(), delay, false, Mugen::Left);
-    input.set(Configuration::config(0).getJoystickLeft(), delay, false, Mugen::Right);
-    input.set(Configuration::config(0).getJoystickDown(), delay, false, Mugen::Down);
+    input.set(Configuration::getJoystickUp(0), delay, false, Mugen::Up);
+    input.set(Configuration::getJoystickRight(0), delay, false, Mugen::Left);
+    input.set(Configuration::getJoystickLeft(0), delay, false, Mugen::Right);
+    input.set(Configuration::getJoystickDown(0), delay, false, Mugen::Down);
 
     input.set(Configuration::getAttack1(0), delay, false, Mugen::A);
     input.set(Configuration::getAttack2(0), delay, false, Mugen::B);
@@ -264,13 +264,13 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Keyboard::Key_ENTER, 0, true, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
 
-    input.set(Configuration::config(0).getJoystickQuit(), 0, true, Mugen::Esc);
-    input.set(Configuration::config(0).getJoystickAttack1(), delay, false, Mugen::A);
-    input.set(Configuration::config(0).getJoystickAttack2(), delay, false, Mugen::B);
-    input.set(Configuration::config(0).getJoystickAttack3(), delay, false, Mugen::C);
-    input.set(Configuration::config(0).getJoystickAttack4(), delay, false, Mugen::X);
-    input.set(Configuration::config(0).getJoystickAttack5(), delay, false, Mugen::Y);
-    input.set(Configuration::config(0).getJoystickAttack6(), delay, false, Mugen::Z);
+    input.set(Configuration::getJoystickQuit(0), 0, true, Mugen::Esc);
+    input.set(Configuration::getJoystickAttack1(0), delay, false, Mugen::A);
+    input.set(Configuration::getJoystickAttack2(0), delay, false, Mugen::B);
+    input.set(Configuration::getJoystickAttack3(0), delay, false, Mugen::C);
+    input.set(Configuration::getJoystickAttack4(0), delay, false, Mugen::X);
+    input.set(Configuration::getJoystickAttack5(0), delay, false, Mugen::Y);
+    input.set(Configuration::getJoystickAttack6(0), delay, false, Mugen::Z);
 
     return input;
 }

@@ -20,7 +20,7 @@ public:
 
     typedef Joystick::Key JoystickInput;
 
-    static Configuration & config(int x);
+    // static Configuration & config(int x);
     
     static void setDefaultKeys(int x);
 
@@ -32,20 +32,17 @@ public:
         FreeForAll = 2,
     };
 
-    /* return a Keyboard::Key_X based on some PAIN_KEY_X */
-    JoystickInput getJoystickKey(Input::PaintownInput which, int facing) const; 
-
-    void setRight(int i);
-    void setLeft(int i);
-    void setUp(int i);
-    void setDown(int i);
-    void setAttack1(int i);
-    void setAttack2(int i);
-    void setAttack3(int i);
-    void setAttack4(int i);
-    void setAttack5(int i);
-    void setAttack6(int i);
-    void setJump(int i);
+    static void setRight(int i);
+    static void setLeft(int i);
+    static void setUp(int i);
+    static void setDown(int i);
+    static void setAttack1(int i);
+    static void setAttack2(int i);
+    static void setAttack3(int i);
+    static void setAttack4(int i);
+    static void setAttack5(int i);
+    static void setAttack6(int i);
+    static void setJump(int i);
 
     /* Config is the associated player */
     static int getRight(int config);
@@ -60,31 +57,31 @@ public:
     static int getAttack6(int config);
     static int getJump(int config);
 
-    void setJoystickRight(JoystickInput i);
-    void setJoystickLeft(JoystickInput i);
-    void setJoystickUp(JoystickInput i);
-    void setJoystickDown(JoystickInput i);
-    void setJoystickAttack1(JoystickInput i);
-    void setJoystickAttack2(JoystickInput i);
-    void setJoystickAttack3(JoystickInput i);
-    void setJoystickAttack4(JoystickInput i);
-    void setJoystickAttack5(JoystickInput i);
-    void setJoystickAttack6(JoystickInput i);
-    void setJoystickJump(JoystickInput i);
-    void setJoystickQuit(JoystickInput i);
+    static void setJoystickRight(JoystickInput i);
+    static void setJoystickLeft(JoystickInput i);
+    static void setJoystickUp(JoystickInput i);
+    static void setJoystickDown(JoystickInput i);
+    static void setJoystickAttack1(JoystickInput i);
+    static void setJoystickAttack2(JoystickInput i);
+    static void setJoystickAttack3(JoystickInput i);
+    static void setJoystickAttack4(JoystickInput i);
+    static void setJoystickAttack5(JoystickInput i);
+    static void setJoystickAttack6(JoystickInput i);
+    static void setJoystickJump(JoystickInput i);
+    static void setJoystickQuit(JoystickInput i);
 
-    JoystickInput getJoystickRight() const;
-    JoystickInput getJoystickLeft() const;
-    JoystickInput getJoystickUp() const;
-    JoystickInput getJoystickDown() const;
-    JoystickInput getJoystickAttack1() const;
-    JoystickInput getJoystickAttack2() const;
-    JoystickInput getJoystickAttack3() const;
-    JoystickInput getJoystickAttack4() const;
-    JoystickInput getJoystickAttack5() const;
-    JoystickInput getJoystickAttack6() const;
-    JoystickInput getJoystickJump() const;
-    JoystickInput getJoystickQuit() const;
+    static JoystickInput getJoystickRight(int config);
+    static JoystickInput getJoystickLeft(int config);
+    static JoystickInput getJoystickUp(int config);
+    static JoystickInput getJoystickDown(int config);
+    static JoystickInput getJoystickAttack1(int config);
+    static JoystickInput getJoystickAttack2(int config);
+    static JoystickInput getJoystickAttack3(int config);
+    static JoystickInput getJoystickAttack4(int config);
+    static JoystickInput getJoystickAttack5(int config);
+    static JoystickInput getJoystickAttack6(int config);
+    static JoystickInput getJoystickJump(int config);
+    static JoystickInput getJoystickQuit(int config);
 
 public:
     static double getGameSpeed();
@@ -167,21 +164,26 @@ protected:
 
     Configuration & operator=(const Configuration & config);
 
+    /*
     static Configuration defaultPlayer1Keys();
     static Configuration defaultPlayer2Keys();
+    */
 
+    /*
     static Token * saveKeyboard( int num, Configuration * configuration );
     static Token * saveJoystick( int num, Configuration * configuration );
+    */
 
     // static void updateToken(const std::string & path, const std::string & value);
     static int getKey(int config, const std::string & name, int defaultValue);
-    int getKey( Input::PaintownInput which, int facing ) const;
+    static JoystickInput getJoystickKey(int config, const std::string & name, JoystickInput defaultValue);
 
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);
 
 private:
     /* keyboard */
+    /*
     int right;
     int left;
     int up;
@@ -193,8 +195,10 @@ private:
     int attack5;
     int attack6;
     int jump;
+    */
 
     /* joystick */
+    /*
     JoystickInput joystick_right;
     JoystickInput joystick_left;
     JoystickInput joystick_up;
@@ -207,8 +211,9 @@ private:
     JoystickInput joystick_attack6;
     JoystickInput joystick_jump;
     JoystickInput joystick_quit;
+    */
 
-    std::map<std::string, Util::ReferenceCount<Configuration> > namespaces;
+    // std::map<std::string, Util::ReferenceCount<Configuration> > namespaces;
 
 private:
     /* whether to save the configuration or not */

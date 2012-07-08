@@ -245,10 +245,10 @@ public:
             }
 
             if (source.useJoystick()){
-                Configuration & configuration = Configuration::config(source.getJoystick());
-                input.set(configuration.getJoystickUp(), 0, true, Up);
-                input.set(configuration.getJoystickDown(), 0, true, Down);
-                input.set(configuration.getJoystickQuit(), 0, false, Quit);
+                int config = source.getJoystick();
+                input.set(Configuration::getJoystickUp(config), 0, true, Up);
+                input.set(Configuration::getJoystickDown(config), 0, true, Down);
+                input.set(Configuration::getJoystickQuit(config), 0, false, Quit);
             }
 
             list.setJustification(Gui::LeftJustify);

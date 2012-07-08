@@ -530,7 +530,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_F6, Pause);
             gameInput.set(Keyboard::Key_F7, ForwardFrame);
             gameInput.set(Keyboard::Key_ESC, QuitGame);
-            gameInput.set(::Configuration::config(0).getJoystickQuit(), QuitGame);
+            gameInput.set(::Configuration::getJoystickQuit(0), QuitGame);
             gameInput.set(Keyboard::Key_F5, SetHealth);
             gameInput.set(Keyboard::Key_F9, ShowFps);
             gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
