@@ -1621,34 +1621,34 @@ public:
                     void setKey(int player, const Mugen::Keys & key, int code){
                         switch(key){
                             case Mugen::Up:
-                                ::Configuration::setUp(code);
+                                ::Configuration::setUp(player, code);
                                 break;
                             case Mugen::Down:
-                                ::Configuration::setDown(code);
+                                ::Configuration::setDown(player, code);
                                 break;
                             case Mugen::Left:
-                                ::Configuration::setLeft(code);
+                                ::Configuration::setLeft(player, code);
                                 break;
                             case Mugen::Right:
-                                ::Configuration::setRight(code);
+                                ::Configuration::setRight(player, code);
                                 break;
                             case Mugen::A:
-                                ::Configuration::setAttack1(code);
+                                ::Configuration::setAttack1(player, code);
                                 break;
                             case Mugen::B:
-                                ::Configuration::setAttack2(code);
+                                ::Configuration::setAttack2(player, code);
                                 break;
                             case Mugen::C:
-                                ::Configuration::setAttack3(code);
+                                ::Configuration::setAttack3(player, code);
                                 break;
                             case Mugen::X:
-                                ::Configuration::setAttack4(code);
+                                ::Configuration::setAttack4(player, code);
                                 break;
                             case Mugen::Y:
-                                ::Configuration::setAttack5(code);
+                                ::Configuration::setAttack5(player, code);
                                 break;
                             case Mugen::Z:
-                                ::Configuration::setAttack6(code);
+                                ::Configuration::setAttack6(player, code);
                                 break;
                             case Mugen::Enter:
                             case Mugen::Start:

@@ -203,6 +203,9 @@ static std::vector<std::string> split(std::string str, char splitter){
     return strings;
 }
 
+static std::string last(const vector<string> & what){
+    return what.at(what.size() - 1);
+}
 
 /* Create a token that contains the entire path.
  * path = "foo/bar/baz"
@@ -224,6 +227,104 @@ static Token * createToken(const string & path){
 }
 
 
+
+
+/* Create a token with the given path and give it a value */
+template <class Value>
+static Token * createToken(const string & path, const Value & value){
+    Token * out = createToken(path);
+    *out << value;
+    return out;
+}
+
+template <class Value, class Value2>
+static Token * createToken(const string & path, const Value & value, const Value2 & value2){
+    Token * out = createToken(path);
+    *out << value;
+    *out << value2;
+    return out;
+}
+
+static void updateToken(Token * data, const std::string & path, Token * add){
+    if (data == NULL){
+        delete add;
+    }
+
+    Token * found = data->findToken(path);
+    /* See if the token already exists. If it does then remove it from its
+     * parent and add a new token to the parent with the updated value.
+     */
+    if (found != NULL){
+        Token * parent = found->getParent();
+        parent->removeToken(found);
+        parent->addToken(add);
+    } else {
+        const vector<string> paths = split(path, '/');
+        Token * start = data;
+        for (int index = 1; index < paths.size() - 1; index++){
+            string where = paths[index];
+            Token * next = start->findToken(string("_/") + where);
+            if (next == NULL){
+                ostringstream out;
+                bool first = true;
+                for (int from = index; from < paths.size(); from++){
+                    if (!first){
+                        out << "/";
+                    }
+                    out << paths[from];
+                    first = false;
+                }
+
+                /* If we run out of found paths then create a token with an empty
+                 * value for the unfound paths we have so far and call updateToken
+                 * again. This time the entire path will be there
+                 * so the 'found = ...' logic will work.
+                 */
+                start->addToken(createToken(out.str(), string("")));
+                updateToken(data, path, add);
+                return;
+            } else {
+                start = next;
+            }
+        }
+
+        /* It probably shouldn't be possible to get here. If the entire
+         * path was there then the findToken() logic above should have worked.
+         */
+        start->addToken(add);
+    }
+}
+
+template <class Value>
+static void updateToken(Token * data, const string & path, const Value & value){
+    if (data == NULL){
+        return;
+    }
+
+    updateToken(data, path, createToken(last(split(path, '/')), value));
+}
+
+void Configuration::setProperty(const string & name, const string & value){
+    updateToken(data.raw(), string(config_configuration) + "/" + name, value);
+    saveConfiguration();
+}
+
+static Token * getPropertyX(Token * data, const std::string & path){
+    return data->findToken(string(config_configuration) + "/" + path);
+}
+
+template <class Out>
+static Out getPropertyX(Token * data, const std::string & path, const Out & defaultValue){
+    if (data == NULL){
+        return defaultValue;
+    }
+    Out out;
+    if (data->match(string(config_configuration) + "/" + path, out)){
+        return out;
+    }
+    updateToken(data, string(config_configuration) + "/" + path, defaultValue);
+    return defaultValue;
+}
 
 void Configuration::setDefaultKeys(int config){
     /* Set the keys token to an empty value */
@@ -363,55 +464,57 @@ int Configuration::getMenuFontHeight(){
     return getProperty(config_menu_font_height, 24);
 }
 
-void Configuration::setKey(int * key, int value){
+void Configuration::setKey(int config, const string & name, int value){
     if (value != InvalidKey){
-        *key = value;
+        ostringstream path;
+        path << config_configuration << "/" << config_input << "/" << config << "/keys/" << name;
+        updateToken(data.raw(), path.str(), value);
         saveConfiguration();
     }
 }
 
-void Configuration::setRight(int i){
-    // setKey(&right, i);
+void Configuration::setRight(int config, int i){
+    setKey(config, "right", i);
 }
 
-void Configuration::setLeft( int i ){
-    // setKey(&left, i);
+void Configuration::setLeft(int config, int i){
+    setKey(config, "left", i);
 }
 
-void Configuration::setUp( int i ){
-    // setKey(&up, i);
+void Configuration::setUp(int config, int i){
+    setKey(config, "up", i);
 }
 
-void Configuration::setDown( int i ){
-    // setKey(&down, i);
+void Configuration::setDown(int config, int i){
+    setKey(config, "down", i);
 }
 
-void Configuration::setAttack1( int i ){
-    // setKey(&attack1, i);
+void Configuration::setAttack1(int config, int i){
+    setKey(config, "attack1", i);
 }
 
-void Configuration::setAttack2( int i ){
-    // setKey(&attack2, i);
+void Configuration::setAttack2(int config, int i){
+    setKey(config, "attack2", i);
 }
 
-void Configuration::setAttack3( int i ){
-    // setKey(&attack3, i);
+void Configuration::setAttack3(int config, int i){
+    setKey(config, "attack3", i);
 }
 
-void Configuration::setAttack4( int i ){
-    // setKey(&attack4, i);
+void Configuration::setAttack4(int config, int i){
+    setKey(config, "attack4", i);
 }
 
-void Configuration::setAttack5( int i ){
-    // setKey(&attack5, i);
+void Configuration::setAttack5(int config, int i){
+    setKey(config, "attack5", i);
 }
 
-void Configuration::setAttack6( int i ){
-    // setKey(&attack6, i);
+void Configuration::setAttack6(int config, int i){
+    setKey(config, "attack6", i);
 }
 
-void Configuration::setJump( int i ){
-    // setKey(&jump, i);
+void Configuration::setJump(int config, int i){
+    setKey(config, "jump", i);
 }
 
 int Configuration::getKey(int config, const string & name, int defaultValue){
@@ -542,59 +645,61 @@ int Configuration::getJump(int config){
     return getKey(config, "jump", normal);
 }
 
-void Configuration::setJoystickKey(JoystickInput & key, const JoystickInput & what){
+void Configuration::setJoystickKey(int config, const std::string & name, const Configuration::JoystickInput & what){
     if (what != Joystick::Invalid){
-        key = what;
+        ostringstream path;
+        path << config_configuration << "/" << config_input << "/" << config << "/joystick/" << name;
+        updateToken(data.raw(), path.str(), what);
         saveConfiguration();
     }
 }
 
-void Configuration::setJoystickRight(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_right, i);
+void Configuration::setJoystickRight(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "right", i);
 }
 
-void Configuration::setJoystickLeft(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_left, i);
+void Configuration::setJoystickLeft(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "left", i);
 }
 
-void Configuration::setJoystickUp(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_up, i);
+void Configuration::setJoystickUp(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "up", i);
 }
 
-void Configuration::setJoystickDown(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_down, i);
+void Configuration::setJoystickDown(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "down", i);
 }
 
-void Configuration::setJoystickAttack1(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_attack1, i);
+void Configuration::setJoystickAttack1(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "attack1", i);
 }
 
-void Configuration::setJoystickAttack2(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_attack2, i);
+void Configuration::setJoystickAttack2(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "attack2", i);
 }
 
-void Configuration::setJoystickAttack3(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_attack3, i);
+void Configuration::setJoystickAttack3(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "attack3", i);
 }
 
-void Configuration::setJoystickAttack4(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_attack4, i);
+void Configuration::setJoystickAttack4(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "attack4", i);
 }
 
-void Configuration::setJoystickAttack5(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_attack5, i);
+void Configuration::setJoystickAttack5(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "attack5", i);
 }
 
-void Configuration::setJoystickAttack6(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_attack6, i);
+void Configuration::setJoystickAttack6(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "attack6", i);
 }
 
-void Configuration::setJoystickJump(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_jump, i);
+void Configuration::setJoystickJump(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "jump", i);
 }
 
-void Configuration::setJoystickQuit(Configuration::JoystickInput i){
-    // setJoystickKey(joystick_quit, i);
+void Configuration::setJoystickQuit(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "quit", i);
 }
 
 Configuration::JoystickInput Configuration::getJoystickRight(int config){
@@ -1155,106 +1260,6 @@ Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::strin
 }
 */
 
-static std::string last(const vector<string> & what){
-    return what.at(what.size() - 1);
-}
-
-/* Create a token with the given path and give it a value */
-template <class Value>
-static Token * createToken(const string & path, const Value & value){
-    Token * out = createToken(path);
-    *out << value;
-    return out;
-}
-
-template <class Value, class Value2>
-static Token * createToken(const string & path, const Value & value, const Value2 & value2){
-    Token * out = createToken(path);
-    *out << value;
-    *out << value2;
-    return out;
-}
-
-static void updateToken(Token * data, const std::string & path, Token * add){
-    if (data == NULL){
-        delete add;
-    }
-
-    Token * found = data->findToken(path);
-    /* See if the token already exists. If it does then remove it from its
-     * parent and add a new token to the parent with the updated value.
-     */
-    if (found != NULL){
-        Token * parent = found->getParent();
-        parent->removeToken(found);
-        parent->addToken(add);
-    } else {
-        const vector<string> paths = split(path, '/');
-        Token * start = data;
-        for (int index = 1; index < paths.size() - 1; index++){
-            string where = paths[index];
-            Token * next = start->findToken(string("_/") + where);
-            if (next == NULL){
-                ostringstream out;
-                bool first = true;
-                for (int from = index; from < paths.size(); from++){
-                    if (!first){
-                        out << "/";
-                    }
-                    out << paths[from];
-                    first = false;
-                }
-
-                /* If we run out of found paths then create a token with an empty
-                 * value for the unfound paths we have so far and call updateToken
-                 * again. This time the entire path will be there
-                 * so the 'found = ...' logic will work.
-                 */
-                start->addToken(createToken(out.str(), string("")));
-                updateToken(data, path, add);
-                return;
-            } else {
-                start = next;
-            }
-        }
-
-        /* It probably shouldn't be possible to get here. If the entire
-         * path was there then the findToken() logic above should have worked.
-         */
-        start->addToken(add);
-    }
-}
-
-template <class Value>
-static void updateToken(Token * data, const string & path, const Value & value){
-    if (data == NULL){
-        return;
-    }
-
-    updateToken(data, path, createToken(last(split(path, '/')), value));
-}
-
-void Configuration::setProperty(const string & name, const string & value){
-    updateToken(data.raw(), string(config_configuration) + "/" + name, value);
-    saveConfiguration();
-}
-
-static Token * getPropertyX(Token * data, const std::string & path){
-    return data->findToken(string(config_configuration) + "/" + path);
-}
-
-template <class Out>
-static Out getPropertyX(Token * data, const std::string & path, const Out & defaultValue){
-    if (data == NULL){
-        return defaultValue;
-    }
-    Out out;
-    if (data->match(string(config_configuration) + "/" + path, out)){
-        return out;
-    }
-    updateToken(data, string(config_configuration) + "/" + path, defaultValue);
-    return defaultValue;
-}
 
 int Configuration::getProperty(const std::string & path, int defaultValue){
     return getPropertyX(data.raw(), path, defaultValue);

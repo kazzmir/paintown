@@ -32,17 +32,17 @@ public:
         FreeForAll = 2,
     };
 
-    static void setRight(int i);
-    static void setLeft(int i);
-    static void setUp(int i);
-    static void setDown(int i);
-    static void setAttack1(int i);
-    static void setAttack2(int i);
-    static void setAttack3(int i);
-    static void setAttack4(int i);
-    static void setAttack5(int i);
-    static void setAttack6(int i);
-    static void setJump(int i);
+    static void setRight(int config, int i);
+    static void setLeft(int config, int i);
+    static void setUp(int config, int i);
+    static void setDown(int config, int i);
+    static void setAttack1(int config, int i);
+    static void setAttack2(int config, int i);
+    static void setAttack3(int config, int i);
+    static void setAttack4(int config, int i);
+    static void setAttack5(int config, int i);
+    static void setAttack6(int config, int i);
+    static void setJump(int config, int i);
 
     /* Config is the associated player */
     static int getRight(int config);
@@ -57,18 +57,18 @@ public:
     static int getAttack6(int config);
     static int getJump(int config);
 
-    static void setJoystickRight(JoystickInput i);
-    static void setJoystickLeft(JoystickInput i);
-    static void setJoystickUp(JoystickInput i);
-    static void setJoystickDown(JoystickInput i);
-    static void setJoystickAttack1(JoystickInput i);
-    static void setJoystickAttack2(JoystickInput i);
-    static void setJoystickAttack3(JoystickInput i);
-    static void setJoystickAttack4(JoystickInput i);
-    static void setJoystickAttack5(JoystickInput i);
-    static void setJoystickAttack6(JoystickInput i);
-    static void setJoystickJump(JoystickInput i);
-    static void setJoystickQuit(JoystickInput i);
+    static void setJoystickRight(int config, JoystickInput i);
+    static void setJoystickLeft(int config, JoystickInput i);
+    static void setJoystickUp(int config, JoystickInput i);
+    static void setJoystickDown(int config, JoystickInput i);
+    static void setJoystickAttack1(int config, JoystickInput i);
+    static void setJoystickAttack2(int config, JoystickInput i);
+    static void setJoystickAttack3(int config, JoystickInput i);
+    static void setJoystickAttack4(int config, JoystickInput i);
+    static void setJoystickAttack5(int config, JoystickInput i);
+    static void setJoystickAttack6(int config, JoystickInput i);
+    static void setJoystickJump(int config, JoystickInput i);
+    static void setJoystickQuit(int config, JoystickInput i);
 
     static JoystickInput getJoystickRight(int config);
     static JoystickInput getJoystickLeft(int config);
@@ -178,8 +178,8 @@ protected:
     static int getKey(int config, const std::string & name, int defaultValue);
     static JoystickInput getJoystickKey(int config, const std::string & name, JoystickInput defaultValue);
 
-    void setKey(int * key, int value);
-    void setJoystickKey(JoystickInput & key, const JoystickInput & what);
+    static void setKey(int config, const std::string & name, int value);
+    static void setJoystickKey(int config, const std::string & name, const JoystickInput & what);
 
 private:
     /* keyboard */
