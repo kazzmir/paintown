@@ -56,16 +56,16 @@ class Selecter: public Util::Logic, public Util::Draw {
         is_done(false){
             // input.set(Keyboard::Key_ESC, 0, true, Quit);
             if (source.useKeyboard()){
-                Configuration & configuration = Configuration::config(source.getKeyboard());
-                input.set(configuration.getRight(), Select::Right);
-                input.set(configuration.getUp(), Select::Up);
-                input.set(configuration.getDown(), Select::Down);
-                input.set(configuration.getLeft(), Select::Left);
+                int player = source.getKeyboard();
+                input.set(Configuration::getRight(player), Select::Right);
+                input.set(Configuration::getUp(player), Select::Up);
+                input.set(Configuration::getDown(player), Select::Down);
+                input.set(Configuration::getLeft(player), Select::Left);
                 input.set(Keyboard::Key_ESC, Select::Quit);
                 input.set(Keyboard::Key_TAB, Select::Remap);
                 input.set(Keyboard::Key_ENTER, Select::Choose);
                 input.set(Keyboard::Key_SPACE, Select::Choose);
-                input.set(configuration.getAttack1(), Select::Choose);
+                input.set(Configuration::getAttack1(player), Select::Choose);
             }
 
             if (source.useJoystick()){

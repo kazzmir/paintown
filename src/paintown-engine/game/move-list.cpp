@@ -240,9 +240,8 @@ public:
             if (source.useKeyboard()){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
-                Configuration & configuration = Configuration::config(source.getKeyboard());
-                input.set(configuration.getUp(), 0, true, Up);
-                input.set(configuration.getDown(), 0, true, Down);
+                input.set(Configuration::getUp(source.getKeyboard()), 0, true, Up);
+                input.set(Configuration::getDown(source.getKeyboard()), 0, true, Down);
             }
 
             if (source.useJoystick()){

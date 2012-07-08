@@ -1568,25 +1568,25 @@ public:
                     static std::string getKeyName(int player, const Mugen::Keys & key){
                         switch(key){
                             case Mugen::Up:
-                                return Keyboard::keyToName(::Configuration::config( player ).getUp());
+                                return Keyboard::keyToName(::Configuration::getUp(player));
                             case Mugen::Down:
-                                return Keyboard::keyToName(::Configuration::config( player ).getDown());
+                                return Keyboard::keyToName(::Configuration::getDown(player));
                             case Mugen::Left:
-                                return Keyboard::keyToName(::Configuration::config( player ).getLeft());
+                                return Keyboard::keyToName(::Configuration::getLeft(player));
                             case Mugen::Right:
-                                return Keyboard::keyToName(::Configuration::config( player ).getRight());
+                                return Keyboard::keyToName(::Configuration::getRight(player));
                             case Mugen::A:
-                                return Keyboard::keyToName(::Configuration::config( player ).getAttack1());
+                                return Keyboard::keyToName(::Configuration::getAttack1(player));
                             case Mugen::B:
-                                return Keyboard::keyToName(::Configuration::config( player ).getAttack2());
+                                return Keyboard::keyToName(::Configuration::getAttack2(player));
                             case Mugen::C:
-                                return Keyboard::keyToName(::Configuration::config( player ).getAttack3());
+                                return Keyboard::keyToName(::Configuration::getAttack3(player));
                             case Mugen::X:
-                                return Keyboard::keyToName(::Configuration::config(player).getAttack4());
+                                return Keyboard::keyToName(::Configuration::getAttack4(player));
                             case Mugen::Y:
-                                return Keyboard::keyToName(::Configuration::config(player).getAttack5());
+                                return Keyboard::keyToName(::Configuration::getAttack5(player));
                             case Mugen::Z:
-                                return Keyboard::keyToName(::Configuration::config(player).getAttack6());
+                                return Keyboard::keyToName(::Configuration::getAttack6(player));
                             case Mugen::Start:
                             case Mugen::Enter:
                             case Mugen::Esc:

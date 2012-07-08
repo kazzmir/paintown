@@ -33,7 +33,6 @@ public:
     };
 
     /* return a Keyboard::Key_X based on some PAIN_KEY_X */
-    int getKey( Input::PaintownInput which, int facing ) const;
     JoystickInput getJoystickKey(Input::PaintownInput which, int facing) const; 
 
     void setRight(int i);
@@ -48,17 +47,18 @@ public:
     void setAttack6(int i);
     void setJump(int i);
 
-    int getRight() const;
-    int getLeft() const;
-    int getUp() const;
-    int getDown() const;
-    int getAttack1() const;
-    int getAttack2() const;
-    int getAttack3() const;
-    int getAttack4() const;
-    int getAttack5() const;
-    int getAttack6() const;
-    int getJump() const;
+    /* Config is the associated player */
+    static int getRight(int config);
+    static int getLeft(int config);
+    static int getUp(int config);
+    static int getDown(int config);
+    static int getAttack1(int config);
+    static int getAttack2(int config);
+    static int getAttack3(int config);
+    static int getAttack4(int config);
+    static int getAttack5(int config);
+    static int getAttack6(int config);
+    static int getJump(int config);
 
     void setJoystickRight(JoystickInput i);
     void setJoystickLeft(JoystickInput i);
@@ -174,6 +174,8 @@ protected:
     static Token * saveJoystick( int num, Configuration * configuration );
 
     // static void updateToken(const std::string & path, const std::string & value);
+    static int getKey(int config, const std::string & name, int defaultValue);
+    int getKey( Input::PaintownInput which, int facing ) const;
 
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);

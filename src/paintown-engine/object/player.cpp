@@ -184,6 +184,36 @@ const InputSource & Player::getInput() const {
     throw std::exception();
 }
 
+static int getKey(int player, Input::PaintownInput which, int facing){
+    switch (which){
+        case Input::Forward: {
+            if (facing == Paintown::Object::FACING_LEFT){
+                return Configuration::getLeft(player);
+            } else {
+                return Configuration::getRight(player);
+            }
+        }
+        case Input::Back : {
+            if (facing == Paintown::Object::FACING_LEFT){
+                return Configuration::getRight(player);
+            } else {
+                return Configuration::getLeft(player);
+            }
+        }
+        case Input::Up: return Configuration::getUp(player);
+        case Input::Down: return Configuration::getDown(player);
+        case Input::Attack1: return Configuration::getAttack1(player);
+        case Input::Attack2: return Configuration::getAttack2(player);
+        case Input::Attack3: return Configuration::getAttack3(player);
+        case Input::Attack4: return Configuration::getAttack4(player);
+        case Input::Attack5: return Configuration::getAttack5(player);
+        case Input::Attack6: return Configuration::getAttack6(player);
+        case Input::Jump : return Configuration::getJump(player);
+        // case Input::Grab: return Configuration::getAttack1(player);
+        default : return -1;
+    }
+}
+
 vector<Input::PaintownInput> Player::fillKeyCache(){
     /*
     acts += 1;
@@ -208,7 +238,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
         Configuration & configuration = Configuration::config(useSource.getKeyboard());
         enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
         for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
-            input.set(configuration.getKey(all[i], facing), 0, false, all[i]);
+            input.set(getKey(useSource.getKeyboard(), all[i], facing), 0, false, all[i]);
         }
     }
 
@@ -263,7 +293,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     enum Input::PaintownInput allHold[] = {Input::Forward, Input::Back, Input::Up, Input::Down};
     for (unsigned int i = 0; i < sizeof(allHold) / sizeof(Input::PaintownInput); i++){
         if (useSource.useKeyboard()){
-            inputHold.set(Configuration::config(useSource.getKeyboard()).getKey(allHold[i], facingHold), 0, false, allHold[i]);
+            inputHold.set(getKey(useSource.getKeyboard(), allHold[i], facingHold), 0, false, allHold[i]);
         }
         if (useSource.useJoystick()){
             inputHold.set(Configuration::config(useSource.getJoystick()).getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
@@ -796,7 +826,9 @@ Util::ReferenceCount<Animation> Player::chooseLikelyAnimation(vector<Object *> *
     if (get != NULL){
         for (vector< Object * >::iterator it = others->begin(); it != others->end(); it++){
             Object * o = *it;
-            if (o->isGettable() && fabs((double)(o->getRX() - getRX())) < 25 && ZDistance( o ) <= get->getMinZDistance()){
+            if (o->isGettable() &&
+                fabs((double)(o->getRX() - getRX())) < 25 &&
+                ZDistance(o) <= get->getMinZDistance()){
                 return get;
             }
         }

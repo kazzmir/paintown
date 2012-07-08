@@ -224,17 +224,6 @@ joystick_quit(Joystick::Quit){
 }
 
 Configuration::Configuration(const Configuration & config):
-right(config.getRight()),
-left(config.getLeft()),
-up(config.getUp()),
-down(config.getDown()),
-attack1(config.getAttack1()),
-attack2(config.getAttack2()),
-attack3(config.getAttack3()),
-attack4(config.getAttack4()),
-attack5(config.getAttack5()),
-attack6(config.getAttack6()),
-jump(config.getJump()),
 joystick_right(config.getJoystickRight()),
 joystick_left(config.getJoystickLeft()),
 joystick_up(config.getJoystickUp()),
@@ -266,18 +255,6 @@ jump( jump ){
 	
 Configuration & Configuration::operator=(const Configuration & config){
     Disable disable;
-    setRight(config.getRight());
-    setLeft(config.getLeft());
-    setUp(config.getUp());
-    setDown(config.getDown());
-    setAttack1(config.getAttack1());
-    setAttack2(config.getAttack2());
-    setAttack3(config.getAttack3());
-    setAttack4(config.getAttack4());
-    setAttack5(config.getAttack5());
-    setAttack6(config.getAttack6());
-    setJump(config.getJump());
-
     setJoystickRight(config.getJoystickRight());
     setJoystickLeft(config.getJoystickLeft());
     setJoystickUp(config.getJoystickUp());
@@ -427,48 +404,110 @@ void Configuration::setJump( int i ){
     setKey(&jump, i);
 }
 
-int Configuration::getRight() const {
-    return right;
+int Configuration::getKey(int config, const string & name, int defaultValue){
+    ostringstream path;
+    path << config_input << "/" << config << "/keys/" << name;
+    return getProperty(path.str(), defaultValue);
 }
 
-int Configuration::getLeft() const {
-    return left;
+int Configuration::getRight(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_RIGHT; break;
+        case 1: normal = Keyboard::Key_L; break;
+    }
+    return getKey(config, "right", normal);
 }
 
-int Configuration::getUp() const {
-    return up;
+int Configuration::getLeft(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_LEFT; break;
+        case 1: normal = Keyboard::Key_J; break;
+    }
+    return getKey(config, "left", normal);
 }
 
-int Configuration::getDown() const {
-    return down;
+int Configuration::getUp(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_UP; break;
+        case 1: normal = Keyboard::Key_I; break;
+    }
+    return getKey(config, "up", normal);
 }
 
-int Configuration::getAttack1() const {
-    return attack1;
+int Configuration::getDown(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_DOWN; break;
+        case 1: normal = Keyboard::Key_COMMA; break;
+    }
+    return getKey(config, "down", normal);
 }
 
-int Configuration::getAttack2() const {
-    return attack2;
+int Configuration::getAttack1(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_A; break;
+        case 1: normal = Keyboard::Key_R; break;
+    }
+    return getKey(config, "attack1", normal);
 }
 
-int Configuration::getAttack3() const {
-    return attack3;
+int Configuration::getAttack2(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_S; break;
+        case 1: normal = Keyboard::Key_T; break;
+    }
+    return getKey(config, "attack2", normal);
 }
 
-int Configuration::getAttack4() const {
-    return attack4;
+int Configuration::getAttack3(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_D; break;
+        case 1: normal = Keyboard::Key_Y; break;
+    }
+    return getKey(config, "attack3", normal);
 }
 
-int Configuration::getAttack5() const {
-    return attack5;
+int Configuration::getAttack4(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_Z; break;
+        case 1: normal = Keyboard::Key_F; break;
+    }
+    return getKey(config, "attack4", normal);
 }
 
-int Configuration::getAttack6() const {
-    return attack6;
+int Configuration::getAttack5(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_X; break;
+        case 1: normal = Keyboard::Key_G; break;
+    }
+
+    return getKey(config, "attack5", normal);
 }
 
-int Configuration::getJump() const {
-    return jump;
+int Configuration::getAttack6(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_C; break;
+        case 1: normal = Keyboard::Key_H; break;
+    }
+    return getKey(config, "attack6", normal);
+}
+
+int Configuration::getJump(int config){
+    int normal = 0;
+    switch (config){
+        case 0: normal = Keyboard::Key_SPACE; break;
+        case 1: normal = Keyboard::Key_B; break;
+    }
+    return getKey(config, "jump", normal);
 }
 
 void Configuration::setJoystickKey(JoystickInput & key, const JoystickInput & what){
@@ -612,6 +651,11 @@ bool Configuration::getSave(){
     return save;
 }
 
+static Token * removeDuplicates(Token * token){
+    /* TODO */
+    return token;
+}
+
 void Configuration::loadConfigurations(){
     Disable disable;
 
@@ -628,7 +672,7 @@ void Configuration::loadConfigurations(){
         }
 
         /* Store the entire configuration tree */
-        data = head->copy();
+        data = removeDuplicates(head->copy());
 
 #if 0
         TokenView view = head->view();
@@ -881,6 +925,7 @@ void Configuration::loadConfigurations(){
 
 /* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
+    /*
     typedef int (Configuration::*get_func)() const;
     Token * config = new Token();
 
@@ -911,6 +956,8 @@ Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
     }
 
     return config;
+    */
+    return NULL;
 }
 
 Token * Configuration::saveJoystick( int num, Configuration * configuration ){
