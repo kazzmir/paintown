@@ -6,10 +6,6 @@
 #include "util/input/input.h"
 #include "globals.h"
 #include "util/debug.h"
-/*
-#include "paintown-engine/object/animation.h"
-#include "paintown-engine/object/object.h"
-*/
 #include <sstream>
 #include <fstream>
 #include <stdlib.h>
@@ -17,6 +13,7 @@
 
 #include <map>
 
+/* FIXME: this backend stuff isn't used at the moment */
 #ifdef USE_SDL
 #if SDL_VERSION_ATLEAST(1, 3, 0)
 static const std::string INPUT_TYPE = "SDL1.3";
@@ -96,97 +93,6 @@ public:
     bool last;
 };
 
-#if 0
-Configuration Configuration::defaultPlayer1Keys(){
-    Disable disable;
-    Configuration config;
-    config.setRight(Keyboard::Key_RIGHT);
-    config.setLeft(Keyboard::Key_LEFT);
-    config.setUp(Keyboard::Key_UP);
-    config.setDown(Keyboard::Key_DOWN);
-    config.setAttack1(Keyboard::Key_A);
-    config.setAttack2(Keyboard::Key_S);
-    config.setAttack3(Keyboard::Key_D);
-    config.setAttack4(Keyboard::Key_Z);
-    config.setAttack5(Keyboard::Key_X);
-    config.setAttack6(Keyboard::Key_C);
-    config.setJump(Keyboard::Key_SPACE);
-
-    /* these mappings should agree with input-manager.cpp:convertJoystickKey,
-     * but otherwise they are completely arbitrary
-     */
-    config.setJoystickRight(Joystick::Right);
-    config.setJoystickLeft(Joystick::Left);
-    config.setJoystickUp(Joystick::Up);
-    config.setJoystickDown(Joystick::Down);
-    config.setJoystickAttack1(Joystick::Button1);
-    config.setJoystickAttack2(Joystick::Button2);
-    config.setJoystickAttack3(Joystick::Button3);
-    config.setJoystickAttack4(Joystick::Button4);
-    config.setJoystickAttack5(Joystick::Button5);
-    config.setJoystickAttack6(Joystick::Button6);
-    config.setJoystickJump(Joystick::Button4);
-    config.setJoystickQuit(Joystick::Quit);
-
-    return config;
-}
-
-Configuration Configuration::defaultPlayer2Keys(){
-    Disable disable;
-    Configuration config;
-    config.setRight(Keyboard::Key_L);
-    config.setLeft(Keyboard::Key_J);
-    config.setUp(Keyboard::Key_I);
-    config.setDown(Keyboard::Key_COMMA);
-    config.setAttack1(Keyboard::Key_R);
-    config.setAttack2(Keyboard::Key_T);
-    config.setAttack3(Keyboard::Key_Y);
-    config.setAttack4(Keyboard::Key_F);
-    config.setAttack5(Keyboard::Key_G);
-    config.setAttack6(Keyboard::Key_H);
-    config.setJump(Keyboard::Key_B);
-
-    /* these mappings should agree with input-manager.cpp:convertJoystickKey,
-     * but otherwise they are completely arbitrary
-     */
-    config.setJoystickRight(Joystick::Right);
-    config.setJoystickLeft(Joystick::Left);
-    config.setJoystickUp(Joystick::Up);
-    config.setJoystickDown(Joystick::Down);
-    config.setJoystickAttack1(Joystick::Button1);
-    config.setJoystickAttack2(Joystick::Button2);
-    config.setJoystickAttack3(Joystick::Button3);
-    config.setJoystickAttack4(Joystick::Button4);
-    config.setJoystickAttack5(Joystick::Button5);
-    config.setJoystickAttack6(Joystick::Button6);
-    config.setJoystickJump(Joystick::Button4);
-    config.setJoystickQuit(Joystick::Quit);
-
-    return config;
-}
-#endif
-
-// static map< int, Configuration * > configs;
-
-/*
-Configuration & Configuration::config(int set){
-    if (configs[set] == NULL ){
-        configs[set] = new Configuration();
-        switch (set){
-            case 0: {
-                *configs[set] = defaultPlayer1Keys();
-                break;
-            }
-            case 1: {
-                *configs[set] = defaultPlayer2Keys();
-                break;
-            }
-        }
-    }
-    return *configs[set];
-}
-*/
-
 /* FIXME: move this to some utils module */
 static std::vector<std::string> split(std::string str, char splitter){
     std::vector<std::string> strings;
@@ -225,9 +131,6 @@ static Token * createToken(const string & path){
     }
     return out;
 }
-
-
-
 
 /* Create a token with the given path and give it a value */
 template <class Value>
@@ -357,19 +260,6 @@ Configuration::Configuration(const Configuration & config){
     menuFont = config.menuFont;
 }
 
-/*
-Configuration::Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump ):
-right( right ),
-left( left ),
-up( up ),
-down( down ),
-attack1( attack1 ),
-attack2( attack2 ),
-attack3( attack3 ),
-jump( jump ){
-}
-*/
-	
 Configuration & Configuration::operator=(const Configuration & config){
     Disable disable;
     setMenuFont(config.getMenuFont());
@@ -379,60 +269,6 @@ Configuration & Configuration::operator=(const Configuration & config){
 Configuration::~Configuration(){
 }
 
-/*
-Configuration::JoystickInput Configuration::getJoystickKey(Input::PaintownInput which, int facing) const {
-    switch (which){
-        case Input::Forward : {
-            if ( facing == Paintown::Object::FACING_LEFT ) 
-                return this->joystick_left;
-            else 	return this->joystick_right;
-        }
-        case Input::Back : {
-            if ( facing == Paintown::Object::FACING_LEFT )
-                return this->joystick_right;
-            else	return this->joystick_left;
-        }
-        case Input::Up : return this->joystick_up;
-        case Input::Down : return this->joystick_down;
-        case Input::Attack1 : return this->joystick_attack1;
-        case Input::Attack2 : return this->joystick_attack2;
-        case Input::Attack3 : return this->joystick_attack3;
-        case Input::Attack4 : return this->joystick_attack4;
-        case Input::Attack5 : return this->joystick_attack5;
-        case Input::Attack6 : return this->joystick_attack6;
-        case Input::Jump : return this->joystick_jump;
-        default : return Joystick::Invalid;
-    }
-}
-*/
-
-/*
-int Configuration::getKey( Input::PaintownInput which, int facing ) const {
-    switch (which){
-        case Input::Forward : {
-            if ( facing == Paintown::Object::FACING_LEFT ) 
-                return this->left;
-            else 	return this->right;
-        }
-        case Input::Back : {
-            if ( facing == Paintown::Object::FACING_LEFT )
-                return this->right;
-            else	return this->left;
-        }
-        case Input::Up : return this->up;
-        case Input::Down : return this->down;
-        case Input::Attack1 : return this->attack1;
-        case Input::Attack2 : return this->attack2;
-        case Input::Attack3 : return this->attack3;
-        case Input::Attack4 : return this->attack4;
-        case Input::Attack5 : return this->attack5;
-        case Input::Attack6 : return this->attack6;
-        case Input::Jump : return this->jump;
-        default : return -1;
-    }
-}
-*/
-        
 Util::ReferenceCount<Menu::FontInfo> Configuration::getMenuFont(){
     return menuFont;
 }
@@ -778,8 +614,6 @@ static Token * removeDuplicates(Token * token){
 }
 
 void Configuration::loadConfigurations(){
-    Disable disable;
-
     data = new Token();
     *data << config_configuration;
 
@@ -794,249 +628,6 @@ void Configuration::loadConfigurations(){
 
         /* Store the entire configuration tree */
         data = removeDuplicates(head->copy());
-
-#if 0
-        TokenView view = head->view();
-        while (view.hasMore()){
-            const Token * n;
-            view >> n;
-            /* these operate on the global vars directly
-             * to avoid calling saveConfiguration
-             * if setFoo() was called
-             */
-            if ( *n == config_keyboard_configuration ){
-                int number = -1;
-                int right, left, down, up, attack1,
-                    attack2, attack3, attack4, attack5, attack6,
-                    jump;
-                right = left = down = up = attack1 = attack2
-                      = attack3 = attack4 = attack5 = attack6 =
-                      jump = InvalidKey;
-
-                /* before the 'version' key was added all backends were
-                 * Allegro so that is the default.
-                 */
-                std::string input = "Allegro";
-
-                TokenView keyboardView = n->view();
-                while (keyboardView.hasMore()){
-                    const Token * thing;
-                    keyboardView >> thing;
-                    if ( *thing == config_number){
-                        thing->view() >> number;
-                    } else if (*thing == config_input){
-                        thing->view() >> input;
-                    } else if ( *thing == config_left){
-                        thing->view() >> left;
-                    } else if ( *thing == config_right){
-                        thing->view() >> right;
-                    } else if ( *thing == config_down){
-                        thing->view() >> down;
-                    } else if ( *thing == config_up){
-                        thing->view() >> up;
-                    } else if ( *thing == config_attack1){
-                        thing->view() >> attack1;
-                    } else if ( *thing == config_attack2){
-                        thing->view() >> attack2;
-                    } else if ( *thing == config_attack3){
-                        thing->view() >> attack3;
-                    } else if ( *thing == config_attack4){
-                        thing->view() >> attack4;
-                    } else if ( *thing == config_attack5){
-                        thing->view() >> attack5;
-                    } else if ( *thing == config_attack6){
-                        thing->view() >> attack6;
-                    } else if ( *thing == config_jump){
-                        thing->view() >> jump;
-                    }
-                }
-                if ( number == -1 ){
-                    /* should use config_number here */
-                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not specifiy (number #) for a keyboard-configuration" );
-                }
-
-                if (input == INPUT_TYPE){
-                    Configuration & myconfig = config(number);
-                    myconfig.setRight(right);
-                    myconfig.setLeft(left);
-                    myconfig.setUp(up);
-                    myconfig.setDown(down);
-                    myconfig.setAttack1(attack1);
-                    myconfig.setAttack2(attack2);
-                    myconfig.setAttack3(attack3);
-                    myconfig.setAttack4(attack4);
-                    myconfig.setAttack5(attack5);
-                    myconfig.setAttack6(attack6);
-                    myconfig.setJump(jump);
-                }
-            } else if ( *n == config_joystick_configuration ){
-                int number = -1;
-                JoystickInput right, left, down, up, attack1,
-                    attack2, attack3, attack4, attack5, attack6, jump, quit;
-                right = left = down = up = attack1 = attack2
-                      = attack3 = attack4 = attack5 = attack6 =
-                      jump = quit = InvalidJoystick;
-                /* see above */
-                std::string input = "Allegro";
-
-                TokenView joystickView = n->view();
-                while (joystickView.hasMore()){
-                    int temp;
-                    const Token * thing;
-                    joystickView >> thing;
-                    if ( *thing == config_number){
-                        thing->view() >> number;
-                    } else if (*thing == config_input){
-                        thing->view() >> input;
-                    } else if ( *thing == config_left){
-                        thing->view() >> temp;
-                        left = intToJoystick(temp);
-                    } else if ( *thing == config_right){
-                        thing->view() >> temp;
-                        right = intToJoystick(temp);
-                    } else if ( *thing == config_down){
-                        thing->view() >> temp;
-                        down = intToJoystick(temp);
-                    } else if ( *thing == config_up){
-                        thing->view() >> temp;
-                        up = intToJoystick(temp);
-                    } else if ( *thing == config_attack1){
-                        thing->view() >> temp;
-                        attack1 = intToJoystick(temp);
-                    } else if ( *thing == config_attack2){
-                        thing->view() >> temp;
-                        attack2 = intToJoystick(temp);
-                    } else if ( *thing == config_attack3){
-                        thing->view() >> temp;
-                        attack3 = intToJoystick(temp);
-                    } else if ( *thing == config_attack4){
-                        thing->view() >> temp;
-                        attack4 = intToJoystick(temp);
-                    } else if ( *thing == config_attack5){
-                        thing->view() >> temp;
-                        attack5 = intToJoystick(temp);
-                    } else if ( *thing == config_attack6){
-                        thing->view() >> temp;
-                        attack6 = intToJoystick(temp);
-                    } else if ( *thing == config_jump){
-                        thing->view() >> temp;
-                        jump = intToJoystick(temp);
-                    } else if ( *thing == config_quit){
-                        thing->view() >> temp;
-                        quit = intToJoystick(temp);
-                    }
-                }
-                if ( number == -1 ){
-                    /* should use config_number here */
-                    throw LoadException(__FILE__, __LINE__, string("Config file ") + Storage::instance().configFile().path() + " does not specifiy (number #) for a joystick-configuration" );
-                }
-
-                if (input == INPUT_TYPE){
-                    Configuration & myconfig = config(number);
-                    myconfig.setJoystickRight(right);
-                    myconfig.setJoystickLeft(left);
-                    myconfig.setJoystickUp(up);
-                    myconfig.setJoystickDown(down);
-                    myconfig.setJoystickAttack1(attack1);
-                    myconfig.setJoystickAttack2(attack2);
-                    myconfig.setJoystickAttack3(attack3);
-                    myconfig.setJoystickAttack4(attack4);
-                    myconfig.setJoystickAttack5(attack5);
-                    myconfig.setJoystickAttack6(attack6);
-                    myconfig.setJoystickJump(jump);
-                    myconfig.setJoystickQuit(quit);
-                }
-            } else if ( *n == config_game_speed){
-                n->view() >> gamespeed;
-            } else if ( *n == config_invincible){
-                n->view() >> invincible;
-            } else if ( *n == config_fullscreen){
-                n->view() >> fullscreen;
-            } else if (*n == config_lives){
-                n->view() >> lives;
-            } else if (*n == config_menu_font){
-                string font;
-                n->view() >> font;
-                /* FIXME */
-                // setMenuFont(font);
-            } else if (*n == config_version){
-                string version;
-                n->view() >> version;
-                /* FIXME: check the version here */
-            } else if (*n == config_sound){
-                int x;
-                n->view() >> x;
-                setSoundVolume(x);
-            } else if (*n == config_language){
-                string what;
-                n->view() >> what;
-                setLanguage(what);
-            } else if (*n == config_music){
-                int x;
-                n->view() >> x;
-                setMusicVolume(x);
-                /*
-            } else if (*n == config_mugen_motif){
-                string motif;
-                n->view() >> motif;
-                setMugenMotif(motif);
-                */
-            } else if (*n == config_quality_filter){
-                string filter;
-                n->view() >> filter;
-                setQualityFilter(filter);
-            } else if (*n == config_fps){
-                int fps = 40;
-                n->view() >> fps;
-                setFps(fps);
-            } else if (*n == config_menu_font_width){
-                int x;
-                n->view() >> x;
-                setMenuFontWidth(x);
-            } else if (*n == config_menu_font_height){
-                int x;
-                n->view() >> x;
-                setMenuFontHeight(x);
-            } else if (*n == config_current_game){
-                try{
-                    string game;
-                    n->view() >> game;
-                    setCurrentGame(game);
-                } catch (const TokenException & fail){
-                    Global::debug(0) << "Warning: could not get the current game from the configuration" << std::endl;
-                }
-            } else if ( *n == config_npc_buddies){
-                n->view() >> npc_buddies;
-            } else if (*n == config_screen_size){
-                int w, h;
-                n->view() >> w >> h;
-                Configuration::setScreenWidth(w);
-                Configuration::setScreenHeight(h);
-            } else if (*n == config_play_mode){
-                string mode;
-                n->view() >> mode;
-                if (mode == config_cooperative){
-                    Configuration::setPlayMode(Configuration::Cooperative);
-                } else if (mode == config_free_for_all){
-                    Configuration::setPlayMode(Configuration::FreeForAll);
-                }
-            } else {
-                // string value;
-                try{
-                    /*
-                    Util::ReferenceCount<Configuration> root = getRootConfiguration();
-                    root->parseProperty(n);
-                    */
-                    /*
-                    n->view() >> value;
-                    root->setProperty(n->getName(), value);
-                    */
-                } catch (const TokenException & e){
-                    /* ignore errors */
-                }
-            }
-        }
-#endif
     } catch ( const LoadException & le ){
         Global::debug( 0 ) << "Notice: Could not load configuration file " << Storage::instance().configFile().path() << ": " << le.getTrace() << endl;
     } catch ( const TokenException & t ){
@@ -1044,194 +635,10 @@ void Configuration::loadConfigurations(){
     }
 }
 
-/* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
-/*
-Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
-    typedef int (Configuration::*get_func)() const;
-    Token * config = new Token();
-
-    config->addToken( new Token(config_keyboard_configuration, false ) );
-
-    *config->newToken() << config_number << num;
-    *config->newToken() << config_input << INPUT_TYPE;
-
-    const char * func_names[] = {config_left, config_right,
-                                 config_up, config_down,
-                                 config_attack1, config_attack2,
-                                 config_attack3, config_attack4,
-                                 config_attack5, config_attack6,
-                                 config_jump};
-
-    get_func funcs[] = {&Configuration::getLeft, &Configuration::getRight,
-                        &Configuration::getUp, &Configuration::getDown,
-                        &Configuration::getAttack1, &Configuration::getAttack2,
-                        &Configuration::getAttack3, &Configuration::getAttack4,
-                        &Configuration::getAttack5, &Configuration::getAttack6,
-                        &Configuration::getJump
-    };
-
-    for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
-        Token * button = new Token();
-        *button << func_names[i] << (configuration->*(funcs[i]))();
-        config->addToken(button);
-    }
-
-    return config;
-    return NULL;
-}
-*/
-
-/*
-Token * Configuration::saveJoystick( int num, Configuration * configuration ){
-    typedef JoystickInput (Configuration::*get_func)() const;
-    Token * config = new Token();
-
-    config->addToken( new Token(config_joystick_configuration, false ) );
-
-    *config->newToken() << config_number << num;
-    *config->newToken() << config_input << INPUT_TYPE;
-
-    const char * func_names[] = {config_left, config_right,
-                                 config_up, config_down,
-                                 config_attack1, config_attack2,
-                                 config_attack3, config_attack4,
-                                 config_attack5, config_attack6,
-                                 config_jump, config_quit};
-
-    get_func funcs[] = {&Configuration::getJoystickLeft, &Configuration::getJoystickRight,
-                        &Configuration::getJoystickUp, &Configuration::getJoystickDown,
-                        &Configuration::getJoystickAttack1, &Configuration::getJoystickAttack2,
-                        &Configuration::getJoystickAttack3, &Configuration::getJoystickAttack4,
-                        &Configuration::getJoystickAttack5, &Configuration::getJoystickAttack6,
-                        &Configuration::getJoystickJump,
-                        &Configuration::getJoystickQuit
-    };
-
-    for ( unsigned int i = 0; i < sizeof(func_names)/sizeof(char*); i++ ){
-        Token * button = new Token();
-        *button << func_names[ i ] << (configuration->*(funcs[i]))();
-        config->addToken( button );
-    }
-
-    return config;
-}
-*/
-
 void Configuration::saveConfiguration(){
-
     if (!save){
         return;
     }
-
-#if 0
-    /* head will delete all these tokens in its destructor */
-    Token head;
-    head << config_configuration;
-    for ( map< int, Configuration * >::iterator it = configs.begin(); it != configs.end(); it++ ){
-        int num = it->first;
-        Configuration * configuration = it->second;
-        head.addToken(saveKeyboard(num, configuration));
-        head.addToken(saveJoystick(num, configuration));
-    }
-
-    Token * speed = new Token();
-    *speed << config_game_speed << Configuration::getGameSpeed();
-    head.addToken( speed );
-
-    Token * invincible = new Token();
-    *invincible << config_invincible << Configuration::getInvincible();
-    head.addToken( invincible );
-
-    Token * sound = new Token();
-    *sound << config_sound << Configuration::getSoundVolume();
-    head.addToken(sound);
-    
-    Token * music = new Token();
-    *music << config_music << Configuration::getMusicVolume();
-    head.addToken(music);
-
-    Token * fullscreen = new Token();
-    *fullscreen << config_fullscreen << Configuration::getFullscreen();
-    head.addToken(fullscreen);
-
-    Token * screen = new Token();
-    *screen << config_screen_size << Configuration::getScreenWidth() << Configuration::getScreenHeight();
-    head.addToken(screen);
-
-    *(head.newToken()) << config_version << Global::getVersionString();
-
-    *(head.newToken()) << config_quality_filter << getQualityFilter();
-
-    *(head.newToken()) << config_fps << getFps();
-
-    if (Configuration::getLanguage() != ""){
-        *(head.newToken()) << config_language << Configuration::getLanguage();
-    }
-
-    if (Configuration::getMenuFont() != NULL){
-        /* FIXME */
-        /*
-        Token * font = new Token();
-        *font << config_menu_font << Configuration::getMenuFont();
-        head.addToken(font);
-        */
-    }
-
-    {
-        Token * width = new Token();
-        *width << config_menu_font_width << Configuration::getMenuFontWidth();
-        head.addToken(width);
-    }
-
-    {
-        Token * height = new Token();
-        *height << config_menu_font_height << Configuration::getMenuFontHeight();
-        head.addToken(height);
-    }
-
-    Token * mode = new Token();
-    string smode;
-    if (Configuration::getPlayMode() == Configuration::Cooperative){
-        smode = config_cooperative;
-    } else if (Configuration::getPlayMode() == Configuration::FreeForAll){
-        smode = config_free_for_all;
-    }
-    *mode << config_play_mode << smode;
-    head.addToken(mode);
-
-    Token * mugenMotifToken = new Token();
-    *mugenMotifToken << config_mugen_motif << Configuration::getMugenMotif();
-    head.addToken(mugenMotifToken);
-
-    Token * lives = new Token();
-    *lives << config_lives << Configuration::getLives();
-    head.addToken(lives);
-
-    Token * game = new Token();
-    *game << config_current_game << Configuration::getCurrentGame();
-    head.addToken(game);
-
-    Token * npc = new Token();
-    *npc << config_npc_buddies << Configuration::getNpcBuddies();
-    head.addToken(npc);
-
-    /*
-    vector<Token*> propertyTokens = getRootConfiguration()->getPropertyTokens();
-    for (vector<Token*>::iterator it = propertyTokens.begin(); it != propertyTokens.end(); it++){
-        head.addToken(*it);
-    }
-    */
-
-    /*
-    for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
-        string name = (*it).first;
-        string value = (*it).second;
-        Token * property = new Token();
-        *property << name << value;
-        head.addToken(property);
-    }
-    */
-#endif
 
     if (data != NULL){
         ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out);
@@ -1245,21 +652,6 @@ void Configuration::saveConfiguration(){
 
 Util::ReferenceCount<Menu::FontInfo> Configuration::menuFont;
 bool Configuration::joystickEnabled = true;
-// std::map<std::string, std::string> Configuration::properties;
-// std::string Configuration::mugenMotif = "default";
-/* Original default was 40 */
-// std::string Configuration::menuFont = "fonts/arial.ttf";
-// Configuration::PlayMode Configuration::play_mode = Configuration::FreeForAll;
-
-/*
-Util::ReferenceCount<Configuration> Configuration::getNamespace(const std::string & name){
-    if (namespaces[name] == NULL){
-        namespaces[name] = Util::ReferenceCount<Configuration>(new Configuration());
-    }
-    return namespaces[name];
-}
-*/
-
 
 int Configuration::getProperty(const std::string & path, int defaultValue){
     return getPropertyX(data.raw(), path, defaultValue);
@@ -1372,7 +764,6 @@ std::string Configuration::getLanguage(){
 
 void Configuration::setLanguage(const std::string & str){
     setProperty("language", str);
-    // language = str;
     saveConfiguration();
 }
 

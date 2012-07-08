@@ -20,8 +20,6 @@ public:
 
     typedef Joystick::Key JoystickInput;
 
-    // static Configuration & config(int x);
-    
     static void setDefaultKeys(int x);
 
     static void loadConfigurations();
@@ -105,11 +103,6 @@ public:
     static void setScreenHeight(int i);
     static int getScreenHeight();
 
-    /*
-    static std::string getMugenMotif();
-    static void setMugenMotif(const std::string & motif);
-    */
-
     static std::string getQualityFilter();
     static void setQualityFilter(const std::string & filter);
 
@@ -152,68 +145,17 @@ public:
     static void setSave(bool what);
     static bool getSave();
     
-    /*
-    Util::ReferenceCount<Configuration> getNamespace(const std::string & name);
-    static Util::ReferenceCount<Configuration> getRootConfiguration();
-    */
-
 protected:
     Configuration();
     Configuration(const Configuration & config);
-    // Configuration( const int right, const int left, const int up, const int down, const int attack1, const int attack2, const int attack3, const int jump );
 
     Configuration & operator=(const Configuration & config);
 
-    /*
-    static Configuration defaultPlayer1Keys();
-    static Configuration defaultPlayer2Keys();
-    */
-
-    /*
-    static Token * saveKeyboard( int num, Configuration * configuration );
-    static Token * saveJoystick( int num, Configuration * configuration );
-    */
-
-    // static void updateToken(const std::string & path, const std::string & value);
     static int getKey(int config, const std::string & name, int defaultValue);
     static JoystickInput getJoystickKey(int config, const std::string & name, JoystickInput defaultValue);
 
     static void setKey(int config, const std::string & name, int value);
     static void setJoystickKey(int config, const std::string & name, const JoystickInput & what);
-
-private:
-    /* keyboard */
-    /*
-    int right;
-    int left;
-    int up;
-    int down;
-    int attack1;
-    int attack2;
-    int attack3;
-    int attack4;
-    int attack5;
-    int attack6;
-    int jump;
-    */
-
-    /* joystick */
-    /*
-    JoystickInput joystick_right;
-    JoystickInput joystick_left;
-    JoystickInput joystick_up;
-    JoystickInput joystick_down;
-    JoystickInput joystick_attack1;
-    JoystickInput joystick_attack2;
-    JoystickInput joystick_attack3;
-    JoystickInput joystick_attack4;
-    JoystickInput joystick_attack5;
-    JoystickInput joystick_attack6;
-    JoystickInput joystick_jump;
-    JoystickInput joystick_quit;
-    */
-
-    // std::map<std::string, Util::ReferenceCount<Configuration> > namespaces;
 
 private:
     /* whether to save the configuration or not */
