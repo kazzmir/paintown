@@ -241,7 +241,6 @@ if %s == None:
     def generate_repeat_once(me, pattern, result, previous_result, stream, failure):
         my_fail = lambda : "raise PegError"
         my_result = newResult()
-        my_result2 = newResult()
         data = """
 try:
     while True:
@@ -311,7 +310,6 @@ else:
         fail = failure
         save = gensym("save")
         for next_pattern in pattern.patterns[::-1]:
-            my_result = newResult()
             data = """
 %s = Result(%s)
 %s

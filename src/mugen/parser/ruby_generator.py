@@ -224,7 +224,6 @@ end
     def generate_repeat_once(me, pattern, result, previous_result, stream, failure):
         my_fail = lambda : "raise PegError"
         my_result = newResult()
-        my_result2 = newResult()
         data = """
 begin
     while (true)

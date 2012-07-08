@@ -694,7 +694,7 @@ if (%(result)s.error()){
             if tail != None:
                 raise Exception("Do not combine inlined rules that use tail recursion")
             def newPattern(pattern, stream, result, success):
-                my_result = newResult()
+                # my_result = newResult()
                 previous_position = gensym('position')
                 out = [False]
                 def label(n):
@@ -706,7 +706,7 @@ if (%(result)s.error()){
                     if out[0] == False:
                         out[0] = newOut()
                     return "%s.setPosition(%s);\ngoto %s;" % (result, previous_position, out[0])
-                pattern_result = pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip()
+                # pattern_result = pattern.generate_cpp(peg, my_result, stream, fail, tail, peg_args).strip()
 
                 data = """
 {

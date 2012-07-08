@@ -79,8 +79,6 @@ using namespace std;
 static const int InvalidKey = 0;
 static const Configuration::JoystickInput InvalidJoystick = Joystick::Invalid;
     
-Util::ReferenceCount<Configuration> Configuration::rootProperty;
-
 /* don't save the configuration while loading it */
 class Disable{
 public:
@@ -881,41 +879,6 @@ void Configuration::loadConfigurations(){
     }
 }
 
-void Configuration::parseProperty(const Token * token){
-#if 0
-    /* Its either plain data or its a nested node which means its a namespace */
-    string value;
-    if (token->match("_", value)){
-        try{
-            token->view() >> value;
-            setProperty(token->getName(), value);
-        } catch (const TokenException & e){
-            /* ignore errors */
-        }
-    } else {
-        string nameSpace = token->getName();
-        Util::ReferenceCount<Configuration> module = getNamespace(nameSpace); 
-        TokenView view = token->view();
-        while (view.hasMore()){
-            const Token * next = NULL;
-            view >> next;
-            module->parseProperty(next);
-        }
-    }
-#endif
-}
-
-/*
-std::string Configuration::getMugenMotif(){
-    return mugenMotif;
-}
-
-void Configuration::setMugenMotif(const std::string & motif){
-    mugenMotif = motif;
-    saveConfiguration();
-}
-*/
-
 /* todo: combine saveKeyboard and saveJoystick, probably using a templated function */
 Token * Configuration::saveKeyboard( int num, Configuration * configuration ){
     typedef int (Configuration::*get_func)() const;
@@ -982,35 +945,6 @@ Token * Configuration::saveJoystick( int num, Configuration * configuration ){
     }
 
     return config;
-}
-
-vector<Token*> Configuration::getPropertyTokens(){
-    /* All these tokens will be deleted by the calling function */
-    vector<Token*> tokens;
-    for (map<string, string>::iterator it = properties.begin(); it != properties.end(); it++){
-        string name = (*it).first;
-        string value = (*it).second;
-        Token * property = new Token();
-        *property << name << value;
-        tokens.push_back(property);
-    }
-
-    for (map<std::string, Util::ReferenceCount<Configuration> >::iterator it = namespaces.begin(); it != namespaces.end(); it++){
-        string name = it->first;
-        Util::ReferenceCount<Configuration> configuration = it->second;
-        if (configuration != NULL){
-            Token * sub = new Token();
-            tokens.push_back(sub);
-            *sub << name;
-
-            vector<Token*> propertyTokens = configuration->getPropertyTokens();
-            for (vector<Token*>::iterator nit = propertyTokens.begin(); nit != propertyTokens.end(); nit++){
-                sub->addToken(*nit);
-            }
-        }
-    }
-
-    return tokens;
 }
 
 void Configuration::saveConfiguration(){
@@ -1129,11 +1063,13 @@ void Configuration::saveConfiguration(){
     */
 #endif
 
-    ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out);
-    if (! out.bad()){
-        data->toString(out, string(""));
-        out << endl;
-        out.close();
+    if (data != NULL){
+        ofstream out(Storage::instance().configFile().path().c_str(), ios::trunc | ios::out);
+        if (! out.bad()){
+            data->toString(out, string(""));
+            out << endl;
+            out.close();
+        }
     }
 }
 
@@ -1279,6 +1215,9 @@ static Token * getPropertyX(Token * data, const std::string & path){
 
 template <class Out>
 static Out getPropertyX(Token * data, const std::string & path, const Out & defaultValue){
+    if (data == NULL){
+        return defaultValue;
+    }
     Out out;
     if (data->match(string(config_configuration) + "/" + path, out)){
         return out;
@@ -1520,13 +1459,3 @@ void Configuration::setFps(int what){
     setProperty(config_fps, what);
     saveConfiguration();
 }
-    
-/*
-Util::ReferenceCount<Configuration> Configuration::getRootConfiguration(){
-    if (rootProperty == NULL){
-        rootProperty = Util::ReferenceCount<Configuration>(new Configuration());
-    }
-
-    return rootProperty;
-}
-*/

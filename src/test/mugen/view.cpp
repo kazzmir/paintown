@@ -302,7 +302,7 @@ void showStage(const string & ourFile, const string &p1_name, const string &p2_n
     
     // Get players
     Global::debug(0) << "Loading player 1" << endl;
-    const Filesystem::AbsolutePath motif =  Mugen::Data::getInstance().getFileFromMotif(Mugen::Data::getInstance().getMotif());
+    const Filesystem::AbsolutePath motif = Mugen::Data::getInstance().getMotif();
 #if 0
     Mugen::CharacterSelect selector(motif, Mugen::Player1, Mugen::Arcade);
     try {

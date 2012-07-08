@@ -178,10 +178,6 @@ protected:
     void setKey(int * key, int value);
     void setJoystickKey(JoystickInput & key, const JoystickInput & what);
 
-    std::vector<Token*> getPropertyTokens();
-
-    void parseProperty(const Token * token);
-
 private:
     /* keyboard */
     int right;
@@ -216,18 +212,11 @@ private:
     /* whether to save the configuration or not */
     static bool save;
 
-    static int screen_width;
-    static int screen_height;
-
     static Util::ReferenceCount<Menu::FontInfo> menuFont;
 
     static bool joystickEnabled;
 
     static Util::ReferenceCount<Token> data;
-
-    /* Top level property that contains all other configuration objects */
-    static Util::ReferenceCount<Configuration> rootProperty;
-    std::map<std::string, std::string> properties;
 };
 
 #endif

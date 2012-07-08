@@ -22,7 +22,7 @@
 # Robert Grimm suggested "His Elkhound-generated C++ parsers do not free memory nor do they integrate GC. Instead, you just allocate from a dedicated region, copy out the AST after parsing, and kill the entire region in one operation."
 #
 
-from core import CodeGenerator, newResult, gensym, resetGensym, indent, special_char, newOut
+from core import CodeGenerator, newResult, gensym, resetGensym, indent, newOut
 from cpp_generator import CppGenerator
 from python_generator import PythonGenerator
 from ruby_generator import RubyGenerator
@@ -1266,10 +1266,6 @@ return %(result)s;
         vars = "\n".join([declareVar(v) for v in self.findVars(peg)])
         my_position = "myposition"
 
-        fail_code = ""
-        if self.fail != None:
-            fail_code = self.fail
-
         def label(n):
             if n != False:
                 return "%s:" % n
@@ -2048,7 +2044,7 @@ def createUtf8Pattern(pattern):
             byte4 = 128 + ((unicode / 4096) % 64)
             byte5 = 128 + ((unicode / 64) % 64)
             byte6 = 128 + (unicode % 64)
-            return [byte1, byte2, byte3, byte4, byte5, byet6]
+            return [byte1, byte2, byte3, byte4, byte5, byte6]
         raise Exception("Could not decode utf8 '%s'" % hex)
 
     return PatternSequence([PatternVerbatim(x) for x in toUtf8(pattern)])
