@@ -1602,25 +1602,32 @@ PaintownUtil::ReferenceCount<std::istringstream> Mugen::Configuration::get(const
 }
  
 Filesystem::AbsolutePath Mugen::Util::loadMotif(){
-    /* FIXME: read motif properly */
     std::string motif;
     try {
         Token * all = ::Configuration::getProperty("mugen/motif");
         if (all != NULL){
-            Global::debug(0) << "Motif is " << all->toString() << std::endl;
+            Global::debug(1) << "Motif is " << all->toString() << std::endl;
             string zip, mount;
+
+            /* Its either just a path to a file or an entry in a zip file or other container.
+             * If its a zip entry then get the zip file, the mount point, and the entry path then
+             * mount the zip.
+             */
             if (all->match("motif/file", motif)){
             } else if (all->match("motif/container", zip, mount, motif)){
                 Storage::instance().addOverlay(Filesystem::AbsolutePath(zip),
                                                Filesystem::AbsolutePath(mount));
             }
         }
-    } catch (const std::ios_base::failure & ex){
+    } catch (const Filesystem::Exception & ex){
         motif.clear();
     }
+
+    /* Found a motif */
     if (!motif.empty()){
         return Filesystem::AbsolutePath(motif);
     } else {
+        /* Otherwise use some default */
         /* FIXME: search for a system.def file */
         return Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def"));
     }

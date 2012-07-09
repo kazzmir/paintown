@@ -279,6 +279,7 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> Font::changeBank(int bank){
     return banks[bank];
 }
 
+/* Should probably move this to Storage::File as a static method or something */
 static void getline(PaintownUtil::ReferenceCount<Storage::File> file, string & out){
     ostringstream more;
 
@@ -288,6 +289,7 @@ static void getline(PaintownUtil::ReferenceCount<Storage::File> file, string & o
         }
         char next;
         file->readLine(&next, 1);
+        /* What about \r ? */
         if (next == '\n'){
             break;
         }
