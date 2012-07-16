@@ -711,7 +711,8 @@ int paintown_main(int argc, char ** argv){
         }
     }
 
-    showOptions(arguments);
+    Global::debug(0) << "Give 'help' to see all the command line options." << endl;
+    // showOptions(arguments);
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
 

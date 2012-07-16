@@ -1620,6 +1620,7 @@ Filesystem::AbsolutePath Mugen::Util::loadMotif(){
             }
         }
     } catch (const Filesystem::Exception & ex){
+        Global::debug(0) << "Could not load mugen motif because " << ex.getTrace() << std::endl;
         motif.clear();
     }
 
