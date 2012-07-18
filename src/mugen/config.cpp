@@ -229,11 +229,12 @@ Filesystem::RelativePath Data::getStageDirectory(){
 }
 
 Filesystem::AbsolutePath Data::getFileFromMotif(const Filesystem::RelativePath & file){
-    try{
-        return getMotifDirectory().join(file.getFilename());
-    } catch (const Filesystem::NotFound & nf){
-	return Storage::instance().find(getDataDirectory().join(file.getFilename()));
+    Filesystem::AbsolutePath out = getMotifDirectory().join(file.getFilename());
+    if (Storage::instance().exists(out)){
+        return out;
     }
+
+    return Storage::instance().find(getDataDirectory().join(file.getFilename()));
 }
 
 void Data::setMotif(const Filesystem::AbsolutePath & motif){
