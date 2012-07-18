@@ -910,7 +910,12 @@ static Character * doLoad(const Filesystem::AbsolutePath & path){
         out << timer.printTime(" took") << std::endl;
         return guy;
     } catch (const MugenException & fail){
-        Storage::instance().removeOverlay(path, path.getDirectory());
+        try{
+            if (Storage::isContainer(path)){
+                Storage::instance().removeOverlay(path, path.getDirectory());
+            }
+        } catch (const Filesystem::Exception & ignore){
+        }
         throw;
     }
 
