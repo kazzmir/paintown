@@ -2060,6 +2060,9 @@ void GameInfo::parseAnimations(const AstRef & parsed){
             /* This creates the animations. It differs from character animation since
              * these are included in the stage.def file with the other defaults
              */
+            /* FIXME: this line assumes the string is 'begin action' but there could be
+             * more spaces between the two words'
+             */
             head.replace(0,13,"");
             int h;
             istringstream out(head);
