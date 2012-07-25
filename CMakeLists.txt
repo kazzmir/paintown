@@ -248,6 +248,8 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 # -------------------------------------------------------
 #add_library (main_module ${ALL_SRC})
 
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/7z)
+
 #Dumb
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/dumb)
 
@@ -306,7 +308,7 @@ add_executable (paintown src/util/xmain.cpp)
 
 # set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
 
-target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module factory_module asteroids_module loadpng_module mugen_module missle_defend_module platformer_module util_module pcre_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module factory_module asteroids_module loadpng_module mugen_module missle_defend_module platformer_module util_module pcre_module x7z_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})

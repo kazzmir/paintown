@@ -29,7 +29,7 @@ def findDirectory(name):
     import os.path
     where = '.'
     # just try 5 directories
-    for i in xrange(0, 5):
+    for i in xrange(0, 6):
         if os.path.exists("%s/%s" % (where, name)):
             return "%s/%s" % (where, name)
         where = os.path.join(where, '..')
