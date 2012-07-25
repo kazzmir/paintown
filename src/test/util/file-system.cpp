@@ -81,9 +81,15 @@ static void testDirectory(){
     }
 }
 
+static void test7z(){
+    Storage::instance().addOverlay(Filesystem::AbsolutePath("src/test/util/test.7z"), Filesystem::AbsolutePath("test"));
+}
+
 int main(){
+    Global::setDebug(1);
     testGetFiles();
     testZip();
     testLastComponent();
     testDirectory();
+    test7z();
 }
