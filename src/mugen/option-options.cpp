@@ -1237,12 +1237,14 @@ public:
                 vector<Filesystem::AbsolutePath> more = Storage::instance().getFilesRecursive(where, "system.def");
                 for (vector<Filesystem::AbsolutePath>::iterator it2 = more.begin(); it2 != more.end(); it2++){
                     const Filesystem::AbsolutePath & file = *it2;
+                    Global::debug(1) << "Potential motif file" << file.path() << endl;
                     if (isMugenMotif(file)){
-                        Global::debug(1) << "Motif: " << file.path() << endl;
+                        Global::debug(1) << " Motif: " << file.path() << endl;
                         good.push_back(file);
                     }
                 }
             } catch (const Filesystem::Exception & fail){
+                Global::debug(1) << "Failed to find motif in container " << it->path() << ": " << fail.getTrace() << endl;
             }
         }
 
