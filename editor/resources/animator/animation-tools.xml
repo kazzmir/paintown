@@ -59,7 +59,7 @@
 
             <hbox>
                 <label text="Rotation" />
-                <slider id="overlay:rotation" minimum="0" maximum="360" />
+                <slider id="overlay:rotation" minimum="-360" maximum="360" />
             </hbox>
 
             <label id="overlay:alpha-text" text="Translucency" />
