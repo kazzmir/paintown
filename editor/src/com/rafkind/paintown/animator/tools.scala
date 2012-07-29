@@ -112,6 +112,15 @@ object Tools{
       }
     })
 
+    val rotation = context.find("overlay:rotation").asInstanceOf[JSlider]
+    rotation.setValue(0)
+    rotation.addChangeListener(new ChangeListener(){
+      def stateChanged(change:ChangeEvent){
+        area.setOverlayImageRotation(rotation.getValue().asInstanceOf[Int])
+        area.repaint();
+      }
+    })
+
     val flipx = context.find("overlay:flip-x").asInstanceOf[JCheckBox]
     val flipy = context.find("overlay:flip-y").asInstanceOf[JCheckBox]
 

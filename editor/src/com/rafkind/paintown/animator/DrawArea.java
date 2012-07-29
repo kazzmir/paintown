@@ -61,6 +61,10 @@ public final class DrawArea extends JComponent {
         public void setBehind(){
             front = false;
         }
+        
+        public void setRotation(int angle){
+            this.angle = angle;
+        }
 
         public void setOffsetX(int x){
             offsetX = x;
@@ -108,9 +112,31 @@ public final class DrawArea extends JComponent {
                 AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, (float)alpha);
                 translucent.setComposite(composite);
 
+                /*
                 double fx = x - image.getWidth(null) / 2 + offsetX;
                 double fy = y - image.getHeight(null) + offsetY;
+                */
+                double fx = x + offsetX;
+                double fy = y + offsetY;
+
+                /* 1. translate the image so its center is at 0, 0
+                 * 2. rotate it by the angle
+                 * 3. translate it by the draw position and its offset. also
+                 *    take into account that the 0 is the bottom of the image
+                 *    so add in another -height/2
+                 */
+                translucent.translate(fx, fy - image.getHeight(null) / 2);
+                translucent.rotate(Math.toRadians(angle));
+                translucent.translate(-image.getWidth(null) / 2, -image.getHeight(null) / 2);
+
+                /* draw at 0, 0 to let the transforms do the work */
+                drawImage(translucent, image, 0, 0, flipX, flipY);
+
+                /*
+                translucent.rotate(Math.toRadians(angle), fx, fy);
                 drawImage(translucent, image, (int) fx, (int) fy, flipX, flipY);
+                */
+
                 /*
                 int width = image.getWidth(null);
                 int height = image.getHeight(null);
@@ -136,6 +162,7 @@ public final class DrawArea extends JComponent {
         boolean flipX = false;
         boolean flipY = false;
         double alpha = 1;
+        int angle = 0;
     }
 
     private OverlayImage overlayImage = new OverlayImage();
@@ -425,6 +452,10 @@ public final class DrawArea extends JComponent {
 
     public void addScaleListener(Lambda0 update){
         scaleListeners.add(update);
+    }
+
+    public void setOverlayImageRotation(int angle){
+        overlayImage.setRotation(angle);
     }
 
     public void setOverlayImage(MaskedImage image){
