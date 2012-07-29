@@ -430,10 +430,10 @@ public:
      */
     static vector<ModType> findZippedMods(){
         vector<ModType> mods;
-        const vector<Filesystem::AbsolutePath> zips = Storage::instance().getFiles(Filesystem::RelativePath("."), Filesystem::RelativePath("*.zip"), false);
+        const vector<Filesystem::AbsolutePath> zips = Storage::instance().getContainerFiles(Filesystem::RelativePath("."));
         for (vector<Filesystem::AbsolutePath>::const_iterator it = zips.begin(); it != zips.end(); it++){
             Filesystem::AbsolutePath zip = *it;
-            Global::debug(0) << "Check zip file " << zip.path() << std::endl;
+            Global::debug(0) << "Check container file " << zip.path() << std::endl;
             vector<string> files = Storage::instance().containerFileList(zip);
 
             Filesystem::AbsolutePath overlayed = Storage::instance().find(Filesystem::RelativePath("."));

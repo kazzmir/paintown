@@ -49,7 +49,7 @@ static Util::ReferenceCount<playerInfo> getPlayer(const Filesystem::AbsolutePath
 }
 
 static void overlayFiles(const std::string & path){
-    std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(Storage::instance().find(Filesystem::RelativePath(path + "/")), "*.zip");
+    std::vector<Filesystem::AbsolutePath> files = Storage::instance().getContainerFiles(Storage::instance().find(Filesystem::RelativePath(path + "/")));
     Filesystem::AbsolutePath place = Storage::instance().find(Filesystem::RelativePath(path));
     for (std::vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++ ){
         Filesystem::AbsolutePath container = *it;
