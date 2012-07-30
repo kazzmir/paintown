@@ -39,6 +39,10 @@ class DrawProperties {
 }
 
 class NewAnimator extends swing.JFrame("Paintown Animator"){
+      
+  val propertyLastLoaded = "animator:last-loaded"
+  /* Define it here so we can modify it in loadPlayer */
+  val loadLastCharacter = new swing.JMenuItem("Load last character")
 
   def get[T](list:List[T], index:Int):T = {
     list.find(list.indexOf(_) == index) match {
@@ -103,6 +107,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     menuCharacter.add(newCharacter)
     val loadCharacter = new swing.JMenuItem("Open Character")
     menuCharacter.add(loadCharacter)
+    menuCharacter.add(loadLastCharacter)
     val saveCharacter = new swing.JMenuItem("Save Character")
     menuCharacter.add(saveCharacter)
     val saveCharacterAs = new swing.JMenuItem("Save Character As")
@@ -137,6 +142,20 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       }
     })
     
+    Config.getConfig().get(propertyLastLoaded).asInstanceOf[String] match {
+      case null => {}
+      case what => loadLastCharacter.setText("Load last character " + new File(what).getName())
+    }
+
+    loadLastCharacter.addActionListener(new swing.AbstractAction(){
+      override def actionPerformed(event:awt.event.ActionEvent){
+        val path = Config.getConfig().get(propertyLastLoaded).asInstanceOf[String]
+        if (path != null){
+          loadPlayer(new File(path))
+        }
+      }
+    })
+
     undo.addActionListener(new swing.AbstractAction(){
       override def actionPerformed(event:awt.event.ActionEvent){
         Undo.popUndo()
@@ -617,6 +636,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       println("Loading character " + file)
       val character = new CharacterStats("", file);
       val tempPlayer = new Player(NewAnimator.this, character);
+      Config.getConfig().set(propertyLastLoaded, file.getAbsolutePath())
+      loadLastCharacter.setText("Load last character " + file.getName())
       swing.SwingUtilities.invokeLater(new Runnable(){
         def run(){
           addNewTab(tempPlayer.getEditor(), character.getName());

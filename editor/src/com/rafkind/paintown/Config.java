@@ -17,8 +17,11 @@ public class Config{
     private void saveData(){
         try{
             ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(savedFile));
-            output.writeObject(config);
-            output.close();
+            try{
+                output.writeObject(config);
+            } finally {
+                output.close();
+            }
         } catch (IOException fail){
             System.err.println(fail);
         }
@@ -27,12 +30,15 @@ public class Config{
     private HashMap<String, Serializable> loadData(){
         try{
             ObjectInputStream input = new ObjectInputStream(new FileInputStream(savedFile));
-            Object in = input.readObject();
-            input.close();
-            if (in instanceof HashMap){
-                return (HashMap<String, Serializable>) in;
+            try{
+                Object in = input.readObject();
+                if (in instanceof HashMap){
+                    return (HashMap<String, Serializable>) in;
+                }
+                return new HashMap<String, Serializable>();
+            } finally {
+                input.close();
             }
-            return new HashMap<String, Serializable>();
         } catch (ClassNotFoundException fail){
             return new HashMap<String, Serializable>();
         } catch (IOException fail){
@@ -57,5 +63,6 @@ public class Config{
 
     public synchronized void set(String name, Serializable what){
         config.put(name, what);
+        saveData();
     }
 }
