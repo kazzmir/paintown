@@ -57,10 +57,10 @@
                 </vbox>
             </hbox>
 
-            <hbox>
-                <label text="Rotation" />
+            <vbox>
+                <label id="overlay:rotation-text" text="Rotation" />
                 <slider id="overlay:rotation" minimum="-360" maximum="360" />
-            </hbox>
+            </vbox>
 
             <label id="overlay:alpha-text" text="Translucency" />
             <slider id="overlay:alpha" minimum="1" maximum="100" />

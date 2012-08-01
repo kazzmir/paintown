@@ -112,10 +112,14 @@ object Tools{
       }
     })
 
+    val rotationText = context.find("overlay:rotation-text").asInstanceOf[JLabel]
+    rotationText.setText("Rotation: 0")
+
     val rotation = context.find("overlay:rotation").asInstanceOf[JSlider]
     rotation.setValue(0)
     rotation.addChangeListener(new ChangeListener(){
       def stateChanged(change:ChangeEvent){
+        rotationText.setText("Rotation: " + rotation.getValue().asInstanceOf[Int])
         area.setOverlayImageRotation(rotation.getValue().asInstanceOf[Int])
         area.repaint();
       }
