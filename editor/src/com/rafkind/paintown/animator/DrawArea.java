@@ -119,15 +119,14 @@ public final class DrawArea extends JComponent {
                 double fx = x + offsetX;
                 double fy = y + offsetY;
 
-                /* 1. translate the image so its center is at 0, 0
+                /* 1. translate the image so the center bottom is at 0, 0
                  * 2. rotate it by the angle
-                 * 3. translate it by the draw position and its offset. also
-                 *    take into account that the 0 is the bottom of the image
-                 *    so add in another -height/2
+                 * 3. translate it by the draw position and its offset.
                  */
-                translucent.translate(fx, fy - image.getHeight(null) / 2);
+                translucent.translate(fx, fy);
                 translucent.rotate(Math.toRadians(angle));
-                translucent.translate(-image.getWidth(null) / 2, -image.getHeight(null) / 2);
+                // translucent.translate(-image.getWidth(null) / 2, -image.getHeight(null) / 2);
+                translucent.translate(-image.getWidth(null) / 2, -image.getHeight(null));
 
                 /* draw at 0, 0 to let the transforms do the work */
                 drawImage(translucent, image, 0, 0, flipX, flipY);
