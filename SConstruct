@@ -1912,6 +1912,8 @@ else:
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
+    # Always need libz
+    env.Append(LIBS = ['z'])
     config = env.Configure(custom_tests = custom_tests)
     try:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
