@@ -10,6 +10,7 @@
 #include "util/bitmap.h"
 #include "openbor/mod.h"
 #include "globals.h"
+#include "configuration.h"
 
 using namespace std;
 
@@ -58,6 +59,10 @@ Graphics::Bitmap Mod::makeBitmap(const Filesystem::RelativePath & path){
     return out;
 }
     
+std::string Mod::getName() const {
+    return name;
+}
+    
 void Mod::playIntro(){
     if (intro != ""){
         try{
@@ -99,7 +104,14 @@ void Mod::loadOpenborMod(const Filesystem::AbsolutePath & path){
 }
 
 void Mod::loadPaintownMod(const Filesystem::AbsolutePath & path){
-   setMod(new Mod(Storage::instance().open(path)));
+   Util::ReferenceCount<Storage::File> file = Storage::instance().open(path);
+   setMod(new Mod(file));
+
+   /* FIXME: hack. this should be done by the configuration system */
+   Token * container = new Token();
+   *container << "mod";
+   container->addToken(file->location());
+   Configuration::setProperty("paintown/mod", container);
 }
     
 Filesystem::AbsolutePath Mod::find(const Filesystem::RelativePath & path){

@@ -41,7 +41,7 @@ define_config(attack5, "attack5");
 define_config(attack6, "attack6");
 define_config(configuration, "configuration");
 define_config(cooperative, "cooperative");
-define_config(current_game, "current-game");
+// define_config(current_game, "current-game");
 define_config(down, "down");
 define_config(free_for_all, "free-for-all");
 define_config(fullscreen, "fullscreen");
@@ -586,15 +586,17 @@ Configuration::JoystickInput Configuration::getJoystickQuit(int config){
     return getJoystickKey(config, "quit", Joystick::Quit);
 }
 
+/*
 string Configuration::getCurrentGame(){
     return getProperty(config_current_game, string(""));
 }
 
-/* assumes the directory is readable and has a dir/dir.txt in it */
+/ * assumes the directory is readable and has a dir/dir.txt in it * /
 void Configuration::setCurrentGame(const std::string & str){
     setProperty(config_current_game, str);
     saveConfiguration();
 }
+*/
 
 void Configuration::disableSave(){
     save = false;

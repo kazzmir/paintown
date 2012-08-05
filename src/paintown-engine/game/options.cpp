@@ -571,7 +571,7 @@ public:
                 modMap[index] = &(*it);
                 opt->setText(name);
                 opt->setInfoText("Choose this mod");
-                if (name.compare(Util::upcase(Configuration::getCurrentGame())) == 0){
+                if (Util::upcase(name).compare(Util::upcase(Mod::getCurrentMod()->getName())) == 0){
                     options.insert(options.begin(),opt);
                 } else {
                     options.push_back(opt);

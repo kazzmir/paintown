@@ -39,6 +39,8 @@ public:
 
     virtual std::vector<Level::LevelInfo> getLevels();
 
+    virtual std::string getName() const;
+
     virtual ~Mod();
 
     virtual Filesystem::AbsolutePath selectPlayer(const std::string & message, const Level::LevelInfo & info, int & remap, const InputSource & source);

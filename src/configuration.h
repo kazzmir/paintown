@@ -118,8 +118,10 @@ public:
     static void setMenuFontHeight(int x);
 
     /* directory of current game/mod */
+    /*
     static std::string getCurrentGame();
     static void setCurrentGame(const std::string & str);
+    */
 
     static std::string getLanguage();
     static void setLanguage(const std::string & str);

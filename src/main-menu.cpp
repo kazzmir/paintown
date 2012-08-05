@@ -616,9 +616,32 @@ static void setupPaintownMod(){
      * 4. die
      */
     try{
-        Filesystem::AbsolutePath currentMod(Configuration::getProperty("paintown/mod", string()));
-        if (currentMod.path() != ""){
-            Paintown::Mod::loadPaintownMod(currentMod);
+        /* TODO: move this to some util class because its used here and in mugen */
+        std::string mod;
+        try {
+            Token * all = Configuration::getProperty("paintown/mod");
+            if (all != NULL){
+                Global::debug(1) << "Mod is " << all->toString() << std::endl;
+                string zip, mount;
+
+                /* Its either just a path to a file or an entry in a zip file or other container.
+                 * If its a zip entry then get the zip file, the mount point, and the entry path then
+                 * mount the zip.
+                 */
+                if (all->match("mod/file", mod)){
+                } else if (all->match("mod/container", zip, mount, mod)){
+                    Storage::instance().addOverlay(Filesystem::AbsolutePath(zip),
+                                                   Filesystem::AbsolutePath(mount));
+                }
+            }
+        } catch (const Filesystem::Exception & ex){
+            Global::debug(0) << "Could not load mugen motif because " << ex.getTrace() << std::endl;
+            mod.clear();
+        }
+
+        /* Found a motif */
+        if (!mod.empty()){
+            Paintown::Mod::loadPaintownMod(Filesystem::AbsolutePath(mod));
             return;
         }
     } catch (const Exception::Base & fail){
