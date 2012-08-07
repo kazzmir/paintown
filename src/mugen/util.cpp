@@ -871,6 +871,25 @@ PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Se
             Global::debug(2) << "Got: x1: " << area.x1 << ", y1: "<< area.y1 << ", x2: "<< area.x2 << ", y2: "<< area.y2 << endl;
             /* FIXME: get the proper source */
             string source = "some file";
+            
+            /* I don't think it matters what the array name is, anything that follows
+             * a clsn declaration is included in the specified clsn.
+             * clsn1: 2
+             *   clsn1[0] = ...
+             *   clsn1[1] = ...
+             *
+             * is the same as
+             *
+             * clsn1: 2
+             *   clsn2[0] = ...
+             *   clsn2[1] = ...
+             */
+            switch (expected){
+                case clsn1: clsn1Holder.push_back(area); break;
+                case clsn2: clsn2Holder.push_back(area); break;
+            }
+
+            /*
             if (array == "clsn1"){
                 if (expected == clsn2){
                     Global::debug(0) << "Warning: Expected clsn2 but read clsn1: " << array.toString() << " at " << source << endl;
@@ -882,6 +901,7 @@ PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Se
                 }
                 clsn2Holder.push_back(area);
             }
+            */
         }
 
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){

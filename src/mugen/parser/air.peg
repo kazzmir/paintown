@@ -198,6 +198,9 @@ rules:
 	comment = ";" (!newline .)*
 	        | "=" (!newline .)*
 		    | "-" "-" (!newline .)*
+
+    # TODO: potentially allow space between clsn name and :
+    # If thats not allowed then verify and say so here
 	collision_default = "Clsn2Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
 	                  | "Clsn1Default"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
 	                  | "Clsn2"{case} ":" s num:integer {{ value = makeAttributeKeyword(Value(makeKeyword($1)), num); }}
@@ -206,6 +209,10 @@ rules:
     # change int,int,int,int to valuelist ?
 	collision = name:"Clsn2"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
 	          | name:"Clsn1"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
+              # Some files seem to forget to put a number after the 'Clsn' completely
+              # It doesn't matter what number appears after Clsn here, it only matters
+              # whats specified before it, either Clsn1: or Clsn2: or whatever
+	          | name:"Clsn"{case} s "[" s index:integer s "]" s "=" s n1:integer s "," s n2:integer s "," s n3:integer s "," s n4:integer {{ value = makeAttributeArray(makeKeyword(name), as<Ast::Value*>(index), makeValueList(n1, n2, n3, n4)); }}
 
 	action_start = "[" s begin:"Begin"{case} s action:"Action"{case} s num:integer s (!"]" .)* "]" {{ value = makeHeader(begin, action, num); }}
 	inline digit = [0123456789]

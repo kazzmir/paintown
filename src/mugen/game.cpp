@@ -922,6 +922,14 @@ static Character * doLoad(const Filesystem::AbsolutePath & path){
     return NULL;
 }
 
+static bool maybeCharacter(const Filesystem::AbsolutePath & path){
+    try{
+        return Mugen::Util::probeDef(path, "Files", "cmd") != "";
+    } catch (...){
+    }
+    return false;
+}
+
 static Character * makeCharacter(const std::string & name, bool random, std::vector<Filesystem::AbsolutePath> & all){
     if (random){
         while (all.size() > 0){
@@ -943,8 +951,19 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
             Storage::instance().addOverlay(zip, zip.getDirectory());
         } catch (const Filesystem::NotFound & fail){
         }
-        Filesystem::AbsolutePath path = Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + name + ".def"));
-        return doLoad(path);
+        // Filesystem::AbsolutePath path = Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + Filesystem::RelativePath(name).getFilename().path() + ".def"));
+        std::vector<Filesystem::AbsolutePath> allDef = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/").join(Filesystem::RelativePath(name))), "*.def");
+
+        /* Search for a file that looks like it probably contains a character as
+         * opposed to a cutscene or whatever.
+         */
+        for (std::vector<Filesystem::AbsolutePath>::iterator it = allDef.begin(); it != allDef.end(); it++){
+            if (maybeCharacter(*it)){
+                return doLoad(*it);
+            }
+        }
+
+        throw MugenException("No .def files for " + name, __FILE__, __LINE__);
     }
 }
 
