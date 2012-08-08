@@ -64,7 +64,7 @@ Read up till line 10, column 1
 'Mugen.Def
 incl ude: '
           ^
-Uh oh, couldn't parse def.peg. Are you sure its using BNF format?
+Uh oh, couldn't parse bad. Are you sure its using BNF format?
 }
 
 Use one of @tt{--cpp}, @tt{--ruby}, @tt{--python} to generate code from the
