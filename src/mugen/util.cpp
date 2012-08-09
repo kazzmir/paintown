@@ -1290,7 +1290,12 @@ portrait(PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL)){
         AstRef parsed(Util::parseDef(file));
 
         name = Util::probeDef(parsed, "info", "name");
-        displayName = Util::probeDef(parsed, "info", "displayname");
+        try{
+            displayName = Util::probeDef(parsed, "info", "displayname");
+        } catch (...){
+            /* If there is no display name then just use the regular name */
+            displayName = name;
+        }
 
         loadImages();
     } catch (...){
