@@ -1374,7 +1374,9 @@ void Mugen::ArcadeData::CharacterInfo::loadImages(){
         }
 
         if (actCollection.size() == 0){
-            throw MugenException("No pal files specified", __FILE__, __LINE__);
+            ostringstream out;
+            out << "No pal files specified in the [Files] section of " << definition.path();
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
         
         Filesystem::RelativePath spriteFile = Filesystem::RelativePath(Util::probeDef(parsed, "files", "sprite"));
