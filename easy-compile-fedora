@@ -54,9 +54,13 @@ sudo yum groupinstall  'Development Tools'
 sudo yum install scons SDL SDL-devel libpng libpng-devel freetype-devel zlib zlib-devel python python-devel make libogg libvorbis libvorbis-devel libmpg123-devel libmpg123 make
 echo -e "\033[31mwould you like	to install the tools for the animation and level editor?"
 echo -e "\033[31m[y/N]"        
+echo "be advised if compile fails because of editor try without editor and report issue on irc #paintown on freenode"
 read anim  
 if [ "$anim = y" ]; then
 sudo yum install ant
+cd editor && make
+cd ../
+make
 else
 make
 fi
