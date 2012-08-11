@@ -39,9 +39,11 @@ su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/
 else
 if [ "$dist = c" ]; then
 su -c 'rpm -Uvh http://download1.rpmfusion.org/free/el/updates/5/i386/rpmfusion-free-release-5-1.noarch.rpm ttp://download1.rpmfusion.org/nonfree/el/updates/5/i386/rpmfusion-nonfree-release-5-1.noarch.rpm'
+su -c 'rpm -Uvh http://download.fedoraproject.org/pub/epel/5/i386/epel-release-5-4.noarch.rpm'
 else
 if [ "$dist = d" ]; then
 su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/el/updates/6/i386/rpmfusion-free-release-6-1.noarch.rpm http://download1.rpmfusion.org/nonfree/el/updates/6/i386/rpmfusion-nonfree-release-6-1.noarch.rpm'
+su -c 'rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm'
 else
 continue
 fi
