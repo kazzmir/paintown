@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # If you are trying to compile Paintown from source but have no idea what to do
 # try running this script. It will attempt to install all the dependencies you
