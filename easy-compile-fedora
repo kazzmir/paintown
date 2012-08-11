@@ -1,0 +1,65 @@
+#!/bin/sh
+
+# If you are trying to compile Paintown from source but have no idea what to do
+# try running this script. It will attempt to install all the dependencies you
+# need and compile Paintown.
+#I stole part of this from jonrafkind
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+echo -e "
+      \033[31m:::::::::     :::     ::::::::::: ::::    ::: ::::::::::: ::::::::  :::       ::: ::::    ::: 
+     :+:    :+:  :+: :+:       :+:     :+:+:   :+:     :+:    :+:    :+: :+:       :+: :+:+:   :+:  
+    +:+    +:+ +:+   +:+      +:+     :+:+:+  +:+     +:+    +:+    +:+ +:+       +:+ :+:+:+  +:+   
+   +#++:++#+ +#++:++#++:     +#+     +#+ +:+ +#+     +#+    +#+    +:+ +#+  +:+  +#+ +#+ +:+ +#+    
+  +#+       +#+     +#+     +#+     +#+  +#+#+#     +#+    +#+    +#+ +#+ +#+#+ +#+ +#+  +#+#+#     
+ #+#       #+#     #+#     #+#     #+#   #+#+#     #+#    #+#    #+#  #+#+# #+#+#  #+#   #+#+#      
+###       ###     ### ########### ###    ####     ###     ########    ###   ###   ###    ####     
+"
+
+echo "Paintown Fedora/centos/redhat installer by scristopher"
+echo "this installer will install Development tools and a few other things"
+echo -e "\033[31mIf you do not have rpmfusions/epel repos installed this installation may fail see http://rpmfusion.org/ for more info on rpmfusion"
+echo -e	"\033[031mIf you do not want the repos installed select f"
+	echo -e "\033[31m#########################"
+	echo "#which distro are you?  #"
+	echo "#a. fedora 15,16 or 17  #"
+	echo "#b. fedora 18 (rawhide) #"
+	echo "#c. RHEL 5 (or centos 5)#"
+	echo "#d. RHEL 6 (or centos 6)#"
+	echo "#f. Do not install      #"
+	echo "#########################"
+	echo -e "\033[0m"
+read dist
+if [ "$dist = a" ]; then
+su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-stable.noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-stable.noarch.rpm'
+else
+if [ "$dist = b" ]; then
+su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-rawhide.noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-rawhide.noarch.rpm'
+else
+if [ "$dist = c" ]; then
+su -c 'rpm -Uvh http://download1.rpmfusion.org/free/el/updates/5/i386/rpmfusion-free-release-5-1.noarch.rpm ttp://download1.rpmfusion.org/nonfree/el/updates/5/i386/rpmfusion-nonfree-release-5-1.noarch.rpm'
+else
+if [ "$dist = d" ]; then
+su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/el/updates/6/i386/rpmfusion-free-release-6-1.noarch.rpm http://download1.rpmfusion.org/nonfree/el/updates/6/i386/rpmfusion-nonfree-release-6-1.noarch.rpm'
+else
+continue
+fi
+fi
+fi
+fi
+sudo yum groupinstall  'Development Tools'
+sudo yum install scons SDL SDL-devel libpng libpng-devel freetype-devel zlib zlib-devel python python-devel make libogg libvorbis libvorbis-devel libmpg123-devel libmpg123 make
+echo -e "\033[31mwould you like	to install the tools for the animation and level editor?"
+echo -e "\033[31m[y/N]"        
+read anim  
+if [ "$anim = y" ]; then
+sudo yum install ant
+else
+make
+fi
+make
+ls -l paintown
+echo -e "\033[31mHere is the executable. To run it type: ./paintown"
+echo -e "\033[31mIf you opted to install the animation editor tools goto the editor folder and run make then ./run.sh"
+echo -e "\033[0m"
