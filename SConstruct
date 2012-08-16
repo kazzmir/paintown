@@ -1401,7 +1401,7 @@ rsx
         if useDistcc():
             env['CC'] = 'distcc'
             env['CXX'] = 'distcc g++'
-        if isOSX104():
+        if isOSX104() or isOSX():
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_FRAMEWORKS -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
         else:
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
