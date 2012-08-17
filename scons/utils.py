@@ -143,3 +143,55 @@ useSDL = makeUseEnvironment('sdl', False)
 useAllegro4 = makeUseEnvironment('allegro4', False)
 useAllegro5 = makeUseEnvironment('allegro5', False)
 useWii = makeUseEnvironment('wii', False)
+
+def configure(environment, backends, custom_tests):
+    config = environment.Configure(custom_tests = custom_tests)
+
+    if not config.CheckCompiler():
+        config.Finish()
+        raise Exception("No c++ compiler found. Install gcc or clang")
+
+    class OkBackend(Exception):
+        pass
+
+    class NoBackend(Exception):
+        pass
+
+    found = False
+    try:
+        for backend in backends:
+            if backend == 'SDL' and config.CheckSDL():
+                environment.Append(CPPDEFINES = ['USE_SDL'])
+                environment['PAINTOWN_BACKEND'] = 'sdl'
+                environment.Append(PAINTOWN_PLATFORM = ['sdl'])
+                raise OkBackend()
+            if backend == 'Allegro4' and config.CheckAllegro4():
+                environment.Append(CPPDEFINES = ['USE_ALLEGRO'])
+                environment['PAINTOWN_BACKEND'] = 'allegro4'
+                environment.Append(PAINTOWN_PLATFORM = ['allegro4'])
+                raise OkBackend()
+            if backend == 'Allegro5' and config.CheckAllegro5():
+                environment.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+                environment['PAINTOWN_BACKEND'] = 'allegro5'
+                environment.Append(PAINTOWN_PLATFORM = ['allegro5'])
+                raise OkBackend()
+    except OkBackend:
+        found = True
+        pass
+
+    if not found:
+        print "No backend found. Cannot build"
+        config.Finish()
+        raise NoBackend()
+
+    return config.Finish()
+
+def checkCompiler(context):
+    context.Message("Checking for a compiler (%s) ... " % context.env['CXX'])
+    ok = context.TryCompile("""
+      int main(int argc, char ** argv){
+        return 0;
+      }
+    """, ".cpp")
+    context.Result(colorResult(ok))
+    return ok

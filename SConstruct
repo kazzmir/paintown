@@ -308,6 +308,8 @@ def checkSDLMain(context):
     tmp = context.env.Clone()
     env = context.env
 
+    env['HAVE_SDL_MAIN'] = False
+
     ok = False
     if useAndroid():
         ok = True
@@ -323,6 +325,7 @@ int SDL_main(int argc, char ** argv){
         context.sconf.env = tmp
     else:
         env.Append(CPPDEFINES = ['USE_SDL_MAIN'])
+        env['HAVE_SDL_MAIN'] = True
     
     context.Result(colorResult(ok))
     return ok
@@ -470,18 +473,22 @@ def checkNativeOgg(context):
             context.sconf.env = tmp
             context.Result(colorResult(0))
             return 0
+    
+    main = 'int main(int argc, char ** argv)'
+    if env['HAVE_SDL_MAIN']:
+        main = 'int SDL_main(int argc, char ** argv)'
 
     ret = context.TryLink("""
         #include <vorbis/vorbisfile.h>
         #include <stdio.h>
 
-        int main(int argc, char ** argv){
+        %(main)s {
           OggVorbis_File ovf;
           FILE * f;
           ov_open_callbacks(f, &ovf, 0, 0, OV_CALLBACKS_DEFAULT);
           return 0;
         }
-    """, ".c")
+    """ % {'main' : main}, ".c")
 
     if not ret:
         context.sconf.env = tmp
@@ -1401,7 +1408,10 @@ rsx
         if useDistcc():
             env['CC'] = 'distcc'
             env['CXX'] = 'distcc g++'
-        if isOSX104() or isOSX():
+        if isOSX():
+            env.Append(CCFLAGS = Split("""-arch i386 -arch x86_64"""))
+            # env.Append(LINKFLAGS = Split("""-arch i386 -arch x86_64"""))
+        if isOSX104():
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_FRAMEWORKS -Wl,-all_load $_LIBDIRFLAGS $_LIBFLAGS $ARCHIVES -o $TARGET'
         else:
             env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'

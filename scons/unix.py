@@ -59,17 +59,6 @@ def checkPython(context):
     context.Result(utils.colorResult(ret))
     return ret
 
-
-def checkCompiler(context):
-    context.Message("Checking for a compiler (%s) ... " % context.env['CXX'])
-    ok = context.TryCompile("""
-      int main(int argc, char ** argv){
-        return 0;
-      }
-    """, ".cpp")
-    context.Result(utils.colorResult(ok))
-    return ok
-
 def checkAllegro5(context):
     context.Message("Checking for Allegro 5 ... ")
     tmp = context.env.Clone()
@@ -234,42 +223,6 @@ def checkSDL(context):
     context.Result(utils.colorResult(ok))
     return ok
 
-def configure(environment, backends):
-    custom_tests = {"CheckCompiler": checkCompiler,
-                    "CheckSDL" : checkSDL,
-                    "CheckAllegro4" : checkAllegro4,
-                    "CheckAllegro5" : checkAllegro5}
-    config = environment.Configure(custom_tests = custom_tests)
-
-    if not config.CheckCompiler():
-        print("No c++ compiler found. Install gcc or clang")
-        Exit(1)
-
-    class OkBackend(Exception):
-        pass
-
-    try:
-        for backend in backends:
-            if backend == 'SDL' and config.CheckSDL():
-                environment.Append(CPPDEFINES = ['USE_SDL'])
-                environment['PAINTOWN_BACKEND'] = 'sdl'
-                environment.Append(PAINTOWN_PLATFORM = ['sdl'])
-                raise OkBackend()
-            if backend == 'Allegro4' and config.CheckAllegro4():
-                environment.Append(CPPDEFINES = ['USE_ALLEGRO'])
-                environment['PAINTOWN_BACKEND'] = 'allegro4'
-                environment.Append(PAINTOWN_PLATFORM = ['allegro4'])
-                raise OkBackend()
-            if backend == 'Allegro5' and config.CheckAllegro5():
-                environment.Append(CPPDEFINES = ['USE_ALLEGRO5'])
-                environment['PAINTOWN_BACKEND'] = 'allegro5'
-                environment.Append(PAINTOWN_PLATFORM = ['allegro5'])
-                raise OkBackend()
-    except OkBackend:
-        pass
-
-    return config.Finish()
-
 def llvm(environment):
     environment['CXX'] = 'clang++'
     environment['CC'] = 'clang'
@@ -303,4 +256,10 @@ def getEnvironment():
 
     if utils.useLLVM():
         llvm(environment)
-    return configure(environment, backends)
+
+    custom_tests = {"CheckCompiler": utils.checkCompiler,
+                    "CheckSDL" : checkSDL,
+                    "CheckAllegro4" : checkAllegro4,
+                    "CheckAllegro5" : checkAllegro5}
+
+    return utils.configure(environment, backends, custom_tests)
