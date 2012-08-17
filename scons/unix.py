@@ -262,4 +262,4 @@ def getEnvironment():
                     "CheckAllegro4" : checkAllegro4,
                     "CheckAllegro5" : checkAllegro5}
 
-    return utils.configure(environment, backends, custom_tests)
+    return utils.configure_backend(environment, backends, custom_tests)

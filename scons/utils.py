@@ -82,6 +82,13 @@ def pegBuilder(environment):
                    suffix = '.cpp',
                    src_suffix = '.peg')
 
+def readExec(program):
+    import os
+    try:
+        return os.popen(program).readline().replace("\n",'')
+    except OSError:
+        return ""
+
 # Try to execute a script that will produce some compiler flags but fail
 # gracefully if the script dies or can't be found
 def safeParseConfig(environment, config):
@@ -144,7 +151,7 @@ useAllegro4 = makeUseEnvironment('allegro4', False)
 useAllegro5 = makeUseEnvironment('allegro5', False)
 useWii = makeUseEnvironment('wii', False)
 
-def configure(environment, backends, custom_tests):
+def configure_backend(environment, backends, custom_tests):
     config = environment.Configure(custom_tests = custom_tests)
 
     if not config.CheckCompiler():
@@ -157,7 +164,6 @@ def configure(environment, backends, custom_tests):
     class NoBackend(Exception):
         pass
 
-    found = False
     try:
         for backend in backends:
             if backend == 'SDL' and config.CheckSDL():
@@ -175,14 +181,10 @@ def configure(environment, backends, custom_tests):
                 environment['PAINTOWN_BACKEND'] = 'allegro5'
                 environment.Append(PAINTOWN_PLATFORM = ['allegro5'])
                 raise OkBackend()
-    except OkBackend:
-        found = True
-        pass
-
-    if not found:
-        print "No backend found. Cannot build"
         config.Finish()
         raise NoBackend()
+    except OkBackend:
+        pass
 
     return config.Finish()
 
