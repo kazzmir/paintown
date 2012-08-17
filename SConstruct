@@ -475,8 +475,11 @@ def checkNativeOgg(context):
             return 0
     
     main = 'int main(int argc, char ** argv)'
-    if env['HAVE_SDL_MAIN']:
-        main = 'int SDL_main(int argc, char ** argv)'
+    try:
+        if env['HAVE_SDL_MAIN']:
+            main = 'int SDL_main(int argc, char ** argv)'
+    except KeyError:
+        pass
 
     ret = context.TryLink("""
         #include <vorbis/vorbisfile.h>
