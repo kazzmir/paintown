@@ -3,6 +3,7 @@ import utils
 from SCons.Environment import Environment
 from SCons.Script import Exit
 from SCons.Script import Action
+from SCons.Script import Split
 
 def checkPython(context):
     context.Message("Check for python..")
@@ -256,7 +257,12 @@ def getStaticEnvironment():
     environment['PEG_MAKE'] = "%s %s" % (utils.colorize('Creating peg parser', peg_color), utils.colorize('$TARGET', 'light-blue'))
     environment.Append(BUILDERS = {'Peg' : utils.pegBuilder(environment)})
     environment.Append(CPPPATH = ['#src', '#src/util/network/hawknl'])
-    environment['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES $_FRAMEWORKS -Wl,-all_load $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
+    # environment.Append(CCFLAGS = Split("-arch i386 -arch x86_64"))
+    # print environment['CCCOM']
+    # I don't know why appending -arch to ccflags doesn't work, but whatever
+    environment['CCCOM'] = '$CC -arch i386 -arch x86_64 $CFLAGS $CCFLAGS $_CCCOMCOM $SOURCES -c -o $TARGET'
+    environment['CXXCOM'] = '$CXX -arch i386 -arch x86_64 -o $TARGET -c $CXXFLAGS $CCFLAGS $_CCCOMCOM $SOURCES'
+    environment['LINKCOM'] = '$CXX $LINKFLAGS -arch i386 -arch x86_64 $SOURCES $_FRAMEWORKS -Wl,-all_load $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
 
     # Default preference for a graphics renderer / input system
     backends = ['SDL', 'Allegro4', 'Allegro5']
