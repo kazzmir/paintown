@@ -7,7 +7,7 @@ root="../../.."
 
 if [ ! -f paintown-static ]; then
     echo "Cannot find the 'paintown-static' binary. Building it for you.."
-    make static
+    scons -f scons/main.py static
     if [ ! -f paintown-static ]; then
         echo "Could not build paintown-static. Build it manually"
         exit 0
@@ -24,19 +24,15 @@ fi
 
 cp paintown-static paintown-$version
 rm -rf paintown-$version.app
-ok=$(which fixbundle &> /dev/null)
-if [ "x$?" = "x1" ]; then
-    echo "Cannot find fixbundle. Get it from allegro"
-    exit 0
-fi
 echo "Create bundle"
-fixbundle paintown-$version -v $version -V "Paintown $version" misc/icon.bmp
+misc/make-bundle.py paintown-$version $version "Paintown $version" misc/icon.png
 # cp scripts.zip $resources
 cp editor/editor.jar $resources
 cp editor/run.sh $resources
 echo "Copy data"
 (cd $resources; cp -a $root/data .; find . -name .svn | xargs rm -rf)
 echo "Create .dmg file"
-misc/buildDMG.pl -compressionLevel 9 -dmgName paintown-$version paintown-$version.app/
+# misc/buildDMG.pl -compressionLevel 9 -dmgName paintown-$version paintown-$version.app/
+hdiutil create paintown-$version.dmg -srcfolder paintown-$version.app -ov
 echo "Created paintown-$version.dmg"
 ls -l paintown-$version.dmg
