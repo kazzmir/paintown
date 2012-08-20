@@ -33,6 +33,7 @@ struct Range{
 struct RuntimeValue{
 private:
     explicit RuntimeValue(Compiler::Value * value);
+    explicit RuntimeValue(const char * cstring);
 public:
     enum Type{
         Invalid,

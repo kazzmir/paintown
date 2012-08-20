@@ -1168,6 +1168,10 @@ public:
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     return RuntimeValue(enemy->getMoveType());
                 }
+                
+                virtual std::string toString() const {
+                    return "p2movetype";
+                }
 
                 Value * copy() const {
                     return new MoveType2();
@@ -1237,7 +1241,7 @@ public:
             class JustI: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue("I");
+                    return RuntimeValue(string("I"));
                 }
 
                 Value * copy() const {
@@ -1252,7 +1256,7 @@ public:
             class JustH: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue("H");
+                    return RuntimeValue(string("H"));
                 }
 
                 virtual std::string toString() const {
