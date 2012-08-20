@@ -3310,48 +3310,54 @@ void CharacterSelect::parseSelect(){
                         // Only add characters if we auto search is off
                         if (Data::getInstance().getSearchType() == Data::SelectDef ||
                             Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
-                            Filesystem::AbsolutePath tempPath;
-                            try {
-                                tempPath = Util::findCharacterDef(temp);
-                            } catch (const Storage::NotFound & ex){
-                                return;
-                            }
-                            Mugen::ArcadeData::CharacterInfo character(tempPath);              
+
                             try{
-                                // Grab stage
-                                view >> temp;
-                                if (PaintownUtil::matchRegex(temp, "order = ")){
-                                    temp.replace(0,std::string("order = ").size(),"");
-                                    character.setOrder((int)atoi(temp.c_str()));
-                                } else if (temp == "random"){
-                                    character.setRandomStage(true);
-                                } else {
-                                    try{
-                                        character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
-                                    } catch (const Filesystem::NotFound & ex){
-                                        Global::debug(0) << "Could not find stage " << temp << ": " << ex.getTrace() << std::endl;
-                                    }
-                                }
-                                // Grab options
-                                /* TODO: make the parser turn these into better AST nodes.
-                                * something like Assignment(Id(music), Filename(whatever))
-                                */
-                                while(true){
+                                Filesystem::AbsolutePath tempPath;
+                                tempPath = Util::findCharacterDef(temp);
+                                Mugen::ArcadeData::CharacterInfo character(tempPath);              
+                                try{
+                                    // Grab stage
                                     view >> temp;
-                                    if (PaintownUtil::matchRegex(temp,"includestage = ")){
-                                        temp.replace(0,std::string("includestage = ").size(),"");
-                                        character.setIncludeStage((bool)atoi(temp.c_str()));
-                                    } else if (PaintownUtil::matchRegex(temp,"music = ")){
-                                        temp.replace(0,std::string("music = ").size(),"");
-                                        character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
-                                    } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                    if (PaintownUtil::matchRegex(temp, "order = ")){
                                         temp.replace(0,std::string("order = ").size(),"");
                                         character.setOrder((int)atoi(temp.c_str()));
+                                    } else if (temp == "random"){
+                                        character.setRandomStage(true);
+                                    } else {
+                                        try{
+                                            character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
+                                        } catch (const Filesystem::NotFound & ex){
+                                            Global::debug(0) << "Could not find stage " << temp << ": " << ex.getTrace() << std::endl;
+                                        }
                                     }
+                                    // Grab options
+                                    /* TODO: make the parser turn these into better AST nodes.
+                                     * something like Assignment(Id(music), Filename(whatever))
+                                     */
+                                    while(true){
+                                        view >> temp;
+                                        if (PaintownUtil::matchRegex(temp,"includestage = ")){
+                                            temp.replace(0,std::string("includestage = ").size(),"");
+                                            character.setIncludeStage((bool)atoi(temp.c_str()));
+                                        } else if (PaintownUtil::matchRegex(temp,"music = ")){
+                                            temp.replace(0,std::string("music = ").size(),"");
+                                            character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
+                                        } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                            temp.replace(0,std::string("order = ").size(),"");
+                                            character.setOrder((int)atoi(temp.c_str()));
+                                        }
+                                    }
+                                } catch (const Ast::Exception & e){
                                 }
-                            } catch (const Ast::Exception & e){
+
+                                self.addCharacter(character);
+                            } catch (const Storage::NotFound & fail){
+                                Global::debug(0) << "Could not add character from " << temp << " because " << fail.getTrace() << std::endl;
+                                self.addEmpty();
+                            } catch (const MugenException & fail){
+                                Global::debug(0) << "Could not add character from " << temp << " because " << fail.getTrace() << std::endl;
+                                self.addEmpty();
                             }
-                            self.addCharacter(character);
                         }
                     }
                 }
