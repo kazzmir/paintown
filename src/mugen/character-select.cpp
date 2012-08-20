@@ -2057,7 +2057,10 @@ void CharacterSelect::init(){
                             try{
                                 bool boxes;
                                 simple.view() >> boxes;
-                                self.grid.setAccessEmpty(boxes);
+                                /* if moveoveremptyboxes is 1 then we should
+                                 * not allow the user to select an empty box
+                                 */
+                                self.grid.setAccessEmpty(!boxes);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.size"){
