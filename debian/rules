@@ -32,7 +32,7 @@ binary-pre:
 	dh_fixperms
 	#ls -lR $(CURDIR)/debian/
 
-auto_test:
+override_dh_auto_test:
 	echo Ignoring tests
 
 binary-arch:
