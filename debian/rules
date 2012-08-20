@@ -32,6 +32,9 @@ binary-pre:
 	dh_fixperms
 	#ls -lR $(CURDIR)/debian/
 
+auto_test:
+	echo Ignoring tests
+
 binary-arch:
 	dh binary-arch
 
@@ -41,4 +44,3 @@ binary-indep:
 binary: install binary-pre binary-arch binary-indep
 
 .PHONY: binary binary-pre binary-arch binary-indep build clean install
-
