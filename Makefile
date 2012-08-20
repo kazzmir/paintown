@@ -1,6 +1,6 @@
 .PHONY: all doc static quiet clean win nsis count test
 
-osx_version="3-6-0"
+osx_version="3-6-1"
 scons:=scons -j `python misc/cores.py`
 gnome_notify:=python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 

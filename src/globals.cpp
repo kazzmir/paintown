@@ -12,7 +12,7 @@ using namespace std;
 
 static int major_version = 3;
 static int minor_version = 6;
-static int micro_version = 0;
+static int micro_version = 1;
 
 /*
 const int MIN_WORLD_Z = 160;
