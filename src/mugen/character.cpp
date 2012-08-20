@@ -231,6 +231,10 @@ void State::transitionTo(const Mugen::Stage & stage, Character & who){
         who.setSpritePriority((int) spritePriority->evaluate(environment).toNumber());
     }
 
+    if (powerChanged()){
+        who.addPower(getPower()->evaluate(FullEnvironment(stage, who)).toNumber());
+    }
+
     who.setMoveType(moveType);
 
     /* I don't think a hit definition should persist across state changes, unless
@@ -3121,6 +3125,7 @@ void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     hitState.shakeTime = getHit().guardPause.player1;
     hitState.spritePriority = getHit().player1SpritePriority;
     hitState.moveContact = 1;
+    addPower(getHit().getPower.guarded);
     characterData.who = NULL;
     characterData.enabled = false;
 }
@@ -3133,9 +3138,7 @@ void Character::didHit(Character * enemy, Mugen::Stage & stage){
     hitState.moveContact = 1;
     addPower(getHit().getPower.hit);
 
-    if (getState(getCurrentState())->powerChanged()){
-        addPower(getState(getCurrentState())->getPower()->evaluate(FullEnvironment(stage, *this)).toNumber());
-    }
+    /* TODO: Add power from the hitdef.givepower attribute */
 
     if (getHit().id != 0){
         setTargetId(getHit().id, enemy);
@@ -3200,6 +3203,8 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
 
     wasHitCounter += 1;
     hitState.update(stage, *this, getY() < 0, hisHit);
+    
+    addPower(hisHit.givePower.hit);
 
     /* I guess HitVelSet in the 50X0 states will set the velocity
      * based on the hitstate.
@@ -3919,7 +3924,7 @@ void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinitio
     lastTicket = enemy->getTicket();
     hitState.shakeTime = hit.guardPause.player2;
     hitState.spritePriority = hit.player2SpritePriority;
-    enemy->addPower(hit.getPower.guarded);
+    addPower(hit.givePower.guarded);
     bool inAir = getY() > 0;
     if (inAir){
     } else {

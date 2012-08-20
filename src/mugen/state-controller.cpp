@@ -4,6 +4,7 @@
 #include "util/parameter.h"
 #include "character.h"
 #include "helper.h"
+#include "config.h"
 #include "stage.h"
 #include "projectile.h"
 #include "sound.h"
@@ -1589,6 +1590,7 @@ struct HitDefinitionData{
         forceStand(copy(you.forceStand)),
         fall(you.fall),
         getPower(you.getPower),
+        givePower(you.givePower),
         down(you.down),
         id(copy(you.id)),
         chainId(copy(you.chainId)),
@@ -2062,6 +2064,19 @@ struct HitDefinitionData{
         Value guarded;
     } getPower;
 
+    struct GivePower{
+        GivePower(){
+        }
+
+        GivePower(const GivePower & you):
+            hit(copy(you.hit)),
+            guarded(copy(you.guarded)){
+            }
+
+        Value hit;
+        Value guarded;
+    } givePower;
+
     struct Down{
         Down(){
         }
@@ -2334,8 +2349,22 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
                 const Ast::Value * hit;
                 const Ast::Value * guarded;
                 simple.view() >> hit >> guarded;
-                this->hit.getPower.hit = Compiler::compile(hit);
-                this->hit.getPower.guarded = Compiler::compile(guarded);
+                /* One or both might not be given */
+                try{
+                    this->hit.getPower.hit = Compiler::compile(hit);
+                    this->hit.getPower.guarded = Compiler::compile(guarded);
+                } catch (const Ast::Exception & ignore){
+                }
+            } else if (simple == "givepower"){
+                const Ast::Value * hit;
+                const Ast::Value * guarded;
+                simple.view() >> hit >> guarded;
+                /* One or both might not be given */
+                try{
+                    this->hit.givePower.hit = Compiler::compile(hit);
+                    this->hit.givePower.guarded = Compiler::compile(guarded);
+                } catch (const Ast::Exception & ignore){
+                }
             } else if (simple == "sparkxy"){
                 try{
                     const Ast::Value * x;
@@ -2646,8 +2675,11 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
     his.player1SpritePriority = evaluateNumberLocal(hit.player1SpritePriority, 1);
     his.player2SpritePriority = evaluateNumberLocal(hit.player2SpritePriority, 0);
 
-    his.getPower.hit = evaluateNumberLocal(hit.getPower.hit, his.damage.damage);
+    his.getPower.hit = evaluateNumberLocal(hit.getPower.hit, his.damage.damage * Data::getInstance().getDefaultAttackLifeToPowerMultiplier());
     his.getPower.guarded = evaluateNumberLocal(hit.getPower.guarded, his.getPower.hit / 2);
+    
+    his.givePower.hit = evaluateNumberLocal(hit.givePower.hit, his.damage.damage * Data::getInstance().getDefaultGetHitLifeToPowerMultiplier());
+    his.givePower.guarded = evaluateNumberLocal(hit.getPower.guarded, his.getPower.hit / 2);
 
 #undef evaluateNumber
 #undef evaluateBool

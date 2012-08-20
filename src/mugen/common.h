@@ -178,6 +178,15 @@ struct HitDefinition{
         int guarded;
     } getPower;
 
+    struct GivePower{
+        GivePower():
+            hit(0),
+            guarded(0){
+            }
+        int hit;
+        int guarded;
+    } givePower;
+
     ResourceEffect guardHitSound;
 
     AttackType::Ground groundType;
