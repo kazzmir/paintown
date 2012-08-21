@@ -36,6 +36,8 @@
                 <radiobutton id="overlay:back" text="Show behind current animation" />
             </buttongroup>
 
+            <checkbox id="overlay:relative" text="Show relative to current offset" />
+
             <hbox>
                 <vbox>
                     <hbox>

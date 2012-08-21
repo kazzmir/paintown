@@ -142,6 +142,14 @@ object Tools{
       }
     })
 
+    val relativeOffset = context.find("overlay:relative").asInstanceOf[JCheckBox]
+    relativeOffset.addActionListener(new AbstractAction(){
+      def actionPerformed(event:ActionEvent){
+        area.setOverlayRelativeOffset(relativeOffset.isSelected())
+        area.repaint()
+      }
+    })
+
     val offsetx = context.find("overlay:x").asInstanceOf[JSpinner]
     val offsety = context.find("overlay:y").asInstanceOf[JSpinner]
 

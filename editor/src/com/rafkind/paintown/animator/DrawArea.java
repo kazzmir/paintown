@@ -61,6 +61,14 @@ public final class DrawArea extends JComponent {
         public void setBehind(){
             front = false;
         }
+
+        public void setRelativeOffset(boolean relative){
+            this.relativeOffset = relative;
+        }
+
+        public boolean useRelativeOffset(){
+            return this.relativeOffset;
+        }
         
         public void setRotation(int angle){
             this.angle = angle;
@@ -162,6 +170,7 @@ public final class DrawArea extends JComponent {
         boolean flipY = false;
         double alpha = 1;
         int angle = 0;
+        boolean relativeOffset = false;
     }
 
     private OverlayImage overlayImage = new OverlayImage();
@@ -453,6 +462,10 @@ public final class DrawArea extends JComponent {
         scaleListeners.add(update);
     }
 
+    public void setOverlayRelativeOffset(boolean relative){
+        overlayImage.setRelativeOffset(relative);
+    }
+
     public void setOverlayImageRotation(int angle){
         overlayImage.setRotation(angle);
     }
@@ -682,7 +695,13 @@ public final class DrawArea extends JComponent {
         g.drawLine(x, 0, x, (int) (getHeight() / getScale()));
 
         if (overlayImage.isBehind()){
-            overlayImage.draw(g2d, x, y);
+            double useX = x;
+            double useY = y;
+            if (overlayImage.useRelativeOffset()){
+                useX += currentAnimation.getOffsetX();
+                useY += currentAnimation.getOffsetY();
+            }
+            overlayImage.draw(g2d, useX, useY);
         }
 
         if (overlayBehind){
@@ -705,7 +724,13 @@ public final class DrawArea extends JComponent {
         }
         
         if (overlayImage.isFront()){
-            overlayImage.draw(g2d, x, y);
+            double useX = x;
+            double useY = y;
+            if (overlayImage.useRelativeOffset()){
+                useX += currentAnimation.getOffsetX();
+                useY += currentAnimation.getOffsetY();
+            }
+            overlayImage.draw(g2d, useX, useY);
         }
 
         /* Undo the scale to get back to 1x1 */
