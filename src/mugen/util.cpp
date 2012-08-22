@@ -1651,14 +1651,19 @@ Filesystem::AbsolutePath Mugen::Util::loadMotif(){
         motif.clear();
     }
 
-    /* Found a motif */
+    /* Found a motif, see if it still exists. It might not if the data directory
+     * was moved.
+     */
     if (!motif.empty()){
-        return Filesystem::AbsolutePath(motif);
-    } else {
-        /* Otherwise use some default */
-        /* FIXME: search for a system.def file */
-        return Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def"));
+        Filesystem::AbsolutePath maybe = Filesystem::AbsolutePath(motif);
+        if (Storage::instance().exists(maybe)){
+            return maybe;
+        }
     }
+
+    /* Otherwise use some default */
+    /* FIXME: search for a system.def file */
+    return Storage::instance().find(Filesystem::RelativePath("mugen/data/system.def"));
 }
 
 Mugen::FontSystem::FontSystem(){
