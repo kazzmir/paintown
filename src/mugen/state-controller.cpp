@@ -7035,7 +7035,35 @@ public:
             Value player2;
         } pause;
 
-        int spark;
+        struct Resource{
+            Resource():
+                own(false){
+                }
+
+            Resource(const Resource & you):
+                own(you.own),
+                group(copy(you.group)),
+                item(copy(you.item)){
+                }
+
+            bool own;
+            Value group;
+            Value item;
+        };
+
+        Resource spark;
+
+        struct SparkPosition{
+            SparkPosition(){
+            }
+
+            SparkPosition(const SparkPosition & you):
+                x(copy(you.x)),
+                y(copy(you.y)){
+                }
+
+            Value x, y;
+        } sparkPosition;
 
         struct HitSound{
             HitSound(const HitSound & you):
@@ -7082,11 +7110,29 @@ public:
                     } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "sparkno"){
-                    string what;
-                    simple.view() >> what;
-                    /* FIXME: either S123 or 123 */
-                    if (PaintownUtil::matchRegex(what, "[0-9]+")){
-                        hit.spark = atoi(what.c_str());
+                    if (simple.getValue()->hasMultiple()){
+                        const Ast::Value * item;
+                        const Ast::Value * group;
+                        simple.view() >> group >> item;
+                        Resource resource = extractResource(group);
+                        hit.spark.own = resource.own;
+                        hit.spark.item = Compiler::compile(item);
+                        hit.spark.group = Compiler::compile(resource.value);
+                    } else {
+                        const Ast::Value * group = simple.getValue();
+                        Resource resource = extractResource(group);
+                        hit.spark.own = resource.own;
+                        hit.spark.item = Compiler::compile(0);
+                        hit.spark.group = Compiler::compile(resource.value);
+                    }
+                } else if (simple == "sparkxy"){
+                    try{
+                        const Ast::Value * x;
+                        const Ast::Value * y;
+                        simple.view() >> x >> y;
+                        hit.sparkPosition.x = Compiler::compile(x);
+                        hit.sparkPosition.y = Compiler::compile(y);
+                    } catch (const Ast::Exception & e){
                     }
                 } else if (simple == "hitsound"){
                     const Ast::Value * group = NULL;
@@ -7178,7 +7224,11 @@ public:
         ReversalData & data = guy.getReversal();
         data.pause.player1 = (int) evaluateNumber(hit.pause.player1, environment, 0);
         data.pause.player2 = (int) evaluateNumber(hit.pause.player2, environment, 0);
-        data.spark = hit.spark;
+        data.spark.own = hit.spark.own;
+        data.spark.group = (int) evaluateNumber(hit.spark.group, environment, 0);
+        data.spark.item = (int) evaluateNumber(hit.spark.item, environment, 0);
+        data.sparkX = (int) evaluateNumber(hit.sparkPosition.x, environment, 0);
+        data.sparkY = (int) evaluateNumber(hit.sparkPosition.y, environment, 0);
         data.hitSound.own = hit.hitSound.own;
         data.hitSound.group = (int) evaluateNumber(hit.hitSound.group, environment, 0);
         data.hitSound.item = (int) evaluateNumber(hit.hitSound.item, environment, 0);

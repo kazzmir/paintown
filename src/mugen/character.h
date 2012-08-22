@@ -131,7 +131,8 @@ class Character;
 /* subset of HitDefinition stuff, just for reversals */
 struct ReversalData{
     ReversalData():
-        spark(-1),
+        sparkX(0),
+        sparkY(0),
         player1State(-1),
         player2State(-1),
         standing(true),
@@ -149,7 +150,19 @@ struct ReversalData{
         int player2;
     } pause;
 
-    int spark;
+    struct Resource{
+        Resource():
+            own(false),
+            group(-1),
+            item(-1){
+            }
+
+        bool own;
+        int group;
+        int item;
+    };
+
+    Resource spark;
 
     struct HitSound{
         HitSound():
@@ -162,6 +175,8 @@ struct ReversalData{
         int group;
         int item;
     } hitSound;
+
+    int sparkX, sparkY;
 
     int player1State;
     int player2State;
