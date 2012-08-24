@@ -1084,6 +1084,7 @@ public:
         virtual bool isPushable();
 
         virtual void setReversalActive();
+        virtual void setReversalInactive();
         virtual bool isReversalActive();
         ReversalData & getReversal();
 
@@ -1405,7 +1406,7 @@ protected:
         HitDefinition hit;
 
         HitState hitState;
-        unsigned int lastTicket;
+        // unsigned int lastTicket;
 
         int combo;
         // int nextCombo;

@@ -73,8 +73,10 @@ public:
     virtual int getObjectId() const;
     virtual void setObjectId(int id);
 
+    /*
     virtual unsigned int getTicket() const;
     virtual void nextTicket();
+    */
     
     // virtual void doMovement(const std::vector<Object*> & objects, Stage & stage);
 

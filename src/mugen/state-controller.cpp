@@ -2704,7 +2704,6 @@ public:
         /* If not in an attack state don't do anything */
         if (guy.getMoveType() == Move::Attack){
             guy.enableHit();
-            guy.nextTicket();
             /* set all the hitdef crap */
             FullEnvironment env(stage, guy, commands);
             HitDefinition & his = guy.getHit();

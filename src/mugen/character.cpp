@@ -259,6 +259,8 @@ void State::transitionTo(const Mugen::Stage & stage, Character & who){
         */
     }
 
+    who.setReversalInactive();
+
     if (changeVelocity){
         who.setXVelocity(velocity_x->evaluate(FullEnvironment(stage, who)).toNumber());
         who.setYVelocity(velocity_y->evaluate(FullEnvironment(stage, who)).toNumber());
@@ -443,6 +445,7 @@ void Object::doMovement(const std::vector<Character*> & objects, Stage & stage){
 }
 */
     
+/*
 unsigned int Object::getTicket() const {
     return ticket;
 }
@@ -450,6 +453,7 @@ unsigned int Object::getTicket() const {
 void Object::nextTicket(){
     ticket += 1;
 }
+*/
 
 int Object::getAlliance() const {
     return alliance;
@@ -589,7 +593,7 @@ pushPlayer(0){
     C(velocity_x);
     C(velocity_y);
     C(currentPhysics);
-    C(lastTicket);
+    // C(lastTicket);
     C(regenerateHealth);
     C(regenerating);
     C(regenerateTime);
@@ -682,7 +686,7 @@ pushPlayer(0){
     C(standFrictionThreshold);
     C(stateType);
     C(moveType);
-    lastTicket = 0;
+    // lastTicket = 0;
     combo = 0;
     hitCount = 0;
     blocking = false;
@@ -791,7 +795,7 @@ void Character::initialize(){
     combo = 1;
     // nextCombo = 0;
 
-    lastTicket = 0;
+    // lastTicket = 0;
 
     /* Load up info for the select screen */
     //loadSelectData();
@@ -1078,9 +1082,8 @@ bool Character::canBeHit(Character * enemy){
         }
     }
 
-    return (moveType != Move::Hit && lastTicket < enemy->getTicket()) ||
-           (moveType == Move::Hit && lastTicket < enemy->getTicket() &&
-            juggleRemaining >= enemy->getCurrentJuggle());
+    return (moveType != Move::Hit) ||
+           (moveType == Move::Hit && juggleRemaining >= enemy->getCurrentJuggle());
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
@@ -2797,7 +2800,9 @@ static bool blockingState(int state){
 void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mugen::Character*>* add){
 
     maxChangeStates = 0;
-    reversalActive = false;
+
+    /* Reversals deactivate on state change or if a reversal actually occurs */
+    // reversalActive = false;
 
     special.reset();
     blocking = false;
@@ -3128,6 +3133,8 @@ void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     addPower(getHit().getPower.guarded);
     characterData.who = NULL;
     characterData.enabled = false;
+
+    disableHit();
 }
 
 void Character::didHit(Character * enemy, Mugen::Stage & stage){
@@ -3138,7 +3145,8 @@ void Character::didHit(Character * enemy, Mugen::Stage & stage){
     hitState.moveContact = 1;
     addPower(getHit().getPower.hit);
 
-    /* TODO: Add power from the hitdef.givepower attribute */
+    /* Once a hitdef hits, it cannot hit again */
+    disableHit();
 
     if (getHit().id != 0){
         setTargetId(getHit().id, enemy);
@@ -3198,6 +3206,7 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 }
 
 void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
+    disableHit();
     if (data.player2State != -1){
         useCharacterData(enemy->getRoot());
         changeState(stage, data.player2State);
@@ -3205,6 +3214,7 @@ void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const Rever
 }
 
 void Character::didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
+    setReversalInactive();
     if (data.player1State != -1){
         changeState(stage, data.player1State);
     }
@@ -3214,7 +3224,7 @@ void Character::didReverse(Mugen::Stage & stage, Character * enemy, const Revers
      * then the enemy enabled a new HitDef thus hitting player while he is doing
      * his reversal animation
      */
-    lastTicket = enemy->getTicket();
+    // lastTicket = enemy->getTicket();
 }
 
 void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
@@ -3243,7 +3253,7 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     setYVelocity(hitState.yVelocity);
     */
 
-    lastTicket = enemy->getTicket();
+    // lastTicket = enemy->getTicket();
 
     if (hisHit.damage.damage != 0){
         takeDamage(stage, enemy, hisHit.damage.damage, true, true);
@@ -3941,7 +3951,7 @@ bool Character::isGuarding() const {
 void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
     hitState.guarded = true;
-    lastTicket = enemy->getTicket();
+    // lastTicket = enemy->getTicket();
     hitState.shakeTime = hit.guardPause.player2;
     hitState.spritePriority = hit.player2SpritePriority;
     addPower(hit.givePower.guarded);
@@ -4147,6 +4157,10 @@ double Character::getGroundFriction() const {
         
 void Character::setReversalActive(){
     reversalActive = true;
+}
+
+void Character::setReversalInactive(){
+    reversalActive = false;
 }
         
 bool Character::isReversalActive(){
