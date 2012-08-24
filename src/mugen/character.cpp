@@ -3197,6 +3197,26 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
     takeDamage(world, obj, amount, true, true);
 }
 
+void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
+    if (data.player2State != -1){
+        useCharacterData(enemy->getRoot());
+        changeState(stage, data.player2State);
+    }
+}
+
+void Character::didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
+    if (data.player1State != -1){
+        changeState(stage, data.player1State);
+    }
+
+    /* if the enemy doesn't change states at least we won't be hit by him again.
+     * although its interesting to consider what would happen if a reversal occured,
+     * then the enemy enabled a new HitDef thus hitting player while he is doing
+     * his reversal animation
+     */
+    lastTicket = enemy->getTicket();
+}
+
 void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
     characterData.who = NULL;
     characterData.enabled = false;
@@ -4127,6 +4147,10 @@ double Character::getGroundFriction() const {
         
 void Character::setReversalActive(){
     reversalActive = true;
+}
+        
+bool Character::isReversalActive(){
+    return reversalActive;
 }
 
 ReversalData & Character::getReversal(){

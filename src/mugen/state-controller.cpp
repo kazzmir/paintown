@@ -7233,7 +7233,7 @@ public:
         data.hitSound.group = (int) evaluateNumber(hit.hitSound.group, environment, 0);
         data.hitSound.item = (int) evaluateNumber(hit.hitSound.item, environment, 0);
         data.player1State = (int) evaluateNumber(hit.player1State, environment, -1);
-        data.player2State = (int) evaluateNumber(hit.player1State, environment, -1);
+        data.player2State = (int) evaluateNumber(hit.player2State, environment, -1);
         data.standing = hit.standing;
         data.crouching = hit.crouching;
         data.aerial = hit.aerial;

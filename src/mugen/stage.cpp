@@ -788,6 +788,10 @@ bool Mugen::Stage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * ob
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
+bool Mugen::Stage::doReversalDetection(Mugen::Object * obj1, Mugen::Object * obj2){
+    return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getAttackBoxes(), (int) obj2->getX(), (int) obj2->getY());
+}
+
 PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Stage::getFightAnimation(int id){
     if (sparks[id] == 0){
         ostringstream out;
@@ -946,13 +950,33 @@ void Mugen::Stage::physics(Character * mugen){
 		}
                 */
 
+                /* Checks attack boxes vs defense boxes */
                 bool collision = doCollisionDetection(mugen, enemy);
+
                 /* blocking collision extends a little further than a a normal collision */
                 bool blockingCollision = doBlockingDetection(mugen, enemy);
 
-                /* guarding */
-                if ((collision || blockingCollision) && enemy->isBlocking(mugen->getHit()) &&
-                    enemy->compatibleHitFlag(mugen->getHit().guardFlag)){
+                /* Checks attack boxes vs attack boxes */
+                bool reversalCollision = doReversalDetection(mugen, enemy);
+
+                /* If enemy is doing a reversal then that takes precedence
+                 * over everything else here, I think.
+                 */
+                if (enemy->isReversalActive() && reversalCollision){
+
+                    /* Add the spark at mugen->hitdef's sparkxy +
+                     *  enemy->reversal­>sparkxy as an offset.
+                     */
+
+                    Global::debug(1) << "Reversal!" << std::endl;
+                    enemy->didReverse(*this, mugen, enemy->getReversal());
+                    mugen->wasReversed(*this, enemy, enemy->getReversal());
+
+                } else if ((collision || blockingCollision) &&
+                           enemy->isBlocking(mugen->getHit()) &&
+                           enemy->compatibleHitFlag(mugen->getHit().guardFlag)){
+                    /* guarding */
+
                     /* FIXME: why do we differentiate between blocking collision and a
                      * regular collision?
                      */

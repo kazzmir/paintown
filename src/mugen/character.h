@@ -864,6 +864,12 @@ public:
         /* `this' character guarded `enemy' */
         void guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit);
 
+        /* `enemy' reversed us */
+        void wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data);
+
+        /* we reversed the enemy */
+        void didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data);
+
         /* true if the player is holding back */
         bool isBlocking(const HitDefinition & hit);
         /* true if the player was attacked and blocked it */
@@ -1078,6 +1084,7 @@ public:
         virtual bool isPushable();
 
         virtual void setReversalActive();
+        virtual bool isReversalActive();
         ReversalData & getReversal();
 
         virtual void setTransOverride(TransType type, int alphaFrom, int alphaTo);
