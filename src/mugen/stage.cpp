@@ -974,6 +974,8 @@ void Mugen::Stage::physics(Character * mugen){
                                  enemy->getReversal().spark,
                                  enemy);
 
+                    playSound(enemy, enemy->getReversal().hitSound.group, enemy->getReversal().hitSound.item, enemy->getReversal().hitSound.own);
+
                     enemy->didReverse(*this, mugen, enemy->getReversal());
                     mugen->wasReversed(*this, enemy, enemy->getReversal());
                 } else if ((collision || blockingCollision) &&
