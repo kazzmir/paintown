@@ -1,6 +1,7 @@
 #include "../common/init.h"
 
 #include <iostream>
+#include "configuration.h"
 #include "util/message-queue.h"
 #include "util/file-system.h"
 #include "util/input/input-source.h"
@@ -59,6 +60,7 @@ int paintown_main(int argc, char ** argv){
     Sound::initialize();
     Util::Thread::initializeLock(&Global::messageLock);
 
+    Configuration::loadConfigurations();
     Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);
 

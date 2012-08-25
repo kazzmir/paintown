@@ -1,5 +1,6 @@
 #include "../common/init.h"
 
+#include "configuration.h"
 #include "util/message-queue.h"
 #include "util/thread.h"
 #include "util/bitmap.h"
@@ -18,6 +19,7 @@ int paintown_main(int argc, char ** argv){
     Screen::fakeInit();
     InputManager input;
     Util::Thread::initializeLock(&Global::messageLock);
+    Configuration::loadConfigurations();
     
     int die = 0;
     // for (int i = 0; i < 3; i++){

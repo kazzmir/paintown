@@ -1,6 +1,7 @@
 #include "../common/init.h"
 
 #include <iostream>
+#include "configuration.h"
 #include "util/message-queue.h"
 #include "util/file-system.h"
 #include "mugen/character-select.h"
@@ -67,6 +68,7 @@ int main(int argc, char ** argv){
     Global::setDebug(1);
     Mugen::ParseCache cache;
     Util::Thread::initializeLock(&Global::messageLock);
+    Configuration::loadConfigurations();
 
     int die = 0;
     if (argc < 2){

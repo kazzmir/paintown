@@ -7,6 +7,7 @@
 #include "util/bitmap.h"
 #include "util/sound.h"
 #include "util/input/input-manager.h"
+#include "configuration.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/game/adventure_world.h"
 #include "paintown-engine/object/player.h"
@@ -72,6 +73,8 @@ int paintown_main(int argc, char ** argv){
     Sound::initialize();
     InputManager manager;
     Util::Thread::initializeLock(&Global::messageLock);
+
+    Configuration::loadConfigurations();
 
     Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);
