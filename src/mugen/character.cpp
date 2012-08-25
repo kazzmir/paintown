@@ -3207,6 +3207,9 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 
 void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     disableHit();
+    hitState.shakeTime = data.player2Pause;
+    /* FIXME: what should the sprite priority of a reversal be? */
+    hitState.spritePriority = 0;
     if (data.player2State != -1){
         useCharacterData(enemy->getRoot());
         changeState(stage, data.player2State);
@@ -3215,6 +3218,9 @@ void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const Rever
 
 void Character::didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     setReversalInactive();
+    hitState.shakeTime = data.player1Pause;
+    /* FIXME: what should the sprite priority of a reversal be? */
+    hitState.spritePriority = 0;
     if (data.player1State != -1){
         changeState(stage, data.player1State);
     }

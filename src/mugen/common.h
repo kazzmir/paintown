@@ -70,6 +70,8 @@ struct ReversalData{
         sparkY(0),
         player1State(-1),
         player2State(-1),
+        player1Pause(0),
+        player2Pause(0),
         standing(true),
         crouching(true),
         aerial(true){
@@ -103,6 +105,9 @@ struct ReversalData{
 
     int player1State;
     int player2State;
+
+    int player1Pause;
+    int player2Pause;
 
     bool standing;
     bool crouching;
