@@ -968,10 +968,14 @@ void Mugen::Stage::physics(Character * mugen){
                      *  enemy->reversal­>sparkxy as an offset.
                      */
 
-                    Global::debug(1) << "Reversal!" << std::endl;
+                    addSpark((int)(mugen->getHit().sparkPosition.x + enemy->getReversal().sparkX),
+                             (int)(mugen->getHit().sparkPosition.y + enemy->getReversal().sparkY),
+                                 enemy->getReversal().spark,
+                                 enemy->getReversal().spark,
+                                 enemy);
+
                     enemy->didReverse(*this, mugen, enemy->getReversal());
                     mugen->wasReversed(*this, enemy, enemy->getReversal());
-
                 } else if ((collision || blockingCollision) &&
                            enemy->isBlocking(mugen->getHit()) &&
                            enemy->compatibleHitFlag(mugen->getHit().guardFlag)){

@@ -128,65 +128,6 @@ namespace PhysicalAttack{
 
 class Character;
 
-/* subset of HitDefinition stuff, just for reversals */
-struct ReversalData{
-    ReversalData():
-        sparkX(0),
-        sparkY(0),
-        player1State(-1),
-        player2State(-1),
-        standing(true),
-        crouching(true),
-        aerial(true){
-        }
-
-    struct PauseTime{
-        PauseTime():
-            player1(0),
-            player2(0){
-            }
-
-        int player1;
-        int player2;
-    } pause;
-
-    struct Resource{
-        Resource():
-            own(false),
-            group(-1),
-            item(-1){
-            }
-
-        bool own;
-        int group;
-        int item;
-    };
-
-    Resource spark;
-
-    struct HitSound{
-        HitSound():
-            own(false),
-            group(-1),
-            item(-1){
-            }
-
-        bool own;
-        int group;
-        int item;
-    } hitSound;
-
-    int sparkX, sparkY;
-
-    int player1State;
-    int player2State;
-
-    bool standing;
-    bool crouching;
-    bool aerial;
-    std::vector<AttackType::Attribute> attributes;
-};
-
 struct HitState{
     HitState():
         shakeTime(0),
