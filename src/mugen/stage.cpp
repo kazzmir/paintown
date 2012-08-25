@@ -962,7 +962,7 @@ void Mugen::Stage::physics(Character * mugen){
                 /* If enemy is doing a reversal then that takes precedence
                  * over everything else here, I think.
                  */
-                if (enemy->isReversalActive() && reversalCollision){
+                if (enemy->canReverse(mugen) && reversalCollision){
 
                     /* Add the spark at mugen->hitdef's sparkxy +
                      *  enemy->reversal­>sparkxy as an offset.

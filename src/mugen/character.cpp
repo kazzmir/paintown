@@ -4173,6 +4173,43 @@ bool Character::isReversalActive(){
     return reversalActive;
 }
 
+bool Character::canReverse(Character * enemy){
+    if (!isReversalActive()){
+        return false;
+    }
+
+    const ReversalData & reversal = getReversal();
+
+    if (enemy->getHit().attribute.state == StateType::Crouch &&
+        !reversal.crouching){
+        return false;
+    }
+            
+    if (enemy->getHit().attribute.state == StateType::Stand &&
+        !reversal.standing){
+        return false;
+    }
+            
+    if (enemy->getHit().attribute.state == StateType::Air &&
+        !reversal.aerial){
+        return false;
+    }
+
+    AttackType::Attribute hitType = parseAttribute(enemy->getHit().attribute.attackType, enemy->getHit().attribute.physics);
+    const vector<AttackType::Attribute> & attributes = getReversal().attributes;
+    bool ok = false;
+
+    /* The hit type of the enemy must be in the list of reversal attributes somewhere */
+    for (vector<AttackType::Attribute>::const_iterator it = attributes.begin(); it != attributes.end(); it++){
+        if (hitType == *it){
+            ok = true;
+            break;
+        }
+    }
+
+    return ok;
+}
+
 ReversalData & Character::getReversal(){
     return reversal;
 }

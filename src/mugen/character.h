@@ -1027,6 +1027,11 @@ public:
         virtual void setReversalActive();
         virtual void setReversalInactive();
         virtual bool isReversalActive();
+
+        /* Takes into account isReversalActive and the attack attributes of who
+         * versus the reversal.attrs
+         */
+        virtual bool canReverse(Character * who);
         ReversalData & getReversal();
 
         virtual void setTransOverride(TransType type, int alphaFrom, int alphaTo);

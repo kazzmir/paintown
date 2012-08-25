@@ -948,6 +948,7 @@ rules:
     value = float
           | integer
           | keyword
+          # Don't confuse SCA for a resource s(CA)
           | resource
           | !keyword identifier
           | range
@@ -955,8 +956,15 @@ rules:
           | hitflag
 
     # Don't confuse resources with some identifiers
-    resource = !resource-s "s"{case} any:expr_c {{ value = makeOwnResource(any); }}
+    resource = !resource-s "s"{case} !maybe-hitdef any:expr_c {{ value = makeOwnResource(any); }}
              | !resource-f "f"{case} any:expr_c {{ value = makeFightResource(any); }}
+
+    # A resource can be confused with a hitdef attribute, like SCA, so make
+    # sure we don't find anything that might be an attribute
+    maybe-hitdef = "c"{case} "a"{case}
+                 | "a"{case} "c"{case}
+                 | "c"{case}
+                 | "a"{case}
 
     # It sort of sucks to explicitly list these out here but the alternative is to
     # define 'identifier' by explicitly listing every identifier we could possibly use

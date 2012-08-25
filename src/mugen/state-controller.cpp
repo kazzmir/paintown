@@ -4611,6 +4611,14 @@ struct HitByAttributes{
         aerial(false){
         }
 
+    HitByAttributes(const HitByAttributes & copy):
+        slot(copy.slot),
+        standing(copy.standing),
+        crouching(copy.crouching),
+        aerial(copy.aerial),
+        attributes(copy.attributes){
+        }
+
     int slot;
     bool standing;
     bool crouching;
@@ -4636,6 +4644,7 @@ static HitByAttributes parseHitByAttributes(const Ast::AttributeSimple & simple)
     } else {
         Ast::View view = simple.view();
         view >> type;
+        type = PaintownUtil::lowerCaseAll(type);
         try{
             while (true){
                 string what;
@@ -7015,9 +7024,6 @@ public:
         hitSound(you.hitSound),
         player1State(copy(you.player1State)),
         player2State(copy(you.player2State)),
-        standing(you.standing),
-        crouching(you.crouching),
-        aerial(you.aerial),
         attributes(you.attributes){
         }
 
@@ -7083,10 +7089,15 @@ public:
         Value player1State;
         Value player2State;
 
+        /* For reversal.attr */
+        HitByAttributes attributes;
+
+        /*
         bool standing;
         bool crouching;
         bool aerial;
         std::vector<AttackType::Attribute> attributes;
+        */
     } hit;
 
     void parse(Ast::Section * section){
@@ -7160,6 +7171,8 @@ public:
                 } else if (simple == "p2stateno"){
                     hit.player2State = Compiler::compile(simple.getValue());
                 } else if (simple == "reversal.attr"){
+                    hit.attributes = parseHitByAttributes(simple);
+                    /*
                     string type;
                     vector<string> moreTypes;
                     if (! simple.getValue()->hasMultiple()){
@@ -7169,6 +7182,7 @@ public:
                     } else {
                         Ast::View view = simple.view();
                         view >> type;
+                        type = PaintownUtil::lowerCaseAll(type);
                         try{
                             while (true){
                                 string what;
@@ -7181,15 +7195,15 @@ public:
                     }
 
                     if (type.find('s') != string::npos){
-                        hit.standing = false;
+                        hit.standing = true;
                     }
 
                     if (type.find('c') != string::npos){
-                        hit.crouching = false;
+                        hit.crouching = true;
                     }
 
                     if (type.find('a') != string::npos){
-                        hit.aerial = false;
+                        hit.aerial = true;
                     }
 
                     map<string, AttackType::Attribute> attributes;
@@ -7209,6 +7223,7 @@ public:
                             hit.attributes.push_back(attributes[what]);
                         }
                     }
+                    */
                 }
             }
         };
@@ -7235,10 +7250,10 @@ public:
         data.player2State = (int) evaluateNumber(hit.player2State, environment, -1);
         data.player1Pause = (int) evaluateNumber(hit.pause.player1, environment, 0);
         data.player2Pause = (int) evaluateNumber(hit.pause.player2, environment, 0);
-        data.standing = hit.standing;
-        data.crouching = hit.crouching;
-        data.aerial = hit.aerial;
-        data.attributes = hit.attributes;
+        data.standing = hit.attributes.standing;
+        data.crouching = hit.attributes.crouching;
+        data.aerial = hit.attributes.aerial;
+        data.attributes = hit.attributes.attributes;
     }
 
     StateController * deepCopy() const {
