@@ -3687,6 +3687,16 @@ void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity
     }
 #endif
 }
+        
+int Character::getStateTime() const {
+    /* While the character is paused/shaking his time is -1 so that triggers
+     * which look for time=0 dont activate
+     */
+    if (hitState.shakeTime > 0){
+        return -1;
+    }
+    return stateTime;
+}
 
 void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     /*

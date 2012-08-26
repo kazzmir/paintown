@@ -620,9 +620,7 @@ public:
             return airjumpfwd;
         }
 
-        virtual inline int getStateTime() const {
-            return stateTime;
-        }
+        virtual int getStateTime() const;
 
         virtual inline int getPreviousState() const {
             return previousState;
