@@ -1152,6 +1152,10 @@ RuntimeValue Character::getSystemVariable(int index) const {
 void Character::resetStateTime(){
     stateTime = 0;
 }
+        
+void Character::resetJugglePoints(){
+    juggleRemaining = getCurrentJuggle();
+}
     
 /*
 void Character::changeState(Mugen::Stage & stage, int state){
@@ -1176,7 +1180,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
     /* reset juggle points once the player gets up */
     if (stateNumber == GetUpFromLiedown){
-        juggleRemaining = getJugglePoints();
+        resetJugglePoints();
     }
 
     /* FIXME: handle movehitpersist
@@ -1356,6 +1360,7 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             int x;
                             simple.view() >> x;
                             self.setJugglePoints(x);
+                            self.resetJugglePoints();
                         } else if (simple == "life"){
                             int x;
                             simple.view() >> x;
@@ -3691,6 +3696,10 @@ void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity
 int Character::getStateTime() const {
     /* While the character is paused/shaking his time is -1 so that triggers
      * which look for time=0 dont activate
+     *
+     * Q: If the player is in state X at time 5 and his hitdef makes contact then
+     * the pause time will activate and for a moment the players time will become -1.
+     * After the pause time ends the time will resume at 6. Is this right?
      */
     if (hitState.shakeTime > 0){
         return -1;

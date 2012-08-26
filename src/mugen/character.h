@@ -870,6 +870,8 @@ public:
             return airjuggle;
         }
 
+        virtual void resetJugglePoints();
+
         virtual inline void setCurrentJuggle(int j){
             currentJuggle = j;
         }
