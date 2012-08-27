@@ -909,13 +909,13 @@ void Mugen::Stage::doProjectileToProjectileCollision(Projectile * mine, Projecti
 
 /* for helpers and players */
 void Mugen::Stage::physics(Character * mugen){
+    // Z/Y offset
+    mugen->setZ(currentZOffset());
+
     /* ignore physics while the player is paused */
     if (mugen->isPaused()){
         return;
     }
-
-    // Z/Y offset
-    mugen->setZ(currentZOffset());
 
     mugen->doMovement(objects, *this);
 
