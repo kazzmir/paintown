@@ -1154,7 +1154,7 @@ void Character::resetStateTime(){
 }
         
 void Character::resetJugglePoints(){
-    juggleRemaining = getCurrentJuggle();
+    juggleRemaining = getJugglePoints();
 }
     
 /*
