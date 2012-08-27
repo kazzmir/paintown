@@ -2974,7 +2974,7 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     }
 
     /* Check the states even if we are paused. If a controller has 'ignorehitpause = 1'
-     * then it will might still activate.
+     * then it might still activate.
      */
     /* always run through the negative states unless we are borrowing another
      * players states
@@ -3402,7 +3402,33 @@ bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, in
                         /* activate may modify the current state */
                         controller->activate(stage, *this, active);
 
+                        /* 8/27/2012 - the mugen docs say this about negative states:
+                         *   For each tick of game-time, MUGEN makes a single pass through each of the special states, from top to bottom, in order of increasing state number (-3, -2, then -1). For each state controller encountered, its condition-type triggers are evaluated and, if they are satisfied, the controller is executed. Then processing proceeds to the next state controller in the state. A state transition (ChangeState) in any of the special states will update the player's current state number, but will not abort processing of the special states. After all the state controllers in the special states have been checked, the player's current state is processed, again from top to bottom. If a state transition is made out of the current state, the rest of the state controllers (if any) in the current state are skipped, and processing continues from the beginning of the new state. When the end of the current state is reached and no state transition is made, processing halts for this tick.
+                         *
+                         * But in testing mugen it seems like a ChangeState in a special state does abort the rest of the controllers. I tested this in kfm.cmd
+                         *
+                         * [State -1, xx1]
+                         * type = ChangeState
+                         * value = 0
+                         * trigger1 = 1 
+                         *
+                         * [State -1, debugx2]
+                         * type = DisplayToClipboard
+                         * text = "testing!"
+                         * params = random
+                         * trigger1 = 1
+                         *
+                         * The clipboard is never updated with the text "testing!". What really happens is that MUGEN will process states -3, -2, -1 no matter what followed by the current state but if any state (negative or normal) does a ChangeState controller then the rest of the controllers in that state are skipped.
+                         *
+                         * So it doesn't matter what the state number is, we always return immediately if the current state was changed.
+                         */
+                        /*
                         if (stateNumber >= 0 && getCurrentState() != oldState){
+                            return true;
+                        }
+                        */
+
+                        if (getCurrentState() != oldState){
                             return true;
                         }
                     }
