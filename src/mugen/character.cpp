@@ -1164,6 +1164,53 @@ void Character::changeState(Mugen::Stage & stage, int state){
 }
 */
 
+/* Updates the current state but doesn't activate it until the current
+ * pause time reaches 0.
+ */
+void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
+    maxChangeStates += 1;
+    if (maxChangeStates > 100){
+        std::ostringstream out;
+        out << "ChangeState called more than 100 times, most likely this is a bug";
+        Global::debug(0) << out.str() << std::endl;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+    /* dont let after images carry over to the next state
+     * UPDATE: mugen actually allows this
+     */
+    // afterImage.show = false;
+
+    /* reset juggle points once the player gets up */
+    if (stateNumber == GetUpFromLiedown){
+        resetJugglePoints();
+    }
+
+    /* FIXME: handle movehitpersist
+     * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
+     */
+    hitState.moveContact = 0;
+
+    /* reset hit count */
+    hitCount = 0;
+
+    ostringstream debug;
+    debug << getDisplayName() << "-" << getObjectId();
+    Global::debug(1, debug.str()) << "Change from state " << currentState << " to state " << stateNumber << endl;
+    previousState = currentState;
+    currentState = stateNumber;
+    stateTime = -1;
+    /*
+    if (getState(currentState) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(currentState);
+        state->transitionTo(stage, *this);
+        doStates(stage, active, currentState);
+    } else {
+        Global::debug(0, debug.str()) << "Unknown state " << currentState << endl;
+    }
+    */
+}
+
+/* Immediately changes to a state and activates it */
 void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
     maxChangeStates += 1;
@@ -2860,6 +2907,19 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             animation->virtualTick();
         }
     } else {
+        /* If statetime was -1 then we were paused due to a p1stateno or p2stateno
+         * from a hitdef or reversaldef. When shaketime reaches 0 we need to activate
+         * the new state that was set from delayChangeState.
+         */
+        if (stateTime == -1){
+            if (getState(currentState) != NULL){
+                PaintownUtil::ReferenceCount<State> state = getState(currentState);
+                state->transitionTo(*stage, *this);
+            } else {
+                Global::debug(0) << "Unknown state " << currentState << endl;
+            }
+        }
+
         /* Stuff to skip if the player is shaking/paused */
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
@@ -3179,7 +3239,7 @@ void Character::didHit(Character * enemy, Mugen::Stage & stage){
     }
 
     if (getHit().player1State != -1){
-        changeState(stage, getHit().player1State);
+        delayChangeState(stage, getHit().player1State);
     }
 }
 
@@ -3217,7 +3277,7 @@ void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const Rever
     hitState.spritePriority = 0;
     if (data.player2State != -1){
         useCharacterData(enemy->getRoot());
-        changeState(stage, data.player2State);
+        delayChangeState(stage, data.player2State);
     }
 }
 
@@ -3227,15 +3287,8 @@ void Character::didReverse(Mugen::Stage & stage, Character * enemy, const Revers
     /* FIXME: what should the sprite priority of a reversal be? */
     hitState.spritePriority = 0;
     if (data.player1State != -1){
-        changeState(stage, data.player1State);
+        delayChangeState(stage, data.player1State);
     }
-
-    /* if the enemy doesn't change states at least we won't be hit by him again.
-     * although its interesting to consider what would happen if a reversal occured,
-     * then the enemy enabled a new HitDef thus hitting player while he is doing
-     * his reversal animation
-     */
-    // lastTicket = enemy->getTicket();
 }
 
 void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
@@ -3694,16 +3747,6 @@ void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity
 }
         
 int Character::getStateTime() const {
-    /* While the character is paused/shaking his time is -1 so that triggers
-     * which look for time=0 dont activate
-     *
-     * Q: If the player is in state X at time 5 and his hitdef makes contact then
-     * the pause time will activate and for a moment the players time will become -1.
-     * After the pause time ends the time will resume at 6. Is this right?
-     */
-    if (hitState.shakeTime > 0){
-        return -1;
-    }
     return stateTime;
 }
 
