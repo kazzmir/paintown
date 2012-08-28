@@ -370,6 +370,9 @@ static Configuration::JoystickInput intToJoystick(int a){
         case Joystick::Button2 : return Joystick::Button2;
         case Joystick::Button3 : return Joystick::Button3;
         case Joystick::Button4 : return Joystick::Button4;
+        case Joystick::Button5 : return Joystick::Button5;
+        case Joystick::Button6 : return Joystick::Button6;
+        case Joystick::Start : return Joystick::Start;
         case Joystick::Quit : return Joystick::Quit;
     }
     return Joystick::Invalid;
@@ -538,6 +541,10 @@ void Configuration::setJoystickQuit(int config, Configuration::JoystickInput i){
     setJoystickKey(config, "quit", i);
 }
 
+void Configuration::setJoystickStart(int config, Configuration::JoystickInput i){
+    setJoystickKey(config, "start", i);
+}
+
 Configuration::JoystickInput Configuration::getJoystickRight(int config){
     return getJoystickKey(config, "right", Joystick::Right);
 }
@@ -584,6 +591,10 @@ Configuration::JoystickInput Configuration::getJoystickJump(int config){
 
 Configuration::JoystickInput Configuration::getJoystickQuit(int config){
     return getJoystickKey(config, "quit", Joystick::Quit);
+}
+
+Configuration::JoystickInput Configuration::getJoystickStart(int config){
+    return getJoystickKey(config, "start", Joystick::Start);
 }
 
 /*
