@@ -1142,6 +1142,43 @@ public:
     }
 };
 
+class ControllerZoom: public StateController {
+public:
+    ControllerZoom(Ast::Section * section, const string & name, int state):
+    StateController(name, state, section){
+        parse(section);
+    }
+
+    ControllerZoom(const ControllerZoom & you):
+    StateController(you){
+    }
+
+    void parse(Ast::Section * section){
+        class Walker: public Ast::Walker {
+        public:
+            Walker(ControllerZoom & controller):
+                controller(controller){
+                }
+
+            ControllerZoom & controller;
+
+            virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+            }
+        };
+
+        Walker walker(*this);
+        section->walk(walker);
+    }
+
+    virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
+        FullEnvironment environment(stage, guy, commands);
+    }
+
+    StateController * deepCopy() const {
+        return new ControllerZoom(*this);
+    }
+};
+
 class ControllerHitVelSet: public StateController {
 public:
     ControllerHitVelSet(Ast::Section * section, const string & name, int state):
@@ -7981,8 +8018,9 @@ static string toString(StateController::Type type){
         case StateController::VarAdd : return "VarAdd";
         case StateController::VarRandom : return "VarRandom";
         case StateController::VarRangeSet : return "VarRangeSet";
-        case StateController::Width :  return "Width";
-        case StateController::Unknown :  return "Unknown";
+        case StateController::Width : return "Width";
+        case StateController::Zoom : return "Zoom";
+        case StateController::Unknown : return "Unknown";
         case StateController::Debug: return "Debug";
     }
     return "???";
@@ -8077,6 +8115,7 @@ StateController * StateController::compile(Ast::Section * section, const string 
         case StateController::TargetVelAdd : return new ControllerTargetVelAdd(section, name, state);
         case StateController::TargetVelSet : return new ControllerTargetVelSet(section, name, state);
         case StateController::TargetDrop : return new ControllerTargetDrop(section, name, state);
+        case StateController::Zoom : return new ControllerZoom(section, name, state);
         case StateController::SndPan : return new ControllerSndPan(section, name, state);
         default: {
             class DefaultController: public StateController {

@@ -1778,6 +1778,7 @@ StateController * Character::parseState(Ast::Section * section){
                 types["velmul"] = StateController::VelMul;
                 types["velset"] = StateController::VelSet;
                 types["width"] = StateController::Width;
+                types["zoom"] = StateController::Zoom;
                 types["debug"] = StateController::Debug;
             }
         }

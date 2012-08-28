@@ -129,6 +129,7 @@ public:
         VelMul,
         VelSet,
         Width,
+        Zoom, /* New for paintown: zooms in on a particular part of the screen */
         /* Default type value. This value means the `type' attribute has not been set */
         Unknown,
         /* Used as a point to break gdb in */
