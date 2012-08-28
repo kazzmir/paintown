@@ -393,7 +393,10 @@ static void extractValue(Value & value, Ast::Section * section){
 
 static void readValues(const Ast::Value * value, Value & out1){
     const Ast::Value * value1 = NULL;
-    value->view() >> value1;
+    try{
+        value->view() >> value1;
+    } catch (const Ast::Exception & fail){
+    }
     if (value1 != NULL){
         out1 = Compiler::compile(value1);
     }
@@ -1143,15 +1146,54 @@ public:
 };
 
 class ControllerZoom: public StateController {
+    enum PositionType{
+        Player1, /* Interprets pos relative to p1's axis. A positive x offset is toward the front of p1. This is the default value for postype. Refer to the note at the end of this controller's description. */
+        Player2, /* Interprets pos relative to p2's axis. A positive x offset is toward the front of p2. Refer to the note at the end of this controller's description. */
+        Front, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
+        Back, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
+        Left, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
+        Right /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
+    };
+
 public:
     ControllerZoom(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    positionType(Player1){
         parse(section);
     }
 
     ControllerZoom(const ControllerZoom & you):
-    StateController(you){
+    StateController(you),
+    positionType(you.positionType),
+    posX(copy(you.posX)),
+    posY(copy(you.posY)),
+    zoomTime(copy(you.zoomTime)),
+    zoomOutTime(copy(you.zoomOutTime)),
+    time(copy(you.time)),
+    bindTime(copy(you.bindTime)),
+    scaleX(copy(you.scaleX)),
+    scaleY(copy(you.scaleY)),
+    velocityX(copy(you.velocityX)),
+    velocityY(copy(you.velocityY)),
+    accelX(copy(you.accelX)),
+    accelY(copy(you.accelY)),
+    superMoveTime(copy(you.superMoveTime)),
+    pauseMoveTime(copy(you.pauseMoveTime)),
+    removeOnGetHit(copy(you.removeOnGetHit)){
     }
+
+    PositionType positionType;
+    Value posX, posY;  /* Position relative to */
+    Value zoomTime; /* How long it takes to reach maximum zoom */
+    Value zoomOutTime; /* How long it takes to go back to normal view. Defaults to zoomTime */
+    Value time; /* How long the Zoom should last */
+    Value bindTime; /* How long the Zoom stays bound related to initial position (Similar to Explod) */
+    Value scaleX, scaleY; /* How much too Zoom in. */
+    Value velocityX, velocityY; /* For Camera Pans (If Needed) */
+    Value accelX, accelY; /* For Camera Pans (If Needed) */
+    Value superMoveTime; /* Time during SuperPause that the Zoom will stay active and update. */
+    Value pauseMoveTime; /* Time during Pause that the Zoom will stay active and update. */
+    Value removeOnGetHit; /* Revert to Default Zoom if player is attacked. */
 
     void parse(Ast::Section * section){
         class Walker: public Ast::Walker {
@@ -1163,6 +1205,46 @@ public:
             ControllerZoom & controller;
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
+                if (simple == "postype"){
+                    string type;
+                    simple.view() >> type;
+                    type = PaintownUtil::lowerCaseAll(type);
+                    if (type == "p1"){
+                        controller.positionType = Player1;
+                    } else if (type == "p2"){
+                        controller.positionType = Player2;
+                    } else if (type == "front"){
+                        controller.positionType = Front;
+                    } else if (type == "back"){
+                        controller.positionType = Back;
+                    } else if (type == "left"){
+                        controller.positionType = Left;
+                    } else if (type == "right"){
+                        controller.positionType = Right;
+                    }
+                } else if (simple == "pos"){
+                    readValues(simple.getValue(), controller.posX, controller.posY);
+                } else if (simple == "zoomtime"){
+                    readValues(simple.getValue(), controller.zoomTime);
+                } else if (simple == "zoomouttime"){
+                    readValues(simple.getValue(), controller.zoomOutTime);
+                } else if (simple == "time"){
+                    readValues(simple.getValue(), controller.time);
+                } else if (simple == "bindtime"){
+                    readValues(simple.getValue(), controller.bindTime);
+                } else if (simple == "scale"){
+                    readValues(simple.getValue(), controller.scaleX, controller.scaleY);
+                } else if (simple == "vel"){
+                    readValues(simple.getValue(), controller.velocityX, controller.velocityY);
+                } else if (simple == "accel"){
+                    readValues(simple.getValue(), controller.accelX, controller.accelY);
+                } else if (simple == "supermovetime"){
+                    readValues(simple.getValue(), controller.superMoveTime);
+                } else if (simple == "pausemovetime"){
+                    readValues(simple.getValue(), controller.pauseMoveTime);
+                } else if (simple == "removeongethit"){
+                    readValues(simple.getValue(), controller.removeOnGetHit);
+                }
             }
         };
 
