@@ -1376,8 +1376,8 @@ public:
                         computeFacing(1, guy, stage, positionType),
                         x, y);
 
-        double zoomTime = evaluateNumber(this->zoomTime, environment, 1);
-        double zoomOutTime = evaluateNumber(this->zoomOutTime, environment, zoomTime);
+        int zoomTime = (int) evaluateNumber(this->zoomTime, environment, 1);
+        int zoomOutTime = (int) evaluateNumber(this->zoomOutTime, environment, zoomTime);
         double time = evaluateNumber(this->time, environment, 0);
         int bindTime = (int) evaluateNumber(this->bindTime, environment, 0);
         double scaleX = evaluateNumber(this->scaleX, environment, 1);
@@ -1389,6 +1389,8 @@ public:
         int superMoveTime = (int) evaluateNumber(this->superMoveTime, environment, 0);
         int pauseMoveTime = (int) evaluateNumber(this->pauseMoveTime, environment, 0);
         bool removeOnGetHit = evaluateNumber(this->removeOnGetHit, environment, true);
+
+        stage.doZoom(x, y, zoomTime, zoomOutTime, time, bindTime, scaleX, scaleY, velocityX, velocityY, accelX, accelY, superMoveTime, pauseMoveTime, removeOnGetHit, &guy);
     }
 
     StateController * deepCopy() const {

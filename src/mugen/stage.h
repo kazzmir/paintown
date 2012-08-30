@@ -225,6 +225,12 @@ public:
 
     virtual int getGameTime() const;
 
+    virtual void doZoom(double x, double y, int zoomTime, int zoomOutTime, int time,
+                        int bindTime, double scaleX, double scaleY,
+                        double velocityX, double velocitY, double accelX, double accelY,
+                        int superMoveTime, int pauseMoveTime, bool removeOnGetHit,
+                        Character * owner);
+
     /* pause for dramatic effect */
     virtual void doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY);
     virtual void doPause(int time, int buffer, int moveAllowed, bool pauseBackground);
@@ -714,6 +720,31 @@ private:
         bool panX;
         bool panY;
     };
+
+    /* For zooming in on a character/position */
+    struct Zoom{
+        Zoom():
+        enabled(false){
+        }
+
+        bool enabled;
+        double x;
+        double y;
+        int zoomTime;
+        int zoomOutTime;
+        int time;
+        int bindTime;
+        double scaleX;
+        double scaleY;
+        double velocityX;
+        double velocityY;
+        double accelX;
+        double accelY;
+        int superMoveTime;
+        int pauseMoveTime;
+        bool removeOnGetHit;
+        Character * owner;
+    } zoom;
    
     /* Screen bound is per character so make a map from character to their
      * ScreenBound data

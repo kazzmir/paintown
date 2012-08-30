@@ -2578,3 +2578,28 @@ void Mugen::Stage::enableScreenBound(Character * who, bool offScreen, bool panX,
     screenBound[who].panX = panX;
     screenBound[who].panY = panY;
 }
+
+void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int time,
+                          int bindTime, double scaleX, double scaleY,
+                          double velocityX, double velocityY, double accelX, double accelY,
+                          int superMoveTime, int pauseMoveTime, bool removeOnGetHit,
+                          Character * owner){
+    zoom.enabled = true;
+    zoom.x = x;
+    zoom.y = y;
+    zoom.zoomTime = zoomTime;
+    zoom.zoomOutTime = zoomOutTime;
+    zoom.time = time;
+    zoom.bindTime = bindTime;
+    zoom.scaleX = scaleX;
+    zoom.scaleY = scaleY;
+    zoom.velocityX = velocityX;
+    zoom.velocityY = velocityY;
+    zoom.accelX = accelX;
+    zoom.accelY = accelY;
+    zoom.superMoveTime = superMoveTime;
+    zoom.pauseMoveTime = pauseMoveTime;
+    zoom.removeOnGetHit = removeOnGetHit;
+    zoom.owner = owner;
+}
+
