@@ -1252,8 +1252,143 @@ public:
         section->walk(walker);
     }
 
+    /* Returns true if the sprite should flip */
+    static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType){
+        switch (positionType){
+            case Player1: {
+                if (facingPositive == 1){
+                    return guy.getFacing() == FacingLeft;
+                } else {
+                    return guy.getFacing() == FacingRight;
+                }
+                break;
+            }
+            case Player2: {
+                Character * enemy = stage.getEnemy(&guy);
+                if (enemy != NULL){
+                    if (facingPositive == 1){
+                        return enemy->getFacing() == FacingLeft;
+                    } else {
+                        return enemy->getFacing() == FacingRight;
+                    }
+                }
+                break;
+            }
+            case Front: {
+                if (facingPositive == -1){
+                    return guy.getFacing() == FacingLeft;
+                } else {
+                    return guy.getFacing() == FacingRight;
+                }
+                break;
+            }
+            case Back: {
+                if (facingPositive == 1){
+                    return guy.getFacing() == FacingLeft;
+                } else {
+                    return guy.getFacing() == FacingRight;
+                }
+                break;
+            }
+            case Left: {
+                if (facingPositive == 1){
+                    return false;
+                } else {
+                    return true;
+                }
+                break;
+            }
+            case Right: {
+                if (facingPositive == 1){
+                    return true;
+                } else {
+                    return false;
+                }
+                break;
+            }
+        }
+
+        return true;
+    }
+
+    static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, bool horizontalFlip, double & x, double & y){
+        posX *= horizontalFlip ? -1 : 1;
+        switch (positionType){
+            case Player1: {
+                x = posX + owner->getX();
+                y = posY + owner->getRY();
+                break;
+            }
+            case Player2: {
+                Character * enemy = stage.getEnemy(owner);
+                if (enemy != NULL){
+                    x = posX + enemy->getX();
+                    y = posX + enemy->getRY();
+                }
+                break;
+            }
+            case Front: {
+                if (owner->getFacing() == FacingRight){
+                    x = stage.maximumRight(owner) + posX;
+                } else {
+                    x = stage.maximumLeft(owner) + posX;
+                }
+                y = stage.maximumUp() + posY;
+                break;
+            }
+            case Back: {
+                if (owner->getFacing() == FacingLeft){
+                    x = stage.maximumRight(owner) + posX;
+                } else {
+                    x = stage.maximumLeft(owner) + posX;
+                }
+                y = stage.maximumUp() + posY;
+                break;
+            }
+            case Left: {
+                x = stage.maximumLeft(owner) + posX;
+                y = stage.maximumUp() + posY;
+                break;
+            }
+            case Right: {
+                x = stage.maximumRight(owner) + posX;
+                y = stage.maximumUp() + posY;
+                break;
+            }
+            default: {
+                x = posX;
+                y = posY;
+                break;
+            }
+        }
+    }
+
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
+
+        double x = 0;
+        double y = 0;
+
+        computePosition(evaluateNumber(this->posX, environment, 0),
+                        evaluateNumber(this->posY, environment, 0),
+                        &guy, stage,
+                        positionType,
+                        computeFacing(1, guy, stage, positionType),
+                        x, y);
+
+        double zoomTime = evaluateNumber(this->zoomTime, environment, 1);
+        double zoomOutTime = evaluateNumber(this->zoomOutTime, environment, zoomTime);
+        double time = evaluateNumber(this->time, environment, 0);
+        int bindTime = (int) evaluateNumber(this->bindTime, environment, 0);
+        double scaleX = evaluateNumber(this->scaleX, environment, 1);
+        double scaleY = evaluateNumber(this->scaleY, environment, 1);
+        double velocityX = evaluateNumber(this->velocityX, environment, 0);
+        double velocityY = evaluateNumber(this->velocityY, environment, 0);
+        double accelX = evaluateNumber(this->accelX, environment, 0);
+        double accelY = evaluateNumber(this->accelY, environment, 0);
+        int superMoveTime = (int) evaluateNumber(this->superMoveTime, environment, 0);
+        int pauseMoveTime = (int) evaluateNumber(this->pauseMoveTime, environment, 0);
+        bool removeOnGetHit = evaluateNumber(this->removeOnGetHit, environment, true);
     }
 
     StateController * deepCopy() const {
