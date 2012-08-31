@@ -682,13 +682,19 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 }
             }
 
-            Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
-            work.start();
-            stage->render(&work);
-            
-            options.draw(work);
-            
-            work.finish();
+            if (stage->isZoomed()){
+                Graphics::Bitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+                stage->render(&work);
+                // Global::debug(0) << "X1 " << stage->zoomX1() << " Y1 " << stage->zoomY1() << " X2 " << stage->zoomX2() << " Y2 " << stage->zoomY2() << std::endl;
+                work.Stretch(screen, stage->zoomX1(), stage->zoomY1(), stage->zoomX2() - stage->zoomX1(), stage->zoomY2() - stage->zoomY1(), 0, 0, screen.getWidth(), screen.getHeight());
+            } else {
+                Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+                work.start();
+                stage->render(&work);
+                options.draw(work);
+                work.finish();
+            }
+
             FontRender * render = FontRender::getInstance();
             render->render(&screen);
             console.draw(screen);

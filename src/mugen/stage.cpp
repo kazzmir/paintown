@@ -1143,6 +1143,24 @@ void Mugen::Stage::unbind(Mugen::Character * what){
 
 /* A main cycle of the game */
 void Mugen::Stage::runCycle(){
+
+    /* Zoom in, then wait for the zoom time to expire, then zoom back out */
+    if (zoom.enabled){
+        if (zoom.zoom == 0){
+            if (zoom.in == true){
+                zoom.time -= 1;
+                if (zoom.time == 0){
+                    zoom.in = false;
+                    zoom.zoom = zoom.zoomOutTime;
+                }
+            } else {
+                zoom.enabled = false;
+            }
+        } else {
+            zoom.zoom -= 1;
+        }
+    }
+
     if (superPause.time == 0){
         // Global::debug(0) << "Stage " << ticker << " at " << System::currentMicroseconds() << std::endl;
         /* Start input early for network mode */
@@ -2587,12 +2605,32 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
     zoom.enabled = true;
     zoom.x = x;
     zoom.y = y;
+    zoom.zoom = zoomTime;
+    zoom.in = true;
     zoom.zoomTime = zoomTime;
     zoom.zoomOutTime = zoomOutTime;
+    if (zoom.zoomTime < 1){
+        zoom.zoomTime = 1;
+    }
+    if (zoom.zoomOutTime < 1){
+        zoom.zoomOutTime = 1;
+    }
     zoom.time = time;
     zoom.bindTime = bindTime;
     zoom.scaleX = scaleX;
     zoom.scaleY = scaleY;
+    if (zoom.scaleX < 0){
+        zoom.scaleX = 0;
+    }
+    if (zoom.scaleX > 1){
+        zoom.scaleX = 1;
+    }
+    if (zoom.scaleY < 0){
+        zoom.scaleY = 0;
+    }
+    if (zoom.scaleY > 1){
+        zoom.scaleY = 1;
+    }
     zoom.velocityX = velocityX;
     zoom.velocityY = velocityY;
     zoom.accelX = accelX;
@@ -2601,5 +2639,33 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
     zoom.pauseMoveTime = pauseMoveTime;
     zoom.removeOnGetHit = removeOnGetHit;
     zoom.owner = owner;
+}
+
+bool Mugen::Stage::isZoomed() const {
+    return zoom.enabled;
+}
+
+double Mugen::Stage::zoomScale() const {
+    if (zoom.in){
+        return (double) (zoom.zoomTime - zoom.zoom) / (double) zoom.zoomTime;
+    } else {
+        return (double) zoom.zoom / (double) zoom.zoomOutTime;
+    }
+}
+
+int Mugen::Stage::zoomX1() const {
+    return (zoom.x - maximumLeft(NULL)) * zoom.scaleX * zoomScale();
+}
+
+int Mugen::Stage::zoomY1() const {
+    return zoom.y * zoom.scaleY * zoomScale();
+}
+
+int Mugen::Stage::zoomX2() const {
+    return DEFAULT_WIDTH - (DEFAULT_WIDTH - (zoom.x - maximumLeft(NULL))) * zoom.scaleX * zoomScale();
+}
+
+int Mugen::Stage::zoomY2() const {
+    return DEFAULT_HEIGHT - (DEFAULT_HEIGHT - zoom.y) * zoom.scaleY * zoomScale();
 }
 

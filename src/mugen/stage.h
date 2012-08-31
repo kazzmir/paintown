@@ -231,6 +231,14 @@ public:
                         int superMoveTime, int pauseMoveTime, bool removeOnGetHit,
                         Character * owner);
 
+    /* If currently zoomed in */
+    virtual bool isZoomed() const;
+
+    virtual int zoomX1() const;
+    virtual int zoomY1() const;
+    virtual int zoomX2() const;
+    virtual int zoomY2() const;
+
     /* pause for dramatic effect */
     virtual void doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY);
     virtual void doPause(int time, int buffer, int moveAllowed, bool pauseBackground);
@@ -370,6 +378,9 @@ protected:
     int nextObjectId();
     
 protected:
+
+    /* Current level of zoom scaling */
+    double zoomScale() const;
 
     void addSpark(int x, int y, int sparkNumber, bool own, Character * owner);
     // void addSpark(int x, int y, const PaintownUtil::ReferenceCount<Animation> & animation);
@@ -732,10 +743,18 @@ private:
         double y;
         int zoomTime;
         int zoomOutTime;
+
+        /* keeps track of the current zoom time and whether its going in or out */
+        int zoom;
+        bool in;
+
         int time;
         int bindTime;
+
+        /* limit on scaling */
         double scaleX;
         double scaleY;
+
         double velocityX;
         double velocityY;
         double accelX;
