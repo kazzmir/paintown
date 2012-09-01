@@ -1363,6 +1363,14 @@ public:
         }
     }
 
+    Character * getBind(Mugen::Stage & stage, Character & guy, PositionType type) const {
+        switch (type){
+            case Player1: return &guy;
+            case Player2: return stage.getEnemy(&guy);
+            default: return NULL;
+        }
+    }
+
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
 
@@ -1390,7 +1398,7 @@ public:
         int pauseMoveTime = (int) evaluateNumber(this->pauseMoveTime, environment, 0);
         bool removeOnGetHit = evaluateNumber(this->removeOnGetHit, environment, true);
 
-        stage.doZoom(x, y, zoomTime, zoomOutTime, time, bindTime, scaleX, scaleY, velocityX, velocityY, accelX, accelY, superMoveTime, pauseMoveTime, removeOnGetHit, &guy);
+        stage.doZoom(x, y, zoomTime, zoomOutTime, time, bindTime, scaleX, scaleY, velocityX, velocityY, accelX, accelY, superMoveTime, pauseMoveTime, removeOnGetHit, getBind(stage, guy, positionType));
     }
 
     StateController * deepCopy() const {
@@ -4588,6 +4596,7 @@ public:
                  * if the bindtime is -1 then it should act indefinetely.
                  */
                 if (bindTime != -2){
+                    /* FIXME: should we always use the same horizontalFlip here? */
                     computePosition(posX, posY, owner, stage, positionType, horizontalFlip, x, y);
                 }
             }

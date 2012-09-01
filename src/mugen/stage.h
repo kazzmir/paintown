@@ -1,5 +1,5 @@
-#ifndef mugen_stage_h
-#define mugen_stage_h
+#ifndef paintown_mugen_stage_h
+#define paintown_mugen_stage_h
 
 #include <fstream>
 #include <string>
@@ -379,8 +379,11 @@ protected:
     
 protected:
 
+    bool exists(Character * who);
+
     /* Current level of zoom scaling */
     double zoomScale() const;
+    void updateZoom();
 
     void addSpark(int x, int y, int sparkNumber, bool own, Character * owner);
     // void addSpark(int x, int y, const PaintownUtil::ReferenceCount<Animation> & animation);
@@ -751,7 +754,11 @@ private:
         int time;
         int bindTime;
 
-        /* limit on scaling */
+        /* keeps track of the relative position between ... */
+        int deltaX, deltaY;
+
+        /* scaling factor. must be at least 1
+         */
         double scaleX;
         double scaleY;
 
@@ -762,7 +769,7 @@ private:
         int superMoveTime;
         int pauseMoveTime;
         bool removeOnGetHit;
-        Character * owner;
+        Character * bound;
     } zoom;
    
     /* Screen bound is per character so make a map from character to their

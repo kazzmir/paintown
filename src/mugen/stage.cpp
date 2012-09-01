@@ -1141,9 +1141,7 @@ void Mugen::Stage::unbind(Mugen::Character * what){
     }
 }
 
-/* A main cycle of the game */
-void Mugen::Stage::runCycle(){
-
+void Mugen::Stage::updateZoom(){
     /* Zoom in, then wait for the zoom time to expire, then zoom back out */
     if (zoom.enabled){
         if (zoom.zoom == 0){
@@ -1159,7 +1157,40 @@ void Mugen::Stage::runCycle(){
         } else {
             zoom.zoom -= 1;
         }
+
+        if (zoom.bindTime > 0){
+            zoom.bindTime -= 1;
+            if (exists(zoom.bound)){
+                zoom.x = zoom.deltaX + zoom.bound->getX();
+                zoom.y = zoom.deltaY + zoom.bound->getRY();
+            }
+        } else {
+            /* move by velocity and acceleration */
+            zoom.x += zoom.velocityX;
+            zoom.y += zoom.velocityY;
+            zoom.velocityX += zoom.accelX;
+            zoom.velocityY += zoom.accelY;
+        }
     }
+}
+        
+bool Mugen::Stage::exists(Character * who){
+    /* Returns true if the pointer is in the current object list. There is a very small
+     * chance that an old object could be deleted and recreated with the same address
+     * so that exists is true for the old pointer when really it should have been false.
+     * I doubt this will matter in practice.
+     */
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+        if (*it == who){
+            return true;
+        }
+    }
+    return false;
+}
+
+/* A main cycle of the game */
+void Mugen::Stage::runCycle(){
+    updateZoom();
 
     if (superPause.time == 0){
         // Global::debug(0) << "Stage " << ticker << " at " << System::currentMicroseconds() << std::endl;
@@ -2601,7 +2632,7 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
                           int bindTime, double scaleX, double scaleY,
                           double velocityX, double velocityY, double accelX, double accelY,
                           int superMoveTime, int pauseMoveTime, bool removeOnGetHit,
-                          Character * owner){
+                          Character * bound){
     zoom.enabled = true;
     zoom.x = x;
     zoom.y = y;
@@ -2617,20 +2648,15 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
     }
     zoom.time = time;
     zoom.bindTime = bindTime;
-    zoom.scaleX = scaleX;
-    zoom.scaleY = scaleY;
-    if (zoom.scaleX < 0){
-        zoom.scaleX = 0;
+    if (scaleX < 1){
+        scaleX = 1;
     }
-    if (zoom.scaleX > 1){
-        zoom.scaleX = 1;
+    if (scaleY < 1){
+        scaleY = 1;
     }
-    if (zoom.scaleY < 0){
-        zoom.scaleY = 0;
-    }
-    if (zoom.scaleY > 1){
-        zoom.scaleY = 1;
-    }
+    zoom.scaleX = 1.0 - 1.0/scaleX;
+    zoom.scaleY = 1.0 - 1.0/scaleY;
+
     zoom.velocityX = velocityX;
     zoom.velocityY = velocityY;
     zoom.accelX = accelX;
@@ -2638,7 +2664,14 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
     zoom.superMoveTime = superMoveTime;
     zoom.pauseMoveTime = pauseMoveTime;
     zoom.removeOnGetHit = removeOnGetHit;
-    zoom.owner = owner;
+    zoom.bound = bound;
+    if (bound != NULL){
+        zoom.deltaX = zoom.x - bound->getX();
+        zoom.deltaY = zoom.y - bound->getRY();
+    } else {
+        zoom.deltaX = 0;
+        zoom.deltaY = 0;
+    }
 }
 
 bool Mugen::Stage::isZoomed() const {
