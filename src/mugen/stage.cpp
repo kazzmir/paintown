@@ -1144,6 +1144,17 @@ void Mugen::Stage::unbind(Mugen::Character * what){
 void Mugen::Stage::updateZoom(){
     /* Zoom in, then wait for the zoom time to expire, then zoom back out */
     if (zoom.enabled){
+
+        if (superPause.time > 0){
+            if (zoom.superMoveTime > 0){
+                zoom.superMoveTime -= 1;
+            } else {
+                return;
+            }
+        }
+
+        /* Also check for pause time */
+
         if (zoom.zoom == 0){
             if (zoom.in == true){
                 zoom.time -= 1;
@@ -1193,6 +1204,7 @@ void Mugen::Stage::runCycle(){
     updateZoom();
 
     if (superPause.time == 0){
+
         // Global::debug(0) << "Stage " << ticker << " at " << System::currentMicroseconds() << std::endl;
         /* Start input early for network mode */
         for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
