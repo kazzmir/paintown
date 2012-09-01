@@ -19,7 +19,7 @@ public:
     using Character::destroyed;
     virtual void destroyed(Stage & stage);
     
-    virtual bool canBeHit(Character * enemy);
+    // virtual bool canBeHit(Character * enemy);
 
     virtual bool isHelper() const;
     virtual const std::string getName() const;

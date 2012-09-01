@@ -32,10 +32,12 @@ void Helper::roundEnd(Mugen::Stage & stage){
     /* Anything to do here? */
 }
     
+/*
 bool Helper::canBeHit(Character * enemy){
-    /* Pretty sure a helper can never be hit */
+    / * Pretty sure a helper can never be hit * /
     return false;
 }
+*/
 
 typedef PaintownUtil::ReferenceCount<State> RefState;
 
