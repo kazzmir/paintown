@@ -1248,6 +1248,9 @@ Mugen::Effects Mugen::Effects::operator+(const Mugen::Effects & e2) const {
     result.facing = result.facing ^ e2.facing;
     result.vfacing = result.vfacing ^ e2.vfacing;
     result.rotation = e2.rotation;
+    if (result.filter == NULL){
+        result.filter = e2.filter;
+    }
     return result;
 }
             
