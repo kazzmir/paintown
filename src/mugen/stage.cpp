@@ -917,6 +917,16 @@ void Mugen::Stage::physics(Character * mugen){
         return;
     }
 
+    if (pause.time > 0){
+        if (pause.moveTime == 0){
+            return;
+        }
+
+        if (pause.who != mugen){
+            return;
+        }
+    }
+
     mugen->doMovement(objects, *this);
 
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
@@ -1153,6 +1163,14 @@ void Mugen::Stage::updateZoom(){
             }
         }
 
+        if (pause.time > 0){
+            if (zoom.pauseMoveTime > 0){
+                zoom.pauseMoveTime -= 1;
+            } else {
+                return;
+            }
+        }
+
         /* Also check for pause time */
 
         if (zoom.zoom == 0){
@@ -1277,7 +1295,16 @@ void Mugen::Stage::runCycle(){
             }
         }
     } else {
-        background->act();
+        if (pause.time > 0){
+            pause.time -= 1;
+            if (pause.moveTime > 0){
+                pause.moveTime -= 1;
+            }
+        }
+
+        if (pause.time <= 0 || (pause.time > 0 && !pause.pauseBackground)){
+            background->act();
+        }
        
         // Players go in here
         std::vector<Mugen::Character *> add;
@@ -1285,7 +1312,13 @@ void Mugen::Stage::runCycle(){
         for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
             /* use local variables more often, iterators can be easily confused */
             Mugen::Character * player = *it;
-            player->act(&objects, this, &add);
+
+            /* If a pause is occuring then only allow the player who started the pause
+             * to move if moveTime is > 0.
+             */
+            if (pause.time <= 0 || (pause.time > 0 && pause.moveTime > 0 && pause.who == player)){
+                player->act(&objects, this, &add);
+            }
         }
 
         /* Then do physics/collision detection */
