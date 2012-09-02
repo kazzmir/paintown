@@ -1155,6 +1155,18 @@ void Mugen::Stage::updateZoom(){
     /* Zoom in, then wait for the zoom time to expire, then zoom back out */
     if (zoom.enabled){
 
+        /* If the original owner got hit and we should remove then disable zoom.
+         * We can't just set zoom.enabled to false immediately because the effect
+         * would look goofy, instead we have to zoom back out. So let the zoom in
+         * finish and then immediately zoom back out. We can do this by setting
+         * the time that the zoom is focused to 0.
+         */
+        if (zoom.removeOnGetHit && exists(zoom.owner)){
+            if (zoom.owner->getWasHitCount() > zoom.hitCount && zoom.time > 0){
+                zoom.time = 0;
+            }
+        }
+
         if (superPause.time > 0){
             if (zoom.superMoveTime > 0){
                 zoom.superMoveTime -= 1;
@@ -1176,7 +1188,7 @@ void Mugen::Stage::updateZoom(){
         if (zoom.zoom == 0){
             if (zoom.in == true){
                 zoom.time -= 1;
-                if (zoom.time == 0){
+                if (zoom.time <= 0){
                     zoom.in = false;
                     zoom.zoom = zoom.zoomOutTime;
                 }
@@ -2681,7 +2693,13 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
                           int bindTime, double scaleX, double scaleY,
                           double velocityX, double velocityY, double accelX, double accelY,
                           int superMoveTime, int pauseMoveTime, bool removeOnGetHit,
-                          Character * bound){
+                          Character * bound, Character * owner){
+
+    /* Don't allow a new zoom to override an existing zoom */
+    if (zoom.enabled){
+        return;
+    }
+
     zoom.enabled = true;
     zoom.x = x;
     zoom.y = y;
@@ -2714,6 +2732,11 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
     zoom.pauseMoveTime = pauseMoveTime;
     zoom.removeOnGetHit = removeOnGetHit;
     zoom.bound = bound;
+    zoom.hitCount = 0;
+    zoom.owner = owner;
+    if (owner != NULL){
+        zoom.hitCount = owner->getWasHitCount();
+    }
     if (bound != NULL){
         zoom.deltaX = zoom.x - bound->getX();
         zoom.deltaY = zoom.y - bound->getRY();

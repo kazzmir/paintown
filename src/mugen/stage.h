@@ -229,7 +229,7 @@ public:
                         int bindTime, double scaleX, double scaleY,
                         double velocityX, double velocitY, double accelX, double accelY,
                         int superMoveTime, int pauseMoveTime, bool removeOnGetHit,
-                        Character * owner);
+                        Character * bound, Character * owner);
 
     /* If currently zoomed in */
     virtual bool isZoomed() const;
@@ -769,7 +769,12 @@ private:
         int superMoveTime;
         int pauseMoveTime;
         bool removeOnGetHit;
+        int hitCount;
+        /* Character we are bound to, depending on the original postype */
         Character * bound;
+
+        /* Character that started the zoom in case they get hit */
+        Character * owner;
     } zoom;
    
     /* Screen bound is per character so make a map from character to their
