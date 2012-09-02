@@ -2415,8 +2415,12 @@ void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool o
     }
 }
    
-void Mugen::Stage::doPause(int time, int buffer, int moveAllowed, bool pauseBackground){
-    /* TODO */
+void Mugen::Stage::doPause(int time, int buffer, int moveAllowed, bool pauseBackground, Character * who){
+    pause.time = time;
+    pause.buffer = buffer;
+    pause.moveTime = moveAllowed;
+    pause.pauseBackground = pauseBackground;
+    pause.who = who;
 }
     
 void Mugen::Stage::createDust(int x, int y){

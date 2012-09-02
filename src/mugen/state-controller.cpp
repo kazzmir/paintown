@@ -6834,7 +6834,8 @@ public:
         stage.doPause((int) evaluateNumber(time, environment, 0),
                       (int) evaluateNumber(buffer, environment, 0),
                       (int) evaluateNumber(move, environment, 0),
-                      evaluateBool(background, environment, true));
+                      evaluateBool(background, environment, true),
+                      &guy);
     }
 
     StateController * deepCopy() const {

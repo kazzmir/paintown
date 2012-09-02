@@ -241,7 +241,7 @@ public:
 
     /* pause for dramatic effect */
     virtual void doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY);
-    virtual void doPause(int time, int buffer, int moveAllowed, bool pauseBackground);
+    virtual void doPause(int time, int buffer, int moveAllowed, bool pauseBackground, Character * who);
 
     /* make dust effects */
     virtual void createDust(int x, int y);
@@ -778,6 +778,18 @@ private:
     std::map<const Character*, ScreenBound> screenBound;
 
     int objectId;
+
+    struct Pause{
+        Pause():
+            time(0){
+            }
+
+        int time;
+        int buffer;
+        int moveTime;
+        bool pauseBackground;
+        Character * who;
+    } pause;
 };
 
 }
