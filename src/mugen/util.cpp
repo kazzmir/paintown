@@ -9,9 +9,12 @@
 #include <iostream>
 
 // To aid in filesize
+/*
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+*/
+
 #include <stdint.h>
 
 #include "configuration.h"
@@ -720,23 +723,14 @@ public:
     currentSprite(0){
         Global::debug(0) << "Opening file " << filename.path() << endl;
         /* 16 skips the header stuff */
-        sffStream.open(filename.path().c_str(), ios::binary);
+        sffStream = Storage::instance().open(filename);
         if (!sffStream){
-            printf("Failed to open %s\n", filename.path().c_str());
-            throw exception();
-            // throw MugenException("Could not open SFF file: '" + filename.path() + "'");
+            throw MugenException("Could not open SFF file: '" + filename.path() + "'", __FILE__, __LINE__);
         }
 
-        /* FIXME: make this a stream and use getSize() */
-        // filesize = computeFileSize(filename.path());
+        filesize = sffStream->getSize();
 
-        // location = 16;
-        // sffStream.seekg(location, ios::beg);
         totalImages = 0;
-        uint32_t suboffset = 0;
-        uint32_t subhead = 0;
-        uint32_t subpalette = 0;
-        uint32_t totalPalettes = 0;
 
         Storage::LittleEndianReader reader(sffStream);
         string signature = reader.readString2(12);
@@ -765,10 +759,10 @@ public:
         reader.readByte4();
         reader.readByte4();
 
-        suboffset = reader.readByte4();
-        totalImages = reader.readByte4();
-        subpalette = reader.readByte4();
-        totalPalettes = reader.readByte4();
+        uint32_t suboffset = reader.readByte4();
+        uint32_t totalImages = reader.readByte4();
+        uint32_t subpalette = reader.readByte4();
+        uint32_t totalPalettes = reader.readByte4();
         
         Global::debug(1) << "Image offset " << suboffset << " total images " << totalImages << " palette offset " << subpalette << " total palettes " << totalPalettes << endl;
 
@@ -805,7 +799,7 @@ public:
             uint16_t palette = reader.readByte2();
             uint16_t flags = reader.readByte2();
             /* if flags == 0 then use ldata, if 1 then tdata */
-            Global::debug(0) << " " << group << ", " << item << " " << width << "x" << height << " format " << formatName(format) << " color depth " << (int) colorDepth << " data " << dataOffset << " length " << dataLength << (flags == 0 ? " literal" : " translate") << endl;
+            Global::debug(1) << " " << group << ", " << item << " " << width << "x" << height << " format " << formatName(format) << " color depth " << (int) colorDepth << " data " << dataOffset << " length " << dataLength << (flags == 0 ? " literal" : " translate") << endl;
             sprites.push_back(SpriteHeader(group, item, width, height,
                                            axisx, axisy, linked, format,
                                            colorDepth, dataOffset, dataLength,
@@ -822,26 +816,6 @@ public:
             uint32_t length = reader.readByte4();
             palettes.push_back(PaletteHeader(group, item, colors, linked, offset, length, index));
         }
-
-        /*
-        for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
-            const SpriteHeader & sprite = *it;
-            if (sprite.flags == 0){
-                read(sprite, reader, ldataOffset, ldataLength);
-            } else {
-                read(sprite, reader, tdataOffset, tdataLength);
-            }
-        }
-        */
-
-        /*
-        const SpriteHeader & sprite = sprites.back();
-        if (sprite.flags == 0){
-            read(sprite, reader, ldataOffset + sprite.dataOffset, sprite.dataLength);
-        } else {
-            read(sprite, reader, tdataOffset + sprite.dataOffset, sprite.dataLength);
-        }
-        */
     }
 
     vector<SpriteHeader> getSprites(){
@@ -914,7 +888,7 @@ public:
         Global::debug(0) << "Read sprite " << sprite.group << ", " << sprite.item << " dimensions " << sprite.width << "x" << sprite.height << endl;
         char * pixels = new char[sprite.width * sprite.height];
         memset(pixels, 0, sprite.width * sprite.height);
-        sffStream.seekg(offset, ios::beg);
+        sffStream->seek(offset, SEEK_SET);
         try{
             switch (sprite.format){
                 case 2: readRLE8(reader, length, pixels, sprite.width * sprite.height); break;
@@ -952,9 +926,9 @@ public:
     }
 
     map<uint8_t, Graphics::Color> readPalette(const PaletteHeader & palette){
-        sffStream.seekg(palette.offset + ldataOffset, ios::beg);
+        sffStream->seek(palette.offset + ldataOffset, SEEK_SET);
         uint8_t * data = new uint8_t[palette.length];
-        sffStream.read((char*) data, palette.length);
+        sffStream->readLine((char*) data, palette.length);
         map<uint8_t, Graphics::Color> out;
         for (int color = 0; color < palette.colors; color++){
             /* Palette data is stored in 4 byte chunks per color.
@@ -1226,8 +1200,6 @@ output(color)
     }
 
     virtual ~SffV2Reader(){
-        sffStream.close();
-        // delete[] spriteIndex;
     }
 
     bool moreSprites(){
@@ -1236,10 +1208,9 @@ output(color)
 
 protected:
     const Filesystem::AbsolutePath filename;
-    ifstream sffStream;
+    PaintownUtil::ReferenceCount<Storage::File> sffStream;
     unsigned long currentSprite;
     int totalSprites;
-    // map<int, MugenSprite*> spriteIndex;
     vector<SpriteHeader> sprites;
     vector<PaletteHeader> palettes;
 
