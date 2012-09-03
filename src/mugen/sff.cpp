@@ -1,7 +1,9 @@
 #include "util/file-system.h"
 #include "util/bitmap.h"
 #include "util/pointer.h"
+
 #include "util.h"
+#include "sprite.h"
 
 #include <sstream>
 #include <map>
@@ -432,9 +434,7 @@ public:
     }
 
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(const SpriteHeader & sprite, bool mask){
-        /* TODO Create a Mugen::SpriteV2 and fill it with the appropriate bitmap */
-
-        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(sprite), sprite.group, sprite.item, sprite.axisx, sprite.axisy)).convert<Mugen::Sprite>();
     }
 
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){

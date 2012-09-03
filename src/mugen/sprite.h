@@ -147,6 +147,27 @@ class SpriteV1: public Sprite {
         void draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
 };
 
+class SpriteV2{
+public:
+    SpriteV2(const Graphics::Bitmap & image, int group, int item, int x, int y);
+    virtual ~SpriteV2();
+	
+    virtual int getWidth() const;
+    virtual int getHeight() const;
+    virtual short getX() const;
+    virtual short getY() const;
+    virtual unsigned short getGroupNumber() const;
+    virtual unsigned short getImageNumber() const;
+    virtual void render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects = Mugen::Effects());
+    virtual void drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work);
+
+protected:
+    Graphics::Bitmap image;
+    int group;
+    int item;
+    int x, y;
+};
+
 }
 
 #endif

@@ -521,4 +521,49 @@ void SpriteV1::draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, 
     drawReal(bmp, xaxis, yaxis, this->x * effects.scalex, this->y * effects.scaley, where, effects);
 }
 
+SpriteV2::SpriteV2(const Graphics::Bitmap & image, int group, int item, int x, int y):
+image(image),
+group(group),
+item(item),
+x(x),
+y(y){
+}
+
+SpriteV2::~SpriteV2(){
+}
+
+int SpriteV2::getWidth() const {
+    return image.getWidth();
+}
+
+int SpriteV2::getHeight() const {
+    return image.getHeight();
+}
+
+short SpriteV2::getX() const {
+    return x;
+}
+
+short SpriteV2::getY() const {
+    return y;
+}
+
+unsigned short SpriteV2::getGroupNumber() const {
+    return group;
+}
+
+unsigned short SpriteV2::getImageNumber() const {
+    return item;
+}
+
+void SpriteV2::render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+    /* TODO */
+}
+
+void SpriteV2::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
+    Graphics::Bitmap single(image, sourceX1, sourceY, sourceWidth, sourceHeight);
+    single.drawStretched(destX, destY, destWidth, destHeight, work);
+}
+
+
 }
