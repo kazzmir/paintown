@@ -2022,6 +2022,8 @@ void Character::load(int useAct){
                                     self.palDefaults.push_back((*it) - 1);
                                 }
                                 // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
+                            } else if (simple == "localcoord"){
+                                /* TODO: mugen 1.0 thing */
                             } else {
                                 throw MugenException("Unhandled option in Info Section: " + simple.toString(), __FILE__, __LINE__);
                             }

@@ -4907,15 +4907,20 @@ static HitByAttributes parseHitByAttributes(const Ast::AttributeSimple & simple)
         simple.view() >> type;
         type = PaintownUtil::lowerCaseAll(type);
     } else {
-        Ast::View view = simple.view();
-        view >> type;
-        type = PaintownUtil::lowerCaseAll(type);
+        /* There might be no attributes at all */
         try{
-            while (true){
-                string what;
-                view >> what;
-                what = PaintownUtil::lowerCaseAll(what);
-                moreTypes.push_back(what);
+            Ast::View view = simple.view();
+            view >> type;
+            type = PaintownUtil::lowerCaseAll(type);
+            try{
+                /* Keep reading till we run out of attributes */
+                while (true){
+                    string what;
+                    view >> what;
+                    what = PaintownUtil::lowerCaseAll(what);
+                    moreTypes.push_back(what);
+                }
+            } catch (const Ast::Exception & e){
             }
         } catch (const Ast::Exception & e){
         }
@@ -7191,7 +7196,10 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "attr"){
-                    simple.view() >> controller.attribute;
+                    try{
+                        simple.view() >> controller.attribute;
+                    } catch (const Ast::Exception & fail){
+                    }
                 }
             }
         };
