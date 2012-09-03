@@ -1083,8 +1083,6 @@ protected:
     virtual std::vector<std::string> doInput(const Mugen::Stage & stage);
     virtual bool doStates(Mugen::Stage & stage, const std::vector<std::string> & active, int state);
 
-    void destroyRaw(const Mugen::SpriteMap & sprites);
-        
     void resetJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void stopGuarding(Mugen::Stage & stage, const std::vector<std::string> & inputs);

@@ -434,10 +434,6 @@ class Background{
             return temp;
         }
 
-    protected:
-
-        void destroyRaw(const Mugen::SpriteMap & sprites);
-
     private:
 	
 	//! File where background is in

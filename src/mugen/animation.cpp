@@ -483,6 +483,7 @@ void Animation::backFrame(){
 }
 
 /* who uses this function? */
+/*
 void Animation::reloadBitmaps(){
     for( std::vector< Frame * >::iterator i = frames.begin() ; i != frames.end() ; ++i ){
 	Frame *frame = *i;
@@ -493,6 +494,7 @@ void Animation::reloadBitmaps(){
 	}
     }
 }
+*/
 
 // Get name of type of animation
 const std::string Animation::getName(const Mugen::AnimationType t){

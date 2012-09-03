@@ -229,7 +229,6 @@ done(false){
                             simple.view() >> spriteFile;
                             Global::debug(1) << "Got Sprite File: '" << spriteFile << "'" << endl;
                             Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(spriteFile)), Filesystem::AbsolutePath(), menu.sprites, false);
-                            Mugen::Util::destroyRaw(menu.sprites);
                         } else if (simple == "snd"){
                             std::string soundFile;
                             simple.view() >> soundFile;

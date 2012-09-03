@@ -88,9 +88,6 @@ namespace Util{
     /* if mask is true, then effects.mask will be true by default */
     std::map<int, PaintownUtil::ReferenceCount<Animation> > loadAnimations(const Filesystem::AbsolutePath & filename, const SpriteMap sprites, bool mask);
 
-    /* destroys raw pcx data in a Sprite */
-    void destroyRaw(const SpriteMap &);
-
     // const Filesystem::AbsolutePath getCorrectFileLocation(const Filesystem::AbsolutePath & dir, const std::string &file );
     
     // Use to probe a def file, looking in section and looking for the item in that section and return it's value as a string

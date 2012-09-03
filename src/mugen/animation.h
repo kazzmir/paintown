@@ -158,7 +158,7 @@ class Animation{
 	void backFrame();
 	
 	// Reload bitmaps for things like palettes
-	void reloadBitmaps();
+	// void reloadBitmaps();
 	
 	inline unsigned int getCurrentPosition() { return position; }
 	inline Frame *getCurrentFrame(){ return frames[position]; }

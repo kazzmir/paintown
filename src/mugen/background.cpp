@@ -1928,8 +1928,6 @@ clearColor(Graphics::MaskColor()){
         out << "Error while parsing " << file.path() << " " << fail.getFullReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
-
-    destroyRaw(sprites);
 }
 
 Background::Background(const AstRef & parsed, const string & header, const Mugen::SpriteMap & sprites):
@@ -2084,17 +2082,6 @@ clearColor(Graphics::MaskColor()){
         ostringstream out;
         out << "Error while parsing " << file.path() << " " << fail.getFullReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
-    }
-
-    destroyRaw(sprites);
-}
-
-void Background::destroyRaw(const Mugen::SpriteMap & sprites){
-    for (map< unsigned int, std::map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> > >::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
-            sprite->unloadRaw();
-        }
     }
 }
 

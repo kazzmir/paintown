@@ -662,7 +662,6 @@ void Mugen::Stage::load(){
 
     // Mugen::Util::readSprites(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.sff")), Filesystem::AbsolutePath(), effects);
     Mugen::Util::readSprites(getMotifFile("fightfx.sff"), Filesystem::AbsolutePath(), effects, true);
-    destroyRaw(effects);
     // sparks = Mugen::Util::loadAnimations(Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath("fightfx.air")), effects);
     sparks = Mugen::Util::loadAnimations(getMotifFile("fightfx.air"), effects, true);
 
@@ -702,15 +701,6 @@ void Mugen::Stage::load(){
 
     // Stage is loaded
     loaded = true;
-}
-
-void Mugen::Stage::destroyRaw(const Mugen::SpriteMap & sprites){
-    for (Mugen::SpriteMap::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
-            sprite->unloadRaw();
-        }
-    }
 }
 
 void Mugen::Stage::setCamera( const double x, const double y ){ 

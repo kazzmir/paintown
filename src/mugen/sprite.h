@@ -1,5 +1,11 @@
-#ifndef mugen_sprite_h
-#define mugen_sprite_h
+#ifndef paintown_mugen_sprite_h
+#define paintown_mugen_sprite_h
+
+/* There are two types of sprites and an interface common to both here.
+ *   SpriteV1 - Sprites that are tied to an sff v1 file. these are always pcx
+ *   SpriteV2 - Sprites that come from an sff v2 and consist of an already made Bitmap
+ *   Sprite - interface that has some common operations like draw()
+ */
 
 #include <stdint.h>
 #include <string>
@@ -22,14 +28,31 @@ class Bitmap;
 namespace Mugen{
 
 class Sprite{
-    public:
-	Sprite(bool defaultMask);
-	Sprite(const Sprite &copy);
-	virtual ~Sprite();
+public:
+    Sprite();
+    virtual ~Sprite();
 	
-	Sprite & operator=(const Sprite &copy);
+    virtual int getWidth() const = 0;
+    virtual int getHeight() const = 0;
+    virtual short getX() const = 0;
+    virtual short getY() const = 0;
+    virtual unsigned short getGroupNumber() const = 0;
+    virtual unsigned short getImageNumber() const = 0;
+    virtual void render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects = Mugen::Effects()) = 0;
+    virtual void drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work) = 0;
+};
+
+class SpriteV1: public Sprite {
+    public:
+	SpriteV1(bool defaultMask);
+	SpriteV1(const SpriteV1 &copy);
+	virtual ~SpriteV1();
+	
+        /* TODO: is this operator used? If not get rid of it */
+	SpriteV1 & operator=(const SpriteV1 &copy);
+
 	// For map searching
-	bool operator<(const Sprite &copy);
+	bool operator<(const SpriteV1 &copy);
 	
 	// Reads in the sprite info from stream
 	void read(const PaintownUtil::ReferenceCount<Storage::File> & ifile, const int loc);
@@ -45,11 +68,9 @@ class Sprite{
 	// load/reload sprite
         PaintownUtil::ReferenceCount<Graphics::Bitmap> load(bool mask);
 	void reload(bool mask=true);
-        /* deletes raw pcx data */
-        void unloadRaw();
 
         /* just copies the bitmap */
-        void copyImage(const PaintownUtil::ReferenceCount<Mugen::Sprite> copy);
+        void copyImage(const PaintownUtil::ReferenceCount<Mugen::SpriteV1> copy);
 
 	int getWidth() const;
 	int getHeight() const;

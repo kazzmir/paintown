@@ -373,7 +373,6 @@ protected:
     bool doBlockingDetection(Object * obj1, Object * obj2);
     bool doCollisionDetection(Object * obj1, Object * obj2);
     bool doReversalDetection(Object * obj1, Object * obj2);
-    void destroyRaw(const Mugen::SpriteMap & sprites);
 
     int nextObjectId();
     

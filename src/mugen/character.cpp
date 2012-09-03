@@ -2290,7 +2290,6 @@ void Character::load(int useAct){
         /* ignore palette */
     }
     Util::readSprites(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)), finalPalette, sprites, true);
-    destroyRaw(sprites);
     Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
@@ -2304,15 +2303,6 @@ void Character::load(int useAct){
         Global::debug(0) << "State -1: '" << (*it)->getName() << "'" << endl;
     }
     */
-}
-
-void Character::destroyRaw(const Mugen::SpriteMap & sprites){
-    for (Mugen::SpriteMap::const_iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-        for(map< unsigned int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::const_iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = j->second;
-            sprite->unloadRaw();
-        }
-    }
 }
 
 bool Character::isBound() const {
