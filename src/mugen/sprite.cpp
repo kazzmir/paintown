@@ -413,7 +413,7 @@ void SpriteV1::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int
     single.drawStretched(destX, destY, destWidth, destHeight, work);
 }
 
-static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+static void drawReal(Graphics::Bitmap * bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     if (bmp == NULL){
         return;
     }
@@ -517,6 +517,10 @@ static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp,
     }
 }
 
+static void drawReal(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){
+    drawReal(bmp.raw(), xaxis, yaxis, x, y, where, effects);
+}
+
 void SpriteV1::draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> & bmp, const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
     drawReal(bmp, xaxis, yaxis, this->x * effects.scalex, this->y * effects.scaley, where, effects);
 }
@@ -557,7 +561,7 @@ unsigned short SpriteV2::getImageNumber() const {
 }
 
 void SpriteV2::render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects){
-    /* TODO */
+    drawReal(&image, xaxis, yaxis, this->x * effects.scalex, this->y * effects.scaley, where, effects);
 }
 
 void SpriteV2::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){

@@ -347,7 +347,7 @@ public:
         reader.readByte4();
 
         uint32_t suboffset = reader.readByte4();
-        uint32_t totalImages = reader.readByte4();
+        totalImages = reader.readByte4();
         uint32_t subpalette = reader.readByte4();
         uint32_t totalPalettes = reader.readByte4();
         
