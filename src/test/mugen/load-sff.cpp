@@ -25,7 +25,6 @@ static int load(const char * path){
             Mugen::Util::readSprites(Filesystem::AbsolutePath(path), Filesystem::AbsolutePath(), sprites, false);
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
-            Mugen::Util::destroySprites(sprites);
         } catch (const MugenException & e){
             Global::debug(0, "test") << "Test failure!: " << e.getReason() << endl;
             return 1;

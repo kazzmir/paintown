@@ -251,7 +251,11 @@ void showCharacter(const string & ourFile){
 
             Font::getDefaultFont().printf( 15, 310, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
             Font::getDefaultFont().printf( 15, 320, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
-            if(it->second->getCurrentFrame()->sprite!=0)Font::getDefaultFont().printf( 15, 330, Graphics::makeColor( 255, 255, 255 ), work, "Length: %d | x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, it->second->getCurrentFrame()->sprite->getLength(), it->second->getCurrentFrame()->sprite->getX(), it->second->getCurrentFrame()->sprite->getY(), it->second->getCurrentFrame()->sprite->getGroupNumber(), it->second->getCurrentFrame()->sprite->getImageNumber());
+            if (it->second->getCurrentFrame()->sprite!=0){
+                PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second->getCurrentFrame()->sprite;
+                Font::getDefaultFont().printf( 15, 330, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
+            }
+
             Font::getDefaultFont().printf( 15, 340, Graphics::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight() );
             Font::getDefaultFont().printf( 15, 350, Graphics::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
             Font::getDefaultFont().printf( 15, 360, Graphics::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
@@ -615,7 +619,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
 		ourSprite->render(back.getWidth() / 2, back.getHeight() / 2, back, effects);
                 int y = 400;
 		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Current Group: %d/%d   -----   Current Sprite: %d/%d (M)ask %s Own (P)alette %s",0, currentGroup, sprites.rbegin()->first, currentSprite, sprites[currentGroup].rbegin()->first, mask ? "on" : "off"); y += Font::getDefaultFont().getHeight() + 3;
-		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Same palette? %s Real Length %d New Length %d", 0, ourSprite->getSamePalette() ? "yes" : "no", ourSprite->getRealLength(), ourSprite->getNewLength()); y += Font::getDefaultFont().getHeight() + 3;
+		// Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Same palette? %s Real Length %d New Length %d", 0, ourSprite->getSamePalette() ? "yes" : "no", ourSprite->getRealLength(), ourSprite->getNewLength()); y += Font::getDefaultFont().getHeight() + 3;
 		Font::getDefaultFont().printf(15, y, Graphics::makeColor(0, 255, 0), back, "Width %d Height %d", 0, ourSprite->getWidth(), ourSprite->getHeight());
 	    } else {
 		Font::getDefaultFont().printf(15, 400, Graphics::makeColor(0, 255, 0), back, "Not valid group or Sprite! Current Group: %d   -----   Current Sprite: %d ",0, currentGroup, currentSprite );
