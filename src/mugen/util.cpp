@@ -469,8 +469,9 @@ public:
 
         filesize = sffStream->getSize();
 
-        /* TODO: read the first 16 bytes to get the version info.
-         * Data starts at the 16th byte.
+        checkVersion(sffStream);
+
+        /* Data starts at the 16th byte.
          */
         location = 16;
         sffStream->seek(location, SEEK_SET);
@@ -502,6 +503,24 @@ public:
         Global::debug(2) << "Got Total Groups: " << totalGroups << ", Total Images: " << totalImages << ", Next Location in file: " << location << endl;
 
         // spriteIndex = new Mugen::Sprite*[totalImages + 1];
+    }
+
+    virtual void checkVersion(const PaintownUtil::ReferenceCount<Storage::File> & stream){
+        Storage::LittleEndianReader reader(stream);
+        string signature = reader.readString2(12);
+        if (signature != "ElecbyteSpr"){
+            Global::debug(0) << "Invalid signature. Got '" << signature << "'" << endl;
+            throw exception();
+        }
+
+        int versionLo3 = reader.readByte1();
+        int versionLo2 = reader.readByte1();
+        int versionLo1 = reader.readByte1();
+        int versionHi = reader.readByte1();
+        if (versionHi != 1){
+            Global::debug(0) << "Invalid version for SFFv1. Got " << versionHi << "." << versionLo1 << "." << versionLo2 << "." << versionLo3 << endl;
+            throw exception();
+        }
     }
 
     virtual ~SffReader(){
@@ -722,8 +741,7 @@ public:
         Storage::LittleEndianReader reader(sffStream);
         string signature = reader.readString2(12);
         if (signature != "ElecbyteSpr"){
-            Global::debug(0) << "Invalid signature. Got '" << signature << "'" << endl;
-            throw exception();
+            throw MugenException(string("Invalid signature for SFFv2 file. Got '") + signature + "'", __FILE__, __LINE__);
         }
 
         int versionLo3 = reader.readByte1();
@@ -731,8 +749,9 @@ public:
         int versionLo1 = reader.readByte1();
         int versionHi = reader.readByte1();
         if (versionHi != 2){
-            Global::debug(0) << "Invalid version. Got " << versionHi << "." << versionLo1 << "." << versionLo2 << "." << versionLo3 << endl;
-            throw exception();
+            std::ostringstream out;
+            out << "Invalid version for SFFv2. Got " << versionHi << "." << versionLo1 << "." << versionLo2 << "." << versionLo3 << endl;
+            throw MugenException(out.str(), __FILE__, __LINE__);
         }
 
         /* skip reserved */
@@ -751,7 +770,7 @@ public:
         subpalette = reader.readByte4();
         totalPalettes = reader.readByte4();
         
-        Global::debug(0) << "Image offset " << suboffset << " total images " << totalImages << " palette offset " << subpalette << " total palettes " << totalPalettes << endl;
+        Global::debug(1) << "Image offset " << suboffset << " total images " << totalImages << " palette offset " << subpalette << " total palettes " << totalPalettes << endl;
 
         /* compressed data */
         ldataOffset = reader.readByte4();
@@ -761,8 +780,8 @@ public:
         tdataOffset = reader.readByte4();
         tdataLength = reader.readByte4();
 
-        Global::debug(0) << "Ldata offset " << ldataOffset << " length " << ldataLength << endl;
-        Global::debug(0) << "Tdata offset " << tdataOffset << " length " << tdataLength << endl;
+        Global::debug(1) << "Ldata offset " << ldataOffset << " length " << ldataLength << endl;
+        Global::debug(1) << "Tdata offset " << tdataOffset << " length " << tdataLength << endl;
 
         /* skip reserved */
         reader.readByte4();
@@ -1274,12 +1293,32 @@ protected:
     uint32_t tdataLength;
 };
 
+static int majorVersion(const Filesystem::AbsolutePath & filename){
+    PaintownUtil::ReferenceCount<Storage::File> stream = Storage::instance().open(filename);
+    if (!stream){
+        throw MugenException("Could not open SFF file: '" + filename.path() + "'", __FILE__, __LINE__);
+    }
+
+    Storage::LittleEndianReader reader(stream);
+    string signature = reader.readString2(12);
+    if (signature != "ElecbyteSpr"){
+        throw MugenException(string("Invalid signature for SFF file. Got '") + signature + "'", __FILE__, __LINE__);
+    }
+
+    int versionLo3 = reader.readByte1();
+    int versionLo2 = reader.readByte1();
+    int versionLo1 = reader.readByte1();
+    int versionHi = reader.readByte1();
+
+    return versionHi;
+}
+
 static bool isSffv1(const Filesystem::AbsolutePath & filename){
-    return true;
+    return majorVersion(filename) == 1;
 }
 
 static bool isSffv2(const Filesystem::AbsolutePath & filename){
-    return false;
+    return majorVersion(filename) == 2;
 }
 
 static PaintownUtil::ReferenceCount<SffReaderInterface> getSffReader(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette){
