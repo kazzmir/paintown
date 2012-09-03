@@ -845,15 +845,10 @@ public:
     }
 
     vector<SpriteHeader> getSprites(){
-        vector<SpriteHeader> sprites;
-        for (vector<SpriteHeader>::iterator it = this->sprites.begin(); it != this->sprites.end(); it++){
-            const SpriteHeader & sprite = *it;
-            sprites.push_back(sprite);
-        }
-        return sprites;
+        return this->sprites;
     }
 
-    const SpriteHeader & findSprite(unsigned int index){
+    const SpriteHeader & findSpriteHeader(unsigned int index){
         for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
             const SpriteHeader & sprite = *it;
             if (sprite.index == index){
@@ -863,38 +858,55 @@ public:
         throw exception();
     }
 
-    PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
+    const SpriteHeader & findSpriteHeader(int group, int item){
+        for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
+            const SpriteHeader & sprite = *it;
+            if (sprite.group == group && sprite.item == item){
+                return sprite;
+            }
+        }
+        std::ostringstream out;
+        out << "No sprite for group " << group << ", " << item;
+        throw MugenException(out.str(), __FILE__, __LINE__);
+    }
+
+    PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(const SpriteHeader & sprite, bool mask){
         /* TODO */
+
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+    }
+
+    PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
+        if (currentSprite < totalImages){
+            int here = currentSprite;
+            currentSprite += 1;
+            return readSprite(sprites[here], mask);
+        }
+
         return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
     }
     
     virtual PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask){
-        /* TODO */
-        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+        return readSprite(findSpriteHeader(group, item), mask);
     }
 
-    Graphics::Bitmap readBitmap(int group, int item){
+    Graphics::Bitmap readBitmap(const SpriteHeader & sprite){
         Storage::LittleEndianReader reader(sffStream);
-        for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
-            const SpriteHeader & sprite = *it;
-            if (sprite.group == group && sprite.item == item){
-                /* Compression formats are consistent across SFF versions. The first
-                 * 4 bytes of each compressed block is an integer representing the
-                 * length of the data after decompression.
-                 */
-                if (sprite.dataLength == 0){
-                    const SpriteHeader & linked = findSprite(sprite.linked);
-                    return readBitmap(linked.group, linked.item);
-                } else {
-                    if (sprite.flags == 0){
-                        return read(sprite, reader, ldataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
-                    } else {
-                        return read(sprite, reader, tdataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
-                    }
-                }
+        if (sprite.dataLength == 0){
+            return readBitmap(findSpriteHeader(sprite.linked));
+        } else {
+            /* Compression formats are consistent across SFF versions. The first
+             * 4 bytes of each compressed block comprises an integer representing
+             * the length of the data after decompression.
+             */
+            if (sprite.flags == 0){
+                return read(sprite, reader, ldataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
+            } else {
+                return read(sprite, reader, tdataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
             }
         }
-        Global::debug(0) << "Didn't find sprite " << group << ", " << item << endl;
+        
+        /* Pretty sure we can't get here */
         throw exception();
     }
 
@@ -1218,58 +1230,6 @@ output(color)
         // delete[] spriteIndex;
     }
 
-    /* gets all the sprite headers without loading the pcx information */
-    void quickReadSprites(){
-        /*
-        for (unsigned int index = 0; index < totalImages; index++){
-            MugenSprite * sprite = new MugenSprite();
-            sprite->read(sffStream, location);
-            spriteIndex[index] = sprite;
-            location = sprite->getNext();
-        }
-        */
-    }
-
-    /* deletes all sprites, only call this if you don't want them! */
-    /*
-    void cleanup(){
-        for (map<int, MugenSprite *>::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
-            MugenSprite * sprite = it->second;
-            delete sprite;
-        }
-    }
-    */
-
-    /*
-    MugenSprite * readSprite(bool mask){
-        bool islinked = false;
-        if (location > filesize){
-            throw MugenException("Error in SFF file: " + filename.path() + ". Offset of image beyond the end of the file.");
-        }
-
-        MugenSprite * sprite = new MugenSprite();
-        sprite->read(sffStream, location);
-        location = sprite->getNext();
-
-        if (sprite->getLength() == 0){
-            const MugenSprite * temp = spriteIndex[sprite->getPrevious()];
-            if (!temp){
-                ostringstream out;
-                out << "Unknown linked sprite " << sprite->getPrevious() << endl;
-                throw MugenException(out.str());
-            }
-            sprite->copyImage(temp);
-        } else {
-            sprite->loadPCX(sffStream, islinked, useact, palsave1, mask);
-        }
-            
-        spriteIndex[currentSprite] = sprite;
-        currentSprite += 1;
-
-        return sprite;
-    }
-    */
-
     bool moreSprites(){
         return currentSprite < totalImages;
     }
@@ -1334,15 +1294,6 @@ static PaintownUtil::ReferenceCount<SffReaderInterface> getSffReader(const Files
 }
 
     }
-}
-
-void Mugen::Util::destroySprites(const SpriteMap & sprites){
-    /*
-    for (map<unsigned int, map< unsigned int, Mugen::Sprite * > >::const_iterator i = sprites.begin(); i != sprites.end(); ++i){
-      for (map<unsigned int, Mugen::Sprite *>::const_iterator j = i->second.begin() ; j != i->second.end(); ++j){
-          delete j->second;
-      }
-    }*/
 }
 
 void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool mask){
