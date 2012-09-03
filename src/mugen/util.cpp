@@ -428,7 +428,20 @@ static int computeFileSize(const string & path){
 namespace Mugen{
     namespace Util{
 
-class SffReader{
+class SffReaderInterface{
+public:
+    SffReaderInterface(){
+    }
+
+    virtual ~SffReaderInterface(){
+    }
+
+    virtual bool moreSprites() = 0;
+    virtual PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask) = 0;
+    virtual PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask) = 0;
+};
+
+class SffReader: public SffReaderInterface {
 public:
     SffReader(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette):
     filename(filename),
@@ -540,14 +553,6 @@ public:
         return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
     }
 
-    /* deletes all sprites, only call this if you don't want them! */
-    void cleanup(){
-        /*for (map<int, PaintownUtil::ReferenceCount<Mugen::Sprite> >::iterator it = spriteIndex.begin(); it != spriteIndex.end(); it++){
-            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second;
-            delete sprite;
-        }*/
-    }
-
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
         bool islinked = false;
         if (location > filesize){
@@ -595,7 +600,7 @@ protected:
     unsigned char palsave1[768]; // First image palette
 };
 
-class SffV2Reader{
+class SffV2Reader: public SffReaderInterface {
 public:
     struct SpriteHeader{
         SpriteHeader(uint16_t group, uint16_t item, uint16_t width,
@@ -839,7 +844,17 @@ public:
         throw exception();
     }
 
-    Graphics::Bitmap readSprite(int group, int item){
+    PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
+        /* TODO */
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+    }
+    
+    virtual PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask){
+        /* TODO */
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+    }
+
+    Graphics::Bitmap readBitmap(int group, int item){
         Storage::LittleEndianReader reader(sffStream);
         for (vector<SpriteHeader>::iterator it = sprites.begin(); it != sprites.end(); it++){
             const SpriteHeader & sprite = *it;
@@ -850,7 +865,7 @@ public:
                  */
                 if (sprite.dataLength == 0){
                     const SpriteHeader & linked = findSprite(sprite.linked);
-                    return readSprite(linked.group, linked.item);
+                    return readBitmap(linked.group, linked.item);
                 } else {
                     if (sprite.flags == 0){
                         return read(sprite, reader, ldataOffset + sprite.dataOffset + 4, sprite.dataLength - 4);
@@ -1259,8 +1274,25 @@ protected:
     uint32_t tdataLength;
 };
 
+static bool isSffv1(const Filesystem::AbsolutePath & filename){
+    return true;
+}
 
+static bool isSffv2(const Filesystem::AbsolutePath & filename){
+    return false;
+}
 
+static PaintownUtil::ReferenceCount<SffReaderInterface> getSffReader(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette){
+    if (isSffv1(filename)){
+        return PaintownUtil::ReferenceCount<SffReaderInterface>(new SffReader(filename, palette));
+    }
+    if (isSffv2(filename)){
+        /* FIXME: use palette somehow */
+        return PaintownUtil::ReferenceCount<SffReaderInterface>(new SffV2Reader(filename));
+    }
+    throw MugenException(filename.path() + " is not an sffv1 or sffv2 file", __FILE__, __LINE__);
+    return PaintownUtil::ReferenceCount<SffReaderInterface>(NULL);
+}
 
     }
 }
@@ -1275,12 +1307,12 @@ void Mugen::Util::destroySprites(const SpriteMap & sprites){
 }
 
 void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette, Mugen::SpriteMap & sprites, bool mask){
-    SffReader reader(filename, palette);
+    PaintownUtil::ReferenceCount<SffReaderInterface> reader = getSffReader(filename, palette);
     /* where replaced sprites go */
-    vector< PaintownUtil::ReferenceCount<Mugen::Sprite> > unused;
-    while (reader.moreSprites()){
+    vector<PaintownUtil::ReferenceCount<Mugen::Sprite> > unused;
+    while (reader->moreSprites()){
         // try{
-            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = reader.readSprite(mask);
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = reader->readSprite(mask);
 
             Mugen::SpriteMap::iterator first_it = sprites.find(sprite->getGroupNumber());
             if (first_it != sprites.end()){
@@ -1804,10 +1836,9 @@ const std::string Mugen::Util::probeDef(const Filesystem::AbsolutePath &file, co
     return probeDef(parseDef(file), section, search);
 }
 
-PaintownUtil::ReferenceCount<Mugen::Sprite>Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
-    SffReader reader(file, actFile);
-    PaintownUtil::ReferenceCount<Mugen::Sprite> found = reader.findSprite(groupNumber, spriteNumber, mask);
-    reader.cleanup();
+PaintownUtil::ReferenceCount<Mugen::Sprite> Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
+    PaintownUtil::ReferenceCount<SffReaderInterface> reader = getSffReader(file, actFile);
+    PaintownUtil::ReferenceCount<Mugen::Sprite> found = reader->findSprite(groupNumber, spriteNumber, mask);
     if (found != NULL){
         return found;
     }
@@ -1820,7 +1851,6 @@ void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, c
     SffReader reader(sffPath, actPath);
     *icon = reader.findSprite(9000, 0, true);
     *portrait = reader.findSprite(9000, 1, true);
-    reader.cleanup();
     if (*icon == NULL || *portrait == NULL){
         bool failed_icon = *icon == NULL;
         bool failed_portrait = *portrait == NULL;
