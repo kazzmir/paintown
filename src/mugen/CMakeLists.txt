@@ -35,6 +35,7 @@ section.cpp
 sound.cpp
 sprite.cpp
 stage.cpp
+sff.cpp
 util.cpp
 search.cpp
 state-controller.cpp

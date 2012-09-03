@@ -1,5 +1,5 @@
-#ifndef mugen_util_h
-#define mugen_util_h
+#ifndef paintown_mugen_util_h
+#define paintown_mugen_util_h
 
 #include <string>
 #include <map>
