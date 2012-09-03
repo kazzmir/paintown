@@ -516,32 +516,44 @@ public:
     }
 
     map<uint8_t, Graphics::Color> readPalette(const PaletteHeader & palette){
-        sffStream->seek(palette.offset + ldataOffset, SEEK_SET);
-        uint8_t * data = new uint8_t[palette.length];
-        sffStream->readLine((char*) data, palette.length);
-        map<uint8_t, Graphics::Color> out;
-        for (int color = 0; color < palette.colors; color++){
-            /* Palette data is stored in 4 byte chunks per color.
-             * The first 3 bytes correspond to 8-bit values for RGB color, and
-             * the last byte is unused (set to 0).
-             */
-            int red = data[color * 4];
-            int green = data[color * 4 + 1];
-            int blue = data[color * 4 + 2];
-            out[color] = Graphics::makeColor(red, green, blue);
+        if (paletteCache.find(palette.index) != paletteCache.end()){
+            return paletteCache[palette.index];
+        } else {
+            sffStream->seek(palette.offset + ldataOffset, SEEK_SET);
+            uint8_t * data = new uint8_t[palette.length];
+            sffStream->readLine((char*) data, palette.length);
+            map<uint8_t, Graphics::Color> out;
+            for (int color = 0; color < palette.colors; color++){
+                /* Palette data is stored in 4 byte chunks per color.
+                 * The first 3 bytes correspond to 8-bit values for RGB color, and
+                 * the last byte is unused (set to 0).
+                 */
+                int red = data[color * 4];
+                int green = data[color * 4 + 1];
+                int blue = data[color * 4 + 2];
+                out[color] = Graphics::makeColor(red, green, blue);
+            }
+            delete[] data;
+            paletteCache[palette.index] = out;
+            return out;
         }
-        delete[] data;
-        return out;
     }
 
     /* pixels are an index into a palette */
     void writePixels(Graphics::Bitmap & out, char * pixels, map<uint8_t, Graphics::Color> & palette){
-        for (int y = 0; y < out.getHeight(); y++){
-            for (int x = 0; x < out.getWidth(); x++){
-                uint8_t pixel = pixels[x + y * out.getWidth()];
-                out.putPixel(x, y, palette[pixel]);
+        int height = out.getHeight();
+        int width = out.getWidth();
+        Graphics::Color * lookup = new Graphics::Color[palette.size()];
+        for (map<uint8_t, Graphics::Color>::iterator it = palette.begin(); it != palette.end(); it++){
+            lookup[it->first] = it->second;
+        }
+        for (int y = 0; y < height; y++){
+            for (int x = 0; x < width; x++){
+                uint8_t pixel = pixels[x + y * width];
+                out.putPixel(x, y, lookup[pixel]);
             }
         }
+        delete[] lookup;
     }
 
     void readRLE8(Storage::LittleEndianReader & reader, uint32_t length, char * pixels, int pixelLength){
@@ -817,6 +829,8 @@ protected:
     uint32_t ldataLength;
     uint32_t tdataOffset;
     uint32_t tdataLength;
+    
+    map< int, map<uint8_t, Graphics::Color> > paletteCache;
 };
 
 static int majorVersion(const Filesystem::AbsolutePath & filename){
