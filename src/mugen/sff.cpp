@@ -434,6 +434,7 @@ public:
     }
 
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(const SpriteHeader & sprite, bool mask){
+        /* FIXME: do something with mask */
         return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(sprite), sprite.group, sprite.item, sprite.axisx, sprite.axisy)).convert<Mugen::Sprite>();
     }
 

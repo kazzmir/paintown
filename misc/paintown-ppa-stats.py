@@ -17,21 +17,17 @@ def stats(distro, arch):
     archive = owner.getPPAByName(name=PPA)
 
     for individualarchive in archive.getPublishedBinaries(status = 'Published', distro_arch_series = desired_dist_and_arch):
-        x = individualarchive.getDownloadCount()
-        if x > 0:
-            print "%(distro)s\t%(arch)s\t%(package)s\t%(version)s\t%(download)s" % {'distro': distro,
-                   'arch': arch,
-                   'package': individualarchive.binary_package_name,
-                   'version': individualarchive.binary_package_version,
-                   'download': str(individualarchive.getDownloadCount())}
-        elif x < 1:
-            print '0'
+        print "%(distro)s\t%(arch)s\t%(package)s\t%(version)s\t%(download)s" % {'distro': distro,
+               'arch': arch,
+               'package': individualarchive.binary_package_name,
+               'version': individualarchive.binary_package_version,
+               'download': str(individualarchive.getDownloadCount())}
 
 def print_distros(distro):
     archs = ['i386', 'amd64']
     for arch in archs:
         stats(distro, arch)
 
-distros = ['natty', 'oneiric', 'maverick', 'lucid']
+distros = ['natty', 'oneiric', 'maverick', 'lucid', 'quantal', 'precise']
 for distro in distros:
     print_distros(distro)
