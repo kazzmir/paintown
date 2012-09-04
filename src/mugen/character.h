@@ -1001,7 +1001,7 @@ public:
 
         virtual void setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack);
         virtual void setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes);
-        virtual void setHitOverride(int slot, const std::string & attribute, int state, int time, bool air);
+        virtual void setHitOverride(int slot, const HitAttributes & attribute, int state, int time, bool air);
 
         virtual void setDefenseMultiplier(double defense);
         virtual void setAttackMultiplier(double attack);

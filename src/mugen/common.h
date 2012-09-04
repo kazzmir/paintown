@@ -382,6 +382,28 @@ class Effects{
         Graphics::Bitmap::Filter * filter;
 };
 
+struct HitAttributes{
+    HitAttributes():
+        standing(false),
+        crouching(false),
+        aerial(false){
+        }
+
+    HitAttributes(const HitAttributes & copy):
+        standing(copy.standing),
+        crouching(copy.crouching),
+        aerial(copy.aerial),
+        attributes(copy.attributes){
+        }
+
+    int slot;
+    bool standing;
+    bool crouching;
+    bool aerial;
+
+    std::vector<AttackType::Attribute> attributes;
+};
+
 }
 
 #endif

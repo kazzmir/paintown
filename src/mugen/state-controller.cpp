@@ -4868,38 +4868,9 @@ public:
     }
 };
 
-struct HitByAttributes{
-    HitByAttributes():
-        slot(-1),
-        standing(false),
-        crouching(false),
-        aerial(false){
-        }
+static HitAttributes parseHitAttributes(const Ast::AttributeSimple & simple){
+    HitAttributes hit;
 
-    HitByAttributes(const HitByAttributes & copy):
-        slot(copy.slot),
-        standing(copy.standing),
-        crouching(copy.crouching),
-        aerial(copy.aerial),
-        attributes(copy.attributes){
-        }
-
-    int slot;
-    bool standing;
-    bool crouching;
-    bool aerial;
-
-    vector<AttackType::Attribute> attributes;
-};
-
-static HitByAttributes parseHitByAttributes(const Ast::AttributeSimple & simple){
-    HitByAttributes hit;
-
-    if (simple == "value"){
-        hit.slot = 0;
-    } else if (simple == "value2"){
-        hit.slot = 1;
-    }
     string type;
     vector<string> moreTypes;
     if (simple.getValue() != NULL && ! simple.getValue()->hasMultiple()){
@@ -4986,19 +4957,22 @@ static HitByAttributes parseHitByAttributes(const Ast::AttributeSimple & simple)
 class ControllerHitBy: public StateController {
 public:
     ControllerHitBy(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    slot(0){
         parse(section);
     }
 
     ControllerHitBy(const ControllerHitBy & you):
     StateController(you),
     time(copy(you.time)),
+    slot(you.slot),
     attributes(you.attributes){
     }
 
     Value time;
 
-    HitByAttributes attributes;
+    int slot;
+    HitAttributes attributes;
 
     virtual ~ControllerHitBy(){
     }
@@ -5015,8 +4989,12 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
                     controller.time = Compiler::compile(simple.getValue());
-                } else if (simple == "value" || simple == "value2"){
-                    controller.attributes = parseHitByAttributes(simple);
+                } else if (simple == "value"){
+                    controller.slot = 0;
+                    controller.attributes = parseHitAttributes(simple);
+                } else if (simple == "value2"){
+                    controller.slot = 1;
+                    controller.attributes = parseHitAttributes(simple);
                 }
             }
         };
@@ -5027,7 +5005,7 @@ public:
 
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (attributes.slot != -1){
-            guy.setHitByOverride(attributes.slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), attributes.standing, attributes.crouching, attributes.aerial, attributes.attributes);
+            guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), attributes.standing, attributes.crouching, attributes.aerial, attributes.attributes);
         }
     }
 
@@ -5039,19 +5017,22 @@ public:
 class ControllerNotHitBy: public StateController {
 public:
     ControllerNotHitBy(Ast::Section * section, const string & name, int state):
-    StateController(name, state, section){
+    StateController(name, state, section),
+    slot(0){
         parse(section);
     }
 
     ControllerNotHitBy(const ControllerNotHitBy & you):
     StateController(you),
     time(copy(you.time)),
+    slot(you.slot),
     attributes(you.attributes){
     }
 
     Value time;
 
-    HitByAttributes attributes;
+    int slot;
+    HitAttributes attributes;
 
     virtual ~ControllerNotHitBy(){
     }
@@ -5068,8 +5049,12 @@ public:
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "time"){
                     controller.time = Compiler::compile(simple.getValue());
-                } else if (simple == "value" || simple == "value2"){
-                    controller.attributes = parseHitByAttributes(simple);
+                } else if (simple == "value"){
+                    controller.slot = 0;
+                    controller.attributes = parseHitAttributes(simple);
+                } else if (simple == "value2"){
+                    controller.slot = 1;
+                    controller.attributes = parseHitAttributes(simple);
                 }
             }
         };
@@ -5115,7 +5100,7 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (attributes.slot != -1){
             vector<AttackType::Attribute> notAttributes = difference(allAttributes(), attributes.attributes);
-            guy.setHitByOverride(attributes.slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), attributes.standing, attributes.crouching, attributes.aerial, notAttributes);
+            guy.setHitByOverride(slot, (int) evaluateNumber(time, FullEnvironment(stage, guy), 1), attributes.standing, attributes.crouching, attributes.aerial, notAttributes);
         }
     }
 
@@ -7168,14 +7153,14 @@ public:
 
     ControllerHitOverride(const ControllerHitOverride & you):
     StateController(you),
-    attribute(you.attribute),
+    attributes(you.attributes),
     slot(copy(you.slot)),
     state(copy(you.state)),
     time(copy(you.time)),
     forceAir(copy(you.forceAir)){
     }
 
-    string attribute;
+    HitAttributes attributes;
     Value slot;
     Value state;
     Value time;
@@ -7196,10 +7181,7 @@ public:
 
             virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                 if (simple == "attr"){
-                    try{
-                        simple.view() >> controller.attribute;
-                    } catch (const Ast::Exception & fail){
-                    }
+                    controller.attributes = parseHitAttributes(simple);
                 }
             }
         };
@@ -7214,7 +7196,7 @@ public:
         int state = (int) evaluateNumber(this->state, environment, -1);
         int time = (int) evaluateNumber(this->time, environment, 1);
         bool air = evaluateBool(this->forceAir, environment, false);
-        guy.setHitOverride(slot, attribute, state, time, air);
+        guy.setHitOverride(slot, attributes, state, time, air);
     }
 };
 
@@ -7364,7 +7346,7 @@ public:
         Value player2State;
 
         /* For reversal.attr */
-        HitByAttributes attributes;
+        HitAttributes attributes;
 
         /*
         bool standing;
@@ -7445,7 +7427,7 @@ public:
                 } else if (simple == "p2stateno"){
                     hit.player2State = Compiler::compile(simple.getValue());
                 } else if (simple == "reversal.attr"){
-                    hit.attributes = parseHitByAttributes(simple);
+                    hit.attributes = parseHitAttributes(simple);
                     /*
                     string type;
                     vector<string> moreTypes;

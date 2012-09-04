@@ -4311,7 +4311,7 @@ bool Character::isPushable(){
     return (pushPlayer == 0);
 }
         
-void Character::setHitOverride(int slot, const string & attribute, int state, int time, bool air){
+void Character::setHitOverride(int slot, const HitAttributes & attribute, int state, int time, bool air){
     /* TODO */
 }
 
