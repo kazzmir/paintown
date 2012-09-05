@@ -1042,10 +1042,44 @@ static AttackType::Attribute parseAttribute(const string & kind, const string & 
     return AttackType::NoAttribute;
 }
 
+/* true if the enemy's hitdef uses an attribute that matches the given hitattribute */
+static bool hasHitAttribute(Character * enemy, const HitAttributes & attribute){
+    /* Check the state type */
+    if (enemy->getHit().attribute.state == StateType::Crouch &&
+        !attribute.crouching){
+        return false;
+    }
+
+    if (enemy->getHit().attribute.state == StateType::Stand &&
+        !attribute.standing){
+        return false;
+    }
+
+    if (enemy->getHit().attribute.state == StateType::Air &&
+        !attribute.aerial){
+        return false;
+    }
+
+    /* Then check the physics type */
+    AttackType::Attribute hitType = parseAttribute(enemy->getHit().attribute.attackType, enemy->getHit().attribute.physics);
+    const vector<AttackType::Attribute> & attributes = attribute.attributes;
+
+    /* The hit type of the hit definition must be in the list of attributes somewhere */
+    for (vector<AttackType::Attribute>::const_iterator it = attributes.begin(); it != attributes.end(); it++){
+        if (hitType == *it){
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool Character::canBeHit(Character * enemy){
     for (int slot = 0; slot < 2; slot++){
         /* Only check active slots */
         if (hitByOverride[slot].time > 0){
+            /* FIXME: use hasHitAttribute from above */
+
             /* Check the state type */
             if (enemy->getHit().attribute.state == StateType::Crouch &&
                 !hitByOverride[slot].crouching){
@@ -2873,6 +2907,13 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
         paletteEffects.time -= 1;
     }
 
+    for (map<int, HitOverride>::iterator it = hitOverrides.begin(); it != hitOverrides.end(); it++){
+        HitOverride & override = it->second;
+        if (override.time > 0){
+            override.time -= 1;
+        }
+    }
+
     for (int slot = 0; slot < 2; slot++){
         if (hitByOverride[slot].time > 0){
             hitByOverride[slot].time -= 1;
@@ -3334,7 +3375,24 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     afterImage.lifetime = 0;
 
     juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
-    
+
+    for (map<int, HitOverride>::iterator it = hitOverrides.begin(); it != hitOverrides.end(); it++){
+        HitOverride & override = it->second;
+        /* Time can be -1 (infinity) or some positive number (counting down) */
+        if (override.time != 0 && hasHitAttribute(enemy, override.attributes)){
+            /* FIXME: handle override.forceAir */
+            if (override.state != -1){
+                changeState(stage, override.state);
+            }
+
+            /* I believe that if any hit override matches that all the others
+             * are ignored and the rest of the logic about checking player2State
+             * and whatever is skipped.
+             */
+            return;
+        }
+    }
+
     if (hisHit.player2State != -1){
         /* Use the state data from the enemy until we are hit or call SelfState
          * Always get the data from root so we don't bind to a helper which may
@@ -4312,7 +4370,10 @@ bool Character::isPushable(){
 }
         
 void Character::setHitOverride(int slot, const HitAttributes & attribute, int state, int time, bool air){
-    /* TODO */
+    HitOverride & override = hitOverrides[slot];
+    override.attributes = attribute;
+    override.state = state;
+    override.time = time;
 }
 
 void Character::setDrawOffset(double x, double y){

@@ -1686,6 +1686,19 @@ public:
 
         /* Current set of commands, updated in act() */
         std::vector<std::string> active;
+
+        struct HitOverride{
+            HitOverride():
+            time(0){
+            }
+
+            int time;
+            HitAttributes attributes;
+            int state;
+            bool forceAir;
+        };
+
+        std::map<int, HitOverride> hitOverrides;
 };
 
 }
