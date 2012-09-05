@@ -467,10 +467,7 @@ protected:
         explode = b;
     }
 
-    virtual bool getExplode(){
-        return explode;
-    }
-
+    virtual bool getExplode();
 
 protected:
     std::string name;

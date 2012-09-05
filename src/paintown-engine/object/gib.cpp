@@ -4,10 +4,13 @@
 #include "object_nonattack.h"
 #include "gib.h"
 #include "util/funcs.h"
+#include "configuration.h"
 #include "globals.h"
 #include <math.h>
 
 namespace Paintown{
+    
+std::string Gib::GibProperty = "paintown/gibs";
 
 Gib::Gib(const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image, const Util::ReferenceCount<Graphics::Bitmap> & bloodImage):
 ObjectNonAttack(x, z),
@@ -62,7 +65,7 @@ Object * Gib::copy(){
     return new Gib( *this );
 }
 
-bool Gib::isCollidable( Object * obj ){
+bool Gib::isCollidable(Object * obj){
     return false;
 }
 
@@ -84,7 +87,7 @@ Network::Message Gib::getCreateMessage(){
     return m;
 }
 	
-void Gib::act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ){
+void Gib::act(std::vector< Object * > * others, World * world, std::vector< Object * > * add){
     if ( fade > 0 ){
         fade += 2;
         if ( fade > 255 ){
@@ -112,23 +115,24 @@ void Gib::act( std::vector< Object * > * others, World * world, std::vector< Obj
                */
         }
 
-        for ( int i = 0; i < Util::rnd(3) + 2; i++ ){
+        double gibAmount = Configuration::getProperty(GibProperty, 5) / 5.0;
+        for (int i = 0; i < Util::rnd((int)(3 * gibAmount)) + 2; i++){
             int x = getRX() + Util::rnd(5) - 2;
             int y = getRY() + Util::rnd(5) - 2;
             blood.push_back(Point(x, y, Util::rnd(10) + 5));
         }
 
-        for ( std::vector< Point >::iterator it = blood.begin(); it != blood.end(); ){
+        for (std::vector< Point >::iterator it = blood.begin(); it != blood.end(); /**/){
             Point & p = *it;
             p.life -= 1;
-            if ( p.life <= 0 ){
-                it = blood.erase( it );
+            if (p.life <= 0){
+                it = blood.erase(it);
             } else {
                 it++;
             }
         }
 
-        angle += (int) sqrt( dx * dx + dy * dy ) * 3;
+        angle += (int) sqrt(dx * dx + dy * dy) * 3;
     }
 }
 

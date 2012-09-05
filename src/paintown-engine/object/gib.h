@@ -4,12 +4,16 @@
 #include "object_nonattack.h"
 #include "util/pointer.h"
 #include "util/network/network.h"
+#include <string>
 #include <vector>
 
 namespace Paintown{
 
 class Gib: public ObjectNonAttack {
 public:
+    /* The property that defines how many gibs to make */
+    static std::string GibProperty;
+
     struct Point{
         Point( int x, int y, int life ):x(x), y(y), life(life){}
         int x, y;

@@ -9,6 +9,7 @@
 #include <vector>
 #include <algorithm>
 
+#include "configuration.h"
 #include "animation.h"
 #include "animation_trail.h"
 #include "character.h"
@@ -563,7 +564,7 @@ static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap )
     }
 }
 	
-vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> animation){
+vector<BodyPart> Character::getBodyParts(Util::ReferenceCount<Animation> animation){
     Graphics::RestoreState state;
     vector< BodyPart > parts;
 
@@ -573,8 +574,8 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
     }
 
     const int gib_size = 12;
-    for ( int x = 0; x < bitmap->getWidth() - gib_size; x += gib_size ){
-        for ( int y = 0; y < bitmap->getHeight() - gib_size; y += gib_size ){
+    for (int x = 0; x < bitmap->getWidth() - gib_size; x += gib_size){
+        for (int y = 0; y < bitmap->getHeight() - gib_size; y += gib_size){
             // Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
             Graphics::Bitmap * sub = new Graphics::Bitmap(gib_size, gib_size);
             sub->fill(Graphics::MaskColor());
@@ -606,8 +607,12 @@ vector< BodyPart > Character::getBodyParts(Util::ReferenceCount<Animation> anima
         "misc/body/torso.png"
     };
 
-    for ( unsigned int i = 0; i < sizeof(more) / sizeof(char*); i += Util::rnd(3) + 1){
-        replacePart(parts, new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(more[i])).path()));	
+    for (unsigned int i = 0; i < sizeof(more) / sizeof(char*); i += Util::rnd(3) + 1){
+        try{
+            replacePart(parts, new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(more[i])).path()));	
+        } catch (const Filesystem::NotFound & ignore){
+        } catch (const Graphics::BitmapException & ignore){
+        }
     }
 
     return parts;
@@ -948,7 +953,15 @@ void Character::takeDamage(World & world, ObjectAttack * obj, int damage, double
     world.addMessage(animationMessage());
     world.addMessage(healthMessage());
 }
-	
+    
+bool Character::getExplode(){
+    if (Configuration::getProperty(Gib::GibProperty, 5) == 0){
+        return false;
+    }
+
+    return explode;
+}
+
 void Character::died( vector< Object * > & objects ){
     if (getLink() != NULL){
         getLink()->unGrab();
@@ -956,8 +969,9 @@ void Character::died( vector< Object * > & objects ){
     }
 
     if (getExplode()){
-        for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
-            const BodyPart & part = *it;
+        int amount = body_parts.size() * Configuration::getProperty(Gib::GibProperty, 5) / 5.0;
+        for (int use = 0; use < amount; use++){
+            const BodyPart & part = body_parts[Util::rnd(body_parts.size())];
 
             int x = (int) getX() + part.x;
             int y = (int) getY() + part.y;
@@ -967,7 +981,7 @@ void Character::died( vector< Object * > & objects ){
             objects.push_back(new Gib(x, y, (int) getZ(), dx, dy, dz, part.image, gibBloodImage));
         }
 
-        if ( squish_sound != NULL ){
+        if (squish_sound != NULL){
             squish_sound->play();
         }
         /*
