@@ -354,14 +354,6 @@ void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
 }
 
 void RainAtmosphere::drawForeground(Graphics::Bitmap * work, int x){
-    const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
-    Graphics::Bitmap::transBlender(0, 0, 0, 64);
-    for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
-        Puddle * puddle = *it;
-        int rx = (int) puddle->current;
-        int ry = (int)(puddle->current * 0.8);
-        work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
-    }
 }
 
 void RainAtmosphere::drawFront(Graphics::Bitmap * work, int x){
@@ -371,9 +363,18 @@ void RainAtmosphere::interpret(const Token * message){
 }
 
 void RainAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
-    for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
+    const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
+    Graphics::Bitmap::transBlender(0, 0, 0, 64);
+    for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
+        Puddle * puddle = *it;
+        int rx = (int) puddle->current;
+        int ry = (int)(puddle->current * 0.8);
+        work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
+    }
+
+    for (vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
         Drop * d = *it;
-        work->line( d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color );
+        work->line(d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color);
     }
 }
 
@@ -412,7 +413,7 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
     if (objects != NULL && objects->size() > 0){
         for (int i = objectPuddles.size(); i < 5; i++){
             Paintown::Object * who = (*objects)[Util::rnd(objects->size())];
-            int x = who->getRX() + Util::rnd(-who->getWidth(), who->getWidth());
+            int x = who->getRX() + Util::rnd(-who->getWidth() / 2, who->getWidth() / 2);
             int y = who->getRY() - Util::rnd(who->getHeight());
             if (who->touchPoint(x, y)){
                 int size = Util::rnd(4) + 2;
