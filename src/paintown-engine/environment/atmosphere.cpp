@@ -316,7 +316,7 @@ void NightAtmosphere::interpret(const Token * message){
 
 RainAtmosphere::RainAtmosphere():
 Atmosphere(),
-playing( false ){
+playing(false){
 
     rain_sound = Sound(Storage::instance().find(Filesystem::RelativePath("sounds/rain.wav")).path());
 
@@ -325,31 +325,44 @@ playing( false ){
     colors[1] = Graphics::makeColor( 0x11, 0x44, 0x77 );
     for (int i = 0; i < 100; i++){
         Drop * d = new Drop(Util::rnd(screenX() * 2) - screenX() / 2, Util::rnd( screenY() ), Util::rnd(4) + 3, colors[Util::rnd(2)]);
-        rain_drops.push_back(d);
+        rain_drops.push_back(Util::ReferenceCount<Drop>(d));
+    }
+
+    try{
+        const char * files[] = {"sprites/rain-drop/drop1.png",
+                                "sprites/rain-drop/drop2.png",
+                                "sprites/rain-drop/drop3.png",
+                                "sprites/rain-drop/drop4.png",
+                                "sprites/rain-drop/drop5.png"};
+        for (int i = 0; i < sizeof(files) / sizeof(const char*); i++){
+            splashes.push_back(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(files[i]))))));
+        }
+    } catch (const Filesystem::NotFound & ignore){
     }
 }
 
 RainAtmosphere::~RainAtmosphere(){
-    for ( vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++ ){
-        delete *it;
-    }
-    for ( vector<Puddle *>::iterator it = puddles.begin(); it != puddles.end(); it++ ){
-        delete *it;
-    }
 }
 
 void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
     const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
     Graphics::Bitmap::transBlender(0, 0, 0, 64);
-    for (vector<Puddle*>::iterator it = puddles.begin(); it != puddles.end(); it++){
-        Puddle * puddle = *it;
+    for (vector<Util::ReferenceCount<Puddle> >::iterator it = puddles.begin(); it != puddles.end(); it++){
+        Util::ReferenceCount<Puddle> puddle = *it;
         if (puddle->x == -1000){
             puddle->x = x + Util::rnd(screenX() + 30) - 15;
         }
         // work->circle(puddle->x, puddle->y, (int)puddle->current, bluish);
         int rx = (int) puddle->current;
         int ry = (int)(puddle->current * 0.8);
-        work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
+        int use = puddle->size;
+        if (use >= 0 && use < splashes.size()){
+            Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
+            splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
+                                       puddle->y - splash->getHeight(),
+                                       *work);
+        }
+        // work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
     }
 }
 
@@ -365,15 +378,22 @@ void RainAtmosphere::interpret(const Token * message){
 void RainAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
     const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
     Graphics::Bitmap::transBlender(0, 0, 0, 64);
-    for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
-        Puddle * puddle = *it;
+    for (vector<Util::ReferenceCount<Puddle> >::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
+        Util::ReferenceCount<Puddle> puddle = *it;
         int rx = (int) puddle->current;
         int ry = (int)(puddle->current * 0.8);
-        work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
+        // work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
+        int use = puddle->size;
+        if (use >= 0 && use < splashes.size()){
+            Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
+            splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
+                                       puddle->y - splash->getHeight(),
+                                       *work);
+        }
     }
 
-    for (vector< Drop * >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
-        Drop * d = *it;
+    for (vector<Util::ReferenceCount<Drop> >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
+        Util::ReferenceCount<Drop> d = *it;
         work->line(d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color);
     }
 }
@@ -387,22 +407,20 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
         rain_sound.setVolume(1);
     }
 
-    for (vector<Puddle*>::iterator it = puddles.begin(); it != puddles.end(); ){
-        Puddle * puddle = *it;
-        puddle->current += 0.3;
-        if (puddle->current >= puddle->size){
-            delete puddle;
+    for (vector<Util::ReferenceCount<Puddle> >::iterator it = puddles.begin(); it != puddles.end(); ){
+        Util::ReferenceCount<Puddle> puddle = *it;
+        puddle->size += 0.3;
+        if (puddle->size >= splashes.size()){
             it = puddles.erase(it);
         } else {
             it++;
         }
     }
 
-    for (vector<Puddle*>::iterator it = objectPuddles.begin(); it != objectPuddles.end(); ){
-        Puddle * puddle = *it;
-        puddle->current += 0.3;
-        if (puddle->current >= puddle->size){
-            delete puddle;
+    for (vector<Util::ReferenceCount<Puddle> >::iterator it = objectPuddles.begin(); it != objectPuddles.end(); ){
+        Util::ReferenceCount<Puddle> puddle = *it;
+        puddle->size += 0.3;
+        if (puddle->size >= splashes.size()){
             it = objectPuddles.erase(it);
         } else {
             it++;
@@ -417,7 +435,7 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
             int y = who->getRY() - Util::rnd(who->getHeight());
             if (who->touchPoint(x, y)){
                 int size = Util::rnd(4) + 2;
-                objectPuddles.push_back(new Puddle(x, y, size));
+                objectPuddles.push_back(Util::ReferenceCount<Puddle>(new Puddle(x, y, 0)));
             }
         }
     }
@@ -429,11 +447,11 @@ void RainAtmosphere::act(const Scene & level, const vector<Paintown::Object*> * 
         /* supreme hack! set x to nothing and later on in the draw routine
          * update x
          */
-        puddles.push_back(new Puddle(-1000, y, size));
+        puddles.push_back(Util::ReferenceCount<Puddle>(new Puddle(-1000, y, 0)));
     }
 
-    for (vector<Drop *>::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
-        Drop * d = *it;
+    for (vector<Util::ReferenceCount<Drop> >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
+        Util::ReferenceCount<Drop> d = *it;
         d->y += 7;
         d->x += 3;
         if (d->y > screenY()){

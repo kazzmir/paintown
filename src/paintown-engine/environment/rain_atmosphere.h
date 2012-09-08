@@ -23,7 +23,7 @@ struct Puddle{
         }
 
     int x, y;
-    int size;
+    double size;
     double current;
 };
 
@@ -41,9 +41,10 @@ public:
     virtual void interpret(const Token * message);
 	
 protected:
-        std::vector<Drop *> rain_drops;
-        std::vector<Puddle *> puddles;
-        std::vector<Puddle *> objectPuddles;
+        std::vector<Util::ReferenceCount<Drop> > rain_drops;
+        std::vector<Util::ReferenceCount<Puddle> > puddles;
+        std::vector<Util::ReferenceCount<Puddle> > objectPuddles;
+        std::vector<Util::ReferenceCount<Graphics::Bitmap> > splashes;
 	Sound rain_sound;
 	bool playing;
 };
