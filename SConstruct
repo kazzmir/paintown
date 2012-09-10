@@ -854,7 +854,7 @@ def getEnvironment(debug):
         env['AS'] = setup(prefix, 'as')
         env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
-        env.Append(LIBS = Split("""xenon m"""))
+        env.Append(LIBS = Split("""xenon m fat"""))
         env.Append(CCFLAGS = Split("""-m32 -mcpu=cell -mtune=cell -mpowerpc64 -mhard-float -ffunction-sections -fdata-sections -maltivec -fno-pic"""))
         env.Append(CPPDEFINES = ['XENON'])
         env.Append(CPPPATH = ['%(xenon)s/usr/include' % {'xenon': xenon}])
@@ -1689,6 +1689,8 @@ def getDataPath():
             return '/apps/paintown/data'
         if useAndroid() or useAndroidX86():
             return '/sdcard/paintown/data'
+        if useXenon():
+            return 'uda0:/paintown/data'
         if useMinpspw():
             return 'ms0:/psp/game150/paintown/data'
         else:
