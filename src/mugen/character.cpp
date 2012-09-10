@@ -2697,7 +2697,7 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
 }
         
 bool Character::canRecover() const {
-    /* FIXME */
+    /* TODO */
     return false;
     // return true;
     // return getY() == 0;

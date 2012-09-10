@@ -146,7 +146,7 @@ void NetworkRemoteBehavior::pollCommands(){
             vector<string> more = readCommands(socket);
             lock.acquire();
             commands.push_back(more);
-            lock.signal();
+            // lock.signal();
             lock.release();
         }
     } catch (const Network::NetworkException & fail){
@@ -169,11 +169,19 @@ void NetworkRemoteBehavior::begin(){
 }
     
 vector<string> NetworkRemoteBehavior::nextCommand(){
-    lock.acquire();
-    if (commands.size() == 0){
-        // Global::debug(0) << "Waiting for more commands" << std::endl;
-        lock.wait();
+    bool ok = false;
+    while (!ok){
+        lock.acquire();
+        if (commands.size() == 0){
+            // Global::debug(0) << "Waiting for more commands" << std::endl;
+            // lock.wait();
+            lock.release();
+            PaintownUtil::rest(1);
+        } else {
+            ok = true;
+        }
     }
+
     vector<string> out = commands.front();
     commands.pop_front();
     lock.release();
