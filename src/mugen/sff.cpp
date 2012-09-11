@@ -834,6 +834,129 @@ protected:
     map< int, map<uint8_t, Graphics::Color> > paletteCache;
 };
 
+/* Looks for a txt file in the container that describes the sprites. The format
+ * is as follows
+ *
+ * group# item# axisX# axisY# filename
+ * group# item# axisX# axisY# filename
+ * ...
+ *
+ */
+class ImageContainerReader: public SffReaderInterface {
+public:
+    struct Image{
+        Image(int group, int item, int axisX, int axisY, string file):
+        group(group),
+        item(item),
+        axisX(axisX),
+        axisY(axisY),
+        file(file){
+        }
+
+        int group;
+        int item;
+        int axisX;
+        int axisY;
+        string file;
+    };
+
+    ImageContainerReader(const Filesystem::AbsolutePath & path):
+    container(path),
+    current(files.begin()){
+        vector<string> files = Storage::instance().containerFileList(path);
+        bool ok = false;
+        string descriptionFile;
+        for (vector<string>::iterator it = files.begin(); it != files.end(); it++){
+            if (it->find(".txt") != string::npos){
+                ok = true;
+                descriptionFile = *it;
+                break;
+            }
+        }
+
+        if (!ok){
+            throw MugenException(string("Could not find a description txt file in the container file ") + path.path(), __FILE__, __LINE__);
+        }
+
+        mount = Filesystem::AbsolutePath(path.path() + "_mount");
+        Storage::instance().addOverlay(path, mount);
+        populate(mount, descriptionFile);
+    }
+
+    void populate(const Filesystem::AbsolutePath & folder, const string & descriptionFile){
+        PaintownUtil::ReferenceCount<Storage::File> data = Storage::instance().open(folder.join(Filesystem::RelativePath(descriptionFile)));
+        if (!data->good()){
+            throw MugenException(string("Could not read description file ") + descriptionFile, __FILE__, __LINE__);
+        }
+        int size = data->getSize();
+        if (size > 0){
+            char * raw = new char[size+1];
+            /* Just to make sure the string ends properly */
+            raw[size] = '\0';
+            data->readLine(raw, size);
+            std::istringstream input;
+            input.str(string(raw));
+            // Global::debug(0) << "Raw '" << raw << "'" << std::endl;
+            while (!input.eof()){
+                int group = -99;
+                int item = -99;
+                int axisx = 0;
+                int axisy = 0;
+                string filename;
+                input >> group >> item >> axisx >> axisy >> filename;
+                if (group == -99){
+                    break;
+                } else {
+                    files.push_back(Image(group, item, axisx, axisy,filename));
+                }
+            }
+            delete[] raw;
+        }
+
+        current = files.begin();
+    }
+
+    virtual ~ImageContainerReader(){
+        Storage::instance().removeOverlay(container, mount);
+    }
+
+    virtual bool moreSprites(){
+        return current != files.end();
+    }
+
+    Graphics::Bitmap readBitmap(const string & path){
+        PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(mount.join(Filesystem::RelativePath(path)));
+        return Graphics::Bitmap(*file);
+    }
+
+    virtual PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
+        if (current == files.end()){
+            return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+        }
+        const Image & image = *current;
+        current++;
+        /* FIXME: do something with mask */
+        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY)).convert<Mugen::Sprite>();
+    }
+
+    virtual PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask){
+        for (vector<Image>::iterator it = files.begin(); it != files.end(); it++){
+            const Image & image = *it;
+            if (image.group == group && image.item == item){
+                /* FIXME: do something with mask */
+                return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY)).convert<Mugen::Sprite>();
+            }
+        }
+        return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
+    }
+
+protected:
+    Filesystem::AbsolutePath container;
+    Filesystem::AbsolutePath mount;
+    std::vector<Image> files;
+    std::vector<Image>::iterator current;
+};
+
 static int majorVersion(const Filesystem::AbsolutePath & filename){
     PaintownUtil::ReferenceCount<Storage::File> stream = Storage::instance().open(filename);
     if (!stream){
@@ -855,11 +978,19 @@ static int majorVersion(const Filesystem::AbsolutePath & filename){
 }
 
 static bool isSffv1(const Filesystem::AbsolutePath & filename){
-    return majorVersion(filename) == 1;
+    try{
+        return majorVersion(filename) == 1;
+    } catch (const MugenException & fail){
+        return false;
+    }
 }
 
 static bool isSffv2(const Filesystem::AbsolutePath & filename){
-    return majorVersion(filename) == 2;
+    try{
+        return majorVersion(filename) == 2;
+    } catch (const MugenException & fail){
+        return false;
+    }
 }
 
 static PaintownUtil::ReferenceCount<SffReaderInterface> getSffReader(const Filesystem::AbsolutePath & filename, const Filesystem::AbsolutePath & palette){
@@ -869,6 +1000,9 @@ static PaintownUtil::ReferenceCount<SffReaderInterface> getSffReader(const Files
     if (isSffv2(filename)){
         /* FIXME: use palette somehow */
         return PaintownUtil::ReferenceCount<SffReaderInterface>(new SffV2Reader(filename));
+    }
+    if (Storage::isContainer(filename)){
+        return PaintownUtil::ReferenceCount<SffReaderInterface>(new ImageContainerReader(filename));
     }
     throw MugenException(filename.path() + " is not an sffv1 or sffv2 file", __FILE__, __LINE__);
     return PaintownUtil::ReferenceCount<SffReaderInterface>(NULL);
