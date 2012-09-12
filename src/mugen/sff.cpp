@@ -907,7 +907,7 @@ public:
                 if (group == -99){
                     break;
                 } else {
-                    files.push_back(Image(group, item, axisx, axisy,filename));
+                    files.push_back(Image(group, item, axisx, axisy, filename));
                 }
             }
             delete[] raw;

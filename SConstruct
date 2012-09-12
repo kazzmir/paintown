@@ -1409,6 +1409,16 @@ rsx
         wrapSymbols(env)
         return env
     def gcc(env):
+        # Allow environment variables to overwrite the default compiler
+        try:
+            env['CC'] = os.environ['CC']
+        except:
+            pass
+        try:
+            env['CXX'] = os.environ['CXX']
+        except:
+            pass
+
         if useDistcc():
             env['CC'] = 'distcc'
             env['CXX'] = 'distcc g++'
