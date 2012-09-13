@@ -360,6 +360,7 @@ int Configuration::getKey(int config, const string & name, int defaultValue){
 }
 
 /* this nonsense is just to convert a regular integer into an enum */
+/*
 static Configuration::JoystickInput intToJoystick(int a){
     switch (a){
         case Joystick::Up : return Joystick::Up;
@@ -377,12 +378,15 @@ static Configuration::JoystickInput intToJoystick(int a){
     }
     return Joystick::Invalid;
 }
+*/
 
+/*
 Configuration::JoystickInput Configuration::getJoystickKey(int config, const string & name, JoystickInput defaultValue){
     ostringstream path;
     path << config_input << "/" << config << "/joystick/" << name;
     return intToJoystick(getProperty(path.str(), defaultValue));
 }
+*/
 
 int Configuration::getRight(int config){
     int normal = 0;
@@ -484,6 +488,7 @@ int Configuration::getJump(int config){
     return getKey(config, "jump", normal);
 }
 
+/*
 void Configuration::setJoystickKey(int config, const std::string & name, const Configuration::JoystickInput & what){
     if (what != Joystick::Invalid){
         ostringstream path;
@@ -596,6 +601,7 @@ Configuration::JoystickInput Configuration::getJoystickQuit(int config){
 Configuration::JoystickInput Configuration::getJoystickStart(int config){
     return getJoystickKey(config, "start", Joystick::Start);
 }
+*/
 
 /*
 string Configuration::getCurrentGame(){

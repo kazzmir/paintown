@@ -55,6 +55,7 @@ public:
     static int getAttack6(int config);
     static int getJump(int config);
 
+    /*
     static void setJoystickRight(int config, JoystickInput i);
     static void setJoystickLeft(int config, JoystickInput i);
     static void setJoystickUp(int config, JoystickInput i);
@@ -82,6 +83,7 @@ public:
     static JoystickInput getJoystickJump(int config);
     static JoystickInput getJoystickStart(int config);
     static JoystickInput getJoystickQuit(int config);
+    */
 
 public:
     static double getGameSpeed();

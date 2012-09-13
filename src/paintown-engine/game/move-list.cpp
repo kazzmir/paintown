@@ -246,9 +246,9 @@ public:
 
             if (source.useJoystick()){
                 int config = source.getJoystick();
-                input.set(Configuration::getJoystickUp(config), 0, true, Up);
-                input.set(Configuration::getJoystickDown(config), 0, true, Down);
-                input.set(Configuration::getJoystickQuit(config), 0, false, Quit);
+                input.set(Joystick::Up, 0, true, Up);
+                input.set(Joystick::Down, 0, true, Down);
+                input.set(Joystick::Quit, 0, false, Quit);
             }
 
             list.setJustification(Gui::LeftJustify);

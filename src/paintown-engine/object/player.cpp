@@ -188,27 +188,27 @@ static Configuration::JoystickInput getJoystickKey(int player, Input::PaintownIn
     switch (which){
         case Input::Forward : {
             if (facing == Paintown::Object::FACING_LEFT){ 
-                return Configuration::getJoystickLeft(player);
+                return Joystick::Left;
             } else {
-                return Configuration::getJoystickRight(player);
+                return Joystick::Right;
             }
         }
         case Input::Back : {
             if (facing == Paintown::Object::FACING_LEFT){
-                return Configuration::getJoystickRight(player);
+                return Joystick::Right;
             } else {
-                return Configuration::getJoystickLeft(player);
+                return Joystick::Left;
             }
         }
-        case Input::Up: return Configuration::getJoystickUp(player);
-        case Input::Down: return Configuration::getJoystickDown(player);
-        case Input::Attack1: return Configuration::getJoystickAttack1(player);
-        case Input::Attack2: return Configuration::getJoystickAttack2(player);
-        case Input::Attack3: return Configuration::getJoystickAttack3(player);
-        case Input::Attack4: return Configuration::getJoystickAttack4(player);
-        case Input::Attack5: return Configuration::getJoystickAttack5(player);
-        case Input::Attack6: return Configuration::getJoystickAttack6(player);
-        case Input::Jump: return Configuration::getJoystickJump(player);
+        case Input::Up: return Joystick::Up;
+        case Input::Down: return Joystick::Down;
+        case Input::Attack1: return Joystick::Button1;
+        case Input::Attack2: return Joystick::Button2;
+        case Input::Attack3: return Joystick::Button3;
+        case Input::Attack4: return Joystick::Button4;
+        case Input::Attack5: return Joystick::Button5;
+        case Input::Attack6: return Joystick::Button6;
+        case Input::Jump: return Joystick::Button4;
         default: return Joystick::Invalid;
     }
 }
