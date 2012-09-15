@@ -766,6 +766,27 @@ public:
 
             return new Animation();
         }
+
+        /* Mugen 1.0 */
+        if (identifier == "ailevel"){
+            class AILevel: public Value {
+            public:
+                RuntimeValue evaluate(const Environment & environment) const {
+                    /* TODO */
+                    return RuntimeValue(0);
+                }
+
+                virtual std::string toString() const {
+                    return "AILevel";
+                }
+
+                Value * copy() const {
+                    return new AILevel();
+                }
+            };
+
+            return new AILevel();
+        }
         
         if (identifier == "alive"){
             class Alive: public Value {
