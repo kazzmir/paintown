@@ -762,7 +762,12 @@ int paintown_main(int argc, char ** argv){
     // Graphics::Bitmap screen(Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());
 
-    setupPaintownMod();
+    try{
+        setupPaintownMod();
+    } catch (const LoadException & fail){
+        Global::debug(0) << "Could not load a paintown mod. Aborting. " << fail.getTrace() << std::endl;
+        return -1;
+    }
     
     InputManager input;
     Music music(music_on);
