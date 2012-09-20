@@ -196,6 +196,152 @@ struct HitState{
     int moveContact;
 };
 
+struct RecordingInformation{
+    std::ofstream out;
+    /* last set of commands */
+    std::vector<std::string> commands;
+    /* last count of ticks for the current set of commands */
+    int ticks;
+
+    ~RecordingInformation(){
+        out.close();
+    }
+};
+
+struct HitOverride{
+    HitOverride():
+        time(0){
+        }
+
+    int time;
+    HitAttributes attributes;
+    int state;
+    bool forceAir;
+};
+
+struct AfterImage{
+    AfterImage():
+        currentTime(0),
+        timegap(0),
+        framegap(0),
+        lifetime(0),
+        length(0),
+        translucent(Default){
+        }
+
+    struct Image{
+        Image():
+            sprite(false),
+        life(0){
+        }
+
+        Image(Frame sprite, Effects effects, int life, int x, int y, bool show):
+            sprite(sprite),
+            extra(-1),
+            effects(effects),
+            life(life),
+            x(x),
+            y(y),
+            show(show){
+            }
+
+        Frame sprite;
+        // Bitmap cache;
+        unsigned int extra;
+        Effects effects;
+        int life;
+        int x;
+        int y;
+        bool show;
+    };
+
+    /* RGB is a macro on windows */
+    struct RGBx{
+        RGBx():
+            red(0),
+            green(0),
+            blue(0){
+            }
+
+        double red, green, blue;
+    };
+
+    /* count ticks */
+    int currentTime;
+    int timegap;
+    int framegap;
+
+    /* time left for the afterimage effects will be added */
+    int lifetime;
+
+    /* maximum number of afterimage frames */
+    unsigned int length;
+    TransType translucent;
+
+    int paletteColor;
+    bool invertColor;
+
+    RGBx bright;
+    RGBx contrast;
+    RGBx postBright;
+    RGBx add;
+    RGBx multiply;
+
+    std::deque<Image> frames;
+};
+
+struct PaletteEffects{
+    PaletteEffects():
+        time(0),
+        addRed(0),
+        addGreen(0),
+        addBlue(0),
+        multiplyRed(0),
+        multiplyGreen(0),
+        multiplyBlue(0),
+        sinRed(0),
+        sinGreen(0),
+        sinBlue(0),
+        period(0),
+        invert(0),
+        color(0),
+        counter(0){
+        }
+
+    PaletteEffects(const PaletteEffects & copy):
+        time(copy.time),
+        addRed(copy.addRed),
+        addGreen(copy.addGreen),
+        addBlue(copy.addBlue),
+        multiplyRed(copy.multiplyRed),
+        multiplyGreen(copy.multiplyGreen),
+        multiplyBlue(copy.multiplyBlue),
+        sinRed(copy.sinRed),
+        sinGreen(copy.sinGreen),
+        sinBlue(copy.sinBlue),
+        period(copy.period),
+        invert(copy.invert),
+        color(copy.color),
+        counter(copy.counter){
+        }
+
+    int time;
+    int addRed;
+    int addGreen;
+    int addBlue;
+    int multiplyRed;
+    int multiplyGreen;
+    int multiplyBlue;
+    int sinRed;
+    int sinGreen;
+    int sinBlue;
+    int period;
+    int invert;
+    int color;
+    unsigned int counter;
+};
+
+
 class StateController;
 
 /* comes from a StateDef */
@@ -336,27 +482,27 @@ public:
 	virtual void priorPalette();
 	
 	virtual inline const std::string getName() const {
-            return name;
+            return getStateData().name;
         }
 
         virtual const Filesystem::AbsolutePath & getLocation() const {
-            return location;
+            return getStateData().location;
         }
 
         virtual inline const std::string & getAuthor() const {
-            return author;
+            return getStateData().author;
         }
 	
 	virtual inline const std::string getDisplayName() const {
-            return displayName;
+            return getStateData().displayName;
         }
 	
 	virtual inline unsigned int getCurrentPalette() const {
-            return currentPalette;
+            return getStateData().currentPalette;
         }
 
         virtual inline const std::map<int, PaintownUtil::ReferenceCount<Animation> > & getAnimations() const {
-            return animations;
+            return getStateData().animations;
         }
 
         virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
@@ -369,15 +515,15 @@ public:
         */
 	
 	virtual inline const Mugen::SoundMap & getSounds() const {
-            return sounds;
+            return getStateData().sounds;
         }
 
 	virtual inline const Mugen::SoundMap * getCommonSounds() const {
-            return commonSounds;
+            return getStateData().commonSounds;
         }
 
         virtual inline PaintownUtil::ReferenceCount<Mugen::Sprite> getSprite(int group, int image){
-            return this->sprites[group][image];
+            return getStateData().sprites[group][image];
         }
 
         virtual const PaintownUtil::ReferenceCount<Mugen::Sprite> getCurrentFrame() const;
@@ -403,7 +549,7 @@ public:
     virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual double getMaxHealth() const {
-        return max_health;
+        return getStateData().max_health;
     }
 
     virtual void setMaxHealth(double health);
@@ -440,98 +586,98 @@ public:
     virtual int getAnimation() const;
     
     virtual inline int getCurrentState() const {
-        return this->currentState;
+        return getStateData().currentState;
     }
 
     virtual PaintownUtil::ReferenceCount<State> getState(int id) const;
     virtual void setState(int id, PaintownUtil::ReferenceCount<State> what);
 
         virtual inline std::string getStateType() const {
-            return stateType;
+            return getStateData().stateType;
         }
 
         virtual inline void setStateType(const std::string & str){
-            stateType = str;
+            getStateData().stateType = str;
         }
 
         virtual inline void setXVelocity(double x){
-            this->velocity_x = x;
+            getStateData().velocity_x = x;
         }
 
         virtual inline double getXVelocity() const {
-            return this->velocity_x;
+            return getStateData().velocity_x;
         }
         
         virtual inline void setYVelocity(double y){
-            this->velocity_y = y;
+            getStateData().velocity_y = y;
         }
         
         virtual inline double getYVelocity() const {
-            return this->velocity_y;
+            return getStateData().velocity_y;
         }
 
         virtual inline double getWalkBackX() const {
-            return walkback;
+            return getStateData().walkback;
         }
         
         virtual inline double getWalkForwardX() const {
-            return walkfwd;
+            return getStateData().walkfwd;
         }
 
         virtual inline void setWalkBackX(double x){
-            walkback = x;
+            getStateData().walkback = x;
         }
         
         virtual inline void setWalkForwardX(double x){
-            walkfwd = x;
+            getStateData().walkfwd = x;
         }
         
         virtual inline double getRunBackX() const {
-            return runbackx;
+            return getStateData().runbackx;
         }
 
         virtual inline void setRunBackX(double x){
-            runbackx = x;
+            getStateData().runbackx = x;
         }
 
         virtual inline void setRunBackY(double x){
-            runbacky = x;
+            getStateData().runbacky = x;
         }
 
         virtual inline double getRunBackY() const {
-            return runbacky;
+            return getStateData().runbacky;
         }
         
         virtual inline double getRunForwardX() const {
-            return runforwardx;
+            return getStateData().runforwardx;
         }
 
         virtual inline void setRunForwardX(double x){
-            runforwardx = x;
+            getStateData().runforwardx = x;
         }
         
         virtual inline double getRunForwardY() const {
-            return runforwardy;
+            return getStateData().runforwardy;
         }
         
         virtual inline void setRunForwardY(double x){
-            runforwardy = x;
+            getStateData().runforwardy = x;
         }
 
         virtual inline double getNeutralJumpingX() const {
-            return jumpneux;
+            return getStateData().jumpneux;
         }
 
         virtual inline void setNeutralJumpingX(double x){
-            jumpneux = x;
+            getStateData().jumpneux = x;
         }
         
         virtual inline double getNeutralJumpingY() const {
-            return jumpneuy;
+            return getStateData().jumpneuy;
         }
         
         virtual inline void setNeutralJumpingY(double x){
-            jumpneuy = x;
+            getStateData().jumpneuy = x;
         }
 
         virtual inline double getYPosition() const {
@@ -539,99 +685,99 @@ public:
         }
         
         virtual inline double getPower() const {
-            return power;
+            return getStateData().power;
         }
 
         virtual inline void setPower(double p){
-            power = p;
+            getStateData().power = p;
         }
 
         virtual void addPower(double d);
 
         virtual inline bool hasControl() const {
-            return has_control;
+            return getStateData().has_control;
         }
 
         virtual inline void setControl(bool b){
-            has_control = b;
+            getStateData().has_control = b;
         }
 
         virtual inline void setJumpBack(double x){
-            jumpback = x;
+            getStateData().jumpback = x;
         }
 
         virtual inline double getJumpBack() const {
-            return jumpback;
+            return getStateData().jumpback;
         }
 
         virtual inline void setJumpForward(double x){
-            jumpfwd = x;
+            getStateData().jumpfwd = x;
         }
 
         virtual inline double getJumpForward() const {
-            return jumpfwd;
+            return getStateData().jumpfwd;
         }
         
         virtual inline void setRunJumpBack(double x){
-            runjumpback = x;
+            getStateData().runjumpback = x;
         }
 
         virtual inline int getRunJumpBack() const {
-            return runjumpback;
+            return getStateData().runjumpback;
         }
 
         virtual inline void setRunJumpForward(double x){
-            runjumpfwd = x;
+            getStateData().runjumpfwd = x;
         }
 
         virtual inline double getRunJumpForward() const {
-            return runjumpfwd;
+            return getStateData().runjumpfwd;
         }
 
         virtual inline void setAirJumpNeutralX(double x){
-            airjumpneux = x;
+            getStateData().airjumpneux = x;
         }
 
         virtual inline double getAirJumpNeutralX() const {
-            return airjumpneux;
+            return getStateData().airjumpneux;
         }
         
         virtual inline void setAirJumpNeutralY(double y){
-            airjumpneuy = y;
+            getStateData().airjumpneuy = y;
         }
 
         virtual inline double getAirJumpNeutralY() const {
-            return airjumpneuy;
+            return getStateData().airjumpneuy;
         }
 
         virtual inline void setAirJumpBack(double x){
-            airjumpback = x;
+            getStateData().airjumpback = x;
         }
 
         virtual inline double getAirJumpBack() const {
-            return airjumpback;
+            return getStateData().airjumpback;
         }
 
         virtual inline void setAirJumpForward(double x){
-            airjumpfwd = x;
+            getStateData().airjumpfwd = x;
         }
 
         virtual inline double getAirJumpForward() const {
-            return airjumpfwd;
+            return getStateData().airjumpfwd;
         }
 
         virtual int getStateTime() const;
 
         virtual inline int getPreviousState() const {
-            return previousState;
+            return getStateData().previousState;
         }
 
         virtual inline const std::string & getMoveType() const {
-            return moveType;
+            return getStateData().moveType;
         }
 
         virtual inline void setMoveType(const std::string & str){
-            moveType = str;
+            getStateData().moveType = str;
         }
 
         virtual void destroyed(Stage & stage);
@@ -649,95 +795,95 @@ public:
         virtual RuntimeValue getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
-            return currentPhysics;
+            return getStateData().currentPhysics;
         }
 
         virtual void setCurrentPhysics(Physics::Type p){
-            currentPhysics = p;
+            getStateData().currentPhysics = p;
         }
 
         virtual void setGravity(double n){
-            gravity = n;
+            getStateData().gravity = n;
         }
 
         virtual double getGravity() const {
-            return gravity;
+            return getStateData().gravity;
         }
 
         virtual int getDefense() const {
-            return defense;
+            return getStateData().defense;
         }
 
         virtual void setDefense(int x){
-            defense = x;
+            getStateData().defense = x;
         }
 	
         virtual int getFallDefenseUp() const {
-            return fallDefenseUp;
+            return getStateData().fallDefenseUp;
         }
 
         virtual void setFallDefenseUp(int x){
-            fallDefenseUp = x;
+            getStateData().fallDefenseUp = x;
         }
 
         virtual int getAttack() const {
-            return attack;
+            return getStateData().attack;
         }
 
         virtual void setLieDownTime(int x){
-            lieDownTime = x;
+            getStateData().lieDownTime = x;
         }
 
         virtual int getLieDownTime() const {
-            return lieDownTime;
+            return getStateData().lieDownTime;
         }
 
         virtual double getCrouchingFriction() const {
-            return crouchFriction;
+            return getStateData().crouchFriction;
         }
 
         virtual void setCrouchingFriction(double n){
-            crouchFriction = n;
+            getStateData().crouchFriction = n;
         }
 
         virtual double getCrouchingFrictionThreshold() const {
-            return crouchFrictionThreshold;
+            return getStateData().crouchFrictionThreshold;
         }
 
         virtual void setCrouchingFrictionThreshold(double n){
-            crouchFrictionThreshold = n;
+            getStateData().crouchFrictionThreshold = n;
         }
                             
         virtual void setJumpChangeAnimationThreshold(double n){
-            jumpChangeAnimationThreshold = n;
+            getStateData().jumpChangeAnimationThreshold = n;
         }
 
         virtual double getJumpChangeAnimationThreshold() const {
-            return jumpChangeAnimationThreshold;
+            return getStateData().jumpChangeAnimationThreshold;
         }
 
         virtual void setAirGetHitGroundLevel(double n){
-            airGetHitGroundLevel = n;
+            getStateData().airGetHitGroundLevel = n;
         }
 
         virtual double getAirGetHitGroundLevel() const {
-            return airGetHitGroundLevel;
+            return getStateData().airGetHitGroundLevel;
         }
 
         virtual void setStandingFriction(double n){
-            standFriction = n;
+            getStateData().standFriction = n;
         }
 
         virtual double getStandingFriction() const {
-            return standFriction;
+            return getStateData().standFriction;
         }
 
         virtual void setStandingFrictionThreshold(double n){
-            standFrictionThreshold = n;
+            getStateData().standFrictionThreshold = n;
         }
 
         virtual double getStandingFrictionThreshold() const {
-            return standFrictionThreshold;
+            return getStateData().standFrictionThreshold;
         }
 
         virtual double getGroundFriction() const;
@@ -751,23 +897,23 @@ public:
         virtual bool hasAnimation(int index) const;
 
         virtual void enableDebug(){
-            debug = true;
+            getStateData().debug = true;
         }
 
         virtual void disableDebug(){
-            debug = false;
+            getStateData().debug = false;
         }
 
         virtual void toggleDebug(){
-            debug = ! debug;
+            getStateData().debug = ! getStateData().debug;
         }
 
         virtual HitDefinition & getHit(){
-            return this->hit;
+            return getStateData().hit;
         }
         
         virtual const HitDefinition & getHit() const {
-            return this->hit;
+            return getStateData().hit;
         }
         
         void enableHit();
@@ -784,11 +930,11 @@ public:
         const std::map<int, std::vector<Character*> > & getTargets() const;
 
         virtual inline int getHeight() const {
-            return height;
+            return getStateData().height;
         }
 
         virtual inline void setHeight(int h){
-            height = h;
+            getStateData().height = h;
         }
 
         /* `this' hit `enemy' */
@@ -821,11 +967,11 @@ public:
         void resetHitFlag();
 
         virtual const HitState & getHitState() const {
-            return hitState;
+            return getStateData().hitState;
         }
 
         virtual HitState & getHitState(){
-            return hitState;
+            return getStateData().hitState;
         }
 
         const std::vector<Area> getAttackBoxes() const;
@@ -863,41 +1009,41 @@ public:
         virtual PaintownUtil::ReferenceCount<Mugen::Sound> getCommonSound(int group, int item) const;
 
         virtual inline void setJugglePoints(int x){
-            airjuggle = x;
+            getStateData().airjuggle = x;
         }
 
         virtual inline int getJugglePoints() const {
-            return airjuggle;
+            return getStateData().airjuggle;
         }
 
         virtual void resetJugglePoints();
 
         virtual inline void setCurrentJuggle(int j){
-            currentJuggle = j;
+            getStateData().currentJuggle = j;
         }
 
         virtual inline int getCurrentJuggle() const {
-            return currentJuggle;
+            return getStateData().currentJuggle;
         }
 
         virtual inline void setCommonSounds(const Mugen::SoundMap * sounds){
-            this->commonSounds = sounds;
+            getStateData().commonSounds = sounds;
         }
 
         virtual inline void setExtraJumps(int a){
-            airjumpnum = a;
+            getStateData().airjumpnum = a;
         }
 
         virtual inline int getExtraJumps() const {
-            return airjumpnum;
+            return getStateData().airjumpnum;
         }
 
         virtual inline double getAirJumpHeight() const {
-            return airjumpheight;
+            return getStateData().airjumpheight;
         }
 
         virtual inline void setAirJumpHeight(double f){
-            airjumpheight = f;
+            getStateData().airjumpheight = f;
         }
 
         /* number of times the character has been hit */
@@ -906,21 +1052,21 @@ public:
         virtual int getCurrentCombo() const;
 
         virtual inline int getHitCount() const {
-            return hitCount;
+            return getStateData().hitCount;
         }
 
         virtual inline const std::vector<WinGame> & getWins() const {
-            return wins;
+            return getStateData().wins;
         }
 
         virtual inline void clearWins(){
-            wins.clear();
+            getStateData().wins.clear();
         }
 
         virtual void addWin(WinGame win);
 
         virtual inline int getMatchWins() const {
-            return matchWins;
+            return getStateData().matchWins;
         }
 
         virtual void addMatchWin();
@@ -928,62 +1074,62 @@ public:
         virtual void resetPlayer();
 
         virtual inline void setBehavior(Behavior * b){
-            behavior = b;
+            getStateData().behavior = b;
         }
 
         virtual inline Behavior * getBehavior(){
-            return this->behavior;
+            return this->getStateData().behavior;
         }
 	
         virtual int getIntPersistIndex() const {
-            return intpersistindex;
+            return getStateData().intpersistindex;
         }
 
         virtual void setIntPersistIndex(int index){
-            intpersistindex = index;
+            getStateData().intpersistindex = index;
         }
 
 	virtual int getFloatPersistIndex() const {
-            return floatpersistindex;
+            return getStateData().floatpersistindex;
         }
 
         virtual void setFloatPersistIndex(int index){
-            floatpersistindex = index;
+            getStateData().floatpersistindex = index;
         }
 
         /* Called when the current round ended */
         virtual void roundEnd(Mugen::Stage & stage);
 
         virtual inline void setDefaultSpark(const ResourceEffect & effect){
-            spark = effect;
+            getStateData().spark = effect;
         }
 
         virtual inline void setDefaultGuardSpark(const ResourceEffect & effect){
-            guardSpark = effect;
+            getStateData().guardSpark = effect;
         }
 
         virtual inline ResourceEffect getDefaultSpark() const {
-            return spark;
+            return getStateData().spark;
         }
 
         virtual inline ResourceEffect getDefaultGuardSpark() const {
-            return guardSpark;
+            return getStateData().guardSpark;
         }
 	
         virtual bool getKoEcho() const {
-            return koecho;
+            return getStateData().koecho;
         }
 
         virtual void setKoEcho(bool x){
-            koecho = x;
+            getStateData().koecho = x;
         }
 
         virtual inline void setRegeneration(bool r){
-            this->regenerateHealth = r;
+            this->getStateData().regenerateHealth = r;
         }
         
         virtual inline int getAttackDistance() const {
-	    return this->attackdist;
+	    return this->getStateData().attackdist;
 	}
     
         /* let go of a bound character (BindToRoot / BindToTarget */
@@ -1064,7 +1210,7 @@ protected:
     void initialize();
 
     virtual inline void setCurrentState(int state){
-        this->currentState = state;
+        this->getStateData().currentState = state;
     }
 
     void checkStateControllers();
@@ -1103,81 +1249,98 @@ protected:
 
     // InputMap<Mugen::Keys> & getInput();
 
+public:
+    virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply);
+
+    void drawAfterImage(const AfterImage & afterImage, const AfterImage::Image & frame, int index, int x, int y, const Graphics::Bitmap & work);
+    void processAfterImages();
+
+    virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
+    Graphics::Bitmap::Filter * getPaletteEffects(unsigned int time);
+
 protected:
 
     PaintownUtil::ReferenceCount<Animation> replaceSprites(const PaintownUtil::ReferenceCount<Animation> & animation);
 
-	/* Location is the directory passed in ctor
-	This is where the def is loaded and all the relevant files
-	are loaded from
-	*/
-    Filesystem::AbsolutePath location;
-	
+    virtual void recordCommands(const std::vector<std::string> & commands);
+
+protected:
+
+    struct StateData{
+        StateData();
+        StateData(const StateData & copy);
+
+        /* Location is the directory passed in ctor
+           This is where the def is loaded and all the relevant files
+           are loaded from
+           */
+        Filesystem::AbsolutePath location;
+
         Filesystem::AbsolutePath baseDir;
-	
-	/* These items are taken from character.def file */
-	
-	/* Base definitions */
-	
-	// Name of Character
-	std::string name;
-	// Name of Character to Display why there is two is beyond me, retards
-	std::string displayName;
-	// Version date (unused)
-	std::string versionDate;
-	// Version that works with mugen (this isn't mugen)
-	std::string mugenVersion;
-	// Author 
-	std::string author;
-	// Palette defaults
-	std::vector< unsigned int> palDefaults;
-	unsigned int currentPalette;
-	
-	/* Relevant files */
-	
-	// Command set file
+
+        /* These items are taken from character.def file */
+
+        /* Base definitions */
+
+        // Name of Character
+        std::string name;
+        // Name of Character to Display why there is two is beyond me, retards
+        std::string displayName;
+        // Version date (unused)
+        std::string versionDate;
+        // Version that works with mugen (this isn't mugen)
+        std::string mugenVersion;
+        // Author 
+        std::string author;
+        // Palette defaults
+        std::vector< unsigned int> palDefaults;
+        unsigned int currentPalette;
+
+        /* Relevant files */
+
+        // Command set file
         Filesystem::RelativePath cmdFile;
-	// Constants
-	std::string constantsFile;
+        // Constants
+        std::string constantsFile;
         /*
-	// States
-	std::string stateFile;
-	// Common States
-	std::string commonStateFile;
-	// Other state files? I can't find documentation on this, in the meantime we'll wing it
-	std::string stFile[12];
+        // States
+        std::string stateFile;
+        // Common States
+        std::string commonStateFile;
+        // Other state files? I can't find documentation on this, in the meantime we'll wing it
+        std::string stFile[12];
         */
-	// Sprites
-	std::string sffFile;
-	// animations
-	std::string airFile;
-	// Sounds
-	std::string sndFile;
-	// Palettes max 12
+        // Sprites
+        std::string sffFile;
+        // animations
+        std::string airFile;
+        // Sounds
+        std::string sndFile;
+        // Palettes max 12
         std::map<int, std::string> palFile;
-	
-	// Arcade mode ( I don't think we will be using this anytime soon )
-	std::string introFile;
-	std::string endingFile;
-	
-	/* Now on to the nitty gritty */
-	
-	/* Player Data and constants comes from cns file */
-	
-	/* Section [Data] */
-	
-	// Life
-	int life;
-	// Attack
-	int attack;
-	// Defence
-	int defense;
-	// How much to bring up defese on fall
-	int fallDefenseUp;
-	// How long to lie down when fall
-	int lieDownTime;
+
+        // Arcade mode ( I don't think we will be using this anytime soon )
+        std::string introFile;
+        std::string endingFile;
+
+        /* Now on to the nitty gritty */
+
+        /* Player Data and constants comes from cns file */
+
+        /* Section [Data] */
+
+        // Life
+        int life;
+        // Attack
+        int attack;
+        // Defence
+        int defense;
+        // How much to bring up defese on fall
+        int fallDefenseUp;
+        // How long to lie down when fall
+        int lieDownTime;
         /* starting air juggle points */
-	int airjuggle;
+        int airjuggle;
 
         /* number of juggle points left */
         int juggleRemaining;
@@ -1185,122 +1348,122 @@ protected:
         /* number of juggle points the current move will take */
         int currentJuggle;
 
-	// Default Hit Spark Number for hitdefs ???
-	ResourceEffect spark;
-	// Default guard spark number
-	ResourceEffect guardSpark;
-	// Echo on KO (I guess is for the death sound)
-	bool koecho;
-	// Volume offset on characters sounds
-	int volumeoffset;
-	// Maybe used in VS mode later
-	/* According to the definition: 
-	Variables with this index and above will not have their values
-	reset to 0 between rounds or matches. There are 60 int variables,
-	indexed from 0 to 59, and 40 float variables, indexed from 0 to 39.
-	If omitted, then it defaults to 60 and 40 for integer and float
-	variables repectively, meaning that none are persistent, i.e. all
-	are reset. If you want your variables to persist between matches,
-	you need to override state 5900 from common1.cns.
-	*/
-	int intpersistindex;
-	int floatpersistindex;
-	
-	/* Section [Size] */
-	
-	// Horizontal Scaling Factor
-	double xscale;
-	//Vertical scaling factor.
-	double yscale;
-	//      ;Player width (back, ground)
-	int groundback;
-	//   ;Player width (front, ground)
-	int groundfront;
-	//      ;Player width (back, air)
-	int airback;
-	//     ;Player width (front, air)
-	int airfront;
-	//  = 60          ;Height of player (for opponent to jump over)
-	int height;
-	// = 160    ;Default attack distance
-	int attackdist;
-	//  = 90 ;Default attack distance for projectiles
-	int projattackdist;
-	//  = 0     ;Set to 1 to scale projectiles too
-	bool projdoscale;
-	// = -5, -90   ;Approximate position of head
-	Mugen::Point headPosition;
-	//  = -5, -60    ;Approximate position of midsection
-	Mugen::Point midPosition;
-	//  = 0     ;Number of pixels to vertically offset the shadow
-	int shadowoffset;
-	// = 0,0    ;Player drawing offset in pixels (x, y)
-	Mugen::Point drawOffset;
-	
-	/* Section [Velocity] */
-	
-	//   = 2.4      ;Walk forward
-	double walkfwd;
-	// = -2.2     ;Walk backward
-	double walkback;
-	//  = 4.6, 0    ;Run forward (x, y)
-	double runforwardx;
-	double runforwardy;
-	// = -4.5,-3.8 ;Hop backward (x, y)
-	double runbackx;
-	double runbacky;
-	// = 0,-8.4    ;Neutral jumping velocity (x, y)
-	double jumpneux;
-	double jumpneuy;
-	// = -2.55    ;Jump back Speed (x, y)
-	double jumpback;
-	// = 2.5       ;Jump forward Speed (x, y)
-	double jumpfwd;
-	// = -2.55,-8.1 ;Running jump speeds (opt)
-	double runjumpback;
-	// = 4,-8.1      ;.
-	double runjumpfwd;
-	// = 0,-8.1      ;.
-	double airjumpneux;
-	double airjumpneuy;
-	// Air jump speeds (opt)
-	double airjumpback;
-	double airjumpfwd;
+        // Default Hit Spark Number for hitdefs ???
+        ResourceEffect spark;
+        // Default guard spark number
+        ResourceEffect guardSpark;
+        // Echo on KO (I guess is for the death sound)
+        bool koecho;
+        // Volume offset on characters sounds
+        int volumeoffset;
+        // Maybe used in VS mode later
+        /* According to the definition: 
+           Variables with this index and above will not have their values
+           reset to 0 between rounds or matches. There are 60 int variables,
+           indexed from 0 to 59, and 40 float variables, indexed from 0 to 39.
+           If omitted, then it defaults to 60 and 40 for integer and float
+           variables repectively, meaning that none are persistent, i.e. all
+           are reset. If you want your variables to persist between matches,
+           you need to override state 5900 from common1.cns.
+           */
+        int intpersistindex;
+        int floatpersistindex;
+
+        /* Section [Size] */
+
+        // Horizontal Scaling Factor
+        double xscale;
+        //Vertical scaling factor.
+        double yscale;
+        //      ;Player width (back, ground)
+        int groundback;
+        //   ;Player width (front, ground)
+        int groundfront;
+        //      ;Player width (back, air)
+        int airback;
+        //     ;Player width (front, air)
+        int airfront;
+        //  = 60          ;Height of player (for opponent to jump over)
+        int height;
+        // = 160    ;Default attack distance
+        int attackdist;
+        //  = 90 ;Default attack distance for projectiles
+        int projattackdist;
+        //  = 0     ;Set to 1 to scale projectiles too
+        bool projdoscale;
+        // = -5, -90   ;Approximate position of head
+        Mugen::Point headPosition;
+        //  = -5, -60    ;Approximate position of midsection
+        Mugen::Point midPosition;
+        //  = 0     ;Number of pixels to vertically offset the shadow
+        int shadowoffset;
+        // = 0,0    ;Player drawing offset in pixels (x, y)
+        Mugen::Point drawOffset;
+
+        /* Section [Velocity] */
+
+        //   = 2.4      ;Walk forward
+        double walkfwd;
+        // = -2.2     ;Walk backward
+        double walkback;
+        //  = 4.6, 0    ;Run forward (x, y)
+        double runforwardx;
+        double runforwardy;
+        // = -4.5,-3.8 ;Hop backward (x, y)
+        double runbackx;
+        double runbacky;
+        // = 0,-8.4    ;Neutral jumping velocity (x, y)
+        double jumpneux;
+        double jumpneuy;
+        // = -2.55    ;Jump back Speed (x, y)
+        double jumpback;
+        // = 2.5       ;Jump forward Speed (x, y)
+        double jumpfwd;
+        // = -2.55,-8.1 ;Running jump speeds (opt)
+        double runjumpback;
+        // = 4,-8.1      ;.
+        double runjumpfwd;
+        // = 0,-8.1      ;.
+        double airjumpneux;
+        double airjumpneuy;
+        // Air jump speeds (opt)
+        double airjumpback;
+        double airjumpfwd;
 
         double power;
-	
-	/* Movement */
-	
-	//  = 1      ;Number of air jumps allowed (opt)
-	int airjumpnum;
-	//  = 35  ;Minimum distance from ground before you can air jump (opt)
-	double airjumpheight;
-	// = .44         ;Vertical acceleration
-	double yaccel;
-	//  = .85  ;Friction coefficient when standing
-	// double standfriction;
-	//  = .82 ;Friction coefficient when crouching
-	double crouchFriction;
+
+        /* Movement */
+
+        //  = 1      ;Number of air jumps allowed (opt)
+        int airjumpnum;
+        //  = 35  ;Minimum distance from ground before you can air jump (opt)
+        double airjumpheight;
+        // = .44         ;Vertical acceleration
+        double yaccel;
+        //  = .85  ;Friction coefficient when standing
+        // double standfriction;
+        //  = .82 ;Friction coefficient when crouching
+        double crouchFriction;
 
         /* TODO: use this variable for something
          * Mugen 1.0
          */
         double crouchFrictionThreshold;
 
-	/* Sprites */
-	Mugen::SpriteMap sprites;
-	// Bitmaps of those sprites
-	// std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
-	
-	/* Animation Lists stored by action number, ie [Begin Action 500] */
-	std::map< int, PaintownUtil::ReferenceCount<Animation> > animations;
-	
-	/* Sounds */
-	Mugen::SoundMap sounds;
+        /* Sprites */
+        Mugen::SpriteMap sprites;
+        // Bitmaps of those sprites
+        // std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
+
+        /* Animation Lists stored by action number, ie [Begin Action 500] */
+        std::map< int, PaintownUtil::ReferenceCount<Animation> > animations;
+
+        /* Sounds */
+        Mugen::SoundMap sounds;
         /* sounds from the stage */
         const Mugen::SoundMap * commonSounds;
-	
-	/* Commands, Triggers or whatever else we come up with */
+
+        /* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;
 
         std::vector<Command *> commands;
@@ -1310,14 +1473,14 @@ protected:
         int currentState;
         int previousState;
         int currentAnimation;
-	
-	// Debug state
-	bool debug;
+
+        // Debug state
+        bool debug;
 
         /*
-        InputMap<Mugen::Keys> inputLeft;
-        InputMap<Mugen::Keys> inputRight;
-        */
+           InputMap<Mugen::Keys> inputLeft;
+           InputMap<Mugen::Keys> inputRight;
+           */
 
         double velocity_x, velocity_y;
 
@@ -1325,7 +1488,7 @@ protected:
 
         /* how much time the player has been in the current state */
         int stateTime;
-    
+
         /* dont delete these in the destructor, the state controller will do that */
         std::map<int, RuntimeValue> variables;
         std::map<int, RuntimeValue> floatVariables;
@@ -1354,7 +1517,7 @@ protected:
 
         int combo;
         // int nextCombo;
-        
+
         int hitCount;
 
         std::vector<WinGame> wins;
@@ -1381,81 +1544,7 @@ protected:
         /* true if the player is currently guarding an attack */
         bool guarding;
 
-public:
-        /* this is public so the AfterImage state-controller can easily communicate
-         * RGB information
-         */
-        struct AfterImage{
-            AfterImage():
-                currentTime(0),
-                timegap(0),
-                framegap(0),
-                lifetime(0),
-                length(0),
-                translucent(Default){
-                }
-
-            struct Image{
-                Image():
-                sprite(false),
-                life(0){
-                }
-
-                Image(Frame sprite, Effects effects, int life, int x, int y, bool show):
-                    sprite(sprite),
-                    extra(-1),
-                    effects(effects),
-                    life(life),
-                    x(x),
-                    y(y),
-                    show(show){
-                    }
-
-                Frame sprite;
-                // Bitmap cache;
-                unsigned int extra;
-                Effects effects;
-                int life;
-                int x;
-                int y;
-                bool show;
-            };
-
-            /* RGB is a macro on windows */
-            struct RGBx{
-                RGBx():
-                    red(0),
-                    green(0),
-                    blue(0){
-                    }
-
-                double red, green, blue;
-            };
-
-            /* count ticks */
-            int currentTime;
-            int timegap;
-            int framegap;
-
-            /* time left for the afterimage effects will be added */
-            int lifetime;
-
-            /* maximum number of afterimage frames */
-            unsigned int length;
-            TransType translucent;
-
-            int paletteColor;
-            bool invertColor;
-
-            RGBx bright;
-            RGBx contrast;
-            RGBx postBright;
-            RGBx add;
-            RGBx multiply;
-
-            std::deque<Image> frames;
-        } afterImage;
-protected:
+        AfterImage afterImage;
 
         struct WidthOverride{
             WidthOverride():
@@ -1473,8 +1562,8 @@ protected:
 
         struct HitByOverride{
             HitByOverride():
-            time(0){
-            }
+                time(0){
+                }
 
             bool standing;
             bool crouching;
@@ -1496,8 +1585,8 @@ protected:
 
         struct TransOverride{
             TransOverride():
-            enabled(false){
-            }
+                enabled(false){
+                }
 
             bool enabled;
             TransType type;
@@ -1505,39 +1594,16 @@ protected:
             int alphaDestination;
         } transOverride;
 
-        struct RecordingInformation{
-            std::ofstream out;
-            /* last set of commands */
-            std::vector<std::string> commands;
-            /* last count of ticks for the current set of commands */
-            int ticks;
-
-            ~RecordingInformation(){
-                out.close();
-            }
-        };
-
         PaintownUtil::ReferenceCount<RecordingInformation> record;
 
-        virtual void recordCommands(const std::vector<std::string> & commands);
-        
         // PushPlayer only one tick
         int pushPlayer;
         
-public:
-        /* this definition is down here so we can get access to the AfterImage
-         * struct definition
-         */
-        virtual void setAfterImage(int time, int length, int timegap, int framegap, TransType effects, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply);
-    
-        void drawAfterImage(const AfterImage & afterImage, const AfterImage::Image & frame, int index, int x, int y, const Graphics::Bitmap & work);
-        void processAfterImages();
-
         struct SpecialStuff{
             SpecialStuff():
-            invisible(false),
-            intro(false){
-            }
+                invisible(false),
+                intro(false){
+                }
 
             void reset(){
                 invisible = false;
@@ -1548,61 +1614,7 @@ public:
             bool intro;
         } special;
 
-        struct PaletteEffects{
-            PaletteEffects():
-            time(0),
-            addRed(0),
-            addGreen(0),
-            addBlue(0),
-            multiplyRed(0),
-            multiplyGreen(0),
-            multiplyBlue(0),
-            sinRed(0),
-            sinGreen(0),
-            sinBlue(0),
-            period(0),
-            invert(0),
-            color(0),
-            counter(0){
-            }
-
-            PaletteEffects(const PaletteEffects & copy):
-            time(copy.time),
-            addRed(copy.addRed),
-            addGreen(copy.addGreen),
-            addBlue(copy.addBlue),
-            multiplyRed(copy.multiplyRed),
-            multiplyGreen(copy.multiplyGreen),
-            multiplyBlue(copy.multiplyBlue),
-            sinRed(copy.sinRed),
-            sinGreen(copy.sinGreen),
-            sinBlue(copy.sinBlue),
-            period(copy.period),
-            invert(copy.invert),
-            color(copy.color),
-            counter(copy.counter){
-            }
-
-            int time;
-            int addRed;
-            int addGreen;
-            int addBlue;
-            int multiplyRed;
-            int multiplyGreen;
-            int multiplyBlue;
-            int sinRed;
-            int sinGreen;
-            int sinBlue;
-            int period;
-            int invert;
-            int color;
-            unsigned int counter;
-        };
-
         PaletteEffects paletteEffects;
-
-        virtual void setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color);
-        Graphics::Bitmap::Filter * getPaletteEffects(unsigned int time);
 
         double max_health;
         double health;
@@ -1612,12 +1624,12 @@ public:
          */
         struct Bind{
             Bind():
-            bound(NULL),
-            time(0),
-            facing(0),
-            offsetX(0),
-            offsetY(0){
-            }
+                bound(NULL),
+                time(0),
+                facing(0),
+                offsetX(0),
+                offsetY(0){
+                }
 
             Bind(const Bind & you):
                 bound(you.bound),
@@ -1647,7 +1659,7 @@ public:
          * Mugen 1.0
          */
         double jumpChangeAnimationThreshold;
-        
+
         /* TODO: what is this for?
          * Mugen 1.0
          */
@@ -1655,9 +1667,9 @@ public:
 
         struct CharacterData {
             CharacterData():
-            who(NULL),
-            enabled(false){
-            }
+                who(NULL),
+                enabled(false){
+                }
 
             const Character * who;
             bool enabled;
@@ -1686,19 +1698,20 @@ public:
 
         /* Current set of commands, updated in act() */
         std::vector<std::string> active;
-
-        struct HitOverride{
-            HitOverride():
-            time(0){
-            }
-
-            int time;
-            HitAttributes attributes;
-            int state;
-            bool forceAir;
-        };
-
         std::map<int, HitOverride> hitOverrides;
+
+    };
+
+    StateData stateData;
+
+public:
+    const StateData & getStateData() const {
+        return stateData;
+    }
+
+    StateData & getStateData(){
+        return stateData;
+    }
 };
 
 }

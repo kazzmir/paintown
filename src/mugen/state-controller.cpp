@@ -3418,7 +3418,7 @@ public:
         int length = evaluateNumber(this->length, environment, 20);
         int paletteColor = evaluateNumber(this->paletteColor, environment, 256);
         bool invertColor = evaluateBool(this->invertColor, environment, false);
-        Character::AfterImage::RGBx bright, contrast, postBright, add, multiply;
+        AfterImage::RGBx bright, contrast, postBright, add, multiply;
         bright.red = evaluateNumber(this->bright.red, environment, 30);
         bright.green = evaluateNumber(this->bright.green, environment, 30);
         bright.blue = evaluateNumber(this->bright.blue, environment, 30);

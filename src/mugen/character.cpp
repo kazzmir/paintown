@@ -560,239 +560,69 @@ void Object::setObjectId(int id){
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, int alliance):
-Object(alliance),
-commonSounds(NULL),
-pushPlayer(0){
-    this->location = s;
+Object(alliance){
+    getStateData().location = s;
     initialize();
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance):
-Object(x,y, alliance),
-commonSounds(NULL),
-pushPlayer(0){
-    this->location = s;
+Object(x,y, alliance){
+    getStateData().location = s;
     initialize();
 }
 
-/* FIXME: need to copy more attributes */
 Character::Character(const Character & copy):
 Object(copy),
-commonSounds(copy.commonSounds),
-debug(false),
-frozen(false),
-pushPlayer(0){
-    maxChangeStates = 0;
-    /* simple macro to copy fields */
-#define C(field) field = copy.field
-    C(xscale);
-    C(yscale);
-    C(currentState);
-    C(previousState);
-    C(currentAnimation);
-    C(velocity_x);
-    C(velocity_y);
-    C(currentPhysics);
-    // C(lastTicket);
-    C(regenerateHealth);
-    C(regenerating);
-    C(regenerateTime);
-    C(max_health);
-    C(health);
-    C(spritePriority);
-    C(location);
-    C(baseDir);
-    C(name);
-    C(displayName);
-    C(versionDate);
-    C(mugenVersion);
-    C(author);
-    C(palDefaults);
-    C(currentPalette);
-    C(cmdFile);
-    C(ownPalette);
-    C(constantsFile);
-    C(sffFile);
-    C(airFile);
-    C(sndFile);
-    C(palFile);
-    C(introFile);
-    C(endingFile);
-    C(life);
-    C(attack);
-    C(defense);
-    C(fallDefenseUp);
-    C(lieDownTime);
-    C(airjuggle);
-    C(juggleRemaining);
-    C(currentJuggle);
-    C(spark);
-    C(guardSpark);
-    C(koecho);
-    C(volumeoffset);
-    C(intpersistindex);
-    C(floatpersistindex);
-    C(xscale);
-    C(yscale);
-    C(groundback);
-    C(groundfront);
-    C(airback);
-    C(airfront);
-    C(height);
-    C(attackdist);
-    C(projattackdist);
-    C(projdoscale);
-    C(headPosition);
-    C(midPosition);
-    C(shadowoffset);
-    C(drawOffset);
-    C(walkfwd);
-    C(walkback);
-    C(runforwardx);
-    C(runforwardy);
-    C(runbackx);
-    C(runbacky);
-    C(jumpneux);
-    C(jumpneuy);
-    C(jumpback);
-    C(jumpfwd);
-    C(runjumpback);
-    C(runjumpfwd);
-    C(airjumpneux);
-    C(airjumpneuy);
-    C(airjumpback);
-    C(airjumpfwd);
-    C(power);
-    C(airjumpnum);
-    C(airjumpheight);
-    C(yaccel);
-    C(crouchFriction);
-    C(crouchFrictionThreshold);
-    C(constants);
-    C(currentState);
-    C(previousState);
-    C(currentAnimation);
-    C(debug);
-    C(velocity_x);
-    C(velocity_y);
-    C(has_control);
-    C(stateTime);
-    C(variables);
-    C(floatVariables);
-    C(systemVariables);
-    C(currentPhysics);
-    C(gravity);
-    C(standFriction);
-    C(standFrictionThreshold);
-    C(stateType);
-    C(moveType);
-    // lastTicket = 0;
-    combo = 0;
-    hitCount = 0;
-    blocking = false;
-    C(drawAngle);
-    C(wins);
-    C(matchWins);
-    C(regenerateHealth);
-    C(regenerating);
-    C(regenerateTime);
-    C(regenerateHealthDifference);
-    guarding = false;
-    C(afterImage);
-    C(widthOverride);
-    // C(hitByOverride);
-    C(defenseMultiplier);
-    C(attackMultiplier);
-    C(frozen);
-    C(reversal);
-    C(reversalActive);
-    C(transOverride);
-    C(special);
-    C(paletteEffects);
-    C(max_health);
-    C(health);
-    C(targets);
-    C(spritePriority);
-    wasHitCounter = 0;
-    C(jumpChangeAnimationThreshold);
-    C(airGetHitGroundLevel);
-#undef C
+stateData(copy.stateData){
 }
 
 Character::~Character(){
     stopRecording();
-
-     // Get rid of sprites
-    /*for (std::map< unsigned int, std::map< unsigned int, Sprite * > >::iterator i = sprites.begin() ; i != sprites.end() ; ++i ){
-      for( std::map< unsigned int, Sprite * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }*/
-    
-     // Get rid of bitmaps
-    /*
-    for( std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > >::iterator i = bitmaps.begin() ; i != bitmaps.end() ; ++i ){
-      for( std::map< unsigned int, Graphics::Bitmap * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }
-    */
-    
-    animations.clear();
-    
-    // Get rid of sounds
-    /*
-    for( std::map< unsigned int, std::map< unsigned int, Sound * > >::iterator i = sounds.begin() ; i != sounds.end() ; ++i ){
-      for( std::map< unsigned int, Sound * >::iterator j = i->second.begin() ; j != i->second.end() ; ++j ){
-	  if( j->second )delete j->second;
-      }
-    }*/
-
-    for (vector<Command*>::iterator it = commands.begin(); it != commands.end(); it++){
+    for (vector<Command*>::iterator it = getStateData().commands.begin(); it != getStateData().commands.end(); it++){
         delete (*it);
     }
 }
 
 void Character::initialize(){
-    max_health = 0;
-    health = 0;
-    maxChangeStates = 0;
-    currentState = Standing;
-    currentPhysics = Physics::Stand;
-    moveType = Move::Idle;
-    wasHitCounter = 0;
-    frozen = false;
-    reversalActive = false;
-    previousState = currentState;
-    stateType = StateType::Stand;
-    currentAnimation = Standing;
-    ownPalette = false;
-    drawAngle = 0;
+    getStateData().max_health = 0;
+    getStateData().health = 0;
+    getStateData().maxChangeStates = 0;
+    getStateData().currentState = Standing;
+    getStateData().currentPhysics = Physics::Stand;
+    getStateData().moveType = Move::Idle;
+    getStateData().wasHitCounter = 0;
+    getStateData().frozen = false;
+    getStateData().reversalActive = false;
+    getStateData().previousState = getStateData().currentState;
+    getStateData().stateType = StateType::Stand;
+    getStateData().currentAnimation = Standing;
+    getStateData().ownPalette = false;
+    getStateData().drawAngle = 0;
     /* FIXME: whats the default sprite priority? */
-    spritePriority = 0;
-    juggleRemaining = 0;
-    koecho = false;
-    defense = 0;
-    fallDefenseUp = 0;
-    defenseMultiplier = 1;
-    attackMultiplier = 1;
-    lieDownTime = 0;
-    xscale = 1;
-    yscale = 1;
-    debug = false;
-    has_control = true;
-    blocking = false;
-    airjumpnum = 0;
-    airjumpheight = 35;
-    guarding = false;
-    behavior = NULL;
+    getStateData().spritePriority = 0;
+    getStateData().juggleRemaining = 0;
+    getStateData().koecho = false;
+    getStateData().defense = 0;
+    getStateData().fallDefenseUp = 0;
+    getStateData().defenseMultiplier = 1;
+    getStateData().attackMultiplier = 1;
+    getStateData().lieDownTime = 0;
+    getStateData().xscale = 1;
+    getStateData().yscale = 1;
+    getStateData().debug = false;
+    getStateData().has_control = true;
+    getStateData().blocking = false;
+    getStateData().airjumpnum = 0;
+    getStateData().airjumpheight = 35;
+    getStateData().guarding = false;
+    getStateData().behavior = NULL;
 
-    intpersistindex = 0;
-    floatpersistindex = 0;
+    getStateData().intpersistindex = 0;
+    getStateData().floatpersistindex = 0;
 
-    matchWins = 0;
+    getStateData().matchWins = 0;
 
-    combo = 1;
+    getStateData().combo = 1;
     // nextCombo = 0;
 
     // lastTicket = 0;
@@ -801,53 +631,53 @@ void Character::initialize(){
     //loadSelectData();
 
     /* provide sensible defaults */
-    walkfwd = 0;
-    walkback = 0;
-    runbackx = 0;
-    runbacky = 0;
-    runforwardx = 0;
-    runforwardy = 0;
-    power = 0;
+    getStateData().walkfwd = 0;
+    getStateData().walkback = 0;
+    getStateData().runbackx = 0;
+    getStateData().runbacky = 0;
+    getStateData().runforwardx = 0;
+    getStateData().runforwardy = 0;
+    getStateData().power = 0;
 
-    velocity_x = 0;
-    velocity_y = 0;
+    getStateData().velocity_x = 0;
+    getStateData().velocity_y = 0;
 
-    gravity = 0.1;
-    standFriction = 0.85;
-    crouchFriction = 0.82;
+    getStateData().gravity = 0.1;
+    getStateData().standFriction = 0.85;
+    getStateData().crouchFriction = 0.82;
 
-    stateTime = 0;
+    getStateData().stateTime = 0;
 
     /* Regeneration */
-    regenerateHealth = false;
-    regenerating = false;
-    regenerateTime = REGENERATE_TIME;
-    regenerateHealthDifference = 0;
+    getStateData().regenerateHealth = false;
+    getStateData().regenerating = false;
+    getStateData().regenerateTime = REGENERATE_TIME;
+    getStateData().regenerateHealthDifference = 0;
 }
 
 void Character::loadSelectData(){
     /* Load up info for the select screen */
     try{
-        Filesystem::AbsolutePath baseDir = location.getDirectory();
+        Filesystem::AbsolutePath baseDir = getStateData().location.getDirectory();
 	Global::debug(1) << baseDir.path() << endl;
-        Filesystem::RelativePath str = Filesystem::RelativePath(location.getFilename().path());
+        Filesystem::RelativePath str = Filesystem::RelativePath(getStateData().location.getFilename().path());
 	const Filesystem::AbsolutePath ourDefFile = Util::fixFileName(baseDir, str.path() + ".def");
 	
 	if (ourDefFile.isEmpty()){
-	    Global::debug(1) << "Cannot locate player definition file for: " << location.path() << endl;
+	    Global::debug(1) << "Cannot locate player definition file for: " << getStateData().location.path() << endl;
 	}
 	
         AstRef parsed(Util::parseDef(ourDefFile));
 	// Set name of character
-	this->name = Mugen::Util::probeDef(parsed, "info", "name");
-	this->displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
-	this->sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
+	this->getStateData().name = Mugen::Util::probeDef(parsed, "info", "name");
+	this->getStateData().displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
+	this->getStateData().sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
         /* FIXME: replace 9000 with some readable constant */
-        Filesystem::AbsolutePath absoluteSff = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->sffFile));
+        Filesystem::AbsolutePath absoluteSff = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->getStateData().sffFile));
         /* FIXME: use getIconAndPortrait so we only load the sff once */
-	this->sprites[9000][0] = Mugen::Util::probeSff(absoluteSff, 9000, 0, true);
-	this->sprites[9000][1] = Mugen::Util::probeSff(absoluteSff, 9000, 1, true);
+	this->getStateData().sprites[9000][0] = Mugen::Util::probeSff(absoluteSff, 9000, 0, true);
+	this->getStateData().sprites[9000][1] = Mugen::Util::probeSff(absoluteSff, 9000, 1, true);
 	
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't grab details for character!" << endl;
@@ -856,13 +686,13 @@ void Character::loadSelectData(){
 }
     
 void Character::addCommand(Command * command){
-    commands.push_back(command);
+    getStateData().commands.push_back(command);
 }
 
 void Character::setAnimation(int animation, int element){
     if (getAnimation(animation) != NULL){
-        foreignAnimation = NULL;
-        currentAnimation = animation;
+        getStateData().foreignAnimation = NULL;
+        getStateData().currentAnimation = animation;
         if (getCurrentAnimation() != NULL){
             getCurrentAnimation()->reset();
             getCurrentAnimation()->setPosition(element);
@@ -880,7 +710,7 @@ static void mergeStates(map<int, PaintownUtil::ReferenceCount<State> > & mergeIn
 }
 
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Storage::instance().lookupInsensitive(baseDir, path);
+    Filesystem::AbsolutePath full = Storage::instance().lookupInsensitive(getStateData().baseDir, path);
     map<int, PaintownUtil::ReferenceCount<State> > out;
     try{
         int defaultTime = 15;
@@ -1013,7 +843,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
                 
-    mergeStates(states, out);
+    mergeStates(getStateData().states, out);
 }
 
 static bool isStateDefSection(string name){
@@ -1077,28 +907,28 @@ static bool hasHitAttribute(Character * enemy, const HitAttributes & attribute){
 bool Character::canBeHit(Character * enemy){
     for (int slot = 0; slot < 2; slot++){
         /* Only check active slots */
-        if (hitByOverride[slot].time > 0){
+        if (getStateData().hitByOverride[slot].time > 0){
             /* FIXME: use hasHitAttribute from above */
 
             /* Check the state type */
             if (enemy->getHit().attribute.state == StateType::Crouch &&
-                !hitByOverride[slot].crouching){
+                !getStateData().hitByOverride[slot].crouching){
                 return false;
             }
             
             if (enemy->getHit().attribute.state == StateType::Stand &&
-                !hitByOverride[slot].standing){
+                !getStateData().hitByOverride[slot].standing){
                 return false;
             }
             
             if (enemy->getHit().attribute.state == StateType::Air &&
-                !hitByOverride[slot].aerial){
+                !getStateData().hitByOverride[slot].aerial){
                 return false;
             }
 
             /* Then check the physics type */
             AttackType::Attribute hitType = parseAttribute(enemy->getHit().attribute.attackType, enemy->getHit().attribute.physics);
-            const vector<AttackType::Attribute> & attributes = hitByOverride[slot].attributes;
+            const vector<AttackType::Attribute> & attributes = getStateData().hitByOverride[slot].attributes;
             bool ok = false;
 
             /* The hit type of the hit definition must be in the list of attributes somewhere */
@@ -1116,24 +946,24 @@ bool Character::canBeHit(Character * enemy){
         }
     }
 
-    return (moveType != Move::Hit) ||
-           (moveType == Move::Hit && juggleRemaining >= enemy->getCurrentJuggle());
+    return (getStateData().moveType != Move::Hit) ||
+           (getStateData().moveType == Move::Hit && getStateData().juggleRemaining >= enemy->getCurrentJuggle());
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
-    constants[name] = Constant(values);
+    getStateData().constants[name] = Constant(values);
 }
 
 void Character::setConstant(std::string name, double value){
-    constants[name] = Constant(value);
+    getStateData().constants[name] = Constant(value);
 }
 
 void Character::setFloatVariable(int index, const RuntimeValue & value){
-    floatVariables[index] = value;
+    getStateData().floatVariables[index] = value;
 }
 
 void Character::setVariable(int index, const RuntimeValue & value){
-    variables[index] = value;
+    getStateData().variables[index] = value;
 }
 
 static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int index){
@@ -1145,50 +975,27 @@ static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int in
 }
 
 RuntimeValue Character::getVariable(int index) const {
-    return extractVariable(variables, index);
-    /*
-    map<int, RuntimeValue>::const_iterator found = variables.find(index);
-    if (found != variables.end()){
-        return (*found).second;
-    }
-    return RuntimeValue(0);
-    */
+    return extractVariable(getStateData().variables, index);
 }
 
 RuntimeValue Character::getFloatVariable(int index) const {
-    return extractVariable(floatVariables, index);
-
-    /*
-    map<int, RuntimeValue>::const_iterator found = floatVariables.find(index);
-    if (found != floatVariables.end()){
-        return (*found).second;
-    }
-    return RuntimeValue(0);
-    */
+    return extractVariable(getStateData().floatVariables, index);
 }
         
 void Character::setSystemVariable(int index, const RuntimeValue & value){
-    systemVariables[index] = value;
+    getStateData().systemVariables[index] = value;
 }
 
 RuntimeValue Character::getSystemVariable(int index) const {
-    return extractVariable(systemVariables, index);
-
-    /*
-    map<int, RuntimeValue>::const_iterator found = systemVariables.find(index);
-    if (found != systemVariables.end()){
-        return (*found).second;
-    }
-    return RuntimeValue(0);
-    */
+    return extractVariable(getStateData().systemVariables, index);
 }
         
 void Character::resetStateTime(){
-    stateTime = 0;
+    getStateData().stateTime = 0;
 }
         
 void Character::resetJugglePoints(){
-    juggleRemaining = getJugglePoints();
+    getStateData().juggleRemaining = getJugglePoints();
 }
     
 /*
@@ -1202,8 +1009,8 @@ void Character::changeState(Mugen::Stage & stage, int state){
  * pause time reaches 0.
  */
 void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
-    maxChangeStates += 1;
-    if (maxChangeStates > 100){
+    getStateData().maxChangeStates += 1;
+    if (getStateData().maxChangeStates > 100){
         std::ostringstream out;
         out << "ChangeState called more than 100 times, most likely this is a bug";
         Global::debug(0) << out.str() << std::endl;
@@ -1222,17 +1029,17 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
     /* FIXME: handle movehitpersist
      * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
      */
-    hitState.moveContact = 0;
+    getStateData().hitState.moveContact = 0;
 
     /* reset hit count */
-    hitCount = 0;
+    getStateData().hitCount = 0;
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getObjectId();
-    Global::debug(1, debug.str()) << "Change from state " << currentState << " to state " << stateNumber << endl;
-    previousState = currentState;
-    currentState = stateNumber;
-    stateTime = -1;
+    Global::debug(1, debug.str()) << "Change from state " << getStateData().currentState << " to state " << stateNumber << endl;
+    getStateData().previousState = getStateData().currentState;
+    getStateData().currentState = stateNumber;
+    getStateData().stateTime = -1;
     /*
     if (getState(currentState) != NULL){
         PaintownUtil::ReferenceCount<State> state = getState(currentState);
@@ -1247,8 +1054,8 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
 /* Immediately changes to a state and activates it */
 void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
-    maxChangeStates += 1;
-    if (maxChangeStates > 100){
+    getStateData().maxChangeStates += 1;
+    if (getStateData().maxChangeStates > 100){
         std::ostringstream out;
         out << "ChangeState called more than 100 times, most likely this is a bug";
         Global::debug(0) << out.str() << std::endl;
@@ -1267,35 +1074,35 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
     /* FIXME: handle movehitpersist
      * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
      */
-    hitState.moveContact = 0;
+    getStateData().hitState.moveContact = 0;
 
     /* reset hit count */
-    hitCount = 0;
+    getStateData().hitCount = 0;
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getObjectId();
-    Global::debug(1, debug.str()) << "Change from state " << currentState << " to state " << stateNumber << endl;
-    previousState = currentState;
-    currentState = stateNumber;
+    Global::debug(1, debug.str()) << "Change from state " << getStateData().currentState << " to state " << stateNumber << endl;
+    getStateData().previousState = getStateData().currentState;
+    getStateData().currentState = stateNumber;
     resetStateTime();
-    if (getState(currentState) != NULL){
-        PaintownUtil::ReferenceCount<State> state = getState(currentState);
+    if (getState(getStateData().currentState) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(getStateData().currentState);
         state->transitionTo(stage, *this);
-        doStates(stage, active, currentState);
+        doStates(stage, getStateData().active, getStateData().currentState);
     } else {
-        Global::debug(0, debug.str()) << "Unknown state " << currentState << endl;
+        Global::debug(0, debug.str()) << "Unknown state " << getStateData().currentState << endl;
     }
 }
 
 /* TODO: get rid of the inputs parameter */
 void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs){
-    characterData.who = NULL;
-    characterData.enabled = false;
+    getStateData().characterData.who = NULL;
+    getStateData().characterData.enabled = false;
     changeState(stage, state);
 }
 
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(baseDir).join(path));
+    Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(getStateData().baseDir).join(path));
     try{
         /* cns can use the Cmd parser */
         AstRef parsed(Util::parseCmd(full));
@@ -1495,41 +1302,41 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             simple.view() >> x;
                             self.setHeight(x);
                         } else if (simple == "xscale"){
-			    simple.view() >> self.xscale;
+			    simple.view() >> self.getStateData().xscale;
 			} else if (simple == "yscale"){
-			    simple.view() >> self.yscale;
+			    simple.view() >> self.getStateData().yscale;
 			} else if (simple == "ground.back"){
-			    simple.view() >> self.groundback;
+			    simple.view() >> self.getStateData().groundback;
 			} else if (simple == "ground.front"){
-			    simple.view() >> self.groundfront;
+			    simple.view() >> self.getStateData().groundfront;
 			} else if (simple == "air.back"){
-			    simple.view() >> self.airback;
+			    simple.view() >> self.getStateData().airback;
 			} else if (simple == "air.front"){
-			    simple.view() >> self.airfront;
+			    simple.view() >> self.getStateData().airfront;
 			} else if (simple == "attack.dist"){
-			    simple.view() >> self.attackdist;
+			    simple.view() >> self.getStateData().attackdist;
 			} else if (simple == "proj.attack.dist"){
-			    simple.view() >> self.projattackdist;
+			    simple.view() >> self.getStateData().projattackdist;
 			} else if (simple == "proj.doscale"){
-			    simple.view() >> self.projdoscale;
+			    simple.view() >> self.getStateData().projdoscale;
 			} else if (simple == "head.pos"){
 			    int x=0,y=0;
 			    try{
-				simple.view() >> self.headPosition.x >> self.headPosition.y;
+				simple.view() >> self.getStateData().headPosition.x >> self.getStateData().headPosition.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			} else if (simple == "mid.pos"){
 			    int x=0,y=0;
 			    try{
-				simple.view() >> self.midPosition.x >> self.midPosition.y;
+				simple.view() >> self.getStateData().midPosition.x >> self.getStateData().midPosition.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			} else if (simple == "shadowoffset"){
-			    simple.view() >> self.shadowoffset;
+			    simple.view() >> self.getStateData().shadowoffset;
 			} else if (simple == "draw.offset"){
 			    int x=0,y=0;
 			    try{
-				simple.view() >> self.drawOffset.x >> self.drawOffset.y;
+				simple.view() >> self.getStateData().drawOffset.x >> self.getStateData().drawOffset.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			}
@@ -1907,18 +1714,18 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         }
     }
 
-    mergeStates(states, out);
+    mergeStates(getStateData().states, out);
 }
     
 void Character::startRecording(int count){
-    record = PaintownUtil::ReferenceCount<RecordingInformation>(new RecordingInformation());
+    getStateData().record = PaintownUtil::ReferenceCount<RecordingInformation>(new RecordingInformation());
     ostringstream filename;
     filename << getDisplayName() << "-" << count << ".txt";
-    record->out.open(filename.str().c_str());
-    if (!record->out.good()){
+    getStateData().record->out.open(filename.str().c_str());
+    if (!getStateData().record->out.good()){
         Global::debug(0) << "Could not record " << filename.str() << std::endl;
     }
-    record->ticks = 1;
+    getStateData().record->ticks = 1;
 }
 
 static bool differentCommands(std::vector<std::string> list1, std::vector<std::string> list2){
@@ -1939,13 +1746,13 @@ static bool differentCommands(std::vector<std::string> list1, std::vector<std::s
 }
 
 void Character::recordCommands(const std::vector<std::string> & commands){
-    if (record != NULL){
-        if (differentCommands(commands, record->commands)){
-            record->out << record->ticks << " " << PaintownUtil::join(record->commands, ", ") << std::endl;
-            record->ticks = 1;
-            record->commands = commands;
+    if (getStateData().record != NULL){
+        if (differentCommands(commands, getStateData().record->commands)){
+            getStateData().record->out << getStateData().record->ticks << " " << PaintownUtil::join(getStateData().record->commands, ", ") << std::endl;
+            getStateData().record->ticks = 1;
+            getStateData().record->commands = commands;
         } else {
-            record->ticks += 1;
+            getStateData().record->ticks += 1;
         }
     }
 }
@@ -1954,11 +1761,11 @@ void Character::stopRecording(){
     /* force the last set of commands to be written if any */
     std::vector<std::string> last;
     recordCommands(last);
-    record = NULL;
+    getStateData().record = NULL;
 }
     
 void Character::checkStateControllers(){
-    for (map<int, PaintownUtil::ReferenceCount<State> >::iterator it = states.begin(); it != states.end(); it++){
+    for (map<int, PaintownUtil::ReferenceCount<State> >::iterator it = getStateData().states.begin(); it != getStateData().states.end(); it++){
         PaintownUtil::ReferenceCount<State> state = it->second;
         if (state->getControllers().size() == 0){
             std::ostringstream out;
@@ -1991,20 +1798,20 @@ void Character::load(int useAct){
     }
 #endif
 
-    Global::info("Loading " + location.getFilename().path());
+    Global::info("Loading " + getStateData().location.getFilename().path());
     
     // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
-    baseDir = location.getDirectory();
+    getStateData().baseDir = getStateData().location.getDirectory();
     // const std::string ourDefFile = location;
      
-    AstRef parsed(Util::parseDef(location));
+    AstRef parsed(Util::parseDef(getStateData().location));
     try{
         /* Every character should have a [Files] section at least. Possibly [Info] as well
          * but I'm not sure yet.
          */
         if (parsed->findSection("files") == NULL){
             std::ostringstream out;
-            out << "Could not find a [Files] section in " << location.path();
+            out << "Could not find a [Files] section in " << getStateData().location.path();
             throw MugenException(out.str(), __FILE__, __LINE__);
         }
         /* Extract info for our first section of our stage */
@@ -2026,34 +1833,34 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "name"){
                                 try{
-                                    simple.view() >> self.name;
+                                    simple.view() >> self.getStateData().name;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "displayname"){
                                 try{
-                                    simple.view() >> self.displayName;
+                                    simple.view() >> self.getStateData().displayName;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "versiondate"){
                                 try{
-                                    simple.view() >> self.versionDate;
+                                    simple.view() >> self.getStateData().versionDate;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "mugenversion"){
                                 try{
-                                    simple.view() >> self.mugenVersion;
+                                    simple.view() >> self.getStateData().mugenVersion;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "author"){
                                 try{
-                                    simple.view() >> self.author;
+                                    simple.view() >> self.getStateData().author;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "pal.defaults"){
                                 vector<int> numbers;
                                 simple.view() >> numbers;
                                 for (vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
-                                    self.palDefaults.push_back((*it) - 1);
+                                    self.getStateData().palDefaults.push_back((*it) - 1);
                                 }
                                 // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
                             } else if (simple == "localcoord"){
@@ -2083,7 +1890,7 @@ void Character::load(int useAct){
                             if (simple == "cmd"){
                                 string file;
                                 simple.view() >> file;
-                                self.cmdFile = Filesystem::RelativePath(file);
+                                self.getStateData().cmdFile = Filesystem::RelativePath(file);
                                 /* loaded later after the state files */
                             } else if (simple == "cns"){
                                 string file;
@@ -2095,25 +1902,25 @@ void Character::load(int useAct){
                                 if (num >= 0 && num <= 12){
                                     string path;
                                     simple.view() >> path;
-                                    stateFiles.push_back(Location(self.baseDir, path));
+                                    stateFiles.push_back(Location(self.getStateData().baseDir, path));
                                     // simple >> self.stFile[num];
                                 }
                             } else if (simple == "stcommon"){
                                 string path;
                                 simple.view() >> path;
-                                stateFiles.insert(stateFiles.begin(), Location(self.baseDir, path));
+                                stateFiles.insert(stateFiles.begin(), Location(self.getStateData().baseDir, path));
                             } else if (simple == "st"){
                                 string path;
                                 simple.view() >> path;
-                                stateFiles.push_back(Location(self.baseDir, path));
+                                stateFiles.push_back(Location(self.getStateData().baseDir, path));
                             } else if (simple == "sprite"){
-                                simple.view() >> self.sffFile;
+                                simple.view() >> self.getStateData().sffFile;
                             } else if (simple == "anim"){
-                                simple.view() >> self.airFile;
+                                simple.view() >> self.getStateData().airFile;
                             } else if (simple == "sound"){
-                                simple.view() >> self.sndFile;
+                                simple.view() >> self.getStateData().sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
-                                Util::readSounds(Storage::instance().lookupInsensitive(self.baseDir, Filesystem::RelativePath(self.sndFile)), self.sounds);
+                                Util::readSounds(Storage::instance().lookupInsensitive(self.getStateData().baseDir, Filesystem::RelativePath(self.getStateData().sndFile)), self.getStateData().sounds);
                             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal[0-9]+")){
                                 int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal([0-9]+)", 0).c_str());
                                 try{
@@ -2122,7 +1929,7 @@ void Character::load(int useAct){
                                      * pal2 =
                                      */
                                     simple.view() >> what;
-                                    self.palFile[num] = what;
+                                    self.getStateData().palFile[num] = what;
                                 } catch (const Ast::Exception & fail){
                                     Global::debug(1) << "No palette defined for " << num << std::endl;
                                 }
@@ -2132,7 +1939,7 @@ void Character::load(int useAct){
                         }
                 };
 
-                FilesWalker walker(*this, location);
+                FilesWalker walker(*this, getStateData().location);
                 Ast::Section * section = *section_it;
                 section->walk(walker);
 
@@ -2159,7 +1966,7 @@ void Character::load(int useAct){
 
                 }
 
-                loadCmdFile(cmdFile);
+                loadCmdFile(getStateData().cmdFile);
 
                 compileTime.endTime();
                 Global::debug(1) << compileTime.printTime("Compile time") << std::endl;
@@ -2235,12 +2042,12 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "intro.storyboard"){
                                 try{
-                                    simple.view() >> self.introFile;
+                                    simple.view() >> self.getStateData().introFile;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "ending.storyboard"){
                                 try{
-                                    simple.view() >> self.endingFile;
+                                    simple.view() >> self.getStateData().endingFile;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else {
@@ -2256,7 +2063,7 @@ void Character::load(int useAct){
         }
     } catch (const Ast::Exception & e){
         ostringstream out;
-        out << "Could not load " << location.path() << ": " << e.getReason();
+        out << "Could not load " << getStateData().location.path() << ": " << e.getReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
@@ -2270,10 +2077,10 @@ void Character::load(int useAct){
     }
 
     // Current palette
-    if (palDefaults.empty()){
+    if (getStateData().palDefaults.empty()){
 	// Correct the palette defaults
-	for (unsigned int i = 0; i < palFile.size(); ++i){
-	    palDefaults.push_back(i);
+	for (unsigned int i = 0; i < getStateData().palFile.size(); ++i){
+	    getStateData().palDefaults.push_back(i);
 	}
     }
     /*
@@ -2295,19 +2102,19 @@ void Character::load(int useAct){
     }
     */
     std::string paletteFile = "";
-    currentPalette = useAct;
-    if (palFile.find(currentPalette) == palFile.end()){
+    getStateData().currentPalette = useAct;
+    if (getStateData().palFile.find(getStateData().currentPalette) == getStateData().palFile.end()){
         /* FIXME: choose a default. its not just palette 1 because that palette
          * might not exist
          */
-	Global::debug(1) << "Couldn't find palette: " << currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
-        if (palFile.size() > 0){
-            paletteFile = palFile.begin()->second;
+	Global::debug(1) << "Couldn't find palette: " << getStateData().currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
+        if (getStateData().palFile.size() > 0){
+            paletteFile = getStateData().palFile.begin()->second;
         }
     } else {
-        if (currentPalette < palFile.size()){
-            paletteFile = palFile[currentPalette];
-            Global::debug(2) << "Current pal: " << currentPalette << " | Palette File: " << paletteFile << endl;
+        if (getStateData().currentPalette < getStateData().palFile.size()){
+            paletteFile = getStateData().palFile[getStateData().currentPalette];
+            Global::debug(2) << "Current pal: " << getStateData().currentPalette << " | Palette File: " << paletteFile << endl;
         }
     }
     /*
@@ -2320,16 +2127,16 @@ void Character::load(int useAct){
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
     Filesystem::AbsolutePath finalPalette;
     try{
-        finalPalette = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(paletteFile));
+        finalPalette = Storage::instance().lookupInsensitive(getStateData().baseDir, Filesystem::RelativePath(paletteFile));
     } catch (const Filesystem::Exception & fail){
         Global::debug(0) << "Couldn't find palette for '" << paletteFile << "' because " << fail.getTrace() << endl;
         /* ignore palette */
     }
-    Util::readSprites(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(sffFile)), finalPalette, sprites, true);
+    Util::readSprites(Storage::instance().lookupInsensitive(getStateData().baseDir, Filesystem::RelativePath(getStateData().sffFile)), finalPalette, getStateData().sprites, true);
     Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    animations = Util::loadAnimations(Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(airFile)), sprites, true);
+    getStateData().animations = Util::loadAnimations(Storage::instance().lookupInsensitive(getStateData().baseDir, Filesystem::RelativePath(getStateData().airFile)), getStateData().sprites, true);
 
     fixAssumptions();
 
@@ -2342,15 +2149,15 @@ void Character::load(int useAct){
 }
 
 bool Character::isBound() const {
-    return bind.time > 0;
+    return getStateData().bind.time > 0;
 }
 
 void Character::bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY){
-    bind.bound = bound;
-    bind.time = time;
-    bind.facing = facing;
-    bind.offsetX = offsetX;
-    bind.offsetY = offsetY;
+    getStateData().bind.bound = bound;
+    getStateData().bind.time = time;
+    getStateData().bind.facing = facing;
+    getStateData().bind.offsetX = offsetX;
+    getStateData().bind.offsetY = offsetY;
 }
 
 bool Character::hasAnimation(int index) const {
@@ -2400,10 +2207,10 @@ void Character::doubleJump(Mugen::Stage & stage, const vector<string> & inputs){
 
 /* TODO: get rid of inputs */
 void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs){
-    guarding = false;
-    if (stateType == StateType::Crouch){
+    getStateData().guarding = false;
+    if (getStateData().stateType == StateType::Crouch){
         changeState(stage, Crouching);
-    } else if (stateType == StateType::Air){
+    } else if (getStateData().stateType == StateType::Air){
         changeState(stage, 51);
     } else {
         changeState(stage, Standing);
@@ -2434,7 +2241,7 @@ void Character::fixAssumptions(){
      * or holdback is pressed
      */
 
-    if (states[-1] != 0){
+    if (getStateData().states[-1] != 0){
         /* walk */
         {
             ostringstream raw;
@@ -2443,7 +2250,7 @@ void Character::fixAssumptions(){
             raw << "trigger1 = command = \"holdfwd\"\n";
             raw << "trigger2 = command = \"holdback\"\n";
             raw << "value = " << WalkingForwards << "\n";
-            states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
+            getStateData().states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
         }
 
 
@@ -2457,7 +2264,7 @@ void Character::fixAssumptions(){
             raw << "trigger2 = stateno = " << WalkingForwards << "\n";
             raw << "triggerall = command = \"holddown\"\n";
 
-            states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
+            getStateData().states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
         }
 
         /* jump */
@@ -2485,7 +2292,7 @@ void Character::fixAssumptions(){
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(-1, -1, new string("holdup")))));
-            states[-1]->addController(controller);
+            getStateData().states[-1]->addController(controller);
         }
 
         /* double jump */
@@ -2532,12 +2339,12 @@ void Character::fixAssumptions(){
                         // new Ast::String(new string("holdup")
                         new Ast::String(-1, -1, new string(jumpCommand)
                             ))));
-            states[-1]->addController(controller);
+            getStateData().states[-1]->addController(controller);
         }
     }
 
     {
-        if (states[StopGuardStand] != 0){
+        if (getStateData().states[StopGuardStand] != 0){
             class StopGuardStandController: public StateController {
             public:
                 StopGuardStandController():
@@ -2557,55 +2364,55 @@ void Character::fixAssumptions(){
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(-1, -1, 0))));
-            states[StopGuardStand]->addController(controller);
+            getStateData().states[StopGuardStand]->addController(controller);
         }
     }
 
     /* need a 20 state controller that changes to state 0 if holdfwd
      * or holdback is not pressed
      */
-    if (states[20] != 0){
+    if (getStateData().states[20] != 0){
         ostringstream raw;
         raw << "[State 20, paintown-internal-stop-walking]\n";
         raw << "value = " << Standing << "\n";
         raw << "trigger1 = command != \"holdfwd\"\n";
         raw << "trigger1 = command != \"holdback\"\n";
 
-        states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
+        getStateData().states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
     }
 
-    if (states[Standing] != 0){
-        states[Standing]->setControl(Compiler::compile(1));
+    if (getStateData().states[Standing] != 0){
+        getStateData().states[Standing]->setControl(Compiler::compile(1));
     }
 
-    if (states[StandToCrouch] != NULL){
+    if (getStateData().states[StandToCrouch] != NULL){
         ostringstream raw;
         raw << "[State " << StandToCrouch << ", paintown-internal-stand-while-crouching]\n";
         raw << "value = " << CrouchToStand << "\n";
         raw << "trigger1 = command != \"holddown\"\n";
 
-        states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, StateController::ChangeState));
+        getStateData().states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, StateController::ChangeState));
 
     }
 
     /* stand after crouching */
-    if (states[11] != 0){
+    if (getStateData().states[11] != 0){
         ostringstream raw;
         raw << "[State 11, paintown-internal-stand-after-crouching]\n";
         raw << "value = " << CrouchToStand << "\n";
         raw << "trigger1 = command != \"holddown\"\n";
 
-        states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
+        getStateData().states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
     }
 
     /* get up kids */
-    if (states[Liedown] != 0){
+    if (getStateData().states[Liedown] != 0){
         ostringstream raw;
         raw << "[State " << Liedown << ", paintown-internal-get-up]\n";
         raw << "value = " << GetUpFromLiedown << "\n";
         raw << "trigger1 = time >= " << getLieDownTime() << "\n";
 
-        states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
+        getStateData().states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
     }
 
     /* standing turn state */
@@ -2613,7 +2420,7 @@ void Character::fixAssumptions(){
         State * turn = new State(StandTurning);
         turn->setType(State::Unchanged);
         turn->setAnimation(Compiler::compile(StandTurning));
-        states[StandTurning] = turn;
+        getStateData().states[StandTurning] = turn;
 
         ostringstream raw;
         raw << "[State 5, paintown-internal-turn]\n";
@@ -2628,7 +2435,7 @@ void Character::fixAssumptions(){
         State * turn = new State(CrouchTurning);
         turn->setType(State::Unchanged);
         turn->setAnimation(Compiler::compile(CrouchTurning));
-        states[CrouchTurning] = turn;
+        getStateData().states[CrouchTurning] = turn;
 
         ostringstream raw;
         raw << "[State 5, paintown-internal-crouch-turn]\n";
@@ -2641,7 +2448,7 @@ void Character::fixAssumptions(){
     /* if y reaches 0 then auto-transition to state 52.
      * probably just add a trigger to state 50
      */
-    if (states[50] != 0){
+    if (getStateData().states[50] != 0){
         /*
         ostringstream raw;
         raw << "[State 50, paintown-internal-land]\n";
@@ -2670,7 +2477,7 @@ void Character::fixAssumptions(){
 
 // Render sprite
 void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp , const int flip, const double scalex, const double scaley ){
-    PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = sprites[group][image];
+    PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = getStateData().sprites[group][image];
     if (sprite != NULL){
         Mugen::Effects effects;
         effects.facing = flip == 1;
@@ -2704,17 +2511,21 @@ bool Character::canRecover() const {
 }
 
 void Character::nextPalette(){
-    if (currentPalette < palDefaults.size()-1){
-	currentPalette++;
-    } else currentPalette = 0;
-    Global::debug(1) << "Current pal: " << currentPalette << " | Location: " << palDefaults[currentPalette] << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
+    if (getStateData().currentPalette < getStateData().palDefaults.size()-1){
+	getStateData().currentPalette++;
+    } else {
+        getStateData().currentPalette = 0;
+    }
+    Global::debug(1) << "Current pal: " << getStateData().currentPalette << " | Location: " << getStateData().palDefaults[getStateData().currentPalette] << " | Palette File: " << getStateData().palFile[getStateData().palDefaults[getStateData().currentPalette]] << endl;
 }
 
 void Character::priorPalette(){
-    if (currentPalette > 0){
-	currentPalette--;
-    } else currentPalette = palDefaults.size() -1;
-    Global::debug(1) << "Current pal: " << currentPalette << " | Palette File: " << palFile[palDefaults[currentPalette]] << endl;
+    if (getStateData().currentPalette > 0){
+	getStateData().currentPalette--;
+    } else {
+        getStateData().currentPalette = getStateData().palDefaults.size() -1;
+    }
+    Global::debug(1) << "Current pal: " << getStateData().currentPalette << " | Palette File: " << getStateData().palFile[getStateData().palDefaults[getStateData().currentPalette]] << endl;
 }
         
 /* players are their own root normally, only helpers differ */
@@ -2731,29 +2542,29 @@ const PaintownUtil::ReferenceCount<Mugen::Sprite> Character::getCurrentFrame() c
 }
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
-    if (special.invisible){
+    if (getStateData().special.invisible){
         return;
     }
 
     if (getCurrentAnimation() != NULL){
-        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() - getY() - rel_y), *work, xscale, yscale);
+        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() - getY() - rel_y), *work, getStateData().xscale, getStateData().yscale);
     }
 }
     
 int Character::getAnimation() const {
-    if (foreignAnimation != NULL){
-        return foreignAnimationNumber;
+    if (getStateData().foreignAnimation != NULL){
+        return getStateData().foreignAnimationNumber;
     }
-    return currentAnimation;
+    return getStateData().currentAnimation;
 }
 
 PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
     /* Foreign animation is set by ChangeAnim2 */
-    if (foreignAnimation != NULL){
-        return foreignAnimation;
+    if (getStateData().foreignAnimation != NULL){
+        return getStateData().foreignAnimation;
     }
 
-    return getAnimation(currentAnimation);
+    return getAnimation(getStateData().currentAnimation);
     /*
     typedef std::map< int, Animation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentAnimation);
@@ -2766,33 +2577,33 @@ PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
 }
         
 void Character::startInput(const Mugen::Stage & stage){
-    if (behavior != NULL){
-        behavior->start(stage, this, commands, getFacing() == FacingRight);
+    if (getStateData().behavior != NULL){
+        getStateData().behavior->start(stage, this, getStateData().commands, getFacing() == FacingRight);
     }
 }
 
 /* returns all the commands that are currently active */
 vector<string> Character::doInput(const Mugen::Stage & stage){
-    if (behavior == NULL){
+    if (getStateData().behavior == NULL){
         throw MugenException("Internal error: No behavior specified", __FILE__, __LINE__);
     }
 
-    return behavior->currentCommands(stage, this, commands, getFacing() == FacingRight);
+    return getStateData().behavior->currentCommands(stage, this, getStateData().commands, getFacing() == FacingRight);
 }
 
 bool Character::isPaused() const {
-    return hitState.shakeTime > 0;
+    return getStateData().hitState.shakeTime > 0;
 }
 
 int Character::pauseTime() const {
-    return hitState.shakeTime;
+    return getStateData().hitState.shakeTime;
 }
     
 double Character::getHealth() const {
-    if (health < 0){
+    if (getStateData().health < 0){
         return 0;
     }
-    return health;
+    return getStateData().health;
 }
 
 /*
@@ -2815,29 +2626,31 @@ static bool holdingBlock(const vector<string> & commands){
 }
 
 void Character::processAfterImages(){
-    if (afterImage.lifetime > 0){
-        afterImage.lifetime -= 1;
+    if (getStateData().afterImage.lifetime > 0){
+        getStateData().afterImage.lifetime -= 1;
     }
 
-    if (afterImage.currentTime > 0){
-        afterImage.currentTime -= 1;
+    if (getStateData().afterImage.currentTime > 0){
+        getStateData().afterImage.currentTime -= 1;
     }
 
     int x = (int) getX();
     int y = (int) getRY();
 
     /* not sure if checking for the timegap > 0 is the right thing.. */
-    if (afterImage.timegap > 0 && afterImage.currentTime <= 0){
-        afterImage.currentTime += afterImage.timegap;
+    if (getStateData().afterImage.timegap > 0 && getStateData().afterImage.currentTime <= 0){
+        getStateData().afterImage.currentTime += getStateData().afterImage.timegap;
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
             Frame * currentSprite = animation->getCurrentFrame();
-            afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, xscale, yscale), life, x, y, afterImage.lifetime > 0));
+            getStateData().afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, getStateData().xscale, getStateData().yscale), getStateData().life, x, y, getStateData().afterImage.lifetime > 0));
         }
     }
-    if (afterImage.length > 0 && afterImage.frames.size() >= afterImage.length){
-        afterImage.frames.resize(afterImage.length - 1);
+    if (getStateData().afterImage.length > 0 &&
+        getStateData().afterImage.frames.size() >= getStateData().afterImage.length){
+
+        getStateData().afterImage.frames.resize(getStateData().afterImage.length - 1);
     }
 
 #if 0
@@ -2878,36 +2691,36 @@ static bool blockingState(int state){
 /* Inherited members */
 void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mugen::Character*>* add){
 
-    maxChangeStates = 0;
+    getStateData().maxChangeStates = 0;
 
     /* Reversals deactivate on state change or if a reversal actually occurs */
     // reversalActive = false;
 
-    special.reset();
-    blocking = false;
+    getStateData().special.reset();
+    getStateData().blocking = false;
 
-    if (frozen){
-        frozen = false;
+    if (getStateData().frozen){
+        getStateData().frozen = false;
     }
  
     //! Check pushable
-    if (pushPlayer > 0){
-        pushPlayer--;
+    if (getStateData().pushPlayer > 0){
+        getStateData().pushPlayer--;
     }
 
     /* reset some stuff */
-    widthOverride.enabled = false;
-    transOverride.enabled = false;
-    drawAngleData.enabled = false;
+    getStateData().widthOverride.enabled = false;
+    getStateData().transOverride.enabled = false;
+    getStateData().drawAngleData.enabled = false;
 
     processAfterImages();
 
-    if (paletteEffects.time > 0){
-        paletteEffects.counter += 1;
-        paletteEffects.time -= 1;
+    if (getStateData().paletteEffects.time > 0){
+        getStateData().paletteEffects.counter += 1;
+        getStateData().paletteEffects.time -= 1;
     }
 
-    for (map<int, HitOverride>::iterator it = hitOverrides.begin(); it != hitOverrides.end(); it++){
+    for (map<int, HitOverride>::iterator it = getStateData().hitOverrides.begin(); it != getStateData().hitOverrides.end(); it++){
         HitOverride & override = it->second;
         if (override.time > 0){
             override.time -= 1;
@@ -2915,25 +2728,25 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     }
 
     for (int slot = 0; slot < 2; slot++){
-        if (hitByOverride[slot].time > 0){
-            hitByOverride[slot].time -= 1;
+        if (getStateData().hitByOverride[slot].time > 0){
+            getStateData().hitByOverride[slot].time -= 1;
         }
     }
 
     /* active is the current set of commands */
-    active = doInput(*stage);
+    getStateData().active = doInput(*stage);
 
-    recordCommands(active);
+    recordCommands(getStateData().active);
 
-    if (hitState.recoverTime > 0){
-        hitState.recoverTime -= 1;
+    if (getStateData().hitState.recoverTime > 0){
+        getStateData().hitState.recoverTime -= 1;
     }
 
-    blocking = holdingBlock(active);
+    getStateData().blocking = holdingBlock(getStateData().active);
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
-    if (hitState.shakeTime > 0){
-        hitState.shakeTime -= 1;
+    if (getStateData().hitState.shakeTime > 0){
+        getStateData().hitState.shakeTime -= 1;
 
         /* Need to update the animation so it doesn't get stuck */
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
@@ -2945,12 +2758,12 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
          * from a hitdef or reversaldef. When shaketime reaches 0 we need to activate
          * the new state that was set from delayChangeState.
          */
-        if (stateTime == -1){
-            if (getState(currentState) != NULL){
-                PaintownUtil::ReferenceCount<State> state = getState(currentState);
+        if (getStateData().stateTime == -1){
+            if (getState(getStateData().currentState) != NULL){
+                PaintownUtil::ReferenceCount<State> state = getState(getStateData().currentState);
                 state->transitionTo(*stage, *this);
             } else {
-                Global::debug(0) << "Unknown state " << currentState << endl;
+                Global::debug(0) << "Unknown state " << getStateData().currentState << endl;
             }
         }
 
@@ -2958,7 +2771,7 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             /* Check debug state */
-            if (debug && !isHelper()){
+            if (getStateData().debug && !isHelper()){
                 if (!animation->showingDefense()){
                     animation->toggleDefense();
                 }
@@ -2976,22 +2789,23 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             animation->logic();
         }
 
-        if (hitState.hitTime > -1){
-            hitState.hitTime -= 1;
+        if (getStateData().hitState.hitTime > -1){
+            getStateData().hitState.hitTime -= 1;
         }
 
-        if (isAttacking() && hitState.moveContact > 0){
-            hitState.moveContact += 1;
+        if (isAttacking() && getStateData().hitState.moveContact > 0){
+            getStateData().hitState.moveContact += 1;
         }
 
         /* if shakeTime is non-zero should we update stateTime? */
-        stateTime += 1;
+        getStateData().stateTime += 1;
 
         /* FIXME: there are a bunch more states that are considered blocking */
-        if (blocking && !blockingState(getCurrentState()) &&
+        if (getStateData().blocking && !blockingState(getCurrentState()) &&
             getMoveType() == Move::Idle &&
             stage->getEnemy(this)->getMoveType() == Move::Attack &&
             withinGuardDistance(stage->getEnemy(this))){
+
             changeState(*stage, Mugen::StartGuardStand);
         }
 
@@ -3013,21 +2827,21 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     /* always run through the negative states unless we are borrowing another
      * players states
      */
-    if (!characterData.enabled){
-        doStates(*stage, active, -3);
-        doStates(*stage, active, -2);
-        doStates(*stage, active, -1);
+    if (!getStateData().characterData.enabled){
+        doStates(*stage, getStateData().active, -3);
+        doStates(*stage, getStateData().active, -2);
+        doStates(*stage, getStateData().active, -1);
     }
-    doStates(*stage, active, currentState);
+    doStates(*stage, getStateData().active, getStateData().currentState);
 
     /*! do regeneration if set, but only for main players */
-    if (regenerateHealth && !isHelper()){
+    if (getStateData().regenerateHealth && !isHelper()){
         if (getHealth() < 5){
             setHealth(5);
-            regenerateTime = REGENERATE_TIME;
+            getStateData().regenerateTime = REGENERATE_TIME;
         }
 
-        if (regenerating){
+        if (getStateData().regenerating){
 
             /* avoid rounding errors */
             if (getHealth() >= getMaxHealth() - 2){
@@ -3037,15 +2851,15 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             }
 
             if (getHealth() == getMaxHealth()){
-                regenerating = false;
+                getStateData().regenerating = false;
             }
-            regenerateTime = REGENERATE_TIME;
-        } else if (getHealth() < getMaxHealth() && regenerateTime == REGENERATE_TIME){
-            regenerateTime -= 1;
-        } else if (regenerateTime <= 0){
-            regenerating = true;
+            getStateData().regenerateTime = REGENERATE_TIME;
+        } else if (getHealth() < getMaxHealth() && getStateData().regenerateTime == REGENERATE_TIME){
+            getStateData().regenerateTime -= 1;
+        } else if (getStateData().regenerateTime <= 0){
+            getStateData().regenerating = true;
         } else {
-            regenerateTime -= 1;
+            getStateData().regenerateTime -= 1;
         }
 
         /*
@@ -3064,16 +2878,16 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
 }
         
 void Character::addPower(double d){
-    power += d;
+    getStateData().power += d;
     /* max power is 3000. is that specified somewhere or just hard coded
      * in the engine?
      */
-    if (power > 3000){
-        power = 3000;
+    if (getStateData().power > 3000){
+        getStateData().power = 3000;
     }
 
-    if (power < 0){
-        power = 0;
+    if (getStateData().power < 0){
+        getStateData().power = 0;
     }
 }
         
@@ -3098,9 +2912,9 @@ void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> 
 }
 
 void Character::addCombo(int combo){
-    hitCount += combo;
-    if (hitCount < 0){
-        hitCount = 0;
+    getStateData().hitCount += combo;
+    if (getStateData().hitCount < 0){
+        getStateData().hitCount = 0;
     }
 }
 
@@ -3124,17 +2938,17 @@ void Character::destroyed(Stage & stage){
 }
 
 void Character::unbind(Character * who){
-    if (bind.bound == who){
-        bind.bound = NULL;
-        bind.time = 0;
+    if (getStateData().bind.bound == who){
+        getStateData().bind.bound = NULL;
+        getStateData().bind.time = 0;
     }
 
-    if (characterData.who == who){
-        characterData.who = NULL;
-        characterData.enabled = false;
+    if (getStateData().characterData.who == who){
+        getStateData().characterData.who = NULL;
+        getStateData().characterData.enabled = false;
     }
 
-    for (map<int, vector<Character*> >::iterator it = targets.begin(); it != targets.end(); it++){
+    for (map<int, vector<Character*> >::iterator it = getStateData().targets.begin(); it != getStateData().targets.end(); it++){
         vector<Character*> & objects = it->second;
         for (vector<Character*>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
             if (*it2 == who){
@@ -3147,18 +2961,18 @@ void Character::unbind(Character * who){
 }
 
 void Character::doMovement(const vector<Character*> & objects, Stage & stage){
-    if (bind.time > 0 && bind.bound != NULL){
-        bind.time -= 1;
-        setX(bind.bound->getX() + bind.offsetX * (bind.bound->getFacing() == FacingLeft ? -1 : 1));
-        setY(bind.bound->getY() + bind.offsetY);
-        switch (bind.facing){
-            case -1: setFacing(bind.bound->getOppositeFacing()); break;
+    if (getStateData().bind.time > 0 && getStateData().bind.bound != NULL){
+        getStateData().bind.time -= 1;
+        setX(getStateData().bind.bound->getX() + getStateData().bind.offsetX * (getStateData().bind.bound->getFacing() == FacingLeft ? -1 : 1));
+        setY(getStateData().bind.bound->getY() + getStateData().bind.offsetY);
+        switch (getStateData().bind.facing){
+            case -1: setFacing(getStateData().bind.bound->getOppositeFacing()); break;
             case 0: maybeTurn(objects, stage); break;
-            case 1: setFacing(bind.bound->getFacing()); break;
+            case 1: setFacing(getStateData().bind.bound->getFacing()); break;
         }
     } else {
         /* TODO: ensure that if shaketime > 0 that binding should still happen */
-        if (hitState.shakeTime > 0){
+        if (getStateData().hitState.shakeTime > 0){
             return;
         }
 
@@ -3202,7 +3016,7 @@ void Character::doMovement(const vector<Character*> & objects, Stage & stage){
 }
 
 void Character::setTargetId(int id, Character * enemy){
-    vector<Character*> & objects = targets[id];
+    vector<Character*> & objects = getStateData().targets[id];
 
     /* Don't add a duplicate target */
     for (vector<Character*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -3214,8 +3028,8 @@ void Character::setTargetId(int id, Character * enemy){
 }
         
 Character * Character::getTargetId(int id) const {
-    if (targets.find(id) != targets.end()){
-        const vector<Character*> & objects = targets.find(id)->second;
+    if (getStateData().targets.find(id) != getStateData().targets.end()){
+        const vector<Character*> & objects = getStateData().targets.find(id)->second;
         if (objects.size() > 0){
             /* FIXME: return a random target? */
             return objects[PaintownUtil::rnd(objects.size())];
@@ -3226,22 +3040,22 @@ Character * Character::getTargetId(int id) const {
         
 void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     /* TODO */
-    hitState.shakeTime = getHit().guardPause.player1;
-    hitState.spritePriority = getHit().player1SpritePriority;
-    hitState.moveContact = 1;
+    getStateData().hitState.shakeTime = getHit().guardPause.player1;
+    getStateData().hitState.spritePriority = getHit().player1SpritePriority;
+    getStateData().hitState.moveContact = 1;
     addPower(getHit().getPower.guarded);
-    characterData.who = NULL;
-    characterData.enabled = false;
+    getStateData().characterData.who = NULL;
+    getStateData().characterData.enabled = false;
 
     disableHit();
 }
 
 void Character::didHit(Character * enemy, Mugen::Stage & stage){
-    characterData.who = NULL;
-    characterData.enabled = false;
-    hitState.shakeTime = getHit().pause.player1;
-    hitState.spritePriority = getHit().player1SpritePriority;
-    hitState.moveContact = 1;
+    getStateData().characterData.who = NULL;
+    getStateData().characterData.enabled = false;
+    getStateData().hitState.shakeTime = getHit().pause.player1;
+    getStateData().hitState.spritePriority = getHit().player1SpritePriority;
+    getStateData().hitState.moveContact = 1;
     addPower(getHit().getPower.hit);
 
     /* Once a hitdef hits, it cannot hit again */
@@ -3253,18 +3067,18 @@ void Character::didHit(Character * enemy, Mugen::Stage & stage){
 
     /* if he is already in a Hit state then increase combo */
     if (enemy->getMoveType() == Move::Hit){
-        combo += 1;
+        getStateData().combo += 1;
     } else {
-        combo = 1;
+        getStateData().combo = 1;
     }
 
     // nextCombo = 15;
 
-    hitCount += 1;
+    getStateData().hitCount += 1;
 
     /* Mainly used for AI so it can tell if a hit succeeded and thus learn which moves to do */
-    if (behavior != NULL){
-        behavior->hit(enemy);
+    if (getStateData().behavior != NULL){
+        getStateData().behavior->hit(enemy);
     }
 
     /* FIXME: handle p1getp2facing */
@@ -3288,7 +3102,7 @@ void Character::hurt(double x){
 void Character::takeDamage(Stage & world, Object * obj, double amount, bool kill, bool defense){
     /* TODO: use getDefense() here somehow */
     if (defense){
-        takeDamage(world, obj, amount / defenseMultiplier, 0.0, 0.0);
+        takeDamage(world, obj, amount / getStateData().defenseMultiplier, 0.0, 0.0);
     } else {
         takeDamage(world, obj, amount, 0.0, 0.0);
     }
@@ -3306,9 +3120,9 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 
 void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     disableHit();
-    hitState.shakeTime = data.player2Pause;
+    getStateData().hitState.shakeTime = data.player2Pause;
     /* FIXME: what should the sprite priority of a reversal be? */
-    hitState.spritePriority = 0;
+    getStateData().hitState.spritePriority = 0;
     if (data.player2State != -1){
         useCharacterData(enemy->getRoot());
         delayChangeState(stage, data.player2State);
@@ -3317,20 +3131,20 @@ void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const Rever
 
 void Character::didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     setReversalInactive();
-    hitState.shakeTime = data.player1Pause;
+    getStateData().hitState.shakeTime = data.player1Pause;
     /* FIXME: what should the sprite priority of a reversal be? */
-    hitState.spritePriority = 0;
+    getStateData().hitState.spritePriority = 0;
     if (data.player1State != -1){
         delayChangeState(stage, data.player1State);
     }
 }
 
 void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
-    characterData.who = NULL;
-    characterData.enabled = false;
+    getStateData().characterData.who = NULL;
+    getStateData().characterData.enabled = false;
 
-    wasHitCounter += 1;
-    hitState.update(stage, *this, getY() < 0, hisHit);
+    getStateData().wasHitCounter += 1;
+    getStateData().hitState.update(stage, *this, getY() < 0, hisHit);
     
     addPower(hisHit.givePower.hit);
 
@@ -3372,11 +3186,11 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     */
     
     /* FIXME: not sure if disabling afterimage's is the right thing */
-    afterImage.lifetime = 0;
+    getStateData().afterImage.lifetime = 0;
 
-    juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
+    getStateData().juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
 
-    for (map<int, HitOverride>::iterator it = hitOverrides.begin(); it != hitOverrides.end(); it++){
+    for (map<int, HitOverride>::iterator it = getStateData().hitOverrides.begin(); it != getStateData().hitOverrides.end(); it++){
         HitOverride & override = it->second;
         /* Time can be -1 (infinity) or some positive number (counting down) */
         if (override.time != 0 && hasHitAttribute(enemy, override.attributes)){
@@ -3769,13 +3583,13 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
     };
 
 Graphics::Bitmap::Filter * Character::getPaletteEffects(unsigned int time){
-    return new PaletteFilter(time, paletteEffects.addRed,
-                    paletteEffects.addGreen, paletteEffects.addBlue,
-                    paletteEffects.multiplyRed, paletteEffects.multiplyGreen,
-                    paletteEffects.multiplyBlue, paletteEffects.sinRed,
-                    paletteEffects.sinGreen, paletteEffects.sinBlue,
-                    paletteEffects.period, paletteEffects.invert,
-                    paletteEffects.color);
+    return new PaletteFilter(time, getStateData().paletteEffects.addRed,
+                    getStateData().paletteEffects.addGreen, getStateData().paletteEffects.addBlue,
+                    getStateData().paletteEffects.multiplyRed, getStateData().paletteEffects.multiplyGreen,
+                    getStateData().paletteEffects.multiplyBlue, getStateData().paletteEffects.sinRed,
+                    getStateData().paletteEffects.sinGreen, getStateData().paletteEffects.sinBlue,
+                    getStateData().paletteEffects.period, getStateData().paletteEffects.invert,
+                    getStateData().paletteEffects.color);
 }
 
 /* FIXME: reimplement this method */
@@ -3824,7 +3638,7 @@ void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity
 }
         
 int Character::getStateTime() const {
-    return stateTime;
+    return getStateData().stateTime;
 }
 
 void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
@@ -3835,27 +3649,27 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     font.printf( x, y + font.getHeight() * 2 + 1, color, *work, "Time %d", 0, getStateTime());
     */
 
-    if (special.invisible){
+    if (getStateData().special.invisible){
         return;
     }
 
     PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
     /* this should never be NULL... */
     if (animation != NULL){
-        int x = getX() - cameraX + drawOffset.x;
-        int y = getRY() - cameraY + drawOffset.y;
+        int x = getX() - cameraX + getStateData().drawOffset.x;
+        int y = getRY() - cameraY + getStateData().drawOffset.y;
 
         /* shake, but only if we are the one being hit */
-        if (isPaused() && moveType == Move::Hit){
+        if (isPaused() && getStateData().moveType == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;
         }
 
-        for (unsigned int index = 0; index < afterImage.frames.size(); index += afterImage.framegap){
-            AfterImage::Image & frame = afterImage.frames[index];
+        for (unsigned int index = 0; index < getStateData().afterImage.frames.size(); index += getStateData().afterImage.framegap){
+            AfterImage::Image & frame = getStateData().afterImage.frames[index];
             if (frame.show){
-                int x = frame.x - cameraX + drawOffset.x + frame.sprite.xoffset;
-                int y = frame.y - cameraY + drawOffset.y + frame.sprite.yoffset;
-                drawAfterImage(afterImage, frame, index, x, y, *work);
+                int x = frame.x - cameraX + getStateData().drawOffset.x + frame.sprite.xoffset;
+                int y = frame.y - cameraY + getStateData().drawOffset.y + frame.sprite.yoffset;
+                drawAfterImage(getStateData().afterImage, frame, index, x, y, *work);
             }
         }
 
@@ -3863,36 +3677,36 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
 
         effects.facing = getFacing() == FacingLeft;
         effects.vfacing = false;
-        effects.scalex = xscale;
-        effects.scaley = yscale;
+        effects.scalex = getStateData().xscale;
+        effects.scaley = getStateData().yscale;
 
-        if (transOverride.enabled){
-            effects.alphaSource = transOverride.alphaSource;
-            effects.alphaDest = transOverride.alphaDestination;
-            effects.trans = transOverride.type;
+        if (getStateData().transOverride.enabled){
+            effects.alphaSource = getStateData().transOverride.alphaSource;
+            effects.alphaDest = getStateData().transOverride.alphaDestination;
+            effects.trans = getStateData().transOverride.type;
         }
 
-        if (drawAngleData.enabled){
-            effects.scalex *= drawAngleData.scaleX;
-            effects.scaley *= drawAngleData.scaleY;
+        if (getStateData().drawAngleData.enabled){
+            effects.scalex *= getStateData().drawAngleData.scaleX;
+            effects.scaley *= getStateData().drawAngleData.scaleY;
             if (getFacing() == FacingRight){
                 /* Counter clock wise if facing right */
-                effects.rotation = drawAngleData.angle;
+                effects.rotation = getStateData().drawAngleData.angle;
             } else {
-                effects.rotation = -drawAngleData.angle;
+                effects.rotation = -getStateData().drawAngleData.angle;
             }
         }
 
         PaintownUtil::ReferenceCount<Graphics::Bitmap::Filter> filter;
-        if (paletteEffects.time > 0){
-            filter = getPaletteEffects(paletteEffects.counter);
+        if (getStateData().paletteEffects.time > 0){
+            filter = getPaletteEffects(getStateData().paletteEffects.counter);
             effects.filter = filter.raw();
         }
 
         animation->render(x, y, *work, effects);
     }
 
-    if (debug && !isHelper()){
+    if (getStateData().debug && !isHelper()){
         const ::Font & font = ::Font::getFont(Global::DEFAULT_FONT, 16, 16);
         int x = 1;
         if (getAlliance() == Mugen::Stage::Player2Side){
@@ -3902,7 +3716,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         Graphics::Color color = Graphics::makeColor(255, 255, 255);
         Graphics::Color backgroundColor = Graphics::MaskColor();
         FontRender * render = FontRender::getInstance();
-        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), currentAnimation);
+        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), getStateData().currentAnimation);
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Vx %f Vy %f", getXVelocity(), getYVelocity());
         y += font.getHeight();
@@ -3914,7 +3728,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Attack type %s", getMoveType().c_str());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", hit.isEnabled());
+        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getStateData().hit.isEnabled());
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Control %d", hasControl());
         y += font.getHeight();
@@ -3947,10 +3761,10 @@ bool Character::canTurn() const {
 }
         
 void Character::setTransOverride(TransType type, int alphaFrom, int alphaTo){
-    transOverride.enabled = true;
-    transOverride.type = type;
-    transOverride.alphaSource = alphaFrom;
-    transOverride.alphaDestination = alphaTo;
+    getStateData().transOverride.enabled = true;
+    getStateData().transOverride.type = type;
+    getStateData().transOverride.alphaSource = alphaFrom;
+    getStateData().transOverride.alphaDestination = alphaTo;
 }
 
 static PaintownUtil::ReferenceCount<Mugen::Sound> findSound(const Mugen::SoundMap & sounds, int group, int item){
@@ -3982,22 +3796,22 @@ void Character::doTurn(Mugen::Stage & stage){
     } else {
         changeState(stage, Mugen::CrouchTurning);
     }
-    if (behavior != NULL){
-        behavior->flip();
+    if (getStateData().behavior != NULL){
+        getStateData().behavior->flip();
     }
     reverseFacing();
 }
 
 const vector<Area> Character::getAttackBoxes() const {
     if (getCurrentAnimation() != NULL){
-        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft, xscale, yscale);
+        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft, getStateData().xscale, getStateData().yscale);
     }
     return vector<Area>();
 }
 
 const vector<Area> Character::getDefenseBoxes() const {
     if (getCurrentAnimation() != NULL){
-        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft, xscale, yscale);
+        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft, getStateData().xscale, getStateData().yscale);
     }
     return vector<Area>();
 }
@@ -4019,23 +3833,23 @@ double Character::getForceY() const {
 }
 
 int Character::getWidth() const {
-    if (widthOverride.enabled){
-        return widthOverride.playerFront;
+    if (getStateData().widthOverride.enabled){
+        return getStateData().widthOverride.playerFront;
     }
-    return groundfront;
+    return getStateData().groundfront;
 }
 
 int Character::getBackWidth() const {
-    if (widthOverride.enabled){
-        return widthOverride.playerBack;
+    if (getStateData().widthOverride.enabled){
+        return getStateData().widthOverride.playerBack;
     }
-    return groundback;
+    return getStateData().groundback;
 }
         
 int Character::getBackX() const {
     int width = getBackWidth();
-    if (widthOverride.enabled){
-        width = widthOverride.edgeBack;
+    if (getStateData().widthOverride.enabled){
+        width = getStateData().widthOverride.edgeBack;
     }
     if (getFacing() == FacingLeft){
         return getX() + width;
@@ -4045,8 +3859,8 @@ int Character::getBackX() const {
 
 int Character::getFrontX() const {
     int width = getWidth();
-    if (widthOverride.enabled){
-        width = widthOverride.edgeFront;
+    if (getStateData().widthOverride.enabled){
+        width = getStateData().widthOverride.edgeFront;
     }
     if (getFacing() == FacingLeft){
         return getX() - width;
@@ -4055,7 +3869,7 @@ int Character::getFrontX() const {
 }
 
 int Character::getCurrentCombo() const {
-    return combo;
+    return getStateData().combo;
 }
 
 /* TODO: implement these */
@@ -4066,39 +3880,39 @@ void Character::setHurtable(){
 }
         
 void Character::addWin(WinGame win){
-    wins.push_back(win);
+    getStateData().wins.push_back(win);
 }
 
 void Character::addMatchWin(){
-    matchWins += 1;
+    getStateData().matchWins += 1;
 }
 
 void Character::resetPlayer(){
     clearWins();
-    power = 0;
+    getStateData().power = 0;
     setHealth(getMaxHealth());
 }
         
 bool Character::isBlocking(const HitDefinition & hit){
     /* FIXME: can only block if in the proper state relative to the hit def */
-    return hasControl() && blocking;
+    return hasControl() && getStateData().blocking;
 }
         
 void Character::resetHitFlag(){
     /* FIXME: not sure if this is right */
-    guarding = false;
+    getStateData().guarding = false;
 }
 
 bool Character::isGuarding() const {
-    return guarding;
+    return getStateData().guarding;
 }
         
 void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
-    hitState.guarded = true;
+    getStateData().hitState.guarded = true;
     // lastTicket = enemy->getTicket();
-    hitState.shakeTime = hit.guardPause.player2;
-    hitState.spritePriority = hit.player2SpritePriority;
+    getStateData().hitState.shakeTime = hit.guardPause.player2;
+    getStateData().hitState.spritePriority = hit.player2SpritePriority;
     addPower(hit.givePower.guarded);
     bool inAir = getY() > 0;
     if (inAir){
@@ -4116,68 +3930,68 @@ void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinitio
 }
 
 void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply){
-    afterImage.currentTime = 0;
-    afterImage.timegap = timegap;
-    afterImage.framegap = framegap;
-    afterImage.lifetime = time;
-    afterImage.length = length;
-    afterImage.translucent = translucent;
-    afterImage.frames.clear();
-    afterImage.paletteColor = paletteColor;
-    afterImage.invertColor = invertColor;
-    afterImage.bright = bright;
-    afterImage.contrast = contrast;
-    afterImage.postBright = postBright;
-    afterImage.add = add;
-    afterImage.multiply = multiply;
+    getStateData().afterImage.currentTime = 0;
+    getStateData().afterImage.timegap = timegap;
+    getStateData().afterImage.framegap = framegap;
+    getStateData().afterImage.lifetime = time;
+    getStateData().afterImage.length = length;
+    getStateData().afterImage.translucent = translucent;
+    getStateData().afterImage.frames.clear();
+    getStateData().afterImage.paletteColor = paletteColor;
+    getStateData().afterImage.invertColor = invertColor;
+    getStateData().afterImage.bright = bright;
+    getStateData().afterImage.contrast = contrast;
+    getStateData().afterImage.postBright = postBright;
+    getStateData().afterImage.add = add;
+    getStateData().afterImage.multiply = multiply;
 }
         
 void Character::setAfterImageTime(int time){
-    afterImage.lifetime = time;
+    getStateData().afterImage.lifetime = time;
 }
         
 void Character::updateAngleEffect(double angle){
-    drawAngle = angle;
+    getStateData().drawAngle = angle;
 }
 
 double Character::getAngleEffect() const {
-    return drawAngle;
+    return getStateData().drawAngle;
 }
         
 void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY){
     if (setAngle){
-        drawAngle = angle;
+        getStateData().drawAngle = angle;
     }
-    drawAngleData.angle = drawAngle;
-    drawAngleData.enabled = true;
-    drawAngleData.scaleX = scaleX;
-    drawAngleData.scaleY = scaleY;
+    getStateData().drawAngleData.angle = getStateData().drawAngle;
+    getStateData().drawAngleData.enabled = true;
+    getStateData().drawAngleData.scaleX = scaleX;
+    getStateData().drawAngleData.scaleY = scaleY;
 }
         
 void Character::assertSpecial(Specials special){
     if (special == Invisible){
-        this->special.invisible = true;
+        this->getStateData().special.invisible = true;
     }
     if (special == Intro){
-        this->special.intro = true;
+        this->getStateData().special.intro = true;
     }
     /* FIXME: handle other specials */
 }
 
 void Character::enableHit(){
-    hit.enable();
+    getStateData().hit.enable();
 }
 
 void Character::disableHit(){
-    hit.disable();
+    getStateData().hit.disable();
 }
         
 void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack){
-    widthOverride.enabled = true;
-    widthOverride.edgeFront = edgeFront;
-    widthOverride.edgeBack = edgeBack;
-    widthOverride.playerFront = playerFront;
-    widthOverride.playerBack = playerBack;
+    getStateData().widthOverride.enabled = true;
+    getStateData().widthOverride.edgeFront = edgeFront;
+    getStateData().widthOverride.edgeBack = edgeBack;
+    getStateData().widthOverride.playerFront = playerFront;
+    getStateData().widthOverride.playerBack = playerBack;
 }
         
 /* FIXME: it may be easier to put the foreign animation stuff here rather than keep track of
@@ -4193,27 +4007,27 @@ PaintownUtil::ReferenceCount<Animation> Character::getAnimation(int id) const {
 }
         
 void Character::setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes){
-    hitByOverride[slot].time = time;
-    hitByOverride[slot].standing = standing;
-    hitByOverride[slot].crouching = crouching;
-    hitByOverride[slot].aerial = aerial;
-    hitByOverride[slot].attributes = attributes;
+    getStateData().hitByOverride[slot].time = time;
+    getStateData().hitByOverride[slot].standing = standing;
+    getStateData().hitByOverride[slot].crouching = crouching;
+    getStateData().hitByOverride[slot].aerial = aerial;
+    getStateData().hitByOverride[slot].attributes = attributes;
 }
         
 void Character::setDefenseMultiplier(double defense){
-    defenseMultiplier = defense;
+    getStateData().defenseMultiplier = defense;
 }
 
 void Character::setAttackMultiplier(double attack){
-    attackMultiplier = attack;
+    getStateData().attackMultiplier = attack;
 }
         
 void Character::doFreeze(){
-    frozen = true;
+    getStateData().frozen = true;
 }
         
 void Character::moveX(double x, bool force){
-    if (force || !frozen){
+    if (force || !getStateData().frozen){
 	if (getFacing() == FacingLeft){
             virtualx -= x;
 	} else {
@@ -4223,46 +4037,46 @@ void Character::moveX(double x, bool force){
 }
 
 void Character::moveY(double y, bool force){
-    if (force || !frozen){
+    if (force || !getStateData().frozen){
         virtualy += y;
     }
 }
         
 Point Character::getMidPosition() const {
-    return midPosition;
+    return getStateData().midPosition;
 }
 
 Point Character::getHeadPosition() const {
-    return headPosition;
+    return getStateData().headPosition;
 }
 
 void Character::setMaxHealth(double health){
-    max_health = health;
-    if (this->health > max_health){
-        this->health = max_health;
+    getStateData().max_health = health;
+    if (this->getStateData().health > getStateData().max_health){
+        this->getStateData().health = getStateData().max_health;
     }
 }
 
 void Character::setHealth(double health){
-    this->health = health;
-    if (this->health < 0){
-        this->health = 0;
+    this->getStateData().health = health;
+    if (this->getStateData().health < 0){
+        this->getStateData().health = 0;
     }
-    if (this->health > getMaxHealth()){
-        this->health = getMaxHealth();
+    if (this->getStateData().health > getMaxHealth()){
+        this->getStateData().health = getMaxHealth();
     }
 }
 
 void Character::setSpritePriority(int priority){
-    spritePriority = priority;
+    getStateData().spritePriority = priority;
 }
         
 int Character::getSpritePriority() const {
     /* FIXME: figure out how long the hitdef's sprite priority should take effect. */
-    if (hitState.shakeTime > 0){
-        return hitState.spritePriority;
+    if (getStateData().hitState.shakeTime > 0){
+        return getStateData().hitState.spritePriority;
     } else {
-        return spritePriority;
+        return getStateData().spritePriority;
     }
 }
 
@@ -4282,8 +4096,8 @@ PaintownUtil::ReferenceCount<Animation> Character::replaceSprites(const Paintown
 }
 
 void Character::setForeignAnimation(PaintownUtil::ReferenceCount<Animation> animation, int number){
-    foreignAnimation = replaceSprites(animation);
-    foreignAnimationNumber = number;
+    getStateData().foreignAnimation = replaceSprites(animation);
+    getStateData().foreignAnimationNumber = number;
 }
         
 bool Character::isHelper() const {
@@ -4301,15 +4115,15 @@ double Character::getGroundFriction() const {
 }
         
 void Character::setReversalActive(){
-    reversalActive = true;
+    getStateData().reversalActive = true;
 }
 
 void Character::setReversalInactive(){
-    reversalActive = false;
+    getStateData().reversalActive = false;
 }
         
 bool Character::isReversalActive(){
-    return reversalActive;
+    return getStateData().reversalActive;
 }
 
 bool Character::canReverse(Character * enemy){
@@ -4350,7 +4164,7 @@ bool Character::canReverse(Character * enemy){
 }
 
 ReversalData & Character::getReversal(){
-    return reversal;
+    return getStateData().reversal;
 }
         
 double Character::forwardPoint(double x) const {
@@ -4362,58 +4176,58 @@ double Character::forwardPoint(double x) const {
 }
         
 void Character::disablePushCheck(){
-    pushPlayer = 1;
+    getStateData().pushPlayer = 1;
 }
 
 bool Character::isPushable(){
-    return (pushPlayer == 0);
+    return (getStateData().pushPlayer == 0);
 }
         
 void Character::setHitOverride(int slot, const HitAttributes & attribute, int state, int time, bool air){
-    HitOverride & override = hitOverrides[slot];
+    HitOverride & override = getStateData().hitOverrides[slot];
     override.attributes = attribute;
     override.state = state;
     override.time = time;
 }
 
 void Character::setDrawOffset(double x, double y){
-    drawOffset.set(x, y);
+    getStateData().drawOffset.set(x, y);
 }
     
 PaintownUtil::ReferenceCount<State> Character::getState(int id) const {
-    if (characterData.enabled && characterData.who != NULL){
-        return characterData.who->getState(id);
+    if (getStateData().characterData.enabled && getStateData().characterData.who != NULL){
+        return getStateData().characterData.who->getState(id);
     }
 
-    if (states.find(id) != states.end()){
-        return states.find(id)->second;
+    if (getStateData().states.find(id) != getStateData().states.end()){
+        return getStateData().states.find(id)->second;
     }
     return PaintownUtil::ReferenceCount<State>(NULL);
 }
 
 void Character::setState(int id, PaintownUtil::ReferenceCount<State> what){
-    states[id] = what;
+    getStateData().states[id] = what;
 }
         
 void Character::setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color){
-    paletteEffects.time = time;
-    paletteEffects.addRed = addRed;
-    paletteEffects.addGreen = addGreen;
-    paletteEffects.addBlue = addBlue;
-    paletteEffects.multiplyRed = multiplyRed;
-    paletteEffects.multiplyGreen = multiplyGreen;
-    paletteEffects.multiplyBlue = multiplyBlue;
-    paletteEffects.sinRed = sinRed;
-    paletteEffects.sinGreen = sinGreen;
-    paletteEffects.sinBlue = sinBlue;
-    paletteEffects.period = period;
-    paletteEffects.invert = invert;
-    paletteEffects.color = color;
-    paletteEffects.counter = 0;
+    getStateData().paletteEffects.time = time;
+    getStateData().paletteEffects.addRed = addRed;
+    getStateData().paletteEffects.addGreen = addGreen;
+    getStateData().paletteEffects.addBlue = addBlue;
+    getStateData().paletteEffects.multiplyRed = multiplyRed;
+    getStateData().paletteEffects.multiplyGreen = multiplyGreen;
+    getStateData().paletteEffects.multiplyBlue = multiplyBlue;
+    getStateData().paletteEffects.sinRed = sinRed;
+    getStateData().paletteEffects.sinGreen = sinGreen;
+    getStateData().paletteEffects.sinBlue = sinBlue;
+    getStateData().paletteEffects.period = period;
+    getStateData().paletteEffects.invert = invert;
+    getStateData().paletteEffects.color = color;
+    getStateData().paletteEffects.counter = 0;
 }
         
 unsigned int Character::getWasHitCount() const {
-    return wasHitCounter;
+    return getStateData().wasHitCounter;
 }
         
 void Character::roundEnd(Stage & stage){
@@ -4432,8 +4246,8 @@ bool Character::isAttacking() const {
 }
     
 void Character::useCharacterData(const Character * who){
-    characterData.who = who;
-    characterData.enabled = true;
+    getStateData().characterData.who = who;
+    getStateData().characterData.enabled = true;
 }
     
 bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
@@ -4454,23 +4268,170 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
 }
         
 std::map<int, vector<Character *> > & Character::getTargets(){
-    return targets;
+    return getStateData().targets;
 }
 
 const std::map<int, vector<Character*> > & Character::getTargets() const {
-    return targets;
+    return getStateData().targets;
 }
         
 bool Character::isAssertIntro(){
-    return special.intro;
+    return getStateData().special.intro;
 }
     
 bool Character::isOwnPalette() const {
-    return ownPalette;
+    return getStateData().ownPalette;
 }
 
 void Character::setOwnPalette(bool what){
-    ownPalette = what;
+    getStateData().ownPalette = what;
+}
+        
+Character::StateData::StateData(){
+    /* TODO */
+}
+
+/* FIXME: need to copy more attributes */
+Character::StateData::StateData(const Character::StateData & copy){
+    /* simple macro to copy fields */
+#define C(field) field = copy.field
+    C(commonSounds);
+    debug = false;
+    frozen = false;
+    pushPlayer = 0;
+    maxChangeStates = 0;
+    C(xscale);
+    C(yscale);
+    C(currentState);
+    C(previousState);
+    C(currentAnimation);
+    C(velocity_x);
+    C(velocity_y);
+    C(currentPhysics);
+    // C(lastTicket);
+    C(regenerateHealth);
+    C(regenerating);
+    C(regenerateTime);
+    C(max_health);
+    C(health);
+    C(spritePriority);
+    C(location);
+    C(baseDir);
+    C(name);
+    C(displayName);
+    C(versionDate);
+    C(mugenVersion);
+    C(author);
+    C(palDefaults);
+    C(currentPalette);
+    C(cmdFile);
+    C(ownPalette);
+    C(constantsFile);
+    C(sffFile);
+    C(airFile);
+    C(sndFile);
+    C(palFile);
+    C(introFile);
+    C(endingFile);
+    C(life);
+    C(attack);
+    C(defense);
+    C(fallDefenseUp);
+    C(lieDownTime);
+    C(airjuggle);
+    C(juggleRemaining);
+    C(currentJuggle);
+    C(spark);
+    C(guardSpark);
+    C(koecho);
+    C(volumeoffset);
+    C(intpersistindex);
+    C(floatpersistindex);
+    C(xscale);
+    C(yscale);
+    C(groundback);
+    C(groundfront);
+    C(airback);
+    C(airfront);
+    C(height);
+    C(attackdist);
+    C(projattackdist);
+    C(projdoscale);
+    C(headPosition);
+    C(midPosition);
+    C(shadowoffset);
+    C(drawOffset);
+    C(walkfwd);
+    C(walkback);
+    C(runforwardx);
+    C(runforwardy);
+    C(runbackx);
+    C(runbacky);
+    C(jumpneux);
+    C(jumpneuy);
+    C(jumpback);
+    C(jumpfwd);
+    C(runjumpback);
+    C(runjumpfwd);
+    C(airjumpneux);
+    C(airjumpneuy);
+    C(airjumpback);
+    C(airjumpfwd);
+    C(power);
+    C(airjumpnum);
+    C(airjumpheight);
+    C(yaccel);
+    C(crouchFriction);
+    C(crouchFrictionThreshold);
+    C(constants);
+    C(currentState);
+    C(previousState);
+    C(currentAnimation);
+    C(debug);
+    C(velocity_x);
+    C(velocity_y);
+    C(has_control);
+    C(stateTime);
+    C(variables);
+    C(floatVariables);
+    C(systemVariables);
+    C(currentPhysics);
+    C(gravity);
+    C(standFriction);
+    C(standFrictionThreshold);
+    C(stateType);
+    C(moveType);
+    // lastTicket = 0;
+    combo = 0;
+    hitCount = 0;
+    blocking = false;
+    C(drawAngle);
+    C(wins);
+    C(matchWins);
+    C(regenerateHealth);
+    C(regenerating);
+    C(regenerateTime);
+    C(regenerateHealthDifference);
+    guarding = false;
+    C(afterImage);
+    C(widthOverride);
+    // C(hitByOverride);
+    C(defenseMultiplier);
+    C(attackMultiplier);
+    C(frozen);
+    C(reversal);
+    C(reversalActive);
+    C(transOverride);
+    C(special);
+    C(paletteEffects);
+    C(max_health);
+    C(health);
+    C(targets);
+    C(spritePriority);
+    wasHitCounter = 0;
+    C(jumpChangeAnimationThreshold);
+    C(airGetHitGroundLevel);
+#undef C
 }
 
 }
