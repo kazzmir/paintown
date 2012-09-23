@@ -2538,33 +2538,11 @@ public:
 
                 Value * compileConst(const Ast::Identifier & identifier){
                     if (identifier == "data.life"){
-                        class DataLife: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getMaxHealth());
-                            }
-
-                            Value * copy() const {
-                                return new DataLife();
-                            }
-                        };
-
-                        return new DataLife();
+                        return getCharacterField(&Character::getMaxHealth, identifier.toLowerString());
                     }
                     
                     if (identifier == "data.power"){
-                        class DataPower: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getPower());
-                            }
-
-                            Value * copy() const {
-                                return new DataPower();
-                            }
-                        };
-
-                        return new DataPower();
+                        return getCharacterField(&Character::getPower, identifier.toLowerString());
                     }
 
                     if (identifier == "data.liedown.time"){
@@ -2573,33 +2551,11 @@ public:
                     }
                     
                     if (identifier == "data.defence"){
-                        class Defence: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getDefense());
-                            }
-
-                            Value * copy() const {
-                                return new Defence();
-                            }
-                        };
-
-                        return new Defence();
+                        return getCharacterField(&Character::getDefense, identifier.toLowerString());
                     }
 
                     if (identifier == "data.attack"){
-                        class Attack: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getAttack());
-                            }
-
-                            Value * copy() const {
-                                return new Attack();
-                            }
-                        };
-
-                        return new Attack();
+                        return getCharacterField(&Character::getAttack, identifier.toLowerString());
                     }
 
                     if (identifier == "data.fall.defence_mul"){
@@ -2618,18 +2574,7 @@ public:
                     }
 
                     if (identifier == "data.airjuggle"){
-                        class AirJuggle: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return environment.getCharacter().getJugglePoints();
-                            }
-
-                            Value * copy() const {
-                                return new AirJuggle();
-                            }
-                        };
-
-                        return new AirJuggle();
+                        return getCharacterField(&Character::getJugglePoints, identifier.toLowerString());
                     }
 
                     if (identifier == "data.sparkno"){
@@ -2665,184 +2610,51 @@ public:
                     }
 
                     if (identifier == "data.ko.echo"){
-                        class KoEcho: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return environment.getCharacter().getKoEcho();
-                            }
-
-                            Value * copy() const {
-                                return new KoEcho();
-                            }
-                        };
-
-                        return new KoEcho();
+                        return getCharacterField(&Character::getKoEcho, identifier.toLowerString());
                     }
 
                     if (identifier == "data.intpersistindex"){
-                        class IntPersistIndex: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return environment.getCharacter().getIntPersistIndex();
-                            }
-
-                            Value * copy() const {
-                                return new IntPersistIndex();
-                            }
-                        };
-
-                        return new IntPersistIndex();
+                        return getCharacterField(&Character::getIntPersistIndex, identifier.toLowerString());
                     }
 
                     if (identifier == "data.floatpersistindex"){
-                        class FloatPersistIndex: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return environment.getCharacter().getFloatPersistIndex();
-                            }
-
-                            Value * copy() const {
-                                return new FloatPersistIndex();
-                            }
-                        };
-
-                        return new FloatPersistIndex();
+                        return getCharacterField(&Character::getFloatPersistIndex, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.airjump.num"){
-                        class AirJump: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return environment.getCharacter().getExtraJumps();
-                            }
-
-                            Value * copy() const {
-                                return new AirJump();
-                            }
-                        };
-
-                        return new AirJump();
+                        return getCharacterField(&Character::getExtraJumps, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.airjump.height"){
-                        class AirJumpHeight: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return environment.getCharacter().getAirJumpHeight();
-                            }
-
-                            Value * copy() const {
-                                return new AirJumpHeight();
-                            }
-                        };
-
-                        return new AirJumpHeight();
-
+                        return getCharacterField(&Character::getAirJumpHeight, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.yaccel"){
-                        class MovementYAccel: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getGravity());
-                            }
-
-                            Value * copy() const {
-                                return new MovementYAccel();
-                            }
-                        };
-
-                        return new MovementYAccel();
+                        return getCharacterField(&Character::getGravity, identifier.toLowerString());
                     }
                     
                     if (identifier == "movement.crouch.friction"){
-                        class MovementCrouchFriction: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getCrouchingFriction());
-                            }
-
-                            Value * copy() const {
-                                return new MovementCrouchFriction();
-                            }
-                        };
-
-                        return new MovementCrouchFriction();
+                        return getCharacterField(&Character::getCrouchingFriction, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.crouch.friction.threshold"){
-                        class MovementCrouchFrictionThreshold: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getCrouchingFrictionThreshold());
-                            }
-
-                            Value * copy() const {
-                                return new MovementCrouchFrictionThreshold();
-                            }
-                        };
-
-                        return new MovementCrouchFrictionThreshold();
+                        return getCharacterField(&Character::getCrouchingFrictionThreshold, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.stand.friction"){
-                        class StandFriction: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getStandingFriction());
-                            }
-
-                            Value * copy() const {
-                                return new StandFriction();
-                            }
-                        };
-
-                        return new StandFriction();
+                        return getCharacterField(&Character::getStandingFriction, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.stand.friction.threshold"){
-                        class StandFrictionThreshold: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getStandingFrictionThreshold());
-                            }
-
-                            Value * copy() const {
-                                return new StandFrictionThreshold();
-                            }
-                        };
-
-                        return new StandFrictionThreshold();
+                        return getCharacterField(&Character::getStandingFrictionThreshold, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.jump.changeanim.threshold"){
-                        class JumpChangeThreshold: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getJumpChangeAnimationThreshold());
-                            }
-
-                            Value * copy() const {
-                                return new JumpChangeThreshold();
-                            }
-                        };
-
-                        return new JumpChangeThreshold();
+                        return getCharacterField(&Character::getJumpChangeAnimationThreshold, identifier.toLowerString());
                     }
 
                     if (identifier == "movement.air.gethit.groundlevel"){
-                        class AirGetHitGroundLevel: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getAirGetHitGroundLevel());
-                            }
-
-                            Value * copy() const {
-                                return new AirGetHitGroundLevel();
-                            }
-                        };
-
-                        return new AirGetHitGroundLevel();
+                        return getCharacterField(&Character::getAirGetHitGroundLevel, identifier.toLowerString());
                     }
 
                     /* FIXME others
@@ -2860,78 +2672,23 @@ public:
 
 
                     if (identifier == "velocity.walk.back.x"){
-                        class VelocityBackX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getWalkBackX());
-                            }
-
-                            Value * copy() const {
-                                return new VelocityBackX();
-                            }
-                        };
-
-                        return new VelocityBackX();
+                        return getCharacterField(&Character::getWalkBackX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.walk.fwd.x"){
-                        class VelocityForwardX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getWalkForwardX());
-                            }
-
-                            Value * copy() const {
-                                return new VelocityForwardX();
-                            }
-                        };
-
-                        return new VelocityForwardX();
+                        return getCharacterField(&Character::getWalkForwardX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.run.fwd.x"){
-                        class RunForwardX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getRunForwardX());
-                            }
-
-                            Value * copy() const {
-                                return new RunForwardX();
-                            }
-                        };
-
-                        return new RunForwardX();
+                        return getCharacterField(&Character::getRunForwardX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.run.fwd.y"){
-                        class RunForwardY: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getRunForwardY());
-                            }
-
-                            Value * copy() const {
-                                return new RunForwardY();
-                            }
-                        };
-
-                        return new RunForwardY();
+                        return getCharacterField(&Character::getRunForwardY, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.jump.neu.x"){
-                        class JumpX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getNeutralJumpingX());
-                            }
-
-                            Value * copy() const {
-                                return new JumpX();
-                            }
-                        };
-
-                        return new JumpX();
+                        return getCharacterField(&Character::getNeutralJumpingX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.jump.y" ||
@@ -2939,195 +2696,139 @@ public:
                          * jump.y, but some characters use it anyway (Gouki)
                          */
                         identifier == "velocity.runjump.y"){
-                        class JumpY: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getNeutralJumpingY());
-                            }
-
-                            Value * copy() const {
-                                return new JumpY();
-                            }
-                        };
-
-                        return new JumpY();
+                        return getCharacterField(&Character::getNeutralJumpingY, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.runjump.back.x"){
-                        class RunBackJumpX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getRunJumpBack());
-                            }
-
-                            Value * copy() const {
-                                return new RunBackJumpX();
-                            }
-                        };
-
-                        return new RunBackJumpX();
+                        return getCharacterField(&Character::getRunJumpBack, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.run.back.x"){
-                        class RunBackX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getRunBackX());
-                            }
-
-                            Value * copy() const {
-                                return new RunBackX();
-                            }
-                        };
-
-                        return new RunBackX();
+                        return getCharacterField(&Character::getRunBackX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.run.back.y"){
-                        class RunBackY: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getRunBackY());
-                            }
-
-                            Value * copy() const {
-                                return new RunBackY();
-                            }
-                        };
-
-                        return new RunBackY();
+                        return getCharacterField(&Character::getRunBackY, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.jump.back.x"){
-                        class JumpBackX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getJumpBack());
-                            }
-
-                            Value * copy() const {
-                                return new JumpBackX();
-                            }
-                        };
-
-                        return new JumpBackX();
+                        return getCharacterField(&Character::getJumpBack, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.jump.fwd.x"){
-                        return getCharacterField(&Character::getJumpForward, "velocity.jump.fwd.x");
+                        return getCharacterField(&Character::getJumpForward, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.runjump.fwd.x"){
-                        return getCharacterField(&Character::getRunJumpForward, "velocity.runjump.fwd.x");
+                        return getCharacterField(&Character::getRunJumpForward, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.air.gethit.airrecover.mul.x"){
-                        return getCharacterField(&Character::getAirHitRecoverMultiplierX, "velocity.air.gethit.airrecover.mul.x");
+                        return getCharacterField(&Character::getAirHitRecoverMultiplierX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.air.gethit.airrecover.mul.y"){
-                        return getCharacterField(&Character::getAirHitRecoverMultiplierY, "velocity.air.gethit.airrecover.mul.y");
+                        return getCharacterField(&Character::getAirHitRecoverMultiplierY, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.airjump.neu.x"){
-                        return getCharacterField(&Character::getAirJumpNeutralX, "velocity.airjump.neu.x");
+                        return getCharacterField(&Character::getAirJumpNeutralX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.airjump.y"){
-                        return getCharacterField(&Character::getAirJumpNeutralY, "velocity.airjump.y");
+                        return getCharacterField(&Character::getAirJumpNeutralY, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.airjump.back.x"){
-                        return getCharacterField(&Character::getAirJumpBack, "velocity.airjump.back.x");
+                        return getCharacterField(&Character::getAirJumpBack, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.airjump.fwd.x"){
-                        return getCharacterField(&Character::getAirJumpForward, "velocity.airjump.fwd.x");
+                        return getCharacterField(&Character::getAirJumpForward, identifier.toLowerString());
                     }
                     
                     if (identifier == "size.xscale"){
-                        return getCharacterField(&Character::getXScale, "size.xscale");
+                        return getCharacterField(&Character::getXScale, identifier.toLowerString());
                     }
                     
                     if (identifier == "size.yscale"){
-                        return getCharacterField(&Character::getYScale, "size.yscale");
+                        return getCharacterField(&Character::getYScale, identifier.toLowerString());
                     }
                     
                     if (identifier == "size.ground.back"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.ground.front"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.air.back"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.air.front"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.height"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.attack.dist"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.proj.attack.dist"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.proj.doscale"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.head.pos.x"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.head.pos.y"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.mid.pos.x"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
                     
                     if (identifier == "size.mid.pos.y"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
                     
                     if (identifier == "size.shadowoffset"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.draw.offset.x"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
 
                     if (identifier == "size.draw.offset.y"){
-                        /* FIXME */
+                        /* TODO */
                         return compile(0);
                     }
-
 
                     return NULL;
                 }
