@@ -1198,7 +1198,27 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             double speed;
                             simple.view() >> speed;
                             self.setAirJumpForward(speed);
-                        }
+                        } else if (simple == "air.gethit.airrecover.mul = .5,.2"){
+                            double x = 0;
+                            double y = 0;
+                            try{
+                                simple.view() >> x >> y;
+                            } catch (const Ast::Exception & ignore){
+                            }
+
+                            self.setAirHitRecoverMultiplierX(x);
+                            self.setAirHitRecoverMultiplierY(y);
+                        } 
+
+
+                        /* TODO
+                        air.gethit.groundrecover = -.15,-3.5
+                        air.gethit.airrecover.add = 0,-4.5
+                        air.gethit.airrecover.back = -1
+                        air.gethit.airrecover.fwd = 0
+                        air.gethit.airrecover.up = -2
+                        air.gethit.airrecover.down = 1.5
+                        */
                     }
                 };
 
@@ -4287,8 +4307,36 @@ void Character::setOwnPalette(bool what){
     getStateData().ownPalette = what;
 }
         
+double Character::getAirHitRecoverMultiplierX() const {
+    return getStateData().velocity_air_gethit_airrecover_mul_x;
+}
+
+double Character::getAirHitRecoverMultiplierY() const {
+    return getStateData().velocity_air_gethit_airrecover_mul_y;
+}
+        
+void Character::setAirHitRecoverMultiplierX(double x){
+    getStateData().velocity_air_gethit_airrecover_mul_x = x;
+}
+
+void Character::setAirHitRecoverMultiplierY(double y){
+    getStateData().velocity_air_gethit_airrecover_mul_y = y;
+}
+        
+double Character::getXScale() const {
+    return getStateData().xscale;
+}
+
+double Character::getYScale() const {
+    return getStateData().yscale;
+}
+
 Character::StateData::StateData(){
-    /* TODO */
+#define Z(x) x = 0
+    /* TODO: add all the variables here */
+    Z(velocity_air_gethit_airrecover_mul_x);
+    Z(velocity_air_gethit_airrecover_mul_y);
+#undef Z
 }
 
 /* FIXME: need to copy more attributes */
@@ -4431,6 +4479,8 @@ Character::StateData::StateData(const Character::StateData & copy){
     wasHitCounter = 0;
     C(jumpChangeAnimationThreshold);
     C(airGetHitGroundLevel);
+    C(velocity_air_gethit_airrecover_mul_x);
+    C(velocity_air_gethit_airrecover_mul_y);
 #undef C
 }
 

@@ -776,6 +776,9 @@ public:
             return getStateData().moveType;
         }
 
+        virtual double getXScale() const;
+        virtual double getYScale() const;
+
         virtual inline void setMoveType(const std::string & str){
             getStateData().moveType = str;
         }
@@ -1205,6 +1208,12 @@ public:
     
         /* True if the hitflags match our current state */
         virtual bool compatibleHitFlag(const HitDefinition::HitFlags & flags);
+                                
+        virtual double getAirHitRecoverMultiplierX() const;
+        virtual double getAirHitRecoverMultiplierY() const;
+
+        virtual void setAirHitRecoverMultiplierX(double x);
+        virtual void setAirHitRecoverMultiplierY(double y);
 
 protected:
     void initialize();
@@ -1449,6 +1458,9 @@ protected:
          * Mugen 1.0
          */
         double crouchFrictionThreshold;
+
+        double velocity_air_gethit_airrecover_mul_x;
+        double velocity_air_gethit_airrecover_mul_y;
 
         /* Sprites */
         Mugen::SpriteMap sprites;

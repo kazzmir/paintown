@@ -460,6 +460,35 @@ const std::vector<std::string> EmptyEnvironment::getCommands() const {
 RuntimeValue EmptyEnvironment::getArg1() const {
     throw MugenException("Cannot get arg1 from an empty environment", __FILE__, __LINE__);
 }
+                        
+template<class ReturnType> Compiler::Value * getCharacterField(ReturnType (Character::*getter)() const, const std::string & name){
+    class CharacterGetter: public Compiler::Value {
+    public:
+        CharacterGetter(ReturnType (Character::*getter)() const, const std::string & name):
+        getter(getter),
+        name(name){
+        }
+        
+        ReturnType (Character::*getter)() const;
+        const std::string name;
+
+        RuntimeValue evaluate(const Environment & environment) const {
+            const Character & guy = environment.getCharacter();
+            return RuntimeValue((guy.*getter)());
+        }
+
+        std::string toString() const {
+            return name;
+        }
+
+        Compiler::Value * copy() const {
+            return new CharacterGetter(getter, name);
+        }
+
+    };
+
+    return new CharacterGetter(getter, name);
+}
 
 }
 
@@ -2985,103 +3014,43 @@ public:
                     }
 
                     if (identifier == "velocity.jump.fwd.x"){
-                        class JumpForwardX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getJumpForward());
-                            }
-
-                            Value * copy() const {
-                                return new JumpForwardX();
-                            }
-                        };
-
-                        return new JumpForwardX();
+                        return getCharacterField(&Character::getJumpForward, "velocity.jump.fwd.x");
                     }
 
                     if (identifier == "velocity.runjump.fwd.x"){
-                        class RunJumpForwardX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getRunJumpForward());
-                            }
+                        return getCharacterField(&Character::getRunJumpForward, "velocity.runjump.fwd.x");
+                    }
 
-                            Value * copy() const {
-                                return new RunJumpForwardX();
-                            }
-                        };
+                    if (identifier == "velocity.air.gethit.airrecover.mul.x"){
+                        return getCharacterField(&Character::getAirHitRecoverMultiplierX, "velocity.air.gethit.airrecover.mul.x");
+                    }
 
-                        return new RunJumpForwardX();
+                    if (identifier == "velocity.air.gethit.airrecover.mul.y"){
+                        return getCharacterField(&Character::getAirHitRecoverMultiplierY, "velocity.air.gethit.airrecover.mul.y");
                     }
 
                     if (identifier == "velocity.airjump.neu.x"){
-                        class AirJumpX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getAirJumpNeutralX());
-                            }
-
-                            Value * copy() const {
-                                return new AirJumpX();
-                            }
-                        };
-
-                        return new AirJumpX();
+                        return getCharacterField(&Character::getAirJumpNeutralX, "velocity.airjump.neu.x");
                     }
 
                     if (identifier == "velocity.airjump.y"){
-                        class AirJumpY: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getAirJumpNeutralY());
-                            }
-
-                            Value * copy() const {
-                                return new AirJumpY();
-                            }
-                        };
-
-                        return new AirJumpY();
+                        return getCharacterField(&Character::getAirJumpNeutralY, "velocity.airjump.y");
                     }
 
                     if (identifier == "velocity.airjump.back.x"){
-                        class AirJumpBackX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getAirJumpBack());
-                            }
-
-                            Value * copy() const {
-                                return new AirJumpBackX();
-                            }
-                        };
-
-                        return new AirJumpBackX();
+                        return getCharacterField(&Character::getAirJumpBack, "velocity.airjump.back.x");
                     }
 
                     if (identifier == "velocity.airjump.fwd.x"){
-                        class AirJumpForwardX: public Value {
-                        public:
-                            RuntimeValue evaluate(const Environment & environment) const {
-                                return RuntimeValue(environment.getCharacter().getAirJumpForward());
-                            }
-
-                            Value * copy() const {
-                                return new AirJumpForwardX();
-                            }
-                        };
-
-                        return new AirJumpForwardX();
+                        return getCharacterField(&Character::getAirJumpForward, "velocity.airjump.fwd.x");
                     }
                     
                     if (identifier == "size.xscale"){
-                        /* FIXME */
-                        return compile(0);
+                        return getCharacterField(&Character::getXScale, "size.xscale");
                     }
                     
                     if (identifier == "size.yscale"){
-                        /* FIXME */
-                        return compile(0);
+                        return getCharacterField(&Character::getYScale, "size.yscale");
                     }
                     
                     if (identifier == "size.ground.back"){
