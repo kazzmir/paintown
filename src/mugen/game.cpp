@@ -964,12 +964,13 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
          * opposed to a cutscene or whatever.
          */
         for (std::vector<Filesystem::AbsolutePath>::iterator it = allDef.begin(); it != allDef.end(); it++){
+            Global::debug(1) << "Maybe load from def file " << it->path() << std::endl;
             if (maybeCharacter(*it)){
                 return doLoad(*it);
             }
         }
 
-        throw MugenException("No .def files for " + name, __FILE__, __LINE__);
+        throw MugenException("No suitable .def files for " + name, __FILE__, __LINE__);
     }
 }
 

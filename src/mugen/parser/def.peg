@@ -248,7 +248,7 @@ rules:
 	             | "\t"
 	inline comment = ";" (!"\n" .)*
 	               | "=" (!"\n" .)*
-		           | "-" "-"+
+                   | "-" "-" (!newline .)*
 	section = line:<line> name:section_start ast:{{value = makeSection(name, getCurrentLine(line), getCurrentColumn(line)); }} whitespace newline+ (section_line(ast) whitespace line_end)* {{ value = ast; }}
     section_line(section) = s comment
                           | s data:attribute {{ asSection(section)->addAttribute(asAttribute(data)); }}
