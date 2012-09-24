@@ -1,13 +1,25 @@
 have required stuff installed first or you waste alot of time :P
+--ubunu
+apt-get install libgmp3-dev libmpfr-dev libmpc-dev texinfo git-core gettext build-
+essential
 
-mkdir /opt/free60-git
-cd /opt/free60-git
+--fedora
+yum groupinstall development tools
+yum install gmp gmp-devel mpfr mpfr-devel libmpc libmpc-devel texinfo git-core gettext gettext-devel build-
+essential
+
+
+
 (modify permissions to make directorys and build as non root user)
 ---Use gligli's git---
+build libxenon somewhere such as your home directory
+mkdir libxenon
+cd libxenon
 git clone https://github.com/gligli/libxenon
 Build toolchain:
 mkdir /usr/local/xenon
 chown username. /user/local/xenon
+cd toolchain
 ./build-xenon-toolchain toolchain
 add to /home/user/.bashrc:
 export DEVKITXENON="/usr/local/xenon"
@@ -18,23 +30,80 @@ build libxenon and libs (zlib, libpng, freetype)
 ./build-xenon-toolchain libs
 
 build sdl:
-cd /opt/free60-git/
-git clone https://github.com/lantus/libSDLXenon.git
+cd ../
+git clone https://github.com/LibXenonProject/libSDLXenon.git
+cd libSDLXenon
 make -f Makefile.xenon
 make -f Makefile.xenon install
 
-#not needed
-#build ZLX:
-#cd ../
-#svn checkout http://zlx.googlecode.com/svn/trunk/ zlx-read-only
-#cd zlx-read-only
-#make -f Makefile_lib
-#make -f Makefile_lib install
+# Also, comment out the size_t declaration in /usr/local/xenon/usr/include/SDL/SDL_config_xenon.h
+# Create /usr/local/xenon/usr/bin/sdl-config with the following values:
+#!/bin/sh
 
-# Also, comment out the size_t declaration in SDL_config_xenon.h
-# Create usr/bin/sdl-config and point it at xenon
+prefix=/usr/local/xenon/usr
+exec_prefix=${prefix}
+exec_prefix_set=no
+libdir=${exec_prefix}/lib
+
+#usage="\
+#Usage: sdl-config [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs]"
+usage="\
+Usage: sdl-config [--prefix[=DIR]] [--exec-prefix[=DIR]] [--version] [--cflags] [--libs] [--static-libs]"
+
+if test $# -eq 0; then
+      echo "${usage}" 1>&2
+      exit 1
+fi
+
+while test $# -gt 0; do
+  case "$1" in
+  -*=*) optarg=`echo "$1" | LC_ALL="C" sed 's/[-_a-zA-Z0-9]*=//'` ;;
+  *) optarg= ;;
+  esac
+
+  case $1 in
+    --prefix=*)
+      prefix=$optarg
+      if test $exec_prefix_set = no ; then
+        exec_prefix=$optarg
+      fi
+      ;;
+    --prefix)
+      echo $prefix
+      ;;
+    --exec-prefix=*)
+      exec_prefix=$optarg
+      exec_prefix_set=yes
+      ;;
+    --exec-prefix)
+      echo $exec_prefix
+      ;;
+    --version)
+      echo 1.2.14
+      ;;
+    --cflags)
+      echo -I${prefix}/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT
+      ;;
+    --libs)
+      echo -L${exec_prefix}/lib  -lSDL
+      ;;
+    --static-libs)
+#    --libs|--static-libs)
+      echo -L${exec_prefix}/lib  -lSDL  -lpthread  -lm -ldl  -lasound -lm -ldl -lpthread -lesd   -lpulse-simple -lpulse   -laa -L/usr/lib -lcaca -lpthread
+      ;;
+    *)
+      echo "${usage}" 1>&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+
+
 build with libxenon 
-
+errors may be caused during the build due to broken symlinks in /usr/local/xenon, check config.log for the error
+and look for the broken symlink in /usr/local/xenon/, remove broken symlink and correctly create it.
 export xenon=1
 make
 then 
