@@ -2657,20 +2657,6 @@ public:
                         return getCharacterField(&Character::getAirGetHitGroundLevel, identifier.toLowerString());
                     }
 
-                    /* FIXME others
-                       movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
-                       movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
-                       movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
-                       movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
-                       movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
-                       movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
-                       movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
-                       movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
-                       movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
-                       movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
-                       */
-
-
                     if (identifier == "velocity.walk.back.x"){
                         return getCharacterField(&Character::getWalkBackX, identifier.toLowerString());
                     }
@@ -2723,12 +2709,32 @@ public:
                         return getCharacterField(&Character::getRunJumpForward, identifier.toLowerString());
                     }
 
+                    /* FIXME others
+                       movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
+                       movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
+                       movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
+                       movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
+                       movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
+                       movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
+                       movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
+                       movement.down.bounce.yaccel: Returns value of the "down.bounce.yaccel" parameter. (float)
+                       movement.down.bounce.groundlevel: Returns value of the "down.bounce.groundlevel" parameter. (float)
+                       movement.down.friction.threshold: Returns value of the "down.friction.threshold" parameter. (float)
+                       */
                     if (identifier == "velocity.air.gethit.airrecover.mul.x"){
                         return getCharacterField(&Character::getAirHitRecoverMultiplierX, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.air.gethit.airrecover.mul.y"){
                         return getCharacterField(&Character::getAirHitRecoverMultiplierY, identifier.toLowerString());
+                    }
+
+                    if (identifier == "velocity.air.gethit.groundrecover.x"){
+                        return getCharacterField(&Character::getAirHitGroundRecoverX, identifier.toLowerString());
+                    }
+                    
+                    if (identifier == "velocity.air.gethit.groundrecover.y"){
+                        return getCharacterField(&Character::getAirHitGroundRecoverY, identifier.toLowerString());
                     }
 
                     if (identifier == "velocity.airjump.neu.x"){

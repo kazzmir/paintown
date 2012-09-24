@@ -1198,7 +1198,8 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             double speed;
                             simple.view() >> speed;
                             self.setAirJumpForward(speed);
-                        } else if (simple == "air.gethit.airrecover.mul = .5,.2"){
+                        } else if (simple == "air.gethit.airrecover.mul"){
+                            /* FIXME: what are the right defaults here? */
                             double x = 0;
                             double y = 0;
                             try{
@@ -1208,7 +1209,18 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
 
                             self.setAirHitRecoverMultiplierX(x);
                             self.setAirHitRecoverMultiplierY(y);
-                        } 
+                        }  else if (simple == "air.gethit.groundrecover"){
+                            /* FIXME: what are the right defaults here? */
+                            double x = 0;
+                            double y = 0;
+                            try{
+                                simple.view() >> x >> y;
+                            } catch (const Ast::Exception & ignore){
+                            }
+
+                            self.setAirHitGroundRecoverX(x);
+                            self.setAirHitGroundRecoverY(y);
+                        }
 
 
                         /* TODO
@@ -4323,6 +4335,22 @@ void Character::setAirHitRecoverMultiplierY(double y){
     getStateData().velocity_air_gethit_airrecover_mul_y = y;
 }
         
+double Character::getAirHitGroundRecoverX() const {
+    return getStateData().velocity_air_gethit_groundrecover_x;
+}
+
+double Character::getAirHitGroundRecoverY() const {
+    return getStateData().velocity_air_gethit_groundrecover_y;
+}
+        
+void Character::setAirHitGroundRecoverX(double x){
+    getStateData().velocity_air_gethit_groundrecover_x = x;
+}
+
+void Character::setAirHitGroundRecoverY(double y){
+    getStateData().velocity_air_gethit_groundrecover_y = y;
+}
+
 double Character::getXScale() const {
     return getStateData().xscale;
 }
@@ -4336,6 +4364,8 @@ Character::StateData::StateData(){
     /* TODO: add all the variables here */
     Z(velocity_air_gethit_airrecover_mul_x);
     Z(velocity_air_gethit_airrecover_mul_y);
+    Z(velocity_air_gethit_groundrecover_x);
+    Z(velocity_air_gethit_groundrecover_y);
 #undef Z
 }
 
@@ -4481,6 +4511,8 @@ Character::StateData::StateData(const Character::StateData & copy){
     C(airGetHitGroundLevel);
     C(velocity_air_gethit_airrecover_mul_x);
     C(velocity_air_gethit_airrecover_mul_y);
+    C(velocity_air_gethit_groundrecover_x);
+    C(velocity_air_gethit_groundrecover_y);
 #undef C
 }
 

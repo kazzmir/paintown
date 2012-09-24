@@ -1215,6 +1215,12 @@ public:
         virtual void setAirHitRecoverMultiplierX(double x);
         virtual void setAirHitRecoverMultiplierY(double y);
 
+        virtual double getAirHitGroundRecoverX() const;
+        virtual double getAirHitGroundRecoverY() const;
+
+        virtual void setAirHitGroundRecoverX(double x);
+        virtual void setAirHitGroundRecoverY(double y);
+
 protected:
     void initialize();
 
@@ -1712,6 +1718,8 @@ protected:
         std::vector<std::string> active;
         std::map<int, HitOverride> hitOverrides;
 
+        double velocity_air_gethit_groundrecover_x;
+        double velocity_air_gethit_groundrecover_y;
     };
 
     StateData stateData;
