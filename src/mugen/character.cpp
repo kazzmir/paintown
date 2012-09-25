@@ -4351,6 +4351,22 @@ void Character::setAirHitGroundRecoverY(double y){
     getStateData().velocity_air_gethit_groundrecover_y = y;
 }
 
+double Character::getAirHitRecoverAddX() const {
+    return getStateData().velocity_air_gethit_recover_add_x;
+}
+
+double Character::getAirHitRecoverAddY() const {
+    return getStateData().velocity_air_gethit_recover_add_y;
+}
+
+void Character::setAirHitRecoverAddX(double x){
+    getStateData().velocity_air_gethit_recover_add_x = x;
+}
+
+void Character::setAirHitRecoverAddY(double y){
+    getStateData().velocity_air_gethit_recover_add_y = y;
+}
+
 double Character::getXScale() const {
     return getStateData().xscale;
 }
@@ -4366,6 +4382,8 @@ Character::StateData::StateData(){
     Z(velocity_air_gethit_airrecover_mul_y);
     Z(velocity_air_gethit_groundrecover_x);
     Z(velocity_air_gethit_groundrecover_y);
+    Z(velocity_air_gethit_recover_add_x);
+    Z(velocity_air_gethit_recover_add_y);
 #undef Z
 }
 
@@ -4513,6 +4531,8 @@ Character::StateData::StateData(const Character::StateData & copy){
     C(velocity_air_gethit_airrecover_mul_y);
     C(velocity_air_gethit_groundrecover_x);
     C(velocity_air_gethit_groundrecover_y);
+    C(velocity_air_gethit_recover_add_x);
+    C(velocity_air_gethit_recover_add_y);
 #undef C
 }
 

@@ -2737,6 +2737,21 @@ public:
                         return getCharacterField(&Character::getAirHitGroundRecoverY, identifier.toLowerString());
                     }
 
+                    if (identifier == "velocity.air.gethit.airrecover.add.x"){
+                        return getCharacterField(&Character::getAirHitRecoverAddX, identifier.toLowerString());
+                    }
+                    
+                    if (identifier == "velocity.air.gethit.airrecover.add.y"){
+                        return getCharacterField(&Character::getAirHitRecoverAddY, identifier.toLowerString());
+                    }
+
+                    /*
+                     * velocity.air.gethit.airrecover.back: Returns value of the "air.gethit.airrecover.back" parameter. (float)
+                     * velocity.air.gethit.airrecover.fwd: Returns value of the "air.gethit.airrecover.fwd" parameter. (float)
+                     * velocity.air.gethit.airrecover.up: Returns value of the "air.gethit.airrecover.up" parameter. (float)
+                     * velocity.air.gethit.airrecover.down: Returns value of the "air.gethit.airrecover.down" parameter. (float)
+                     */
+
                     if (identifier == "velocity.airjump.neu.x"){
                         return getCharacterField(&Character::getAirJumpNeutralX, identifier.toLowerString());
                     }

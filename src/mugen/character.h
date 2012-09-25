@@ -1221,6 +1221,13 @@ public:
         virtual void setAirHitGroundRecoverX(double x);
         virtual void setAirHitGroundRecoverY(double y);
 
+        virtual double getAirHitRecoverAddX() const;
+        virtual double getAirHitRecoverAddY() const;
+
+        virtual void setAirHitRecoverAddX(double x);
+        virtual void setAirHitRecoverAddY(double y);
+
+
 protected:
     void initialize();
 
@@ -1720,6 +1727,9 @@ protected:
 
         double velocity_air_gethit_groundrecover_x;
         double velocity_air_gethit_groundrecover_y;
+        
+        double velocity_air_gethit_recover_add_x;
+        double velocity_air_gethit_recover_add_y;
     };
 
     StateData stateData;
