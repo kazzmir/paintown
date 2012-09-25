@@ -779,6 +779,11 @@ public:
         virtual double getXScale() const;
         virtual double getYScale() const;
 
+        virtual int getGroundBack() const;
+        virtual int getGroundFront() const;
+        virtual int getAirBack() const;
+        virtual int getAirFront() const;
+
         virtual inline void setMoveType(const std::string & str){
             getStateData().moveType = str;
         }
@@ -1132,8 +1137,16 @@ public:
         }
         
         virtual inline int getAttackDistance() const {
-	    return this->getStateData().attackdist;
-	}
+            return this->getStateData().attackdist;
+        }
+        
+        virtual inline int getProjectileAttackDistance() const {
+            return this->getStateData().projattackdist;
+        }
+                        
+        virtual inline bool getProjectileScale() const {
+            return this->getStateData().projdoscale;
+        }
     
         /* let go of a bound character (BindToRoot / BindToTarget */
         virtual void unbind(Character * who);
@@ -1187,6 +1200,7 @@ public:
 
         virtual Point getMidPosition() const;
         virtual Point getHeadPosition() const;
+        virtual Point getDrawOffset() const;
 
         /* bind the enemy to the target id. used for target redirection
          * and BindToTarget

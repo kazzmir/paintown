@@ -2777,63 +2777,116 @@ public:
                     }
                     
                     if (identifier == "size.ground.back"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getGroundBack, identifier.toLowerString());
                     }
 
                     if (identifier == "size.ground.front"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getGroundFront, identifier.toLowerString());
                     }
 
                     if (identifier == "size.air.back"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getAirBack, identifier.toLowerString());
                     }
 
                     if (identifier == "size.air.front"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getAirFront, identifier.toLowerString());
                     }
 
                     if (identifier == "size.height"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getHeight, identifier.toLowerString());
                     }
 
                     if (identifier == "size.attack.dist"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getAttackDistance, identifier.toLowerString());
                     }
 
                     if (identifier == "size.proj.attack.dist"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getProjectileAttackDistance, identifier.toLowerString());
                     }
 
                     if (identifier == "size.proj.doscale"){
-                        /* TODO */
-                        return compile(0);
+                        return getCharacterField(&Character::getProjectileScale, identifier.toLowerString());
                     }
 
                     if (identifier == "size.head.pos.x"){
-                        /* TODO */
-                        return compile(0);
+                        class HeadPosX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                Point point = environment.getCharacter().getHeadPosition();
+                                return point.x;
+                            }
+
+                            string toString() const {
+                                return "size.head.pos.x";
+                            }
+
+                            Value * copy() const {
+                                return new HeadPosX();
+                            }
+                        };
+
+                        return new HeadPosX();
                     }
 
                     if (identifier == "size.head.pos.y"){
-                        /* TODO */
-                        return compile(0);
+                        class HeadPosY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                Point point = environment.getCharacter().getHeadPosition();
+                                return point.y;
+                            }
+
+                            string toString() const {
+                                return "size.head.pos.y";
+                            }
+
+                            Value * copy() const {
+                                return new HeadPosY();
+                            }
+                        };
+
+                        return new HeadPosY();
                     }
 
                     if (identifier == "size.mid.pos.x"){
-                        /* TODO */
-                        return compile(0);
+                        class MidPosX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                Point point = environment.getCharacter().getMidPosition();
+                                return point.x;
+                            }
+
+                            string toString() const {
+                                return "size.mix.pos.x";
+                            }
+
+                            Value * copy() const {
+                                return new MidPosX();
+                            }
+                        };
+
+                        return new MidPosX();
                     }
                     
                     if (identifier == "size.mid.pos.y"){
-                        /* TODO */
-                        return compile(0);
+                        class MidPosY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                Point point = environment.getCharacter().getMidPosition();
+                                return point.y;
+                            }
+
+                            string toString() const {
+                                return "size.mix.pos.y";
+                            }
+
+                            Value * copy() const {
+                                return new MidPosY();
+                            }
+                        };
+
+                        return new MidPosY();
+
                     }
                     
                     if (identifier == "size.shadowoffset"){
@@ -2842,13 +2895,44 @@ public:
                     }
 
                     if (identifier == "size.draw.offset.x"){
-                        /* TODO */
-                        return compile(0);
+                        class DrawOffsetX: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                Point point = environment.getCharacter().getDrawOffset();
+                                return point.x;
+                            }
+
+                            string toString() const {
+                                return "size.draw.offset.x";
+                            }
+
+                            Value * copy() const {
+                                return new DrawOffsetX();
+                            }
+                        };
+
+                        return new DrawOffsetX();
                     }
 
                     if (identifier == "size.draw.offset.y"){
-                        /* TODO */
-                        return compile(0);
+                        class DrawOffsetY: public Value {
+                        public:
+                            RuntimeValue evaluate(const Environment & environment) const {
+                                Point point = environment.getCharacter().getDrawOffset();
+                                return point.y;
+                            }
+
+                            string toString() const {
+                                return "size.draw.offset.y";
+                            }
+
+                            Value * copy() const {
+                                return new DrawOffsetY();
+                            }
+                        };
+
+                        return new DrawOffsetY();
+
                     }
 
                     return NULL;

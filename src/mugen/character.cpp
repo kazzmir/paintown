@@ -3864,6 +3864,9 @@ double Character::getForceY() const {
     return 0;
 }
 
+/* FIXME: I think the width/backwidth/backx things should take into account
+ * if the player is in the air. If so it should return airBack/front/etc..
+ */
 int Character::getWidth() const {
     if (getStateData().widthOverride.enabled){
         return getStateData().widthOverride.playerFront;
@@ -4080,6 +4083,10 @@ Point Character::getMidPosition() const {
 
 Point Character::getHeadPosition() const {
     return getStateData().headPosition;
+}
+
+Point Character::getDrawOffset() const {
+    return getStateData().drawOffset;
 }
 
 void Character::setMaxHealth(double health){
@@ -4375,9 +4382,27 @@ double Character::getYScale() const {
     return getStateData().yscale;
 }
 
+int Character::getGroundBack() const {
+    return getStateData().groundback;
+}
+
+int Character::getGroundFront() const {
+    return getStateData().groundfront;
+}
+
+int Character::getAirBack() const {
+    return getStateData().airback;
+}
+
+int Character::getAirFront() const {
+    return getStateData().airfront;
+}
+
 Character::StateData::StateData(){
 #define Z(x) x = 0
     /* TODO: add all the variables here */
+    Z(projdoscale);
+
     Z(velocity_air_gethit_airrecover_mul_x);
     Z(velocity_air_gethit_airrecover_mul_y);
     Z(velocity_air_gethit_groundrecover_x);
