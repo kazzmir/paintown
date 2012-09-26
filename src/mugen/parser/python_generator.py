@@ -347,6 +347,12 @@ else:
                 length = 1
             import re
             letters = re.sub(r"'", "\\'", pattern.letters)
+            if letters == "\n":
+                letters = "\\n"
+            if letters == "\r":
+                letters = "\\r"
+            if letters == "\t":
+                letters = "\\t"
             data = """
 if '%s' == %s.get(%s.getPosition(), %s):
     %s.nextPosition(%s)
