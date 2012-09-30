@@ -705,8 +705,9 @@ void OptionMoveList::logic(){
 
 void OptionMoveList::run(const Menu::Context & context){
     if (players.size() > 1){
-        Menu::Menu menu(Menu::Menu::Tabbed);
-        Gui::TabbedBox & box = ((Menu::TabRenderer *) menu.getRenderer())->getBox();
+        Util::ReferenceCount<Menu::TabRenderer> renderer = Util::ReferenceCount<Menu::TabRenderer>(new Menu::TabRenderer());
+        Menu::Menu menu(renderer.convert<Menu::Renderer>());
+        Gui::TabbedBox & box = renderer->getBox();
         box.location.setDimensions(GFX_X - 50, GFX_Y - 50);
         box.location.setCenterPosition(Gui::RelativePoint(0, 0));
         for (vector<Paintown::Player*>::iterator it = players.begin(); it != players.end(); it++){

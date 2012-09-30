@@ -45,10 +45,11 @@ Level::LevelInfo doLevelMenu(const string dir, const Menu::Context & context){
     }
 
     try{
-        Menu::Menu temp;
+        Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
+        Menu::Menu temp(renderer.convert<Menu::Renderer>());
         
         int index = 0;
-        Gui::ContextBox & box = ((Menu::DefaultRenderer *) temp.getRenderer())->getBox();
+        Gui::ContextBox & box = renderer->getBox();
         box.setListType(Gui::ContextBox::Normal);
         for ( unsigned int i = 0; i < possible.size(); i++ ){
             OptionLevel *opt = new OptionLevel(box, 0, &index, i);
@@ -161,8 +162,9 @@ public:
             throw Exception::Return(__FILE__, __LINE__);
         }
         int select = 0;
-        Menu::Menu menu;
-        const Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+        Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
+        Menu::Menu menu(renderer.convert<Menu::Renderer>());
+        const Gui::ContextBox & box = renderer->getBox();
         for (int i = 2; i <= maxPlayers; i++){
             OptionLevel * option = new OptionLevel(box, 0, &select, i);
             ostringstream out;
@@ -180,9 +182,10 @@ public:
 
     /* ask the user(s) to select modes of input (keyboard, joystick...) */
     int selectInput(const Menu::Context & context, const vector<string> & names, int player){
-        Menu::Menu menu;
+        Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
+        Menu::Menu menu(renderer.convert<Menu::Renderer>());
         int select = 0;
-        Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+        Gui::ContextBox & box = renderer->getBox();
         box.setListType(Gui::ContextBox::Normal);
         int index = 0;
         for (vector<string>::const_iterator it = names.begin(); it != names.end(); it++){
@@ -556,12 +559,13 @@ public:
     void run(const Menu::Context & context){
         try{
             int select = 0;
-            Menu::Menu menu;
+            Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
+            Menu::Menu menu(renderer.convert<Menu::Renderer>());
             vector<ModType> mods = findMods();
             map<int, ModType*> modMap;
             int index = 0;
             std::vector<OptionLevel *> options;
-            Gui::ContextBox & box = ((Menu::DefaultRenderer *) menu.getRenderer())->getBox();
+            Gui::ContextBox & box = renderer->getBox();
             box.setListType(Gui::ContextBox::Normal);
             box.getListValues().setDistanceFade(false);
             box.getListValues().setOtherColor(Graphics::makeColor(192, 192, 192));
