@@ -775,9 +775,9 @@ Configuration::PlayMode Configuration::getPlayMode(){
 
 void Configuration::setPlayMode(Configuration::PlayMode mode){
     if (mode == Configuration::Cooperative){
-        setProperty("play-mode", config_cooperative);
+        setProperty("play-mode", string(config_cooperative));
     } else if (mode == Configuration::FreeForAll){
-        setProperty("play-mode", config_free_for_all);
+        setProperty("play-mode", string(config_free_for_all));
     }
 }
     
