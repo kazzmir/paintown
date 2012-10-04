@@ -220,6 +220,14 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Joystick::Button4, delay, false, Mugen::X);
     input.set(Joystick::Button5, delay, false, Mugen::Y);
     input.set(Joystick::Button6, delay, false, Mugen::Z);
+
+    input.set(Configuration::getAttack1(0), Mugen::A);
+    input.set(Configuration::getAttack2(0), Mugen::B);
+    input.set(Configuration::getAttack3(0), Mugen::C);
+    input.set(Configuration::getAttack4(0), Mugen::X);
+    input.set(Configuration::getAttack5(0), Mugen::Y);
+    input.set(Configuration::getAttack6(0), Mugen::Z);
+
     /* FIXME: do we need start? maybe put it in the configuration */
     input.set(Keyboard::Key_ENTER, delay, false, Mugen::Start);
     input.set(Keyboard::Key_ESC, 0, true, Mugen::Esc);
