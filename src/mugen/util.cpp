@@ -55,14 +55,17 @@ const std::string Mugen::Util::fixCase( const std::string &str ){
     return tempStr;
 }
 
-const std::string Mugen::Util::removeSpaces( const std::string &str ){
+const std::string Mugen::Util::removeSpaces(const std::string & str){
     std::string tempStr = str;
-    if (tempStr.find(' ') != std::string::npos){
-	Global::debug(2) << "Removing spaces from: " << tempStr << endl;
-	for (int i = tempStr.size()-1; i>-1; --i){
-	    if( tempStr[i] == ' ' )tempStr.erase( tempStr.begin()+i );
-	    else if( tempStr[i] == '\t' )tempStr.erase( tempStr.begin()+i );
-	}
+    while (tempStr.find(' ') == 0 || tempStr.find('\t') == 0){
+        tempStr = tempStr.erase(0, 1);
+    }
+    if (tempStr == ""){
+        return tempStr;
+    }
+    while (tempStr.rfind(' ') == tempStr.size() - 1 ||
+           tempStr.rfind('\t') == tempStr.size() - 1){
+        tempStr = tempStr.erase(tempStr.size() - 1);
     }
     return tempStr;
 }
@@ -192,7 +195,9 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
                 return path;
 	    }
 	}
-        throw Filesystem::NotFound(__FILE__, __LINE__, str);
+        ostringstream out;
+        out << "Could not find " << str;
+        throw Filesystem::NotFound(__FILE__, __LINE__, out.str());
 	// Global::debug(2) << "Corrected file: " << returnString << endl;
 	// return returnString;
     }
