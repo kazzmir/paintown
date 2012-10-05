@@ -63,8 +63,9 @@ const std::string Mugen::Util::removeSpaces(const std::string & str){
     if (tempStr == ""){
         return tempStr;
     }
-    while (tempStr.rfind(' ') == tempStr.size() - 1 ||
-           tempStr.rfind('\t') == tempStr.size() - 1){
+    while (tempStr.size() > 0 &&
+           (tempStr.rfind(' ') == tempStr.size() - 1 ||
+            tempStr.rfind('\t') == tempStr.size() - 1)){
         tempStr = tempStr.erase(tempStr.size() - 1);
     }
     return tempStr;
