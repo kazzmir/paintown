@@ -2260,8 +2260,12 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
             character = ((Mugen::Character *)players[1]);
             character->setFacing(FacingLeft);
             break;
-        default:
+        default: {
+            ostringstream fail;
+            fail << "Internal error: unknown player type " << type;
+            throw MugenException(fail.str(), __FILE__, __LINE__);
             break;
+        }
     }
     
 

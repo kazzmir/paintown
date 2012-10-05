@@ -322,6 +322,7 @@ void SpriteV1::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile
         pcx = new char[reallength];
         if (!pcx){
             printf("out of memory!!\n");
+            return;
         }
         memset(pcx, 0, reallength);
     }

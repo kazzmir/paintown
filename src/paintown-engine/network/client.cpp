@@ -666,6 +666,10 @@ void networkClient(){
         TextInput & nameInput;
         TextInput & portInput;
         TextInput & hostInput;
+    
+        void drawFirst(const Graphics::Bitmap & screen){
+            draw(screen);
+        }
 
         void draw(const Graphics::Bitmap & work){
             if (state.draw){
@@ -712,7 +716,6 @@ void networkClient(){
     Logic logic(focus, state, nameInput, portInput, hostInput, bundle);
     Draw draw(state, focus, nameInput, portInput, hostInput);
 
-    draw.draw(*Graphics::screenParameter.current());
     Util::standardLoop(logic, draw);
 }
 
