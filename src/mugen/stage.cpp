@@ -1281,8 +1281,10 @@ void Mugen::Stage::runCycle(){
     // Run our ticker on and on like energizer bunnies (tm)
     ticker++;
 
+    /*
     const double diffx = startx - camerax;
     const double diffy = starty - cameray;
+    */
 
     if (environmentColor.time > 0){
         environmentColor.time -= 1;
