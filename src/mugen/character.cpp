@@ -4374,6 +4374,46 @@ void Character::setAirHitRecoverAddY(double y){
     getStateData().velocity_air_gethit_recover_add_y = y;
 }
 
+double Character::getAirHitRecoverUp() const {
+    return getStateData().velocity_air_gethit_recover_up;
+}
+
+void Character::setAirHitRecoverUp(double up){
+    getStateData().velocity_air_gethit_recover_up = up;
+}
+
+double Character::getAirHitRecoverDown() const {
+    return getStateData().velocity_air_gethit_recover_down;
+}
+
+void Character::setAirHitRecoverDown(double down){
+    getStateData().velocity_air_gethit_recover_down = down;
+}
+ 
+double Character::getAirHitRecoverForward() const {
+    return getStateData().velocity_air_gethit_recover_forward;
+}
+
+void Character::setAirHitRecoverForward(double forward){
+    getStateData().velocity_air_gethit_recover_forward = forward;
+}
+
+double Character::getAirHitRecoverBack() const {
+    return getStateData().velocity_air_gethit_recover_back;
+}
+
+void Character::setAirHitRecoverBack(double back){
+    getStateData().velocity_air_gethit_recover_back = back;
+}
+        
+double Character::getAirHitRecoverYAccel() const {
+    return getStateData().air_gethit_recover_yaccel;
+}
+
+void Character::setAirHitRecoverYAccel(double yaccel){
+    getStateData().air_gethit_recover_yaccel = yaccel;
+}
+
 double Character::getXScale() const {
     return getStateData().xscale;
 }
@@ -4409,6 +4449,11 @@ Character::StateData::StateData(){
     Z(velocity_air_gethit_groundrecover_y);
     Z(velocity_air_gethit_recover_add_x);
     Z(velocity_air_gethit_recover_add_y);
+    Z(velocity_air_gethit_recover_up);
+    Z(velocity_air_gethit_recover_down);
+    Z(velocity_air_gethit_recover_forward);
+    Z(velocity_air_gethit_recover_back);
+    Z(air_gethit_recover_yaccel);
 #undef Z
 }
 
@@ -4558,6 +4603,11 @@ Character::StateData::StateData(const Character::StateData & copy){
     C(velocity_air_gethit_groundrecover_y);
     C(velocity_air_gethit_recover_add_x);
     C(velocity_air_gethit_recover_add_y);
+    C(velocity_air_gethit_recover_up);
+    C(velocity_air_gethit_recover_down);
+    C(velocity_air_gethit_recover_forward);
+    C(velocity_air_gethit_recover_back);
+    C(air_gethit_recover_yaccel);
 #undef C
 }
 

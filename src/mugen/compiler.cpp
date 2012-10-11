@@ -2708,12 +2708,15 @@ public:
                     if (identifier == "velocity.runjump.fwd.x"){
                         return getCharacterField(&Character::getRunJumpForward, identifier.toLowerString());
                     }
+                       
+                    if (identifier == "movement.air.gethit.airrecover.yaccel"){
+                        return getCharacterField(&Character::getAirHitRecoverYAccel, identifier.toLowerString());
+                    }
 
                     /* FIXME others
                        movement.air.gethit.groundrecover.ground.threshold: Returns value of the "air.gethit.groundrecover.ground.threshold" parameter. (float)
                        movement.air.gethit.groundrecover.groundlevel: Returns value of the "air.gethit.groundrecover.groundlevel" parameter. (float)
                        movement.air.gethit.airrecover.threshold: Returns value of the "air.gethit.airrecover.threshold" parameter. (float)
-                       movement.air.gethit.airrecover.yaccel: Returns value of the "air.gethit.airrecover.yaccel" parameter. (float)
                        movement.air.gethit.trip.groundlevel: Returns value of the "air.gethit.trip.groundlevel" parameter. (float)
                        movement.down.bounce.offset.x: Returns x-component of the "down.bounce.offset.x" parameter. (float)
                        movement.down.bounce.offset.y: Returns y-component of the "down.bounce.offset.y" parameter. (float)
@@ -2744,14 +2747,23 @@ public:
                     if (identifier == "velocity.air.gethit.airrecover.add.y"){
                         return getCharacterField(&Character::getAirHitRecoverAddY, identifier.toLowerString());
                     }
+                     
+                    if (identifier == "velocity.air.gethit.airrecover.up"){
+                        return getCharacterField(&Character::getAirHitRecoverUp, identifier.toLowerString());
+                    }
+                    
+                    if (identifier == "velocity.air.gethit.airrecover.down"){
+                        return getCharacterField(&Character::getAirHitRecoverDown, identifier.toLowerString());
+                    }
 
-                    /*
-                     * velocity.air.gethit.airrecover.back: Returns value of the "air.gethit.airrecover.back" parameter. (float)
-                     * velocity.air.gethit.airrecover.fwd: Returns value of the "air.gethit.airrecover.fwd" parameter. (float)
-                     * velocity.air.gethit.airrecover.up: Returns value of the "air.gethit.airrecover.up" parameter. (float)
-                     * velocity.air.gethit.airrecover.down: Returns value of the "air.gethit.airrecover.down" parameter. (float)
-                     */
-
+                    if (identifier == "velocity.air.gethit.airrecover.fwd"){
+                        return getCharacterField(&Character::getAirHitRecoverForward, identifier.toLowerString());
+                    }
+                    
+                    if (identifier == "velocity.air.gethit.airrecover.back"){
+                        return getCharacterField(&Character::getAirHitRecoverBack, identifier.toLowerString());
+                    }
+                     
                     if (identifier == "velocity.airjump.neu.x"){
                         return getCharacterField(&Character::getAirJumpNeutralX, identifier.toLowerString());
                     }
