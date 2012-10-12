@@ -804,9 +804,9 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
 
                 DefaultWalker walker(defaultTime, defaultBufferTime);
                 section->walk(walker);
-            } else if (PaintownUtil::matchRegex(head, "statedef")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("statedef"))){
                 currentState = parseStateDefinition(section, full, out);
-            } else if (PaintownUtil::matchRegex(head, "state ")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("state "))){
                 if (currentState != NULL){
                     currentState->addController(parseState(section));
                 } else {
@@ -848,8 +848,8 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
 
 static bool isStateDefSection(string name){
     name = Util::fixCase(name);
-    return PaintownUtil::matchRegex(name, "state ") ||
-           PaintownUtil::matchRegex(name, "statedef ");
+    return PaintownUtil::matchRegex(name, PaintownUtil::Regex("state ")) ||
+           PaintownUtil::matchRegex(name, PaintownUtil::Regex("statedef "));
 }
 
 static AttackType::Attribute parseAttribute(const string & kind, const string & action){
@@ -1448,7 +1448,7 @@ PaintownUtil::ReferenceCount<State> Character::parseStateDefinition(Ast::Section
     /* this should really be head = Mugen::Util::fixCase(head) */
     head = Util::fixCase(head);
 
-    int state = atoi(PaintownUtil::captureRegex(head, "statedef *(-?[0-9]+)", 0).c_str());
+    int state = atoi(PaintownUtil::captureRegex(head, PaintownUtil::Regex("statedef *(-?[0-9]+)"), 0).c_str());
     class StateWalker: public Ast::Walker {
         public:
             StateWalker(PaintownUtil::ReferenceCount<State> definition, const Filesystem::AbsolutePath & path):
@@ -1555,8 +1555,8 @@ StateController * Character::parseState(Ast::Section * section){
     std::string head = section->getName();
     head = Util::fixCase(head);
 
-    string name = PaintownUtil::captureRegex(head, "state *-?[0-9]+ *, *(.*)", 0);
-    int state = atoi(PaintownUtil::captureRegex(head, "state *(-?[0-9]+)", 0).c_str());
+    string name = PaintownUtil::captureRegex(head, PaintownUtil::Regex("state *-?[0-9]+ *, *(.*)"), 0);
+    int state = atoi(PaintownUtil::captureRegex(head, PaintownUtil::Regex("state *(-?[0-9]+)"), 0).c_str());
 
     class StateControllerWalker: public Ast::Walker {
     public:
@@ -1729,9 +1729,9 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         std::string head = section->getName();
         head = Util::fixCase(head);
 
-        if (PaintownUtil::matchRegex(head, "statedef")){
+        if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("statedef"))){
             currentState = parseStateDefinition(section, full, out);
-        } else if (PaintownUtil::matchRegex(head, "state ")){
+        } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("state "))){
             if (currentState != NULL){
                 StateController * controller = parseState(section);
                 if (controller != NULL){
@@ -1929,8 +1929,8 @@ void Character::load(int useAct){
                                 simple.view() >> file;
                                 /* just loads the constants */
                                 self.loadCnsFile(Filesystem::RelativePath(file));
-                            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "st[0-9]+")){
-                                int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "st([0-9]+)", 0).c_str());
+                            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("st[0-9]+"))){
+                                int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("st([0-9]+)"), 0).c_str());
                                 if (num >= 0 && num <= 12){
                                     string path;
                                     simple.view() >> path;
@@ -1953,8 +1953,8 @@ void Character::load(int useAct){
                                 simple.view() >> self.getStateData().sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
                                 Util::readSounds(Storage::instance().lookupInsensitive(self.getStateData().baseDir, Filesystem::RelativePath(self.getStateData().sndFile)), self.getStateData().sounds);
-                            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal[0-9]+")){
-                                int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "pal([0-9]+)", 0).c_str());
+                            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("pal[0-9]+"))){
+                                int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("pal([0-9]+)"), 0).c_str());
                                 try{
                                     string what;
                                     /* There could be no file listed, just

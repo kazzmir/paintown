@@ -521,14 +521,6 @@ int Mugen::Stage::currentZOffset() const {
     return zoffset;
 }
 
-static bool matchRegex(const string & str, const string & regex){
-    return Util::matchRegex(str, regex);
-}
-
-static string regexResult(const string & str, const string & regex){
-    return "";
-}
-
 static Filesystem::AbsolutePath getMotifFile(const string & path){
     return Mugen::Data::getInstance().getFileFromMotif(Filesystem::RelativePath(path));
 }

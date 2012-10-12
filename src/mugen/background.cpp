@@ -1098,7 +1098,7 @@ enum ElementType{
 
 static BackgroundElement *getElement(Ast::Section * section, const Mugen::SpriteMap & sprites, const AstRef & parsed){
     std::string head = section->getName();
-    head = PaintownUtil::captureRegex(head, ".*[bB][gG] (.*)", 0);
+    head = PaintownUtil::captureRegex(head, PaintownUtil::Regex(".*[bB][gG] (.*)"), 0);
     std::string name = head;
     Global::debug(2) << "Found background element: " << name << endl;
 
@@ -1791,7 +1791,7 @@ clearColor(Graphics::MaskColor()){
                 SceneDefWalker walker(*this,sprites);
                 section->walk(walker);
 #endif
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "def.*")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + "def.*"))){
                 class BackgroundDefWalker: public Ast::Walker {
                 public:
                     BackgroundDefWalker(Background & self, Mugen::SpriteMap & sprites):
@@ -1835,7 +1835,7 @@ clearColor(Graphics::MaskColor()){
                 section->walk(walker);
                 // This our background data definitions
                 /* probably need a better regex here */
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " .*")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + " .*"))){
                 BackgroundElement * element = getElement(*section_it, sprites, parsed);
 
                 if (element != NULL){
@@ -1866,12 +1866,12 @@ clearColor(Graphics::MaskColor()){
                 out >> h;
                 animations[h] = Mugen::Util::getAnimation(section, sprites, false);
 #endif
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrldef")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + "ctrldef"))){
                 // Grabs the Background Controller Definition so that we can go through the child controllers
                 head.replace(0,10,"");
                 BackgroundController *temp = new BackgroundController(head, section, *this);
                 controllers.push_back(temp);
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrl")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + "ctrl"))){
                 if (controllers.empty()){
                     /* This is a hack to get mugen to do some fancy controlling in a regular
                      * game to accomplish stage fatalities and other tricks
@@ -1948,7 +1948,7 @@ clearColor(Graphics::MaskColor()){
             head = Mugen::Util::fixCase(head);
             std::string tempHeader = Mugen::Util::fixCase(header);
             Global::debug(2) << "Checking head: " << head << " for Header: " << tempHeader << endl;
-            if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "def.*")){
+            if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + "def.*"))){
                 class BackgroundDefWalker: public Ast::Walker {
                 public:
                     BackgroundDefWalker(Background & self, Mugen::SpriteMap & sprites, bool & ownSprites):
@@ -1991,7 +1991,7 @@ clearColor(Graphics::MaskColor()){
                 section->walk(walker);
                 // This our background data definitions
                 /* probably need a better regex here */
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + " .*")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + " .*"))){
                 BackgroundElement * element = NULL;
 
                 if (ownSprites){
@@ -2017,12 +2017,12 @@ clearColor(Graphics::MaskColor()){
                     }
                     priorElement = element;
                 }
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrldef")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + "ctrldef"))){
                 // Grabs the Background Controller Definition so that we can go through the child controllers
                 head.replace(0,10,"");
                 BackgroundController *temp = new BackgroundController(head, section, *this);
                 controllers.push_back(temp);
-            } else if (PaintownUtil::matchRegex(head, ".*" + tempHeader + "ctrl")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex(".*" + tempHeader + "ctrl"))){
                 if (controllers.empty()){
                     /* This is a hack to get mugen to do some fancy controlling in a regular
                      * game to accomplish stage fatalities and other tricks

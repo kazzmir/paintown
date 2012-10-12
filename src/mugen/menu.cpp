@@ -273,7 +273,7 @@ done(false){
                         } else if (simple == "fight"){
                             //simple.view() >> menu.fightFile;
                             //Global::debug(1) << "Got Fight File: '" << menu.fightFile << "'" << endl;
-                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font[0-9]*")){
+                        } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("^font[0-9]*"))){
                             string temp;
                             simple.view() >> temp;
                             menu.fonts.add(temp);
@@ -492,7 +492,7 @@ done(false){
 
                 TitleInfoWalker walker(*this);
                 section->walk(walker);
-            } else if (PaintownUtil::matchRegex(head, "^titlebgdef")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("^titlebgdef"))){
                 background = PaintownUtil::ReferenceCount<Background>(new Background(ourDefFile, "titlebg"));
             } else if (head == "select info"){ 
                 //selectInfoFile = ourDefFile;

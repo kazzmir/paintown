@@ -67,7 +67,7 @@ demoMode(demoMode){
                             simple.view() >> sffFile;
                             Global::debug(1) << "Got Sprite File: '" << sffFile << "'" << std::endl;
                             Mugen::Util::readSprites(Mugen::Util::findFile(Filesystem::RelativePath(sffFile)), Filesystem::AbsolutePath(), self.sprites, true);
-                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                        } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("^font"))){
                             std::string fontPath;
                             simple.view() >> fontPath;
                             self.fonts.add(fontPath);

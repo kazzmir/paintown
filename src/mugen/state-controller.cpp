@@ -61,8 +61,8 @@ spritePriority(0){
         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
             if (simple == "triggerall"){
                 controller.addTriggerAll(Compiler::compile(simple.getValue()));
-            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger[0-9]+")){
-                int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), "trigger([0-9]+)", 0).c_str());
+            } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("trigger[0-9]+"))){
+                int trigger = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("trigger([0-9]+)"), 0).c_str());
                 controller.addTrigger(trigger, Compiler::compile(simple.getValue()));
             } else if (simple == "persistent"){
                 try{

@@ -144,16 +144,16 @@ musicLoop(true){
                     scene.defaultPositionSet = true;
                 } catch (const Ast::Exception & e){
                 }
-            } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.anim")){
-                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.anim", 0).c_str());
+            } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("layer[0-9]\\.anim"))){
+                int num = atoi(PaintownUtil::captureRegex(simple.idString(), PaintownUtil::Regex("layer([0-9])\\.anim"), 0).c_str());
                 if (num >= 0 && num < scene.maxLayers){
                     std::string action;
                     simple.view() >> action;
                     Ast::Section * section = parsed->findSection("begin action " + action);
                     scene.layers[num]->setAnimation(Util::getAnimation(section, sprites, false));
                 }
-            } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.offset")){
-                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.offset", 0).c_str());
+            } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("layer[0-9]\\.offset"))){
+                int num = atoi(PaintownUtil::captureRegex(simple.idString(), PaintownUtil::Regex("layer([0-9])\\.offset"), 0).c_str());
                 if (num >= 0 && num < scene.maxLayers){
                     int x=0,y=0;
                     try{
@@ -162,8 +162,8 @@ musicLoop(true){
                     }
                     scene.layers[num]->setOffset(x, y);
                 }
-            } else if (PaintownUtil::matchRegex(simple.idString(), "layer[0-9]\\.starttime")){
-                int num = atoi(PaintownUtil::captureRegex(simple.idString(), "layer([0-9])\\.starttime", 0).c_str());
+            } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("layer[0-9]\\.starttime"))){
+                int num = atoi(PaintownUtil::captureRegex(simple.idString(), PaintownUtil::Regex("layer([0-9])\\.starttime"), 0).c_str());
                 if (num >= 0 && num < scene.maxLayers){
                     int time;
                     simple.view() >> time;
@@ -374,7 +374,7 @@ startscene(0){
 
                 SceneWalk walk(baseDir, *this, mask);
                 section->walk(walk);
-            } else if (PaintownUtil::matchRegex(head, "^scene")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("^scene"))){
                 Scene *scene = new Scene(section, ourDefFile, parsed, sprites);
                 scenes.push_back(scene);
                 // Check default position

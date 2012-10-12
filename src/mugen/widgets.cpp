@@ -106,7 +106,7 @@ static void submit(void * panel){
     if (!chat->getInput().getText().empty()){
         const std::string & text = chat->getInput().getText();
         // check if it's a command
-        if (PaintownUtil::matchRegex(text, "^/.*")){
+        if (PaintownUtil::matchRegex(text, PaintownUtil::Regex("^/.*"))){
             const std::vector<std::string> & command = split(text.substr(1), ' ');
             chat->handleCommand(command);
         } else {

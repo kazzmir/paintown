@@ -402,7 +402,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             }
 
             string act(const string & line){
-                string argument = Util::captureRegex(line, "god-mode\\s+(\\w+)", 0);
+                string argument = Util::captureRegex(line, Util::Regex("god-mode\\s+(\\w+)"), 0);
                 if (argument == "on"){
                     set(true);
                     return "God mode enabled";

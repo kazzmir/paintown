@@ -1950,7 +1950,7 @@ void CharacterSelect::init(){
                             Global::debug(1) << "Got Select File: '" << file << "'" << std::endl;
                         } else if (simple == "fight"){
                             // Ignore
-                        } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                        } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("^font"))){
                             std::string fontPath;
                             simple.view() >> fontPath;
                             select.fonts.add(fontPath);
@@ -1964,7 +1964,7 @@ void CharacterSelect::init(){
                 section->walk(walker);
             } else if (head == "title info"){
                 /* Nothing */
-            } else if (PaintownUtil::matchRegex(head, "^titlebg")){
+            } else if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("^titlebg"))){
                 /* Nothing */
             } else if (head == "select info"){
                 class SelectInfoWalker: public Ast::Walker{
@@ -3318,7 +3318,7 @@ void CharacterSelect::parseSelect(){
                                 try{
                                     // Grab stage
                                     view >> temp;
-                                    if (PaintownUtil::matchRegex(temp, "order = ")){
+                                    if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("order = "))){
                                         temp.replace(0,std::string("order = ").size(),"");
                                         character.setOrder((int)atoi(temp.c_str()));
                                     } else if (temp == "random"){
@@ -3336,13 +3336,13 @@ void CharacterSelect::parseSelect(){
                                      */
                                     while(true){
                                         view >> temp;
-                                        if (PaintownUtil::matchRegex(temp,"includestage = ")){
+                                        if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("includestage = "))){
                                             temp.replace(0,std::string("includestage = ").size(),"");
                                             character.setIncludeStage((bool)atoi(temp.c_str()));
-                                        } else if (PaintownUtil::matchRegex(temp,"music = ")){
+                                        } else if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("music = "))){
                                             temp.replace(0,std::string("music = ").size(),"");
                                             character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
-                                        } else if (PaintownUtil::matchRegex(temp,"order = ")){
+                                        } else if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("order = "))){
                                             temp.replace(0,std::string("order = ").size(),"");
                                             character.setOrder((int)atoi(temp.c_str()));
                                         }

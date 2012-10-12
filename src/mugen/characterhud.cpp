@@ -1380,7 +1380,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             }
                         }
                         */
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                    } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("^font"))){
                         string path;
                         simple.view() >> path;
                         self.fonts.push_back(new Font(Util::findFile(Filesystem::RelativePath(path))));
@@ -1416,9 +1416,9 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                 std::vector<Font *> & fonts;
 
                 virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                    if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                    if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p1"))){
                         getBar(simple,"p1", self.player1LifeBar);
-                    } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                    } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p2"))){
                         getBar(simple,"p2", self.player2LifeBar);
                     }
                 }
@@ -1468,9 +1468,9 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                     Mugen::SoundMap & sounds;
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p1"))){
                             getBar(simple,"p1",self.player1PowerBar);
-                        } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p2"))){
                             getBar(simple,"p2",self.player2PowerBar);
                         } else if (simple == "level1.snd"){
                             int g=0,s=0;
@@ -1540,9 +1540,9 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                     std::map<int, PaintownUtil::ReferenceCount<Animation> > & animations;
                     std::vector<Font *> & fonts;
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p1"))){
                             getFace(simple,"p1",self.player1Face);
-                        } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p2"))){
                             getFace(simple,"p2",self.player2Face);
                         }
                     }
@@ -1576,9 +1576,9 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                     std::map<int, PaintownUtil::ReferenceCount<Animation> > & animations;
                     std::vector<Font *> & fonts;
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
-                        if (PaintownUtil::matchRegex(simple.toString(), "p1")){
+                        if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p1"))){
                             getName(simple,"p1", self.player1Name);
-                        } else if (PaintownUtil::matchRegex(simple.toString(), "p2")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("p2"))){
                             getName(simple,"p2", self.player2Name);
                         }
                     }
@@ -1778,7 +1778,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getFightSound().setSound(self.sounds[g][s]);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^fight.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^fight."))){
                             getElementProperties(simple,"","fight", self.roundControl.getFight(), sprites, animations,fonts);
                         } else if (simple == "ko.snd"){
                             int g=0,s=0;
@@ -1787,7 +1787,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getKOSound().setSound(self.sounds[g][s]);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^KO.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^KO."))){
                             getElementProperties(simple,"","ko", self.roundControl.getKO(),sprites,animations,fonts);
                         } else if (simple == "dko.snd"){
                             int g=0,s=0;
@@ -1796,7 +1796,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getDKOSound().setSound(self.sounds[g][s]);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^DKO.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^DKO."))){
                             getElementProperties(simple,"","dko", self.roundControl.getDKO(),sprites,animations,fonts);
                         } else if (simple == "to.snd"){
                             int g=0,s=0;
@@ -1805,7 +1805,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             } catch (const Ast::Exception & e){
                             }
                             self.roundControl.getTOSound().setSound(self.sounds[g][s]);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^TO.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^TO."))){
                             getElementProperties(simple,"","to", self.roundControl.getTO(),sprites,animations,fonts);
                         } else if (simple == "win.snd"){
                             int g=0,s=0;
@@ -1837,16 +1837,16 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             }
                             self.roundControl.getDrawSound().setSound(self.sounds[g][s]);
                         }
-                        if (PaintownUtil::matchRegex(simple.toString(),"^win.")){
+                        if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^win."))){
                             getElementProperties(simple,"","win", self.roundControl.getWin(),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^win2.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^win2."))){
                             getElementProperties(simple,"","win2", self.roundControl.getWin2(),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^draw.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^draw."))){
                             getElementProperties(simple,"","draw", self.roundControl.getDraw(),sprites,animations,fonts);
                         }
                         getElementProperties(simple,"round","default", self.roundControl.getDefaultRound(),sprites,animations,fonts);
-                        if (PaintownUtil::matchRegex(simple.toString(), "round[0-9]+")){
-                            std::string temp = PaintownUtil::captureRegex(simple.toString(), "round([0-9]+)",0);
+                        if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("round[0-9]+"))){
+                            std::string temp = PaintownUtil::captureRegex(simple.toString(), PaintownUtil::Regex("round([0-9]+)"),0);
                             int num = atoi(temp.c_str());
                             ostringstream str;
                             str << "round" << num;
@@ -1857,7 +1857,7 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                                 } catch (const Ast::Exception & e){
                                 }
                                 self.roundControl.getRoundSound(num).setSound(self.sounds[g][s]);
-                            } else if (PaintownUtil::matchRegex(simple.toString(),"^"+str.str())){
+                            } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^"+str.str()))){
                                 getElementProperties(simple,"",str.str(), self.roundControl.getRound(num),sprites,animations,fonts);
                             }
                         }
@@ -1911,45 +1911,45 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
                             } catch (const Ast::Exception & e){
                             }
                             self.winIconDisplay.setPlayer2Offset(x,y);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.counter.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.counter."))){
                             getElementProperties(simple,"p1","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.counter.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.counter."))){
                             getElementProperties(simple,"p2","counter", self.winIconDisplay.getPlayer1Counter(),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.n.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.n."))){
                             getElementProperties(simple,"p1","n", self.winIconDisplay.getPlayer1Win(WinGame::Normal),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.n.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.n."))){
                             getElementProperties(simple,"p2","n", self.winIconDisplay.getPlayer2Win(WinGame::Normal),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.s.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.s."))){
                             getElementProperties(simple,"p1","s", self.winIconDisplay.getPlayer1Win(WinGame::Special),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.s.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.s."))){
                             getElementProperties(simple,"p2","s", self.winIconDisplay.getPlayer2Win(WinGame::Special),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.h.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.h."))){
                             getElementProperties(simple,"p1","h", self.winIconDisplay.getPlayer1Win(WinGame::Hyper),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.h.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.h."))){
                             getElementProperties(simple,"p2","h", self.winIconDisplay.getPlayer2Win(WinGame::Hyper),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.throw.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.throw."))){
                             getElementProperties(simple,"p1","throw", self.winIconDisplay.getPlayer1Win(WinGame::NormalThrow),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.throw.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.throw."))){
                             getElementProperties(simple,"p2","throw", self.winIconDisplay.getPlayer2Win(WinGame::NormalThrow),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.c.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.c."))){
                             getElementProperties(simple,"p1","c", self.winIconDisplay.getPlayer1Win(WinGame::Cheese),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.c.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.c."))){
                             getElementProperties(simple,"p2","c", self.winIconDisplay.getPlayer2Win(WinGame::Cheese),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.t.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.t."))){
                             getElementProperties(simple,"p1","t", self.winIconDisplay.getPlayer1Win(WinGame::TimeOver),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.t.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.t."))){
                             getElementProperties(simple,"p2","t", self.winIconDisplay.getPlayer2Win(WinGame::TimeOver),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.suicide.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.suicide."))){
                             getElementProperties(simple,"p1","suicide", self.winIconDisplay.getPlayer1Win(WinGame::Suicide),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.suicide.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.suicide."))){
                             getElementProperties(simple,"p2","suicide", self.winIconDisplay.getPlayer2Win(WinGame::Suicide),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.teammate.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.teammate."))){
                             getElementProperties(simple,"p1","teammate", self.winIconDisplay.getPlayer1Win(WinGame::Teammate),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.teammate.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.teammate."))){
                             getElementProperties(simple,"p2","teammate", self.winIconDisplay.getPlayer2Win(WinGame::Teammate),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p1.perfect.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p1.perfect."))){
                             getElementProperties(simple,"p1","perfect", self.winIconDisplay.getPlayer1Win(WinGame::Perfect),sprites,animations,fonts);
-                        } else if (PaintownUtil::matchRegex(simple.toString(),"^p2.perfect.")){
+                        } else if (PaintownUtil::matchRegex(simple.toString(), PaintownUtil::Regex("^p2.perfect."))){
                             getElementProperties(simple,"p2","perfect", self.winIconDisplay.getPlayer2Win(WinGame::Perfect),sprites,animations,fonts);
                         } else if (simple == "useiconupto"){
                             int num;
@@ -2056,7 +2056,7 @@ void GameInfo::parseAnimations(const AstRef & parsed){
         Ast::Section * section = *section_it;
         std::string head = section->getName();
         head = Util::fixCase(head);
-        if (PaintownUtil::matchRegex(head, "begin *action")){
+        if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("begin *action"))){
             /* This creates the animations. It differs from character animation since
              * these are included in the stage.def file with the other defaults
              */

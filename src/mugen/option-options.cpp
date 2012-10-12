@@ -754,7 +754,7 @@ recalculateHeight(160){
                         std::string file;
                         simple.view() >> file;
                         self.sounds.init(file);
-                    } else if (PaintownUtil::matchRegex(simple.idString(), "^font")){
+                    } else if (PaintownUtil::matchRegex(simple.idString(), PaintownUtil::Regex("^font"))){
                         std::string temp;
                         simple.view() >> temp;
                         fonts.push_back(PaintownUtil::ReferenceCount<Font>(new Font(Util::findFile(Filesystem::RelativePath(temp)))));

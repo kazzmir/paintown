@@ -493,7 +493,7 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
      * screw up the original string
      */
     head = Mugen::Util::fixCase(head);
-    string prefix = PaintownUtil::captureRegex(head, "(.*)" + name + "def", 0);
+    string prefix = PaintownUtil::captureRegex(head, PaintownUtil::Regex("(.*)" + name + "def"), 0);
     stuff.push_back(section);
     section_it++;
 
@@ -506,7 +506,8 @@ vector<Ast::Section*> Mugen::Util::collectBackgroundStuff(list<Ast::Section*>::i
         string sectionName = section->getName();
         sectionName = Mugen::Util::fixCase(sectionName);
         Global::debug(2, __FILE__) << "Match '" << (prefix + name + ".*") << "' against '" << sectionName << "'" << endl;
-        if (PaintownUtil::matchRegex(sectionName, prefix + name + ".*") || PaintownUtil::matchRegex(sectionName, ".*begin *action.*")){
+        if (PaintownUtil::matchRegex(sectionName, PaintownUtil::Regex(prefix + name + ".*")) ||
+            PaintownUtil::matchRegex(sectionName, PaintownUtil::Regex(".*begin *action.*"))){
             stuff.push_back(section);
         } else {
             break;
@@ -603,7 +604,7 @@ PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Se
                 frame->effects.vfacing = true;
             }
 
-            if (PaintownUtil::matchRegex(blend, "^a")){
+            if (PaintownUtil::matchRegex(blend, PaintownUtil::Regex("^a"))){
                 frame->effects.trans = Add;
 
                 /*
@@ -617,9 +618,9 @@ PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Util::getAnimation(Ast::Se
                 int source = frame->effects.alphaSource;
                 int dest = frame->effects.alphaDest;
                 // string regex = "as\\([[:digit:]]\\+\\)d\\([[:digit:]]\\+\\)";
-                string regex = "as(\\d+)d(\\d+)";
+                PaintownUtil::Regex regex("as(\\d+)d(\\d+)");
                 // string regex = "as[0-9]+d[0-9]+";
-                if (PaintownUtil::matchRegex(blend, regex)){
+                if (PaintownUtil::matchRegex(blend, PaintownUtil::Regex(regex))){
                     source = atoi(PaintownUtil::captureRegex(blend, regex, 0).c_str());
                     dest = atoi(PaintownUtil::captureRegex(blend, regex, 1).c_str());
                     frame->effects.trans = AddAlpha;
@@ -830,8 +831,8 @@ std::map<int, PaintownUtil::ReferenceCount<Mugen::Animation> > Mugen::Util::load
         Global::debug(2, __FILE__) << "Animation section '" << head << "'" << endl;
 	head = Mugen::Util::fixCase(head);
         int number;
-        if (PaintownUtil::matchRegex(head, "begin action [0-9]+")){
-            number = atoi(PaintownUtil::captureRegex(head, "begin action ([0-9]+)", 0).c_str());
+        if (PaintownUtil::matchRegex(head, PaintownUtil::Regex("begin action [0-9]+"))){
+            number = atoi(PaintownUtil::captureRegex(head, PaintownUtil::Regex("begin action ([0-9]+)"), 0).c_str());
             Global::debug(2, __FILE__) << "Parse animation " << number << endl;
             animations[number] = Mugen::Util::getAnimation(section, sprites, mask);
         }

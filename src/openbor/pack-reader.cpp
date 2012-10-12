@@ -118,7 +118,7 @@ static string convertToRegex(const string & input){
 
 static bool matchPart(const string & path, const string & search){
     string regex = convertToRegex(search);
-    return Util::matchRegex(path, regex);
+    return Util::matchRegex(path, Util::Regex(regex));
 }
 
 /* split "foo/bar/baz" into [foo, bar, baz] */
