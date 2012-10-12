@@ -333,6 +333,8 @@ int main(int argc, char ** argv){
             Global::debug(0) << "Problem loading file [" << file << "]. Reason: " << ex.getTrace() << std::endl;
         } catch (const TokenException & ex){
             Global::debug(0) << "Problem parsing file [" << file << "]. Reason: " << ex.getTrace() << std::endl;
+        } catch (const Storage::NotFound & ex){
+            Global::debug(0) << "Couldn't find file. Reason: " << ex.getTrace() << std::endl;
         }
         
     } else {
