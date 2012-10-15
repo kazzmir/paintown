@@ -1424,6 +1424,10 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             double x;
                             simple.view() >> x;
                             self.setAirGetHitGroundLevel(x);
+                        } else if (simple == "air.gethit.groundrecover.groundlevel"){
+                            double x;
+                            simple.view() >> x;
+                            self.setAirGetHitGroundLevel(x);
                         }
                     }
                 };
