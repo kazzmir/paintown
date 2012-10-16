@@ -1038,6 +1038,7 @@ except PegError:
             """ % (result, position, indent(pattern.generate_python(result, None, stream, fail).strip()), stream, "RULE_%s" % self.name, position, result, result)
             return data
 
+        resetGensym()
         stream = "stream"
         position = "position"
         rule_parameters = ""
