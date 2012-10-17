@@ -776,6 +776,8 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             world.end();
         }
     } catch (const LoseException & lose){
+        /* TODO: maybe show a lose cutscene for each player */
+
         fadeOut(getScreen(), "Game over");
         finish = false;
     }
@@ -830,21 +832,29 @@ struct GameData{
     vector<Paintown::Object*> players;
 };
 
-static void showIntro(Paintown::Player * player){
-    if (player->getIntroFile() != Filesystem::RelativePath("")){
+static void showCutscene(const Filesystem::RelativePath & path){
+    if (path != Filesystem::RelativePath("")){
         try{
-            Gui::CutScene intro(Storage::instance().find(player->getIntroFile()));
+            Gui::CutScene intro(Storage::instance().find(path));
             /* FIXME: hack */
             intro.setResolution(320, 240);
             intro.playAll();
         } catch (const Filesystem::NotFound & fail){
-            Global::debug(0) << "Could not find file while trying to play cutscene " << player->getIntroFile().path() << ": " << fail.getTrace() << std::endl;
+            Global::debug(0) << "Could not find file while trying to play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
         } catch (const Filesystem::Exception & fail){
-            Global::debug(0) << "Could not play cutscene " << player->getIntroFile().path() << ": " << fail.getTrace() << std::endl;
+            Global::debug(0) << "Could not play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
         } catch (const Exception::Base & fail){
-            Global::debug(0) << "Could not play cutscene " << player->getIntroFile().path() << ": " << fail.getTrace() << std::endl;
+            Global::debug(0) << "Could not play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
         }
     }
+}
+
+static void showEnding(Paintown::Player * player){
+    showCutscene(player->getEndingFile());
+}
+
+static void showIntro(Paintown::Player * player){
+    showCutscene(player->getIntroFile());
 }
 
 static void showIntros(const vector<Paintown::Object*> & players){
@@ -852,6 +862,16 @@ static void showIntros(const vector<Paintown::Object*> & players){
         Paintown::Character * maybe = (Paintown::Character*) *it;
         if (maybe->isPlayer()){
             showIntro((Paintown::Player*) maybe);
+        }
+    }
+}
+
+static void showEndings(const vector<Util::Future<Paintown::Object*> * > & futurePlayers){
+    for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
+        Util::Future<Paintown::Object*> * future = *fit;
+        Paintown::Object * player = future->get();
+        if (player != NULL){
+            showEnding((Paintown::Player*) player);
         }
     }
 }
@@ -990,9 +1010,7 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
     for (int level = 0; level < levels.size(); level++){
         try{
             realGame(futurePlayers, levelInfo, levels[level], setup_players, first);
-            first = false;
         } catch (const StageNext & next){
-            continue;
         } catch (const StagePrevious & previous){
             level -= 2;
             if (level == -2){
@@ -1004,14 +1022,11 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
                 level = index.index - 2;
             }
         }
-    }
 
-    /*
-    for (vector<string>::const_iterator it = levelInfo.getLevels().begin(); it != levelInfo.getLevels().end(); it++){
-        realGame(futurePlayers, levelInfo, *it, setup_players, first);
         first = false;
     }
-    */
+
+    showEndings(futurePlayers);
 }
 
 void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){

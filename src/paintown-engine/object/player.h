@@ -51,6 +51,7 @@ public:
     }
     
     virtual const Filesystem::RelativePath & getIntroFile();
+    virtual const Filesystem::RelativePath & getEndingFile();
 
     virtual bool getExplode(){
         return false;
@@ -163,6 +164,7 @@ protected:
     std::vector<Player*> binds;
 
     Filesystem::RelativePath intro;
+    Filesystem::RelativePath ending;
 
     DrawGlowEffect * invincibilityEffect;
 };

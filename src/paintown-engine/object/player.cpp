@@ -117,6 +117,7 @@ invincible(pl.invincible),
 ignore_lives(false),
 source(pl.source),
 intro(pl.intro),
+ending(pl.ending),
 invincibilityEffect(NULL){
     show_life = getHealth();
     ignore_lives = pl.ignore_lives;
@@ -135,6 +136,10 @@ void Player::load(const Filesystem::AbsolutePath & path){
         string introPath;
         if (token->match("_/intro", introPath)){
             intro = Filesystem::RelativePath(introPath);
+        }
+        string endingPath;
+        if (token->match("_/ending", endingPath)){
+            ending = Filesystem::RelativePath(endingPath);
         }
     }
 }
@@ -630,6 +635,10 @@ const char * Player::keyToName(Input::PaintownInput key){
     
 const Filesystem::RelativePath & Player::getIntroFile(){
     return intro;
+}
+
+const Filesystem::RelativePath & Player::getEndingFile(){
+    return ending;
 }
 
 /*
