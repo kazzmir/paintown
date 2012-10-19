@@ -1040,10 +1040,10 @@ void Mugen::Stage::physics(Character * mugen){
                 // NOTE: if Push Check is disabled do not do this
                 if (mplayer->isPushable() && menemy->isPushable()){
                     while (anyCollisions(mplayer->getDefenseBoxes(), (int) mplayer->getX(), (int) mplayer->getY(),
-                                        menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
-                        centerCollision(mplayer, menemy) &&
-                        (fabs(enemy->getX() - mugen->getX()) < enemy->getWidth() + mugen->getWidth()) &&
-                        mplayer->getY() < enemy->getHeight()){
+                                         menemy->getDefenseBoxes(), (int) menemy->getX(), (int) menemy->getY()) &&
+                           centerCollision(mplayer, menemy) &&
+                           (fabs(enemy->getX() - mugen->getX()) < enemy->getWidth() + mugen->getWidth()) &&
+                           mplayer->getY() < enemy->getHeight()){
                         
                         bool enemyMoved = false;
                         /* use move*Force to override pos freeze */

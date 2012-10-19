@@ -4446,6 +4446,8 @@ Character::StateData::StateData(){
 #define Z(x) x = 0
     /* TODO: add all the variables here */
     Z(projdoscale);
+    
+    Z(pushPlayer);
 
     Z(velocity_air_gethit_airrecover_mul_x);
     Z(velocity_air_gethit_airrecover_mul_y);
