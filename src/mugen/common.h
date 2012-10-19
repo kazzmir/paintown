@@ -384,12 +384,14 @@ class Effects{
 
 struct HitAttributes{
     HitAttributes():
+        slot(-1),
         standing(false),
         crouching(false),
         aerial(false){
         }
 
     HitAttributes(const HitAttributes & copy):
+        slot(copy.slot),
         standing(copy.standing),
         crouching(copy.crouching),
         aerial(copy.aerial),

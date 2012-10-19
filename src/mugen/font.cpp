@@ -287,7 +287,7 @@ static void getline(PaintownUtil::ReferenceCount<Storage::File> file, string & o
         if (file->eof()){
             break;
         }
-        char next;
+        char next = 0;
         file->readLine(&next, 1);
         /* What about \r ? */
         if (next == '\n'){
