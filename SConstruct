@@ -199,39 +199,46 @@ def checkRTTI(context):
     context.Result(colorResult(foo))
     return foo
 
-def checkAllegro5(context):
-    context.Message("Checking for Allegro 5 ... ")
-    tmp = context.env.Clone()
-    env = context.env
-    def find(version):
-        context.Message(str(version))
+def checkAllegro5(debug):
+    use_debug = [""]
+    if debug:
+        use_debug[0] = "-debug"
+    def make(context):
+        context.Message("Checking for Allegro 5 ... ")
+        tmp = context.env.Clone()
+        env = context.env
+        def find(version):
+            context.Message(str(version))
+            try:
+                def make(name):
+                    return '%s%s-%s' % (name, use_debug[0], version)
+                libraries = [make('allegro'),
+                             make('allegro_ttf'),
+                             make('allegro_memfile'),
+                             make('allegro_image'),
+                             make('allegro_primitives'),
+                             make('allegro_audio'),
+                             make('allegro_acodec')]
+                safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
+                env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
+                context.Message('found version %s' % version)
+                return True
+            except Exception, e:
+                print e
+                return False
         try:
-            def make(name):
-                return '%s-%s' % (name, version)
-            libraries = [make('allegro'),
-                         make('allegro_ttf'),
-                         make('allegro_memfile'),
-                         make('allegro_image'),
-                         make('allegro_primitives'),
-                         make('allegro_audio'),
-                         make('allegro_acodec')]
-            safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
-            env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
-            context.Message('found version %s' % version)
-            return True
-        except Exception:
-            return False
-    try:
-        ok = 0
-        # if find(5.1) or find(5.0):
-        if find(5.1):
-            ok = 1
-        context.Result(colorResult(ok))
-        return ok
-    except:
-        context.sconf.env = tmp
-    context.Result(colorResult(0))
-    return 0
+            ok = 0
+            # if find(5.1) or find(5.0):
+            if find(5.1):
+                ok = 1
+            context.Result(colorResult(ok))
+            return ok
+        except:
+            context.sconf.env = tmp
+        context.Result(colorResult(0))
+        return 0
+
+    return make
 
 def checkSDL(context):
     context.Message("Checking for SDL ... ")
@@ -1240,6 +1247,8 @@ rsx
         env['OBJCOPY'] = set_prefix('objcopy')
 
         base = setup(path, '/user/%(arch)s' % {'arch': arch})
+        
+        env.PrependENVPath('PKG_CONFIG_PATH', base + '/lib/pkgconfig')
 
         env.Append(CPPPATH = ['%s/include' % base,
                               # '%s/include/allegro5' % base
@@ -1742,7 +1751,7 @@ def configEnvironment(env):
         return env
     else:
         custom_tests = {"CheckAllegro" : checkAllegro,
-                        "CheckAllegro5" : checkAllegro5,
+                        "CheckAllegro5" : checkAllegro5(getDebug()),
                         "CheckSDL" : checkSDL,
                         "CheckSDLMain" : checkSDLMain}
         config = env.Configure(custom_tests = custom_tests)
@@ -1814,7 +1823,7 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRuby" : checkRuby,
                 "CheckRTTI" : checkRTTI,
                 "CheckAllegro" : checkAllegro,
-                "CheckAllegro5" : checkAllegro5,
+                "CheckAllegro5" : checkAllegro5(getDebug()),
                 "CheckPthreads" : checkPthreads,
                 "CheckSDL" : checkSDL,
                 "CheckSDLMain" : checkSDLMain,
