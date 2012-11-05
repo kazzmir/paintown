@@ -1269,7 +1269,7 @@ rsx
         # Copy the static stdc++ from gnu-libstdc++
         # gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
         # libs = Split("""freetype2-static png SDL m log c jnigraphics supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
-        libs = Split("""freetype2-static png allegro m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
+        libs = Split("""freetype2-static png m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
