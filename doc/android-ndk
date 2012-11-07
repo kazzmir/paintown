@@ -48,6 +48,7 @@
         - ln -s libpng-android/obj/local/armeabi/libpng.a /opt/android/android-toolchain/user/armeabi/lib
         # Also copy to armeabi-v7a
 
+      11/5/2012: Don't use SDL anymore.
       - Get SDL:
         - hg clone http://hg.libsdl.org/SDL
         - cd SDL/android-project/jni
@@ -61,6 +62,12 @@
         - ln -s SDL/include/ /opt/android/android-toolchain/user/armeabi/include/SDL
         - ln -s SDL/android-project/libs/armeabi/libSDL.so /opt/android/android-toolchain/user/armeabi/lib
       
+      - Get Allegro5
+        - 5.1
+        - md android-build
+        - run cmake. WANT_OPENSL=on, WANT_GLES2=off, WANT_SHADERS=off
+        - make install
+
   4. Set the build type environment variable to 'android' and build paintown:
       - export android=1
       - cd /path/to/paintown

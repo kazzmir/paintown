@@ -1053,9 +1053,9 @@ PaintownUtil::ReferenceCount<Mugen::Sprite> Mugen::Util::probeSff(const Filesyst
 }
  
 void Mugen::Util::getIconAndPortrait(const Filesystem::AbsolutePath & sffPath, const Filesystem::AbsolutePath & actPath, PaintownUtil::ReferenceCount<Mugen::Sprite> * icon, PaintownUtil::ReferenceCount<Mugen::Sprite> * portrait){
-    SffReader reader(sffPath, actPath);
-    *icon = reader.findSprite(9000, 0, true);
-    *portrait = reader.findSprite(9000, 1, true);
+    PaintownUtil::ReferenceCount<SffReaderInterface> reader = getSffReader(sffPath, actPath);
+    *icon = reader->findSprite(9000, 0, true);
+    *portrait = reader->findSprite(9000, 1, true);
     if (*icon == NULL || *portrait == NULL){
         bool failed_icon = *icon == NULL;
         bool failed_portrait = *portrait == NULL;
