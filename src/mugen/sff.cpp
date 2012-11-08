@@ -1004,6 +1004,11 @@ static PaintownUtil::ReferenceCount<SffReaderInterface> getSffReader(const Files
     if (Storage::isContainer(filename)){
         return PaintownUtil::ReferenceCount<SffReaderInterface>(new ImageContainerReader(filename));
     }
+
+    if (Storage::instance().isDirectory(filename)){
+        /* TODO */
+    }
+
     throw MugenException(filename.path() + " is not an sffv1 or sffv2 file", __FILE__, __LINE__);
     return PaintownUtil::ReferenceCount<SffReaderInterface>(NULL);
 }
