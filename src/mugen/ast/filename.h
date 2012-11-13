@@ -3,15 +3,30 @@
 
 #include "Value.h"
 #include <string>
+#include <algorithm>
 #include "util/funcs.h"
 
 namespace Ast{
 
 class Filename: public Value {
 public:
-    Filename(int line, int column, const std::string * str):
+    Filename(int line, int column, std::string * str):
     Value(line, column),
     str(str){
+        if (str != NULL){
+            invertSlashes(*str);
+        }
+    }
+
+    static int invert(int c){
+        if (c == '\\'){
+            return '/';
+        }
+        return c;
+    }
+
+    void invertSlashes(std::string & str){
+        std::transform(str.begin(), str.end(), str.begin(), invert);
     }
 
     virtual std::string toString() const {
@@ -97,7 +112,7 @@ public:
     }
 
 protected:
-    const std::string * str;
+    std::string * str;
 };
 
 }

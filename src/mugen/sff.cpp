@@ -834,6 +834,9 @@ protected:
     map< int, map<uint8_t, Graphics::Color> > paletteCache;
 };
 
+struct Image{
+};
+
 /* Looks for a txt file in the container that describes the sprites. The format
  * is as follows
  *
