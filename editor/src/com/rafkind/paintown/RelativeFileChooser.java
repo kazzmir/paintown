@@ -17,14 +17,14 @@ public class RelativeFileChooser extends JDialog {
 	public static final int OK = 0;
 	public static final int CANCEL = 1;
 
-	private List paths;
-	private int option;
+	private List<File> paths = new ArrayList<File>();
+	private int option = CANCEL;
 	
     public RelativeFileChooser(JFrame frame, File start){
         this(frame, start, null);
     }
 
-	public RelativeFileChooser(JFrame frame, File start, File jump){
+	public RelativeFileChooser(JFrame frame, final File start, File jump){
 		super(frame, "Choose a file", true);
 		this.setSize(300, 400);
 
@@ -38,15 +38,6 @@ public class RelativeFileChooser extends JDialog {
 			}
 		});
 		
-		paths = new ArrayList();
-		// paths.add( start );
-		paths.add(new File("."));
-        paths.addAll(pathTo(start, jump));
-		option = OK;
-
-		final JTextField path = (JTextField) engine.find("path");
-		path.setText(getPath());
-
 		class FileList implements ListModel{
 			List listeners = new ArrayList();
 			List files = new ArrayList();
@@ -57,9 +48,10 @@ public class RelativeFileChooser extends JDialog {
 
 			public void setFile(File file){
 				files = new ArrayList();
-				if ( file.isDirectory() ){
+				if (file.isDirectory()){
 					File[] all = file.listFiles();
-					files.add( new File(".."));
+                    files.add(new File("."));
+					files.add(new File(".."));
 					for (int i = 0; i < all.length; i++){
 						files.add(all[i]);
 					}
@@ -96,6 +88,14 @@ public class RelativeFileChooser extends JDialog {
                 use = use.getParentFile();
             }
         }
+
+        // paths.add( start );
+		paths.add(new File("."));
+        paths.addAll(pathTo(start, use));
+		
+        final JTextField path = (JTextField) engine.find("path");
+		path.setText(getPath());
+
 		final FileList list = new FileList(use);
 
 		final JList files = (JList) engine.find("files");
@@ -103,24 +103,51 @@ public class RelativeFileChooser extends JDialog {
 
 		files.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "select");
 
-		files.getActionMap().put("select", new AbstractAction(){
-			public void actionPerformed( ActionEvent event ){
-				File file = (File) files.getSelectedValue();
-				paths.add(file);
-				list.setFile(file);
-				path.setText(getPath());
-				if (! file.isDirectory()){
-					RelativeFileChooser.this.setVisible( false );
-				}
+        final Lambda1 updateFile = new Lambda1(){
+            public Object invoke(Object o){
+                File file = (File) o;
 
-				if (list.getSize() > 0){
-					files.setSelectedIndex( 0 );
-					files.ensureIndexIsVisible( 0 );
-				}
+                /* Don't do anything if the user selects the current directory */
+                if (file.toString() == "."){
+                    return null;
+                }
+
+                /* If they select '..' then remove one path */
+                if (file.toString() == ".." && paths.size() > 1){
+                    paths.remove(paths.size() - 1);
+                    path.setText(getPath());
+                } else {
+                    /* Otherwise add the path to the current list */
+                    paths.add(file);
+                }
+
+                list.setFile(getTruePath(start));
+                path.setText(getPath());
+
+                /* User has selected a file so theres nothing to do except return it to the user */
+                if (! file.isDirectory()){
+                    setOption(OK);
+                    RelativeFileChooser.this.setVisible(false);
+                }
+
+                /* Reset the visible list */
+                if (list.getSize() > 0){
+                    files.setSelectedIndex(0);
+                    files.ensureIndexIsVisible(0);
+                }
+
+                return null;
+            }
+        };
+
+		files.getActionMap().put("select", new AbstractAction(){
+			public void actionPerformed(ActionEvent event){
+				File file = (File) files.getSelectedValue();
+                updateFile.invoke_(file);
 			}
 		});
 
-		files.addMouseListener(new MouseAdapter() {
+		files.addMouseListener(new MouseAdapter(){
 			public void mouseClicked(MouseEvent clicked){
 				if (clicked.getClickCount() == 2){
 					Action action = files.getActionMap().get("select");
@@ -129,31 +156,45 @@ public class RelativeFileChooser extends JDialog {
 			}
 		});
 
-		final JButton up = (JButton) engine.find( "up" );
+		final JButton up = (JButton) engine.find("up");
 		up.addActionListener( new AbstractAction(){
-			public void actionPerformed( ActionEvent e ){
-				if ( paths.size() > 1 ){
-					paths.remove( paths.size() - 1 );
-					list.setFile( (File) paths.get( paths.size() - 1 ) );
-					path.setText( getPath() );
+			public void actionPerformed(ActionEvent e){
+                updateFile.invoke_(new File(".."));
+                /*
+				if (paths.size() > 1){
+					paths.remove(paths.size() - 1);
+					list.setFile(getTruePath(start));
+					path.setText(getPath());
 				}
+                */
 			}
 		});
 
-		final JButton cancel = (JButton) engine.find( "cancel" );
-		cancel.addActionListener( new AbstractAction(){
-			public void actionPerformed( ActionEvent e ){
+		final JButton cancel = (JButton) engine.find("cancel");
+		cancel.addActionListener(new AbstractAction(){
+			public void actionPerformed(ActionEvent e){
 				setOption(CANCEL);
-				RelativeFileChooser.this.setVisible( false );
+				RelativeFileChooser.this.setVisible(false);
 			}
 		});
 
 		final JButton ok = (JButton) engine.find("ok");
 		ok.addActionListener(new AbstractAction(){
-			public void actionPerformed( ActionEvent e ){
-				paths.add(files.getSelectedValue());
+			public void actionPerformed(ActionEvent e){
+                File selected = (File) files.getSelectedValue();
+                if (selected.getName() == ".."){
+                    /* Don't allow user to select .. */
+                    return;
+                } else if (selected.getName() == "."){
+                    /* If the user selects . then they want this directory */
+                } else {
+                    /* Otherwise they selected a file/directory so use that one */
+                    paths.add(selected);
+                }
+
+                /* User has made their choice so we are done */
 				setOption(OK);
-				RelativeFileChooser.this.setVisible( false );
+				RelativeFileChooser.this.setVisible(false);
 			}
 		});
 	}
@@ -163,12 +204,12 @@ public class RelativeFileChooser extends JDialog {
      * find: /a/b/c/d/e/f
      * output: d/e/f
      */
-    private List pathTo(File base, File find){
+    private List<File> pathTo(File base, File find){
         if (find == null){
-            return new ArrayList();
+            return new ArrayList<File>();
         }
 
-        List out = new ArrayList();
+        List<File> out = new ArrayList<File>();
         while (!find.equals(base)){
             /* add the current find path then go one up and loop */
 
@@ -180,8 +221,8 @@ public class RelativeFileChooser extends JDialog {
              * hit the root and have implicitly gone past the base since the
              * base should never be the root anyway.
              */
-            if (parent.equals(find)){
-                return new ArrayList();
+            if (parent == null || parent.equals(find)){
+                return new ArrayList<File>();
             }
             find = parent;
         }
@@ -205,6 +246,13 @@ public class RelativeFileChooser extends JDialog {
 		this.show();
 		return getOption();
 	}
+
+    public File getTruePath(File start){
+        for (File file: paths){
+            start = new File(start, file.getName());
+        }
+        return start;
+    }
 
 	public String getPath(){
 		StringBuffer b = new StringBuffer();
