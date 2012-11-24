@@ -2142,6 +2142,12 @@ def ps3_pkg(target, source, env):
     print "Sign pkg with tools from geohot or something (http://www.geohot.com)..."
     return 0
 
+def xenon_elf(target, source, env):
+    file = source[0].name
+    print "Running xenon-objcopy for you"
+    env.Execute('xenon-objcopy -O elf32-powerpc --adjust-vma 0x80000000 %s xenon.elf' % file)
+    return 0
+
 def wii_elf2dol(target, source, env):
     file = source[0].name
     print "Running elf2dol to create %s.dol for you" % file
@@ -2157,6 +2163,8 @@ for i in shared:
     safe = env.Install('.', i)
     if useMinpspw():
         env.AddPostAction(safe, psp_eboot)
+    if useXenon():
+        env.AddPostAction(safe, xenon_elf)
     if usePs3():
         env.AddPostAction(safe, ps3_pkg)
     if useWii():
