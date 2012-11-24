@@ -95,7 +95,7 @@ public class ProjectileEvent extends AnimationEventNotifier implements Animation
 		profield.setText(_projectile);
 		probutton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+					RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();

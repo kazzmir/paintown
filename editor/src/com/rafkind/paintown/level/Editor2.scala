@@ -1038,7 +1038,7 @@ class NewEditor extends JFrame("Paintown Editor"){
 
             add.addActionListener(new AbstractAction(){
                 override def actionPerformed(event:ActionEvent){
-                    val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                    val chooser = new RelativeFileChooser(NewEditor.this, "Choose a file", Data.getDataPath());
                     val ret = chooser.open();
                     if (ret == RelativeFileChooser.OK ){
                         val path = chooser.getPath();
@@ -1198,7 +1198,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             val add = levelEngine.find( "add-front-panel" ).asInstanceOf[JButton];
             add.addActionListener( new AbstractAction(){
                 override def actionPerformed(event:ActionEvent){
-                    val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                    val chooser = new RelativeFileChooser(NewEditor.this, "Choose a file", Data.getDataPath());
                     val ret = chooser.open();
                     if (ret == RelativeFileChooser.OK){
                         try{
@@ -1234,7 +1234,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             val add = levelEngine.find( "add-back-panel" ).asInstanceOf[JButton];
             add.addActionListener( new AbstractAction(){
                 override def actionPerformed(event:ActionEvent){
-                    val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                    val chooser = new RelativeFileChooser(NewEditor.this, "Choose a file", Data.getDataPath());
                     val ret = chooser.open();
                     if (ret == RelativeFileChooser.OK){
                         try{
@@ -1298,7 +1298,7 @@ class NewEditor extends JFrame("Paintown Editor"){
 
         levelChangeBackground.addActionListener(new AbstractAction(){
             override def actionPerformed(event:ActionEvent){
-                val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+                val chooser = new RelativeFileChooser(NewEditor.this, "Choose a file", Data.getDataPath());
                 val ret = chooser.open();
                 if (ret == RelativeFileChooser.OK){
                     val path = chooser.getPath();
@@ -1320,7 +1320,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         val introFile = levelEngine.find("intro-pick").asInstanceOf[JButton]
         introFile.addActionListener(new AbstractAction(){
           override def actionPerformed(event:ActionEvent){
-            val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+            val chooser = new RelativeFileChooser(NewEditor.this, "Choose a file", Data.getDataPath());
             val ret = chooser.open();
             if (ret == RelativeFileChooser.OK ){
               val path = chooser.getPath();
@@ -1341,7 +1341,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         val endingFile = levelEngine.find("ending-pick").asInstanceOf[JButton]
         endingFile.addActionListener(new AbstractAction(){
           override def actionPerformed(event:ActionEvent){
-            val chooser = new RelativeFileChooser(NewEditor.this, Data.getDataPath());
+            val chooser = new RelativeFileChooser(NewEditor.this, "Choose a file", Data.getDataPath());
             val ret = chooser.open();
             if (ret == RelativeFileChooser.OK ){
               val path = chooser.getPath();

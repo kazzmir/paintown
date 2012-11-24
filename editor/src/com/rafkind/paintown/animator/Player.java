@@ -282,7 +282,7 @@ public final class Player{
 
         deathSoundButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();
@@ -297,7 +297,7 @@ public final class Player{
         JButton hitSoundButton = (JButton) contextEditor.find( "change-hit-sound" );
         hitSoundButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();
@@ -314,7 +314,7 @@ public final class Player{
 
         landingSoundButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();
@@ -331,7 +331,7 @@ public final class Player{
 
         introButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();
@@ -349,7 +349,7 @@ public final class Player{
 
         iconButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();
@@ -366,7 +366,7 @@ public final class Player{
 
         origMapButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();
@@ -383,7 +383,7 @@ public final class Player{
 
         addRemapButton.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+                RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();

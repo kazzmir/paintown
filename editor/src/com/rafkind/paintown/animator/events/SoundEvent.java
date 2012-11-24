@@ -47,7 +47,7 @@ public class SoundEvent extends AnimationEventNotifier implements AnimationEvent
 		soundfield.setText(_sound);
 		soundbutton.addActionListener( new AbstractAction(){
 				public void actionPerformed( ActionEvent event ){
-					RelativeFileChooser chooser = NewAnimator.getNewFileChooser();
+					RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a file");
 					int ret = chooser.open();
 					if ( ret == RelativeFileChooser.OK ){
 						final String path = chooser.getPath();

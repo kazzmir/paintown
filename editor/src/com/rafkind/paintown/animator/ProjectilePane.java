@@ -68,7 +68,7 @@ public class ProjectilePane {
             JButton basedirButton = (JButton) contextEditor.find("change-basedir");
             basedirButton.addActionListener(new AbstractAction(){
                 public void actionPerformed(ActionEvent event){
-                    RelativeFileChooser chooser = NewAnimator.getNewFileChooser(object.getPath());
+                    RelativeFileChooser chooser = NewAnimator.getNewFileChooser("Choose a base directory for frames", object.getPath());
                     int ret = chooser.open();
                     if (ret == RelativeFileChooser.OK){
                         final String path = chooser.getPath();

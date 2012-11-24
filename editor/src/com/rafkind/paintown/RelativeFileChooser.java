@@ -20,12 +20,12 @@ public class RelativeFileChooser extends JDialog {
 	private List<File> paths = new ArrayList<File>();
 	private int option = CANCEL;
 	
-    public RelativeFileChooser(JFrame frame, File start){
-        this(frame, start, null);
+    public RelativeFileChooser(JFrame frame, String title, File start){
+        this(frame, title, start, null);
     }
 
-	public RelativeFileChooser(JFrame frame, final File start, File jump){
-		super(frame, "Choose a file", true);
+	public RelativeFileChooser(JFrame frame, String title, final File start, File jump){
+		super(frame, title, true);
 		this.setSize(300, 400);
 
 		SwingEngine engine = new SwingEngine("relative.xml");

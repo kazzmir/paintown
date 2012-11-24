@@ -1110,7 +1110,7 @@ public class Editor extends JFrame {
 
             add.addActionListener( new AbstractAction(){
                 public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
+                    RelativeFileChooser chooser = new RelativeFileChooser(Editor.this, "Choose a file", Data.getDataPath());
                     int ret = chooser.open();
                     if ( ret == RelativeFileChooser.OK ){
                         final String path = chooser.getPath();
@@ -1281,7 +1281,7 @@ public class Editor extends JFrame {
             final JButton add = (JButton) levelEngine.find( "add-front-panel" );
             add.addActionListener( new AbstractAction(){
                 public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
+                    RelativeFileChooser chooser = new RelativeFileChooser(Editor.this, "Choose a file", Data.getDataPath());
                     int ret = chooser.open();
                     if ( ret == RelativeFileChooser.OK ){
                         try{
@@ -1315,7 +1315,7 @@ public class Editor extends JFrame {
             final JButton add = (JButton) levelEngine.find( "add-back-panel" );
             add.addActionListener( new AbstractAction(){
                 public void actionPerformed( ActionEvent event ){
-                    RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
+                    RelativeFileChooser chooser = new RelativeFileChooser(Editor.this, "Choose a file", Data.getDataPath());
                     int ret = chooser.open();
                     if ( ret == RelativeFileChooser.OK ){
                         try{
@@ -1377,7 +1377,7 @@ public class Editor extends JFrame {
 
         levelChangeBackground.addActionListener( new AbstractAction(){
             public void actionPerformed( ActionEvent event ){
-                RelativeFileChooser chooser = new RelativeFileChooser( Editor.this, Data.getDataPath() );
+                RelativeFileChooser chooser = new RelativeFileChooser(Editor.this, "Choose a file", Data.getDataPath());
                 int ret = chooser.open();
                 if ( ret == RelativeFileChooser.OK ){
                     final String path = chooser.getPath();

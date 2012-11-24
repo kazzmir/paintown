@@ -431,9 +431,9 @@ public class CharacterAnimation extends JPanel {
                 public void actionPerformed(ActionEvent event){
                     RelativeFileChooser chooser;
                     if (object.getPath() != null){
-                        chooser = NewAnimator.getNewFileChooser(object.getPath());
+                        chooser = NewAnimator.getNewFileChooser("Choose base directory", object.getPath());
                     } else {
-                        chooser = NewAnimator.getNewFileChooser();
+                        chooser = NewAnimator.getNewFileChooser("Choose base directory");
                     }
                     int ret = chooser.open();
                     if (ret == RelativeFileChooser.OK){
