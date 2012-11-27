@@ -835,7 +835,53 @@ protected:
 };
 
 struct Image{
+    Image(int group, int item, int axisX, int axisY, string file):
+        group(group),
+        item(item),
+        axisX(axisX),
+        axisY(axisY),
+        file(file){
+        }
+
+    int group;
+    int item;
+    int axisX;
+    int axisY;
+    string file;
 };
+
+static vector<Image> loadImageDescriptions(const Filesystem::AbsolutePath & path){
+    vector<Image> files;
+    PaintownUtil::ReferenceCount<Storage::File> data = Storage::instance().open(path);
+    if (!data->good()){
+        throw MugenException(string("Could not read description file ") + path.path(), __FILE__, __LINE__);
+    }
+    int size = data->getSize();
+    if (size > 0){
+        char * raw = new char[size+1];
+        /* Just to make sure the string ends properly */
+        raw[size] = '\0';
+        data->readLine(raw, size);
+        std::istringstream input;
+        input.str(string(raw));
+        // Global::debug(0) << "Raw '" << raw << "'" << std::endl;
+        while (!input.eof()){
+            int group = -99;
+            int item = -99;
+            int axisx = 0;
+            int axisy = 0;
+            string filename;
+            input >> group >> item >> axisx >> axisy >> filename;
+            if (group == -99){
+                break;
+            } else {
+                files.push_back(Image(group, item, axisx, axisy, filename));
+            }
+        }
+        delete[] raw;
+    }
+    return files;
+}
 
 /* Looks for a txt file in the container that describes the sprites. The format
  * is as follows
@@ -847,22 +893,7 @@ struct Image{
  */
 class ImageContainerReader: public SffReaderInterface {
 public:
-    struct Image{
-        Image(int group, int item, int axisX, int axisY, string file):
-        group(group),
-        item(item),
-        axisX(axisX),
-        axisY(axisY),
-        file(file){
-        }
-
-        int group;
-        int item;
-        int axisX;
-        int axisY;
-        string file;
-    };
-
+    
     ImageContainerReader(const Filesystem::AbsolutePath & path):
     container(path),
     current(files.begin()){
@@ -887,35 +918,7 @@ public:
     }
 
     void populate(const Filesystem::AbsolutePath & folder, const string & descriptionFile){
-        PaintownUtil::ReferenceCount<Storage::File> data = Storage::instance().open(folder.join(Filesystem::RelativePath(descriptionFile)));
-        if (!data->good()){
-            throw MugenException(string("Could not read description file ") + descriptionFile, __FILE__, __LINE__);
-        }
-        int size = data->getSize();
-        if (size > 0){
-            char * raw = new char[size+1];
-            /* Just to make sure the string ends properly */
-            raw[size] = '\0';
-            data->readLine(raw, size);
-            std::istringstream input;
-            input.str(string(raw));
-            // Global::debug(0) << "Raw '" << raw << "'" << std::endl;
-            while (!input.eof()){
-                int group = -99;
-                int item = -99;
-                int axisx = 0;
-                int axisy = 0;
-                string filename;
-                input >> group >> item >> axisx >> axisy >> filename;
-                if (group == -99){
-                    break;
-                } else {
-                    files.push_back(Image(group, item, axisx, axisy, filename));
-                }
-            }
-            delete[] raw;
-        }
-
+        files = loadImageDescriptions(folder.join(Filesystem::RelativePath(descriptionFile)));
         current = files.begin();
     }
 
@@ -962,22 +965,6 @@ protected:
 
 class DirectoryReader: public SffReaderInterface {
 public:
-    struct Image{
-        Image(int group, int item, int axisX, int axisY, string file):
-        group(group),
-        item(item),
-        axisX(axisX),
-        axisY(axisY),
-        file(file){
-        }
-
-        int group;
-        int item;
-        int axisX;
-        int axisY;
-        string file;
-    };
-
     DirectoryReader(const Filesystem::AbsolutePath & path):
     root(path),
     current(files.begin()){
@@ -1000,35 +987,7 @@ public:
     }
 
     void populate(const Filesystem::AbsolutePath & file){
-        PaintownUtil::ReferenceCount<Storage::File> data = Storage::instance().open(file);
-        if (!data->good()){
-            throw MugenException(string("Could not read description file ") + file.path(), __FILE__, __LINE__);
-        }
-        int size = data->getSize();
-        if (size > 0){
-            char * raw = new char[size+1];
-            /* Just to make sure the string ends properly */
-            raw[size] = '\0';
-            data->readLine(raw, size);
-            std::istringstream input;
-            input.str(string(raw));
-            // Global::debug(0) << "Raw '" << raw << "'" << std::endl;
-            while (!input.eof()){
-                int group = -99;
-                int item = -99;
-                int axisx = 0;
-                int axisy = 0;
-                string filename;
-                input >> group >> item >> axisx >> axisy >> filename;
-                if (group == -99){
-                    break;
-                } else {
-                    files.push_back(Image(group, item, axisx, axisy, filename));
-                }
-            }
-            delete[] raw;
-        }
-
+        files = loadImageDescriptions(file);
         current = files.begin();
     }
 
@@ -1160,6 +1119,7 @@ void Mugen::Util::readSprites(const Filesystem::AbsolutePath & filename, const F
         delete (*it);
     }*/
 }
+
 PaintownUtil::ReferenceCount<Mugen::Sprite> Mugen::Util::probeSff(const Filesystem::AbsolutePath &file, int groupNumber, int spriteNumber, bool mask, const Filesystem::AbsolutePath & actFile){
     PaintownUtil::ReferenceCount<SffReaderInterface> reader = getSffReader(file, actFile);
     PaintownUtil::ReferenceCount<Mugen::Sprite> found = reader->findSprite(groupNumber, spriteNumber, mask);
