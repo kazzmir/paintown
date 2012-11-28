@@ -54,7 +54,7 @@ static void * handleMessages(void * arg){
             received += 1;
             {
                 ostringstream context;
-                context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
+                context << __FILE__ << " " << System::currentMilliseconds();
                 Global::debug(2, context.str()) << "Receiving message " << received << endl;
             }
             Network::Message m(socket);
@@ -62,7 +62,7 @@ static void * handleMessages(void * arg){
 
             {
                 ostringstream context;
-                context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
+                context << __FILE__ << " " << System::currentMilliseconds();
                 Global::debug(2, context.str()) << "Received path '" << m.path << "'" << endl;
             }
         }
@@ -501,7 +501,7 @@ Network::Message NetworkWorldClient::pingMessage(unsigned int pingId){
     message.id = 0;
     message << World::PING_REQUEST;
     message << pingId;
-    pings[pingId] = System::currentMicroseconds();
+    pings[pingId] = System::currentMilliseconds();
 
     Global::debug(1) << "Sending ping request " << pingId << endl;
 

@@ -740,8 +740,12 @@ int paintown_main(int argc, char ** argv){
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
 
     /* time how long init takes */
-    TimeDifference diff;
-    diff.startTime();
+    /* FIXME: we count time using SDL_GetTicks or whatever in allegro but it will
+     * return an uninitialized value before init so we get messed up time
+     * when we try to count it.
+     */
+    // TimeDifference diff;
+    // diff.startTime();
     /* init initializes practically everything including
      *  graphics
      *  sound
@@ -756,8 +760,8 @@ int paintown_main(int argc, char ** argv){
     } else {
         // Configuration::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
     }
-    diff.endTime();
-    Global::debug(0) << diff.printTime("Init took") << endl;
+    // diff.endTime();
+    // Global::debug(0) << diff.printTime("Init took") << endl;
 
     // Graphics::Bitmap screen(Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());

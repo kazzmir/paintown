@@ -149,7 +149,7 @@ Message::Message(Socket socket){
         /* this is a string copy, not an assignment to a temporary pointer */
         this->path = buf;
     }
-    timestamp = System::currentMicroseconds();
+    timestamp = System::currentMilliseconds();
     readFrom = socket;
 #endif
 }

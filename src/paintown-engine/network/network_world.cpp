@@ -41,7 +41,7 @@ static void * handleMessages( void * arg ){
         while (world->isRunning()){
             Network::Message m(socket);
             ostringstream context;
-            context << __FILE__ << " " << (System::currentMicroseconds() / 1000);
+            context << __FILE__ << " " << System::currentMilliseconds();
             Global::debug(2, context.str()) << "Received message " << id << " with path '" << m.path << "'" << endl;
             id += 1;
             world->addIncomingMessage(m, socket);
