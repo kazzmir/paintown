@@ -14,10 +14,15 @@ Stimulation::Stimulation(){
 Stimulation::Stimulation( const Stimulation & copy ){
 }
 
-void Stimulation::stimulate( Object & obj ) const {
+void Stimulation::stimulate(Object & obj) const {
 }
 
-void Stimulation::stimulate( Character & obj ) const {
+void Stimulation::stimulate(Character & obj) const {
+    stimulate((Object&) obj);
+}
+
+void Stimulation::stimulate(Player & obj) const {
+    stimulate((Character&) obj);
 }
     
 Stimulation * Stimulation::create(const Token & token){
@@ -33,6 +38,9 @@ Stimulation * Stimulation::create(const Token & token){
         if (*child == "speed"){
             return new SpeedStimulation(*child);
         }
+        if (*child == "extra-life"){
+            return new ExtraLifeStimulation(*child);
+        }
         Global::debug(0) << "Unknown stimulation type: " << child->getName() << std::endl;
     } catch (const TokenException & fail){
         Global::debug(0) << "Could not parse stimulation: " << fail.getTrace() << std::endl;
@@ -47,12 +55,13 @@ Stimulation * Stimulation::create(Network::Message & message){
         case Health: return new HealthStimulation(message);
         case Invincibility: return new InvincibilityStimulation(message);
         case Speed: return new SpeedStimulation(message);
+        case ExtraLife: return new ExtraLifeStimulation(message);
     }
     return NULL;
 }
 
 Stimulation * Stimulation::copy() const {
-	return new Stimulation(*this);
+    return new Stimulation(*this);
 }
 
 void Stimulation::createMessage(Network::Message & message) const {
@@ -91,9 +100,6 @@ HealthStimulation::HealthStimulation(Network::Message & message){
     message >> value;
 }
 	
-void HealthStimulation::stimulate( Object & o ) const {
-}
-	
 void HealthStimulation::stimulate( Character & c ) const {
     /* cause negative hurt */
     c.hurt(-value);
@@ -127,9 +133,6 @@ InvincibilityStimulation::InvincibilityStimulation(const Token & data){
 
 InvincibilityStimulation::InvincibilityStimulation(const InvincibilityStimulation & copy):
 duration(copy.duration){
-}
-
-void InvincibilityStimulation::stimulate(Object & o) const {
 }
 
 void InvincibilityStimulation::stimulate(Character & guy) const {
@@ -172,9 +175,6 @@ boost(copy.boost),
 ticks(copy.ticks){
 }
 
-void SpeedStimulation::stimulate(Object & o) const {
-}
-
 void SpeedStimulation::stimulate(Character & guy) const {
     guy.setSpeedBoost(boost, ticks);
     guy.addEffect(new DrawCountdownEffect(new DrawGlowEffect(&guy, Graphics::makeColor(64,10,0), Graphics::makeColor(190, 30, 20), 50), ticks));
@@ -186,6 +186,38 @@ Stimulation * SpeedStimulation::copy() const {
 
 void SpeedStimulation::createMessage(Network::Message & message) const {
     message << Stimulation::Speed << (int) (boost * 100) << ticks;
+}
+
+ExtraLifeStimulation::ExtraLifeStimulation(const int lives):
+lives(lives){
+}
+
+ExtraLifeStimulation::ExtraLifeStimulation(const Token & data):
+lives(0){
+    if (!data.match("_", lives)){
+        throw TokenException(__FILE__, __LINE__, "Expected a number after extra-life: (extra-life 1)");
+    }
+}
+
+ExtraLifeStimulation::ExtraLifeStimulation(Network::Message & data):
+lives(0){
+    data >> lives;
+}
+
+ExtraLifeStimulation::ExtraLifeStimulation(const ExtraLifeStimulation & copy):
+lives(copy.lives){
+}
+
+void ExtraLifeStimulation::stimulate(Character & guy) const {
+    guy.setLives(guy.getLives() + lives);
+}
+
+Stimulation * ExtraLifeStimulation::copy() const {
+    return new ExtraLifeStimulation(*this);
+}
+
+void ExtraLifeStimulation::createMessage(Network::Message & message) const {
+    message << Stimulation::ExtraLife << lives;
 }
 
 }

@@ -13,6 +13,7 @@ namespace Paintown{
 
 class Object;
 class Character;
+class Player;
 
 class Stimulation{
 public:
@@ -23,7 +24,8 @@ public:
     enum Type{
         Health,
         Invincibility,
-        Speed
+        Speed,
+        ExtraLife
     };
 
     /* translate type to the string name so a block object can be made */
@@ -37,6 +39,7 @@ public:
 
     virtual void stimulate(Object & o) const;
     virtual void stimulate(Character & c) const;
+    virtual void stimulate(Player & p) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
 
@@ -51,7 +54,6 @@ public:
     HealthStimulation(Network::Message & message);
     HealthStimulation(const HealthStimulation & h);
 
-    virtual void stimulate(Object & o) const;
     virtual void stimulate(Character & c) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
@@ -68,7 +70,6 @@ public:
     InvincibilityStimulation(Network::Message & data);
     InvincibilityStimulation(const InvincibilityStimulation & copy);
 
-    virtual void stimulate(Object & o) const;
     virtual void stimulate(Character & c) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
@@ -85,7 +86,6 @@ public:
     SpeedStimulation(Network::Message & data);
     SpeedStimulation(const SpeedStimulation & copy);
 
-    virtual void stimulate(Object & o) const;
     virtual void stimulate(Character & c) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
@@ -93,6 +93,21 @@ public:
 protected:
     double boost;
     int ticks;
+};
+
+class ExtraLifeStimulation: public Stimulation {
+public:
+    ExtraLifeStimulation(const int lives);
+    ExtraLifeStimulation(const Token & data);
+    ExtraLifeStimulation(Network::Message & data);
+    ExtraLifeStimulation(const ExtraLifeStimulation & copy);
+
+    virtual void stimulate(Character & p) const;
+    virtual Stimulation * copy() const;
+    virtual void createMessage(Network::Message & message) const;
+
+protected:
+    int lives;
 };
 
 }

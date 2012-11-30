@@ -50,6 +50,8 @@ public:
         /* */
     }
     
+    virtual void stimulate(const Stimulation & stim);
+    
     virtual const Filesystem::RelativePath & getIntroFile();
     virtual const Filesystem::RelativePath & getEndingFile();
 

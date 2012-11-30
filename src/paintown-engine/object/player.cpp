@@ -15,6 +15,7 @@
 #include "util/load_exception.h"
 #include "../game/world.h"
 #include "util/file-system.h"
+#include "stimulation.h"
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
@@ -606,6 +607,10 @@ bool Player::combo(Util::ReferenceCount<Animation> ani){
         }
     }
     return false;
+}
+
+void Player::stimulate(const Stimulation & stim){
+    stim.stimulate(*this);
 }
 
 /*

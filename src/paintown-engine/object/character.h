@@ -143,7 +143,7 @@ public:
      * stimulation calls stimulate on character, then character
      * calls stimulate on stimulation with the proper type
      */
-    virtual void stimulate( const Stimulation & stim );
+    virtual void stimulate(const Stimulation & stim);
 
     virtual bool touchPoint(int x, int y);
 

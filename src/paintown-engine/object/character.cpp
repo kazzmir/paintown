@@ -1014,8 +1014,8 @@ void Character::decreaseYVelocity(){
 	y_velocity -= 0.18;
 }
 	
-void Character::stimulate( const Stimulation & stim ){
-	stim.stimulate( *(Character *) this );
+void Character::stimulate(const Stimulation & stim){
+    stim.stimulate(*this);
 }
 	
 void Character::decreaseXVelocity(){
