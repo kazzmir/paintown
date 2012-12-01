@@ -291,7 +291,7 @@ public:
         };
         class Exit : public BaseMenuItem {
         public:
-            Exit(PaintownUtil::ReferenceCount<OptionMenu> menu):
+            Exit(OptionMenu * menu):
             menu(menu){
                 optionName = "Exit Match";
                 currentValue = "(Enter)";
@@ -315,9 +315,9 @@ public:
                 }
             }
             
-            PaintownUtil::ReferenceCount<OptionMenu> menu;
+            OptionMenu * menu;
         };
-        std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
+        std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     
         // Add empty list for now
         menu = PaintownUtil::ReferenceCount<OptionMenu>(new OptionMenu(list));
@@ -330,7 +330,12 @@ public:
         if (options.getPlayer2Behavior() != NULL){
             list.push_back(OptionMenu::getPlayerKeys(1, "Player 2", menu));
         }
-        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit(menu)));
+
+        /* There is a circular reference here if we use just `menu'.
+         *   menu -> options -> scroll item -> Exit -> menu
+         * So to break the circularity we use a raw pointer to the original menu.
+         */
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit(menu.raw())));
         
         // Now update it
         menu->updateList(list);
@@ -339,8 +344,10 @@ public:
         menu->setRenderBackground(false);
         menu->setClearAlpha(128);
     }
+
     ~EscapeMenu(){
     }
+
     void act(){
         menu->act();
     }
