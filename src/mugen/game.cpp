@@ -1953,9 +1953,6 @@ void Game::doArcade(Searcher & searcher){
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
     Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
     
-    
-    bool playerLoaded = false;
-    
     // Match data
     Mugen::ArcadeData::MatchPath match;
     
@@ -1988,26 +1985,17 @@ void Game::doArcade(Searcher & searcher){
         }
     }
     
-    // get intro and ending for player
-    Filesystem::AbsolutePath file;
-    if (playerType == Player1){
-        file = player1Collection.getFirst().getDef();
-    } else {
-        file = player2Collection.getFirst().getDef();
-    }
-
-    GameScreens screens(file, systemFile);
-
-    screens.playIntro(playerKeys);
-
-    bool quit = false;
-    // Display game over storyboard
-    bool displayGameOver = false;
-    
     Mugen::ArcadeData::CharacterCollection & playerCollection = choosePlayerCollection(playerType, player1Collection, player2Collection);
     Mugen::ArcadeData::CharacterCollection & enemyCollection = chooseEnemyCollection(playerType, player1Collection, player2Collection);
+    
+    GameScreens screens(playerCollection.getFirst().getDef(), systemFile);
+    screens.playIntro(playerKeys);
 
     try{
+        bool quit = false;
+    
+        // Display game over storyboard
+        bool displayGameOver = false;
         while (!quit){
             enemyCollection = match.next();
             
@@ -2018,15 +2006,13 @@ void Game::doArcade(Searcher & searcher){
                 quit = displayGameOver = true;
             }
         }
-    } catch (const Exception::Return & ex){
-        return;
-    } catch (const QuitGameException & ex){
-        return;
-    }
 
-    // Show game over if ended through game otherwise just get out
-    if (displayGameOver){
-        screens.playGameOver(playerKeys);
+        // Show game over if ended through game otherwise just get out
+        if (displayGameOver){
+            screens.playGameOver(playerKeys);
+        }
+    } catch (const Exception::Return & ex){
+    } catch (const QuitGameException & ex){
     }
 }
 
