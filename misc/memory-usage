@@ -2,4 +2,4 @@
 
 file=massif.paintown.out
 valgrind --tool=massif --time-unit=B --massif-out-file=$file $@
-ms_print $file
+echo ms_print $file

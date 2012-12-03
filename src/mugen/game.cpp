@@ -66,7 +66,7 @@ Game::~Game(){
 }
 
 void Game::run(Searcher & searcher){
-    ParseCache cache;
+    // ParseCache cache;
     /* Make sure searcher is running */
     searcher.start();
 
@@ -1072,6 +1072,7 @@ public:
     CharacterTeam & player2;
 
     virtual void compute(){
+        ParseCache cache;
         // Load player 1
         player1.load();
         // Load player 2
@@ -1178,6 +1179,7 @@ public:
     }
 
     virtual void initialize(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+        ParseCache cache;
         /* Find regular files */
         std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
 
@@ -1211,7 +1213,6 @@ public:
     virtual ~StartGameMode(){
     }
 
-    ParseCache cache;
     PaintownUtil::ReferenceCount<Character> player1;
     PaintownUtil::ReferenceCount<Character> player2;
     PaintownUtil::ReferenceCount<Stage> stage;
@@ -1251,7 +1252,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
-    ParseCache cache;
+    // ParseCache cache;
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
