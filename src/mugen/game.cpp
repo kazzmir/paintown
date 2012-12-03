@@ -1861,6 +1861,87 @@ CharacterSelect::PlayerType characterSelectType(const Mugen::PlayerType & type){
     }
 }
 
+Mugen::ArcadeData::CharacterCollection & choosePlayerCollection(PlayerType type, ArcadeData::CharacterCollection & player1, ArcadeData::CharacterCollection & player2){
+    switch (type){
+        case Player1: return player1;
+        case Player2: return player2;
+        case CPU:
+        case NoControl:{
+            throw MugenException("Unsupported player collection", __FILE__, __LINE__);
+        }
+    }
+
+    return player1;
+}
+
+Mugen::ArcadeData::CharacterCollection & chooseEnemyCollection(PlayerType type, ArcadeData::CharacterCollection & player1, ArcadeData::CharacterCollection & player2){
+    switch (type){
+        case Player1: return player2;
+        case Player2: return player1;
+        case CPU:
+        case NoControl:{
+            throw MugenException("Unsupported player collection", __FILE__, __LINE__);
+        }
+    }
+
+    return player2;
+}
+
+/* Returns true if the player wins the match */
+bool runArcade(const Filesystem::AbsolutePath & systemFile, ArcadeData::CharacterCollection & playerCollection, ArcadeData::CharacterCollection & enemyCollection, HumanBehavior & behavior, InputMap<Keys> & keys1, InputMap<Keys> & keys2, RunMatchOptions & options, Searcher & searcher, PlayerType playerType, InputMap<Keys> & playerKeys){
+    Filesystem::AbsolutePath musicOverride;
+    LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
+
+    Filesystem::AbsolutePath stagePath = enemyCollection.getFirst().getStage();
+    if (stagePath.path() == ""){
+        throw MugenException("No stages available", __FILE__, __LINE__);
+    }
+
+    /* Keep rematching until the player wins or they stop continuing */
+    while (true){
+        /* FIXME: player is always on p1 side, is that ok? */
+        PaintownUtil::ReferenceCount<CharacterTeam> player(new CharacterTeam(playerCollection, Stage::Player1Side));
+        PaintownUtil::ReferenceCount<CharacterTeam> enemy(PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(enemyCollection, Stage::Player2Side)));
+
+        player->getFirst().setBehavior(&behavior);
+        enemy->getFirst().setBehavior(&AIBehavior);
+
+        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(*player, *enemy);
+        showLoadPlayers(systemFile, playerCollection, enemyCollection, keys1, keys2);
+
+        // FIXME use override music later
+        Mugen::Stage stage(stagePath);
+        prepareStage(loader, stage);
+        stage.reset();
+
+        int wins = player->getFirst().getMatchWins();
+        searcher.pause();
+        try{
+            runMatch(&stage, "", options);
+        } catch (...){
+            searcher.start();
+            throw;
+        }
+
+        if (player->getFirst().getMatchWins() > wins){
+            return true;
+        } else {
+            if (stage.doContinue(playerType, playerKeys)){
+                PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = doSelectScreen(systemFile, Arcade, characterSelectType(playerType), searcher, keys1, keys2);
+
+                if (playerType == Mugen::Player1){
+                    playerCollection = select->getPlayer1().getCollection();
+                } else {
+                    playerCollection = select->getPlayer2().getCollection();
+                }
+
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
 }
 
 void Game::doArcade(Searcher & searcher){
@@ -1868,13 +1949,10 @@ void Game::doArcade(Searcher & searcher){
     InputMap<Mugen::Keys> keys2 = Mugen::getPlayer2Keys();
     InputMap<Mugen::Keys> playerKeys;
     HumanBehavior behavior(keys1, keys2);
-    LearningAIBehavior AIBehavior(Mugen::Data::getInstance().getDifficulty());
     
     Mugen::ArcadeData::CharacterCollection player1Collection(Mugen::ArcadeData::CharacterCollection::Single);
     Mugen::ArcadeData::CharacterCollection player2Collection(Mugen::ArcadeData::CharacterCollection::Single);
     
-    PaintownUtil::ReferenceCount<CharacterTeam> player1 = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
-    PaintownUtil::ReferenceCount<CharacterTeam> player2 = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
     
     bool playerLoaded = false;
     
@@ -1923,109 +2001,29 @@ void Game::doArcade(Searcher & searcher){
     screens.playIntro(playerKeys);
 
     bool quit = false;
-    // Total wins from player
-    int wins = 0;
     // Display game over storyboard
     bool displayGameOver = false;
     
-    // Rematch?
-    bool rematch = false;
-    
-    while (!quit){
-        if (!rematch){
-            if (playerType == Mugen::Player1){
-                player2Collection = match.next();
-            } else {
-                player1Collection = match.next();
-            }
-        }
-        
-        PaintownUtil::ReferenceCount<CharacterTeam> ourPlayer = PaintownUtil::ReferenceCount<CharacterTeam>(NULL);
-        Filesystem::AbsolutePath stagePath;
-        Filesystem::AbsolutePath musicOverride;
-        if (playerType == Mugen::Player1){
-            if (!playerLoaded){
-                player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
-                playerLoaded = true;
-            }
-            if (!rematch){
-                player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
-            } else {
-                player2->getFirst().resetPlayer();
-                rematch = false;
-            }
-                
-            ourPlayer = player1;
-            player1->getFirst().setBehavior(&behavior);
-            player2->getFirst().setBehavior(&AIBehavior);
-            stagePath = player2Collection.getFirst().getStage();
-        } else {
-            if (!playerLoaded){
-                player2 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player2Collection, Stage::Player2Side));
-                playerLoaded = true;
-            }
-            if (!rematch){
-                player1 = PaintownUtil::ReferenceCount<CharacterTeam>(new CharacterTeam(player1Collection, Stage::Player1Side));
-            } else {
-                player1->getFirst().resetPlayer();
-                rematch = false;
-            }
+    Mugen::ArcadeData::CharacterCollection & playerCollection = choosePlayerCollection(playerType, player1Collection, player2Collection);
+    Mugen::ArcadeData::CharacterCollection & enemyCollection = chooseEnemyCollection(playerType, player1Collection, player2Collection);
+
+    try{
+        while (!quit){
+            enemyCollection = match.next();
             
-            ourPlayer = player2;
-            player2->getFirst().setBehavior(&behavior);
-            player1->getFirst().setBehavior(&AIBehavior);
-            stagePath = player1Collection.getFirst().getStage();
-        }
-        
-        PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(*player1, *player2);
-        showLoadPlayers(systemFile, player1Collection, player2Collection, keys1, keys2);
+            quit = ! runArcade(systemFile, playerCollection, enemyCollection, behavior, keys1, keys2, options, searcher, playerType, playerKeys);
 
-        if (stagePath.path() == ""){
-            throw MugenException("No stages available", __FILE__, __LINE__);
-        }
-        
-        // FIXME use override music later
-        Mugen::Stage stage(stagePath);
-        prepareStage(loader, stage);
-        stage.reset();
-        try {
-            searcher.pause();
-            runMatch(&stage, "", options);
-            searcher.start();
-            if (ourPlayer->getFirst().getMatchWins() > wins){
-                wins = ourPlayer->getFirst().getMatchWins();
-                // Reset player for next match
-                ourPlayer->getFirst().resetPlayer();
-                // There is a win they may proceed
-                if (!match.hasMore()){
-                    screens.playEnding(playerKeys);
-                    quit = displayGameOver = true;
-                }
-            } else {
-                // Player lost do continue screen if enabled for now just quit
-                if (stage.doContinue(playerType, playerKeys)){
-                    PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = doSelectScreen(systemFile, Arcade, characterSelectType(playerType), searcher, keys1, keys2);
-
-                    if (playerType == Mugen::Player1){
-                        player1Collection = select->getPlayer1().getCollection();
-                    } else {
-                        player2Collection = select->getPlayer2().getCollection();
-                    }
-                        
-                    playerLoaded = false;
-                    rematch = true;
-                    wins = 0;
-                } else {
-                    quit = displayGameOver = true;
-                }
+            if (!quit && !match.hasMore()){
+                screens.playEnding(playerKeys);
+                quit = displayGameOver = true;
             }
-        } catch (const Exception::Return & ex){
-            return;
-        } catch (const QuitGameException & ex){
-            return;
         }
+    } catch (const Exception::Return & ex){
+        return;
+    } catch (const QuitGameException & ex){
+        return;
     }
-    
+
     // Show game over if ended through game otherwise just get out
     if (displayGameOver){
         screens.playGameOver(playerKeys);
