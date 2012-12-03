@@ -31,6 +31,7 @@ item-content.cpp
 match.cpp
 menu.cpp
 reader.cpp
+run-match.cpp
 section.cpp
 sound.cpp
 sprite.cpp

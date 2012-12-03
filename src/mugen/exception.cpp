@@ -40,6 +40,13 @@ CanceledException::CanceledException(){
 
 CanceledException::~CanceledException() throw(){
 }
+
+QuitGameException::QuitGameException():
+MugenException("Quit game", __FILE__, __LINE__){
+}
+
+QuitGameException::~QuitGameException() throw (){
+}
     
 MugenRuntimeException::MugenRuntimeException(){
 }

@@ -55,6 +55,12 @@ public:
     virtual ~CanceledException() throw();
 };
 
+class QuitGameException: public MugenException {
+public:
+    QuitGameException();
+    virtual ~QuitGameException() throw ();
+};
+
 /* thrown from the compiler/state-controller when mugen code screws up */
 class MugenRuntimeException: public MugenException {
 protected:

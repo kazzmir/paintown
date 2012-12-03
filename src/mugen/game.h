@@ -4,15 +4,42 @@
 #include <string>
 
 #include "util.h"
+#include "util/gui/fadetool.h"
 
+namespace Graphics{
 class Bitmap;
+}
 
 namespace Mugen{
 
+class HumanBehavior;
 class Searcher;
 class CharacterSelect;
 class Stage;
-    
+
+class RunMatchOptions{
+public:
+    RunMatchOptions();
+    // For demo mode
+    RunMatchOptions(int endTime);
+    RunMatchOptions(const RunMatchOptions & copy);
+    const RunMatchOptions & operator=(const RunMatchOptions & copy);
+    void act();
+    void draw(const Graphics::Bitmap & work);
+    bool isDemoMode() const;
+    void setBehavior(HumanBehavior * player1, HumanBehavior * player2);
+    HumanBehavior * getPlayer1Behavior() const;
+    HumanBehavior * getPlayer2Behavior() const;
+
+protected:
+    int ticker;
+    int endTime;
+    bool demoMode;
+    Gui::FadeTool fader;
+    HumanBehavior * player1Behavior;
+    HumanBehavior * player2Behavior;
+};
+
 /* Our game definition, this is to facilitate running a game */
 class Game {
     public:
@@ -21,6 +48,9 @@ class Game {
 
         //! Runs everything
         virtual void run(Searcher & searcher);
+        
+        /* in run-match.cpp */
+        static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "", RunMatchOptions options = RunMatchOptions());
 
         /* just start a training match */
         static void startTraining(const std::string & player1, const std::string & player2, const std::string & stage);
