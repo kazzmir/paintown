@@ -1019,7 +1019,7 @@ public:
         try{
             // Get credits
             if (Util::probeDef(parsed, "end credits", "enabled") == "1"){
-                gameOverEnabled = true;
+                creditsEnabled = true;
                 credits = Data::getInstance().getFileFromMotif(Filesystem::RelativePath(Util::probeDef(parsed, "end credits", "storyboard")));
             }
         } catch (const MugenException & fail){
@@ -1077,7 +1077,7 @@ public:
     }
 
     void playGameOver(const InputMap<Keys> & keys){
-        if (!gameOver.isEmpty()){
+        if (gameOverEnabled && !gameOver.isEmpty()){
             Storyboard story(gameOver, true);
             story.setInput(keys);
             story.run();
@@ -1283,8 +1283,6 @@ void Game::doArcade(Searcher & searcher){
     try{
         bool quit = false;
     
-        // Display game over storyboard
-        bool displayGameOver = false;
         while (!quit){
             enemyCollection = match.next();
             
@@ -1292,14 +1290,11 @@ void Game::doArcade(Searcher & searcher){
 
             if (!quit && !match.hasMore()){
                 screens.playEnding(playerKeys);
-                quit = displayGameOver = true;
+                quit = true;
             }
         }
 
-        // Show game over if ended through game otherwise just get out
-        if (displayGameOver){
-            screens.playGameOver(playerKeys);
-        }
+        screens.playGameOver(playerKeys);
     } catch (const Exception::Return & ex){
     } catch (const QuitGameException & ex){
     }
