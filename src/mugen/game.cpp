@@ -123,6 +123,8 @@ void Game::run(Searcher & searcher){
                 break;
             }
         }
+    } catch (const CanceledException & cancel){
+        /* its ok */
     } catch (const MugenException e){
         std::ostringstream out;
         out << "Press ENTER to continue\n";
@@ -1060,6 +1062,7 @@ protected:
 class PlayerLoader: public PaintownUtil::Future<int> {
 public:
     PlayerLoader(CharacterTeam & player1, CharacterTeam & player2):
+        alive(true),
         player1(player1),
         player2(player2){
             /* compute is a virtual function, is the virtual table set up
@@ -1068,13 +1071,31 @@ public:
             // start();
     }
 
+    /* Communicate that the thread is dead */
+    PaintownUtil::Thread::LockObject lock;
+    volatile bool alive;
     CharacterTeam & player1;
     CharacterTeam & player2;
 
+    virtual bool checkDead(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        return !alive;
+    }
+
     virtual void compute(){
         ParseCache cache;
+
+        if (checkDead()){
+            return;
+        }
+        
         // Load player 1
         player1.load();
+
+        if (checkDead()){
+            return;
+        }
+
         // Load player 2
         player2.load();
         // NOTE is this needed anymore?
@@ -1090,13 +1111,26 @@ public:
         __sfp_lock_release();
         */
 #endif
-        set(0);
+    }
+
+    virtual ~PlayerLoader(){
+        lock.acquire();
+        alive = false;
+        lock.release();
+
+        /* we have to wait till the done flag is set because otherwise
+         * this object will be partially destroyed while the Future destructor
+         * is running.
+         */
+        while (!isDone()){
+            PaintownUtil::rest(1);
+        }
     }
 };
 
 static PaintownUtil::ReferenceCount<PlayerLoader> preLoadCharacters(CharacterTeam & player1, CharacterTeam & player2){
     
-    PaintownUtil::ReferenceCount<PlayerLoader> playerLoader =  PaintownUtil::ReferenceCount<PlayerLoader>(new PlayerLoader(player1, player2));
+    PaintownUtil::ReferenceCount<PlayerLoader> playerLoader = PaintownUtil::ReferenceCount<PlayerLoader>(new PlayerLoader(player1, player2));
     playerLoader->start();
     
     return playerLoader;
@@ -1739,6 +1773,42 @@ protected:
     Filesystem::AbsolutePath credits;
 };
 
+static PaintownUtil::ReferenceCount<Mugen::CharacterSelect> doSelectScreen(const Filesystem::AbsolutePath & systemFile, const GameType & gameType, const CharacterSelect::PlayerType & playerType, Searcher & searcher, InputMap<Keys> & keys1, InputMap<Keys> & keys2){
+    PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = PaintownUtil::ReferenceCount<Mugen::CharacterSelect>(new Mugen::CharacterSelect(systemFile));
+    select->init();
+    select->setMode(gameType, playerType);
+
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select->getLogic(keys1, keys2, searcher);
+    PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select->getDraw();
+    PaintownUtil::standardLoop(*logic, *draw);
+
+    if (select->wasCanceled()){
+        throw CanceledException();
+    }
+
+    /* Wait for at least 1 stage to be found */
+    while (Data::getInstance().autoSearch() &&
+           select->stageCount() == 0 &&
+           !searcher.stagesDone()){
+        PaintownUtil::rest(1);
+    }
+
+    return select;
+    
+}
+
+static void showLoadPlayers(const Filesystem::AbsolutePath & systemFile, const Mugen::ArcadeData::CharacterCollection & player1Collection, const Mugen::ArcadeData::CharacterCollection & player2Collection, InputMap<Keys> & keys1, InputMap<Keys> & keys2){
+
+    VersusMenu versus(systemFile);
+    versus.init(player1Collection, player2Collection);
+    PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
+    PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
+    PaintownUtil::standardLoop(*logic, *draw);
+    if (versus.wasCanceled()){
+        throw CanceledException();
+    }
+}
+
 }
 
 void Game::doArcade(Searcher & searcher){
@@ -1760,47 +1830,51 @@ void Game::doArcade(Searcher & searcher){
     Mugen::ArcadeData::MatchPath match;
     
     RunMatchOptions options;
-    
-    // Scoped so it doesn't persist
+
     {
-        Mugen::CharacterSelect select(systemFile);
-        select.init();
-        if (playerType == Mugen::Player1){
-            select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
-        } else {
-            select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player2);
-        }
-        PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
-        PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
-        PaintownUtil::standardLoop(*logic, *draw);
-        
-        if (select.wasCanceled()){
-            return;
+        CharacterSelect::PlayerType type;
+        switch (playerType){
+            case Mugen::Player1: {
+                type = CharacterSelect::Player1;
+                break;
+            }
+            case Mugen::Player2: {
+                type = CharacterSelect::Player2;
+                break;
+            }
+            case Mugen::CPU:
+            case Mugen::NoControl: {
+                throw MugenException("Should not be able to start an arcade match with type CPU or NoControl", __FILE__, __LINE__);
+                break;
+            }
         }
 
-        /* Wait for at least 1 stage to be found */
-        while (Data::getInstance().autoSearch() &&
-               select.stageCount() == 0 &&
-               !searcher.stagesDone()){
-            PaintownUtil::rest(1);
+        PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = doSelectScreen(systemFile, Arcade, type, searcher, keys1, keys2);
+
+        match = select->getArcadePath();
+
+        switch (playerType){
+            case Mugen::Player1: {
+                player1Collection = select->getPlayer1().getCollection();
+                playerKeys = keys1;
+                behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
+                options.setBehavior(&behavior, NULL);
+                break;
+            }
+            case Mugen::Player2: {
+                player2Collection = select->getPlayer2().getCollection();
+                playerKeys = keys2;
+                behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
+                options.setBehavior(NULL, &behavior);
+                break;
+            }
+            case Mugen::CPU:
+            case Mugen::NoControl: {
+                break;
+            }
         }
-    
-        if (playerType == Mugen::Player1){
-            player1Collection = select.getPlayer1().getCollection();
-            playerKeys = keys1;
-            behavior = HumanBehavior(getPlayer1Keys(), getPlayer1InputLeft());
-            options.setBehavior(&behavior, NULL);
-        } else {
-            player2Collection = select.getPlayer2().getCollection();
-            playerKeys = keys2;
-            behavior = HumanBehavior(getPlayer2Keys(), getPlayer2InputLeft());
-            options.setBehavior(NULL, &behavior);
-        }
-        
-        // Match data
-        match = select.getArcadePath();
     }
-   
+    
     // get intro and ending for player
     Filesystem::AbsolutePath file;
     if (playerType == Player1){
@@ -1869,17 +1943,7 @@ void Game::doArcade(Searcher & searcher){
         }
         
         PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(*player1, *player2);
-        
-        {
-            VersusMenu versus(systemFile);
-            versus.init(player1Collection, player2Collection);
-            PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = versus.getLogic(keys1, keys2);
-            PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = versus.getDraw();
-            PaintownUtil::standardLoop(*logic, *draw);
-            if (versus.wasCanceled()){
-                return;
-            }
-        }
+        showLoadPlayers(systemFile, player1Collection, player2Collection, keys1, keys2);
 
         if (stagePath.path() == ""){
             throw MugenException("No stages available", __FILE__, __LINE__);
@@ -1917,7 +1981,7 @@ void Game::doArcade(Searcher & searcher){
                     PaintownUtil::standardLoop(*logic, *draw);
                     
                     if (select.wasCanceled()){
-                        return;
+                        throw CanceledException();
                     }
                     
                     if (playerType == Mugen::Player1){

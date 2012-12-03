@@ -48,6 +48,13 @@ public:
     virtual ~ReloadMugenException() throw();
 };
 
+/* Thrown when some action is canceled from the UI */
+class CanceledException: public MugenException {
+public:
+    CanceledException();
+    virtual ~CanceledException() throw();
+};
+
 /* thrown from the compiler/state-controller when mugen code screws up */
 class MugenRuntimeException: public MugenException {
 protected:

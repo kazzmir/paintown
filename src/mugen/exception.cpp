@@ -35,6 +35,12 @@ ReloadMugenException::ReloadMugenException(){
 ReloadMugenException::~ReloadMugenException() throw(){
 }
     
+CanceledException::CanceledException(){
+}
+
+CanceledException::~CanceledException() throw(){
+}
+    
 MugenRuntimeException::MugenRuntimeException(){
 }
 
