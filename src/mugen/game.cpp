@@ -850,6 +850,39 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
             }
         };
 
+        class CommandKill: public Console::Command {
+        public:
+            CommandKill(Mugen::Stage * stage):
+            stage(stage){
+            }
+
+            Mugen::Stage * stage;
+
+            string getDescription() const {
+                return "kill # - Set a players health to 0, killing him"; 
+            }
+            
+            string act(const string & line){
+                std::istringstream input(line);
+                string command;
+                int character = 0;
+                input >> command >> character;
+                std::vector<Character*> players = stage->getPlayers();
+                int count = 0;
+                if (character < players.size()){
+                    Character * player = players[character];
+                    player->setHealth(0);
+                    std::ostringstream out;
+                    out << "Killed player " << character;
+                    return out.str();
+                }
+                std::ostringstream out;
+                out << "No such player " << character;
+                return out.str();
+            }
+
+        };
+
         class CommandRecord: public Console::Command {
         public:
             CommandRecord(Mugen::Stage * stage):
@@ -878,6 +911,7 @@ static void runMatch(Mugen::Stage * stage, const std::string & musicOverride = "
         console.addAlias("exit", "quit");
         console.addCommand("help", PaintownUtil::ReferenceCount<Console::Command>(new CommandHelp(console)));
         console.addCommand("memory", PaintownUtil::ReferenceCount<Console::Command>(new CommandMemory()));
+        console.addCommand("kill", PaintownUtil::ReferenceCount<Console::Command>(new CommandKill(stage)));
         console.addCommand("record", PaintownUtil::ReferenceCount<Console::Command>(new CommandRecord(stage)));
         console.addCommand("debug", PaintownUtil::ReferenceCount<Console::Command>(new CommandDebug(stage)));
         console.addCommand("change-state", PaintownUtil::ReferenceCount<Console::Command>(new CommandChangeState(stage)));
@@ -1809,6 +1843,24 @@ static void showLoadPlayers(const Filesystem::AbsolutePath & systemFile, const M
     }
 }
 
+CharacterSelect::PlayerType characterSelectType(const Mugen::PlayerType & type){
+    switch (type){
+        case Mugen::Player1: {
+            return CharacterSelect::Player1;
+            break;
+        }
+        case Mugen::Player2: {
+            return CharacterSelect::Player2;
+            break;
+        }
+        case Mugen::CPU:
+        case Mugen::NoControl: {
+            throw MugenException("Should not be able to start an arcade match with type CPU or NoControl", __FILE__, __LINE__);
+            break;
+        }
+    }
+}
+
 }
 
 void Game::doArcade(Searcher & searcher){
@@ -1832,24 +1884,7 @@ void Game::doArcade(Searcher & searcher){
     RunMatchOptions options;
 
     {
-        CharacterSelect::PlayerType type;
-        switch (playerType){
-            case Mugen::Player1: {
-                type = CharacterSelect::Player1;
-                break;
-            }
-            case Mugen::Player2: {
-                type = CharacterSelect::Player2;
-                break;
-            }
-            case Mugen::CPU:
-            case Mugen::NoControl: {
-                throw MugenException("Should not be able to start an arcade match with type CPU or NoControl", __FILE__, __LINE__);
-                break;
-            }
-        }
-
-        PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = doSelectScreen(systemFile, Arcade, type, searcher, keys1, keys2);
+        PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = doSelectScreen(systemFile, Arcade, characterSelectType(playerType), searcher, keys1, keys2);
 
         match = select->getArcadePath();
 
@@ -1969,32 +2004,17 @@ void Game::doArcade(Searcher & searcher){
             } else {
                 // Player lost do continue screen if enabled for now just quit
                 if (stage.doContinue(playerType, playerKeys)){
-                    Mugen::CharacterSelect select(systemFile);
-                    select.init();
+                    PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = doSelectScreen(systemFile, Arcade, characterSelectType(playerType), searcher, keys1, keys2);
+
                     if (playerType == Mugen::Player1){
-                        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player1);
+                        player1Collection = select->getPlayer1().getCollection();
                     } else {
-                        select.setMode(Mugen::Arcade, Mugen::CharacterSelect::Player2);
+                        player2Collection = select->getPlayer2().getCollection();
                     }
-                    PaintownUtil::ReferenceCount<PaintownUtil::Logic> logic = select.getLogic(keys1, keys2, searcher);
-                    PaintownUtil::ReferenceCount<PaintownUtil::Draw> draw = select.getDraw();
-                    PaintownUtil::standardLoop(*logic, *draw);
-                    
-                    if (select.wasCanceled()){
-                        throw CanceledException();
-                    }
-                    
-                    if (playerType == Mugen::Player1){
-                        player1Collection = select.getPlayer1().getCollection();
-                        playerLoaded = false;
-                        rematch = true;
-                        wins = 0;
-                    } else {
-                        player2Collection = select.getPlayer2().getCollection();
-                        playerLoaded = false;
-                        rematch = true;
-                        wins = 0;
-                    }
+                        
+                    playerLoaded = false;
+                    rematch = true;
+                    wins = 0;
                 } else {
                     quit = displayGameOver = true;
                 }
