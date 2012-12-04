@@ -1888,21 +1888,6 @@ public:
             return new StateNo();
         }
 
-        if (identifier == "life"){
-            class Life: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getHealth());
-                }
-
-                Value * copy() const {
-                    return new Life();
-                }
-            };
-
-            return new Life();
-        }
-
         if (identifier == "p2life"){
             class P2Life: public Value {
             public:
@@ -1917,21 +1902,6 @@ public:
             };
 
             return new P2Life();
-        }
-
-        if (identifier == "lifemax"){
-            class LifeMax: public Value {
-            public:
-                RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getMaxHealth());
-                }
-
-                Value * copy() const {
-                    return new LifeMax();
-                }
-            };
-
-            return new LifeMax();
         }
 
         if (identifier == "power"){
