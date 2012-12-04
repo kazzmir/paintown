@@ -54,6 +54,7 @@ public:
     HealthStimulation(Network::Message & message);
     HealthStimulation(const HealthStimulation & h);
 
+    using Stimulation::stimulate;
     virtual void stimulate(Character & c) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
@@ -70,6 +71,7 @@ public:
     InvincibilityStimulation(Network::Message & data);
     InvincibilityStimulation(const InvincibilityStimulation & copy);
 
+    using Stimulation::stimulate;
     virtual void stimulate(Character & c) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
@@ -86,6 +88,7 @@ public:
     SpeedStimulation(Network::Message & data);
     SpeedStimulation(const SpeedStimulation & copy);
 
+    using Stimulation::stimulate;
     virtual void stimulate(Character & c) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
@@ -102,6 +105,7 @@ public:
     ExtraLifeStimulation(Network::Message & data);
     ExtraLifeStimulation(const ExtraLifeStimulation & copy);
 
+    using Stimulation::stimulate;
     virtual void stimulate(Character & p) const;
     virtual Stimulation * copy() const;
     virtual void createMessage(Network::Message & message) const;
