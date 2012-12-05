@@ -837,7 +837,7 @@ static void showCutscene(const Filesystem::RelativePath & path){
         try{
             Gui::CutScene intro(Storage::instance().find(path));
             /* FIXME: hack */
-            intro.setResolution(320, 240);
+            // intro.setResolution(320, 240);
             intro.playAll();
         } catch (const Filesystem::NotFound & fail){
             Global::debug(0) << "Could not find file while trying to play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
@@ -1005,6 +1005,9 @@ static void setupLocalPlayers(const vector<Paintown::Object*> & objects){
 }
 
 static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, void (*setup_players)(const vector<Paintown::Object*> & players)){
+
+    levelInfo.playIntro();
+
     bool first = true;
     const std::vector<std::string> & levels = levelInfo.getLevels();
     for (int level = 0; level < levels.size(); level++){
@@ -1026,7 +1029,11 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
         first = false;
     }
 
+    /* First player endings */
     showEndings(futurePlayers);
+
+    /* Then game ending */
+    levelInfo.playEnding();
 }
 
 void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){

@@ -5,6 +5,7 @@
 #include "util/funcs.h"
 #include "globals.h"
 #include "util/debug.h"
+#include "util/gui/cutscene.h"
 
 namespace Level{
 
@@ -83,6 +84,39 @@ void LevelInfo::setName(const std::string & s){
 const string & LevelInfo::getName() const {
     return name;
 }
+
+void LevelInfo::setIntro(const Filesystem::RelativePath & path){
+    intro = path;
+}
+
+void LevelInfo::setEnding(const Filesystem::RelativePath & path){
+    ending = path;
+}
+
+static void showCutscene(const Filesystem::RelativePath & path){
+    if (path != Filesystem::RelativePath("")){
+        try{
+            Gui::CutScene intro(Storage::instance().find(path));
+            /* FIXME: hack */
+            // intro.setResolution(320, 240);
+            intro.playAll();
+        } catch (const Filesystem::NotFound & fail){
+            Global::debug(0) << "Could not find file while trying to play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
+        } catch (const Filesystem::Exception & fail){
+            Global::debug(0) << "Could not play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
+        } catch (const Exception::Base & fail){
+            Global::debug(0) << "Could not play cutscene " << path.path() << ": " << fail.getTrace() << std::endl;
+        }
+    }
+}
+
+void LevelInfo::playIntro() const {
+    showCutscene(intro);
+}
+
+void LevelInfo::playEnding() const {
+    showCutscene(ending);
+}
     
 LevelInfo::~LevelInfo(){
 }
@@ -97,6 +131,15 @@ LevelInfo readLevel(const Token * level){
         string name;
         if (level->match("level-set/name", name)){
             info.setName(name);
+        }
+
+        string path;
+        if (level->match("level-set/intro", path)){
+            info.setIntro(Filesystem::RelativePath(path));
+        }
+        
+        if (level->match("level-set/ending", path)){
+            info.setEnding(Filesystem::RelativePath(path));
         }
 
         string playerPath;

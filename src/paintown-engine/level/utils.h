@@ -45,6 +45,12 @@ public:
 
     virtual void setLoadingMessage(const std::string & str);
 
+    virtual void setIntro(const Filesystem::RelativePath & path);
+    virtual void setEnding(const Filesystem::RelativePath & path);
+
+    virtual void playIntro() const;
+    virtual void playEnding() const;
+
     /* descriptive name of this set of levels */
     virtual const std::string & getName() const;
     virtual void setPlayerPath(const std::string & s);
@@ -54,12 +60,23 @@ public:
 
 protected:
     std::vector<std::string> levels;
+
+    /* Path to a list of players */
     std::string playerPath;
+
+    /* Name of the level set which appears in the menu */
     std::string name;
     std::string _loadingMessage;
     Filesystem::AbsolutePath _loadingBackground;
+
+    /* Played before the first level, at the start of the game */
+    Filesystem::RelativePath intro;
+
+    /* Played after the last level, at the end of the game */
+    Filesystem::RelativePath ending;
     const Graphics::Bitmap * background;
 
+    /* Position of the loading message on the screen */
     int x, y;
 };
 
