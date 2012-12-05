@@ -1147,6 +1147,7 @@ CharacterSelect::PlayerType characterSelectType(const Mugen::PlayerType & type){
             throw MugenException("Should not be able to start an arcade match with type CPU or NoControl", __FILE__, __LINE__);
             break;
         }
+        default: throw MugenException("Internal error: unknown player type given", __FILE__, __LINE__);
     }
 }
 
