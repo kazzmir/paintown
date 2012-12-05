@@ -900,8 +900,11 @@ static void runNewMenu(Searcher & searcher){
                     try {
                         std::vector< PaintownUtil::ReferenceCount<Gui::ScrollItem> > items;
                         items.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Item("PLAY LOCALLY", Mugen::Versus)));
+                        /* FIXME: fix networking for mugen */
+                        /*
                         items.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Item("CREATE SERVER", Mugen::NetworkVersusServer)));
                         items.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Item("CONNECT TO SERVER", Mugen::NetworkVersusClient)));
+                        */
                         PaintownUtil::ReferenceCount<Menu> versus = PaintownUtil::ReferenceCount<Menu>(new Menu(*menu, items));
                         Logic logic(versus);
                         Draw draw(versus);
