@@ -1016,6 +1016,7 @@ public:
                     switch (environment.getCharacter().getFacing()){
                         case FacingRight: return x - environment.getStage().maximumLeft(&environment.getCharacter());
                         case FacingLeft: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
+                        default: return 0;
                     }
                 }
 
@@ -1036,6 +1037,7 @@ public:
                     switch (environment.getCharacter().getFacing()){
                         case FacingRight: return x - environment.getStage().maximumLeft(&environment.getCharacter());
                         case FacingLeft: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
+                        default: return 0;
 
                     }
                 }
@@ -1056,6 +1058,7 @@ public:
                     switch (environment.getCharacter().getFacing()){
                         case FacingLeft: return x - environment.getStage().maximumLeft(&environment.getCharacter());
                         case FacingRight: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
+                        default: return 0;
                     }
                 }
 
@@ -1075,6 +1078,7 @@ public:
                     switch (environment.getCharacter().getFacing()){
                         case FacingLeft: return x - environment.getStage().maximumLeft(&environment.getCharacter());
                         case FacingRight: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
+                        default: return 0;
                     }
                 }
 
@@ -4649,6 +4653,7 @@ public:
                     switch (environment.getCharacter().getFacing()){
                         case FacingLeft: return environment.getCharacter().getFrontX() - enemy->getFrontX();
                         case FacingRight: return enemy->getFrontX() - environment.getCharacter().getFrontX();
+                        default: return 0;
                     }
                 }
 
@@ -4745,6 +4750,7 @@ public:
                     switch (environment.getCharacter().getFacing()){
                         case FacingLeft: return environment.getCharacter().getX() - enemy->getX();
                         case FacingRight: return enemy->getX() - environment.getCharacter().getX();
+                        default: return 0;
                     }
                 }
 
