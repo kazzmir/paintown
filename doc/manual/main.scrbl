@@ -2,6 +2,8 @@
 @(require scribble/basic)
 
 @(title #:version "0.1" "Paintown Manual")
+@image{images/main-menu.png}
+@verbatim{ }
 @author+email["Jon Rafkind" "jon@rafkind.com"]
 @(table-of-contents)
 

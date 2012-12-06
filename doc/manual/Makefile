@@ -4,3 +4,8 @@
 files=main.scrbl # whatever.scrbl
 main.pdf: *.scrbl
 	raco scribble --pdf main.scrbl
+
+.PHONY: html
+
+html: *.scrbl
+	raco scribble --htmls main.scrbl
