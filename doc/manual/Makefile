@@ -2,5 +2,5 @@
 # http://racket-lang.org
 
 files=main.scrbl # whatever.scrbl
-main.pdf: main.scrbl
+main.pdf: *.scrbl
 	raco scribble --pdf main.scrbl
