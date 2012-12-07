@@ -36,8 +36,8 @@ for field in fields:
     type-modifier = "unsigned"
                   | "signed"
     # Handles c++ style namespaces
-    type-identifier = modifier:type-modifier? s* name:identifier template:template? namespace:("::" type-identifier)? {{ value = name }}
-    template = "<" s* type-identifier (s* "," s* type-identifier)* s* ">"
+    type-identifier = modifier:type-modifier? s* name:identifier template:template? namespace:("::" type-identifier)? {{ value = state.makeType(modifier, name, template, namespace) }}
+    template = "<" s* arg1:type-identifier args:(s* "," s* type-identifier)* s* ">" {{ value = [arg1] + args }}
     newline = "\n"
     s = " "
       | "\t"
