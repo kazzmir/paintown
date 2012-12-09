@@ -251,7 +251,7 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/7z)
 
 #Dumb
-add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/dumb)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sound/dumb)
 
 #Util
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util)
@@ -278,7 +278,7 @@ add_library(loadpng_module ${LOADPNG_SRC})
 # add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lzw.c)
 
 # GME Library
-add_library(gme_module src/util/gme/Ay_Apu.cpp src/util/gme/Ay_Cpu.cpp src/util/gme/Ay_Emu.cpp src/util/gme/Blip_Buffer.cpp src/util/gme/Classic_Emu.cpp src/util/gme/Data_Reader.cpp src/util/gme/Dual_Resampler.cpp src/util/gme/Effects_Buffer.cpp src/util/gme/Fir_Resampler.cpp src/util/gme/Gb_Apu.cpp src/util/gme/Gb_Cpu.cpp src/util/gme/Gb_Oscs.cpp src/util/gme/Gbs_Emu.cpp src/util/gme/gme.cpp src/util/gme/Gme_File.cpp src/util/gme/Gym_Emu.cpp src/util/gme/Hes_Apu.cpp src/util/gme/Hes_Cpu.cpp src/util/gme/Hes_Emu.cpp src/util/gme/Kss_Cpu.cpp src/util/gme/Kss_Emu.cpp src/util/gme/Kss_Scc_Apu.cpp src/util/gme/M3u_Playlist.cpp src/util/gme/Multi_Buffer.cpp src/util/gme/Music_Emu.cpp src/util/gme/Nes_Apu.cpp src/util/gme/Nes_Cpu.cpp src/util/gme/Nes_Fme7_Apu.cpp src/util/gme/Nes_Namco_Apu.cpp src/util/gme/Nes_Oscs.cpp src/util/gme/Nes_Vrc6_Apu.cpp src/util/gme/Nsfe_Emu.cpp src/util/gme/Nsf_Emu.cpp src/util/gme/Sap_Apu.cpp src/util/gme/Sap_Cpu.cpp src/util/gme/Sap_Emu.cpp src/util/gme/Sms_Apu.cpp src/util/gme/Snes_Spc.cpp src/util/gme/Spc_Cpu.cpp src/util/gme/Spc_Dsp.cpp src/util/gme/Spc_Emu.cpp src/util/gme/Vgm_Emu.cpp src/util/gme/Vgm_Emu_Impl.cpp src/util/gme/Ym2413_Emu.cpp src/util/gme/Ym2612_Emu.cpp)
+add_library(gme_module src/util/sound/gme/Ay_Apu.cpp src/util/sound/gme/Ay_Cpu.cpp src/util/sound/gme/Ay_Emu.cpp src/util/sound/gme/Blip_Buffer.cpp src/util/sound/gme/Classic_Emu.cpp src/util/sound/gme/Data_Reader.cpp src/util/sound/gme/Dual_Resampler.cpp src/util/sound/gme/Effects_Buffer.cpp src/util/sound/gme/Fir_Resampler.cpp src/util/sound/gme/Gb_Apu.cpp src/util/sound/gme/Gb_Cpu.cpp src/util/sound/gme/Gb_Oscs.cpp src/util/sound/gme/Gbs_Emu.cpp src/util/sound/gme/gme.cpp src/util/sound/gme/Gme_File.cpp src/util/sound/gme/Gym_Emu.cpp src/util/sound/gme/Hes_Apu.cpp src/util/sound/gme/Hes_Cpu.cpp src/util/sound/gme/Hes_Emu.cpp src/util/sound/gme/Kss_Cpu.cpp src/util/sound/gme/Kss_Emu.cpp src/util/sound/gme/Kss_Scc_Apu.cpp src/util/sound/gme/M3u_Playlist.cpp src/util/sound/gme/Multi_Buffer.cpp src/util/sound/gme/Music_Emu.cpp src/util/sound/gme/Nes_Apu.cpp src/util/sound/gme/Nes_Cpu.cpp src/util/sound/gme/Nes_Fme7_Apu.cpp src/util/sound/gme/Nes_Namco_Apu.cpp src/util/sound/gme/Nes_Oscs.cpp src/util/sound/gme/Nes_Vrc6_Apu.cpp src/util/sound/gme/Nsfe_Emu.cpp src/util/sound/gme/Nsf_Emu.cpp src/util/sound/gme/Sap_Apu.cpp src/util/sound/gme/Sap_Cpu.cpp src/util/sound/gme/Sap_Emu.cpp src/util/sound/gme/Sms_Apu.cpp src/util/sound/gme/Snes_Spc.cpp src/util/sound/gme/Spc_Cpu.cpp src/util/sound/gme/Spc_Dsp.cpp src/util/sound/gme/Spc_Emu.cpp src/util/sound/gme/Vgm_Emu.cpp src/util/sound/gme/Vgm_Emu_Impl.cpp src/util/sound/gme/Ym2413_Emu.cpp src/util/sound/gme/Ym2612_Emu.cpp)
 
 #Script directory
 # add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine/script)
