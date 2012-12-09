@@ -1,11 +1,23 @@
 * Network mode for MUGEN *
 
-Network mode can use the same principle as the scripted mode where only non-deterministic events need to be sent -- basically just commands and random numbers. Both clients should remain in sync so commands sent at tick X from one client should have some effect at tick X on the other client. Since there are 60 ticks per second this leaves 16ms for the packet to travel from the first client to get to the other client and be included in the current tick.
+Each client will update their own world state in real-time as if they were playing a local game. The server will serialize its world state and send it to all the clients so they can synchronize to the same state. Each client will send key presses using UDP to all other clients to ensure keys are activated as soon as possible, but its ok if the message is lost because the next world update will just reset things to a clean slate.
 
-The most likely scenario will be that client 1 sends a command at tick 1 and it reaches client 2 at tick 5 or so. Since client 2's world will not know about client 1's command at tick 1 it will be out of sync. So each time a packet from client 1 shows up we could replay the world from that tick using the new set of commands. Replaying the stage is hard though, there are a ton of variables in the objects (characters, projectiles, etc).
+World serialization:
+  all character transient data
+  state controller data (like persisent)
+  projectiles
+  helpers
 
-Each client's world should update asynchronously though, otherwise it will look to each player like their keys are delayed. So how can we update the local client's player as fast as possible but update the opponent as packets arrive? If we just update the opponent when packets show up then client 1 will have a different view of the world than client 2.
+No object should use a pointer to reference any other object, instead integer ids will be used which are regulated by the server. This is so the server and client can refer to the same object in a machine independant way.
 
-That is, client 2 could issue some attack at tick 1. Client 1 could block from tick 1 to 3, but the attack from client 2 might not show up till tick 5. On client 2's machine client 1 would have blocked (assuming client 1's commands showed up instantly) but on client 1's machine he will be hit by an attack if client 2's packets show up at tick 5. Client 1 would have to rewrite history such that client 2's commands really took effect at tick 1.
+Each client should store the last N non-deterministic events to the system so that they can be replayed when a new world state shows up. Once the new world state shows up the current state is equal to the new world state that is simulated for N ticks.
 
-Since packets will always be delayed history will be constantly rewritten, most likely making for some very strange gameplay.
+example:
+  server and client start from world 0 at time 0
+  server sends world 1 at time 1
+  client receives world 1 at time 5
+  client should set the current world to world 1 and then replay any events that occured between time 1 and time 5
+
+The client's world at time 5 might diverge from world 1 but hopefully so little time has passed that things aren't too out of sync. Hopefully the entire world state will not be that large, possibly <10k, so it should be able to be sent relatively quickly. The frequency of sending world states can be dynamically controlled based on ping. Lower pings can send world states more frequently while higher pings will send more infrequently (and thus see more jitter).
+
+Key presses should be sent with UDP and the current time. If a key press is within some small delta from the current time then it should be considered legal. Something like within 50ms should be ok, possibly even 100ms.
