@@ -1,7 +1,7 @@
-#ifndef _game_object_h
-#define _game_object_h
+#ifndef _paintown_game_object_h
+#define _paintown_game_object_h
 
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "paintown-engine/network/network.h"
 #include "util/bitmap.h"
 #include <string>

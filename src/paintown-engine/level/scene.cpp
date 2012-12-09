@@ -16,7 +16,7 @@
 #include "util/token.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "../environment/atmosphere.h"
 #include "../script/script.h"
 #include "../trigger/trigger.h"

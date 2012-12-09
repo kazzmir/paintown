@@ -5,7 +5,7 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/input/input-manager.h"
 #include "configuration.h"
 #include "paintown-engine/game/mod.h"

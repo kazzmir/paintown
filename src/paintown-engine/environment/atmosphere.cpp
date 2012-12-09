@@ -12,7 +12,7 @@
 #include "util/trans-bitmap.h"
 #include "util/file-system.h"
 #include "util/funcs.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/token.h"
 #include "paintown-engine/object/object.h"
 #include <vector>

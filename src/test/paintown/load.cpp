@@ -7,7 +7,7 @@
 #include "util/input/input-source.h"
 #include "util/timedifference.h"
 #include "util/bitmap.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/object/player.h"
 #include "factory/collector.h"

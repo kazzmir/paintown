@@ -17,7 +17,7 @@
 #include "util/load_exception.h"
 #include "object.h"
 #include "util/file-system.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/timedifference.h"
 #include "util/token.h"
 #include "util/token_exception.h"

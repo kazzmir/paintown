@@ -1,5 +1,5 @@
-#include "util/sound.h"
-#include "util/music.h"
+#include "util/sound/sound.h"
+#include "util/sound/music.h"
 #include "configuration.h"
 #include "util/file-system.h"
 #include "../common/init.h"

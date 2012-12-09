@@ -6,6 +6,7 @@
 #include "paintown-engine/game/options.h"
 #include "factory/collector.h"
 #include "util/menu/menu.h"
+#include "configuration.h"
 
 using namespace std;
 
@@ -48,6 +49,7 @@ int paintown_main(int argc, char ** argv){
 
 int main(int argc, char ** argv){
     Screen::fakeInit();
+    Configuration::loadConfigurations();
     return paintown_main(argc, argv);
 }
 #ifdef USE_ALLEGRO

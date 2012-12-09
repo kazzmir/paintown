@@ -27,7 +27,7 @@
 #include "util/lit_bitmap.h"
 #include "util/ebox.h"
 #include "util/load_exception.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/timedifference.h"
 #include "util/token.h"
 #include "util/token_exception.h"

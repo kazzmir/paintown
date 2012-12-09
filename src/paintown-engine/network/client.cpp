@@ -19,7 +19,7 @@
 #include "factory/font_render.h"
 #include "../factory/object_factory.h"
 #include "../factory/heart_factory.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "../game/world.h"
 #include "../object/character.h"
 #include "../object/player.h"

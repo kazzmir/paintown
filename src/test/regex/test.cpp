@@ -14,38 +14,38 @@ public:
 
 void test1(){
     using namespace Util;
-    if (!matchRegex("a", "a")){
+    if (!matchRegex("a", Regex("a"))){
         throw Failure(1);
     }
-    if (!matchRegex("aaaa", "a*")){
+    if (!matchRegex("aaaa", Regex("a*"))){
         throw Failure(1);
     }
-    if (!matchRegex("2", "[0-9]")){
+    if (!matchRegex("2", Regex("[0-9]"))){
         throw Failure(1);
     }
-    if (!matchRegex("asdofijwioefrjoaisfjioasdf", ".*")){
+    if (!matchRegex("asdofijwioefrjoaisfjioasdf", Regex(".*"))){
         throw Failure(1);
     }
-    if (!matchRegex("tuna", "^tuna$")){
+    if (!matchRegex("tuna", Regex("^tuna$"))){
         throw Failure(1);
     }
-    if (!matchRegex("football", "f(oot)ball")){
+    if (!matchRegex("football", Regex("f(oot)ball"))){
         throw Failure(1);
     }
-    if (!matchRegex("az", "(1|2|3|a)(f|v|z)")){
+    if (!matchRegex("az", Regex("(1|2|3|a)(f|v|z)"))){
         throw Failure(1);
     }
-    if (matchRegex("nogga", "lopster")){
+    if (matchRegex("nogga", Regex("lopster"))){
         throw Failure(1);
     }
-    if (!matchRegex("titlebg 1", ".*titlebg .*")){
+    if (!matchRegex("titlebg 1", Regex(".*titlebg .*"))){
         throw Failure(1);
     }
 }
 
 void test2(){
     using namespace Util;
-    if (captureRegex("foobar", "f(oo)bar", 0) != "oo"){
+    if (captureRegex("foobar", Regex("f(oo)bar"), 0) != "oo"){
         throw Failure(2);
     }
 }

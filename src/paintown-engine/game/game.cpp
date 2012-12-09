@@ -5,7 +5,7 @@
 #include "game.h"
 #include "mod.h"
 #include "move-list.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "util/funcs.h"
 #include "util/font.h"
 #include "util/pointer.h"

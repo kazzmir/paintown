@@ -12,7 +12,7 @@
 #include "util/stretch-bitmap.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/exceptions/exception.h"
 
 #include "mugen/util.h"

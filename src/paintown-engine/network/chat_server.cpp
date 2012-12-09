@@ -24,7 +24,7 @@
 #include <iostream>
 #include <sstream>
 #include "util/resource.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 
 #include <signal.h>
 

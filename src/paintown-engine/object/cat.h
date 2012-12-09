@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 #include "object_nonattack.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/network/network.h"
 #include "util/file-system.h"
 

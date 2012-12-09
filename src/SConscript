@@ -141,7 +141,7 @@ def lzmaLibrary7z(env):
 
 def gmeLibrary(env):
     use = env
-    return SConscript('util/gme/SConscript', exports = ['use'])
+    return SConscript('util/sound/gme/SConscript', exports = ['use'])
 
 #for i in filelist:
 #    # print "%s = %s" % (i, filelist[i])
@@ -208,7 +208,7 @@ def pcreLibrary(env):
 def dumbLibrary(env):
     dumbEnv = env.Clone()
     env = dumbEnv
-    return use.SConscript('util/dumb/SConscript', exports = ['env'])
+    return use.SConscript('util/sound/dumb/SConscript', exports = ['env'])
 
 def hawknlLibrary(env):
     hawkEnv = env.Clone()

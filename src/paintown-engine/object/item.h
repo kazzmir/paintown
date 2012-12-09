@@ -4,7 +4,7 @@
 #include "util/load_exception.h"
 #include "util/file-system.h"
 #include "object_nonattack.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/bitmap.h"
 #include "util/network/network.h"
 #include "stimulation.h"

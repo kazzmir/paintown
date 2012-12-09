@@ -2,7 +2,7 @@
 #define _paintown_rain_atmosphere_h
 
 #include "atmosphere.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include <vector>
 
 namespace Graphics{

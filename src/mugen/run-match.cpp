@@ -12,7 +12,7 @@
 #include "util/message-queue.h"
 #include "util/init.h"
 #include "config.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/system.h"
 #include "character.h"

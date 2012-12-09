@@ -24,7 +24,7 @@ static const int DEFAULT_DEBUG = 0;
 #include "util/network/network.h"
 #include "util/token_exception.h"
 #include "util/system.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "util/menu/menu.h"
 #include "util/menu/menu-exception.h"
 #include "util/menu/optionfactory.h"

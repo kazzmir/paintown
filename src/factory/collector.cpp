@@ -7,7 +7,7 @@
 #include "paintown-engine/factory/object_factory.h"
 #include "util/resource.h"
 #include "mugen/config.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/init.h"
 #include <iostream>
 

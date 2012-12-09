@@ -19,7 +19,7 @@
 #include "util/resource.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 
 using namespace std;
 

@@ -13,7 +13,7 @@
 #include "util/stretch-bitmap.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
-#include "util/sound.h"
+#include "util/sound/sound.h"
 #include "util/exceptions/exception.h"
 #include "util/network/network.h"
 #include "util/network/chat.h"
@@ -242,7 +242,7 @@ public:
                                 if (check != pingReply.end()){
                                     // there is an existing entry lets display our ping
                                     std::ostringstream difference;
-                                    difference << (double)((System::currentMicroseconds() - check->second)/1000000000);
+                                    difference << (double)((System::currentMilliseconds() - check->second)/1000000);
                                     panel.addMessage("[CTCP] Received CTCP-PING reply from " + check->first + ": " + difference.str() + "second(s)" );
                                     pingReply.erase(check);
                                 }
@@ -319,7 +319,7 @@ public:
                     const std::string & who = command.at(1);
                     if (!who.empty()){
                         std::ostringstream timestamp;
-                        uint64_t time = System::currentMicroseconds();
+                        uint64_t time = System::currentMilliseconds();
                         timestamp << time;
                         ircClient->sendCommand(::Network::IRC::Command::PrivateMessage, who, ":\001PING " + timestamp.str() + "\001");
                         panel.addMessage("[CTCP] Sending CTCP-PING request to " + who);

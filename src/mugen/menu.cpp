@@ -23,7 +23,7 @@
 #include "util/thread.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "util/events.h"
 #include "util/system.h"
 #include "util/parameter.h"

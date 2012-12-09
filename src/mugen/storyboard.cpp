@@ -20,7 +20,7 @@
 
 #include "util/debug.h"
 #include "util/timedifference.h"
-#include "util/music.h"
+#include "util/sound/music.h"
 #include "ast/all.h"
 #include "parser/all.h"
 #include "util/input/input-map.h"
