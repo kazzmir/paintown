@@ -42,9 +42,9 @@
 namespace PaintownUtil = ::Util;
 
 using namespace Mugen;
+using std::vector;
 using std::string;
 using std::ostringstream;
-
 
 Game::Game(const PlayerType & playerType, const GameType & gameType, const Filesystem::AbsolutePath & systemFile):
 playerType(playerType),
@@ -532,10 +532,35 @@ void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen
 class StartGameMode{
 public:
     StartGameMode(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
-        initialize(player1Name, player2Name, stageName);
+        vector<string> players;
+        players.push_back(player1Name);
+        players.push_back(player2Name);
+        initialize(players, stageName);
     }
 
-    virtual void initialize(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
+    StartGameMode(const std::string & player1Name,
+                  const std::string & player2Name,
+                  const std::string & player3Name,
+                  const std::string & player4Name,
+                  const std::string & stageName){
+        vector<string> players;
+        players.push_back(player1Name);
+        players.push_back(player2Name);
+        players.push_back(player3Name);
+        players.push_back(player4Name);
+        initialize(players, stageName);
+    }
+
+
+    PaintownUtil::ReferenceCount<Character> getPlayer1(){
+        return players[0];
+    }
+    
+    PaintownUtil::ReferenceCount<Character> getPlayer2(){
+        return players[1];
+    }
+
+    virtual void initialize(const vector<string> & playerNames, const string & stageName){
         ParseCache cache;
         /* Find regular files */
         std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
@@ -544,11 +569,13 @@ public:
         std::vector<Filesystem::AbsolutePath> zipCharacters = Storage::instance().getContainerFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")));
         allCharacters.insert(allCharacters.end(), zipCharacters.begin(), zipCharacters.end());
         std::random_shuffle(allCharacters.begin(), allCharacters.end());
-        bool random1 = player1Name == "_";
-        bool random2 = player2Name == "_";
 
-        player1 = makeCharacter(player1Name, random1, allCharacters);
-        player2 = makeCharacter(player2Name, random2, allCharacters);
+        for (vector<string>::const_iterator it = playerNames.begin(); it != playerNames.end(); it++){
+            string name = *it;
+            bool random = name == "_";
+            PaintownUtil::ReferenceCount<Character> player(makeCharacter(name, random, allCharacters));
+            players.push_back(player);
+        }
 
         stage = new Stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
         {
@@ -561,8 +588,16 @@ public:
             timer.endTime();
             out << timer.printTime(" took") << std::endl;
         }
-        stage->addPlayer1(player1.raw());
-        stage->addPlayer2(player2.raw());
+
+        if (players.size() > 0){
+            stage->addPlayer1(players[0].raw());
+        }
+
+        if (players.size() > 1){
+            stage->addPlayer2(players[1].raw());
+        }
+
+        /* TODO: handle players 3 and 4 */
     }
 
     virtual void run() = 0;
@@ -570,8 +605,7 @@ public:
     virtual ~StartGameMode(){
     }
 
-    PaintownUtil::ReferenceCount<Character> player1;
-    PaintownUtil::ReferenceCount<Character> player2;
+    vector<PaintownUtil::ReferenceCount<Character> > players;
     PaintownUtil::ReferenceCount<Stage> stage;
 };
 
@@ -586,8 +620,8 @@ public:
     virtual void run(){
         HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
         LearningAIBehavior player2Behavior(30);
-        player1->setBehavior(&player1Behavior);
-        player2->setBehavior(&player2Behavior);
+        getPlayer1()->setBehavior(&player1Behavior);
+        getPlayer2()->setBehavior(&player2Behavior);
 
         RunMatchOptions options;
         options.setBehavior(&player1Behavior, NULL);
@@ -721,10 +755,10 @@ public:
         HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
         DummyBehavior dummyBehavior;
         // Set regenerative health
-        player1->setRegeneration(true);
-        player2->setRegeneration(true);
-        player1->setBehavior(&player1Behavior);
-        player2->setBehavior(&dummyBehavior);
+        getPlayer1()->setRegeneration(true);
+        getPlayer2()->setRegeneration(true);
+        getPlayer1()->setBehavior(&player1Behavior);
+        getPlayer2()->setBehavior(&dummyBehavior);
 
         RunMatchOptions options;
 
@@ -762,8 +796,8 @@ public:
         LearningAIBehavior player2Behavior(30);
 
         // Set regenerative health
-        player1->setBehavior(&player1Behavior);
-        player2->setBehavior(&player2Behavior);
+        getPlayer1()->setBehavior(&player1Behavior);
+        getPlayer2()->setBehavior(&player2Behavior);
 
         stage->reset();
         Game::runMatch(stage.raw());
@@ -773,6 +807,35 @@ public:
 void Game::startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName){
     StartWatch watch(player1Name, player2Name, stageName);
     watch.run();
+}
+
+class StartTeam: public StartGameMode {
+public:
+    StartTeam(const std::string & player1Name,
+               const std::string & player2Name,
+               const std::string & player3Name,
+               const std::string & player4Name,
+               const std::string & stageName):
+    StartGameMode(player1Name, player2Name, player3Name, player4Name, stageName){
+    }
+
+    virtual void run(){
+        /* FIXME: implement team stuff. Set up stage to be in team mode */
+        LearningAIBehavior player1Behavior(30);
+        LearningAIBehavior player2Behavior(30);
+
+        // Set regenerative health
+        getPlayer1()->setBehavior(&player1Behavior);
+        getPlayer2()->setBehavior(&player2Behavior);
+
+        stage->reset();
+        Game::runMatch(stage.raw());
+    }
+};
+
+void Game::startTeam(const std::string & player1Name, const std::string & player2Name, const std::string & player3Name, const std::string & player4Name, const std::string & stageName){
+    StartTeam team(player1Name, player2Name, player3Name, player4Name, stageName);
+    team.run();
 }
 
 class StartScript: public StartGameMode {
@@ -797,8 +860,8 @@ public:
         ScriptedBehavior player2Behavior(player2Path);
 
         // Set regenerative health
-        player1->setBehavior(&player1Behavior);
-        player2->setBehavior(&player2Behavior);
+        getPlayer1()->setBehavior(&player1Behavior);
+        getPlayer2()->setBehavior(&player2Behavior);
 
         stage->reset();
         Game::runMatch(stage.raw());

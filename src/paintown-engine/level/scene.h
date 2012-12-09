@@ -86,7 +86,10 @@ public:
 protected:
 
     /* true if the scene the next block is ready */
-    bool canContinue( int x );
+    bool canContinue(int x);
+
+    /* true if the position x is passed the boundary of the current block */
+    bool passedBoundary(int x);
 
     inline double getBackgroundParallax() const {
         return backgroundParallax;

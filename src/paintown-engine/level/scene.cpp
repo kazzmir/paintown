@@ -291,9 +291,19 @@ void Scene::advanceBlocks( int n ){
     }
 }
 
+bool Scene::passedBoundary(int x){
+    return x >= getLimit() - 320;
+}
+
 bool Scene::canContinue(int x){
-    return (current_block->isContinuous() && x >= getLimit() - 320) ||
-           (hearts.empty() && current_block->empty() && x >= getLimit() - 320);
+    /* continuous means the player can walk past the boundary without having
+     * to kill all the enemies first. So there are two conditions:
+     * 1. block is continuous and the player is past the boundary
+     * 2. all the enemies are dead (and no more will be spawned) and the
+     *    player is past the boundary
+     */
+    return (current_block->isContinuous() && passedBoundary(x)) ||
+           (hearts.empty() && current_block->empty() && passedBoundary(x));
 }
 
 /* put the enemy into a vector so that it can be added into the game objects

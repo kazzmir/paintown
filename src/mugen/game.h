@@ -59,6 +59,8 @@ class Game {
         static void startArcade(const std::string & player1, const std::string & player2, const std::string & stage);
         /* start a watch match */
         static void startWatch(const std::string & player1Name, const std::string & player2Name, const std::string & stageName);
+        /* start a team match */
+        static void startTeam(const std::string & player1Name, const std::string & player2Name, const std::string & player3Name, const std::string & player4Name, const std::string & stageName);
         /* start a scripted match */
         static void startScript(const std::string & player1Name, const std::string & player1Script, const std::string & player2Name, const std::string & player2Script, const std::string & stageName);
     private:

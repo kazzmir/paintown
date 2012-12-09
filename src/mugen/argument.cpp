@@ -96,13 +96,58 @@ static bool parseMugenInstant(string input, string * player1, string * player2, 
     return true;
 }
 
+/* TODO: refactor this (and the above method) */
+static bool parseMugenInstant(string input, string * player1, string * player2, string * player3, string * player4, string * stage){
+    unsigned int comma = input.find(',');
+    if (comma == string::npos){
+        Global::debug(0) << "Expected five arguments separated by a comma, only 1 was given: " << input << endl;
+        return false;
+    }
+    *player1 = input.substr(0, comma);
+    input.erase(0, comma + 1);
+    comma = input.find(',');
+
+    if (comma == string::npos){
+        Global::debug(0) << "Expected five arguments separated by a comma, only 2 were given: " << input << endl;
+        return false;
+    }
+
+    *player2 = input.substr(0, comma);
+    input.erase(0, comma + 1);
+
+    comma = input.find(',');
+
+    if (comma == string::npos){
+        Global::debug(0) << "Expected five arguments separated by a comma, only 2 were given: " << input << endl;
+        return false;
+    }
+
+    *player3 = input.substr(0, comma);
+    input.erase(0, comma + 1);
+
+    comma = input.find(',');
+
+    if (comma == string::npos){
+        Global::debug(0) << "Expected five arguments separated by a comma, only 2 were given: " << input << endl;
+        return false;
+    }
+
+    *player4 = input.substr(0, comma);
+    input.erase(0, comma + 1);
+
+    *stage = input;
+
+    return true;
+}
+
 struct MugenInstant{
     enum Kind{
         None,
         Training,
         Watch,
         Arcade,
-        Script
+        Script,
+        Team
     };
 
     MugenInstant():
@@ -113,6 +158,8 @@ struct MugenInstant{
     bool enabled;
     string player1;
     string player2;
+    string player3;
+    string player4;
     string player1Script;
     string player2Script;
     string stage;
@@ -260,6 +307,50 @@ public:
     }
 };
 
+class MugenTeamArgument: public Argument {
+public:
+    MugenInstant data;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("mugen:team");
+        return out;
+    }
+
+    string description() const {
+        return " <player 1 name>,<player 2 name>,<player 3 name>,<player 4 name>,<stage> : Start watch game with the specified players and stage";
+    }
+
+    class Run: public ArgumentAction {
+    public:
+
+        Run(MugenInstant data):
+            data(data){
+            }
+
+        MugenInstant data;
+
+        void act(){
+            Util::loadMotif();
+            Global::debug(0) << "Mugen watch mode player1 '" << data.player1 << "' player2 '" << data.player2 << "' player3 '" << data.player3 << "' player 4 '" << data.player4 << "' stage '" << data.stage << "'" << endl;
+            Mugen::Game::startTeam(data.player1, data.player2, data.player3, data.player4, data.stage);
+        }
+    };
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+        current++;
+        if (current != end){
+            data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.player3, &data.player4, &data.stage);
+            data.kind = MugenInstant::Team;
+            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+        } else {
+            Global::debug(0) << "Expected an argument. Example: mugen:team kfm,ken,kfm,kfm,falls" << endl;
+        }
+
+        return current;
+    }
+};
+
 class MugenArcadeArgument: public Argument {
 public:
     MugenInstant data;
@@ -361,6 +452,7 @@ std::vector< ::Util::ReferenceCount<Argument> > arguments(){
     all.push_back(::Util::ReferenceCount<Argument>(new MugenTrainingArgument()));
     all.push_back(::Util::ReferenceCount<Argument>(new MugenScriptArgument()));
     all.push_back(::Util::ReferenceCount<Argument>(new MugenWatchArgument()));
+    all.push_back(::Util::ReferenceCount<Argument>(new MugenTeamArgument()));
     all.push_back(::Util::ReferenceCount<Argument>(new MugenArcadeArgument()));
 
     all.push_back(::Util::ReferenceCount<Argument>(new MugenServerArgument()));
