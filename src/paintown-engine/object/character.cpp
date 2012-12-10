@@ -1885,6 +1885,11 @@ void Character::drawOutline(Graphics::Bitmap * work, int rel_x, int rel_y, int r
 
 /* draws a real looking shadow */
 void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
+    /* FIXME: fix this for a5 */
+#ifdef USE_ALLEGRO5
+    return;
+#endif
+
     if (animation_current != NULL){
         const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
         const double newheight = bmp->getHeight() * scale;
