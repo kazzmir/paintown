@@ -6,7 +6,7 @@
 #include "util/debug.h"
 
 #ifdef USE_SDL
-#include "util/sdl/mixer/SDL_mixer.h"
+#include "util/sound/sdl/mixer/SDL_mixer.h"
 #endif
 
 using std::string;

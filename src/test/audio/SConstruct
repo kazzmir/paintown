@@ -30,7 +30,7 @@ def dumbLibrary(env):
 
 def sdlMixerLibrary(env):
     use = env
-    return SConscript('../../util/sdl/mixer/SConscript', exports = ['use'], variant_dir = 'mixer')
+    return SConscript('../../util/sound/sdl/mixer/SConscript', exports = ['use'], variant_dir = 'mixer')
 
 def isLinux():
     import sys

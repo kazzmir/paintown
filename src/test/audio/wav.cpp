@@ -3,7 +3,7 @@
 #include <SDL/SDL.h>
 #include "util/debug.h"
 #include "util/sound/sound.h"
-#include "util/sdl/mixer/SDL_mixer.h"
+#include "util/sound/sdl/mixer/SDL_mixer.h"
 
 #if 0
 class Sound{

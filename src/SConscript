@@ -125,7 +125,7 @@ util/sdl/image/IMG_xcf.c
 
 def sdlMixerLibrary(env):
     use = env
-    return SConscript('util/sdl/mixer/SConscript', exports = ['use'])
+    return SConscript('util/sound/sdl/mixer/SConscript', exports = ['use'])
 
 def sflLibrary(env):
     use = env
