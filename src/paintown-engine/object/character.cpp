@@ -1928,48 +1928,6 @@ void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Gra
     }
 }
 
-void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
-    if (animation_current != NULL){
-        const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
-        const double newheight = bmp->getHeight() * scale;
-        Graphics::Bitmap shade = Graphics::Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
-        bmp->Stretch(shade);
-
-        /* Could be slow, but meh, lets do it for now to make it look like a real shadow */
-        for (int h = 0; h < shade.getHeight(); ++h){
-            for (int w = 0; w < shade.getWidth(); ++w){
-                Graphics::Color pix = shade.getPixel(w,h);
-                if (pix != Graphics::MaskColor()){
-                    shade.putPixel(w,h, Graphics::makeColor(0,0,0));
-                }
-            }
-        }
-
-        int i = ((Graphics::getRed(color) * 77 + intensity) + (Graphics::getGreen(color) * 154 + intensity) + (Graphics::getBlue(color) * 25 + intensity))/256;
-        i = 255 - i;
-        // Bitmap::transBlender(Bitmap::getRed(color), Bitmap::getGreen(color), Bitmap::getBlue(color), i);
-        Graphics::Bitmap::multiplyBlender((Graphics::getRed(color) * 77 + intensity), (Graphics::getGreen(color) * 154 + intensity), (Graphics::getBlue(color) * 25 + intensity), i);
-
-        if (scale > 0){
-            int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
-            int y = (int)(getRZ() + getY() * scale);
-            if (getFacing() == FACING_RIGHT){ 
-                shade.translucent().drawVFlip( x, y, *work );
-            } else { 
-                shade.translucent().drawHVFlip(x, y, *work );
-            }
-        } else if (scale < 0){
-            int x = (int)((getRX() - rel_x) - bmp->getWidth()/2);
-            int y = (int)((getRZ() - fabs(newheight)) + (getY() * scale));
-            if (getFacing() == FACING_RIGHT){ 
-                shade.translucent().draw(x + 3, y, *work );
-            } else { 
-                shade.translucent().drawHFlip(x - 3, y, *work );
-            }
-        }
-    }
-}
-
 /*
 bool Character::collision( Object * obj ){
 	cout<<"X: "<<getRX()<< " Y: "<<getRY()<<endl;

@@ -127,7 +127,6 @@ public:
     virtual void drawOutline(Graphics::Bitmap * work, int rel_x, int rel_y, int red, int green, int blue, int intensity);
 
     virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
-    virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual const Graphics::Bitmap * getCurrentFrame() const;
 
