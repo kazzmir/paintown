@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "collector.h"
 #include "paintown-engine/factory/heart_factory.h"
 #include "paintown-engine/game/nameplacer.h"

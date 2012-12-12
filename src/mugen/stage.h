@@ -8,7 +8,7 @@
 #include <deque>
 #include "exception.h"
 #include "util.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 
 namespace Graphics{
 class Bitmap;

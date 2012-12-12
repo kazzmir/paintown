@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "object_attack.h"
 #include "util/load_exception.h"
 #include "util/file-system.h"

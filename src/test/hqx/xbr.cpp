@@ -1,6 +1,6 @@
 #include "../common/init.h"
 #include "util/debug.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-source.h"
 #include "util/input/input-manager.h"

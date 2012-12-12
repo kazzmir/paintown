@@ -4,7 +4,7 @@
 #include "globals.h"
 #include <math.h>
 #include "object.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/funcs.h"
 
 namespace Paintown{

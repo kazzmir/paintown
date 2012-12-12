@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "item.h"
 #include "object_attack.h"
 #include "stimulation.h"

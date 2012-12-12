@@ -9,7 +9,7 @@
 #include "mugen/stage.h"
 #include "mugen/parse-cache.h"
 #include "util/timedifference.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/debug.h"
 #include "util/input/input-manager.h"
 

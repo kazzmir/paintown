@@ -2,7 +2,7 @@
 #include <sstream>
 
 #include "animation.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "character.h" 
 #include "util/token.h"
 #include "util/tokenreader.h"

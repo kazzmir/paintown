@@ -1,6 +1,6 @@
 #ifdef HAVE_NETWORKING
 
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "../object/object.h"
 #include "../object/character.h"
 #include "../game/adventure_world.h"

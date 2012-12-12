@@ -3,7 +3,7 @@
 
 #include "util/sound/sound.h"
 #include "paintown-engine/network/network.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include <string>
 #include <vector>
 

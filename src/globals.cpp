@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "globals.h"
 #include <streambuf>
 #include "util/funcs.h"

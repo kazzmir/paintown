@@ -1,8 +1,8 @@
 #ifdef HAVE_NETWORKING
 
-#include "util/bitmap.h"
-#include "util/stretch-bitmap.h"
-#include "util/trans-bitmap.h"
+#include "util/graphics/bitmap.h"
+#include "util/graphics/stretch-bitmap.h"
+#include "util/graphics/trans-bitmap.h"
 #include "util/parameter.h"
 #include "util/events.h"
 

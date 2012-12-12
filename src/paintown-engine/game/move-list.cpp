@@ -11,7 +11,7 @@
 #include "util/input/input-manager.h"
 #include "util/menu/menu.h"
 #include "configuration.h"
-#include "util/stretch-bitmap.h"
+#include "util/graphics/stretch-bitmap.h"
 #include "util/init.h"
 
 using std::endl;

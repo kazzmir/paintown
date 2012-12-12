@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "object_nonattack.h"
 #include "globals.h"
 #include "animation.h"

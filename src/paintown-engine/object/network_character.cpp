@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "network_character.h"
 #include "object.h"
 #include "object_messages.h"

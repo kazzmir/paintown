@@ -18,7 +18,7 @@ static const int DEFAULT_DEBUG = -1;
 static const int DEFAULT_DEBUG = 0;
 #endif
 
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 
 #include "factory/collector.h"
 #include "util/network/network.h"

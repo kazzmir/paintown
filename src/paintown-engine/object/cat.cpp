@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include <map>
 #include "object_nonattack.h"
 #include "util/funcs.h"

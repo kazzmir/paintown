@@ -4,7 +4,7 @@
 #include "util/message-queue.h"
 #include "util/file-system.h"
 #include "util/timedifference.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/sound/sound.h"
 #include "util/input/input-manager.h"
 #include "configuration.h"

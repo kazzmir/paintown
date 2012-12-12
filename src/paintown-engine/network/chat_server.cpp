@@ -1,13 +1,12 @@
 #ifdef HAVE_NETWORKING
 
-#include "util/bitmap.h"
-#include "util/trans-bitmap.h"
-#include "util/stretch-bitmap.h"
+#include "util/graphics/bitmap.h"
+#include "util/graphics/trans-bitmap.h"
+#include "util/graphics/stretch-bitmap.h"
 #include "util/network/network.h"
 #include "util/events.h"
 #include "chat_server.h"
 #include "chat.h"
-#include "util/bitmap.h"
 #include "util/funcs.h"
 #include "util/input/keyboard.h"
 #include "util/font.h"

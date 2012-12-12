@@ -81,7 +81,7 @@
 #include <fstream>
 #include <map>
 #include <algorithm>
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"

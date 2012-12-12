@@ -3,7 +3,7 @@
 #include "configuration.h"
 #include "util/message-queue.h"
 #include "util/thread.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/file-system.h"
 #include "mugen/stage.h"
 #include "mugen/exception.h"

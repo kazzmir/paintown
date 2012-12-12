@@ -4,8 +4,8 @@
 #include <exception>
 
 #include "util/timedifference.h"
-#include "util/trans-bitmap.h"
-#include "util/stretch-bitmap.h"
+#include "util/graphics/trans-bitmap.h"
+#include "util/graphics/stretch-bitmap.h"
 #include "mugen/ast/all.h"
 #include "mugen/sound.h"
 #include "mugen/config.h"

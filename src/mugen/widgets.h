@@ -2,7 +2,7 @@
 #define mugen_widgets_h
 
 #include "util.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/input/text-input.h"
 
 #include <string>

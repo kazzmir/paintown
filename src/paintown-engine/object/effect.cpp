@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "animation.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "effect.h"
 #include "globals.h"
 #include "util/load_exception.h"

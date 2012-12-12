@@ -1,5 +1,5 @@
 #include "character.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/load_exception.h"
 #include "../game/nameplacer.h"
 #include "animation.h"

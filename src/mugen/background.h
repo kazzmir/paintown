@@ -10,7 +10,7 @@
 #include "util.h"
 #include "util/gui/rectarea.h"
 #include "ast/all.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/pointer.h"
 
 namespace PaintownUtil = ::Util;

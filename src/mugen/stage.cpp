@@ -19,9 +19,9 @@
 #include "util/events.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "util/bitmap.h"
-#include "util/stretch-bitmap.h"
-#include "util/trans-bitmap.h"
+#include "util/graphics/bitmap.h"
+#include "util/graphics/stretch-bitmap.h"
+#include "util/graphics/trans-bitmap.h"
 // #include "util/console.h"
 /*
 #include "object/animation.h"

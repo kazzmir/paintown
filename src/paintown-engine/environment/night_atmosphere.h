@@ -6,7 +6,7 @@ class Bitmap;
 }
 
 #include "util/token_exception.h"
-#include "util/bitmap.h"
+#include "util/graphics/color.h"
 #include "atmosphere.h"
 #include <vector>
 

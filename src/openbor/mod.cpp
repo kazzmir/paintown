@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "mod.h"
 #include "paintown-engine/level/utils.h"
 #include "util/funcs.h"

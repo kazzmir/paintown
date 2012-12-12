@@ -1,7 +1,7 @@
 #include "adventure_world.h"
 #include "versus_world.h"
 #include "../object/character.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/file-system.h"
 #include "util/funcs.h"
 #include "../object/effect.h"

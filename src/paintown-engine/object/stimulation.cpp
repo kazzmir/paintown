@@ -1,6 +1,6 @@
 #include "stimulation.h"
 #include "object.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "character.h"

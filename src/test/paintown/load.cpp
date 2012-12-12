@@ -6,7 +6,7 @@
 #include "util/file-system.h"
 #include "util/input/input-source.h"
 #include "util/timedifference.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/sound/sound.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/object/player.h"

@@ -1,5 +1,5 @@
 #include "util/ebox.h"
-#include "util/trans-bitmap.h"
+#include "util/graphics/trans-bitmap.h"
 #include "projectile.h"
 #include "object_attack.h"
 #include "util/token.h"

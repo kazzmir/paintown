@@ -11,7 +11,7 @@
 #include "util/pointer.h"
 #include "../game/adventure_world.h"
 #include "util/thread.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 
 class World;
 class InputSource;

@@ -1,7 +1,7 @@
 #ifndef _paintown_draw_effect_h
 #define _paintown_draw_effect_h
 
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 
 namespace Paintown{
 

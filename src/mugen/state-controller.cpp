@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "ast/all.h"
 #include "state-controller.h"
 #include "util/parameter.h"

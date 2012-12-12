@@ -1,5 +1,5 @@
 #include "util/file-system.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/pointer.h"
 
 #include "util.h"

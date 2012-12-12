@@ -7,7 +7,7 @@
 
 #include "util/load_exception.h"
 #include "util/input/input.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "attack.h"
 
 /* is that crazy hat for chicken? */

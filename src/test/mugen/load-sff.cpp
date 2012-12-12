@@ -8,7 +8,7 @@
 #include "mugen/exception.h"
 #include "mugen/parse-cache.h"
 #include "util/timedifference.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/debug.h"
 #include "mugen/util.h"
 

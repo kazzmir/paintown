@@ -1,6 +1,6 @@
 #include "widgets.h"
 
-#include "util/trans-bitmap.h"
+#include "util/graphics/trans-bitmap.h"
 #include "util/network/network.h"
 #include "util/input/keyboard.h"
 #include "util/exceptions/exception.h"

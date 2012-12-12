@@ -1,10 +1,10 @@
 #include "character-select.h"
 
 #include "util/resource.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/debug.h"
 #include "util/font.h"
-#include "util/stretch-bitmap.h"
+#include "util/graphics/stretch-bitmap.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
 #include "util/token.h"

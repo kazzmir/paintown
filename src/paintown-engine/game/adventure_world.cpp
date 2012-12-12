@@ -1,6 +1,6 @@
 #include "util/funcs.h"
-#include "util/bitmap.h"
-#include "util/trans-bitmap.h"
+#include "util/graphics/bitmap.h"
+#include "util/graphics/trans-bitmap.h"
 #include "../script/script.h"
 #include "../object/object.h"
 #include "../object/object_attack.h"

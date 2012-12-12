@@ -12,7 +12,7 @@
 
 #include "configuration.h"
 #include "init.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 
 namespace Global{
     /*

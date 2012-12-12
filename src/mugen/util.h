@@ -11,7 +11,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "common.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/pointer.h"
 #include "ast/extra.h"
 #include "util/network/network.h"

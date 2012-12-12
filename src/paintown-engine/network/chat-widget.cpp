@@ -1,4 +1,4 @@
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include <deque>
 #include "util/input/text-input.h"
 #include "chat-widget.h"

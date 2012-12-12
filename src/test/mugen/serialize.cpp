@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "util/file-system.h"
 #include "util/timedifference.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/token_exception.h"
 #include "mugen/ast/all.h"
 #include "mugen/parser/all.h"

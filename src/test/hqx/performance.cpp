@@ -1,6 +1,6 @@
 #include "../common/init.h"
 #include "util/debug.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/timedifference.h"
 #include <stdlib.h>
 

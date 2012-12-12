@@ -1,5 +1,5 @@
 #include "shadow.h"
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include <vector>

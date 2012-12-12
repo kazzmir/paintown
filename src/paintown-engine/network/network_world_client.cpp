@@ -1,6 +1,6 @@
 #ifdef HAVE_NETWORKING
 
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "../game/adventure_world.h"
 #include "network_world_client.h"
 #include "util/network/network.h"

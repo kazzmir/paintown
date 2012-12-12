@@ -6,7 +6,7 @@
  * Move Filter to the Graphics namespace so we can forward declare it here
  * and get rid of this include.
  */
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 
 namespace Mugen{
 

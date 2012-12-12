@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include "util/bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "block.h"
 #include "../object/heart.h"
 #include "util/load_exception.h"
