@@ -289,13 +289,13 @@ add_library(pcre_module src/util/pcre/pcre_chartables.c src/util/pcre/pcre_compi
 
 if (USE_SDL)
     # IMAGE
-    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/image)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/graphics/sdl/image)
     # SFL
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sfl)
     # Stretch
-    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sdl/stretch)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/graphics/sdl/stretch)
     # SPRIG
-    add_library(sprig_module src/util/sdl/sprig/SPG_extended.c src/util/sdl/sprig/SPG_primitives.c src/util/sdl/sprig/SPG_misc.c src/util/sdl/sprig/SPG_rotation.c src/util/sdl/sprig/SPG_polygon.c src/util/sdl/sprig/SPG_surface.c)
+    add_library(sprig_module src/util/graphics/sdl/sprig/SPG_extended.c src/util/graphics/sdl/sprig/SPG_primitives.c src/util/graphics/sdl/sprig/SPG_misc.c src/util/graphics/sdl/sprig/SPG_rotation.c src/util/graphics/sdl/sprig/SPG_polygon.c src/util/graphics/sdl/sprig/SPG_surface.c)
     # Mixer
     add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/sound/sdl/mixer)
     # add_library(mixer_module src/util/sound/sdl/mixer/music.c src/util/sound/sdl/mixer/mixer.c src/util/sound/sdl/mixer/music_ogg.c src/util/sound/sdl/mixer/music_flac.c src/util/sound/sdl/mixer/music_mad.c src/util/sound/sdl/mixer/dynamic_ogg.c src/util/sound/sdl/mixer/effect_position.c src/util/sound/sdl/mixer/effects_internal.c src/util/sound/sdl/mixer/effect_stereoreverse.c src/util/sound/sdl/mixer/load_voc.c src/util/sound/sdl/mixer/load_aiff.c src/util/sound/sdl/mixer/wavestream.c src/util/sound/sdl/mixer/load_ogg.c src/util/sound/sdl/mixer/convert.cpp)

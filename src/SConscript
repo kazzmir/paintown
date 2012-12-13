@@ -69,12 +69,12 @@ filelist = helpers.read_cmake_list("%s/FileList.cmake" % findCmake())
 def sprigLibrary(env):
     sprig = env.Clone()
     source = Split("""
-util/sdl/sprig/SPG_extended.c
-util/sdl/sprig/SPG_misc.c
-util/sdl/sprig/SPG_polygon.c
-util/sdl/sprig/SPG_primitives.c
-util/sdl/sprig/SPG_rotation.c
-util/sdl/sprig/SPG_surface.c
+util/graphics/sdl/sprig/SPG_extended.c
+util/graphics/sdl/sprig/SPG_misc.c
+util/graphics/sdl/sprig/SPG_polygon.c
+util/graphics/sdl/sprig/SPG_primitives.c
+util/graphics/sdl/sprig/SPG_rotation.c
+util/graphics/sdl/sprig/SPG_surface.c
 """)
 
     return sprig.StaticLibrary('sprig', source)
@@ -84,8 +84,8 @@ def stretchLibrary(env):
     # FIXME: asm has some bug in it, try to fix it later
     stretch.Append(CPPDEFINES = ['SDL_STRETCH_DISABLE_ASM'])
     source = Split("""
-util/sdl/stretch/sdlstretch.c
-util/sdl/stretch/sdlstretchcode.c
+util/graphics/sdl/stretch/sdlstretch.c
+util/graphics/sdl/stretch/sdlstretchcode.c
 """)
 
     return stretch.StaticLibrary('stretch', source)
@@ -103,22 +103,22 @@ def sdlImageLibrary(env):
     image = env.Clone()
     image.Append(CPPDEFINES = ['LOAD_PNG', 'LOAD_PCX', 'LOAD_GIF'])
     source = Split("""
-util/sdl/image/IMG.c
-util/sdl/image/IMG_jpg.c
-util/sdl/image/IMG_pnm.c
-util/sdl/image/IMG_xpm.c
-util/sdl/image/IMG_ImageIO.c
-util/sdl/image/IMG_lbm.c
-util/sdl/image/IMG_tga.c
-util/sdl/image/IMG_xv.c
-util/sdl/image/IMG_bmp.c
-util/sdl/image/IMG_pcx.c
-util/sdl/image/IMG_tif.c
-util/sdl/image/IMG_xxx.c
-util/sdl/image/IMG_gif.c
-util/sdl/image/IMG_png.c
-util/sdl/image/IMG_savepng.c
-util/sdl/image/IMG_xcf.c
+util/graphics/sdl/image/IMG.c
+util/graphics/sdl/image/IMG_jpg.c
+util/graphics/sdl/image/IMG_pnm.c
+util/graphics/sdl/image/IMG_xpm.c
+util/graphics/sdl/image/IMG_ImageIO.c
+util/graphics/sdl/image/IMG_lbm.c
+util/graphics/sdl/image/IMG_tga.c
+util/graphics/sdl/image/IMG_xv.c
+util/graphics/sdl/image/IMG_bmp.c
+util/graphics/sdl/image/IMG_pcx.c
+util/graphics/sdl/image/IMG_tif.c
+util/graphics/sdl/image/IMG_xxx.c
+util/graphics/sdl/image/IMG_gif.c
+util/graphics/sdl/image/IMG_png.c
+util/graphics/sdl/image/IMG_savepng.c
+util/graphics/sdl/image/IMG_xcf.c
 """)
 
     return image.StaticLibrary('image',source)

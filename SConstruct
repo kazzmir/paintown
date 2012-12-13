@@ -297,7 +297,7 @@ def checkSDL(context):
         env.Append(CPPDEFINES = ['USE_SDL'])
         env.Append(CPPPATH = ['/Library/Frameworks/SDL.framework/Headers',
                               '/System/Library/Frameworks/Foundation.framework/Headers'])
-        main = env.StaticLibrary('src/util/sdl/SDLMain.m')
+        main = env.StaticLibrary('src/util/graphics/sdl/SDLMain.m')
         env.Append(LIBS = [main])
         m = build('c')
         if m:
