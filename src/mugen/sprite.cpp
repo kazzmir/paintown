@@ -1,5 +1,4 @@
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 #include "util/file-system.h"
 #include <string.h>
 #include "sprite.h"

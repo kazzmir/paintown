@@ -3,9 +3,7 @@
 #include <iostream>
 
 #include "util/graphics/bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
 #include "util/timedifference.h"
-#include "util/graphics/trans-bitmap.h"
 #include "ast/all.h"
 #include "sound.h"
 #include "font.h"

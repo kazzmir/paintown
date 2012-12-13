@@ -1,5 +1,4 @@
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 #include "animation_trail.h"
 #include "character.h"
 #include "object.h"

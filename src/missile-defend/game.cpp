@@ -14,8 +14,6 @@ Do not try to make profit from this or you will surely die.
 #include "globals.h"
 #include "configuration.h"
 #include "util/graphics/bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 #include "util/debug.h"
 #include "util/pointer.h"
 #include "util/system.h"

@@ -1,5 +1,4 @@
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 #include <iostream>
 #include "object_nonattack.h"
 #include "gib.h"

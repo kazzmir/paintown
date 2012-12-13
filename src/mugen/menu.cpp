@@ -1,6 +1,4 @@
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
 #include "menu.h"
 
 #include <fstream>

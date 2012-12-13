@@ -1,5 +1,4 @@
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -24,7 +23,6 @@
 
 #include "../factory/shadow.h"
 #include "util/funcs.h"
-#include "util/graphics/lit_bitmap.h"
 #include "util/ebox.h"
 #include "util/load_exception.h"
 #include "util/sound/sound.h"

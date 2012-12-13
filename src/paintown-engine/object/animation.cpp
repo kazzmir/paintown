@@ -7,7 +7,6 @@
 #include "animation_trail.h"
 #include "attack.h"
 #include "util/graphics/bitmap.h"
-#include "util/graphics/lit_bitmap.h"
 #include "character.h"
 #include "util/funcs.h"
 #include "util/ebox.h"

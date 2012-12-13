@@ -9,7 +9,6 @@
 #include "util/resource.h"
 #include "snow_atmosphere.h"
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 #include "util/file-system.h"
 #include "util/funcs.h"
 #include "util/sound/sound.h"

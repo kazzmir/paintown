@@ -2,7 +2,7 @@
 #include <ostream>
 
 #include "game.h"
-#include "util/graphics/stretch-bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "stage.h"
 #include "factory/font_render.h"
 #include "util/console.h"

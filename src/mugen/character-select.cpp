@@ -3,9 +3,8 @@
 #include <iostream>
 #include <exception>
 
+#include "util/graphics/bitmap.h"
 #include "util/timedifference.h"
-#include "util/graphics/trans-bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
 #include "mugen/ast/all.h"
 #include "mugen/sound.h"
 #include "mugen/config.h"

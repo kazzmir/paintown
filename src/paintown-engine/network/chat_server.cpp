@@ -1,8 +1,6 @@
 #ifdef HAVE_NETWORKING
 
 #include "util/graphics/bitmap.h"
-#include "util/graphics/trans-bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
 #include "util/network/network.h"
 #include "util/events.h"
 #include "chat_server.h"

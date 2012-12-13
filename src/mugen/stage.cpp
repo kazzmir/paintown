@@ -20,8 +20,6 @@
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/graphics/bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
-#include "util/graphics/trans-bitmap.h"
 // #include "util/console.h"
 /*
 #include "object/animation.h"

@@ -1,7 +1,6 @@
 #include "storyboard.h"
 
 #include "util/graphics/bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
 #include "util/resource.h"
 #include "util/funcs.h"
 #include "util/events.h"
