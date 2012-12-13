@@ -31,7 +31,6 @@
 #include "mugen/parser/parse-exception.h"
 #include "mugen/background.h"
 #include "util/graphics/bitmap.h"
-#include "util/graphics/stretch-bitmap.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "factory/font_render.h"

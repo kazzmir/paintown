@@ -3,7 +3,7 @@
 
 #include "util/font.h"
 #include "util/pointer.h"
-#include "util/graphics/stretch-bitmap.h"
+#include "util/graphics/bitmap.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
 
