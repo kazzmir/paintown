@@ -21,9 +21,9 @@ src/openbor/util.cpp
 src/openbor/data.cpp)
 
 set(LOADPNG_SRC
-src/util/allegro/loadpng/loadpng.c
-src/util/allegro/loadpng/regpng.c
-src/util/allegro/loadpng/savepng.c)
+src/util/graphics/allegro/loadpng/loadpng.c
+src/util/graphics/allegro/loadpng/regpng.c
+src/util/graphics/allegro/loadpng/savepng.c)
 
 set(PLATFORMER_SRC
 src/platformer/argument.cpp
