@@ -19,7 +19,7 @@
 #include "../object/player.h"
 #include "../factory/object_factory.h"
 #include <string.h>
-#include "util/gradient.h"
+#include "util/graphics/gradient.h"
 #include "util/system.h"
 #include "cacher.h"
 #include "util/input/input-manager.h"

@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 #include "util/file-system.h"
-#include "util/gradient.h"
+#include "util/graphics/gradient.h"
 #include "util/pointer.h"
 #include "util/gui/animation.h"
 #include "util/gui/select-list.h"

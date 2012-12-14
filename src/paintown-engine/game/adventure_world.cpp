@@ -7,7 +7,7 @@
 #include "../object/player-common.h"
 #include "util/font.h"
 #include "util/file-system.h"
-#include "util/gradient.h"
+#include "util/graphics/gradient.h"
 #include "factory/font_render.h"
 #include "globals.h"
 #include "../object/effect.h"
