@@ -13,6 +13,7 @@
 #include "util/gui/cutscene.h"
 #include "util/menu/menu.h"
 #include "util/menu/optionfactory.h"
+#include "util/timedifference.h"
 #include "util/menu/menu_option.h"
 #include "configuration.h"
 #include "../object/object.h"
@@ -956,6 +957,9 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
 
     bool gameState = true;
     { /* force scope so the context is destroyed before the factories */
+        TimeDifference loadingTime;
+        loadingTime.startTime();
+
         Global::clearInfo();
         Global::info("Setting up world");
         GameContext context(futurePlayers, Filesystem::RelativePath(level), setup_players);
@@ -969,6 +973,11 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         // Music::changeSong();
 
         initializePlayers(context.getPlayers());
+
+        loadingTime.endTime();
+        std::ostringstream loadingDescription;
+        loadingDescription << "Loading level " << level << " took";
+        Global::debug(0) << loadingTime.printTime(loadingDescription.str()) << std::endl;
 
         /* only show intros at the start of the entire game, not for each level */
         if (firstLevel){
