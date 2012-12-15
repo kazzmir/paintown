@@ -24,7 +24,7 @@
 #include "../factory/shadow.h"
 #include "util/funcs.h"
 #include "util/ebox.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/sound/sound.h"
 #include "util/timedifference.h"
 #include "util/token.h"

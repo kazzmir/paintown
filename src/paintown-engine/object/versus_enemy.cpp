@@ -1,6 +1,6 @@
 #include "versus_enemy.h"
 #include "character.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/funcs.h"
 #include "animation.h"
 #include "object.h"

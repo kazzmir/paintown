@@ -17,7 +17,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "util/funcs.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 
 using namespace std;
 

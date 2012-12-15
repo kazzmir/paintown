@@ -2,7 +2,6 @@
 #define _paintown_network_world_h
 
 #include "util/network/network.h"
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "paintown-engine/object/object.h"
 #include "paintown-engine/game/adventure_world.h"
@@ -29,7 +28,7 @@ struct Packet{
 
 class NetworkWorld: public AdventureWorld, public ChatWidget {
 public:
-	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Paintown::Object * > & players, const std::map<Paintown::Object*, Network::Socket> & characterToClient, const Filesystem::AbsolutePath & path, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 ) throw ( LoadException );
+	NetworkWorld( std::vector<Network::Socket> & sockets, const std::vector< Paintown::Object * > & players, const std::map<Paintown::Object*, Network::Socket> & characterToClient, const Filesystem::AbsolutePath & path, const std::map<Paintown::Object::networkid_t, std::string> & clientNames, int screen_size = 320 );
 	
 	virtual void addMessage( Network::Message m, Network::Socket from = 0, Network::Socket to = 0);
 	virtual void act();

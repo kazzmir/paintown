@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "util/load_exception.h"
 #include "character.h"
 
 namespace Paintown{

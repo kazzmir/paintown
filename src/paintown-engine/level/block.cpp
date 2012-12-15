@@ -4,7 +4,7 @@
 #include "blockobject.h"
 #include "../object/enemy.h"
 #include "globals.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/token.h"
 #include "util/funcs.h"
 #include "util/token_exception.h"

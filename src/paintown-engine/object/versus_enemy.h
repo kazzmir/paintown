@@ -3,7 +3,7 @@
 
 #include "enemy.h"
 #include "character.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 
 class World;
 

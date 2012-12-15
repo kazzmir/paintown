@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "util/pointer.h"
 

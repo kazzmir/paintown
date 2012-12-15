@@ -2,7 +2,6 @@
 #define _paintown_enemy_guy_h
 
 #include "character.h"
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "heart.h"
 

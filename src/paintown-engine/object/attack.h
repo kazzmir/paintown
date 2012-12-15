@@ -1,7 +1,5 @@
-#ifndef _attack_h
-#define _attack_h
-
-#include "util/load_exception.h"
+#ifndef _paintown_attack_h
+#define _paintown_attack_h
 
 class Token;
 

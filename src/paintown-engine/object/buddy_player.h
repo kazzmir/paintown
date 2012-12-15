@@ -4,7 +4,6 @@
 #include "character.h" 
 #include "player-common.h"
 #include <deque>
-#include "util/load_exception.h"
 #include <vector>
 #include "util/thread.h"
 

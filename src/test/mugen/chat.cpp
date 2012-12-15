@@ -8,7 +8,7 @@
 #include "util/graphics/bitmap.h"
 #include "util/font.h"
 #include "util/debug.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/token_exception.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"

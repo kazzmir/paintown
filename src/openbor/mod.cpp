@@ -7,7 +7,7 @@
 #include "pack-reader.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/exceptions/exception.h"
 #include <vector>
 #include "util/init.h"

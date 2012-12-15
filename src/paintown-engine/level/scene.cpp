@@ -5,7 +5,7 @@
 #include "util/graphics/bitmap.h"
 #include "block.h"
 #include "../object/heart.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/funcs.h"
 #include "../object/object.h"
 #include "scene.h"

@@ -4,7 +4,6 @@
 #include "object_nonattack.h"
 
 #include <string>
-#include "util/load_exception.h"
 #include "util/network/network.h"
 
 namespace Graphics{

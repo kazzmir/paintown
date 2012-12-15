@@ -2,7 +2,6 @@
 #define _paintown_projectile_h
 
 #include "object_attack.h"
-#include "util/load_exception.h"
 #include "util/network/network.h"
 #include <vector>
 #include <string>

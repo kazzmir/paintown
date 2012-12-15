@@ -9,7 +9,7 @@
 #include "util/input/keyboard.h"
 #include "util/font.h"
 #include "util/file-system.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/exceptions/exception.h"
 #include "globals.h"
 #include "util/init.h"

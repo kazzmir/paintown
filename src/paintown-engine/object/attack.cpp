@@ -1,7 +1,5 @@
 #include "attack.h"
-#include "util/load_exception.h"
 #include "util/token.h"
-#include "util/token_exception.h"
 
 #include <iostream>
 

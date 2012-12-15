@@ -1,11 +1,11 @@
-#ifndef _animation_h
-#define _animation_h
+#ifndef _paintown_animation_h
+#define _paintown_animation_h
 
 #include <string>
 #include <vector>
 #include <map>
 
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/input/input.h"
 #include "util/graphics/bitmap.h"
 #include "attack.h"

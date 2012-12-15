@@ -2,7 +2,7 @@
 #include "display_character.h"
 #include "draw-effect.h"
 #include "util/thread.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/token.h"
 #include "util/token_exception.h"
 #include "util/tokenreader.h"

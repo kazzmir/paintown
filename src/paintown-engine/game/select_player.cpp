@@ -1,6 +1,5 @@
 #include "util/graphics/bitmap.h"
 #include "paintown-engine/object/object.h"
-#include "util/load_exception.h"
 #include "util/funcs.h"
 #include "util/events.h"
 #include "util/parameter.h"

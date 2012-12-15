@@ -1,7 +1,6 @@
 #ifndef _paintown_item_h
 #define _paintown_item_h
 
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "object_nonattack.h"
 #include "util/sound/sound.h"

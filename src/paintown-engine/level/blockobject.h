@@ -1,7 +1,6 @@
 #ifndef _block_object_h
 #define _block_object_h
 
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include "../factory/object_factory.h"
 #include <string>

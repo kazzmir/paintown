@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "attack.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 
 class Token;
 

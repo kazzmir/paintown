@@ -2,7 +2,6 @@
 #define _paintown_display_character_h
 
 #include "character.h"
-#include "util/load_exception.h"
 #include "util/file-system.h"
 #include <string>
 #include <vector>

@@ -2,7 +2,6 @@
 #define _paintown_player_common_h
 
 #include "character.h"
-#include "util/load_exception.h"
 
 namespace Storage{
     class AbsolutePath;

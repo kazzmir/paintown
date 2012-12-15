@@ -19,7 +19,6 @@ class Bitmap;
 #include <map>
 #include <string>
 
-#include "util/load_exception.h"
 #include "../network/network.h"
 #include "../level/block.h"
 #include "util/pointer.h"

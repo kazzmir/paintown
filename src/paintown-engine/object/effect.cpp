@@ -4,7 +4,7 @@
 #include "util/graphics/bitmap.h"
 #include "effect.h"
 #include "globals.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "object.h"
 #include "object_nonattack.h"
 #include "util/token.h"

@@ -9,7 +9,6 @@
 #include "sprite.h"
 #include "util.h"
 #include "exception.h"
-#include "util/load_exception.h"
 #include <sstream>
 
 using namespace std;

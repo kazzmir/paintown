@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "util/load_exception.h"
 #include "util/graphics/bitmap.h"
 #include "character.h"
 #include "network_character.h"

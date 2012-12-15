@@ -13,7 +13,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "projectile.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "object.h"
 #include "util/file-system.h"
 #include "util/sound/sound.h"

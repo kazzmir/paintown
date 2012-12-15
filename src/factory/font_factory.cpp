@@ -11,7 +11,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "util/exceptions/exception.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/ftalleg.h"
 
 // #include "fonts.h"

@@ -5,7 +5,6 @@
 #include <vector>
 #include <map>
 #include <deque>
-#include "util/load_exception.h"
 #include "util/pointer.h"
 #include "block.h"
 #include "util/file-system.h"

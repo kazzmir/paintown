@@ -13,7 +13,7 @@
 #include "paintown-engine/object/object.h"
 #include "object_factory.h"
 #include "paintown-engine/script/script.h"
-#include "util/load_exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/file-system.h"
 #include "util/debug.h"
 #include "globals.h"
