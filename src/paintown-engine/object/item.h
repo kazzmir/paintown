@@ -41,6 +41,8 @@ public:
     virtual ~Item();
 
 protected:
+    void drawShadow(Graphics::Bitmap * work, int cameraX, int cameraY, double scale);
+
     inline const Filesystem::AbsolutePath & getPath() const {
         return path;
     }
@@ -54,6 +56,23 @@ protected:
     Util::ReferenceCount<Stimulation> stimulation;
     Sound sound;
     Filesystem::AbsolutePath path;
+
+    /* Items can float above the ground like in quake3 */
+    struct Floating{
+        Floating():
+        enabled(false),
+        height(20),
+        amplitude(10),
+        period(100),
+        time(0){
+        }
+
+        bool enabled;
+        double height;
+        double amplitude;
+        int period;
+        unsigned int time;
+    } floating;
 };
 
 }

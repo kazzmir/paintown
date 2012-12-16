@@ -1883,13 +1883,16 @@ void Character::drawOutline(Graphics::Bitmap * work, int rel_x, int rel_y, int r
 
 /* draws a real looking shadow */
 void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
-    /* FIXME: fix this for a5 */
-#ifdef USE_ALLEGRO5
-    return;
-#endif
-
     if (animation_current != NULL){
         const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
+            
+        int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
+        int y = (int)(getRZ() + getY() * scale);
+
+        bmp->drawShadow(*work, x, y, intensity, color, scale, getFacing() == FACING_RIGHT);
+
+#if 0
+
         const double newheight = bmp->getHeight() * scale;
         Graphics::Bitmap shade = Graphics::Bitmap::temporaryBitmap(bmp->getWidth(), (int) fabs(newheight));
         bmp->Stretch(shade);
@@ -1899,7 +1902,7 @@ void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Gra
             for (int w = 0; w < shade.getWidth(); ++w){
                 Graphics::Color pix = shade.getPixel(w,h);
                 if (pix != Graphics::MaskColor()){
-                    shade.putPixel(w,h, Graphics::makeColor(0,0,0));
+                    shade.putPixel(w,h, color);
                 }
             }
         }
@@ -1923,6 +1926,7 @@ void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Gra
                 shade.translucent().drawHFlip(x - 3, y, *work );
             }
         }
+#endif
     }
 }
 

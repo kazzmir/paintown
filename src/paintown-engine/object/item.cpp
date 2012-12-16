@@ -11,6 +11,7 @@
 #include "util/file-system.h"
 #include <iostream>
 #include <string>
+#include <math.h>
 
 using namespace std;
 
@@ -45,6 +46,21 @@ stimulation(stimulation){
                 string path;
                 next->view() >> path;
                 sound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
+            } else if (*next == "float"){
+                floating.enabled = true;
+                double value = 0;
+                if (next->match("_/height", value)){
+                    floating.height = value;
+                }
+                if (next->match("_/amplitude", value)){
+                    floating.amplitude = value;
+                }
+                if (next->match("_/period", value)){
+                    if (value < 1){
+                        value = 1;
+                    }
+                    floating.period = value;
+                }
             }
         }
     } catch (const TokenException & ex){
@@ -59,7 +75,8 @@ stimulation(stimulation){
 Item::Item(const Item & item):
 ObjectNonAttack(item),
 collide(0),
-stimulation(item.stimulation){
+stimulation(item.stimulation),
+floating(item.floating){
     this->picture = item.picture;
     collide = new ECollide(this->picture);
     setHealth(item.getHealth());
@@ -138,13 +155,33 @@ bool Item::collision(ObjectAttack * obj){
 }
 
 void Item::act(vector< Object * > * others, World * world, vector< Object * > * add){
+    if (floating.enabled){
+        floating.time += 1;
+    }
 }
 
-void Item::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
-    picture.draw( getRX() - rel_x - picture.getWidth() / 2, getRY() - picture.getHeight(), *work );
+void Item::drawShadow(Graphics::Bitmap * work, int cameraX, int cameraY, double scale){
+    int x = (int)(getRX() - cameraX - picture.getWidth()/2);
+    int y = (int)(getRZ() + getY() * scale);
 
-    if ( Global::getDebug() > 5 ){
-        work->circleFill( getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ) );
+    picture.drawShadow(*work, x, y, 128, Graphics::makeColor(0, 0, 0), scale, true);
+}
+
+void Item::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
+    drawShadow(work, rel_x, rel_y, -0.5);
+
+    int finalX = getRX() - rel_x - picture.getWidth() / 2;
+    int finalY = getRY() - picture.getHeight();
+
+    if (floating.enabled){
+        double angle = Util::radians(360.0 * (double) (floating.time % floating.period) / (double) floating.period);
+        finalY -= floating.height + floating.amplitude * sin(angle);
+    }
+
+    picture.draw(finalX, finalY, *work);
+
+    if (Global::getDebug() > 5){
+        work->circleFill(getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ));
     }
 }
 	
