@@ -663,6 +663,22 @@ static void setupPaintownMod(){
     setupSystemMod();
 }
 
+/* Sort arguments based on the first letter of the keywords */
+static bool argumentSorter(const Util::ReferenceCount<Argument> & arg1, const Util::ReferenceCount<Argument> & arg2){
+    vector<string> keywords1 = arg1->keywords();
+    vector<string> keywords2 = arg2->keywords();
+
+    if (keywords1.size() > 0 && keywords2.size() > 0){
+        /* Check first letter in the first string */
+        return keywords1[0][0] < keywords2[0][0];
+    }
+    return false;
+}
+
+static void sortArguments(vector<Util::ReferenceCount<Argument> > & arguments){
+    sort(arguments.begin(), arguments.end(), argumentSorter);
+}
+
 /* 1. parse arguments
  * 2. initialize environment
  * 3. run main dispatcher
@@ -729,6 +745,8 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
 #endif
+
+    sortArguments(arguments);
     
     vector<Util::ReferenceCount<ArgumentAction> > actions;
 
