@@ -50,6 +50,8 @@ static const int DEFAULT_DEBUG = 0;
 #include "util/main.h"
 #include "util/argument.h"
 
+#include "paintown-engine/game/argument.h"
+
 #include "mugen/options.h"
 #include "mugen/argument.h"
 
@@ -717,6 +719,7 @@ int paintown_main(int argc, char ** argv){
     arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit)));
     arguments.push_back(Util::ReferenceCount<Argument>(new HelpArgument(arguments)));
 
+    appendVector(arguments, Paintown::arguments());
     appendVector(arguments, Mugen::arguments());
     appendVector(arguments, Platformer::arguments());
     appendVector(arguments, Asteroids::arguments());

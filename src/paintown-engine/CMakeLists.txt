@@ -15,6 +15,7 @@ game/move-list.cpp
 game/select_player.cpp
 game/character-select.cpp
 game/nameplacer.cpp
+game/argument.cpp
 game/adventure_world.cpp
 game/mod.cpp
 game/options.cpp)
