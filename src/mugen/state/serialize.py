@@ -58,8 +58,10 @@ def create_peg(grammar, kind = 'file'):
 
 def generate_cpp(object, name = None):
     def make_init_field(field):
-        return '%(name)s = %(zero)s;' % {'name': field.name,
-                                         'zero': field.zero()}
+        if field.type_.isPOD():
+            return '%(name)s = %(zero)s;' % {'name': field.name,
+                                             'zero': field.zero()}
+        return None
 
     def make_definition(field):
         if isinstance(field.type_, state.State):
@@ -68,13 +70,19 @@ def generate_cpp(object, name = None):
                                        'type': field.type_}
 
     def indent(lines, much):
+        if len(lines) == 0:
+            return ''
         tabs = '    ' * much
         out = []
         for line in lines:
             out.extend(line.split('\n'))
         return '\n'.join([out[0]] + [tabs + line for line in out[1:]])
 
-    inits = [make_init_field(field) for field in object.fields]
+    inits = []
+    for field in object.fields:
+        maybe_init = make_init_field(field)
+        if maybe_init != None:
+            inits.append(maybe_init)
     definitions = [make_definition(field) for field in object.fields]
     instance = "";
     if name != None:
