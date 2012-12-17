@@ -56,14 +56,14 @@ def create_peg(grammar, kind = 'file'):
     # Then use it to parse the grammar and return a new peg
     return peg.create_peg(peg_parser(grammar), kind)
 
-def generate_cpp(object):
+def generate_cpp(object, name = None):
     def make_init_field(field):
         return '%(name)s = %(zero)s;' % {'name': field.name,
                                          'zero': field.zero()}
 
     def make_definition(field):
         if isinstance(field.type_, state.State):
-            return generate_cpp(field.type_)
+            return generate_cpp(field.type_, field.name)
         return '%(type)s %(name)s;' % {'name': field.name,
                                        'type': field.type_}
 
@@ -76,6 +76,9 @@ def generate_cpp(object):
 
     inits = [make_init_field(field) for field in object.fields]
     definitions = [make_definition(field) for field in object.fields]
+    instance = "";
+    if name != None:
+        instance = " %s" % name;
     data = """
 struct %(name)s{
     %(name)s(){
@@ -83,8 +86,9 @@ struct %(name)s{
     }
 
     %(definitions)s
-};
+}%(maybe-instance)s;
 """ % {'name': object.name,
+       'maybe-instance': instance,
        'init-fields': indent(inits, 2),
        'definitions': indent(definitions, 1)
       }
