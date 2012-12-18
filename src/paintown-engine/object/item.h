@@ -24,13 +24,13 @@ public:
     Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation);
     Item(const Item & item);
 
-    virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-    virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
-    virtual bool isCollidable( Object * obj );
+    virtual void act(std::vector< Object * > * others, World * world, std::vector< Object * > * add);
+    virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y);
+    virtual bool isCollidable(Object * obj);
     virtual std::vector<ECollide*> getCollide() const;
     virtual bool collision( ObjectAttack * obj );
     virtual bool isGettable();
-    virtual void touch( Object * obj );
+    virtual void touch(Object * obj);
     virtual int getWidth() const;
     virtual int getHeight() const;
     virtual Network::Message getCreateMessage();
@@ -73,6 +73,19 @@ protected:
         int period;
         unsigned int time;
     } floating;
+};
+
+class BreakableItem: public Item {
+public:
+    BreakableItem(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation);
+    BreakableItem(const BreakableItem & item);
+    
+    virtual bool isCollidable(Object * obj);
+    virtual bool isGettable();
+    virtual void touch(Object * obj);
+    virtual void died(std::vector< Object * > & objects);
+
+    virtual ~BreakableItem();
 };
 
 }

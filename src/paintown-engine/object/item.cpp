@@ -224,4 +224,31 @@ Item::~Item(){
     delete collide;
 }
 
+
+BreakableItem::BreakableItem(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
+Item(filename, stimulation){
+}
+
+BreakableItem::BreakableItem(const BreakableItem & item):
+Item(item){
+}
+    
+bool BreakableItem::isCollidable(Object * obj){
+    /* FIXME: only collidable by players */
+    return true;
+}
+
+bool BreakableItem::isGettable(){
+    return false;
+}
+
+void BreakableItem::touch(Object * obj){
+}
+
+void BreakableItem::died(std::vector< Object * > & objects){
+}
+
+BreakableItem::~BreakableItem(){
+}
+
 }
