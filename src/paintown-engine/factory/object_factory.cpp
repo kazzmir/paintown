@@ -66,10 +66,19 @@ static Paintown::Stimulation * makeStimulation(const string & str, double value)
 }
 */
 
-Paintown::Object * ObjectFactory::makeItem( Paintown::Item * item, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeItem(Paintown::Item * item, const BlockObject * block){
     int x, z;
     block->getCoords(x, z);
     item->setStimulation(block->getStimulation());
+    item->setX(x);
+    item->setZ(z);
+    item->setObjectId(block->getId());
+    return item;
+}
+
+Paintown::Object * ObjectFactory::makeBreakableItem(Paintown::BreakableItem * item, const BlockObject * block){
+    int x, z;
+    block->getCoords(x, z);
     item->setX(x);
     item->setZ(z);
     item->setObjectId(block->getId());
@@ -140,7 +149,7 @@ void ObjectFactory::maxObjectId(int id){
     }
 }
 
-Paintown::Object * ObjectFactory::makeObject( const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeObject(const BlockObject * block){
     maxObjectId(block->getId());
 
     try{
@@ -153,7 +162,17 @@ Paintown::Object * ObjectFactory::makeObject( const BlockObject * block ){
                     Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
 
-                return makeItem( (Paintown::Item *) cached[cachePath]->copy(), block );
+                return makeItem((Paintown::Item *) cached[cachePath]->copy(), block);
+            }
+            case BreakableItemType: {
+                string cachePath = "breakable-item:" + block->getPath().path();
+                if (cached[cachePath] == NULL){
+                    cached[cachePath] = new Paintown::BreakableItem(block->getPath(), block->getStimulation());
+                    Global::debug(1) << "Cached " << block->getPath().path() << endl;
+                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                }
+
+                return makeBreakableItem((Paintown::BreakableItem *) cached[cachePath]->copy(), block);
             }
             case NetworkCharacterType: {
                 string cachedPath = "network-character:" + block->getPath().path();

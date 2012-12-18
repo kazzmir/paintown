@@ -10,6 +10,7 @@ namespace Paintown{
     class Actor;
     class Cat;
     class Item;
+    class BreakableItem;
     class Enemy;
     class NetworkCharacter;
     class NetworkPlayer;
@@ -38,12 +39,14 @@ public:
             CatType = 4,
             NetworkCharacterType = 5,
             NetworkPlayerType = 6,
+            BreakableItemType = 7,
         };
 	
 private:
 	ObjectFactory();
         Paintown::Object * makeObject( const BlockObject * block );
 
+        Paintown::Object * makeBreakableItem(Paintown::BreakableItem * item, const BlockObject * block);
         Paintown::Object * makeItem(Paintown::Item * item, const BlockObject * block);
 	Paintown::Object * makeEnemy(Paintown::Enemy * enemy, const BlockObject * block);
 	Paintown::Object * makeActor(Paintown::Actor * ret, const BlockObject * block);

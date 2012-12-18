@@ -266,8 +266,7 @@ Item(item){
 }
     
 bool BreakableItem::isCollidable(Object * obj){
-    /* FIXME: only collidable by players */
-    return true;
+    return obj->getAlliance() != ALLIANCE_ENEMY;
 }
 
 bool BreakableItem::isGettable(){
@@ -278,6 +277,10 @@ void BreakableItem::touch(Object * obj){
 }
 
 void BreakableItem::died(std::vector< Object * > & objects){
+}
+    
+void BreakableItem::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects){
+    setHealth(0);
 }
 
 BreakableItem::~BreakableItem(){

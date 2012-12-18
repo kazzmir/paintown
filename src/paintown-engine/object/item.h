@@ -86,6 +86,7 @@ public:
     
     virtual bool isCollidable(Object * obj);
     virtual bool isGettable();
+    virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects);
     virtual void touch(Object * obj);
     virtual void died(std::vector< Object * > & objects);
 
