@@ -4,15 +4,19 @@
 #include "util/file-system.h"
 #include "object_nonattack.h"
 #include "util/sound/sound.h"
-#include "util/graphics/bitmap.h"
 #include "util/network/network.h"
 #include "stimulation.h"
 #include "util/pointer.h"
+#include "animation.h"
 
 #include <string>
 #include <vector>
 
 class World;
+
+namespace Graphics{
+    class Bitmap;
+}
 
 namespace Paintown{
 
@@ -51,8 +55,8 @@ protected:
         return stimulation;
     }
 
-    Graphics::Bitmap picture;
-    ECollide * collide;
+    Util::ReferenceCount<Animation> animation;
+    // ECollide * collide;
     Util::ReferenceCount<Stimulation> stimulation;
     Sound sound;
     Filesystem::AbsolutePath path;

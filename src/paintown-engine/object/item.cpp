@@ -17,9 +17,16 @@ using namespace std;
 
 namespace Paintown{
 
+static Util::ReferenceCount<Animation> singleFrameAnimation(const Token * frame){
+    std::ostringstream data;
+    data << "(animation " << frame->toString() << ")";
+    TokenReader reader;
+    return Util::ReferenceCount<Animation>(new Animation(reader.readTokenFromString(data.str()), NULL));
+}
+
 Item::Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
 ObjectNonAttack(0, 0),
-collide(0),
+// collide(0),
 stimulation(stimulation){
     TokenReader tr;
 
@@ -39,9 +46,14 @@ stimulation(stimulation){
             const Token * next = NULL;
             view >> next;
             if (*next == "frame"){
+                animation = singleFrameAnimation(next);
+                /*
                 string file;
                 next->view() >> file;
                 picture.load(Storage::instance().find(Filesystem::RelativePath(file)).path());
+                */
+            } else if (*next == "anim" || *next == "animation"){
+                animation = Util::ReferenceCount<Animation>(new Animation(next, NULL));
             } else if (*next == "sound"){
                 string path;
                 next->view() >> path;
@@ -68,17 +80,17 @@ stimulation(stimulation){
         throw LoadException(__FILE__, __LINE__, ex, "Could not open item file");
     }
 
-    collide = new ECollide( picture );
+    // collide = new ECollide(picture);
     path = filename;
 }
 
 Item::Item(const Item & item):
 ObjectNonAttack(item),
-collide(0),
+// collide(0),
 stimulation(item.stimulation),
 floating(item.floating){
-    this->picture = item.picture;
-    collide = new ECollide(this->picture);
+    this->animation = Util::ReferenceCount<Animation>(new Animation(*item.animation, NULL));
+    // collide = new ECollide(this->picture);
     setHealth(item.getHealth());
     sound = item.sound;
     path = item.getPath();
@@ -113,9 +125,10 @@ void Item::setStimulation(const Util::ReferenceCount<Stimulation> & stimulation)
 }
 
 vector<ECollide*> Item::getCollide() const {
-    vector<ECollide*> out;
-    out.push_back(collide);
-    return out;
+    if (animation != NULL){
+        return animation->getNormalCollide();
+    }
+    return vector<ECollide*>();
 }
 	
 bool Item::collision(ObjectAttack * obj){
@@ -155,33 +168,48 @@ bool Item::collision(ObjectAttack * obj){
 }
 
 void Item::act(vector< Object * > * others, World * world, vector< Object * > * add){
+    if (animation != NULL){
+        animation->Act();
+    }
+
     if (floating.enabled){
         floating.time += 1;
     }
 }
 
 void Item::drawShadow(Graphics::Bitmap * work, int cameraX, int cameraY, double scale){
-    int x = (int)(getRX() - cameraX - picture.getWidth()/2);
-    int y = (int)(getRZ() + getY() * scale);
+    if (animation != NULL){
+        const Graphics::Bitmap * frame = animation->getCurrentFrame();
+        if (frame != NULL){
+            int x = (int)(getRX() - cameraX - frame->getWidth()/2);
+            int y = (int)(getRZ() + getY() * scale);
 
-    picture.drawShadow(*work, x, y, 128, Graphics::makeColor(0, 0, 0), scale, true);
+            frame->drawShadow(*work, x, y, 128, Graphics::makeColor(0, 0, 0), scale, true);
+        }
+    }
 }
 
 void Item::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
     drawShadow(work, rel_x, rel_y, -0.5);
 
-    int finalX = getRX() - rel_x - picture.getWidth() / 2;
-    int finalY = getRY() - picture.getHeight();
+    if (animation != NULL){
+        const Graphics::Bitmap * frame = animation->getCurrentFrame();
+        if (frame != NULL){
 
-    if (floating.enabled){
-        double angle = Util::radians(360.0 * (double) (floating.time % floating.period) / (double) floating.period);
-        finalY -= floating.height + floating.amplitude * sin(angle);
-    }
+            int finalX = getRX() - rel_x - frame->getWidth() / 2;
+            int finalY = getRY() - frame->getHeight();
 
-    picture.draw(finalX, finalY, *work);
+            if (floating.enabled){
+                double angle = Util::radians(360.0 * (double) (floating.time % floating.period) / (double) floating.period);
+                finalY -= floating.height + floating.amplitude * sin(angle);
+            }
 
-    if (Global::getDebug() > 5){
-        work->circleFill(getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ));
+            frame->draw(finalX, finalY, *work);
+
+            if (Global::getDebug() > 5){
+                work->circleFill(getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ));
+            }
+        }
     }
 }
 	
@@ -213,17 +241,21 @@ bool Item::isCollidable( Object * obj ){
 }
 
 int Item::getWidth() const {
-    return picture.getWidth();
+    if (animation != NULL){
+        return animation->getWidth();
+    }
+    return 0;
 }
 
 int Item::getHeight() const {
-    return picture.getHeight();
+    if (animation != NULL){
+        return animation->getHeight();
+    }
+    return 0;
 }
 	
 Item::~Item(){
-    delete collide;
 }
-
 
 BreakableItem::BreakableItem(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
 Item(filename, stimulation){

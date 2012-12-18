@@ -488,8 +488,8 @@ changedAttacks(false){
 
 }
 
-Animation::Animation( const Animation & animation, Character * const owner ):
-parent( owner ),
+Animation::Animation(const Animation & animation, Character * const owner):
+parent(owner),
 // attack_collide( NULL ),
 commision( true ),
 changedAttacks(false){
