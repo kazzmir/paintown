@@ -55,6 +55,8 @@ id(-1){
                 current->view() >> k;
                 if ( k == "item" ){
                     type = ObjectFactory::ItemType;
+                } else if (k == "breakable-item"){
+                    type = ObjectFactory::BreakableItemType;
                 } else if ( k == "enemy" ){
                     type = ObjectFactory::EnemyType;
                 } else if ( k == "actor" ){

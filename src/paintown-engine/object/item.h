@@ -25,7 +25,7 @@ class Object;
 
 class Item: public ObjectNonAttack {
 public:
-    Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation);
+    Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation, const std::string & checkName = "item");
     Item(const Item & item);
 
     virtual void act(std::vector< Object * > * others, World * world, std::vector< Object * > * add);
@@ -89,6 +89,8 @@ public:
     virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects);
     virtual void touch(Object * obj);
     virtual void died(std::vector< Object * > & objects);
+    
+    virtual Object * copy();
 
     virtual ~BreakableItem();
 };

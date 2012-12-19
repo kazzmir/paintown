@@ -24,7 +24,7 @@ static Util::ReferenceCount<Animation> singleFrameAnimation(const Token * frame)
     return Util::ReferenceCount<Animation>(new Animation(reader.readTokenFromString(data.str()), NULL));
 }
 
-Item::Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
+Item::Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation, const string & check):
 ObjectNonAttack(0, 0),
 // collide(0),
 stimulation(stimulation){
@@ -37,7 +37,7 @@ stimulation(stimulation){
         Token * head;
         head = tr.readTokenFromFile(filename.path());
 
-        if ( *head != "item" ){
+        if (*head != check){
             throw LoadException(__FILE__, __LINE__, "Item does not begin with 'item'" );
         }
 
@@ -258,7 +258,7 @@ Item::~Item(){
 }
 
 BreakableItem::BreakableItem(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
-Item(filename, stimulation){
+Item(filename, stimulation, "breakable-item"){
 }
 
 BreakableItem::BreakableItem(const BreakableItem & item):
@@ -281,6 +281,10 @@ void BreakableItem::died(std::vector< Object * > & objects){
     
 void BreakableItem::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects){
     setHealth(0);
+}
+    
+Object * BreakableItem::copy(){
+    return new BreakableItem(*this);
 }
 
 BreakableItem::~BreakableItem(){
