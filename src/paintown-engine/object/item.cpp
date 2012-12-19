@@ -275,6 +275,10 @@ Item(filename, stimulation, "breakable-item"){
                 string path;
                 next->view() >> path;
                 breakSound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
+            } else if (*next == "hit-sound"){
+                string path;
+                next->view() >> path;
+                hitSound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
             } else if (*next == "health"){
                 int health = 1;
                 next->view() >> health;
@@ -289,7 +293,8 @@ Item(filename, stimulation, "breakable-item"){
 
 BreakableItem::BreakableItem(const BreakableItem & item):
 Item(item),
-breakSound(item.breakSound){
+breakSound(item.breakSound),
+hitSound(item.hitSound){
 }
     
 bool BreakableItem::isCollidable(Object * obj){
@@ -313,6 +318,7 @@ void BreakableItem::died(std::vector<Object *> & objects){
     
 void BreakableItem::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects){
     collision_objects[obj] = obj->getTicket();
+    hitSound.play();
 }
     
 Object * BreakableItem::copy(){

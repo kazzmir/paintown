@@ -97,6 +97,7 @@ public:
 
 protected:
     Sound breakSound;
+    Sound hitSound;
     std::map<Object *, unsigned long> collision_objects;
 };
 
