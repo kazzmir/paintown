@@ -85,6 +85,7 @@ public:
     BreakableItem(const BreakableItem & item);
     
     virtual bool isCollidable(Object * obj);
+    virtual bool collision(ObjectAttack * obj);
     virtual bool isGettable();
     virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects);
     virtual void touch(Object * obj);
@@ -93,6 +94,10 @@ public:
     virtual Object * copy();
 
     virtual ~BreakableItem();
+
+protected:
+    Sound breakSound;
+    std::map<Object *, unsigned long> collision_objects;
 };
 
 }

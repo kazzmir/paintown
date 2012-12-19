@@ -259,14 +259,45 @@ Item::~Item(){
 
 BreakableItem::BreakableItem(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation):
 Item(filename, stimulation, "breakable-item"){
+
+    /* FIXME: item has already read the file so its innefficient to read it again here */
+    TokenReader tr;
+
+    try{
+        Token * head;
+        head = tr.readTokenFromFile(filename.path());
+
+        TokenView view = head->view();
+        while (view.hasMore()){
+            const Token * next = NULL;
+            view >> next;
+            if (*next == "break-sound"){
+                string path;
+                next->view() >> path;
+                breakSound = Sound(Storage::instance().find(Filesystem::RelativePath(path)).path());
+            } else if (*next == "health"){
+                int health = 1;
+                next->view() >> health;
+                setMaxHealth(health);
+                setHealth(health);
+            }
+        }
+    } catch (const TokenException & ex){
+        throw LoadException(__FILE__, __LINE__, ex, "Could not open item file");
+    }
 }
 
 BreakableItem::BreakableItem(const BreakableItem & item):
-Item(item){
+Item(item),
+breakSound(item.breakSound){
 }
     
 bool BreakableItem::isCollidable(Object * obj){
-    return obj->getAlliance() != ALLIANCE_ENEMY;
+    return getAlliance() != ALLIANCE_ENEMY;
+}
+
+bool BreakableItem::collision(ObjectAttack * obj){
+    return collision_objects[obj] != obj->getTicket() && Item::collision(obj);
 }
 
 bool BreakableItem::isGettable(){
@@ -276,11 +307,12 @@ bool BreakableItem::isGettable(){
 void BreakableItem::touch(Object * obj){
 }
 
-void BreakableItem::died(std::vector< Object * > & objects){
+void BreakableItem::died(std::vector<Object *> & objects){
+    breakSound.play();
 }
     
 void BreakableItem::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects){
-    setHealth(0);
+    collision_objects[obj] = obj->getTicket();
 }
     
 Object * BreakableItem::copy(){
