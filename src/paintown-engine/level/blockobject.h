@@ -2,6 +2,7 @@
 #define _block_object_h
 
 #include "util/file-system.h"
+#include "../object/trigger.h"
 #include "../factory/object_factory.h"
 #include <string>
 
@@ -119,6 +120,8 @@ protected:
 
     int coords_x, coords_z;
     int id;
+
+    std::map<Paintown::TriggerType, Util::ReferenceCount<Paintown::Trigger> > triggers;
 
     Util::ReferenceCount<Paintown::Stimulation> stimulation;
 };
