@@ -144,7 +144,11 @@ void Object::moveX( const int x ){
 	moveX( (double)x );
 }
 
-void Object::died( vector< Object * > & objects ){
+void Object::died(vector<Object *> & objects){
+    if (triggers.find(OnDeath) != triggers.end()){
+        Util::ReferenceCount<Trigger> trigger = triggers.find(OnDeath)->second;
+        trigger->invoke(objects);
+    }
 }
 
 void Object::moveY( const int y ){
@@ -301,6 +305,10 @@ Object::~Object(){
     if (getScriptObject() != NULL){
         Script::Engine::getEngine()->destroyObject(getScriptObject());
     }
+}
+        
+void Object::setTriggers(const std::map<TriggerType, Util::ReferenceCount<Trigger> > & triggers){
+    this->triggers = triggers;
 }
 
 }

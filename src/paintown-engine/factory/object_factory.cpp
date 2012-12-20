@@ -73,6 +73,7 @@ Paintown::Object * ObjectFactory::makeItem(Paintown::Item * item, const BlockObj
     item->setX(x);
     item->setZ(z);
     item->setObjectId(block->getId());
+    item->setTriggers(block->getTriggers());
     return item;
 }
 
@@ -82,6 +83,7 @@ Paintown::Object * ObjectFactory::makeBreakableItem(Paintown::BreakableItem * it
     item->setX(x);
     item->setZ(z);
     item->setObjectId(block->getId());
+    item->setTriggers(block->getTriggers());
     return item;
 }
 
@@ -91,6 +93,7 @@ Paintown::Object * ObjectFactory::makeActor( Paintown::Actor * ret, const BlockO
     ret->setX(x);
     ret->setZ(z);
     ret->setObjectId(block->getId());
+    ret->setTriggers(block->getTriggers());
 
     return ret;
 }
@@ -100,6 +103,7 @@ Paintown::Object * ObjectFactory::makeCat( Paintown::Cat * ret, const BlockObjec
     block->getCoords(x, z);
     ret->setX(x);
     ret->setZ(z);
+    ret->setTriggers(block->getTriggers());
 
     return ret;
 }
@@ -115,6 +119,7 @@ Paintown::Object * ObjectFactory::makeNetworkCharacter( Paintown::NetworkCharact
 Paintown::Object * ObjectFactory::makeNetworkPlayer( Paintown::NetworkPlayer * guy, const BlockObject * block ){
     guy->setMap(block->getMap());
     guy->setObjectId(block->getId());
+    guy->setTriggers(block->getTriggers());
     return guy;
 }
 
@@ -132,6 +137,7 @@ Paintown::Object * ObjectFactory::makeEnemy( Paintown::Enemy * ret, const BlockO
     ret->setMaxHealth(block->getHealth());
     ret->setHealth(block->getHealth());
     ret->setObjectId(block->getId());
+    ret->setTriggers(block->getTriggers());
     ret->setScriptObject(Script::Engine::getEngine()->createCharacter(ret));
 
     hearts.push_back(ret->getHeart());
@@ -176,12 +182,12 @@ Paintown::Object * ObjectFactory::makeObject(const BlockObject * block){
             }
             case NetworkCharacterType: {
                 string cachedPath = "network-character:" + block->getPath().path();
-                if ( cached[cachedPath] == NULL ){
-                    cached[cachedPath] = new Paintown::NetworkCharacter( block->getPath(), 0 );
+                if (cached[cachedPath] == NULL){
+                    cached[cachedPath] = new Paintown::NetworkCharacter(block->getPath(), 0);
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
                     Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
-                return makeNetworkCharacter( (Paintown::NetworkCharacter *) cached[cachedPath]->copy(), block );
+                return makeNetworkCharacter((Paintown::NetworkCharacter *) cached[cachedPath]->copy(), block);
             }
             case NetworkPlayerType: {
                 string cachedPath = "network-player:" + block->getPath().path();

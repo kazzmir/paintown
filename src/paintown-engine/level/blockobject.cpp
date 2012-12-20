@@ -49,6 +49,9 @@ static Util::ReferenceCount<Paintown::Trigger> getTrigger(const Token & token){
             SpawnTrigger(const SpawnTrigger & copy):
             spawn(copy.spawn){
             }
+
+            virtual void invoke(vector<Paintown::Object*> & add){
+            }
     
             virtual Trigger * copy() const {
                 return new SpawnTrigger(*this);
@@ -194,7 +197,7 @@ void BlockObject::setStimulation(const Util::ReferenceCount<Paintown::Stimulatio
     this->stimulation = stimulation;
 }
     
-std::map<Paintown::TriggerType, Util::ReferenceCount<Paintown::Trigger> > BlockObject::getTriggers(){
+std::map<Paintown::TriggerType, Util::ReferenceCount<Paintown::Trigger> > BlockObject::getTriggers() const {
     return triggers;
 }
 

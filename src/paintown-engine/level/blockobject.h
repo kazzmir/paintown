@@ -92,7 +92,7 @@ public:
 
     virtual void setStimulation(const Util::ReferenceCount<Paintown::Stimulation> & stimulation);
 
-    virtual std::map<Paintown::TriggerType, Util::ReferenceCount<Paintown::Trigger> > getTriggers();
+    virtual std::map<Paintown::TriggerType, Util::ReferenceCount<Paintown::Trigger> > getTriggers() const;
 
     inline void setId(const int id){
         this->id = id;

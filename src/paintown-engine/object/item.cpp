@@ -314,6 +314,7 @@ void BreakableItem::touch(Object * obj){
 
 void BreakableItem::died(std::vector<Object *> & objects){
     breakSound.play();
+    Object::died(objects);
 }
     
 void BreakableItem::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects){

@@ -4,8 +4,11 @@
 #include "util/sound/sound.h"
 #include "paintown-engine/network/network.h"
 #include "util/graphics/bitmap.h"
+#include "util/pointer.h"
+#include "trigger.h"
 #include <string>
 #include <vector>
+#include <map>
 
 namespace Graphics{
 class Bitmap;
@@ -105,6 +108,8 @@ public:
 	 * You have collided with this object. Make your time.
 	 */
 	virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
+
+        virtual void setTriggers(const std::map<TriggerType, Util::ReferenceCount<Trigger> > & triggers);
 
         /* true if the point touches the character.
          * x,y should be absolute coordinates.
@@ -455,6 +460,8 @@ private:
         int objectId;
 
         void * scriptObject;
+
+        std::map<TriggerType, Util::ReferenceCount<Trigger> > triggers;
 };
 
 }
