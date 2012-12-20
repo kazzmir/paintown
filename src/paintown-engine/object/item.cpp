@@ -312,9 +312,9 @@ bool BreakableItem::isGettable(){
 void BreakableItem::touch(Object * obj){
 }
 
-void BreakableItem::died(std::vector<Object *> & objects){
+void BreakableItem::died(const Util::ReferenceCount<Scene> & scene, std::vector<Object *> & objects){
     breakSound.play();
-    Object::died(objects);
+    Object::died(scene, objects);
 }
     
 void BreakableItem::collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects){

@@ -170,7 +170,7 @@ public:
     /* make the character jump! */
     virtual void jump();
 
-    virtual void died( std::vector< Object * > & objects );
+    virtual void died(const Util::ReferenceCount<Scene> & scene, std::vector< Object * > & objects);
 
 public:
     /* debug methods */

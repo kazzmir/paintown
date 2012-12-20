@@ -2,6 +2,9 @@
 #define _paintown_object_trigger_h
 
 #include <vector>
+#include "util/pointer.h"
+
+class Scene;
 
 namespace Paintown{
 
@@ -14,7 +17,7 @@ class Trigger{
 public:
     Trigger();
     virtual Trigger * copy() const = 0;
-    virtual void invoke(std::vector<Object*> & add) = 0;
+    virtual void invoke(const Util::ReferenceCount<Scene> & scene, std::vector<Object*> & add) = 0;
     virtual ~Trigger();
 };
 

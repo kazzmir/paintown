@@ -16,6 +16,7 @@ class Bitmap;
 
 class ECollide;
 class World;
+class Scene;
 
 namespace Script{
     class Object;
@@ -273,7 +274,7 @@ public:
 	/* this object died. this object can add arbitrary objects
 	 * into 'objects'
 	 */
-	virtual void died(std::vector< Object * > & objects);
+	virtual void died(const Util::ReferenceCount<Scene> & scene, std::vector< Object * > & objects);
 
 	/* set fall velocities */
 	virtual void fall( double x_vel, double y_vel );

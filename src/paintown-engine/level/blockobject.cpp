@@ -50,7 +50,7 @@ static Util::ReferenceCount<Paintown::Trigger> getTrigger(const Token & token){
             spawn(copy.spawn){
             }
 
-            virtual void invoke(vector<Paintown::Object*> & add){
+            virtual void invoke(const Util::ReferenceCount<Scene> & scene, vector<Paintown::Object*> & add){
             }
     
             virtual Trigger * copy() const {

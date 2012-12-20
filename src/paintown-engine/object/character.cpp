@@ -960,7 +960,7 @@ bool Character::getExplode(){
     return explode;
 }
 
-void Character::died( vector< Object * > & objects ){
+void Character::died(const Util::ReferenceCount<Scene> & scene, vector< Object * > & objects){
     if (getLink() != NULL){
         getLink()->unGrab();
         setLink(NULL);

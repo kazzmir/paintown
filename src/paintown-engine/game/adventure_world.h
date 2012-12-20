@@ -182,7 +182,7 @@ protected:
      */
     Paintown::Object * bang;
 
-    Scene * scene;
+    Util::ReferenceCount<Scene> scene;
 
     // int min_x;
     int screen_size;

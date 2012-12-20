@@ -139,10 +139,6 @@ AdventureWorld::~AdventureWorld(){
         delete bang;
     }
 
-    if (scene){
-        delete scene;
-    }
-
     if (mini_map){
         delete mini_map;
     }
@@ -310,17 +306,14 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	*/
 
     Global::info("Loading scenery");
-	Scene * s = NULL;
-        if (randomLevel()){
-            s = new RandomScene(path, *cacher);
-        } else {
-            s = new Scene(path, *cacher);
-        }
-	if ( scene != NULL ){
-		delete scene;
-	}
-	scene = s;
-	
+    Scene * s = NULL;
+    if (randomLevel()){
+        s = new RandomScene(path, *cacher);
+    } else {
+        s = new Scene(path, *cacher);
+    }
+    scene = Util::ReferenceCount<Scene>(s);
+
         Filesystem::AbsolutePath bang_path(Storage::instance().find(Filesystem::RelativePath("misc/flash/flash.txt")));
         Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
@@ -405,7 +398,7 @@ Network::Message AdventureWorld::deleteMessage( unsigned int id ){
 const Util::ReferenceCount<Block> AdventureWorld::currentBlock() const {
     if (scene == NULL){
         Global::debug(-1) << "*BUG* Scene is null" << endl;
-        exit(1);
+        throw std::exception();
     }
     return scene->currentBlock();
 }
@@ -413,13 +406,13 @@ const Util::ReferenceCount<Block> AdventureWorld::currentBlock() const {
 int AdventureWorld::levelLength() const {
     if (scene == NULL){
         Global::debug(-1) << "*BUG* Scene is null" << endl;
-        exit(1);
+        throw std::exception();
     }
     return scene->totalLength();
 }
         
 void AdventureWorld::addEnemy(Paintown::Enemy * obj){
-    if (scene){
+    if (scene != NULL){
         scene->addEnemy(obj);
     } else {
         /* scene should exist.. but just be safe */
@@ -541,7 +534,7 @@ void AdventureWorld::doLogic(){
 void AdventureWorld::eraseDeadObjects(vector<Paintown::Object*> & added_effects){
     for ( vector<Paintown::Object *>::iterator it = objects.begin(); it != objects.end(); ){
         if ( (*it)->getHealth() <= 0 ){
-            (*it)->died(added_effects);
+            (*it)->died(scene, added_effects);
             if (! isPlayer(*it)){
                 delete *it;
             }

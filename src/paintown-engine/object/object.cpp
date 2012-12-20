@@ -144,10 +144,10 @@ void Object::moveX( const int x ){
 	moveX( (double)x );
 }
 
-void Object::died(vector<Object *> & objects){
+void Object::died(const Util::ReferenceCount<Scene> & scene, vector<Object *> & objects){
     if (triggers.find(OnDeath) != triggers.end()){
         Util::ReferenceCount<Trigger> trigger = triggers.find(OnDeath)->second;
-        trigger->invoke(objects);
+        trigger->invoke(scene, objects);
     }
 }
 
