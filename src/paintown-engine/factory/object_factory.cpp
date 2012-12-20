@@ -21,7 +21,7 @@
 using namespace std;
 
 ObjectFactory * ObjectFactory::factory = NULL;
-Paintown::Object * ObjectFactory::createObject( const BlockObject * block ){
+Paintown::Object * ObjectFactory::createObject(const Util::ReferenceCount<BlockObject> & block){
     return getFactory()->makeObject(block);
 }
         
@@ -66,7 +66,7 @@ static Paintown::Stimulation * makeStimulation(const string & str, double value)
 }
 */
 
-Paintown::Object * ObjectFactory::makeItem(Paintown::Item * item, const BlockObject * block){
+Paintown::Object * ObjectFactory::makeItem(Paintown::Item * item, const Util::ReferenceCount<BlockObject> & block){
     int x, z;
     block->getCoords(x, z);
     item->setStimulation(block->getStimulation());
@@ -77,7 +77,7 @@ Paintown::Object * ObjectFactory::makeItem(Paintown::Item * item, const BlockObj
     return item;
 }
 
-Paintown::Object * ObjectFactory::makeBreakableItem(Paintown::BreakableItem * item, const BlockObject * block){
+Paintown::Object * ObjectFactory::makeBreakableItem(Paintown::BreakableItem * item, const Util::ReferenceCount<BlockObject> & block){
     int x, z;
     block->getCoords(x, z);
     item->setX(x);
@@ -87,7 +87,7 @@ Paintown::Object * ObjectFactory::makeBreakableItem(Paintown::BreakableItem * it
     return item;
 }
 
-Paintown::Object * ObjectFactory::makeActor( Paintown::Actor * ret, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeActor( Paintown::Actor * ret, const Util::ReferenceCount<BlockObject> & block ){
     int x, z;
     block->getCoords(x, z);
     ret->setX(x);
@@ -98,7 +98,7 @@ Paintown::Object * ObjectFactory::makeActor( Paintown::Actor * ret, const BlockO
     return ret;
 }
 
-Paintown::Object * ObjectFactory::makeCat( Paintown::Cat * ret, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeCat( Paintown::Cat * ret, const Util::ReferenceCount<BlockObject> & block ){
     int x, z;
     block->getCoords(x, z);
     ret->setX(x);
@@ -108,7 +108,7 @@ Paintown::Object * ObjectFactory::makeCat( Paintown::Cat * ret, const BlockObjec
     return ret;
 }
 
-Paintown::Object * ObjectFactory::makeNetworkCharacter( Paintown::NetworkCharacter * guy, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeNetworkCharacter( Paintown::NetworkCharacter * guy, const Util::ReferenceCount<BlockObject> & block ){
 
     guy->setMap(block->getMap());
     guy->setObjectId(block->getId());
@@ -116,14 +116,14 @@ Paintown::Object * ObjectFactory::makeNetworkCharacter( Paintown::NetworkCharact
     return guy;
 }
 
-Paintown::Object * ObjectFactory::makeNetworkPlayer( Paintown::NetworkPlayer * guy, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeNetworkPlayer( Paintown::NetworkPlayer * guy, const Util::ReferenceCount<BlockObject> & block ){
     guy->setMap(block->getMap());
     guy->setObjectId(block->getId());
     guy->setTriggers(block->getTriggers());
     return guy;
 }
 
-Paintown::Object * ObjectFactory::makeEnemy( Paintown::Enemy * ret, const BlockObject * block ){
+Paintown::Object * ObjectFactory::makeEnemy( Paintown::Enemy * ret, const Util::ReferenceCount<BlockObject> & block ){
     int x, z;
     block->getCoords(x, z);
     ret->setX(x);
@@ -155,7 +155,7 @@ void ObjectFactory::maxObjectId(int id){
     }
 }
 
-Paintown::Object * ObjectFactory::makeObject(const BlockObject * block){
+Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObject> & block){
     maxObjectId(block->getId());
 
     try{

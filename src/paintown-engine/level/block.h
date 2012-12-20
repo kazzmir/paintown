@@ -2,6 +2,7 @@
 #define _paintown_block_h
 
 #include <vector>
+#include "util/pointer.h"
 
 class BlockObject;
 class Token;
@@ -55,7 +56,7 @@ public:
         finished = f;
     }
 
-    void addBlockObject(BlockObject * object);
+    void addBlockObject(const Util::ReferenceCount<BlockObject> & object);
 
     bool empty();
 
@@ -63,7 +64,7 @@ public:
 
     virtual ~Block();
 
-    const std::vector<BlockObject*> & getObjects() const {
+    const std::vector<Util::ReferenceCount<BlockObject> > & getObjects() const {
         return objects;
     }
 
@@ -72,7 +73,7 @@ protected:
     int id;
     bool wait;
 
-    std::vector< BlockObject * > objects;
+    std::vector<Util::ReferenceCount<BlockObject> > objects;
     int finished;
     bool continuous;
 };

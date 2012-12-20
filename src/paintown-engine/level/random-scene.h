@@ -15,9 +15,9 @@ public:
     virtual ~RandomScene();
 
 protected:
-    std::vector<BlockObject *> collectObjects();
+    std::vector<Util::ReferenceCount<BlockObject> > collectObjects();
 
-    std::vector<BlockObject *> objects;
+    std::vector<Util::ReferenceCount<BlockObject> > objects;
 };
 
 #endif

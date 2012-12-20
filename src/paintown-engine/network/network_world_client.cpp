@@ -184,17 +184,17 @@ void NetworkWorldClient::handleCreateCharacter( Network::Message & message ){
         }
         if ( ! found ){
             /* TODO: set the block id (different from network id) */
-            BlockObject block;
+            Util::ReferenceCount<BlockObject> block(new BlockObject());
             int isPlayer;
             message >> isPlayer;
             if (isPlayer == World::IS_PLAYER){
-                block.setType(ObjectFactory::NetworkPlayerType);
+                block->setType(ObjectFactory::NetworkPlayerType);
             } else {
-                block.setType(ObjectFactory::NetworkCharacterType);
+                block->setType(ObjectFactory::NetworkCharacterType);
             }
-            block.setMap(map);
-            block.setPath(path);
-            Paintown::Character * character = (Paintown::Character *) ObjectFactory::createObject( &block );
+            block->setMap(map);
+            block->setPath(path);
+            Paintown::Character * character = (Paintown::Character *) ObjectFactory::createObject(block);
             if (character == NULL){
                 debug(0) << "Could not create character!" << endl;
                 return;
@@ -222,12 +222,12 @@ void NetworkWorldClient::handleCreateCat( Network::Message & message ){
     message >> id;
     if (uniqueObject(id)){
         Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
-        BlockObject block;
-        block.setType(ObjectFactory::CatType);
-        block.setPath(path);
+        Util::ReferenceCount<BlockObject> block(new BlockObject());
+        block->setType(ObjectFactory::CatType);
+        block->setPath(path);
         /* TODO: should these values be hard-coded? */
-        block.setCoords(200, 150);
-        Paintown::Cat * cat = (Paintown::Cat *) ObjectFactory::createObject(&block);
+        block->setCoords(200, 150);
+        Paintown::Cat * cat = (Paintown::Cat *) ObjectFactory::createObject(block);
         if (cat == NULL){
             debug(0) << "Could not create cat" << endl;
             return;
@@ -265,12 +265,12 @@ void NetworkWorldClient::handleCreateItem( Network::Message & message ){
         int type;
         message >> x >> z;
         Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath(message.path));
-        BlockObject block;
-        block.setType(ObjectFactory::ItemType);
-        block.setPath(path);
-        block.setStimulation(Util::ReferenceCount<Paintown::Stimulation>(Paintown::Stimulation::create(message)));
-        block.setCoords(x, z);
-        Paintown::Item * item = (Paintown::Item *) ObjectFactory::createObject( &block );
+        Util::ReferenceCount<BlockObject> block(new BlockObject());
+        block->setType(ObjectFactory::ItemType);
+        block->setPath(path);
+        block->setStimulation(Util::ReferenceCount<Paintown::Stimulation>(Paintown::Stimulation::create(message)));
+        block->setCoords(x, z);
+        Paintown::Item * item = (Paintown::Item *) ObjectFactory::createObject(block);
         if (item == NULL){
             debug(0) << "Could not create item" << endl;
             return;

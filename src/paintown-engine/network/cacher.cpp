@@ -7,13 +7,13 @@ NetworkCacher::NetworkCacher():
 Cacher(){
 }
     
-Paintown::Object * NetworkCacher::cache(const BlockObject & block) const {
-    if (block.getType() == ObjectFactory::EnemyType){
-        BlockObject networkEnemy(block);
-        networkEnemy.setType(ObjectFactory::NetworkCharacterType);
-        return ObjectFactory::createObject(&networkEnemy);
+Paintown::Object * NetworkCacher::cache(const Util::ReferenceCount<BlockObject> & block) const {
+    if (block->getType() == ObjectFactory::EnemyType){
+        Util::ReferenceCount<BlockObject> networkEnemy(new BlockObject(*block));
+        networkEnemy->setType(ObjectFactory::NetworkCharacterType);
+        return ObjectFactory::createObject(networkEnemy);
     } else {
-        return ObjectFactory::createObject(&block);
+        return ObjectFactory::createObject(block);
     }
 }
 

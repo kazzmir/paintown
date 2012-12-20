@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include "util/pointer.h"
 
 namespace Paintown{
     class Object;
@@ -22,7 +23,7 @@ class BlockObject;
 /* factory class for instantiating new objects from a BlockObject */
 class ObjectFactory{
 public:
-	static Paintown::Object * createObject( const BlockObject * block );
+	static Paintown::Object * createObject(const Util::ReferenceCount<BlockObject> & block);
         static int getNextObjectId();
         static void maxId(int id);
 	static void destroy();
@@ -44,24 +45,24 @@ public:
 	
 private:
 	ObjectFactory();
-        Paintown::Object * makeObject( const BlockObject * block );
+        Paintown::Object * makeObject(const Util::ReferenceCount<BlockObject> & block );
 
-        Paintown::Object * makeBreakableItem(Paintown::BreakableItem * item, const BlockObject * block);
-        Paintown::Object * makeItem(Paintown::Item * item, const BlockObject * block);
-	Paintown::Object * makeEnemy(Paintown::Enemy * enemy, const BlockObject * block);
-	Paintown::Object * makeActor(Paintown::Actor * ret, const BlockObject * block);
-	Paintown::Object * makeCat(Paintown::Cat * ret, const BlockObject * block);
-	Paintown::Object * makeNetworkCharacter(Paintown::NetworkCharacter * guy, const BlockObject * block);
-	Paintown::Object * makeNetworkPlayer(Paintown::NetworkPlayer * guy, const BlockObject * block);
+        Paintown::Object * makeBreakableItem(Paintown::BreakableItem * item, const Util::ReferenceCount<BlockObject> & block);
+        Paintown::Object * makeItem(Paintown::Item * item, const Util::ReferenceCount<BlockObject> & block);
+	Paintown::Object * makeEnemy(Paintown::Enemy * enemy, const Util::ReferenceCount<BlockObject> & block);
+	Paintown::Object * makeActor(Paintown::Actor * ret, const Util::ReferenceCount<BlockObject> & block);
+	Paintown::Object * makeCat(Paintown::Cat * ret, const Util::ReferenceCount<BlockObject> & block);
+	Paintown::Object * makeNetworkCharacter(Paintown::NetworkCharacter * guy, const Util::ReferenceCount<BlockObject> & block);
+	Paintown::Object * makeNetworkPlayer(Paintown::NetworkPlayer * guy, const Util::ReferenceCount<BlockObject> & block);
 
         int _getNextObjectId();
         void maxObjectId(int id);
 
-	~ObjectFactory();
+	virtual ~ObjectFactory();
 
 private:
         std::map< std::string, Paintown::Object * > cached;
-	static ObjectFactory * factory;
+        static ObjectFactory * factory;
         std::vector< Heart * > hearts;
         int nextObjectId;
 };

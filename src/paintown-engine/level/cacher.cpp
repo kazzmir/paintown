@@ -14,8 +14,8 @@ DefaultCacher::DefaultCacher():
 Cacher(){
 }
 
-Paintown::Object * DefaultCacher::cache(const BlockObject & block) const {
-    return ObjectFactory::createObject(&block);
+Paintown::Object * DefaultCacher::cache(const Util::ReferenceCount<BlockObject> & block) const {
+    return ObjectFactory::createObject(block);
 }
 
 DefaultCacher::~DefaultCacher(){

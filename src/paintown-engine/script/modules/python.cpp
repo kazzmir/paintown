@@ -63,10 +63,10 @@ namespace PaintownLevel{
         char * path;
         if (PyArg_ParseTuple(args, "s", &path)){
             string spath(path);
-            BlockObject block;
-            block.setType(ObjectFactory::EnemyType);
-            block.setPath(Storage::instance().find(Filesystem::RelativePath(spath)));
-            Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(&block);
+            Util::ReferenceCount<BlockObject> block(new BlockObject());
+            block->setType(ObjectFactory::EnemyType);
+            block->setPath(Storage::instance().find(Filesystem::RelativePath(spath)));
+            Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(block);
             delete enemy;
         }
 
@@ -89,20 +89,20 @@ namespace PaintownLevel{
         if (PyArg_ParseTuple(args, "Ossiiii", &cworld, &path, &name, &map, &health, &x, &z)){
             string spath(path);
             string sname(name);
-            BlockObject block;
-            block.setPath(Storage::instance().find(Filesystem::RelativePath(spath)));
-            block.setName(sname);
-            block.setAlias(sname);
-            block.setMap(map);
-            block.setId(ObjectFactory::getNextObjectId());
-            block.setType(ObjectFactory::EnemyType);
-            block.setHealth(health);
-            block.setCoords(x,z);
+            Util::ReferenceCount<BlockObject> block(new BlockObject());
+            block->setPath(Storage::instance().find(Filesystem::RelativePath(spath)));
+            block->setName(sname);
+            block->setAlias(sname);
+            block->setMap(map);
+            block->setId(ObjectFactory::getNextObjectId());
+            block->setType(ObjectFactory::EnemyType);
+            block->setHealth(health);
+            block->setCoords(x,z);
             /* the factory will create an enemy and the enemy
              * will call into the script module to create a new character,
              * so just return that handle
              */
-            Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(&block);
+            Paintown::Enemy * enemy = (Paintown::Enemy*) ObjectFactory::createObject(block);
             World * world = (World*) PyCObject_AsVoidPtr(cworld);
             world->addEnemy(enemy);
             Py_INCREF((PyObject*) enemy->getScriptObject());

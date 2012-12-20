@@ -51,20 +51,19 @@ continuous( false ){
                 setFinished( f );
             } else if ( *current == "object" ){
                 try{ 
-                    BlockObject * so = new BlockObject(current);
+                    Util::ReferenceCount<BlockObject> object(new BlockObject(current));
 
                     /* cache the object in the factory */
                     // Object * tmp = ObjectFactory::createObject(so);
-                    Paintown::Object * tmp = cacher.cache(*so);
+                    Paintown::Object * tmp = cacher.cache(object);
                     if (tmp == NULL){
                         current->print(" ");
-                        delete so;
                         throw LoadException(__FILE__, __LINE__, "Could not cache object" );
                     } else {
                         /* clean up! */
 
                         delete tmp;
-                        objects.push_back( so );
+                        objects.push_back(object);
                     }
                 } catch (const LoadException & le){
                     throw le;
@@ -88,7 +87,7 @@ finished(-1),
 continuous(false){
 }
     
-void Block::addBlockObject(BlockObject * object){
+void Block::addBlockObject(const Util::ReferenceCount<BlockObject> & object){
     objects.push_back(object);
 }
 	
@@ -96,7 +95,7 @@ bool Block::empty(){
 	return objects.empty();
 }
 
-vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, vector< Paintown::Object * > * list ){
+vector<Heart *> Block::createObjects(int total_length, int min_x, int max_x, int min_z, int max_z, vector< Paintown::Object * > * list){
     vector< Heart * > hearts;
 
     /* to silence compiler warnings */
@@ -107,52 +106,37 @@ vector< Heart * > Block::createObjects( int total_length, int min_x, int max_x, 
 
     // cout<<"Total length = "<<total_length<<" Min_x = "<<min_x<<" Max_x = " << max_x << endl;
     // cout<<"Current block has "<<objects.size()<<" total = "<<total_length<<" min = "<<min_x<<" max_x = "<<max_x<<endl;
-    for ( vector< BlockObject * >::iterator it = objects.begin(); it != objects.end(); ){
-        BlockObject * obj = *it;
+    for (vector<Util::ReferenceCount<BlockObject> >::iterator it = objects.begin(); it != objects.end(); ){
+        Util::ReferenceCount<BlockObject> obj = *it;
 
-        int x, z;
-        obj->getCoords( x, z );
-        x += total_length;
-        /* dont care about distance.. */
-        if ( true ){
-
-            Paintown::Object * newobj = ObjectFactory::createObject( obj );
-            if ( newobj == NULL ){
-                delete obj;
-                it = objects.erase( it );
-                continue;
-            }
-
-            /* does this violate some OOP principle? oh wel */
-            if ( obj->getType() == ObjectFactory::EnemyType ){
-                Heart * h = ((Paintown::Enemy *)newobj)->getHeart();
-                hearts.push_back( h );
-            }
-            // newobj->moveX( total_length );
-            newobj->moveRight( total_length );
-            newobj->moveZ( min_z );
-            if ( newobj->getZ() < min_z ){
-                newobj->setZ( min_z );
-            }
-            if ( newobj->getZ() > max_z ){
-                newobj->setZ( max_z );
-            }
-            list->push_back( newobj );
-            // cout<<"Created new object at "<<newobj->getX()<<" " <<newobj->getZ()<<". Min_x = "<<min_x<<". block = "<<total_length<<endl;
-
-            delete obj;
-            it = objects.erase( it );
-        } else {
-            // cout<<"Coords not in range "<<x<<endl;
-            it++;
+        Paintown::Object * newobj = ObjectFactory::createObject(obj);
+        if (newobj == NULL){
+            it = objects.erase(it);
+            continue;
         }
+
+        /* does this violate some OOP principle? oh wel */
+        if ( obj->getType() == ObjectFactory::EnemyType ){
+            Heart * h = ((Paintown::Enemy *)newobj)->getHeart();
+            hearts.push_back( h );
+        }
+        // newobj->moveX( total_length );
+        newobj->moveRight( total_length );
+        newobj->moveZ( min_z );
+        if ( newobj->getZ() < min_z ){
+            newobj->setZ( min_z );
+        }
+        if ( newobj->getZ() > max_z ){
+            newobj->setZ( max_z );
+        }
+        list->push_back( newobj );
+        // cout<<"Created new object at "<<newobj->getX()<<" " <<newobj->getZ()<<". Min_x = "<<min_x<<". block = "<<total_length<<endl;
+
+        it = objects.erase(it);
     }
 
     return hearts;
 }
 	
 Block::~Block(){
-	for ( vector<BlockObject *>::iterator it = objects.begin(); it != objects.end(); it++ ){
-		delete *it;
-	}
 }
