@@ -76,6 +76,7 @@ object/player-common.cpp
 object/versus_player.cpp
 object/versus_enemy.cpp
 object/projectile.cpp
+object/trigger.cpp
 object/attack.cpp
 object/stimulation.cpp
 object/character.cpp

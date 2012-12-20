@@ -10,6 +10,7 @@ enum TriggerType{
 class Trigger{
 public:
     Trigger();
+    virtual Trigger * copy() const = 0;
     virtual ~Trigger();
 };
 

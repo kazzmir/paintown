@@ -33,7 +33,40 @@ health(copy.health),
 coords_x(copy.coords_x),
 coords_z(copy.coords_z),
 id(copy.id),
+triggers(copy.triggers),
 stimulation(copy.stimulation){
+}
+
+static Util::ReferenceCount<Paintown::Trigger> getTrigger(const Token & token){
+    const Token * spawn = token.findToken("_/spawn");
+    if (spawn != NULL){
+        class SpawnTrigger: public Paintown::Trigger {
+        public:
+            SpawnTrigger(const Token * block):
+            spawn(block){
+            }
+
+            SpawnTrigger(const SpawnTrigger & copy):
+            spawn(copy.spawn){
+            }
+    
+            virtual Trigger * copy() const {
+                return new SpawnTrigger(*this);
+            }
+
+            virtual ~SpawnTrigger(){
+            }
+
+            BlockObject spawn; 
+        };
+
+        const Token * object = spawn->findToken("_/object");
+        if (object != NULL){
+            return Util::ReferenceCount<Paintown::Trigger>(new SpawnTrigger(object));
+        }
+    }
+
+    return Util::ReferenceCount<Paintown::Trigger>(NULL);
 }
 
 BlockObject::BlockObject(const Token * tok):
@@ -109,6 +142,10 @@ id(-1){
                 int x, z;
                 current->view() >> x >> z;
                 setCoords( x, z );
+            } else if (*current == "on-death"){
+                Paintown::TriggerType type = Paintown::OnDeath;
+                Util::ReferenceCount<Paintown::Trigger> trigger = getTrigger(*current);
+                triggers[type] = trigger;
             } else if ( *current == "health" ){
                 int h;
                 current->view() >> h;
@@ -155,6 +192,10 @@ Util::ReferenceCount<Paintown::Stimulation> BlockObject::getStimulation() const 
 
 void BlockObject::setStimulation(const Util::ReferenceCount<Paintown::Stimulation> & stimulation){
     this->stimulation = stimulation;
+}
+    
+std::map<Paintown::TriggerType, Util::ReferenceCount<Paintown::Trigger> > BlockObject::getTriggers(){
+    return triggers;
 }
 
 BlockObject::~BlockObject(){
