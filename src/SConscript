@@ -66,91 +66,6 @@ def findCmake():
     
 filelist = helpers.read_cmake_list("%s/FileList.cmake" % findCmake())
 
-def sprigLibrary(env):
-    sprig = env.Clone()
-    source = Split("""
-util/graphics/sdl/sprig/SPG_extended.c
-util/graphics/sdl/sprig/SPG_misc.c
-util/graphics/sdl/sprig/SPG_polygon.c
-util/graphics/sdl/sprig/SPG_primitives.c
-util/graphics/sdl/sprig/SPG_rotation.c
-util/graphics/sdl/sprig/SPG_surface.c
-""")
-
-    return sprig.StaticLibrary('sprig', source)
-
-def stretchLibrary(env):
-    stretch = env.Clone()
-    # FIXME: asm has some bug in it, try to fix it later
-    stretch.Append(CPPDEFINES = ['SDL_STRETCH_DISABLE_ASM'])
-    source = Split("""
-util/graphics/sdl/stretch/sdlstretch.c
-util/graphics/sdl/stretch/sdlstretchcode.c
-""")
-
-    return stretch.StaticLibrary('stretch', source)
-
-def alGifLibrary(env):
-    gif = env.Clone()
-    source = Split("""
-util/graphics/allegro/gif/algif.c
-util/graphics/allegro/gif/gif.c
-util/graphics/allegro/gif/lzw.c
-""")
-    return gif.StaticLibrary('algif', source)
-
-def sdlImageLibrary(env):
-    image = env.Clone()
-    image.Append(CPPDEFINES = ['LOAD_PNG', 'LOAD_PCX', 'LOAD_GIF'])
-    source = Split("""
-util/graphics/sdl/image/IMG.c
-util/graphics/sdl/image/IMG_jpg.c
-util/graphics/sdl/image/IMG_pnm.c
-util/graphics/sdl/image/IMG_xpm.c
-util/graphics/sdl/image/IMG_ImageIO.c
-util/graphics/sdl/image/IMG_lbm.c
-util/graphics/sdl/image/IMG_tga.c
-util/graphics/sdl/image/IMG_xv.c
-util/graphics/sdl/image/IMG_bmp.c
-util/graphics/sdl/image/IMG_pcx.c
-util/graphics/sdl/image/IMG_tif.c
-util/graphics/sdl/image/IMG_xxx.c
-util/graphics/sdl/image/IMG_gif.c
-util/graphics/sdl/image/IMG_png.c
-util/graphics/sdl/image/IMG_savepng.c
-util/graphics/sdl/image/IMG_xcf.c
-""")
-
-    return image.StaticLibrary('image',source)
-
-def sdlMixerLibrary(env):
-    use = env
-    return SConscript('util/sound/sdl/mixer/SConscript', exports = ['use'])
-
-def soxLibrary(env):
-    use = env
-    return SConscript('util/sox/SConscript', exports = ['use'])
-
-#for i in filelist:
-#    # print "%s = %s" % (i, filelist[i])
-#    # meh, kind of a hack
-#    if i == 'SCRIPT_SRC':
-#        # call the python and ruby checks here
-#        env = use.Clone()
-#        # config = env.Configure()
-#        # Ugly way to pass the custom tests in
-#        config = env.Configure(custom_tests = env['PAINTOWN_TESTS'])
-#        # config.CheckRuby()
-#        config.CheckPython()
-#        env = config.Finish()
-#        use.Append(LIBS = env['LIBS'])
-#        use.Replace(LIBS = unique(use['LIBS']))
-#        files = filelist[i]
-#        # abstract this so we don't duplicate code
-#        obj_files.append(map(lambda x: env.StaticObject(x.replace('src/', '')), files))
-#    else:
-#        addFiles(filelist[i])
-
 for i in filelist:
     addFiles(filelist[i])
 
@@ -160,6 +75,9 @@ def useSDL():
 
 def useAllegro5():
     return use['PAINTOWN_BACKEND'] == 'allegro5'
+
+def useAllegro4():
+    return use['PAINTOWN_BACKEND'] == 'allegro'
 
 def useAndroid():
     import os
@@ -188,17 +106,10 @@ def icon():
     else:
         return []
 
-def hawknlLibrary(env):
-    hawkEnv = env.Clone()
-    env = hawkEnv
-    # if isOSX():
-    #    env.Append(CPPDEFINES = 'MACOSX')
-    return env.SConscript('util/network/hawknl/SConscript', exports = ['env'])
-
-def doUtil(env):
+def doUtil(env, options):
     utilEnv = env.Clone()
     env = utilEnv
-    return env.SConscript('util/SConscript', exports = ['env'])
+    return env.SConscript('util/SConscript', exports = ['env', 'options'])
 
 def main():
     return ['util/xmain.cpp']
@@ -219,17 +130,22 @@ def psp_prx(env):
 
 use.Depends(use.Peg('openbor/data.peg'), 'mugen/parser/peg.py')
 
-use.Prepend(ARCHIVES = doUtil(use))
+options = {'networking': use['PAINTOWN_NETWORKING'],
+           'sdl': useSDL(),
+           'allegro': useAllegro4(),
+           'allegro5': useAllegro5()
+          }
 
-if use['PAINTOWN_NETWORKING']:
-    use.Prepend(ARCHIVES = [hawknlLibrary(use)])
+use.Prepend(ARCHIVES = doUtil(use, options))
 
-if not useSDL() and not useAllegro5():
-    use.Prepend(ARCHIVES = [alGifLibrary(use)])
-if useSDL() and not useMinpspw():
-    use.Prepend(ARCHIVES = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
-elif useMinpspw():
-    use.Prepend(ARCHIVES = [sprigLibrary(use), stretchLibrary(use)])
+# FIXME: fix minpspw build at some point
+
+#if not useSDL() and not useAllegro5():
+#    use.Prepend(ARCHIVES = [alGifLibrary(use)])
+#if useSDL() and not useMinpspw():
+#    use.Prepend(ARCHIVES = [sdlImageLibrary(use), sprigLibrary(use), sdlMixerLibrary(use), stretchLibrary(use)])
+#elif useMinpspw():
+#    use.Prepend(ARCHIVES = [sprigLibrary(use), stretchLibrary(use)])
 
 def addObjects(objects):
     obj_files.extend(objects)
