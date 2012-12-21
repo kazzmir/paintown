@@ -2,6 +2,7 @@
 #include "util/debug.h"
 #include "util/menu/menu_option.h"
 #include "util/menu/menu.h"
+#include "util/exceptions/load_exception.h"
 #include "util/loading.h"
 #include "configuration.h"
 #include "options.h"

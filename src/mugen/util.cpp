@@ -19,6 +19,7 @@
 
 #include "configuration.h"
 
+#include "util/exceptions/load_exception.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
 #include "util/debug.h"

@@ -2,6 +2,7 @@
 #include "util/token.h"
 #include "../level/scene.h"
 #include "../environment/atmosphere.h"
+#include "util/exceptions/load_exception.h"
 #include <vector>
 
 using namespace std;

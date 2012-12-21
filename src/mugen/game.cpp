@@ -12,6 +12,7 @@
 #include "util/input/input-manager.h"
 #include "util/input/input-source.h"
 #include "util/input/input-map.h"
+#include "util/exceptions/load_exception.h"
 #include "util/funcs.h"
 #include "util/system.h"
 #include "util/timedifference.h"

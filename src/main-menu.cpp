@@ -36,6 +36,7 @@ static const int DEFAULT_DEBUG = 0;
 #include "platformer/game/options.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/exceptions/exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/timedifference.h"
 #include "util/funcs.h"
 #include "util/ftalleg.h"

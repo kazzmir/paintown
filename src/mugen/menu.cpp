@@ -15,6 +15,7 @@
 #include "stage.h"
 
 #include "util/exceptions/exception.h"
+#include "util/exceptions/load_exception.h"
 #include "util/init.h"
 #include "util/resource.h"
 #include "util/funcs.h"

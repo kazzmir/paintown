@@ -1,5 +1,6 @@
 #include "configuration.h"
 #include "util/input/keyboard.h"
+#include "util/exceptions/load_exception.h"
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/file-system.h"
