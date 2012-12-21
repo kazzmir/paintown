@@ -127,21 +127,9 @@ def sdlMixerLibrary(env):
     use = env
     return SConscript('util/sound/sdl/mixer/SConscript', exports = ['use'])
 
-def sflLibrary(env):
-    use = env
-    return SConscript('util/sfl/SConscript', exports = ['use'])
-
 def soxLibrary(env):
     use = env
     return SConscript('util/sox/SConscript', exports = ['use'])
-
-def lzmaLibrary7z(env):
-    use = env
-    return SConscript('util/7z/SConscript', exports = ['use'])
-
-def gmeLibrary(env):
-    use = env
-    return SConscript('util/sound/gme/SConscript', exports = ['use'])
 
 #for i in filelist:
 #    # print "%s = %s" % (i, filelist[i])
@@ -200,16 +188,6 @@ def icon():
     else:
         return []
 
-def pcreLibrary(env):
-    pcreEnv = env.Clone()
-    env = pcreEnv
-    return use.SConscript('util/pcre/SConstruct', exports = ['env'])
-
-def dumbLibrary(env):
-    dumbEnv = env.Clone()
-    env = dumbEnv
-    return use.SConscript('util/sound/dumb/SConscript', exports = ['env'])
-
 def hawknlLibrary(env):
     hawkEnv = env.Clone()
     env = hawkEnv
@@ -217,10 +195,7 @@ def hawknlLibrary(env):
     #    env.Append(CPPDEFINES = 'MACOSX')
     return env.SConscript('util/network/hawknl/SConscript', exports = ['env'])
 
-def minizipLibrary(env):
-    return env.SConscript('util/zip/SConscript', exports = ['env'])
-
-def utilLibrary(env):
+def doUtil(env):
     utilEnv = env.Clone()
     env = utilEnv
     return env.SConscript('util/SConscript', exports = ['env'])
@@ -244,15 +219,11 @@ def psp_prx(env):
 
 use.Depends(use.Peg('openbor/data.peg'), 'mugen/parser/peg.py')
 
-util = utilLibrary(use)
+use.Prepend(ARCHIVES = doUtil(use))
 
-use.Prepend(ARCHIVES = [util])
-
-use.Prepend(ARCHIVES = [dumbLibrary(use)])
 if use['PAINTOWN_NETWORKING']:
     use.Prepend(ARCHIVES = [hawknlLibrary(use)])
 
-use.Prepend(ARCHIVES = [gmeLibrary(use), lzmaLibrary7z(use), sflLibrary(use), pcreLibrary(use), minizipLibrary(use)])
 if not useSDL() and not useAllegro5():
     use.Prepend(ARCHIVES = [alGifLibrary(use)])
 if useSDL() and not useMinpspw():
