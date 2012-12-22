@@ -18,8 +18,6 @@ using namespace std;
 #endif
 
 Collector::Collector(){
-    /* the only resource */
-    resource = new Resource();
 }
 
 /* cleans up global state */
@@ -33,6 +31,6 @@ Collector::~Collector(){
     Graphics::Bitmap::shutdown();
     Mugen::Data::destroy();
     Sound::uninitialize();
-    delete resource;
+    Resource::destroy();
     Global::close();
 }

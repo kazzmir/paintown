@@ -52,7 +52,7 @@ protected:
     int darkness;
 
     Graphics::Bitmap * lamp;
-    Sound * thunder;
+    Util::ReferenceCount<Sound> thunder;
     bool lightning;
     int lightningFade;
     int thunderPause;

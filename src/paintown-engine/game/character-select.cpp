@@ -976,7 +976,7 @@ void CharacterSelect::swap(int cursor){
 void CharacterSelect::playSound(const Sounds & sound){
     std::map<Sounds, std::string>::iterator play = sounds.find(sound);
     if (play != sounds.end()){
-        Sound * sound = Resource::getSound(Filesystem::RelativePath(play->second));
+        Util::ReferenceCount<Sound> sound = Resource::getSound(Filesystem::RelativePath(play->second));
         if (sound != NULL){
             sound->play();
         }
