@@ -694,7 +694,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
             FontRender * render = FontRender::getInstance();
             render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
 
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, (int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
+            const Font & font = Font::getDefaultFont((int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
 
             if (state.helpTime > 0){
                 int x = (int)(100 * work.getScaleWidth() / 2);
@@ -1055,7 +1055,7 @@ void fadeOut( const Graphics::Bitmap & work, const string & message ){
     Graphics::Bitmap::transBlender(0, 0, 0, 128);
     work.applyTrans(Graphics::makeColor(0, 0, 0));
 
-    const Font & f = Font::getFont(Global::DEFAULT_FONT, 50, 50 );
+    const Font & f = Font::getDefaultFont(50, 50 );
     f.printf(200, 200, Graphics::makeColor(255, 0, 0), work, message, 0);
     work.BlitToScreen();
 

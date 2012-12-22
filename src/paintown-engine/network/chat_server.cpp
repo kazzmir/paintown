@@ -363,6 +363,25 @@ void ChatServer::stopAccepting(){
     debug(1) << "Not accepting any connections" << endl;
 }
 
+static bool checkVersion(int version){
+    if (version == Global::getVersion()){
+        return true;
+    }
+
+    /* when an incompatible version is made, add a check here, like
+     *  version < getVersion(3, 5)
+     * would mean any client below version 3.5 is incompatible.
+     *
+     * assume versions of client's greater than ourself is compatible, but
+     * this may not be true. There is no way to check this.
+     */
+    if (version < 0){
+        return false;
+    }
+
+    return true;
+}
+
 void ChatServer::addConnection(Network::Socket s){
     Client * client = new Client(s, this, clientId());
 
@@ -385,7 +404,7 @@ void ChatServer::addConnection(Network::Socket s){
         }
         int version;
         hello >> version;
-        if (! Util::checkVersion(version)){
+        if (! checkVersion(version)){
             ostringstream out;
             out << "Invalid version: " << version;
             throw LoadException(__FILE__, __LINE__, out.str());
@@ -591,7 +610,7 @@ void ChatServer::killClient(Client * c){
 
 bool ChatServer::logic(){
     /*
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    const Font & font = Font::getDefaultFont(20, 20);
     lineEdit->act(font);
     if (lineEdit->didChanged(editCounter)){
         needUpdate();
@@ -657,7 +676,7 @@ bool ChatServer::needToDraw(){
 
 /*
 void ChatServer::drawInputBox(int x, int y, const Graphics::Bitmap & work){
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getDefaultFont(20, 20 );
 
     // work.drawingMode( Bitmap::MODE_TRANS );
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
@@ -700,7 +719,7 @@ static Graphics::Color focusColor(Focus want, Focus now){
 void ChatServer::draw(const Graphics::Bitmap & work, Gui::LineEdit & lineEdit, Focus focus){
     int start_x = 20;
     int start_y = 20;
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    const Font & font = Font::getDefaultFont(20, 20);
     background->Blit(work);
     messages.draw(start_x, start_y, work, font);
 
@@ -761,7 +780,7 @@ void ChatServer::run(){
 
     lineEdit.setText(welcomeMessage());
     // lineEdit->setFont(Menu::getFont());
-    lineEdit.setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
+    lineEdit.setFont(& Font::getDefaultFont(20, 20));
     lineEdit.setFocused(true);
 
     class Logic: public Util::Logic {
@@ -887,7 +906,7 @@ void ChatServer::run(){
              */
             bool inputHadFocus = focus == INPUT_BOX;
 
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+            const Font & font = Font::getDefaultFont(20, 20);
             lineEdit.act(font);
             if (lineEdit.didChanged(editCounter)){
                 server.needUpdate();

@@ -48,7 +48,7 @@ void BuddyPlayer::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
         show_life = 0;
     }
 
-    const Font & player_font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    const Font & player_font = Font::getDefaultFont(20, 20);
     const string & name = getName();
     int nameHeight = player_font.getHeight(name) / 2;
     nameHeight = 20 / 2;

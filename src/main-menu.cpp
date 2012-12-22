@@ -770,6 +770,8 @@ int paintown_main(int argc, char ** argv){
     // showOptions(arguments);
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
+    
+    Global::debug(0) << "Paintown version " << Global::getVersionString() << endl;
 
     /* time how long init takes */
     /* FIXME: we count time using SDL_GetTicks or whatever in allegro but it will
@@ -813,7 +815,9 @@ int paintown_main(int argc, char ** argv){
         actions.push_back(Util::ReferenceCount<ArgumentAction>(new DefaultGame()));
     }
 
-    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
+
+    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultMenuFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(*defaultFont.current(), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
 
     startMain(actions, allow_quit);
 

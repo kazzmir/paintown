@@ -3742,7 +3742,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     }
 
     if (getStateData().debug && !isHelper()){
-        const ::Font & font = ::Font::getFont(Global::DEFAULT_FONT, 16, 16);
+        const ::Font & font = ::Font::getDefaultFont(16, 16);
         int x = 1;
         if (getAlliance() == Mugen::Stage::Player2Side){
             x = 640 - font.textLength("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") - 1;

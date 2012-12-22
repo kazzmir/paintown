@@ -774,7 +774,7 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     }
 
     if (descriptionTime > 0 && scene->getDescription() != ""){
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 30, 30);
+        const Font & font = Font::getDefaultFont(30, 30);
         FontRender * render = FontRender::getInstance();
         string description = scene->getDescription();
         int trans = (DESCRIPTION_TIME - descriptionTime) / 2;
@@ -839,7 +839,7 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     if (is_paused){
         work->transBlender( 0, 0, 0, 128 );
         work->translucent().fill(Graphics::makeColor(0, 0, 0));
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 15, 15);
+        const Font & font = Font::getDefaultFont(15, 15);
         font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
     }
 }

@@ -61,7 +61,7 @@ static int getServerPort(){
     const int drawY = 250;
     {
         // background.BlitToScreen();
-        const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+        const Font & font = Font::getDefaultFont(20, 20 );
         Graphics::Bitmap black( 300, font.getHeight() * 4 );
         black.clear();
         black.border( 0, 1, Graphics::makeColor( 255, 255, 255 ) );
@@ -124,7 +124,7 @@ static int getServerPort(){
                 background.Blit(buffer);
                 Graphics::Bitmap work(buffer, 100, drawY, 200, 25);
                 work.clear();
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+                const Font & font = Font::getDefaultFont(20, 20 );
                 font.printf(0, 0, Graphics::makeColor(255, 255, 255), work, input.getText(), 0);
                 // work.Blit(100, drawY, background);
                 // background.BlitToScreen();
@@ -153,7 +153,7 @@ static int getServerPort(){
 
         if (draw){
             work.clear();
-            const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+            const Font & font = Font::getDefaultFont(20, 20 );
             font.printf(0, 0, Graphics::makeColor( 255, 255, 255 ), work, input.getText(), 0);
             work.Blit(100, drawY, background);
             background.BlitToScreen();
@@ -317,7 +317,7 @@ static Level::LevelInfo selectLevels(){
     /* FIXME: get a better Menu::Context object, one that already has
      * a font set and a background.
      */
-    context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Global::DEFAULT_FONT, 20, 20)));
+    context.setFont(Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(Font::getDefaultFontPath(), 20, 20)));
     Graphics::Bitmap normalBackground(Global::titleScreen().path());
     context.addBackground(normalBackground);
     return Paintown::doLevelMenu("/levels", context);
@@ -602,7 +602,7 @@ void networkServer(){
 
     debug(1) << "Port is " << port << endl;
 
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getDefaultFont(20, 20 );
     try{
         /*
 #ifdef _WIN32

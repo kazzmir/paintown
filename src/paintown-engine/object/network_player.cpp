@@ -120,7 +120,7 @@ void NetworkPlayer::drawFront( Graphics::Bitmap * work, int rel_x ){
 
     int hasIcon = icon ? icon->getWidth() : 0;
 
-    const Font & player_font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & player_font = Font::getDefaultFont(20, 20 );
     const string & name = getName();
     int nameHeight = player_font.getHeight( name ) / 2;
     nameHeight = 20 / 2;

@@ -12,8 +12,6 @@ namespace Global{
 	
 extern const unsigned int MagicId;
 
-extern const Filesystem::RelativePath DEFAULT_FONT;
-
 /* The current version */
 int getVersion();
 /* The current version as a string */

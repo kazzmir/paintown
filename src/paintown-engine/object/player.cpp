@@ -480,7 +480,7 @@ void Player::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
 /* present the current input to the user */
 void Player::drawButtons(Graphics::Bitmap * work, int x, int y){
     Graphics::Color color = Graphics::makeColor(255, 255, 255);
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 10, 10);
+    const Font & font = Font::getDefaultFont(10, 10);
     y -= 10;
     for (deque<Input::PaintownInput>::iterator it = key_cache.begin(); it != key_cache.end(); it++){
         Input::PaintownInput key = *it;
@@ -526,7 +526,7 @@ void Player::drawFront(Graphics::Bitmap * work, int rel_x){
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );
 	// const Font & player_font = Font::getFont( NAME_FONT );
-	const Font & player_font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+	const Font & player_font = Font::getDefaultFont(20, 20 );
 	const string & name = getName();
 	int nameHeight = player_font.getHeight(name) / 2;
 	nameHeight = 20 / 2;

@@ -382,7 +382,7 @@ public:
         counter += 1;
 
         /* TODO: maybe change the font here */
-        // const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+        // const Font & font = Font::getDefaultFont(20, 20);
         // area.act(font);
         gradient.update();
         // handleInput();
@@ -531,7 +531,7 @@ public:
                                area.getArea().getWidth() - area.getTransforms().getRadius(),
                                area.getArea().getHeight() - area.getTransforms().getRadius());
         // space.clear();
-        // const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+        // const Font & font = Font::getDefaultFont(20, 20);
         // listMovements(space, selected);
         int margin = 180;
         int playerX = space.getWidth() - margin - area.getTransforms().getRadius();

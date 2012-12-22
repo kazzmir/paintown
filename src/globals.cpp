@@ -19,8 +19,6 @@ const int MIN_WORLD_Z = 160;
 const int MAX_WORLD_Z = 232;
 */
 
-const Filesystem::RelativePath Global::DEFAULT_FONT = Filesystem::RelativePath("fonts/arial.ttf");
-
 namespace Global{
     int do_shutdown = 0;
 }

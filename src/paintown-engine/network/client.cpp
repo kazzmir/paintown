@@ -622,7 +622,7 @@ void networkClient(){
                                 InputManager::waitForRelease(input, InputSource(), Action);
                                 runClient(nameInput.getText(), hostInput.getText(), portInput.getText());
                             } catch (const NetworkException & e){
-                                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+                                const Font & font = Font::getDefaultFont(20, 20);
                                 popup(font, e.getMessage());
                                 InputManager::waitForRelease(input, InputSource(), Action);
                                 InputManager::waitForPress(input, InputSource(), Action);
@@ -673,7 +673,7 @@ void networkClient(){
         void draw(const Graphics::Bitmap & work){
             if (state.draw){
                 state.draw = false;
-                const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+                const Font & font = Font::getDefaultFont(20, 20 );
                 background.Blit(work);
 
                 const int inputBoxLength = font.textLength("a") * 40;

@@ -133,7 +133,7 @@ enterPressed( false ){
 
     lineEdit->setText("Hi!");
     // lineEdit->setFont(Menu::getFont());
-    lineEdit->setFont(& Font::getFont(Global::DEFAULT_FONT, 20, 20));
+    lineEdit->setFont(& Font::getDefaultFont(20, 20));
     lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
     lineEdit->hookKey(Keyboard::Key_TAB, next_focus, this);
     lineEdit->setFocused(true);
@@ -221,7 +221,7 @@ bool ChatClient::sendMessage( const string & message ){
 }
 
 void ChatClient::popup(const Graphics::Bitmap & work, const std::string & str ){
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getDefaultFont(20, 20 );
     int length = font.textLength( str.c_str() ) + 20;
     int height = font.getHeight() * 2;
     Graphics::Bitmap area( work, work.getWidth() / 2 - length / 2, work.getHeight() / 2, length, height );
@@ -267,7 +267,7 @@ void ChatClient::handleInput( Keyboard & keyboard ){
        }
        */
 
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getDefaultFont(20, 20 );
     lineEdit->act(font);
 
     if ( lineEdit->didChanged( editCounter ) ){
@@ -301,7 +301,7 @@ void ChatClient::next_focus(void * self){
 }
 	
 bool ChatClient::logic(){
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20);
+    const Font & font = Font::getDefaultFont(20, 20);
     lineEdit->act(font);
     if (lineEdit->didChanged(editCounter)){
         needUpdate();
@@ -337,7 +337,7 @@ bool ChatClient::logic(){
 }
 
 void ChatClient::drawInputBox( int x, int y, const Graphics::Bitmap & work ){
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getDefaultFont(20, 20 );
 
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     work.translucent().rectangleFill( x, y, x + messages.getWidth(), y + font.getHeight() + 1, Graphics::makeColor( 0, 0, 0 ) );
@@ -371,7 +371,7 @@ void ChatClient::drawBuddies( const Graphics::Bitmap & area, int x, int y, const
 void ChatClient::draw( const Graphics::Bitmap & work ){
     int start_x = 20;
     int start_y = 20;
-    const Font & font = Font::getFont(Global::DEFAULT_FONT, 20, 20 );
+    const Font & font = Font::getDefaultFont(20, 20 );
     background->Blit( work );
     messages.draw( start_x, start_y, work, font );
     // drawInputBox( start_x, start_y + messages.getHeight() + 5, work );

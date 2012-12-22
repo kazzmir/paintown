@@ -46,7 +46,7 @@ void NamePlacer::doPlacement( int & x, int & y, int & id ){
 	}
 	/* give the place some buffer room to go away */
 	places[ id ] = 10;
-	const Font & ft = Font::getFont(Global::DEFAULT_FONT);
+	const Font & ft = Font::getDefaultFont();
 	x = 1 + (count&1) * 170;
 	y = 1 + (count/2) * ft.getHeight() / 2;
 }
