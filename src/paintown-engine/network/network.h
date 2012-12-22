@@ -5,6 +5,8 @@
 
 namespace Network{
 
+extern const unsigned int MagicId;
+
 struct Message{
     Message();
     Message( const Message & m );

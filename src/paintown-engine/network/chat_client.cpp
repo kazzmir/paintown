@@ -6,7 +6,7 @@
 #include "chat_client.h"
 #include "chat.h"
 #include "util/init.h"
-#include "globals.h"
+#include "util/version.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-source.h"
 #include "util/font.h"
@@ -17,6 +17,9 @@
 #include "util/input/input-manager.h"
 #include "util/input/input-map.h"
 #include "util/sound/sound.h"
+
+/* FIXME: only for title screen */
+#include "globals.h"
 
 using namespace std;
 
@@ -113,8 +116,8 @@ enterPressed( false ){
         Network::Message nameMessage;
         nameMessage.path = name;
         nameMessage << HELLO;
-        nameMessage << Global::MagicId;
-        nameMessage << Global::getVersion();
+        nameMessage << Network::MagicId;
+        nameMessage << Version::getVersion();
         nameMessage.send(socket);
     } catch (const Network::NetworkException & n){
         debug( 0 ) << "Could not send username: " << n.getMessage() << endl;

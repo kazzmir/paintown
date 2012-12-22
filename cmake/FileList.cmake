@@ -7,7 +7,6 @@ src/asteroids/game.cpp
 src/asteroids/argument.cpp)
 
 set(FACTORY_SRC
-src/factory/font_factory.cpp
 src/factory/font_render.cpp
 src/factory/collector.cpp)
 

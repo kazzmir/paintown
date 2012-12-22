@@ -5,7 +5,6 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "font_render.h"
-#include "font_factory.h"
 
 using namespace std;
 

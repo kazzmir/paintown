@@ -10,28 +10,6 @@
 
 using namespace std;
 
-static int major_version = 3;
-static int minor_version = 6;
-static int micro_version = 1;
-
-/*
-const int MIN_WORLD_Z = 160;
-const int MAX_WORLD_Z = 232;
-*/
-
-int Global::getVersion(int major, int minor, int micro){
-    return major * 1000 + minor * 100 + micro;
-}
-
-int Global::getVersion(){
-    return getVersion(major_version, minor_version, micro_version);
-}
-
-string Global::getVersionString(){
-    ostringstream str;
-    str << major_version << "." << minor_version << "." << micro_version;
-    return str.str();
-}
 
 void Global::showTitleScreen(){
     Graphics::Bitmap s(*Storage::instance().open(titleScreen()));
@@ -44,8 +22,6 @@ const Filesystem::AbsolutePath Global::titleScreen(){
 
 namespace Global{
 
-/* just some random number I picked out of thin air */
-const unsigned int MagicId = 0x0dff2110;
 
 /*
 int getScreenWidth(){

@@ -33,6 +33,9 @@ using std::vector;
 
 namespace Network{
 
+/* just some random number I picked out of thin air */
+const unsigned int MagicId = 0x0dff2110;
+
 static int messageSize(Message const & message){
     return message.size();
 }

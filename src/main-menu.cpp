@@ -44,7 +44,7 @@ static const int DEFAULT_DEBUG = 0;
 #include "util/tokenreader.h"
 #include "util/token.h"
 #include "util/parameter.h"
-#include "globals.h"
+#include "util/version.h"
 #include "util/debug.h"
 #include "util/configuration.h"
 #include "util/init.h"
@@ -146,7 +146,7 @@ public:
     }
     
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        Global::debug(0) << "Version " << Global::getVersionString() << endl;
+        Global::debug(0) << "Version " << Version::getVersionString() << endl;
         exit(0);
     }
 };
@@ -698,6 +698,8 @@ int paintown_main(int argc, char ** argv){
     // NetworkJoin networkJoin;
     // MugenInstant mugenInstant;
 
+    Version::setVersion(3, 6, 1);
+
     System::startMemoryUsage();
 
     Global::setDebug(DEFAULT_DEBUG);
@@ -771,7 +773,7 @@ int paintown_main(int argc, char ** argv){
 
     Global::debug(0) << "Debug level: " << Global::getDebug() << endl;
     
-    Global::debug(0) << "Paintown version " << Global::getVersionString() << endl;
+    Global::debug(0) << "Paintown version " << Version::getVersionString() << endl;
 
     /* time how long init takes */
     /* FIXME: we count time using SDL_GetTicks or whatever in allegro but it will

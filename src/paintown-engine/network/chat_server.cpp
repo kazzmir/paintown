@@ -12,6 +12,7 @@
 #include "util/exceptions/load_exception.h"
 #include "util/exceptions/exception.h"
 #include "globals.h"
+#include "util/version.h"
 #include "util/init.h"
 #include "util/input/input-source.h"
 #include "util/gui/lineedit.h"
@@ -364,7 +365,7 @@ void ChatServer::stopAccepting(){
 }
 
 static bool checkVersion(int version){
-    if (version == Global::getVersion()){
+    if (version == Version::getVersion()){
         return true;
     }
 
@@ -397,7 +398,7 @@ void ChatServer::addConnection(Network::Socket s){
         }
         unsigned int magic;
         hello >> magic;
-        if (magic != Global::MagicId){
+        if (magic != Network::MagicId){
             ostringstream out;
             out << "Invalid magic id: " << magic;
             throw LoadException(__FILE__, __LINE__, out.str());
