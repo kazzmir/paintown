@@ -16,7 +16,7 @@
 #include "util/exceptions/load_exception.h"
 #include "util/file-system.h"
 #include "util/debug.h"
-#include "globals.h"
+#include "util/message-queue.h"
 
 using namespace std;
 
@@ -165,7 +165,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if (cached[cachePath] == NULL){
                     cached[cachePath] = new Paintown::Item(block->getPath(), block->getStimulation());
                     Global::debug(1) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
 
                 return makeItem((Paintown::Item *) cached[cachePath]->copy(), block);
@@ -175,7 +175,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if (cached[cachePath] == NULL){
                     cached[cachePath] = new Paintown::BreakableItem(block->getPath(), block->getStimulation());
                     Global::debug(1) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
 
                 return makeBreakableItem((Paintown::BreakableItem *) cached[cachePath]->copy(), block);
@@ -185,7 +185,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if (cached[cachedPath] == NULL){
                     cached[cachedPath] = new Paintown::NetworkCharacter(block->getPath(), 0);
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
                 return makeNetworkCharacter((Paintown::NetworkCharacter *) cached[cachedPath]->copy(), block);
             }
@@ -194,7 +194,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if (cached[cachedPath] == NULL){
                     cached[cachedPath] = new Paintown::NetworkPlayer( block->getPath(), 0 );
                     Global::debug(1) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
                 return makeNetworkPlayer( (Paintown::NetworkPlayer *) cached[cachedPath]->copy(), block );
             }
@@ -203,7 +203,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new Paintown::Actor( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
 
                 return makeActor( (Paintown::Actor *) cached[cachedPath]->copy(), block );
@@ -213,7 +213,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new Paintown::Enemy(block->getPath());
                     Global::debug(1) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
                 /* Hack! Set the map here so the original cached object stores
                  * remaps, thus saving time later
@@ -226,7 +226,7 @@ Paintown::Object * ObjectFactory::makeObject(const Util::ReferenceCount<BlockObj
                 if ( cached[cachedPath] == NULL ){
                     cached[cachedPath] = new Paintown::Cat( block->getPath() );
                     Global::debug( 1 ) << "Cached " << block->getPath().path() << endl;
-                    Global::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
+                    MessageQueue::info("Cached " + Storage::instance().cleanse(block->getPath()).path());
                 }
 
                 return makeCat( (Paintown::Cat *) cached[cachedPath]->copy(), block );

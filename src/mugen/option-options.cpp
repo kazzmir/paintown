@@ -1342,7 +1342,7 @@ public:
 
         Context state;
         /* an empty Info object, we don't really care about it */
-        Loader::Info level;
+        Loader::Info level("Finding motifs", Filesystem::AbsolutePath());
         Loader::loadScreen(state, level, Loader::SimpleCircle);
 
         if (state.list.size() <= 1){

@@ -462,10 +462,7 @@ static PaintownUtil::ReferenceCount<PlayerLoader> preLoadCharacters(CharacterTea
 
 void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen::Stage & stage){
     try{
-        Loader::Info info;
-        Graphics::Bitmap background(*Graphics::screenParameter.current(), true);
-        info.setBackground(&background);
-        info.setLoadingMessage("Loading...");
+        Loader::Info info("Loading...", Filesystem::AbsolutePath());
         info.setPosition(25, 25);
 
         class Context: public Loader::LoadingContext {

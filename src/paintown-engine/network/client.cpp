@@ -10,10 +10,11 @@
 #include "util/input/input-manager.h"
 #include "util/input/text-input.h"
 #include "util/init.h"
-#include "globals.h"
+#include "util/message-queue.h"
 #include "util/funcs.h"
 #include "util/font.h"
 #include "util/file-system.h"
+#include "globals.h"
 #include "../level/utils.h"
 #include "factory/font_render.h"
 #include "../factory/object_factory.h"
@@ -100,20 +101,20 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
         Paintown::Player * player;
 
         virtual void load(){
-            Global::info("Create player " + playerPath.path());
+            MessageQueue::info("Create player " + playerPath.path());
             player = new Paintown::Player(playerPath, Util::ReferenceCount<InputSource>(new InputSource(0, 0)));
             player->setMap(remap);
             player->ignoreLives();
             Filesystem::RelativePath cleanPath = Storage::instance().cleanse(playerPath);
 
-            Global::info("Notify server");
+            MessageQueue::info("Notify server");
             /* send the path of the chosen player */
             Message create;
             create << World::CREATE_CHARACTER;
             create.path = cleanPath.path();
             create.send(socket);
 
-            Global::info("Waiting for id from server");
+            MessageQueue::info("Waiting for id from server");
             /* get the id from the server */
             Message myid(socket);
             int type;
@@ -128,7 +129,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
             } else {
                 Global::debug(0) << "Bogus message, expected SET_ID(" << World::SET_ID << ") got " << type << endl;
             }
-            Global::info("Received an id");
+            MessageQueue::info("Received an id");
         }
     };
 
@@ -191,7 +192,7 @@ static void playGame(Socket socket){
                     next >> id >> alliance;
                     if (uniqueId(players, id)){
                         Global::debug(1) << "Create a new network player id " << id << " alliance " << alliance << endl;
-                        Global::info("Create character " + next.path);
+                        MessageQueue::info("Create character " + next.path);
                         Paintown::Character * c = new Paintown::NetworkPlayer(Storage::instance().find(Filesystem::RelativePath(next.path)), alliance);
                         c->setId(id);
                         ((Paintown::NetworkCharacter *)c)->alwaysShowName();
@@ -205,7 +206,7 @@ static void playGame(Socket socket){
                     next >> id;
                     string name = next.path;
                     clientNames[id] = name;
-                    Global::info("Player " + name);
+                    MessageQueue::info("Player " + name);
                 }
 
                 void loadLevel(Message & next){
@@ -214,7 +215,7 @@ static void playGame(Socket socket){
                     this->world = new NetworkWorldClient(socket, players, level, player->getId(), clientNames);
                     Music::changeSong();
 
-                    Global::info("Waiting for ok from server");
+                    MessageQueue::info("Waiting for ok from server");
                     waitForServer(socket);
 
                     this->world->startMessageHandler();

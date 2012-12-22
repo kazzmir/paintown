@@ -21,6 +21,7 @@
 #include "util/file-system.h"
 #include "util/timedifference.h"
 #include "util/debug.h"
+#include "util/message-queue.h"
 #include "factory/font_render.h"
 
 #include "animation.h"
@@ -1720,7 +1721,7 @@ static Filesystem::AbsolutePath findStateFile(const Filesystem::AbsolutePath & b
         
 void Character::loadStateFile(const Filesystem::AbsolutePath & base, const string & path){
     Filesystem::AbsolutePath full = findStateFile(base, path);
-    Global::info("Reading " + Storage::instance().cleanse(full).path());
+    MessageQueue::info("Reading " + Storage::instance().cleanse(full).path());
     PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Storage::instance().cleanse(full));
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
@@ -1833,7 +1834,7 @@ void Character::load(int useAct){
     }
 #endif
 
-    Global::info("Loading " + getStateData().location.getFilename().path());
+    MessageQueue::info("Loading " + getStateData().location.getFilename().path());
     
     // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
     getStateData().baseDir = getStateData().location.getDirectory();

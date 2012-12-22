@@ -9,7 +9,7 @@
 #include "util/file-system.h"
 #include "util/graphics/gradient.h"
 #include "factory/font_render.h"
-#include "globals.h"
+#include "util/message-queue.h"
 #include "../object/effect.h"
 #include "../object/enemy.h"
 #include "../object/player.h"
@@ -305,7 +305,7 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
 	}
 	*/
 
-    Global::info("Loading scenery");
+    MessageQueue::info("Loading scenery");
     Scene * s = NULL;
     if (randomLevel()){
         s = new RandomScene(path, *cacher);

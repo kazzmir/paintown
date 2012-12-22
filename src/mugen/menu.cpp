@@ -770,8 +770,7 @@ static void runNewMenu(Searcher & searcher){
         Exception::Base * exception;
     };
     
-    Loader::Info info;
-    info.setLoadingMessage("Loading M.U.G.E.N");
+    Loader::Info info("Loading M.U.G.E.N", Filesystem::AbsolutePath());
     Context menuLoader(searcher);
     Loader::loadScreen(menuLoader, info);
 

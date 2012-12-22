@@ -14,6 +14,7 @@
 #include "globals.h"
 #include "util/debug.h"
 #include "util/token.h"
+#include "util/events.h"
 #include "util/tokenreader.h"
 #include "util/file-system.h"
 #include "util/sound/music.h"
@@ -65,7 +66,7 @@ hasMusic(false){
         TokenView view = current->view();
         while (view.hasMore()){
             /* stop loading if a shutdown occurs */
-            if (Global::shutdown()){
+            if (Util::shutdown()){
                 throw ShutdownException();
             }
 

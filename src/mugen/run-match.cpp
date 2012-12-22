@@ -328,11 +328,11 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_F9, ShowFps);
             gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
 
-            Global::registerInfo(&messages);
+            MessageQueue::registerInfo(&messages);
         }
 
         virtual ~LogicDraw(){
-            Global::unregisterInfo(&messages);
+            MessageQueue::unregisterInfo(&messages);
         }
 
         InputMap<MugenInput> gameInput;

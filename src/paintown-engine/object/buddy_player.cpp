@@ -3,6 +3,7 @@
 #include "../game/nameplacer.h"
 #include "animation.h"
 #include "util/font.h"
+#include "util/message-queue.h"
 #include "../game/world.h"
 #include "globals.h"
 #include "util/funcs.h"
@@ -271,7 +272,7 @@ void BuddyFuture::compute(){
     Character * player = (Character*) playerFuture->get();
     Object * buddy = new BuddyPlayer(player, *base);
     buddy->setObjectId(id);
-    Global::info("Loaded buddy " + Storage::instance().cleanse(path).path());
+    MessageQueue::info("Loaded buddy " + Storage::instance().cleanse(path).path());
     set(buddy);
 }
 

@@ -13,6 +13,7 @@
 #include "util/init.h"
 #include "../level/utils.h"
 #include "util/loading.h"
+#include "util/message-queue.h"
 #include "util/sound/music.h"
 #include "network_world.h"
 #include "../object/alliance.h"
@@ -269,7 +270,7 @@ static int playerAlliance(){
 
 static void waitAllOk(const vector<Socket> & sockets){
     Global::debug(1) << "Waiting for an ok from all clients" << endl;
-    Global::info("Waiting for all clients..");
+    MessageQueue::info("Waiting for all clients..");
     for (vector<Socket>::const_iterator it = sockets.begin(); it != sockets.end(); it++){
         bool done = false;
         while (!done){
@@ -338,7 +339,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
     for (vector<Client*>::const_iterator it = clients.begin(); it != clients.end(); it++){
         Client * client = *it;
         debug(1) << "Setting up client " << client->getName() << endl;
-        Global::info("Setting up client " + client->getName());
+        MessageQueue::info("Setting up client " + client->getName());
         Socket socket = client->getSocket();
         sockets.push_back(socket);
         debug(1) << "Read character path from " << id << endl;
@@ -347,7 +348,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
         message >> type;
         if (type == World::CREATE_CHARACTER){
             int alliance = playerAlliance();
-            Global::info(" creating " + message.path);
+            MessageQueue::info(" creating " + message.path);
             Paintown::Character * client_character = new Paintown::NetworkPlayer(Storage::instance().find(Filesystem::RelativePath(message.path)), alliance);
             characterToSocket[client_character] = socket;
             /* FIXME: Don't need this line now that NetworkPlayer exists.
@@ -379,7 +380,7 @@ static void createClients(const vector<Client*> & clients, vector<Network::Socke
         }
     }
 
-    Global::info("Notify all clients");
+    MessageQueue::info("Notify all clients");
     for (vector<Message>::iterator it = clientInfos.begin(); it != clientInfos.end(); it++){
         sendToAll(sockets, *it);
     }

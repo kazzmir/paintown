@@ -28,7 +28,7 @@
 #include "util/tokenreader.h"
 #include "util/input/input-source.h"
 #include "util/input/keyboard.h"
-#include "globals.h"
+#include "util/message-queue.h"
 #include "../script/script.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/exceptions/exception.h"
@@ -960,13 +960,13 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         TimeDifference loadingTime;
         loadingTime.startTime();
 
-        Global::clearInfo();
-        Global::info("Setting up world");
+        MessageQueue::clearInfo();
+        MessageQueue::info("Setting up world");
         GameContext context(futurePlayers, Filesystem::RelativePath(level), setup_players);
         Loader::loadScreen(context, Level::convert(levelInfo));
         context.failure();
-        Global::info("World setup");
-        Global::info(funnyGo());
+        MessageQueue::info("World setup");
+        MessageQueue::info(funnyGo());
 
         Keyboard::pushRepeatState(false);
 

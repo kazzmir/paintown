@@ -20,19 +20,14 @@ std::string getVersionString();
 /* Turn some major.minor.micro into a single version number for comparisons */
 int getVersion(int major, int minor, int micro);
 
-bool shutdown();
-
 void showTitleScreen();
 const Filesystem::AbsolutePath titleScreen();
 
-void registerInfo(MessageQueue *);
-void unregisterInfo(MessageQueue *);
-void info(const std::string & str);
-void clearInfo();
-
 /* the real, physical screen size */
+/*
 int getScreenWidth();
 int getScreenHeight();
+*/
 
 }
 

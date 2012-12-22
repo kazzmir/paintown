@@ -18,6 +18,7 @@
 #include "object.h"
 #include "object_messages.h"
 #include "player.h"
+#include "util/message-queue.h"
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
 #include "util/input/input-source.h"
@@ -1185,13 +1186,13 @@ PlayerFuture::~PlayerFuture(){
 
 void PlayerFuture::compute(){
     string look = Storage::instance().cleanse(path).path();
-    Global::info("Loading " + look);
+    MessageQueue::info("Loading " + look);
     Player * player = new Player(path, source);
     player->setInvincible(invincible);
     player->setMap(remap);
     player->setObjectId(-1);
     player->setLives(lives);
-    Global::info("Loaded " + look);
+    MessageQueue::info("Loaded " + look);
     set(player);
 }
 

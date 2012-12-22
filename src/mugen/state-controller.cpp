@@ -1,4 +1,5 @@
 #include "util/graphics/bitmap.h"
+#include "util/message-queue.h"
 #include "ast/all.h"
 #include "state-controller.h"
 #include "util/parameter.h"
@@ -7106,7 +7107,7 @@ public:
             }
         }
 
-        Global::info(out.str());
+        MessageQueue::info(out.str());
     }
 
     StateController * deepCopy() const {

@@ -162,10 +162,9 @@ LevelInfo readLevel(const Token * level){
 }
 
 Loader::Info convert(const LevelInfo & info){
-    Loader::Info loader;
+    Loader::Info loader(info.loadingMessage(), Filesystem::AbsolutePath());
     loader.setPosition(info.getPositionX(), info.getPositionY());
     loader.setBackground(info.getBackground());
-    loader.setLoadingMessage(info.loadingMessage());
     return loader;
 }
 
