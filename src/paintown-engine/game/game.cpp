@@ -15,7 +15,7 @@
 #include "util/menu/optionfactory.h"
 #include "util/timedifference.h"
 #include "util/menu/menu_option.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "../object/object.h"
 #include "../object/character.h"
 #include "../object/player.h"

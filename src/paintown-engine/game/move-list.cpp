@@ -10,7 +10,7 @@
 #include "util/input/input-map.h"
 #include "util/input/input-manager.h"
 #include "util/menu/menu.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/graphics/bitmap.h"
 #include "util/init.h"
 

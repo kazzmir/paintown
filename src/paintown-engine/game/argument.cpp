@@ -2,7 +2,7 @@
 #include "game.h"
 #include "mod.h"
 #include "util/regex.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/debug.h"
 #include "paintown-engine/level/utils.h"
 #include "paintown-engine/object/player.h"

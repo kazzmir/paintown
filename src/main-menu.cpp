@@ -46,7 +46,7 @@ static const int DEFAULT_DEBUG = 0;
 #include "util/parameter.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/init.h"
 #include "util/main.h"
 #include "util/argument.h"

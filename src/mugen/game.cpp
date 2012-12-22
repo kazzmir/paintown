@@ -6,7 +6,7 @@
 #include <sstream>
 #include "util/font.h"
 #include "util/token.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "globals.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-manager.h"

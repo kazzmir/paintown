@@ -9,7 +9,7 @@
 #include "util/font.h"
 #include "util/funcs.h"
 #include "factory/font_render.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "globals.h"
 #include "../game/nameplacer.h"
 #include "../game/world.h"

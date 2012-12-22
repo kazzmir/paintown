@@ -1,5 +1,4 @@
 set(BASE_SRC 
-src/configuration.cpp
 src/globals.cpp
 src/main-menu.cpp)
 

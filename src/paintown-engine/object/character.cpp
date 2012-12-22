@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-#include "configuration.h"
+#include "util/configuration.h"
 #include "animation.h"
 #include "animation_trail.h"
 #include "character.h"

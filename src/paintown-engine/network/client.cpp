@@ -32,7 +32,7 @@
 #include "util/loading.h"
 #include "chat_client.h"
 #include "../network/network.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/system.h"
 #include <string>
 #include <sstream>

@@ -10,7 +10,7 @@
 #include "util/graphics/bitmap.h"
 #include "openbor/mod.h"
 #include "globals.h"
-#include "configuration.h"
+#include "util/configuration.h"
 
 using namespace std;
 

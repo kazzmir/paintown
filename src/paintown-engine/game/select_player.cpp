@@ -32,7 +32,7 @@
 
 #include "util/gui/animation.h"
 
-#include "configuration.h"
+#include "util/configuration.h"
 
 using namespace std;
 

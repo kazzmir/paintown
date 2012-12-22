@@ -38,7 +38,7 @@
 #include "../game/options.h"
 #include "util/menu/font-info.h"
 
-#include "configuration.h"
+#include "util/configuration.h"
 
 using namespace std;
 

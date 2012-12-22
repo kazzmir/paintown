@@ -7,7 +7,7 @@
 #include "../level/utils.h"
 #include "mod.h"
 #include "util/menu/menu.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "game.h"
 #include "util/file-system.h"
 #include "util/funcs.h"

@@ -4,7 +4,7 @@
 #include "util/menu/menu.h"
 #include "util/exceptions/load_exception.h"
 #include "util/loading.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "options.h"
 #include "game.h"
 #include "menu.h"

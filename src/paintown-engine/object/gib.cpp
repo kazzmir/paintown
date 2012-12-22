@@ -3,7 +3,7 @@
 #include "object_nonattack.h"
 #include "gib.h"
 #include "util/funcs.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "globals.h"
 #include <math.h>
 

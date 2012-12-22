@@ -12,7 +12,7 @@ Do not try to make profit from this or you will surely die.
 #include "game.h"
 
 #include "globals.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/graphics/bitmap.h"
 #include "util/debug.h"
 #include "util/pointer.h"

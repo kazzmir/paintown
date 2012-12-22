@@ -3,7 +3,7 @@
 #include "versus_player.h"
 #include "util/exceptions/load_exception.h"
 #include "animation.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/funcs.h"
 #include "globals.h"
 #include "util/input/input.h"

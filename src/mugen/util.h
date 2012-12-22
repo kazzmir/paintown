@@ -7,7 +7,7 @@
 #include <list>
 #include <queue>
 #include "exception.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "sound.h"
 #include "sprite.h"
 #include "common.h"
