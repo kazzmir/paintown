@@ -703,6 +703,7 @@ int paintown_main(int argc, char ** argv){
     System::startMemoryUsage();
 
     Global::setDebug(DEFAULT_DEBUG);
+    Global::setDefaultDebugContext("paintown");
     vector<const char *> all_args;
 
 #ifdef PS3
