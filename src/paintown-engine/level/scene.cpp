@@ -4,7 +4,6 @@
 
 #include "util/graphics/bitmap.h"
 #include "block.h"
-#include "../object/heart.h"
 #include "util/exceptions/load_exception.h"
 #include "util/funcs.h"
 #include "../object/object.h"
@@ -39,6 +38,7 @@ Panel::~Panel(){
 
 Scene::Scene(const Filesystem::AbsolutePath & filename, const Level::Cacher & cacher):
 background(NULL),
+enemyCount(0),
 block_length(0),
 minimum_z(0),
 maximum_z(0),
@@ -244,17 +244,6 @@ int Scene::getFinished() const {
     return block_length + current_block->getFinished();
 }
 
-void Scene::clearHearts(){
-    for (vector<Heart *>::iterator it = hearts.begin(); it != hearts.end(); ){
-        Heart * h = *it;
-        if (!h->getAlive()){
-            // delete h;
-            it = hearts.erase(it);
-        } else
-            it++;
-    }
-}
-
 void Scene::playIntro(){
     try{
         if (intro != Filesystem::RelativePath("")){
@@ -308,7 +297,7 @@ bool Scene::canContinue(int x){
      *    player is past the boundary
      */
     return (current_block->isContinuous() && passedBoundary(x)) ||
-           (hearts.empty() && passedBoundary(x));
+           (numberOfEnemies() == 0 && passedBoundary(x));
 }
 
 /* put the enemy into a vector so that it can be added into the game objects
@@ -316,8 +305,21 @@ bool Scene::canContinue(int x){
  * the logic() method will corrupt the iterators.
  */
 void Scene::addEnemy(Paintown::Enemy * const obj){
-    hearts.push_back(obj->getHeart());
+    enemyCount += 1;
+    // obj->created(*this);
+    // added_objects.push_back(obj);
+}
+
+void Scene::addObject(Paintown::Object * obj){
     added_objects.push_back(obj);
+}
+
+void Scene::removeEnemy(Paintown::Enemy * const obj){
+    enemyCount -= 1;
+}
+    
+int Scene::numberOfEnemies() const {
+    return enemyCount;
 }
 
 void Scene::doTriggers(){
@@ -333,9 +335,7 @@ void Scene::doTriggers(){
     }
 }
 
-vector<Heart*> Scene::createObjects(const vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, vector<Paintown::Object*> * out){
-    vector<Heart *> hearts;
-
+void Scene::createObjects(const vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, vector<Paintown::Object*> * out){
     for (vector<Util::ReferenceCount<BlockObject> >::const_iterator it = blockObjects.begin(); it != blockObjects.end(); it++){
         Util::ReferenceCount<BlockObject> obj = *it;
 
@@ -344,11 +344,7 @@ vector<Heart*> Scene::createObjects(const vector<Util::ReferenceCount<BlockObjec
             continue;
         }
 
-        /* does this violate some OOP principle? oh well */
-        if (obj->getType() == ObjectFactory::EnemyType){
-            Heart * h = ((Paintown::Enemy *)newobj)->getHeart();
-            hearts.push_back(h);
-        }
+        newobj->created(*this);
 
         // newobj->moveX( total_length );
         newobj->moveRight(length);
@@ -363,11 +359,11 @@ vector<Heart*> Scene::createObjects(const vector<Util::ReferenceCount<BlockObjec
 
     }
 
-    return hearts;
+    // return hearts;
 }
 
 void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
-    clearHearts();
+    // clearHearts();
 
     if (canContinue(min_x)){
         advanceBlocks(blockNumber + 1);
@@ -379,8 +375,8 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
     if (newBlock && objects != NULL){
         newBlock = false;
         // Global::debug(0) << "Creating new objects" << endl;
-        vector<Heart *> new_hearts = createObjects(current_block->getObjects(), block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects);
-        hearts.insert(hearts.end(), new_hearts.begin(), new_hearts.end());
+        createObjects(current_block->getObjects(), block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects);
+        // hearts.insert(hearts.end(), new_hearts.begin(), new_hearts.end());
         objects->insert(objects->end(), added_objects.begin(), added_objects.end());
         added_objects.clear();
     }
@@ -460,7 +456,7 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
         atmosphere->drawScreen(work, x);
     }
 
-    if (hearts.empty() && !passedBoundary(x)){
+    if (numberOfEnemies() == 0 && !passedBoundary(x)){
         if (arrow_blink > 5){
             arrow->draw(work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work);
         }

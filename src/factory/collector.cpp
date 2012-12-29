@@ -1,6 +1,5 @@
 #include "util/graphics/bitmap.h"
 #include "collector.h"
-#include "paintown-engine/factory/heart_factory.h"
 #include "paintown-engine/game/nameplacer.h"
 #include "util/font_factory.h"
 #include "font_render.h"
@@ -24,7 +23,6 @@ Collector::Collector(){
 Collector::~Collector(){
     ObjectFactory::destroy();
     NamePlacer::destroy();
-    HeartFactory::destroy();
     FontFactory::destroy();
     FontRender::destroy();
     Graphics::Bitmap::cleanupTemporaryBitmaps();

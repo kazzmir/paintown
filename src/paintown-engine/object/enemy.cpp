@@ -9,11 +9,10 @@
 #include "util/funcs.h"
 #include "util/font.h"
 #include "factory/font_render.h"
+#include "../level/scene.h"
 #include "../game/nameplacer.h"
 #include "alliance.h"
 #include "util/debug.h"
-#include "heart.h"
-#include "../factory/heart_factory.h"
 #include "util/file-system.h"
 #include "object.h"
 #include "../game/world.h"
@@ -57,8 +56,6 @@ aggression( NORMAL_AGRESSION ){
 }
 
 void Enemy::constructSelf(){
-    // heart = new Heart();
-    heart = HeartFactory::createHeart();
     want_path = false;
     show_name_time = 0;
     show_life = getHealth();
@@ -66,7 +63,6 @@ void Enemy::constructSelf(){
 }
 
 Enemy::~Enemy(){
-    heart->setAlive( false );
 }
 	
 Object * Enemy::copy(){
@@ -115,6 +111,11 @@ void Enemy::drawFront( Graphics::Bitmap * work, int rel_x ){
 		drawLifeBar( icon_x + x + 1, y + height + 1, work );
 	}
 }
+        
+void Enemy::died(const Util::ReferenceCount<Scene> & scene, std::vector< Object * > & objects){
+    scene->removeEnemy(this);
+    Character::died(scene, objects);
+}
 
 static inline double min( double a, double b ){
 	return a < b ? a : b;
@@ -137,6 +138,10 @@ static double velocity( double x1, double x2, double speed ){
 static bool closeFloat(double a, double b){
     const double epsilon = 0.0001;
     return fabs(a-b) < epsilon;
+}
+        
+void Enemy::created(Scene & scene){
+    scene.addEnemy(this);
 }
 
 /* returns the closest object in the X plane */

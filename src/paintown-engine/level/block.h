@@ -6,7 +6,6 @@
 
 class BlockObject;
 class Token;
-class Heart;
 
 namespace Paintown{
     class Object;
@@ -60,7 +59,7 @@ public:
 
     bool empty();
 
-    std::vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, std::vector< Paintown::Object * > * list );
+    // std::vector< Heart * > createObjects( int total_length, int min_x, int max_x, int min_z, int max_z, std::vector< Paintown::Object * > * list );
 
     virtual ~Block();
 

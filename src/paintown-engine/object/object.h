@@ -271,6 +271,9 @@ public:
 		virtualz = z;
 	}
 
+        /* Called when this object is instantiated */
+        virtual void created(Scene & scene);
+
 	/* this object died. this object can add arbitrary objects
 	 * into 'objects'
 	 */

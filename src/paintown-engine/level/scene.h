@@ -46,6 +46,8 @@ public:
         return description;
     }
 
+    int numberOfEnemies() const;
+
     inline int getMinimumZ() const {
         return minimum_z;
     }
@@ -62,11 +64,14 @@ public:
         return current_block;
     }
 
-    std::vector<Heart*> createObjects(const std::vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, std::vector<Paintown::Object*> * out);
+    void createObjects(const std::vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, std::vector<Paintown::Object*> * out);
 
     void startMusic();
 
+    void addObject(Paintown::Object * obj);
+
     void addEnemy(Paintown::Enemy * const obj);
+    void removeEnemy(Paintown::Enemy * const obj);
 
     virtual void advanceBlocks( int n );
 
@@ -119,7 +124,7 @@ protected:
     void calculateLength();
 
     /* erase dead hearts */
-    void clearHearts();
+    // void clearHearts();
 
     /* try to execute the triggers */
     void doTriggers();
@@ -137,8 +142,11 @@ protected:
     std::deque<Util::ReferenceCount<Block> > level_blocks;
     std::vector<Util::ReferenceCount<Block> > old_level_blocks;
 
-    std::vector< Heart * > hearts;
+    // std::vector< Heart * > hearts;
     std::vector<Paintown::Object*> added_objects;
+
+    /* current number of enemies */
+    int enemyCount;
 
     int scene_length;
 

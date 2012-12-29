@@ -140,8 +140,11 @@ void Object::faceObjectOpposite( const Object * o ){
 void Object::thrown(){
 }
 	
-void Object::moveX( const int x ){
-	moveX( (double)x );
+void Object::moveX(const int x){
+    moveX((double)x);
+}
+        
+void Object::created(Scene & scene){
 }
 
 void Object::died(const Util::ReferenceCount<Scene> & scene, vector<Object *> & objects){

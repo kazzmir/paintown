@@ -411,9 +411,12 @@ int AdventureWorld::levelLength() const {
     return scene->totalLength();
 }
         
+/* called from the scripting engine */
 void AdventureWorld::addEnemy(Paintown::Enemy * obj){
     if (scene != NULL){
-        scene->addEnemy(obj);
+        obj->created(*scene);
+        scene->addObject(obj);
+        // scene->addEnemy(obj);
     } else {
         /* scene should exist.. but just be safe */
         delete obj;

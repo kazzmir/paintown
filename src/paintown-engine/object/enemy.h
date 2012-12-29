@@ -3,7 +3,6 @@
 
 #include "character.h"
 #include "util/file-system.h"
-#include "heart.h"
 
 #include <string>
 #include <vector>
@@ -30,16 +29,22 @@ public:
 	
 	virtual void drawFront( Graphics::Bitmap * work, int rel_x );
 	
+        virtual void died(const Util::ReferenceCount<Scene> & scene, std::vector< Object * > & objects);
+	
 	virtual void hurt( int x );
 
 	virtual inline void setMaxHealth( int h ){
 		Character::setMaxHealth( h );
 		show_life = h;
 	}
+        
+        virtual void created(Scene & scene);
 
+        /*
 	virtual inline Heart * getHeart() const{
 		return heart;
 	}
+        */
 	
 	virtual ~Enemy();
 
@@ -61,7 +66,7 @@ protected:
 
 protected:
 
-	Heart * heart;
+	// Heart * heart;
 	int want_x, want_z;
 	bool want_path;
 

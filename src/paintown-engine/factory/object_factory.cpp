@@ -8,7 +8,6 @@
 #include "paintown-engine/object/network_player.h"
 #include "paintown-engine/object/actor.h"
 #include "paintown-engine/object/cat.h"
-#include "paintown-engine/object/heart.h"
 #include "paintown-engine/object/item.h"
 #include "paintown-engine/object/object.h"
 #include "object_factory.h"
@@ -140,7 +139,7 @@ Paintown::Object * ObjectFactory::makeEnemy( Paintown::Enemy * ret, const Util::
     ret->setTriggers(block->getTriggers());
     ret->setScriptObject(Script::Engine::getEngine()->createCharacter(ret));
 
-    hearts.push_back(ret->getHeart());
+    // hearts.push_back(ret->getHeart());
 
     return ret;
 }

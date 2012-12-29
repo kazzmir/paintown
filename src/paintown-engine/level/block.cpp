@@ -95,14 +95,15 @@ bool Block::empty(){
 	return objects.empty();
 }
 
+/*
 vector<Heart *> Block::createObjects(int total_length, int min_x, int max_x, int min_z, int max_z, vector< Paintown::Object * > * list){
     vector< Heart * > hearts;
 
-    /* to silence compiler warnings */
-    /*
+    / * to silence compiler warnings * /
+    / *
     min_x = min_x;
     max_x = max_x;
-    */
+    * /
 
     // cout<<"Total length = "<<total_length<<" Min_x = "<<min_x<<" Max_x = " << max_x << endl;
     // cout<<"Current block has "<<objects.size()<<" total = "<<total_length<<" min = "<<min_x<<" max_x = "<<max_x<<endl;
@@ -115,7 +116,7 @@ vector<Heart *> Block::createObjects(int total_length, int min_x, int max_x, int
             continue;
         }
 
-        /* does this violate some OOP principle? oh wel */
+        / * does this violate some OOP principle? oh wel * /
         if ( obj->getType() == ObjectFactory::EnemyType ){
             Heart * h = ((Paintown::Enemy *)newobj)->getHeart();
             hearts.push_back( h );
@@ -137,6 +138,7 @@ vector<Heart *> Block::createObjects(int total_length, int min_x, int max_x, int
 
     return hearts;
 }
+*/
 	
 Block::~Block(){
 }

@@ -17,7 +17,6 @@ namespace Paintown{
     class NetworkPlayer;
 }
 
-class Heart;
 class BlockObject;
 
 /* factory class for instantiating new objects from a BlockObject */
@@ -63,7 +62,7 @@ private:
 private:
         std::map< std::string, Paintown::Object * > cached;
         static ObjectFactory * factory;
-        std::vector< Heart * > hearts;
+        // std::vector< Heart * > hearts;
         int nextObjectId;
 };
 
