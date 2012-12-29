@@ -62,6 +62,8 @@ public:
         return current_block;
     }
 
+    std::vector<Heart*> createObjects(const std::vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, std::vector<Paintown::Object*> * out);
+
     void startMusic();
 
     void addEnemy(Paintown::Enemy * const obj);
@@ -165,6 +167,7 @@ protected:
     /* Paths to intro and ending cutscenes */
     Filesystem::RelativePath intro;
     Filesystem::RelativePath ending;
+    bool newBlock;
 };
 
 #endif

@@ -24,6 +24,8 @@
 #include "cacher.h"
 #include "util/exceptions/shutdown_exception.h"
 #include "util/gui/cutscene.h"
+#include "blockobject.h"
+#include "../factory/object_factory.h"
 
 using namespace std;
 
@@ -45,7 +47,8 @@ blockNumber(1),
 backgroundParallax(5),
 foregroundParallax(1.2),
 frontBuffer(NULL),
-hasMusic(false){
+hasMusic(false),
+newBlock(true){
 
     TokenReader tr;
 
@@ -274,13 +277,14 @@ void Scene::playEnding(){
     }
 }
 
-void Scene::advanceBlocks( int n ){
-    while ( blockNumber < n ){
+void Scene::advanceBlocks(int n){
+    while (blockNumber < n){
         if (level_blocks.empty()){
             break;
         }
 
         block_length += current_block->getLength();
+        newBlock = true;
         // delete current_block;
         /* store blocks so that they are deleted in the destructor.
          * this way the scripting engine can do stuff with it
@@ -304,7 +308,7 @@ bool Scene::canContinue(int x){
      *    player is past the boundary
      */
     return (current_block->isContinuous() && passedBoundary(x)) ||
-           (hearts.empty() && current_block->empty() && passedBoundary(x));
+           (hearts.empty() && passedBoundary(x));
 }
 
 /* put the enemy into a vector so that it can be added into the game objects
@@ -329,6 +333,39 @@ void Scene::doTriggers(){
     }
 }
 
+vector<Heart*> Scene::createObjects(const vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, vector<Paintown::Object*> * out){
+    vector<Heart *> hearts;
+
+    for (vector<Util::ReferenceCount<BlockObject> >::const_iterator it = blockObjects.begin(); it != blockObjects.end(); it++){
+        Util::ReferenceCount<BlockObject> obj = *it;
+
+        Paintown::Object * newobj = ObjectFactory::createObject(obj);
+        if (newobj == NULL){
+            continue;
+        }
+
+        /* does this violate some OOP principle? oh well */
+        if (obj->getType() == ObjectFactory::EnemyType){
+            Heart * h = ((Paintown::Enemy *)newobj)->getHeart();
+            hearts.push_back(h);
+        }
+
+        // newobj->moveX( total_length );
+        newobj->moveRight(length);
+        newobj->moveZ(minZ);
+        if (newobj->getZ() < minZ){
+            newobj->setZ(minZ);
+        }
+        if (newobj->getZ() > maxZ){
+            newobj->setZ(maxZ);
+        }
+        out->push_back(newobj);
+
+    }
+
+    return hearts;
+}
+
 void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
     clearHearts();
 
@@ -339,9 +376,10 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
 
     doTriggers();
 
-    if (objects != NULL){
+    if (newBlock && objects != NULL){
+        newBlock = false;
         // Global::debug(0) << "Creating new objects" << endl;
-        vector<Heart *> new_hearts = current_block->createObjects(block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects);
+        vector<Heart *> new_hearts = createObjects(current_block->getObjects(), block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects);
         hearts.insert(hearts.end(), new_hearts.begin(), new_hearts.end());
         objects->insert(objects->end(), added_objects.begin(), added_objects.end());
         added_objects.clear();
@@ -422,9 +460,9 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
         atmosphere->drawScreen(work, x);
     }
 
-    if ( hearts.empty() && current_block->empty() && x < getLimit() - 320 ){
+    if (hearts.empty() && !passedBoundary(x)){
         if (arrow_blink > 5){
-            arrow->draw( work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work);
+            arrow->draw(work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work);
         }
     }
 
