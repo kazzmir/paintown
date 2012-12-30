@@ -48,7 +48,6 @@ set(ENV_SRC
 environment/atmosphere.cpp)
 
 set(PAINTOWN_FACTORY_SRC
-factory/heart_factory.cpp
 factory/object_factory.cpp
 factory/shadow.cpp)
 
@@ -79,8 +78,7 @@ object/projectile.cpp
 object/trigger.cpp
 object/attack.cpp
 object/stimulation.cpp
-object/character.cpp
-object/heart.cpp)
+object/character.cpp)
 
 set(TRIGGER_SRC
 trigger/trigger.cpp

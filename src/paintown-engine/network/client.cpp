@@ -18,7 +18,6 @@
 #include "../level/utils.h"
 #include "factory/font_render.h"
 #include "../factory/object_factory.h"
-#include "../factory/heart_factory.h"
 #include "util/sound/music.h"
 #include "../game/world.h"
 #include "../object/character.h"
@@ -265,7 +264,6 @@ static void playGame(Socket socket){
                     bool forceQuit = ! Game::playLevel(world, xplayers);
 
                     ObjectFactory::destroy();
-                    HeartFactory::destroy();
 
                     if (forceQuit){
                         Global::debug(1, __FILE__) << "Force quit" << endl;

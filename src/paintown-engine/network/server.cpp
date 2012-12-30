@@ -6,7 +6,6 @@
 
 #include "chat_server.h"
 #include "factory/font_render.h"
-#include "../factory/heart_factory.h"
 #include "../factory/object_factory.h"
 #include "../game/game.h"
 #include "globals.h"
@@ -234,7 +233,6 @@ static void networkGame( const vector< Object * > & players, const string & leve
 		}
 
 		ObjectFactory::destroy();
-		HeartFactory::destroy();
 
 		if ( ! gameState ){
 			return;
@@ -530,7 +528,6 @@ static void playGame(vector<Client*> & clients){
             bool played = Game::playLevel(world, players);
 
             ObjectFactory::destroy();
-            HeartFactory::destroy();
 
             world.stopRunning();
             Message finish;

@@ -21,7 +21,6 @@
 #include "../object/player.h"
 #include "../object/animation.h"
 #include "../factory/object_factory.h"
-#include "../factory/heart_factory.h"
 #include "paintown-engine/level/utils.h"
 #include "factory/font_render.h"
 #include "util/token.h"
@@ -949,7 +948,6 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         virtual ~Cleanup(){
             Keyboard::popRepeatState();
             ObjectFactory::destroy();
-            HeartFactory::destroy();
         }
     };
 
