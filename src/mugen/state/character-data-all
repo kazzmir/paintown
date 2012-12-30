@@ -1,0 +1,399 @@
+include "common.h"
+namespace Mugen
+struct StateData{
+    /* Location is the directory passed in ctor
+     * This is where the def is loaded and all the relevant files
+     * are loaded from
+     */
+    Filesystem::AbsolutePath location;
+    
+    Filesystem::AbsolutePath baseDir;
+    
+    /* These items are taken from character.def file */
+    
+    /* Base definitions */
+    
+    // Name of Character
+    std::string name;
+    // Name of Character to Display why there is unclear
+    std::string displayName;
+    // Version date (unused)
+    std::string versionDate;
+    // Version that works with mugen (this isn't mugen)
+    std::string mugenVersion;
+    // Author 
+    std::string author;
+    // Palette defaults
+    std::vector<unsigned int> palDefaults;
+    unsigned int currentPalette;
+    
+    /* Relevant files */
+    
+    // Command set file
+    Filesystem::RelativePath cmdFile;
+    // Constants
+    std::string constantsFile;
+    /*
+    // States
+    std::string stateFile;
+    // Common States
+    std::string commonStateFile;
+    // Other state files? I can't find documentation on this, in the meantime we'll wing it
+    std::string stFile[12];
+     */
+    // Sprites
+    std::string sffFile;
+    // animations
+    std::string airFile;
+    // Sounds
+    std::string sndFile;
+    // Palettes max 12
+    std::map<int, std::string> palFile;
+    
+    // Arcade mode ( I don't think we will be using this anytime soon )
+    std::string introFile;
+    std::string endingFile;
+    
+    /* Now on to the nitty gritty */
+    
+    /* Player Data and constants comes from cns file */
+    
+    /* Section [Data] */
+    
+    // Life
+    int life;
+    // Attack
+    int attack;
+    // Defence
+    int defense;
+    // How much to bring up defese on fall
+    int fallDefenseUp;
+    // How long to lie down when fall
+    int lieDownTime;
+    /* starting air juggle points */
+    int airjuggle;
+    
+    /* number of juggle points left */
+    int juggleRemaining;
+    
+    /* number of juggle points the current move will take */
+    int currentJuggle;
+    
+    // Default Hit Spark Number for hitdefs ???
+    ResourceEffect spark;
+    // Default guard spark number
+    ResourceEffect guardSpark;
+    // Echo on KO (I guess is for the death sound)
+    bool koecho;
+    // Volume offset on characters sounds
+    int volumeoffset;
+    // Maybe used in VS mode later
+    /* According to the definition: 
+       Variables with this index and above will not have their values
+       reset to 0 between rounds or matches. There are 60 int variables,
+       indexed from 0 to 59, and 40 float variables, indexed from 0 to 39.
+       If omitted, then it defaults to 60 and 40 for integer and float
+       variables repectively, meaning that none are persistent, i.e. all
+       are reset. If you want your variables to persist between matches,
+       you need to override state 5900 from common1.cns.
+     */
+    int intpersistindex;
+    int floatpersistindex;
+    
+    /* Section [Size] */
+    
+    // Horizontal Scaling Factor
+    double xscale;
+    //Vertical scaling factor.
+    double yscale;
+    //      ;Player width (back, ground)
+    int groundback;
+    //   ;Player width (front, ground)
+    int groundfront;
+    //      ;Player width (back, air)
+    int airback;
+    //     ;Player width (front, air)
+    int airfront;
+    //  = 60          ;Height of player (for opponent to jump over)
+    int height;
+    // = 160    ;Default attack distance
+    int attackdist;
+    //  = 90 ;Default attack distance for projectiles
+    int projattackdist;
+    //  = 0     ;Set to 1 to scale projectiles too
+    bool projdoscale;
+    // = -5, -90   ;Approximate position of head
+    Mugen::Point headPosition;
+    //  = -5, -60    ;Approximate position of midsection
+    Mugen::Point midPosition;
+    //  = 0     ;Number of pixels to vertically offset the shadow
+    int shadowoffset;
+    // = 0,0    ;Player drawing offset in pixels (x, y)
+    Mugen::Point drawOffset;
+    
+    /* Section [Velocity] */
+    
+    //   = 2.4      ;Walk forward
+    double walkfwd;
+    // = -2.2     ;Walk backward
+    double walkback;
+    //  = 4.6, 0    ;Run forward (x, y)
+    double runforwardx;
+    double runforwardy;
+    // = -4.5,-3.8 ;Hop backward (x, y)
+    double runbackx;
+    double runbacky;
+    // = 0,-8.4    ;Neutral jumping velocity (x, y)
+    double jumpneux;
+    double jumpneuy;
+    // = -2.55    ;Jump back Speed (x, y)
+    double jumpback;
+    // = 2.5       ;Jump forward Speed (x, y)
+    double jumpfwd;
+    // = -2.55,-8.1 ;Running jump speeds (opt)
+    double runjumpback;
+    // = 4,-8.1      ;.
+    double runjumpfwd;
+    // = 0,-8.1      ;.
+    double airjumpneux;
+    double airjumpneuy;
+    // Air jump speeds (opt)
+    double airjumpback;
+    double airjumpfwd;
+    
+    double power;
+    
+    /* Movement */
+    
+    //  = 1      ;Number of air jumps allowed (opt)
+    int airjumpnum;
+    //  = 35  ;Minimum distance from ground before you can air jump (opt)
+    double airjumpheight;
+    // = .44         ;Vertical acceleration
+    double yaccel;
+    //  = .85  ;Friction coefficient when standing
+    // double standfriction;
+    //  = .82 ;Friction coefficient when crouching
+    double crouchFriction;
+    
+    /* TODO: use this variable for something
+     * Mugen 1.0
+     */
+    double crouchFrictionThreshold;
+    
+    double velocity_air_gethit_airrecover_mul_x;
+    double velocity_air_gethit_airrecover_mul_y;
+    
+    /* Sprites */
+    Mugen::SpriteMap sprites;
+    // Bitmaps of those sprites
+    // std::map< unsigned int, std::map< unsigned int, Graphics::Bitmap * > > bitmaps;
+    
+    /* Animation Lists stored by action number, ie [Begin Action 500] */
+    std::map< int, PaintownUtil::ReferenceCount<Animation> > animations;
+    
+    /* Sounds */
+    Mugen::SoundMap sounds;
+    /* sounds from the stage */
+    // Mugen::SoundMap * commonSounds;
+    
+    /* Commands, Triggers or whatever else we come up with */
+    std::map<std::string, Constant> constants;
+    
+    // std::vector<Command *> commands;
+    
+    int currentState;
+    int previousState;
+    int currentAnimation;
+    
+    // Debug state
+    bool debug;
+    
+    /*
+       InputMap<Mugen::Keys> inputLeft;
+       InputMap<Mugen::Keys> inputRight;
+     */
+    
+    double velocity_x;
+    double velocity_y;
+    
+    bool has_control;
+    
+    /* how much time the player has been in the current state */
+    int stateTime;
+    
+    /* dont delete these in the destructor, the state controller will do that */
+    std::map<int, RuntimeValue> variables;
+    std::map<int, RuntimeValue> floatVariables;
+    std::map<int, RuntimeValue> systemVariables;
+    Physics::Type currentPhysics;
+    
+    /* yaccel */
+    double gravity;
+    
+    /* stand.friction */
+    double standFriction;
+    
+    /* TODO: use this variable for something.
+     * Mugen 1.0 variable
+     */ 
+    double standFrictionThreshold;
+    
+    /* S (stand), C (crouch), A (air), L (lying down) */
+    std::string stateType;
+    std::string moveType;
+    
+    HitDefinition hit;
+    
+    HitState hitState;
+    // unsigned int lastTicket;
+    
+    int combo;
+    // int nextCombo;
+    
+    int hitCount;
+    
+    std::vector<WinGame> wins;
+    
+    int matchWins;
+    
+    // Behavior * behavior;
+    
+    PaintownUtil::ReferenceCount<Animation> foreignAnimation;
+    int foreignAnimationNumber;
+    
+    /* true if the player is holding the back button */
+    bool blocking;
+    
+    //! regenerate health?
+    bool regenerateHealth;
+    bool regenerating;
+    int regenerateTime;
+    int regenerateHealthDifference;
+    
+    /* used to communicate the need to guard in the engine */
+    // bool needToGuard;
+    
+    /* true if the player is currently guarding an attack */
+    bool guarding;
+    
+    struct WidthOverride{
+            bool enabled;
+            int edgeFront;
+            int edgeBack;
+            int playerFront;
+            int playerBack;
+    } widthOverride;
+    
+    struct HitByOverride{
+            bool standing;
+            bool crouching;
+            bool aerial;
+            int time;
+            std::vector<AttackType::Attribute> attributes;
+    } hitByOverride[2];
+    
+    /* reduces damage taken */
+    double defenseMultiplier;
+    /* increase attack damage */
+    double attackMultiplier;
+    
+    /* if frozen then the player won't move */
+    bool frozen;
+    
+    ReversalData reversal;
+    bool reversalActive;
+    
+    struct TransOverride{
+            bool enabled;
+            TransType type;
+            int alphaSource;
+            int alphaDestination;
+    } transOverride;
+    
+    // PaintownUtil::ReferenceCount<RecordingInformation> record;
+    
+    // PushPlayer only one tick
+    int pushPlayer;
+    
+    struct SpecialStuff{
+            bool invisible;
+            bool intro;
+    } special;
+    
+    PaletteEffects paletteEffects;
+    
+    double max_health;
+    double health;
+    
+    /* keeps track of binds to other characters. Used for BindToRoot and
+     * BindToTarget
+     */
+    struct Bind{
+            // const Character * bound;
+            int time;
+            int facing;
+            double offsetX;
+            double offsetY;
+    } bind;
+    
+    // std::map<int, std::vector<Character *> > targets;
+    
+    int spritePriority;
+    
+    /* number of times this character has been hit in total */
+    unsigned int wasHitCounter;
+    
+    /* TODO: what is this for?
+     * Mugen 1.0
+     */
+    double jumpChangeAnimationThreshold;
+    
+    /* TODO: what is this for?
+     * Mugen 1.0
+     */
+    double airGetHitGroundLevel;
+    
+    /*
+       struct CharacterData {
+       CharacterData():
+       who(NULL),
+       enabled(false){
+       }
+    
+       const Character * who;
+       bool enabled;
+       } characterData;
+     */
+    
+    bool ownPalette;
+    /* keep a count of the number of times changeState was called to prevent
+     * an infinite recursion.
+     */
+    int maxChangeStates;
+    
+    double drawAngle;
+    struct DrawAngleEffect{
+            bool enabled;
+            double angle;
+            double scaleX;
+            double scaleY;
+    } drawAngleData;
+    
+    /* Current set of commands, updated in act() */
+    std::vector<std::string> active;
+    std::map<int, HitOverride> hitOverrides;
+    
+    double velocity_air_gethit_groundrecover_x;
+    double velocity_air_gethit_groundrecover_y;
+    
+    double velocity_air_gethit_recover_add_x;
+    double velocity_air_gethit_recover_add_y;
+    
+    double velocity_air_gethit_recover_up;
+    double velocity_air_gethit_recover_down;
+    double velocity_air_gethit_recover_forward;
+    double velocity_air_gethit_recover_back;
+    
+    double air_gethit_recover_yaccel;
+}

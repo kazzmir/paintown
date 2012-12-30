@@ -18,6 +18,7 @@
 #include "object.h"
 #include "common.h"
 #include "sprite.h"
+#include "character-state.h"
 
 namespace Ast{
     class KeyList;
@@ -51,33 +52,6 @@ extern PaintownUtil::Parameter<Filesystem::RelativePath> stateFileParameter;
 class Behavior;
 class Stage;
 
-struct Constant{
-    enum ConstantType{
-        None,
-        Double,
-        ListOfDouble,
-    };
-
-    Constant():
-    type(None){
-    }
-
-    Constant(double value):
-    type(Double),
-    double_(value){
-    }
-
-    Constant(std::vector<double> doubles):
-    type(ListOfDouble),
-    doubles(doubles){
-    }
-
-    ConstantType type;
-
-    double double_;
-    std::vector<double> doubles;
-};
-
 namespace StateType{
     extern std::string Stand;
     extern std::string Crouch;
@@ -91,35 +65,6 @@ namespace Move{
     extern std::string Hit;
 }
 
-
-struct WinGame{
-    /* TODO: add an explanation for each win type that describes how to
-     * achieve that state.
-     */
-    enum WinType{
-        Normal,
-        Special,
-        Hyper,
-        NormalThrow,
-        Cheese,
-        TimeOver,
-        Suicide,
-        Teammate,
-        /* Overlayed */
-        /* is this needed now that the `perfect' bool exists? */
-        Perfect,
-    };
-
-    WinGame():
-    type(Normal),
-    perfect(false){
-    }
-
-    WinType type;
-    bool perfect;
-
-};
-
 namespace PhysicalAttack{
     extern std::string Normal;
     extern std::string Throw;
@@ -127,74 +72,6 @@ namespace PhysicalAttack{
 }
 
 class Character;
-
-struct HitState{
-    HitState():
-        shakeTime(0),
-        hitTime(-1),
-        hits(0),
-        slideTime(0),
-        returnControlTime(0),
-        recoverTime(0),
-        yAcceleration(0),
-        yVelocity(0),
-        xVelocity(0),
-        guarded(false),
-        damage(0),
-        chainId(-1),
-        spritePriority(0),
-        moveContact(0){
-        }
-
-    void update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
-    int shakeTime;
-    int hitTime;
-    
-    /* FIXME: handle hits somehow. corresponds to hitcount
-     * hitcount: Returns the number of hits taken by the player in current combo. (int)
-     */
-    int hits;
-    int slideTime;
-    int returnControlTime;
-    int recoverTime;
-    double yAcceleration;
-    double yVelocity;
-    double xVelocity;
-    AttackType::Animation animationType;
-    AttackType::Ground airType;
-    AttackType::Ground groundType;
-    AttackType::Ground hitType;
-    bool guarded;
-    int damage;
-    int chainId;
-    int spritePriority;
-
-    struct Fall{
-        Fall():
-            fall(false),
-            recover(true),
-            recoverTime(0),
-            xVelocity(0),
-            yVelocity(0),
-            changeXVelocity(false),
-            damage(0){
-            }
-
-        struct Shake{
-            int time;
-        } envShake;
-
-        bool fall;
-        bool recover;
-        int recoverTime;
-        double xVelocity;
-        double yVelocity;
-        bool changeXVelocity;
-        double damage;
-    } fall;
-
-    int moveContact;
-};
 
 struct RecordingInformation{
     std::ofstream out;
@@ -341,7 +218,6 @@ struct PaletteEffects{
     unsigned int counter;
 };
 
-
 class StateController;
 
 /* comes from a StateDef */
@@ -482,27 +358,27 @@ public:
 	virtual void priorPalette();
 	
 	virtual inline const std::string getName() const {
-            return getStateData().name;
+            return getLocalData().name;
         }
 
         virtual const Filesystem::AbsolutePath & getLocation() const {
-            return getStateData().location;
+            return getLocalData().location;
         }
 
         virtual inline const std::string & getAuthor() const {
-            return getStateData().author;
+            return getLocalData().author;
         }
 	
 	virtual inline const std::string getDisplayName() const {
-            return getStateData().displayName;
+            return getLocalData().displayName;
         }
 	
 	virtual inline unsigned int getCurrentPalette() const {
-            return getStateData().currentPalette;
+            return getLocalData().currentPalette;
         }
 
         virtual inline const std::map<int, PaintownUtil::ReferenceCount<Animation> > & getAnimations() const {
-            return getStateData().animations;
+            return getLocalData().animations;
         }
 
         virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
@@ -515,15 +391,15 @@ public:
         */
 	
 	virtual inline const Mugen::SoundMap & getSounds() const {
-            return getStateData().sounds;
+            return getLocalData().sounds;
         }
 
 	virtual inline const Mugen::SoundMap * getCommonSounds() const {
-            return getStateData().commonSounds;
+            return getLocalData().commonSounds;
         }
 
         virtual inline PaintownUtil::ReferenceCount<Mugen::Sprite> getSprite(int group, int image){
-            return getStateData().sprites[group][image];
+            return getLocalData().sprites[group][image];
         }
 
         virtual const PaintownUtil::ReferenceCount<Mugen::Sprite> getCurrentFrame() const;
@@ -549,7 +425,7 @@ public:
     virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual double getMaxHealth() const {
-        return getStateData().max_health;
+        return getLocalData().max_health;
     }
 
     virtual void setMaxHealth(double health);
@@ -586,98 +462,98 @@ public:
     virtual int getAnimation() const;
     
     virtual inline int getCurrentState() const {
-        return getStateData().currentState;
+        return getLocalData().currentState;
     }
 
     virtual PaintownUtil::ReferenceCount<State> getState(int id) const;
     virtual void setState(int id, PaintownUtil::ReferenceCount<State> what);
 
         virtual inline std::string getStateType() const {
-            return getStateData().stateType;
+            return getLocalData().stateType;
         }
 
         virtual inline void setStateType(const std::string & str){
-            getStateData().stateType = str;
+            getLocalData().stateType = str;
         }
 
         virtual inline void setXVelocity(double x){
-            getStateData().velocity_x = x;
+            getLocalData().velocity_x = x;
         }
 
         virtual inline double getXVelocity() const {
-            return getStateData().velocity_x;
+            return getLocalData().velocity_x;
         }
         
         virtual inline void setYVelocity(double y){
-            getStateData().velocity_y = y;
+            getLocalData().velocity_y = y;
         }
         
         virtual inline double getYVelocity() const {
-            return getStateData().velocity_y;
+            return getLocalData().velocity_y;
         }
 
         virtual inline double getWalkBackX() const {
-            return getStateData().walkback;
+            return getLocalData().walkback;
         }
         
         virtual inline double getWalkForwardX() const {
-            return getStateData().walkfwd;
+            return getLocalData().walkfwd;
         }
 
         virtual inline void setWalkBackX(double x){
-            getStateData().walkback = x;
+            getLocalData().walkback = x;
         }
         
         virtual inline void setWalkForwardX(double x){
-            getStateData().walkfwd = x;
+            getLocalData().walkfwd = x;
         }
         
         virtual inline double getRunBackX() const {
-            return getStateData().runbackx;
+            return getLocalData().runbackx;
         }
 
         virtual inline void setRunBackX(double x){
-            getStateData().runbackx = x;
+            getLocalData().runbackx = x;
         }
 
         virtual inline void setRunBackY(double x){
-            getStateData().runbacky = x;
+            getLocalData().runbacky = x;
         }
 
         virtual inline double getRunBackY() const {
-            return getStateData().runbacky;
+            return getLocalData().runbacky;
         }
         
         virtual inline double getRunForwardX() const {
-            return getStateData().runforwardx;
+            return getLocalData().runforwardx;
         }
 
         virtual inline void setRunForwardX(double x){
-            getStateData().runforwardx = x;
+            getLocalData().runforwardx = x;
         }
         
         virtual inline double getRunForwardY() const {
-            return getStateData().runforwardy;
+            return getLocalData().runforwardy;
         }
         
         virtual inline void setRunForwardY(double x){
-            getStateData().runforwardy = x;
+            getLocalData().runforwardy = x;
         }
 
         virtual inline double getNeutralJumpingX() const {
-            return getStateData().jumpneux;
+            return getLocalData().jumpneux;
         }
 
         virtual inline void setNeutralJumpingX(double x){
-            getStateData().jumpneux = x;
+            getLocalData().jumpneux = x;
         }
         
         virtual inline double getNeutralJumpingY() const {
-            return getStateData().jumpneuy;
+            return getLocalData().jumpneuy;
         }
         
         virtual inline void setNeutralJumpingY(double x){
-            getStateData().jumpneuy = x;
+            getLocalData().jumpneuy = x;
         }
 
         virtual inline double getYPosition() const {
@@ -685,95 +561,95 @@ public:
         }
         
         virtual inline double getPower() const {
-            return getStateData().power;
+            return getLocalData().power;
         }
 
         virtual inline void setPower(double p){
-            getStateData().power = p;
+            getLocalData().power = p;
         }
 
         virtual void addPower(double d);
 
         virtual inline bool hasControl() const {
-            return getStateData().has_control;
+            return getLocalData().has_control;
         }
 
         virtual inline void setControl(bool b){
-            getStateData().has_control = b;
+            getLocalData().has_control = b;
         }
 
         virtual inline void setJumpBack(double x){
-            getStateData().jumpback = x;
+            getLocalData().jumpback = x;
         }
 
         virtual inline double getJumpBack() const {
-            return getStateData().jumpback;
+            return getLocalData().jumpback;
         }
 
         virtual inline void setJumpForward(double x){
-            getStateData().jumpfwd = x;
+            getLocalData().jumpfwd = x;
         }
 
         virtual inline double getJumpForward() const {
-            return getStateData().jumpfwd;
+            return getLocalData().jumpfwd;
         }
         
         virtual inline void setRunJumpBack(double x){
-            getStateData().runjumpback = x;
+            getLocalData().runjumpback = x;
         }
 
         virtual inline int getRunJumpBack() const {
-            return getStateData().runjumpback;
+            return getLocalData().runjumpback;
         }
 
         virtual inline void setRunJumpForward(double x){
-            getStateData().runjumpfwd = x;
+            getLocalData().runjumpfwd = x;
         }
 
         virtual inline double getRunJumpForward() const {
-            return getStateData().runjumpfwd;
+            return getLocalData().runjumpfwd;
         }
 
         virtual inline void setAirJumpNeutralX(double x){
-            getStateData().airjumpneux = x;
+            getLocalData().airjumpneux = x;
         }
 
         virtual inline double getAirJumpNeutralX() const {
-            return getStateData().airjumpneux;
+            return getLocalData().airjumpneux;
         }
         
         virtual inline void setAirJumpNeutralY(double y){
-            getStateData().airjumpneuy = y;
+            getLocalData().airjumpneuy = y;
         }
 
         virtual inline double getAirJumpNeutralY() const {
-            return getStateData().airjumpneuy;
+            return getLocalData().airjumpneuy;
         }
 
         virtual inline void setAirJumpBack(double x){
-            getStateData().airjumpback = x;
+            getLocalData().airjumpback = x;
         }
 
         virtual inline double getAirJumpBack() const {
-            return getStateData().airjumpback;
+            return getLocalData().airjumpback;
         }
 
         virtual inline void setAirJumpForward(double x){
-            getStateData().airjumpfwd = x;
+            getLocalData().airjumpfwd = x;
         }
 
         virtual inline double getAirJumpForward() const {
-            return getStateData().airjumpfwd;
+            return getLocalData().airjumpfwd;
         }
 
         virtual int getStateTime() const;
 
         virtual inline int getPreviousState() const {
-            return getStateData().previousState;
+            return getLocalData().previousState;
         }
 
         virtual inline const std::string & getMoveType() const {
-            return getStateData().moveType;
+            return getLocalData().moveType;
         }
 
         virtual double getXScale() const;
@@ -785,7 +661,7 @@ public:
         virtual int getAirFront() const;
 
         virtual inline void setMoveType(const std::string & str){
-            getStateData().moveType = str;
+            getLocalData().moveType = str;
         }
 
         virtual void destroyed(Stage & stage);
@@ -803,95 +679,95 @@ public:
         virtual RuntimeValue getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
-            return getStateData().currentPhysics;
+            return getLocalData().currentPhysics;
         }
 
         virtual void setCurrentPhysics(Physics::Type p){
-            getStateData().currentPhysics = p;
+            getLocalData().currentPhysics = p;
         }
 
         virtual void setGravity(double n){
-            getStateData().gravity = n;
+            getLocalData().gravity = n;
         }
 
         virtual double getGravity() const {
-            return getStateData().gravity;
+            return getLocalData().gravity;
         }
 
         virtual int getDefense() const {
-            return getStateData().defense;
+            return getLocalData().defense;
         }
 
         virtual void setDefense(int x){
-            getStateData().defense = x;
+            getLocalData().defense = x;
         }
 	
         virtual int getFallDefenseUp() const {
-            return getStateData().fallDefenseUp;
+            return getLocalData().fallDefenseUp;
         }
 
         virtual void setFallDefenseUp(int x){
-            getStateData().fallDefenseUp = x;
+            getLocalData().fallDefenseUp = x;
         }
 
         virtual int getAttack() const {
-            return getStateData().attack;
+            return getLocalData().attack;
         }
 
         virtual void setLieDownTime(int x){
-            getStateData().lieDownTime = x;
+            getLocalData().lieDownTime = x;
         }
 
         virtual int getLieDownTime() const {
-            return getStateData().lieDownTime;
+            return getLocalData().lieDownTime;
         }
 
         virtual double getCrouchingFriction() const {
-            return getStateData().crouchFriction;
+            return getLocalData().crouchFriction;
         }
 
         virtual void setCrouchingFriction(double n){
-            getStateData().crouchFriction = n;
+            getLocalData().crouchFriction = n;
         }
 
         virtual double getCrouchingFrictionThreshold() const {
-            return getStateData().crouchFrictionThreshold;
+            return getLocalData().crouchFrictionThreshold;
         }
 
         virtual void setCrouchingFrictionThreshold(double n){
-            getStateData().crouchFrictionThreshold = n;
+            getLocalData().crouchFrictionThreshold = n;
         }
                             
         virtual void setJumpChangeAnimationThreshold(double n){
-            getStateData().jumpChangeAnimationThreshold = n;
+            getLocalData().jumpChangeAnimationThreshold = n;
         }
 
         virtual double getJumpChangeAnimationThreshold() const {
-            return getStateData().jumpChangeAnimationThreshold;
+            return getLocalData().jumpChangeAnimationThreshold;
         }
 
         virtual void setAirGetHitGroundLevel(double n){
-            getStateData().airGetHitGroundLevel = n;
+            getLocalData().airGetHitGroundLevel = n;
         }
 
         virtual double getAirGetHitGroundLevel() const {
-            return getStateData().airGetHitGroundLevel;
+            return getLocalData().airGetHitGroundLevel;
         }
 
         virtual void setStandingFriction(double n){
-            getStateData().standFriction = n;
+            getLocalData().standFriction = n;
         }
 
         virtual double getStandingFriction() const {
-            return getStateData().standFriction;
+            return getLocalData().standFriction;
         }
 
         virtual void setStandingFrictionThreshold(double n){
-            getStateData().standFrictionThreshold = n;
+            getLocalData().standFrictionThreshold = n;
         }
 
         virtual double getStandingFrictionThreshold() const {
-            return getStateData().standFrictionThreshold;
+            return getLocalData().standFrictionThreshold;
         }
 
         virtual double getGroundFriction() const;
@@ -905,23 +781,23 @@ public:
         virtual bool hasAnimation(int index) const;
 
         virtual void enableDebug(){
-            getStateData().debug = true;
+            getLocalData().debug = true;
         }
 
         virtual void disableDebug(){
-            getStateData().debug = false;
+            getLocalData().debug = false;
         }
 
         virtual void toggleDebug(){
-            getStateData().debug = ! getStateData().debug;
+            getLocalData().debug = ! getLocalData().debug;
         }
 
         virtual HitDefinition & getHit(){
-            return getStateData().hit;
+            return getLocalData().hit;
         }
         
         virtual const HitDefinition & getHit() const {
-            return getStateData().hit;
+            return getLocalData().hit;
         }
         
         void enableHit();
@@ -938,11 +814,11 @@ public:
         const std::map<int, std::vector<Character*> > & getTargets() const;
 
         virtual inline int getHeight() const {
-            return getStateData().height;
+            return getLocalData().height;
         }
 
         virtual inline void setHeight(int h){
-            getStateData().height = h;
+            getLocalData().height = h;
         }
 
         /* `this' hit `enemy' */
@@ -975,11 +851,11 @@ public:
         void resetHitFlag();
 
         virtual const HitState & getHitState() const {
-            return getStateData().hitState;
+            return getLocalData().hitState;
         }
 
         virtual HitState & getHitState(){
-            return getStateData().hitState;
+            return getLocalData().hitState;
         }
 
         const std::vector<Area> getAttackBoxes() const;
@@ -1017,41 +893,41 @@ public:
         virtual PaintownUtil::ReferenceCount<Mugen::Sound> getCommonSound(int group, int item) const;
 
         virtual inline void setJugglePoints(int x){
-            getStateData().airjuggle = x;
+            getLocalData().airjuggle = x;
         }
 
         virtual inline int getJugglePoints() const {
-            return getStateData().airjuggle;
+            return getLocalData().airjuggle;
         }
 
         virtual void resetJugglePoints();
 
         virtual inline void setCurrentJuggle(int j){
-            getStateData().currentJuggle = j;
+            getLocalData().currentJuggle = j;
         }
 
         virtual inline int getCurrentJuggle() const {
-            return getStateData().currentJuggle;
+            return getLocalData().currentJuggle;
         }
 
         virtual inline void setCommonSounds(const Mugen::SoundMap * sounds){
-            getStateData().commonSounds = sounds;
+            getLocalData().commonSounds = sounds;
         }
 
         virtual inline void setExtraJumps(int a){
-            getStateData().airjumpnum = a;
+            getLocalData().airjumpnum = a;
         }
 
         virtual inline int getExtraJumps() const {
-            return getStateData().airjumpnum;
+            return getLocalData().airjumpnum;
         }
 
         virtual inline double getAirJumpHeight() const {
-            return getStateData().airjumpheight;
+            return getLocalData().airjumpheight;
         }
 
         virtual inline void setAirJumpHeight(double f){
-            getStateData().airjumpheight = f;
+            getLocalData().airjumpheight = f;
         }
 
         /* number of times the character has been hit */
@@ -1060,21 +936,21 @@ public:
         virtual int getCurrentCombo() const;
 
         virtual inline int getHitCount() const {
-            return getStateData().hitCount;
+            return getLocalData().hitCount;
         }
 
         virtual inline const std::vector<WinGame> & getWins() const {
-            return getStateData().wins;
+            return getLocalData().wins;
         }
 
         virtual inline void clearWins(){
-            getStateData().wins.clear();
+            getLocalData().wins.clear();
         }
 
         virtual void addWin(WinGame win);
 
         virtual inline int getMatchWins() const {
-            return getStateData().matchWins;
+            return getLocalData().matchWins;
         }
 
         virtual void addMatchWin();
@@ -1082,70 +958,70 @@ public:
         virtual void resetPlayer();
 
         virtual inline void setBehavior(Behavior * b){
-            getStateData().behavior = b;
+            getLocalData().behavior = b;
         }
 
         virtual inline Behavior * getBehavior(){
-            return this->getStateData().behavior;
+            return this->getLocalData().behavior;
         }
 	
         virtual int getIntPersistIndex() const {
-            return getStateData().intpersistindex;
+            return getLocalData().intpersistindex;
         }
 
         virtual void setIntPersistIndex(int index){
-            getStateData().intpersistindex = index;
+            getLocalData().intpersistindex = index;
         }
 
 	virtual int getFloatPersistIndex() const {
-            return getStateData().floatpersistindex;
+            return getLocalData().floatpersistindex;
         }
 
         virtual void setFloatPersistIndex(int index){
-            getStateData().floatpersistindex = index;
+            getLocalData().floatpersistindex = index;
         }
 
         /* Called when the current round ended */
         virtual void roundEnd(Mugen::Stage & stage);
 
         virtual inline void setDefaultSpark(const ResourceEffect & effect){
-            getStateData().spark = effect;
+            getLocalData().spark = effect;
         }
 
         virtual inline void setDefaultGuardSpark(const ResourceEffect & effect){
-            getStateData().guardSpark = effect;
+            getLocalData().guardSpark = effect;
         }
 
         virtual inline ResourceEffect getDefaultSpark() const {
-            return getStateData().spark;
+            return getLocalData().spark;
         }
 
         virtual inline ResourceEffect getDefaultGuardSpark() const {
-            return getStateData().guardSpark;
+            return getLocalData().guardSpark;
         }
 	
         virtual bool getKoEcho() const {
-            return getStateData().koecho;
+            return getLocalData().koecho;
         }
 
         virtual void setKoEcho(bool x){
-            getStateData().koecho = x;
+            getLocalData().koecho = x;
         }
 
         virtual inline void setRegeneration(bool r){
-            this->getStateData().regenerateHealth = r;
+            this->getLocalData().regenerateHealth = r;
         }
         
         virtual inline int getAttackDistance() const {
-            return this->getStateData().attackdist;
+            return this->getLocalData().attackdist;
         }
         
         virtual inline int getProjectileAttackDistance() const {
-            return this->getStateData().projattackdist;
+            return this->getLocalData().projattackdist;
         }
                         
         virtual inline bool getProjectileScale() const {
-            return this->getStateData().projdoscale;
+            return this->getLocalData().projdoscale;
         }
     
         /* let go of a bound character (BindToRoot / BindToTarget */
@@ -1260,7 +1136,7 @@ protected:
     void initialize();
 
     virtual inline void setCurrentState(int state){
-        this->getStateData().currentState = state;
+        this->getLocalData().currentState = state;
     }
 
     void checkStateControllers();
@@ -1315,10 +1191,10 @@ protected:
     virtual void recordCommands(const std::vector<std::string> & commands);
 
 protected:
-
-    struct StateData{
-        StateData();
-        StateData(const StateData & copy);
+    /* Data that doesn't have to be sent to remote instances */
+    struct LocalData{
+        LocalData();
+        LocalData(const LocalData & copy);
 
         /* Location is the directory passed in ctor
            This is where the def is loaded and all the relevant files
@@ -1327,6 +1203,10 @@ protected:
         Filesystem::AbsolutePath location;
 
         Filesystem::AbsolutePath baseDir;
+        
+        std::map<int, PaintownUtil::ReferenceCount<State> > states;
+        AfterImage afterImage;
+        PaletteEffects paletteEffects;
 
         /* These items are taken from character.def file */
 
@@ -1521,8 +1401,6 @@ protected:
 
         std::vector<Command *> commands;
 
-        std::map<int, PaintownUtil::ReferenceCount<State> > states;
-
         int currentState;
         int previousState;
         int currentAnimation;
@@ -1597,8 +1475,6 @@ protected:
         /* true if the player is currently guarding an attack */
         bool guarding;
 
-        AfterImage afterImage;
-
         struct WidthOverride{
             WidthOverride():
                 enabled(false),
@@ -1666,8 +1542,6 @@ protected:
             bool invisible;
             bool intro;
         } special;
-
-        PaletteEffects paletteEffects;
 
         double max_health;
         double health;
@@ -1767,6 +1641,7 @@ protected:
         double air_gethit_recover_yaccel;
     };
 
+    LocalData localData;
     StateData stateData;
 
 public:
@@ -1776,6 +1651,14 @@ public:
 
     StateData & getStateData(){
         return stateData;
+    }
+
+    const LocalData & getLocalData() const {
+        return localData;
+    }
+
+    LocalData & getLocalData(){
+        return localData;
     }
 };
 

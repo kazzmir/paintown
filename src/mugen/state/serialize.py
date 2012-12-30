@@ -16,7 +16,9 @@ code: {{
 import state    
 }}
 rules:
-    start = name:namespace (!"\n" .)* newline s* obj:struct {{ value = state.Program(name, obj) }}
+    start = includes:include* name:namespace (!"\n" .)* newline s* obj:struct {{ value = state.Program(includes, name, obj) }}
+    include = "include" s+ what:string (!"\n" .)* s+ "\n"* {{ value = what }}
+    string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = ''.join(contents) }}
     namespace = "namespace" s+ id:identifier
     struct = "struct" s* name:identifier s* "{" fields:(s* field)* s* "}" {{
         value = state.State(name)
@@ -102,11 +104,27 @@ struct %(name)s{
       }
     return data
 
+def md5(what):
+    import hashlib
+    m = hashlib.md5()
+    m.update(what)
+    return m.hexdigest()
+
 def generate_program_cpp(program):
-    data = """namespace %s{
+    header = "_serialize_%s_%s" % (program.namespace, md5(generate_cpp(program.struct)))
+    includes = '\n'.join(['#include "%s"' % x for x in program.includes])
+    data = """
+#ifndef %s
+#define %s
+
+%s
+
+namespace %s{
 %s
 }
-""" % (program.namespace, generate_cpp(program.struct))
+
+#endif
+""" % (header, header, includes, program.namespace, generate_cpp(program.struct))
     return data
 
 def test1():

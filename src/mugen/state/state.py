@@ -10,13 +10,15 @@ class State:
         self.fields.append(field)
 
 class Program:
-    def __init__(self, namespace, struct):
+    def __init__(self, includes, namespace, struct):
+        self.includes = includes
         self.namespace = namespace
         self.struct = struct
 
 def combineTemplate(name, templates):
     if templates != None:
-        return "%s<%s>" % (name, ', '.join([str(x) for x in templates]))
+        # Need a space before > to prevent >> from being lexed as operator>>
+        return "%s<%s >" % (name, ', '.join([str(x) for x in templates]))
     return name
 
 def combineModifier(modifier, name):

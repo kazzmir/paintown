@@ -10,6 +10,9 @@
 
 namespace Mugen{
 
+class Stage;
+class Character;
+
 enum Facing{
     FacingLeft, FacingRight
 };
@@ -404,6 +407,129 @@ struct HitAttributes{
     bool aerial;
 
     std::vector<AttackType::Attribute> attributes;
+};
+
+struct Constant{
+    enum ConstantType{
+        None,
+        Double,
+        ListOfDouble,
+    };
+
+    Constant():
+    type(None){
+    }
+
+    Constant(double value):
+    type(Double),
+    double_(value){
+    }
+
+    Constant(std::vector<double> doubles):
+    type(ListOfDouble),
+    doubles(doubles){
+    }
+
+    ConstantType type;
+
+    double double_;
+    std::vector<double> doubles;
+};
+
+struct HitState{
+    HitState():
+        shakeTime(0),
+        hitTime(-1),
+        hits(0),
+        slideTime(0),
+        returnControlTime(0),
+        recoverTime(0),
+        yAcceleration(0),
+        yVelocity(0),
+        xVelocity(0),
+        guarded(false),
+        damage(0),
+        chainId(-1),
+        spritePriority(0),
+        moveContact(0){
+        }
+
+    void update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit);
+    int shakeTime;
+    int hitTime;
+    
+    /* FIXME: handle hits somehow. corresponds to hitcount
+     * hitcount: Returns the number of hits taken by the player in current combo. (int)
+     */
+    int hits;
+    int slideTime;
+    int returnControlTime;
+    int recoverTime;
+    double yAcceleration;
+    double yVelocity;
+    double xVelocity;
+    AttackType::Animation animationType;
+    AttackType::Ground airType;
+    AttackType::Ground groundType;
+    AttackType::Ground hitType;
+    bool guarded;
+    int damage;
+    int chainId;
+    int spritePriority;
+
+    struct Fall{
+        Fall():
+            fall(false),
+            recover(true),
+            recoverTime(0),
+            xVelocity(0),
+            yVelocity(0),
+            changeXVelocity(false),
+            damage(0){
+            }
+
+        struct Shake{
+            int time;
+        } envShake;
+
+        bool fall;
+        bool recover;
+        int recoverTime;
+        double xVelocity;
+        double yVelocity;
+        bool changeXVelocity;
+        double damage;
+    } fall;
+
+    int moveContact;
+};
+
+struct WinGame{
+    /* TODO: add an explanation for each win type that describes how to
+     * achieve that state.
+     */
+    enum WinType{
+        Normal,
+        Special,
+        Hyper,
+        NormalThrow,
+        Cheese,
+        TimeOver,
+        Suicide,
+        Teammate,
+        /* Overlayed */
+        /* is this needed now that the `perfect' bool exists? */
+        Perfect,
+    };
+
+    WinGame():
+    type(Normal),
+    perfect(false){
+    }
+
+    WinType type;
+    bool perfect;
+
 };
 
 }

@@ -561,13 +561,13 @@ void Object::setObjectId(int id){
 
 Character::Character(const Filesystem::AbsolutePath & s, int alliance):
 Object(alliance){
-    getStateData().location = s;
+    getLocalData().location = s;
     initialize();
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance):
 Object(x,y, alliance){
-    getStateData().location = s;
+    getLocalData().location = s;
     initialize();
 }
 
@@ -578,51 +578,51 @@ stateData(copy.stateData){
 
 Character::~Character(){
     stopRecording();
-    for (vector<Command*>::iterator it = getStateData().commands.begin(); it != getStateData().commands.end(); it++){
+    for (vector<Command*>::iterator it = getLocalData().commands.begin(); it != getLocalData().commands.end(); it++){
         delete (*it);
     }
 }
 
 void Character::initialize(){
-    getStateData().max_health = 0;
-    getStateData().health = 0;
-    getStateData().maxChangeStates = 0;
-    getStateData().currentState = Standing;
-    getStateData().currentPhysics = Physics::Stand;
-    getStateData().moveType = Move::Idle;
-    getStateData().wasHitCounter = 0;
-    getStateData().frozen = false;
-    getStateData().reversalActive = false;
-    getStateData().previousState = getStateData().currentState;
-    getStateData().stateType = StateType::Stand;
-    getStateData().currentAnimation = Standing;
-    getStateData().ownPalette = false;
-    getStateData().drawAngle = 0;
+    getLocalData().max_health = 0;
+    getLocalData().health = 0;
+    getLocalData().maxChangeStates = 0;
+    getLocalData().currentState = Standing;
+    getLocalData().currentPhysics = Physics::Stand;
+    getLocalData().moveType = Move::Idle;
+    getLocalData().wasHitCounter = 0;
+    getLocalData().frozen = false;
+    getLocalData().reversalActive = false;
+    getLocalData().previousState = getLocalData().currentState;
+    getLocalData().stateType = StateType::Stand;
+    getLocalData().currentAnimation = Standing;
+    getLocalData().ownPalette = false;
+    getLocalData().drawAngle = 0;
     /* FIXME: whats the default sprite priority? */
-    getStateData().spritePriority = 0;
-    getStateData().juggleRemaining = 0;
-    getStateData().koecho = false;
-    getStateData().defense = 0;
-    getStateData().fallDefenseUp = 0;
-    getStateData().defenseMultiplier = 1;
-    getStateData().attackMultiplier = 1;
-    getStateData().lieDownTime = 0;
-    getStateData().xscale = 1;
-    getStateData().yscale = 1;
-    getStateData().debug = false;
-    getStateData().has_control = true;
-    getStateData().blocking = false;
-    getStateData().airjumpnum = 0;
-    getStateData().airjumpheight = 35;
-    getStateData().guarding = false;
-    getStateData().behavior = NULL;
+    getLocalData().spritePriority = 0;
+    getLocalData().juggleRemaining = 0;
+    getLocalData().koecho = false;
+    getLocalData().defense = 0;
+    getLocalData().fallDefenseUp = 0;
+    getLocalData().defenseMultiplier = 1;
+    getLocalData().attackMultiplier = 1;
+    getLocalData().lieDownTime = 0;
+    getLocalData().xscale = 1;
+    getLocalData().yscale = 1;
+    getLocalData().debug = false;
+    getLocalData().has_control = true;
+    getLocalData().blocking = false;
+    getLocalData().airjumpnum = 0;
+    getLocalData().airjumpheight = 35;
+    getLocalData().guarding = false;
+    getLocalData().behavior = NULL;
 
-    getStateData().intpersistindex = 0;
-    getStateData().floatpersistindex = 0;
+    getLocalData().intpersistindex = 0;
+    getLocalData().floatpersistindex = 0;
 
-    getStateData().matchWins = 0;
+    getLocalData().matchWins = 0;
 
-    getStateData().combo = 1;
+    getLocalData().combo = 1;
     // nextCombo = 0;
 
     // lastTicket = 0;
@@ -631,53 +631,53 @@ void Character::initialize(){
     //loadSelectData();
 
     /* provide sensible defaults */
-    getStateData().walkfwd = 0;
-    getStateData().walkback = 0;
-    getStateData().runbackx = 0;
-    getStateData().runbacky = 0;
-    getStateData().runforwardx = 0;
-    getStateData().runforwardy = 0;
-    getStateData().power = 0;
+    getLocalData().walkfwd = 0;
+    getLocalData().walkback = 0;
+    getLocalData().runbackx = 0;
+    getLocalData().runbacky = 0;
+    getLocalData().runforwardx = 0;
+    getLocalData().runforwardy = 0;
+    getLocalData().power = 0;
 
-    getStateData().velocity_x = 0;
-    getStateData().velocity_y = 0;
+    getLocalData().velocity_x = 0;
+    getLocalData().velocity_y = 0;
 
-    getStateData().gravity = 0.1;
-    getStateData().standFriction = 0.85;
-    getStateData().crouchFriction = 0.82;
+    getLocalData().gravity = 0.1;
+    getLocalData().standFriction = 0.85;
+    getLocalData().crouchFriction = 0.82;
 
-    getStateData().stateTime = 0;
+    getLocalData().stateTime = 0;
 
     /* Regeneration */
-    getStateData().regenerateHealth = false;
-    getStateData().regenerating = false;
-    getStateData().regenerateTime = REGENERATE_TIME;
-    getStateData().regenerateHealthDifference = 0;
+    getLocalData().regenerateHealth = false;
+    getLocalData().regenerating = false;
+    getLocalData().regenerateTime = REGENERATE_TIME;
+    getLocalData().regenerateHealthDifference = 0;
 }
 
 void Character::loadSelectData(){
     /* Load up info for the select screen */
     try{
-        Filesystem::AbsolutePath baseDir = getStateData().location.getDirectory();
+        Filesystem::AbsolutePath baseDir = getLocalData().location.getDirectory();
 	Global::debug(1) << baseDir.path() << endl;
-        Filesystem::RelativePath str = Filesystem::RelativePath(getStateData().location.getFilename().path());
+        Filesystem::RelativePath str = Filesystem::RelativePath(getLocalData().location.getFilename().path());
 	const Filesystem::AbsolutePath ourDefFile = Util::fixFileName(baseDir, str.path() + ".def");
 	
 	if (ourDefFile.isEmpty()){
-	    Global::debug(1) << "Cannot locate player definition file for: " << getStateData().location.path() << endl;
+	    Global::debug(1) << "Cannot locate player definition file for: " << getLocalData().location.path() << endl;
 	}
 	
         AstRef parsed(Util::parseDef(ourDefFile));
 	// Set name of character
-	this->getStateData().name = Mugen::Util::probeDef(parsed, "info", "name");
-	this->getStateData().displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
-	this->getStateData().sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
+	this->getLocalData().name = Mugen::Util::probeDef(parsed, "info", "name");
+	this->getLocalData().displayName = Mugen::Util::probeDef(parsed, "info", "displayname");
+	this->getLocalData().sffFile = Mugen::Util::probeDef(parsed, "files", "sprite");
 	// Get necessary sprites 9000 & 9001 for select screen
         /* FIXME: replace 9000 with some readable constant */
-        Filesystem::AbsolutePath absoluteSff = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->getStateData().sffFile));
+        Filesystem::AbsolutePath absoluteSff = Storage::instance().lookupInsensitive(baseDir, Filesystem::RelativePath(this->getLocalData().sffFile));
         /* FIXME: use getIconAndPortrait so we only load the sff once */
-	this->getStateData().sprites[9000][0] = Mugen::Util::probeSff(absoluteSff, 9000, 0, true);
-	this->getStateData().sprites[9000][1] = Mugen::Util::probeSff(absoluteSff, 9000, 1, true);
+	this->getLocalData().sprites[9000][0] = Mugen::Util::probeSff(absoluteSff, 9000, 0, true);
+	this->getLocalData().sprites[9000][1] = Mugen::Util::probeSff(absoluteSff, 9000, 1, true);
 	
     } catch (const MugenException &ex){
 	Global::debug(1) << "Couldn't grab details for character!" << endl;
@@ -686,13 +686,13 @@ void Character::loadSelectData(){
 }
     
 void Character::addCommand(Command * command){
-    getStateData().commands.push_back(command);
+    getLocalData().commands.push_back(command);
 }
 
 void Character::setAnimation(int animation, int element){
     if (getAnimation(animation) != NULL){
-        getStateData().foreignAnimation = NULL;
-        getStateData().currentAnimation = animation;
+        getLocalData().foreignAnimation = NULL;
+        getLocalData().currentAnimation = animation;
         if (getCurrentAnimation() != NULL){
             getCurrentAnimation()->reset();
             getCurrentAnimation()->setPosition(element);
@@ -710,7 +710,7 @@ static void mergeStates(map<int, PaintownUtil::ReferenceCount<State> > & mergeIn
 }
 
 void Character::loadCmdFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Storage::instance().lookupInsensitive(getStateData().baseDir, path);
+    Filesystem::AbsolutePath full = Storage::instance().lookupInsensitive(getLocalData().baseDir, path);
     map<int, PaintownUtil::ReferenceCount<State> > out;
     try{
         int defaultTime = 15;
@@ -843,7 +843,7 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
                 
-    mergeStates(getStateData().states, out);
+    mergeStates(getLocalData().states, out);
 }
 
 static bool isStateDefSection(string name){
@@ -907,28 +907,28 @@ static bool hasHitAttribute(Character * enemy, const HitAttributes & attribute){
 bool Character::canBeHit(Character * enemy){
     for (int slot = 0; slot < 2; slot++){
         /* Only check active slots */
-        if (getStateData().hitByOverride[slot].time > 0){
+        if (getLocalData().hitByOverride[slot].time > 0){
             /* FIXME: use hasHitAttribute from above */
 
             /* Check the state type */
             if (enemy->getHit().attribute.state == StateType::Crouch &&
-                !getStateData().hitByOverride[slot].crouching){
+                !getLocalData().hitByOverride[slot].crouching){
                 return false;
             }
             
             if (enemy->getHit().attribute.state == StateType::Stand &&
-                !getStateData().hitByOverride[slot].standing){
+                !getLocalData().hitByOverride[slot].standing){
                 return false;
             }
             
             if (enemy->getHit().attribute.state == StateType::Air &&
-                !getStateData().hitByOverride[slot].aerial){
+                !getLocalData().hitByOverride[slot].aerial){
                 return false;
             }
 
             /* Then check the physics type */
             AttackType::Attribute hitType = parseAttribute(enemy->getHit().attribute.attackType, enemy->getHit().attribute.physics);
-            const vector<AttackType::Attribute> & attributes = getStateData().hitByOverride[slot].attributes;
+            const vector<AttackType::Attribute> & attributes = getLocalData().hitByOverride[slot].attributes;
             bool ok = false;
 
             /* The hit type of the hit definition must be in the list of attributes somewhere */
@@ -946,24 +946,24 @@ bool Character::canBeHit(Character * enemy){
         }
     }
 
-    return (getStateData().moveType != Move::Hit) ||
-           (getStateData().moveType == Move::Hit && getStateData().juggleRemaining >= enemy->getCurrentJuggle());
+    return (getLocalData().moveType != Move::Hit) ||
+           (getLocalData().moveType == Move::Hit && getLocalData().juggleRemaining >= enemy->getCurrentJuggle());
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
-    getStateData().constants[name] = Constant(values);
+    getLocalData().constants[name] = Constant(values);
 }
 
 void Character::setConstant(std::string name, double value){
-    getStateData().constants[name] = Constant(value);
+    getLocalData().constants[name] = Constant(value);
 }
 
 void Character::setFloatVariable(int index, const RuntimeValue & value){
-    getStateData().floatVariables[index] = value;
+    getLocalData().floatVariables[index] = value;
 }
 
 void Character::setVariable(int index, const RuntimeValue & value){
-    getStateData().variables[index] = value;
+    getLocalData().variables[index] = value;
 }
 
 static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int index){
@@ -975,27 +975,27 @@ static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int in
 }
 
 RuntimeValue Character::getVariable(int index) const {
-    return extractVariable(getStateData().variables, index);
+    return extractVariable(getLocalData().variables, index);
 }
 
 RuntimeValue Character::getFloatVariable(int index) const {
-    return extractVariable(getStateData().floatVariables, index);
+    return extractVariable(getLocalData().floatVariables, index);
 }
         
 void Character::setSystemVariable(int index, const RuntimeValue & value){
-    getStateData().systemVariables[index] = value;
+    getLocalData().systemVariables[index] = value;
 }
 
 RuntimeValue Character::getSystemVariable(int index) const {
-    return extractVariable(getStateData().systemVariables, index);
+    return extractVariable(getLocalData().systemVariables, index);
 }
         
 void Character::resetStateTime(){
-    getStateData().stateTime = 0;
+    getLocalData().stateTime = 0;
 }
         
 void Character::resetJugglePoints(){
-    getStateData().juggleRemaining = getJugglePoints();
+    getLocalData().juggleRemaining = getJugglePoints();
 }
     
 /*
@@ -1009,8 +1009,8 @@ void Character::changeState(Mugen::Stage & stage, int state){
  * pause time reaches 0.
  */
 void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
-    getStateData().maxChangeStates += 1;
-    if (getStateData().maxChangeStates > 100){
+    getLocalData().maxChangeStates += 1;
+    if (getLocalData().maxChangeStates > 100){
         std::ostringstream out;
         out << "ChangeState called more than 100 times, most likely this is a bug";
         Global::debug(0) << out.str() << std::endl;
@@ -1029,17 +1029,17 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
     /* FIXME: handle movehitpersist
      * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
      */
-    getStateData().hitState.moveContact = 0;
+    getLocalData().hitState.moveContact = 0;
 
     /* reset hit count */
-    getStateData().hitCount = 0;
+    getLocalData().hitCount = 0;
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getObjectId();
-    Global::debug(1, debug.str()) << "Change from state " << getStateData().currentState << " to state " << stateNumber << endl;
-    getStateData().previousState = getStateData().currentState;
-    getStateData().currentState = stateNumber;
-    getStateData().stateTime = -1;
+    Global::debug(1, debug.str()) << "Change from state " << getLocalData().currentState << " to state " << stateNumber << endl;
+    getLocalData().previousState = getLocalData().currentState;
+    getLocalData().currentState = stateNumber;
+    getLocalData().stateTime = -1;
     /*
     if (getState(currentState) != NULL){
         PaintownUtil::ReferenceCount<State> state = getState(currentState);
@@ -1054,8 +1054,8 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
 /* Immediately changes to a state and activates it */
 void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
-    getStateData().maxChangeStates += 1;
-    if (getStateData().maxChangeStates > 100){
+    getLocalData().maxChangeStates += 1;
+    if (getLocalData().maxChangeStates > 100){
         std::ostringstream out;
         out << "ChangeState called more than 100 times, most likely this is a bug";
         Global::debug(0) << out.str() << std::endl;
@@ -1074,35 +1074,35 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
     /* FIXME: handle movehitpersist
      * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
      */
-    getStateData().hitState.moveContact = 0;
+    getLocalData().hitState.moveContact = 0;
 
     /* reset hit count */
-    getStateData().hitCount = 0;
+    getLocalData().hitCount = 0;
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getObjectId();
-    Global::debug(1, debug.str()) << "Change from state " << getStateData().currentState << " to state " << stateNumber << endl;
-    getStateData().previousState = getStateData().currentState;
-    getStateData().currentState = stateNumber;
+    Global::debug(1, debug.str()) << "Change from state " << getLocalData().currentState << " to state " << stateNumber << endl;
+    getLocalData().previousState = getLocalData().currentState;
+    getLocalData().currentState = stateNumber;
     resetStateTime();
-    if (getState(getStateData().currentState) != NULL){
-        PaintownUtil::ReferenceCount<State> state = getState(getStateData().currentState);
+    if (getState(getLocalData().currentState) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState);
         state->transitionTo(stage, *this);
-        doStates(stage, getStateData().active, getStateData().currentState);
+        doStates(stage, getLocalData().active, getLocalData().currentState);
     } else {
-        Global::debug(0, debug.str()) << "Unknown state " << getStateData().currentState << endl;
+        Global::debug(0, debug.str()) << "Unknown state " << getLocalData().currentState << endl;
     }
 }
 
 /* TODO: get rid of the inputs parameter */
 void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs){
-    getStateData().characterData.who = NULL;
-    getStateData().characterData.enabled = false;
+    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.enabled = false;
     changeState(stage, state);
 }
 
 void Character::loadCnsFile(const Filesystem::RelativePath & path){
-    Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(getStateData().baseDir).join(path));
+    Filesystem::AbsolutePath full = Storage::instance().findInsensitive(Storage::instance().cleanse(getLocalData().baseDir).join(path));
     try{
         /* cns can use the Cmd parser */
         AstRef parsed(Util::parseCmd(full));
@@ -1334,41 +1334,41 @@ void Character::loadCnsFile(const Filesystem::RelativePath & path){
                             simple.view() >> x;
                             self.setHeight(x);
                         } else if (simple == "xscale"){
-			    simple.view() >> self.getStateData().xscale;
+			    simple.view() >> self.getLocalData().xscale;
 			} else if (simple == "yscale"){
-			    simple.view() >> self.getStateData().yscale;
+			    simple.view() >> self.getLocalData().yscale;
 			} else if (simple == "ground.back"){
-			    simple.view() >> self.getStateData().groundback;
+			    simple.view() >> self.getLocalData().groundback;
 			} else if (simple == "ground.front"){
-			    simple.view() >> self.getStateData().groundfront;
+			    simple.view() >> self.getLocalData().groundfront;
 			} else if (simple == "air.back"){
-			    simple.view() >> self.getStateData().airback;
+			    simple.view() >> self.getLocalData().airback;
 			} else if (simple == "air.front"){
-			    simple.view() >> self.getStateData().airfront;
+			    simple.view() >> self.getLocalData().airfront;
 			} else if (simple == "attack.dist"){
-			    simple.view() >> self.getStateData().attackdist;
+			    simple.view() >> self.getLocalData().attackdist;
 			} else if (simple == "proj.attack.dist"){
-			    simple.view() >> self.getStateData().projattackdist;
+			    simple.view() >> self.getLocalData().projattackdist;
 			} else if (simple == "proj.doscale"){
-			    simple.view() >> self.getStateData().projdoscale;
+			    simple.view() >> self.getLocalData().projdoscale;
 			} else if (simple == "head.pos"){
 			    int x=0,y=0;
 			    try{
-				simple.view() >> self.getStateData().headPosition.x >> self.getStateData().headPosition.y;
+				simple.view() >> self.getLocalData().headPosition.x >> self.getLocalData().headPosition.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			} else if (simple == "mid.pos"){
 			    int x=0,y=0;
 			    try{
-				simple.view() >> self.getStateData().midPosition.x >> self.getStateData().midPosition.y;
+				simple.view() >> self.getLocalData().midPosition.x >> self.getLocalData().midPosition.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			} else if (simple == "shadowoffset"){
-			    simple.view() >> self.getStateData().shadowoffset;
+			    simple.view() >> self.getLocalData().shadowoffset;
 			} else if (simple == "draw.offset"){
 			    int x=0,y=0;
 			    try{
-				simple.view() >> self.getStateData().drawOffset.x >> self.getStateData().drawOffset.y;
+				simple.view() >> self.getLocalData().drawOffset.x >> self.getLocalData().drawOffset.y;
 			    } catch (const Ast::Exception & e){
 			    }
 			}
@@ -1750,18 +1750,18 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
         }
     }
 
-    mergeStates(getStateData().states, out);
+    mergeStates(getLocalData().states, out);
 }
     
 void Character::startRecording(int count){
-    getStateData().record = PaintownUtil::ReferenceCount<RecordingInformation>(new RecordingInformation());
+    getLocalData().record = PaintownUtil::ReferenceCount<RecordingInformation>(new RecordingInformation());
     ostringstream filename;
     filename << getDisplayName() << "-" << count << ".txt";
-    getStateData().record->out.open(filename.str().c_str());
-    if (!getStateData().record->out.good()){
+    getLocalData().record->out.open(filename.str().c_str());
+    if (!getLocalData().record->out.good()){
         Global::debug(0) << "Could not record " << filename.str() << std::endl;
     }
-    getStateData().record->ticks = 1;
+    getLocalData().record->ticks = 1;
 }
 
 static bool differentCommands(std::vector<std::string> list1, std::vector<std::string> list2){
@@ -1782,13 +1782,13 @@ static bool differentCommands(std::vector<std::string> list1, std::vector<std::s
 }
 
 void Character::recordCommands(const std::vector<std::string> & commands){
-    if (getStateData().record != NULL){
-        if (differentCommands(commands, getStateData().record->commands)){
-            getStateData().record->out << getStateData().record->ticks << " " << PaintownUtil::join(getStateData().record->commands, ", ") << std::endl;
-            getStateData().record->ticks = 1;
-            getStateData().record->commands = commands;
+    if (getLocalData().record != NULL){
+        if (differentCommands(commands, getLocalData().record->commands)){
+            getLocalData().record->out << getLocalData().record->ticks << " " << PaintownUtil::join(getLocalData().record->commands, ", ") << std::endl;
+            getLocalData().record->ticks = 1;
+            getLocalData().record->commands = commands;
         } else {
-            getStateData().record->ticks += 1;
+            getLocalData().record->ticks += 1;
         }
     }
 }
@@ -1797,11 +1797,11 @@ void Character::stopRecording(){
     /* force the last set of commands to be written if any */
     std::vector<std::string> last;
     recordCommands(last);
-    getStateData().record = NULL;
+    getLocalData().record = NULL;
 }
     
 void Character::checkStateControllers(){
-    for (map<int, PaintownUtil::ReferenceCount<State> >::iterator it = getStateData().states.begin(); it != getStateData().states.end(); it++){
+    for (map<int, PaintownUtil::ReferenceCount<State> >::iterator it = getLocalData().states.begin(); it != getLocalData().states.end(); it++){
         PaintownUtil::ReferenceCount<State> state = it->second;
         if (state->getControllers().size() == 0){
             std::ostringstream out;
@@ -1834,20 +1834,20 @@ void Character::load(int useAct){
     }
 #endif
 
-    MessageQueue::info("Loading " + getStateData().location.getFilename().path());
+    MessageQueue::info("Loading " + getLocalData().location.getFilename().path());
     
     // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
-    getStateData().baseDir = getStateData().location.getDirectory();
+    getLocalData().baseDir = getLocalData().location.getDirectory();
     // const std::string ourDefFile = location;
      
-    AstRef parsed(Util::parseDef(getStateData().location));
+    AstRef parsed(Util::parseDef(getLocalData().location));
     try{
         /* Every character should have a [Files] section at least. Possibly [Info] as well
          * but I'm not sure yet.
          */
         if (parsed->findSection("files") == NULL){
             std::ostringstream out;
-            out << "Could not find a [Files] section in " << getStateData().location.path();
+            out << "Could not find a [Files] section in " << getLocalData().location.path();
             throw MugenException(out.str(), __FILE__, __LINE__);
         }
         /* Extract info for our first section of our stage */
@@ -1869,34 +1869,34 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "name"){
                                 try{
-                                    simple.view() >> self.getStateData().name;
+                                    simple.view() >> self.getLocalData().name;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "displayname"){
                                 try{
-                                    simple.view() >> self.getStateData().displayName;
+                                    simple.view() >> self.getLocalData().displayName;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "versiondate"){
                                 try{
-                                    simple.view() >> self.getStateData().versionDate;
+                                    simple.view() >> self.getLocalData().versionDate;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "mugenversion"){
                                 try{
-                                    simple.view() >> self.getStateData().mugenVersion;
+                                    simple.view() >> self.getLocalData().mugenVersion;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "author"){
                                 try{
-                                    simple.view() >> self.getStateData().author;
+                                    simple.view() >> self.getLocalData().author;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "pal.defaults"){
                                 vector<int> numbers;
                                 simple.view() >> numbers;
                                 for (vector<int>::iterator it = numbers.begin(); it != numbers.end(); it++){
-                                    self.getStateData().palDefaults.push_back((*it) - 1);
+                                    self.getLocalData().palDefaults.push_back((*it) - 1);
                                 }
                                 // Global::debug(1) << "Pal" << self.palDefaults.size() << ": " << num << endl;
                             } else if (simple == "localcoord"){
@@ -1926,7 +1926,7 @@ void Character::load(int useAct){
                             if (simple == "cmd"){
                                 string file;
                                 simple.view() >> file;
-                                self.getStateData().cmdFile = Filesystem::RelativePath(file);
+                                self.getLocalData().cmdFile = Filesystem::RelativePath(file);
                                 /* loaded later after the state files */
                             } else if (simple == "cns"){
                                 string file;
@@ -1938,25 +1938,25 @@ void Character::load(int useAct){
                                 if (num >= 0 && num <= 12){
                                     string path;
                                     simple.view() >> path;
-                                    stateFiles.push_back(Location(self.getStateData().baseDir, path));
+                                    stateFiles.push_back(Location(self.getLocalData().baseDir, path));
                                     // simple >> self.stFile[num];
                                 }
                             } else if (simple == "stcommon"){
                                 string path;
                                 simple.view() >> path;
-                                stateFiles.insert(stateFiles.begin(), Location(self.getStateData().baseDir, path));
+                                stateFiles.insert(stateFiles.begin(), Location(self.getLocalData().baseDir, path));
                             } else if (simple == "st"){
                                 string path;
                                 simple.view() >> path;
-                                stateFiles.push_back(Location(self.getStateData().baseDir, path));
+                                stateFiles.push_back(Location(self.getLocalData().baseDir, path));
                             } else if (simple == "sprite"){
-                                simple.view() >> self.getStateData().sffFile;
+                                simple.view() >> self.getLocalData().sffFile;
                             } else if (simple == "anim"){
-                                simple.view() >> self.getStateData().airFile;
+                                simple.view() >> self.getLocalData().airFile;
                             } else if (simple == "sound"){
-                                simple.view() >> self.getStateData().sndFile;
+                                simple.view() >> self.getLocalData().sndFile;
                                 // Mugen::Util::readSounds(Mugen::Util::fixFileName(self.baseDir, self.sndFile), self.sounds);
-                                Util::readSounds(Storage::instance().lookupInsensitive(self.getStateData().baseDir, Filesystem::RelativePath(self.getStateData().sndFile)), self.getStateData().sounds);
+                                Util::readSounds(Storage::instance().lookupInsensitive(self.getLocalData().baseDir, Filesystem::RelativePath(self.getLocalData().sndFile)), self.getLocalData().sounds);
                             } else if (PaintownUtil::matchRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("pal[0-9]+"))){
                                 int num = atoi(PaintownUtil::captureRegex(PaintownUtil::lowerCaseAll(simple.idString()), PaintownUtil::Regex("pal([0-9]+)"), 0).c_str());
                                 try{
@@ -1965,7 +1965,7 @@ void Character::load(int useAct){
                                      * pal2 =
                                      */
                                     simple.view() >> what;
-                                    self.getStateData().palFile[num] = what;
+                                    self.getLocalData().palFile[num] = what;
                                 } catch (const Ast::Exception & fail){
                                     Global::debug(1) << "No palette defined for " << num << std::endl;
                                 }
@@ -1975,7 +1975,7 @@ void Character::load(int useAct){
                         }
                 };
 
-                FilesWalker walker(*this, getStateData().location);
+                FilesWalker walker(*this, getLocalData().location);
                 Ast::Section * section = *section_it;
                 section->walk(walker);
 
@@ -2002,7 +2002,7 @@ void Character::load(int useAct){
 
                 }
 
-                loadCmdFile(getStateData().cmdFile);
+                loadCmdFile(getLocalData().cmdFile);
 
                 compileTime.endTime();
                 Global::debug(1) << compileTime.printTime("Compile time") << std::endl;
@@ -2078,12 +2078,12 @@ void Character::load(int useAct){
                         virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                             if (simple == "intro.storyboard"){
                                 try{
-                                    simple.view() >> self.getStateData().introFile;
+                                    simple.view() >> self.getLocalData().introFile;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else if (simple == "ending.storyboard"){
                                 try{
-                                    simple.view() >> self.getStateData().endingFile;
+                                    simple.view() >> self.getLocalData().endingFile;
                                 } catch (const Ast::Exception & fail){
                                 }
                             } else {
@@ -2099,7 +2099,7 @@ void Character::load(int useAct){
         }
     } catch (const Ast::Exception & e){
         ostringstream out;
-        out << "Could not load " << getStateData().location.path() << ": " << e.getReason();
+        out << "Could not load " << getLocalData().location.path() << ": " << e.getReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
 
@@ -2113,10 +2113,10 @@ void Character::load(int useAct){
     }
 
     // Current palette
-    if (getStateData().palDefaults.empty()){
+    if (getLocalData().palDefaults.empty()){
 	// Correct the palette defaults
-	for (unsigned int i = 0; i < getStateData().palFile.size(); ++i){
-	    getStateData().palDefaults.push_back(i);
+	for (unsigned int i = 0; i < getLocalData().palFile.size(); ++i){
+	    getLocalData().palDefaults.push_back(i);
 	}
     }
     /*
@@ -2138,19 +2138,19 @@ void Character::load(int useAct){
     }
     */
     std::string paletteFile = "";
-    getStateData().currentPalette = useAct;
-    if (getStateData().palFile.find(getStateData().currentPalette) == getStateData().palFile.end()){
+    getLocalData().currentPalette = useAct;
+    if (getLocalData().palFile.find(getLocalData().currentPalette) == getLocalData().palFile.end()){
         /* FIXME: choose a default. its not just palette 1 because that palette
          * might not exist
          */
-	Global::debug(1) << "Couldn't find palette: " << getStateData().currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
-        if (getStateData().palFile.size() > 0){
-            paletteFile = getStateData().palFile.begin()->second;
+	Global::debug(1) << "Couldn't find palette: " << getLocalData().currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
+        if (getLocalData().palFile.size() > 0){
+            paletteFile = getLocalData().palFile.begin()->second;
         }
     } else {
-        if (getStateData().currentPalette < getStateData().palFile.size()){
-            paletteFile = getStateData().palFile[getStateData().currentPalette];
-            Global::debug(2) << "Current pal: " << getStateData().currentPalette << " | Palette File: " << paletteFile << endl;
+        if (getLocalData().currentPalette < getLocalData().palFile.size()){
+            paletteFile = getLocalData().palFile[getLocalData().currentPalette];
+            Global::debug(2) << "Current pal: " << getLocalData().currentPalette << " | Palette File: " << paletteFile << endl;
         }
     }
     /*
@@ -2163,16 +2163,16 @@ void Character::load(int useAct){
     // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
     Filesystem::AbsolutePath finalPalette;
     try{
-        finalPalette = Storage::instance().lookupInsensitive(getStateData().baseDir, Filesystem::RelativePath(paletteFile));
+        finalPalette = Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(paletteFile));
     } catch (const Filesystem::Exception & fail){
         Global::debug(0) << "Couldn't find palette for '" << paletteFile << "' because " << fail.getTrace() << endl;
         /* ignore palette */
     }
-    Util::readSprites(Storage::instance().lookupInsensitive(getStateData().baseDir, Filesystem::RelativePath(getStateData().sffFile)), finalPalette, getStateData().sprites, true);
+    Util::readSprites(Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(getLocalData().sffFile)), finalPalette, getLocalData().sprites, true);
     Global::debug(2) << "Reading Air (animation) Data..." << endl;
     /* Animations */
     // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    getStateData().animations = Util::loadAnimations(Storage::instance().lookupInsensitive(getStateData().baseDir, Filesystem::RelativePath(getStateData().airFile)), getStateData().sprites, true);
+    getLocalData().animations = Util::loadAnimations(Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(getLocalData().airFile)), getLocalData().sprites, true);
 
     fixAssumptions();
 
@@ -2185,15 +2185,15 @@ void Character::load(int useAct){
 }
 
 bool Character::isBound() const {
-    return getStateData().bind.time > 0;
+    return getLocalData().bind.time > 0;
 }
 
 void Character::bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY){
-    getStateData().bind.bound = bound;
-    getStateData().bind.time = time;
-    getStateData().bind.facing = facing;
-    getStateData().bind.offsetX = offsetX;
-    getStateData().bind.offsetY = offsetY;
+    getLocalData().bind.bound = bound;
+    getLocalData().bind.time = time;
+    getLocalData().bind.facing = facing;
+    getLocalData().bind.offsetX = offsetX;
+    getLocalData().bind.offsetY = offsetY;
 }
 
 bool Character::hasAnimation(int index) const {
@@ -2243,10 +2243,10 @@ void Character::doubleJump(Mugen::Stage & stage, const vector<string> & inputs){
 
 /* TODO: get rid of inputs */
 void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs){
-    getStateData().guarding = false;
-    if (getStateData().stateType == StateType::Crouch){
+    getLocalData().guarding = false;
+    if (getLocalData().stateType == StateType::Crouch){
         changeState(stage, Crouching);
-    } else if (getStateData().stateType == StateType::Air){
+    } else if (getLocalData().stateType == StateType::Air){
         changeState(stage, 51);
     } else {
         changeState(stage, Standing);
@@ -2277,7 +2277,7 @@ void Character::fixAssumptions(){
      * or holdback is pressed
      */
 
-    if (getStateData().states[-1] != 0){
+    if (getLocalData().states[-1] != 0){
         /* walk */
         {
             ostringstream raw;
@@ -2286,7 +2286,7 @@ void Character::fixAssumptions(){
             raw << "trigger1 = command = \"holdfwd\"\n";
             raw << "trigger2 = command = \"holdback\"\n";
             raw << "value = " << WalkingForwards << "\n";
-            getStateData().states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
+            getLocalData().states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
         }
 
 
@@ -2300,7 +2300,7 @@ void Character::fixAssumptions(){
             raw << "trigger2 = stateno = " << WalkingForwards << "\n";
             raw << "triggerall = command = \"holddown\"\n";
 
-            getStateData().states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
+            getLocalData().states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
         }
 
         /* jump */
@@ -2328,7 +2328,7 @@ void Character::fixAssumptions(){
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("command"),
                         new Ast::String(-1, -1, new string("holdup")))));
-            getStateData().states[-1]->addController(controller);
+            getLocalData().states[-1]->addController(controller);
         }
 
         /* double jump */
@@ -2375,12 +2375,12 @@ void Character::fixAssumptions(){
                         // new Ast::String(new string("holdup")
                         new Ast::String(-1, -1, new string(jumpCommand)
                             ))));
-            getStateData().states[-1]->addController(controller);
+            getLocalData().states[-1]->addController(controller);
         }
     }
 
     {
-        if (getStateData().states[StopGuardStand] != 0){
+        if (getLocalData().states[StopGuardStand] != 0){
             class StopGuardStandController: public StateController {
             public:
                 StopGuardStandController():
@@ -2400,55 +2400,55 @@ void Character::fixAssumptions(){
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(-1, -1, 0))));
-            getStateData().states[StopGuardStand]->addController(controller);
+            getLocalData().states[StopGuardStand]->addController(controller);
         }
     }
 
     /* need a 20 state controller that changes to state 0 if holdfwd
      * or holdback is not pressed
      */
-    if (getStateData().states[20] != 0){
+    if (getLocalData().states[20] != 0){
         ostringstream raw;
         raw << "[State 20, paintown-internal-stop-walking]\n";
         raw << "value = " << Standing << "\n";
         raw << "trigger1 = command != \"holdfwd\"\n";
         raw << "trigger1 = command != \"holdback\"\n";
 
-        getStateData().states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
+        getLocalData().states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
     }
 
-    if (getStateData().states[Standing] != 0){
-        getStateData().states[Standing]->setControl(Compiler::compile(1));
+    if (getLocalData().states[Standing] != 0){
+        getLocalData().states[Standing]->setControl(Compiler::compile(1));
     }
 
-    if (getStateData().states[StandToCrouch] != NULL){
+    if (getLocalData().states[StandToCrouch] != NULL){
         ostringstream raw;
         raw << "[State " << StandToCrouch << ", paintown-internal-stand-while-crouching]\n";
         raw << "value = " << CrouchToStand << "\n";
         raw << "trigger1 = command != \"holddown\"\n";
 
-        getStateData().states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, StateController::ChangeState));
+        getLocalData().states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, StateController::ChangeState));
 
     }
 
     /* stand after crouching */
-    if (getStateData().states[11] != 0){
+    if (getLocalData().states[11] != 0){
         ostringstream raw;
         raw << "[State 11, paintown-internal-stand-after-crouching]\n";
         raw << "value = " << CrouchToStand << "\n";
         raw << "trigger1 = command != \"holddown\"\n";
 
-        getStateData().states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
+        getLocalData().states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
     }
 
     /* get up kids */
-    if (getStateData().states[Liedown] != 0){
+    if (getLocalData().states[Liedown] != 0){
         ostringstream raw;
         raw << "[State " << Liedown << ", paintown-internal-get-up]\n";
         raw << "value = " << GetUpFromLiedown << "\n";
         raw << "trigger1 = time >= " << getLieDownTime() << "\n";
 
-        getStateData().states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
+        getLocalData().states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
     }
 
     /* standing turn state */
@@ -2456,7 +2456,7 @@ void Character::fixAssumptions(){
         State * turn = new State(StandTurning);
         turn->setType(State::Unchanged);
         turn->setAnimation(Compiler::compile(StandTurning));
-        getStateData().states[StandTurning] = turn;
+        getLocalData().states[StandTurning] = turn;
 
         ostringstream raw;
         raw << "[State 5, paintown-internal-turn]\n";
@@ -2471,7 +2471,7 @@ void Character::fixAssumptions(){
         State * turn = new State(CrouchTurning);
         turn->setType(State::Unchanged);
         turn->setAnimation(Compiler::compile(CrouchTurning));
-        getStateData().states[CrouchTurning] = turn;
+        getLocalData().states[CrouchTurning] = turn;
 
         ostringstream raw;
         raw << "[State 5, paintown-internal-crouch-turn]\n";
@@ -2484,7 +2484,7 @@ void Character::fixAssumptions(){
     /* if y reaches 0 then auto-transition to state 52.
      * probably just add a trigger to state 50
      */
-    if (getStateData().states[50] != 0){
+    if (getLocalData().states[50] != 0){
         /*
         ostringstream raw;
         raw << "[State 50, paintown-internal-land]\n";
@@ -2513,7 +2513,7 @@ void Character::fixAssumptions(){
 
 // Render sprite
 void Character::renderSprite(const int x, const int y, const unsigned int group, const unsigned int image, Graphics::Bitmap *bmp , const int flip, const double scalex, const double scaley ){
-    PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = getStateData().sprites[group][image];
+    PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = getLocalData().sprites[group][image];
     if (sprite != NULL){
         Mugen::Effects effects;
         effects.facing = flip == 1;
@@ -2547,21 +2547,21 @@ bool Character::canRecover() const {
 }
 
 void Character::nextPalette(){
-    if (getStateData().currentPalette < getStateData().palDefaults.size()-1){
-	getStateData().currentPalette++;
+    if (getLocalData().currentPalette < getLocalData().palDefaults.size()-1){
+	getLocalData().currentPalette++;
     } else {
-        getStateData().currentPalette = 0;
+        getLocalData().currentPalette = 0;
     }
-    Global::debug(1) << "Current pal: " << getStateData().currentPalette << " | Location: " << getStateData().palDefaults[getStateData().currentPalette] << " | Palette File: " << getStateData().palFile[getStateData().palDefaults[getStateData().currentPalette]] << endl;
+    Global::debug(1) << "Current pal: " << getLocalData().currentPalette << " | Location: " << getLocalData().palDefaults[getLocalData().currentPalette] << " | Palette File: " << getLocalData().palFile[getLocalData().palDefaults[getLocalData().currentPalette]] << endl;
 }
 
 void Character::priorPalette(){
-    if (getStateData().currentPalette > 0){
-	getStateData().currentPalette--;
+    if (getLocalData().currentPalette > 0){
+	getLocalData().currentPalette--;
     } else {
-        getStateData().currentPalette = getStateData().palDefaults.size() -1;
+        getLocalData().currentPalette = getLocalData().palDefaults.size() -1;
     }
-    Global::debug(1) << "Current pal: " << getStateData().currentPalette << " | Palette File: " << getStateData().palFile[getStateData().palDefaults[getStateData().currentPalette]] << endl;
+    Global::debug(1) << "Current pal: " << getLocalData().currentPalette << " | Palette File: " << getLocalData().palFile[getLocalData().palDefaults[getLocalData().currentPalette]] << endl;
 }
         
 /* players are their own root normally, only helpers differ */
@@ -2578,29 +2578,29 @@ const PaintownUtil::ReferenceCount<Mugen::Sprite> Character::getCurrentFrame() c
 }
 
 void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
-    if (getStateData().special.invisible){
+    if (getLocalData().special.invisible){
         return;
     }
 
     if (getCurrentAnimation() != NULL){
-        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() - getY() - rel_y), *work, getStateData().xscale, getStateData().yscale);
+        getCurrentAnimation()->renderReflection(getFacing() == FacingLeft, true, intensity, (int)(getX() - rel_x), (int)(getZ() - getY() - rel_y), *work, getLocalData().xscale, getLocalData().yscale);
     }
 }
     
 int Character::getAnimation() const {
-    if (getStateData().foreignAnimation != NULL){
-        return getStateData().foreignAnimationNumber;
+    if (getLocalData().foreignAnimation != NULL){
+        return getLocalData().foreignAnimationNumber;
     }
-    return getStateData().currentAnimation;
+    return getLocalData().currentAnimation;
 }
 
 PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
     /* Foreign animation is set by ChangeAnim2 */
-    if (getStateData().foreignAnimation != NULL){
-        return getStateData().foreignAnimation;
+    if (getLocalData().foreignAnimation != NULL){
+        return getLocalData().foreignAnimation;
     }
 
-    return getAnimation(getStateData().currentAnimation);
+    return getAnimation(getLocalData().currentAnimation);
     /*
     typedef std::map< int, Animation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentAnimation);
@@ -2613,33 +2613,33 @@ PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
 }
         
 void Character::startInput(const Mugen::Stage & stage){
-    if (getStateData().behavior != NULL){
-        getStateData().behavior->start(stage, this, getStateData().commands, getFacing() == FacingRight);
+    if (getLocalData().behavior != NULL){
+        getLocalData().behavior->start(stage, this, getLocalData().commands, getFacing() == FacingRight);
     }
 }
 
 /* returns all the commands that are currently active */
 vector<string> Character::doInput(const Mugen::Stage & stage){
-    if (getStateData().behavior == NULL){
+    if (getLocalData().behavior == NULL){
         throw MugenException("Internal error: No behavior specified", __FILE__, __LINE__);
     }
 
-    return getStateData().behavior->currentCommands(stage, this, getStateData().commands, getFacing() == FacingRight);
+    return getLocalData().behavior->currentCommands(stage, this, getLocalData().commands, getFacing() == FacingRight);
 }
 
 bool Character::isPaused() const {
-    return getStateData().hitState.shakeTime > 0;
+    return getLocalData().hitState.shakeTime > 0;
 }
 
 int Character::pauseTime() const {
-    return getStateData().hitState.shakeTime;
+    return getLocalData().hitState.shakeTime;
 }
     
 double Character::getHealth() const {
-    if (getStateData().health < 0){
+    if (getLocalData().health < 0){
         return 0;
     }
-    return getStateData().health;
+    return getLocalData().health;
 }
 
 /*
@@ -2662,31 +2662,31 @@ static bool holdingBlock(const vector<string> & commands){
 }
 
 void Character::processAfterImages(){
-    if (getStateData().afterImage.lifetime > 0){
-        getStateData().afterImage.lifetime -= 1;
+    if (getLocalData().afterImage.lifetime > 0){
+        getLocalData().afterImage.lifetime -= 1;
     }
 
-    if (getStateData().afterImage.currentTime > 0){
-        getStateData().afterImage.currentTime -= 1;
+    if (getLocalData().afterImage.currentTime > 0){
+        getLocalData().afterImage.currentTime -= 1;
     }
 
     int x = (int) getX();
     int y = (int) getRY();
 
     /* not sure if checking for the timegap > 0 is the right thing.. */
-    if (getStateData().afterImage.timegap > 0 && getStateData().afterImage.currentTime <= 0){
-        getStateData().afterImage.currentTime += getStateData().afterImage.timegap;
+    if (getLocalData().afterImage.timegap > 0 && getLocalData().afterImage.currentTime <= 0){
+        getLocalData().afterImage.currentTime += getLocalData().afterImage.timegap;
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
             Frame * currentSprite = animation->getCurrentFrame();
-            getStateData().afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, getStateData().xscale, getStateData().yscale), getStateData().life, x, y, getStateData().afterImage.lifetime > 0));
+            getLocalData().afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, getLocalData().xscale, getLocalData().yscale), getLocalData().life, x, y, getLocalData().afterImage.lifetime > 0));
         }
     }
-    if (getStateData().afterImage.length > 0 &&
-        getStateData().afterImage.frames.size() >= getStateData().afterImage.length){
+    if (getLocalData().afterImage.length > 0 &&
+        getLocalData().afterImage.frames.size() >= getLocalData().afterImage.length){
 
-        getStateData().afterImage.frames.resize(getStateData().afterImage.length - 1);
+        getLocalData().afterImage.frames.resize(getLocalData().afterImage.length - 1);
     }
 
 #if 0
@@ -2727,36 +2727,36 @@ static bool blockingState(int state){
 /* Inherited members */
 void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mugen::Character*>* add){
 
-    getStateData().maxChangeStates = 0;
+    getLocalData().maxChangeStates = 0;
 
     /* Reversals deactivate on state change or if a reversal actually occurs */
     // reversalActive = false;
 
-    getStateData().special.reset();
-    getStateData().blocking = false;
+    getLocalData().special.reset();
+    getLocalData().blocking = false;
 
-    if (getStateData().frozen){
-        getStateData().frozen = false;
+    if (getLocalData().frozen){
+        getLocalData().frozen = false;
     }
  
     //! Check pushable
-    if (getStateData().pushPlayer > 0){
-        getStateData().pushPlayer--;
+    if (getLocalData().pushPlayer > 0){
+        getLocalData().pushPlayer--;
     }
 
     /* reset some stuff */
-    getStateData().widthOverride.enabled = false;
-    getStateData().transOverride.enabled = false;
-    getStateData().drawAngleData.enabled = false;
+    getLocalData().widthOverride.enabled = false;
+    getLocalData().transOverride.enabled = false;
+    getLocalData().drawAngleData.enabled = false;
 
     processAfterImages();
 
-    if (getStateData().paletteEffects.time > 0){
-        getStateData().paletteEffects.counter += 1;
-        getStateData().paletteEffects.time -= 1;
+    if (getLocalData().paletteEffects.time > 0){
+        getLocalData().paletteEffects.counter += 1;
+        getLocalData().paletteEffects.time -= 1;
     }
 
-    for (map<int, HitOverride>::iterator it = getStateData().hitOverrides.begin(); it != getStateData().hitOverrides.end(); it++){
+    for (map<int, HitOverride>::iterator it = getLocalData().hitOverrides.begin(); it != getLocalData().hitOverrides.end(); it++){
         HitOverride & override = it->second;
         if (override.time > 0){
             override.time -= 1;
@@ -2764,25 +2764,25 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     }
 
     for (int slot = 0; slot < 2; slot++){
-        if (getStateData().hitByOverride[slot].time > 0){
-            getStateData().hitByOverride[slot].time -= 1;
+        if (getLocalData().hitByOverride[slot].time > 0){
+            getLocalData().hitByOverride[slot].time -= 1;
         }
     }
 
     /* active is the current set of commands */
-    getStateData().active = doInput(*stage);
+    getLocalData().active = doInput(*stage);
 
-    recordCommands(getStateData().active);
+    recordCommands(getLocalData().active);
 
-    if (getStateData().hitState.recoverTime > 0){
-        getStateData().hitState.recoverTime -= 1;
+    if (getLocalData().hitState.recoverTime > 0){
+        getLocalData().hitState.recoverTime -= 1;
     }
 
-    getStateData().blocking = holdingBlock(getStateData().active);
+    getLocalData().blocking = holdingBlock(getLocalData().active);
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
-    if (getStateData().hitState.shakeTime > 0){
-        getStateData().hitState.shakeTime -= 1;
+    if (getLocalData().hitState.shakeTime > 0){
+        getLocalData().hitState.shakeTime -= 1;
 
         /* Need to update the animation so it doesn't get stuck */
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
@@ -2794,12 +2794,12 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
          * from a hitdef or reversaldef. When shaketime reaches 0 we need to activate
          * the new state that was set from delayChangeState.
          */
-        if (getStateData().stateTime == -1){
-            if (getState(getStateData().currentState) != NULL){
-                PaintownUtil::ReferenceCount<State> state = getState(getStateData().currentState);
+        if (getLocalData().stateTime == -1){
+            if (getState(getLocalData().currentState) != NULL){
+                PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState);
                 state->transitionTo(*stage, *this);
             } else {
-                Global::debug(0) << "Unknown state " << getStateData().currentState << endl;
+                Global::debug(0) << "Unknown state " << getLocalData().currentState << endl;
             }
         }
 
@@ -2807,7 +2807,7 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
         if (animation != NULL){
             /* Check debug state */
-            if (getStateData().debug && !isHelper()){
+            if (getLocalData().debug && !isHelper()){
                 if (!animation->showingDefense()){
                     animation->toggleDefense();
                 }
@@ -2825,19 +2825,19 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             animation->logic();
         }
 
-        if (getStateData().hitState.hitTime > -1){
-            getStateData().hitState.hitTime -= 1;
+        if (getLocalData().hitState.hitTime > -1){
+            getLocalData().hitState.hitTime -= 1;
         }
 
-        if (isAttacking() && getStateData().hitState.moveContact > 0){
-            getStateData().hitState.moveContact += 1;
+        if (isAttacking() && getLocalData().hitState.moveContact > 0){
+            getLocalData().hitState.moveContact += 1;
         }
 
         /* if shakeTime is non-zero should we update stateTime? */
-        getStateData().stateTime += 1;
+        getLocalData().stateTime += 1;
 
         /* FIXME: there are a bunch more states that are considered blocking */
-        if (getStateData().blocking && !blockingState(getCurrentState()) &&
+        if (getLocalData().blocking && !blockingState(getCurrentState()) &&
             getMoveType() == Move::Idle &&
             stage->getEnemy(this)->getMoveType() == Move::Attack &&
             withinGuardDistance(stage->getEnemy(this))){
@@ -2863,21 +2863,21 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
     /* always run through the negative states unless we are borrowing another
      * players states
      */
-    if (!getStateData().characterData.enabled){
-        doStates(*stage, getStateData().active, -3);
-        doStates(*stage, getStateData().active, -2);
-        doStates(*stage, getStateData().active, -1);
+    if (!getLocalData().characterData.enabled){
+        doStates(*stage, getLocalData().active, -3);
+        doStates(*stage, getLocalData().active, -2);
+        doStates(*stage, getLocalData().active, -1);
     }
-    doStates(*stage, getStateData().active, getStateData().currentState);
+    doStates(*stage, getLocalData().active, getLocalData().currentState);
 
     /*! do regeneration if set, but only for main players */
-    if (getStateData().regenerateHealth && !isHelper()){
+    if (getLocalData().regenerateHealth && !isHelper()){
         if (getHealth() < 5){
             setHealth(5);
-            getStateData().regenerateTime = REGENERATE_TIME;
+            getLocalData().regenerateTime = REGENERATE_TIME;
         }
 
-        if (getStateData().regenerating){
+        if (getLocalData().regenerating){
 
             /* avoid rounding errors */
             if (getHealth() >= getMaxHealth() - 2){
@@ -2887,15 +2887,15 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
             }
 
             if (getHealth() == getMaxHealth()){
-                getStateData().regenerating = false;
+                getLocalData().regenerating = false;
             }
-            getStateData().regenerateTime = REGENERATE_TIME;
-        } else if (getHealth() < getMaxHealth() && getStateData().regenerateTime == REGENERATE_TIME){
-            getStateData().regenerateTime -= 1;
-        } else if (getStateData().regenerateTime <= 0){
-            getStateData().regenerating = true;
+            getLocalData().regenerateTime = REGENERATE_TIME;
+        } else if (getHealth() < getMaxHealth() && getLocalData().regenerateTime == REGENERATE_TIME){
+            getLocalData().regenerateTime -= 1;
+        } else if (getLocalData().regenerateTime <= 0){
+            getLocalData().regenerating = true;
         } else {
-            getStateData().regenerateTime -= 1;
+            getLocalData().regenerateTime -= 1;
         }
 
         /*
@@ -2914,16 +2914,16 @@ void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mug
 }
         
 void Character::addPower(double d){
-    getStateData().power += d;
+    getLocalData().power += d;
     /* max power is 3000. is that specified somewhere or just hard coded
      * in the engine?
      */
-    if (getStateData().power > 3000){
-        getStateData().power = 3000;
+    if (getLocalData().power > 3000){
+        getLocalData().power = 3000;
     }
 
-    if (getStateData().power < 0){
-        getStateData().power = 0;
+    if (getLocalData().power < 0){
+        getLocalData().power = 0;
     }
 }
         
@@ -2948,9 +2948,9 @@ void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> 
 }
 
 void Character::addCombo(int combo){
-    getStateData().hitCount += combo;
-    if (getStateData().hitCount < 0){
-        getStateData().hitCount = 0;
+    getLocalData().hitCount += combo;
+    if (getLocalData().hitCount < 0){
+        getLocalData().hitCount = 0;
     }
 }
 
@@ -2974,17 +2974,17 @@ void Character::destroyed(Stage & stage){
 }
 
 void Character::unbind(Character * who){
-    if (getStateData().bind.bound == who){
-        getStateData().bind.bound = NULL;
-        getStateData().bind.time = 0;
+    if (getLocalData().bind.bound == who){
+        getLocalData().bind.bound = NULL;
+        getLocalData().bind.time = 0;
     }
 
-    if (getStateData().characterData.who == who){
-        getStateData().characterData.who = NULL;
-        getStateData().characterData.enabled = false;
+    if (getLocalData().characterData.who == who){
+        getLocalData().characterData.who = NULL;
+        getLocalData().characterData.enabled = false;
     }
 
-    for (map<int, vector<Character*> >::iterator it = getStateData().targets.begin(); it != getStateData().targets.end(); it++){
+    for (map<int, vector<Character*> >::iterator it = getLocalData().targets.begin(); it != getLocalData().targets.end(); it++){
         vector<Character*> & objects = it->second;
         for (vector<Character*>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
             if (*it2 == who){
@@ -2997,18 +2997,18 @@ void Character::unbind(Character * who){
 }
 
 void Character::doMovement(const vector<Character*> & objects, Stage & stage){
-    if (getStateData().bind.time > 0 && getStateData().bind.bound != NULL){
-        getStateData().bind.time -= 1;
-        setX(getStateData().bind.bound->getX() + getStateData().bind.offsetX * (getStateData().bind.bound->getFacing() == FacingLeft ? -1 : 1));
-        setY(getStateData().bind.bound->getY() + getStateData().bind.offsetY);
-        switch (getStateData().bind.facing){
-            case -1: setFacing(getStateData().bind.bound->getOppositeFacing()); break;
+    if (getLocalData().bind.time > 0 && getLocalData().bind.bound != NULL){
+        getLocalData().bind.time -= 1;
+        setX(getLocalData().bind.bound->getX() + getLocalData().bind.offsetX * (getLocalData().bind.bound->getFacing() == FacingLeft ? -1 : 1));
+        setY(getLocalData().bind.bound->getY() + getLocalData().bind.offsetY);
+        switch (getLocalData().bind.facing){
+            case -1: setFacing(getLocalData().bind.bound->getOppositeFacing()); break;
             case 0: maybeTurn(objects, stage); break;
-            case 1: setFacing(getStateData().bind.bound->getFacing()); break;
+            case 1: setFacing(getLocalData().bind.bound->getFacing()); break;
         }
     } else {
         /* TODO: ensure that if shaketime > 0 that binding should still happen */
-        if (getStateData().hitState.shakeTime > 0){
+        if (getLocalData().hitState.shakeTime > 0){
             return;
         }
 
@@ -3052,7 +3052,7 @@ void Character::doMovement(const vector<Character*> & objects, Stage & stage){
 }
 
 void Character::setTargetId(int id, Character * enemy){
-    vector<Character*> & objects = getStateData().targets[id];
+    vector<Character*> & objects = getLocalData().targets[id];
 
     /* Don't add a duplicate target */
     for (vector<Character*>::iterator it = objects.begin(); it != objects.end(); it++){
@@ -3064,8 +3064,8 @@ void Character::setTargetId(int id, Character * enemy){
 }
         
 Character * Character::getTargetId(int id) const {
-    if (getStateData().targets.find(id) != getStateData().targets.end()){
-        const vector<Character*> & objects = getStateData().targets.find(id)->second;
+    if (getLocalData().targets.find(id) != getLocalData().targets.end()){
+        const vector<Character*> & objects = getLocalData().targets.find(id)->second;
         if (objects.size() > 0){
             /* FIXME: return a random target? */
             return objects[PaintownUtil::rnd(objects.size())];
@@ -3076,22 +3076,22 @@ Character * Character::getTargetId(int id) const {
         
 void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     /* TODO */
-    getStateData().hitState.shakeTime = getHit().guardPause.player1;
-    getStateData().hitState.spritePriority = getHit().player1SpritePriority;
-    getStateData().hitState.moveContact = 1;
+    getLocalData().hitState.shakeTime = getHit().guardPause.player1;
+    getLocalData().hitState.spritePriority = getHit().player1SpritePriority;
+    getLocalData().hitState.moveContact = 1;
     addPower(getHit().getPower.guarded);
-    getStateData().characterData.who = NULL;
-    getStateData().characterData.enabled = false;
+    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.enabled = false;
 
     disableHit();
 }
 
 void Character::didHit(Character * enemy, Mugen::Stage & stage){
-    getStateData().characterData.who = NULL;
-    getStateData().characterData.enabled = false;
-    getStateData().hitState.shakeTime = getHit().pause.player1;
-    getStateData().hitState.spritePriority = getHit().player1SpritePriority;
-    getStateData().hitState.moveContact = 1;
+    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.enabled = false;
+    getLocalData().hitState.shakeTime = getHit().pause.player1;
+    getLocalData().hitState.spritePriority = getHit().player1SpritePriority;
+    getLocalData().hitState.moveContact = 1;
     addPower(getHit().getPower.hit);
 
     /* Once a hitdef hits, it cannot hit again */
@@ -3103,18 +3103,18 @@ void Character::didHit(Character * enemy, Mugen::Stage & stage){
 
     /* if he is already in a Hit state then increase combo */
     if (enemy->getMoveType() == Move::Hit){
-        getStateData().combo += 1;
+        getLocalData().combo += 1;
     } else {
-        getStateData().combo = 1;
+        getLocalData().combo = 1;
     }
 
     // nextCombo = 15;
 
-    getStateData().hitCount += 1;
+    getLocalData().hitCount += 1;
 
     /* Mainly used for AI so it can tell if a hit succeeded and thus learn which moves to do */
-    if (getStateData().behavior != NULL){
-        getStateData().behavior->hit(enemy);
+    if (getLocalData().behavior != NULL){
+        getLocalData().behavior->hit(enemy);
     }
 
     /* FIXME: handle p1getp2facing */
@@ -3138,7 +3138,7 @@ void Character::hurt(double x){
 void Character::takeDamage(Stage & world, Object * obj, double amount, bool kill, bool defense){
     /* TODO: use getDefense() here somehow */
     if (defense){
-        takeDamage(world, obj, amount / getStateData().defenseMultiplier, 0.0, 0.0);
+        takeDamage(world, obj, amount / getLocalData().defenseMultiplier, 0.0, 0.0);
     } else {
         takeDamage(world, obj, amount, 0.0, 0.0);
     }
@@ -3156,9 +3156,9 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 
 void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     disableHit();
-    getStateData().hitState.shakeTime = data.player2Pause;
+    getLocalData().hitState.shakeTime = data.player2Pause;
     /* FIXME: what should the sprite priority of a reversal be? */
-    getStateData().hitState.spritePriority = 0;
+    getLocalData().hitState.spritePriority = 0;
     if (data.player2State != -1){
         useCharacterData(enemy->getRoot());
         delayChangeState(stage, data.player2State);
@@ -3167,20 +3167,20 @@ void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const Rever
 
 void Character::didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     setReversalInactive();
-    getStateData().hitState.shakeTime = data.player1Pause;
+    getLocalData().hitState.shakeTime = data.player1Pause;
     /* FIXME: what should the sprite priority of a reversal be? */
-    getStateData().hitState.spritePriority = 0;
+    getLocalData().hitState.spritePriority = 0;
     if (data.player1State != -1){
         delayChangeState(stage, data.player1State);
     }
 }
 
 void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
-    getStateData().characterData.who = NULL;
-    getStateData().characterData.enabled = false;
+    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.enabled = false;
 
-    getStateData().wasHitCounter += 1;
-    getStateData().hitState.update(stage, *this, getY() < 0, hisHit);
+    getLocalData().wasHitCounter += 1;
+    getLocalData().hitState.update(stage, *this, getY() < 0, hisHit);
     
     addPower(hisHit.givePower.hit);
 
@@ -3222,11 +3222,11 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     */
     
     /* FIXME: not sure if disabling afterimage's is the right thing */
-    getStateData().afterImage.lifetime = 0;
+    getLocalData().afterImage.lifetime = 0;
 
-    getStateData().juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
+    getLocalData().juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
 
-    for (map<int, HitOverride>::iterator it = getStateData().hitOverrides.begin(); it != getStateData().hitOverrides.end(); it++){
+    for (map<int, HitOverride>::iterator it = getLocalData().hitOverrides.begin(); it != getLocalData().hitOverrides.end(); it++){
         HitOverride & override = it->second;
         /* Time can be -1 (infinity) or some positive number (counting down) */
         if (override.time != 0 && hasHitAttribute(enemy, override.attributes)){
@@ -3619,13 +3619,13 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
     };
 
 Graphics::Bitmap::Filter * Character::getPaletteEffects(unsigned int time){
-    return new PaletteFilter(time, getStateData().paletteEffects.addRed,
-                    getStateData().paletteEffects.addGreen, getStateData().paletteEffects.addBlue,
-                    getStateData().paletteEffects.multiplyRed, getStateData().paletteEffects.multiplyGreen,
-                    getStateData().paletteEffects.multiplyBlue, getStateData().paletteEffects.sinRed,
-                    getStateData().paletteEffects.sinGreen, getStateData().paletteEffects.sinBlue,
-                    getStateData().paletteEffects.period, getStateData().paletteEffects.invert,
-                    getStateData().paletteEffects.color);
+    return new PaletteFilter(time, getLocalData().paletteEffects.addRed,
+                    getLocalData().paletteEffects.addGreen, getLocalData().paletteEffects.addBlue,
+                    getLocalData().paletteEffects.multiplyRed, getLocalData().paletteEffects.multiplyGreen,
+                    getLocalData().paletteEffects.multiplyBlue, getLocalData().paletteEffects.sinRed,
+                    getLocalData().paletteEffects.sinGreen, getLocalData().paletteEffects.sinBlue,
+                    getLocalData().paletteEffects.period, getLocalData().paletteEffects.invert,
+                    getLocalData().paletteEffects.color);
 }
 
 /* FIXME: reimplement this method */
@@ -3674,7 +3674,7 @@ void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity
 }
         
 int Character::getStateTime() const {
-    return getStateData().stateTime;
+    return getLocalData().stateTime;
 }
 
 void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
@@ -3685,27 +3685,27 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
     font.printf( x, y + font.getHeight() * 2 + 1, color, *work, "Time %d", 0, getStateTime());
     */
 
-    if (getStateData().special.invisible){
+    if (getLocalData().special.invisible){
         return;
     }
 
     PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
     /* this should never be NULL... */
     if (animation != NULL){
-        int x = getX() - cameraX + getStateData().drawOffset.x;
-        int y = getRY() - cameraY + getStateData().drawOffset.y;
+        int x = getX() - cameraX + getLocalData().drawOffset.x;
+        int y = getRY() - cameraY + getLocalData().drawOffset.y;
 
         /* shake, but only if we are the one being hit */
-        if (isPaused() && getStateData().moveType == Move::Hit){
+        if (isPaused() && getLocalData().moveType == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;
         }
 
-        for (unsigned int index = 0; index < getStateData().afterImage.frames.size(); index += getStateData().afterImage.framegap){
-            AfterImage::Image & frame = getStateData().afterImage.frames[index];
+        for (unsigned int index = 0; index < getLocalData().afterImage.frames.size(); index += getLocalData().afterImage.framegap){
+            AfterImage::Image & frame = getLocalData().afterImage.frames[index];
             if (frame.show){
-                int x = frame.x - cameraX + getStateData().drawOffset.x + frame.sprite.xoffset;
-                int y = frame.y - cameraY + getStateData().drawOffset.y + frame.sprite.yoffset;
-                drawAfterImage(getStateData().afterImage, frame, index, x, y, *work);
+                int x = frame.x - cameraX + getLocalData().drawOffset.x + frame.sprite.xoffset;
+                int y = frame.y - cameraY + getLocalData().drawOffset.y + frame.sprite.yoffset;
+                drawAfterImage(getLocalData().afterImage, frame, index, x, y, *work);
             }
         }
 
@@ -3713,36 +3713,36 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
 
         effects.facing = getFacing() == FacingLeft;
         effects.vfacing = false;
-        effects.scalex = getStateData().xscale;
-        effects.scaley = getStateData().yscale;
+        effects.scalex = getLocalData().xscale;
+        effects.scaley = getLocalData().yscale;
 
-        if (getStateData().transOverride.enabled){
-            effects.alphaSource = getStateData().transOverride.alphaSource;
-            effects.alphaDest = getStateData().transOverride.alphaDestination;
-            effects.trans = getStateData().transOverride.type;
+        if (getLocalData().transOverride.enabled){
+            effects.alphaSource = getLocalData().transOverride.alphaSource;
+            effects.alphaDest = getLocalData().transOverride.alphaDestination;
+            effects.trans = getLocalData().transOverride.type;
         }
 
-        if (getStateData().drawAngleData.enabled){
-            effects.scalex *= getStateData().drawAngleData.scaleX;
-            effects.scaley *= getStateData().drawAngleData.scaleY;
+        if (getLocalData().drawAngleData.enabled){
+            effects.scalex *= getLocalData().drawAngleData.scaleX;
+            effects.scaley *= getLocalData().drawAngleData.scaleY;
             if (getFacing() == FacingRight){
                 /* Counter clock wise if facing right */
-                effects.rotation = getStateData().drawAngleData.angle;
+                effects.rotation = getLocalData().drawAngleData.angle;
             } else {
-                effects.rotation = -getStateData().drawAngleData.angle;
+                effects.rotation = -getLocalData().drawAngleData.angle;
             }
         }
 
         PaintownUtil::ReferenceCount<Graphics::Bitmap::Filter> filter;
-        if (getStateData().paletteEffects.time > 0){
-            filter = getPaletteEffects(getStateData().paletteEffects.counter);
+        if (getLocalData().paletteEffects.time > 0){
+            filter = getPaletteEffects(getLocalData().paletteEffects.counter);
             effects.filter = filter.raw();
         }
 
         animation->render(x, y, *work, effects);
     }
 
-    if (getStateData().debug && !isHelper()){
+    if (getLocalData().debug && !isHelper()){
         const ::Font & font = ::Font::getDefaultFont(16, 16);
         int x = 1;
         if (getAlliance() == Mugen::Stage::Player2Side){
@@ -3752,7 +3752,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         Graphics::Color color = Graphics::makeColor(255, 255, 255);
         Graphics::Color backgroundColor = Graphics::MaskColor();
         FontRender * render = FontRender::getInstance();
-        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), getStateData().currentAnimation);
+        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), getLocalData().currentAnimation);
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Vx %f Vy %f", getXVelocity(), getYVelocity());
         y += font.getHeight();
@@ -3764,7 +3764,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Attack type %s", getMoveType().c_str());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getStateData().hit.isEnabled());
+        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getLocalData().hit.isEnabled());
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Control %d", hasControl());
         y += font.getHeight();
@@ -3797,10 +3797,10 @@ bool Character::canTurn() const {
 }
         
 void Character::setTransOverride(TransType type, int alphaFrom, int alphaTo){
-    getStateData().transOverride.enabled = true;
-    getStateData().transOverride.type = type;
-    getStateData().transOverride.alphaSource = alphaFrom;
-    getStateData().transOverride.alphaDestination = alphaTo;
+    getLocalData().transOverride.enabled = true;
+    getLocalData().transOverride.type = type;
+    getLocalData().transOverride.alphaSource = alphaFrom;
+    getLocalData().transOverride.alphaDestination = alphaTo;
 }
 
 static PaintownUtil::ReferenceCount<Mugen::Sound> findSound(const Mugen::SoundMap & sounds, int group, int item){
@@ -3832,22 +3832,22 @@ void Character::doTurn(Mugen::Stage & stage){
     } else {
         changeState(stage, Mugen::CrouchTurning);
     }
-    if (getStateData().behavior != NULL){
-        getStateData().behavior->flip();
+    if (getLocalData().behavior != NULL){
+        getLocalData().behavior->flip();
     }
     reverseFacing();
 }
 
 const vector<Area> Character::getAttackBoxes() const {
     if (getCurrentAnimation() != NULL){
-        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft, getStateData().xscale, getStateData().yscale);
+        return getCurrentAnimation()->getAttackBoxes(getFacing() == FacingLeft, getLocalData().xscale, getLocalData().yscale);
     }
     return vector<Area>();
 }
 
 const vector<Area> Character::getDefenseBoxes() const {
     if (getCurrentAnimation() != NULL){
-        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft, getStateData().xscale, getStateData().yscale);
+        return getCurrentAnimation()->getDefenseBoxes(getFacing() == FacingLeft, getLocalData().xscale, getLocalData().yscale);
     }
     return vector<Area>();
 }
@@ -3872,23 +3872,23 @@ double Character::getForceY() const {
  * if the player is in the air. If so it should return airBack/front/etc..
  */
 int Character::getWidth() const {
-    if (getStateData().widthOverride.enabled){
-        return getStateData().widthOverride.playerFront;
+    if (getLocalData().widthOverride.enabled){
+        return getLocalData().widthOverride.playerFront;
     }
-    return getStateData().groundfront;
+    return getLocalData().groundfront;
 }
 
 int Character::getBackWidth() const {
-    if (getStateData().widthOverride.enabled){
-        return getStateData().widthOverride.playerBack;
+    if (getLocalData().widthOverride.enabled){
+        return getLocalData().widthOverride.playerBack;
     }
-    return getStateData().groundback;
+    return getLocalData().groundback;
 }
         
 int Character::getBackX() const {
     int width = getBackWidth();
-    if (getStateData().widthOverride.enabled){
-        width = getStateData().widthOverride.edgeBack;
+    if (getLocalData().widthOverride.enabled){
+        width = getLocalData().widthOverride.edgeBack;
     }
     if (getFacing() == FacingLeft){
         return getX() + width;
@@ -3898,8 +3898,8 @@ int Character::getBackX() const {
 
 int Character::getFrontX() const {
     int width = getWidth();
-    if (getStateData().widthOverride.enabled){
-        width = getStateData().widthOverride.edgeFront;
+    if (getLocalData().widthOverride.enabled){
+        width = getLocalData().widthOverride.edgeFront;
     }
     if (getFacing() == FacingLeft){
         return getX() - width;
@@ -3908,7 +3908,7 @@ int Character::getFrontX() const {
 }
 
 int Character::getCurrentCombo() const {
-    return getStateData().combo;
+    return getLocalData().combo;
 }
 
 /* TODO: implement these */
@@ -3919,39 +3919,39 @@ void Character::setHurtable(){
 }
         
 void Character::addWin(WinGame win){
-    getStateData().wins.push_back(win);
+    getLocalData().wins.push_back(win);
 }
 
 void Character::addMatchWin(){
-    getStateData().matchWins += 1;
+    getLocalData().matchWins += 1;
 }
 
 void Character::resetPlayer(){
     clearWins();
-    getStateData().power = 0;
+    getLocalData().power = 0;
     setHealth(getMaxHealth());
 }
         
 bool Character::isBlocking(const HitDefinition & hit){
     /* FIXME: can only block if in the proper state relative to the hit def */
-    return hasControl() && getStateData().blocking;
+    return hasControl() && getLocalData().blocking;
 }
         
 void Character::resetHitFlag(){
     /* FIXME: not sure if this is right */
-    getStateData().guarding = false;
+    getLocalData().guarding = false;
 }
 
 bool Character::isGuarding() const {
-    return getStateData().guarding;
+    return getLocalData().guarding;
 }
         
 void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
-    getStateData().hitState.guarded = true;
+    getLocalData().hitState.guarded = true;
     // lastTicket = enemy->getTicket();
-    getStateData().hitState.shakeTime = hit.guardPause.player2;
-    getStateData().hitState.spritePriority = hit.player2SpritePriority;
+    getLocalData().hitState.shakeTime = hit.guardPause.player2;
+    getLocalData().hitState.spritePriority = hit.player2SpritePriority;
     addPower(hit.givePower.guarded);
     bool inAir = getY() > 0;
     if (inAir){
@@ -3969,68 +3969,68 @@ void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinitio
 }
 
 void Character::setAfterImage(int time, int length, int timegap, int framegap, TransType translucent, int paletteColor, bool invertColor, const AfterImage::RGBx & bright, const AfterImage::RGBx & contrast, const AfterImage::RGBx & postBright, const AfterImage::RGBx & add, const AfterImage::RGBx & multiply){
-    getStateData().afterImage.currentTime = 0;
-    getStateData().afterImage.timegap = timegap;
-    getStateData().afterImage.framegap = framegap;
-    getStateData().afterImage.lifetime = time;
-    getStateData().afterImage.length = length;
-    getStateData().afterImage.translucent = translucent;
-    getStateData().afterImage.frames.clear();
-    getStateData().afterImage.paletteColor = paletteColor;
-    getStateData().afterImage.invertColor = invertColor;
-    getStateData().afterImage.bright = bright;
-    getStateData().afterImage.contrast = contrast;
-    getStateData().afterImage.postBright = postBright;
-    getStateData().afterImage.add = add;
-    getStateData().afterImage.multiply = multiply;
+    getLocalData().afterImage.currentTime = 0;
+    getLocalData().afterImage.timegap = timegap;
+    getLocalData().afterImage.framegap = framegap;
+    getLocalData().afterImage.lifetime = time;
+    getLocalData().afterImage.length = length;
+    getLocalData().afterImage.translucent = translucent;
+    getLocalData().afterImage.frames.clear();
+    getLocalData().afterImage.paletteColor = paletteColor;
+    getLocalData().afterImage.invertColor = invertColor;
+    getLocalData().afterImage.bright = bright;
+    getLocalData().afterImage.contrast = contrast;
+    getLocalData().afterImage.postBright = postBright;
+    getLocalData().afterImage.add = add;
+    getLocalData().afterImage.multiply = multiply;
 }
         
 void Character::setAfterImageTime(int time){
-    getStateData().afterImage.lifetime = time;
+    getLocalData().afterImage.lifetime = time;
 }
         
 void Character::updateAngleEffect(double angle){
-    getStateData().drawAngle = angle;
+    getLocalData().drawAngle = angle;
 }
 
 double Character::getAngleEffect() const {
-    return getStateData().drawAngle;
+    return getLocalData().drawAngle;
 }
         
 void Character::drawAngleEffect(double angle, bool setAngle, double scaleX, double scaleY){
     if (setAngle){
-        getStateData().drawAngle = angle;
+        getLocalData().drawAngle = angle;
     }
-    getStateData().drawAngleData.angle = getStateData().drawAngle;
-    getStateData().drawAngleData.enabled = true;
-    getStateData().drawAngleData.scaleX = scaleX;
-    getStateData().drawAngleData.scaleY = scaleY;
+    getLocalData().drawAngleData.angle = getLocalData().drawAngle;
+    getLocalData().drawAngleData.enabled = true;
+    getLocalData().drawAngleData.scaleX = scaleX;
+    getLocalData().drawAngleData.scaleY = scaleY;
 }
         
 void Character::assertSpecial(Specials special){
     if (special == Invisible){
-        this->getStateData().special.invisible = true;
+        this->getLocalData().special.invisible = true;
     }
     if (special == Intro){
-        this->getStateData().special.intro = true;
+        this->getLocalData().special.intro = true;
     }
     /* FIXME: handle other specials */
 }
 
 void Character::enableHit(){
-    getStateData().hit.enable();
+    getLocalData().hit.enable();
 }
 
 void Character::disableHit(){
-    getStateData().hit.disable();
+    getLocalData().hit.disable();
 }
         
 void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack){
-    getStateData().widthOverride.enabled = true;
-    getStateData().widthOverride.edgeFront = edgeFront;
-    getStateData().widthOverride.edgeBack = edgeBack;
-    getStateData().widthOverride.playerFront = playerFront;
-    getStateData().widthOverride.playerBack = playerBack;
+    getLocalData().widthOverride.enabled = true;
+    getLocalData().widthOverride.edgeFront = edgeFront;
+    getLocalData().widthOverride.edgeBack = edgeBack;
+    getLocalData().widthOverride.playerFront = playerFront;
+    getLocalData().widthOverride.playerBack = playerBack;
 }
         
 /* FIXME: it may be easier to put the foreign animation stuff here rather than keep track of
@@ -4046,27 +4046,27 @@ PaintownUtil::ReferenceCount<Animation> Character::getAnimation(int id) const {
 }
         
 void Character::setHitByOverride(int slot, int time, bool standing, bool crouching, bool aerial, const std::vector<AttackType::Attribute> & attributes){
-    getStateData().hitByOverride[slot].time = time;
-    getStateData().hitByOverride[slot].standing = standing;
-    getStateData().hitByOverride[slot].crouching = crouching;
-    getStateData().hitByOverride[slot].aerial = aerial;
-    getStateData().hitByOverride[slot].attributes = attributes;
+    getLocalData().hitByOverride[slot].time = time;
+    getLocalData().hitByOverride[slot].standing = standing;
+    getLocalData().hitByOverride[slot].crouching = crouching;
+    getLocalData().hitByOverride[slot].aerial = aerial;
+    getLocalData().hitByOverride[slot].attributes = attributes;
 }
         
 void Character::setDefenseMultiplier(double defense){
-    getStateData().defenseMultiplier = defense;
+    getLocalData().defenseMultiplier = defense;
 }
 
 void Character::setAttackMultiplier(double attack){
-    getStateData().attackMultiplier = attack;
+    getLocalData().attackMultiplier = attack;
 }
         
 void Character::doFreeze(){
-    getStateData().frozen = true;
+    getLocalData().frozen = true;
 }
         
 void Character::moveX(double x, bool force){
-    if (force || !getStateData().frozen){
+    if (force || !getLocalData().frozen){
 	if (getFacing() == FacingLeft){
             virtualx -= x;
 	} else {
@@ -4076,50 +4076,50 @@ void Character::moveX(double x, bool force){
 }
 
 void Character::moveY(double y, bool force){
-    if (force || !getStateData().frozen){
+    if (force || !getLocalData().frozen){
         virtualy += y;
     }
 }
         
 Point Character::getMidPosition() const {
-    return getStateData().midPosition;
+    return getLocalData().midPosition;
 }
 
 Point Character::getHeadPosition() const {
-    return getStateData().headPosition;
+    return getLocalData().headPosition;
 }
 
 Point Character::getDrawOffset() const {
-    return getStateData().drawOffset;
+    return getLocalData().drawOffset;
 }
 
 void Character::setMaxHealth(double health){
-    getStateData().max_health = health;
-    if (this->getStateData().health > getStateData().max_health){
-        this->getStateData().health = getStateData().max_health;
+    getLocalData().max_health = health;
+    if (this->getLocalData().health > getLocalData().max_health){
+        this->getLocalData().health = getLocalData().max_health;
     }
 }
 
 void Character::setHealth(double health){
-    this->getStateData().health = health;
-    if (this->getStateData().health < 0){
-        this->getStateData().health = 0;
+    this->getLocalData().health = health;
+    if (this->getLocalData().health < 0){
+        this->getLocalData().health = 0;
     }
-    if (this->getStateData().health > getMaxHealth()){
-        this->getStateData().health = getMaxHealth();
+    if (this->getLocalData().health > getMaxHealth()){
+        this->getLocalData().health = getMaxHealth();
     }
 }
 
 void Character::setSpritePriority(int priority){
-    getStateData().spritePriority = priority;
+    getLocalData().spritePriority = priority;
 }
         
 int Character::getSpritePriority() const {
     /* FIXME: figure out how long the hitdef's sprite priority should take effect. */
-    if (getStateData().hitState.shakeTime > 0){
-        return getStateData().hitState.spritePriority;
+    if (getLocalData().hitState.shakeTime > 0){
+        return getLocalData().hitState.spritePriority;
     } else {
-        return getStateData().spritePriority;
+        return getLocalData().spritePriority;
     }
 }
 
@@ -4139,8 +4139,8 @@ PaintownUtil::ReferenceCount<Animation> Character::replaceSprites(const Paintown
 }
 
 void Character::setForeignAnimation(PaintownUtil::ReferenceCount<Animation> animation, int number){
-    getStateData().foreignAnimation = replaceSprites(animation);
-    getStateData().foreignAnimationNumber = number;
+    getLocalData().foreignAnimation = replaceSprites(animation);
+    getLocalData().foreignAnimationNumber = number;
 }
         
 bool Character::isHelper() const {
@@ -4158,15 +4158,15 @@ double Character::getGroundFriction() const {
 }
         
 void Character::setReversalActive(){
-    getStateData().reversalActive = true;
+    getLocalData().reversalActive = true;
 }
 
 void Character::setReversalInactive(){
-    getStateData().reversalActive = false;
+    getLocalData().reversalActive = false;
 }
         
 bool Character::isReversalActive(){
-    return getStateData().reversalActive;
+    return getLocalData().reversalActive;
 }
 
 bool Character::canReverse(Character * enemy){
@@ -4207,7 +4207,7 @@ bool Character::canReverse(Character * enemy){
 }
 
 ReversalData & Character::getReversal(){
-    return getStateData().reversal;
+    return getLocalData().reversal;
 }
         
 double Character::forwardPoint(double x) const {
@@ -4219,58 +4219,58 @@ double Character::forwardPoint(double x) const {
 }
         
 void Character::disablePushCheck(){
-    getStateData().pushPlayer = 1;
+    getLocalData().pushPlayer = 1;
 }
 
 bool Character::isPushable(){
-    return (getStateData().pushPlayer == 0);
+    return (getLocalData().pushPlayer == 0);
 }
         
 void Character::setHitOverride(int slot, const HitAttributes & attribute, int state, int time, bool air){
-    HitOverride & override = getStateData().hitOverrides[slot];
+    HitOverride & override = getLocalData().hitOverrides[slot];
     override.attributes = attribute;
     override.state = state;
     override.time = time;
 }
 
 void Character::setDrawOffset(double x, double y){
-    getStateData().drawOffset.set(x, y);
+    getLocalData().drawOffset.set(x, y);
 }
     
 PaintownUtil::ReferenceCount<State> Character::getState(int id) const {
-    if (getStateData().characterData.enabled && getStateData().characterData.who != NULL){
-        return getStateData().characterData.who->getState(id);
+    if (getLocalData().characterData.enabled && getLocalData().characterData.who != NULL){
+        return getLocalData().characterData.who->getState(id);
     }
 
-    if (getStateData().states.find(id) != getStateData().states.end()){
-        return getStateData().states.find(id)->second;
+    if (getLocalData().states.find(id) != getLocalData().states.end()){
+        return getLocalData().states.find(id)->second;
     }
     return PaintownUtil::ReferenceCount<State>(NULL);
 }
 
 void Character::setState(int id, PaintownUtil::ReferenceCount<State> what){
-    getStateData().states[id] = what;
+    getLocalData().states[id] = what;
 }
         
 void Character::setPaletteEffects(int time, int addRed, int addGreen, int addBlue, int multiplyRed, int multiplyGreen, int multiplyBlue, int sinRed, int sinGreen, int sinBlue, int period, int invert, int color){
-    getStateData().paletteEffects.time = time;
-    getStateData().paletteEffects.addRed = addRed;
-    getStateData().paletteEffects.addGreen = addGreen;
-    getStateData().paletteEffects.addBlue = addBlue;
-    getStateData().paletteEffects.multiplyRed = multiplyRed;
-    getStateData().paletteEffects.multiplyGreen = multiplyGreen;
-    getStateData().paletteEffects.multiplyBlue = multiplyBlue;
-    getStateData().paletteEffects.sinRed = sinRed;
-    getStateData().paletteEffects.sinGreen = sinGreen;
-    getStateData().paletteEffects.sinBlue = sinBlue;
-    getStateData().paletteEffects.period = period;
-    getStateData().paletteEffects.invert = invert;
-    getStateData().paletteEffects.color = color;
-    getStateData().paletteEffects.counter = 0;
+    getLocalData().paletteEffects.time = time;
+    getLocalData().paletteEffects.addRed = addRed;
+    getLocalData().paletteEffects.addGreen = addGreen;
+    getLocalData().paletteEffects.addBlue = addBlue;
+    getLocalData().paletteEffects.multiplyRed = multiplyRed;
+    getLocalData().paletteEffects.multiplyGreen = multiplyGreen;
+    getLocalData().paletteEffects.multiplyBlue = multiplyBlue;
+    getLocalData().paletteEffects.sinRed = sinRed;
+    getLocalData().paletteEffects.sinGreen = sinGreen;
+    getLocalData().paletteEffects.sinBlue = sinBlue;
+    getLocalData().paletteEffects.period = period;
+    getLocalData().paletteEffects.invert = invert;
+    getLocalData().paletteEffects.color = color;
+    getLocalData().paletteEffects.counter = 0;
 }
         
 unsigned int Character::getWasHitCount() const {
-    return getStateData().wasHitCounter;
+    return getLocalData().wasHitCounter;
 }
         
 void Character::roundEnd(Stage & stage){
@@ -4289,8 +4289,8 @@ bool Character::isAttacking() const {
 }
     
 void Character::useCharacterData(const Character * who){
-    getStateData().characterData.who = who;
-    getStateData().characterData.enabled = true;
+    getLocalData().characterData.who = who;
+    getLocalData().characterData.enabled = true;
 }
     
 bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
@@ -4311,138 +4311,138 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
 }
         
 std::map<int, vector<Character *> > & Character::getTargets(){
-    return getStateData().targets;
+    return getLocalData().targets;
 }
 
 const std::map<int, vector<Character*> > & Character::getTargets() const {
-    return getStateData().targets;
+    return getLocalData().targets;
 }
         
 bool Character::isAssertIntro(){
-    return getStateData().special.intro;
+    return getLocalData().special.intro;
 }
     
 bool Character::isOwnPalette() const {
-    return getStateData().ownPalette;
+    return getLocalData().ownPalette;
 }
 
 void Character::setOwnPalette(bool what){
-    getStateData().ownPalette = what;
+    getLocalData().ownPalette = what;
 }
         
 double Character::getAirHitRecoverMultiplierX() const {
-    return getStateData().velocity_air_gethit_airrecover_mul_x;
+    return getLocalData().velocity_air_gethit_airrecover_mul_x;
 }
 
 double Character::getAirHitRecoverMultiplierY() const {
-    return getStateData().velocity_air_gethit_airrecover_mul_y;
+    return getLocalData().velocity_air_gethit_airrecover_mul_y;
 }
         
 void Character::setAirHitRecoverMultiplierX(double x){
-    getStateData().velocity_air_gethit_airrecover_mul_x = x;
+    getLocalData().velocity_air_gethit_airrecover_mul_x = x;
 }
 
 void Character::setAirHitRecoverMultiplierY(double y){
-    getStateData().velocity_air_gethit_airrecover_mul_y = y;
+    getLocalData().velocity_air_gethit_airrecover_mul_y = y;
 }
         
 double Character::getAirHitGroundRecoverX() const {
-    return getStateData().velocity_air_gethit_groundrecover_x;
+    return getLocalData().velocity_air_gethit_groundrecover_x;
 }
 
 double Character::getAirHitGroundRecoverY() const {
-    return getStateData().velocity_air_gethit_groundrecover_y;
+    return getLocalData().velocity_air_gethit_groundrecover_y;
 }
         
 void Character::setAirHitGroundRecoverX(double x){
-    getStateData().velocity_air_gethit_groundrecover_x = x;
+    getLocalData().velocity_air_gethit_groundrecover_x = x;
 }
 
 void Character::setAirHitGroundRecoverY(double y){
-    getStateData().velocity_air_gethit_groundrecover_y = y;
+    getLocalData().velocity_air_gethit_groundrecover_y = y;
 }
 
 double Character::getAirHitRecoverAddX() const {
-    return getStateData().velocity_air_gethit_recover_add_x;
+    return getLocalData().velocity_air_gethit_recover_add_x;
 }
 
 double Character::getAirHitRecoverAddY() const {
-    return getStateData().velocity_air_gethit_recover_add_y;
+    return getLocalData().velocity_air_gethit_recover_add_y;
 }
 
 void Character::setAirHitRecoverAddX(double x){
-    getStateData().velocity_air_gethit_recover_add_x = x;
+    getLocalData().velocity_air_gethit_recover_add_x = x;
 }
 
 void Character::setAirHitRecoverAddY(double y){
-    getStateData().velocity_air_gethit_recover_add_y = y;
+    getLocalData().velocity_air_gethit_recover_add_y = y;
 }
 
 double Character::getAirHitRecoverUp() const {
-    return getStateData().velocity_air_gethit_recover_up;
+    return getLocalData().velocity_air_gethit_recover_up;
 }
 
 void Character::setAirHitRecoverUp(double up){
-    getStateData().velocity_air_gethit_recover_up = up;
+    getLocalData().velocity_air_gethit_recover_up = up;
 }
 
 double Character::getAirHitRecoverDown() const {
-    return getStateData().velocity_air_gethit_recover_down;
+    return getLocalData().velocity_air_gethit_recover_down;
 }
 
 void Character::setAirHitRecoverDown(double down){
-    getStateData().velocity_air_gethit_recover_down = down;
+    getLocalData().velocity_air_gethit_recover_down = down;
 }
  
 double Character::getAirHitRecoverForward() const {
-    return getStateData().velocity_air_gethit_recover_forward;
+    return getLocalData().velocity_air_gethit_recover_forward;
 }
 
 void Character::setAirHitRecoverForward(double forward){
-    getStateData().velocity_air_gethit_recover_forward = forward;
+    getLocalData().velocity_air_gethit_recover_forward = forward;
 }
 
 double Character::getAirHitRecoverBack() const {
-    return getStateData().velocity_air_gethit_recover_back;
+    return getLocalData().velocity_air_gethit_recover_back;
 }
 
 void Character::setAirHitRecoverBack(double back){
-    getStateData().velocity_air_gethit_recover_back = back;
+    getLocalData().velocity_air_gethit_recover_back = back;
 }
         
 double Character::getAirHitRecoverYAccel() const {
-    return getStateData().air_gethit_recover_yaccel;
+    return getLocalData().air_gethit_recover_yaccel;
 }
 
 void Character::setAirHitRecoverYAccel(double yaccel){
-    getStateData().air_gethit_recover_yaccel = yaccel;
+    getLocalData().air_gethit_recover_yaccel = yaccel;
 }
 
 double Character::getXScale() const {
-    return getStateData().xscale;
+    return getLocalData().xscale;
 }
 
 double Character::getYScale() const {
-    return getStateData().yscale;
+    return getLocalData().yscale;
 }
 
 int Character::getGroundBack() const {
-    return getStateData().groundback;
+    return getLocalData().groundback;
 }
 
 int Character::getGroundFront() const {
-    return getStateData().groundfront;
+    return getLocalData().groundfront;
 }
 
 int Character::getAirBack() const {
-    return getStateData().airback;
+    return getLocalData().airback;
 }
 
 int Character::getAirFront() const {
-    return getStateData().airfront;
+    return getLocalData().airfront;
 }
 
-Character::StateData::StateData(){
+Character::LocalData::LocalData(){
 #define Z(x) x = 0
     /* TODO: add all the variables here */
     Z(projdoscale);
@@ -4464,7 +4464,7 @@ Character::StateData::StateData(){
 }
 
 /* FIXME: need to copy more attributes */
-Character::StateData::StateData(const Character::StateData & copy){
+Character::LocalData::LocalData(const Character::LocalData & copy){
     /* simple macro to copy fields */
 #define C(field) field = copy.field
     C(commonSounds);

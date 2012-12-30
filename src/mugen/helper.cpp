@@ -13,7 +13,7 @@ owner(owner),
 root(root),
 id(id),
 name(owner->getName() + " " + name + " (helper)"){
-    getStateData().behavior = &dummy;
+    getLocalData().behavior = &dummy;
 }
 
 Helper::~Helper(){
