@@ -335,36 +335,34 @@ void Scene::doTriggers(){
     }
 }
 
-void Scene::createObjects(const vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, vector<Paintown::Object*> * out){
-    for (vector<Util::ReferenceCount<BlockObject> >::const_iterator it = blockObjects.begin(); it != blockObjects.end(); it++){
-        Util::ReferenceCount<BlockObject> obj = *it;
-
-        Paintown::Object * newobj = ObjectFactory::createObject(obj);
-        if (newobj == NULL){
-            continue;
-        }
-
-        newobj->created(*this);
-
-        // newobj->moveX( total_length );
-        newobj->moveRight(length);
-        newobj->moveZ(minZ);
-        if (newobj->getZ() < minZ){
-            newobj->setZ(minZ);
-        }
-        if (newobj->getZ() > maxZ){
-            newobj->setZ(maxZ);
-        }
-        out->push_back(newobj);
-
+void Scene::createObject(const Util::ReferenceCount<BlockObject> & object){
+    Paintown::Object * newobj = ObjectFactory::createObject(object);
+    if (newobj == NULL){
+        return;
     }
 
-    // return hearts;
+    newobj->created(*this);
+
+    // newobj->moveX( total_length );
+    newobj->moveRight(block_length);
+    newobj->moveZ(getMinimumZ());
+    if (newobj->getZ() < getMinimumZ()){
+        newobj->setZ(getMinimumZ());
+    }
+    if (newobj->getZ() > getMaximumZ()){
+        newobj->setZ(getMaximumZ());
+    }
+    added_objects.push_back(newobj);
+}
+
+void Scene::createObjects(const vector<Util::ReferenceCount<BlockObject> > & blockObjects){
+    for (vector<Util::ReferenceCount<BlockObject> >::const_iterator it = blockObjects.begin(); it != blockObjects.end(); it++){
+        Util::ReferenceCount<BlockObject> obj = *it;
+        createObject(obj);
+    }
 }
 
 void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
-    // clearHearts();
-
     if (canContinue(min_x)){
         advanceBlocks(blockNumber + 1);
         Global::debug(3) << "[Scene] Current block is " << blockNumber << ". Length is " << current_block->getLength() << " Minimum x is " << min_x << endl;	
@@ -375,11 +373,14 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
     if (newBlock && objects != NULL){
         newBlock = false;
         // Global::debug(0) << "Creating new objects" << endl;
-        createObjects(current_block->getObjects(), block_length, min_x, max_x, getMinimumZ(), getMaximumZ(), objects);
+        createObjects(current_block->getObjects());
         // hearts.insert(hearts.end(), new_hearts.begin(), new_hearts.end());
-        objects->insert(objects->end(), added_objects.begin(), added_objects.end());
-        added_objects.clear();
     }
+
+    if (objects != NULL){
+        objects->insert(objects->end(), added_objects.begin(), added_objects.end());
+    }
+    added_objects.clear();
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;

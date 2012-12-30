@@ -64,7 +64,8 @@ public:
         return current_block;
     }
 
-    void createObjects(const std::vector<Util::ReferenceCount<BlockObject> > & blockObjects, int length, int minX, int minY, int minZ, int maxZ, std::vector<Paintown::Object*> * out);
+    void createObjects(const std::vector<Util::ReferenceCount<BlockObject> > & blockObjects);
+    void createObject(const Util::ReferenceCount<BlockObject> & object);
 
     void startMusic();
 

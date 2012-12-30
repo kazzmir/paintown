@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "blockobject.h"
+#include "scene.h"
 #include "../object/stimulation.h"
 #include "../factory/object_factory.h"
 #include "util/exceptions/load_exception.h"
@@ -43,7 +44,7 @@ static Util::ReferenceCount<Paintown::Trigger> getTrigger(const Token & token){
         class SpawnTrigger: public Paintown::Trigger {
         public:
             SpawnTrigger(const Token * block):
-            spawn(block){
+            spawn(new BlockObject(block)){
             }
 
             SpawnTrigger(const SpawnTrigger & copy):
@@ -51,6 +52,7 @@ static Util::ReferenceCount<Paintown::Trigger> getTrigger(const Token & token){
             }
 
             virtual void invoke(const Util::ReferenceCount<Scene> & scene, vector<Paintown::Object*> & add){
+                scene->createObject(spawn);
             }
     
             virtual Trigger * copy() const {
@@ -60,7 +62,7 @@ static Util::ReferenceCount<Paintown::Trigger> getTrigger(const Token & token){
             virtual ~SpawnTrigger(){
             }
 
-            BlockObject spawn; 
+            Util::ReferenceCount<BlockObject> spawn; 
         };
 
         const Token * object = spawn->findToken("_/object");
