@@ -410,7 +410,7 @@ public:
         virtual void startInput(const Stage & stage);
 
     /*! This all the inherited members */
-    virtual void act(std::vector<Mugen::Character*>*, Stage*, std::vector<Mugen::Character*>*);                       
+    virtual void act(Stage*);
     virtual void draw(Graphics::Bitmap*, int cameraX, int cameraY);
     virtual const std::string getAttackName();
     virtual int getDamage() const;
@@ -434,7 +434,7 @@ public:
 
     virtual void reverseFacing();
 
-    virtual void doMovement(const std::vector<Character*> & objects, Stage & stage);
+    virtual void doMovement(Stage & stage);
 
     /* absolute X coordinate of the back of the character */
     virtual int getBackX() const;
@@ -1159,7 +1159,7 @@ protected:
     void doubleJump(Mugen::Stage & stage, const std::vector<std::string> & inputs);
     void stopGuarding(Mugen::Stage & stage, const std::vector<std::string> & inputs);
 
-    void maybeTurn(const std::vector<Character*> & objects, Stage & stage);
+    void maybeTurn(Stage & stage);
 
     /*
     internalCommand_t resetJump;
@@ -1659,6 +1659,10 @@ public:
 
     LocalData & getLocalData(){
         return localData;
+    }
+
+    void setStateData(const StateData & data){
+        this->stateData = data;
     }
 };
 

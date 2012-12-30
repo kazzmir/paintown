@@ -2725,7 +2725,7 @@ static bool blockingState(int state){
 }
 
 /* Inherited members */
-void Character::act(vector<Mugen::Character*>* others, Stage * stage, vector<Mugen::Character*>* add){
+void Character::act(Stage * stage){
 
     getLocalData().maxChangeStates = 0;
 
@@ -2954,8 +2954,15 @@ void Character::addCombo(int combo){
     }
 }
 
-void Character::maybeTurn(const vector<Character*> & objects, Stage & stage){
+void Character::maybeTurn(Stage & stage){
     if (canTurn()){
+        Mugen::Character * enemy = stage.getEnemy(this);
+        if ((enemy->getX() > getX() && getFacing() != Mugen::FacingRight) ||
+            (enemy->getX() < getX() && getFacing() != Mugen::FacingLeft)){
+            doTurn(stage);
+        }
+
+        /*
         for (vector<Character*>::const_iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = *enem;
             if (stage.isaPlayer(enemy) && enemy->getAlliance() != getAlliance()){
@@ -2965,6 +2972,7 @@ void Character::maybeTurn(const vector<Character*> & objects, Stage & stage){
                 }
             }
         }
+        */
     }
 }
     
@@ -2996,14 +3004,14 @@ void Character::unbind(Character * who){
     }
 }
 
-void Character::doMovement(const vector<Character*> & objects, Stage & stage){
+void Character::doMovement(Stage & stage){
     if (getLocalData().bind.time > 0 && getLocalData().bind.bound != NULL){
         getLocalData().bind.time -= 1;
         setX(getLocalData().bind.bound->getX() + getLocalData().bind.offsetX * (getLocalData().bind.bound->getFacing() == FacingLeft ? -1 : 1));
         setY(getLocalData().bind.bound->getY() + getLocalData().bind.offsetY);
         switch (getLocalData().bind.facing){
             case -1: setFacing(getLocalData().bind.bound->getOppositeFacing()); break;
-            case 0: maybeTurn(objects, stage); break;
+            case 0: maybeTurn(stage); break;
             case 1: setFacing(getLocalData().bind.bound->getFacing()); break;
         }
     } else {
@@ -3047,7 +3055,7 @@ void Character::doMovement(const vector<Character*> & objects, Stage & stage){
            }
            */
 
-        maybeTurn(objects, stage);
+        maybeTurn(stage);
     }
 }
 

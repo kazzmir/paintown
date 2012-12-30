@@ -907,7 +907,7 @@ void Mugen::Stage::physics(Character * mugen){
         }
     }
 
-    mugen->doMovement(objects, *this);
+    mugen->doMovement(*this);
 
     if (mugen->getCurrentPhysics() == Mugen::Physics::Stand ||
         mugen->getCurrentPhysics() == Mugen::Physics::Crouch){
@@ -1311,7 +1311,7 @@ void Mugen::Stage::runCycle(){
              * to move if moveTime is > 0.
              */
             if (pause.time <= 0 || (pause.time > 0 && pause.moveTime > 0 && pause.who == player)){
-                player->act(&objects, this, &add);
+                player->act(this);
             }
         }
 
@@ -2325,8 +2325,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
                     answer = false;
                 }
             }
-            std::vector<Mugen::Character *> add;
-            character->act(&add, stage, &add);
+            character->act(stage);
         }
 
         double ticks(double system){
