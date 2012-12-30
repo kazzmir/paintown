@@ -9,6 +9,11 @@ class State:
     def addField(self, field):
         self.fields.append(field)
 
+class Program:
+    def __init__(self, namespace, struct):
+        self.namespace = namespace
+        self.struct = struct
+
 def combineTemplate(name, templates):
     if templates != None:
         return "%s<%s>" % (name, ', '.join([str(x) for x in templates]))

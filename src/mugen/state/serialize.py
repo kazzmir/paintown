@@ -16,7 +16,7 @@ code: {{
 import state    
 }}
 rules:
-    start = space:namespace (!"\n" .)* newline s* obj:struct {{ value = obj }}
+    start = name:namespace (!"\n" .)* newline s* obj:struct {{ value = state.Program(name, obj) }}
     namespace = "namespace" s+ id:identifier
     struct = "struct" s* name:identifier s* "{" fields:(s* field)* s* "}" {{
         value = state.State(name)
@@ -102,6 +102,13 @@ struct %(name)s{
       }
     return data
 
+def generate_program_cpp(program):
+    data = """namespace %s{
+%s
+}
+""" % (program.namespace, generate_cpp(program.struct))
+    return data
+
 def test1():
     parser = create_peg(grammar, 'string')
 
@@ -116,4 +123,4 @@ if len(sys.argv) < 2:
     print "Give an argument"
     sys.exit(0)
 
-print generate_cpp(create_peg(grammar)(sys.argv[1]))
+print generate_program_cpp(create_peg(grammar)(sys.argv[1]))
