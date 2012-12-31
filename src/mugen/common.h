@@ -29,6 +29,7 @@ public:
     virtual ~CharacterId();
     bool operator==(const CharacterId &) const;
     bool operator!=(const CharacterId &) const;
+    bool operator<(const CharacterId &) const;
 
     /* Used to pass the raw integer value to mugen script */
     int intValue() const;

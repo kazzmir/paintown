@@ -44,6 +44,7 @@ option-options.cpp
 widgets.cpp
 ast/ast.cpp
 versus.cpp
+world.cpp
 parse-cache.cpp
 parser/parse-exception.cpp
 parser/def.cpp

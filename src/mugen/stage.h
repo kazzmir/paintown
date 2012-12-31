@@ -29,6 +29,7 @@ namespace Mugen{
     class Spark;
     class Effect;
     class GameInfo;
+    class World;
 
 class Effect{
 public:
@@ -208,6 +209,8 @@ public:
 
     // Render debug stuff like lines and crap
     virtual void toggleDebug(int player);
+
+    virtual PaintownUtil::ReferenceCount<World> snapshotState();
 
     // Inherited world actions
     virtual void draw(Graphics::Bitmap * work);

@@ -103,11 +103,15 @@ CharacterId::~CharacterId(){
 CharacterId::CharacterId(const CharacterId & copy):
 id(copy.id){
 }
+
+bool CharacterId::operator<(const CharacterId & him) const {
+    return id < him.id;
+}
     
 bool CharacterId::operator==(const CharacterId & him) const {
     return id == him.id;
 }
-    
+
 bool CharacterId::operator!=(const CharacterId & him) const {
     return !(*this == him);
 }

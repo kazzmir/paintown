@@ -14,6 +14,7 @@
 
 #include "util/init.h"
 #include "state.h"
+#include "world.h"
 
 #include "util/system.h"
 #include "util/events.h"
@@ -1521,6 +1522,10 @@ void Mugen::Stage::drawBackgroundWithEffects(int x, int y, const Graphics::Bitma
 
 void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitmap & board){
     drawBackgroundWithEffectsSide(x, y, board, &Background::renderForeground);
+}
+    
+PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
+    return PaintownUtil::ReferenceCount<Mugen::World>(new Mugen::World());
 }
 
 /* Returns a sorted listed of sprite priorties */
