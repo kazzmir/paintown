@@ -18,7 +18,7 @@ class Object;
 class Character;
 class Projectile{
 public:
-    Projectile(double x, double y, int id, Character * owner, int animation, int hitAnimation, int dieAnimation,
+    Projectile(double x, double y, int id,Character * owner, int animation, int hitAnimation, int dieAnimation,
                int cancelAnimation, double scaleX, double scaleY, bool autoRemove, int removeTime, 
                double velocityX, double velocityY, double removeVelocityX, double removeVelocityY,
                double accelerateX, double accelerateY, double velocityXMultipler, 
@@ -31,7 +31,7 @@ public:
 
     virtual int getSpritePriority() const;
     virtual void draw(const Graphics::Bitmap & work, double x, double y);
-    virtual void logic();
+    virtual void logic(Stage & stage);
 
     /* Projectile priority. If this projectile has higher priority than another projectile
      * then if the projectiles collide, the other projectile will cancel.
@@ -61,7 +61,7 @@ public:
     /* False if the miss time is still active */
     bool canCollide() const;
 
-    virtual Character * getOwner() const;
+    virtual const CharacterId & getOwner() const;
         
     const std::vector<Area> getAttackBoxes() const;
     const std::vector<Area> getDefenseBoxes() const;
@@ -76,7 +76,7 @@ public:
     }
 
 protected:
-    Character * owner;
+    CharacterId owner;
     int spritePriority;
     ::Util::ReferenceCount<Animation> animation;
     double x, y;

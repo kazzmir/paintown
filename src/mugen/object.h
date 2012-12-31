@@ -57,9 +57,9 @@ public:
     
     virtual double getHealth() const = 0;
         
-    virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity) = 0;
+    // virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity) = 0;
     virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh) = 0;
-    virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y) = 0;
+    // virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y) = 0;
     
     // virtual void act(std::vector<Mugen::Object*>*, Stage*, std::vector<Mugen::Object*>*) = 0;
     
@@ -106,8 +106,8 @@ public:
     virtual const HitDefinition & getHit() const = 0;
     virtual int getCurrentJuggle() const = 0;
     virtual bool isAttacking() const = 0;
-    virtual const std::vector<Area> getAttackBoxes() const = 0;
-    virtual const std::vector<Area> getDefenseBoxes() const = 0;
+    // virtual const std::vector<Area> getAttackBoxes() const = 0;
+    // virtual const std::vector<Area> getDefenseBoxes() const = 0;
     virtual ResourceEffect getDefaultSpark() const = 0;
     virtual ResourceEffect getDefaultGuardSpark() const = 0;
     virtual int getAttackDistance() const = 0;

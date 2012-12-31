@@ -371,9 +371,9 @@ protected:
 
     void updatePlayer(Character *o);
     void physics(Character * o);
-    bool doBlockingDetection(Object * obj1, Object * obj2);
-    bool doCollisionDetection(Object * obj1, Object * obj2);
-    bool doReversalDetection(Object * obj1, Object * obj2);
+    bool doBlockingDetection(Character * obj1, Character * obj2);
+    bool doCollisionDetection(Character * obj1, Character * obj2);
+    bool doReversalDetection(Character * obj1, Character * obj2);
 
     CharacterId nextId();
     

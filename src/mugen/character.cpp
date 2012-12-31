@@ -589,6 +589,7 @@ Object(x,y, alliance){
 
 Character::Character(const Character & copy):
 Object(copy),
+localData(copy.localData),
 stateData(copy.stateData){
 }
 
@@ -2204,8 +2205,8 @@ bool Character::isBound() const {
     return getLocalData().bind.time > 0;
 }
 
-void Character::bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY){
-    getLocalData().bind.bound = bound->getId();
+void Character::bindTo(const CharacterId & bound, int time, int facing, double offsetX, double offsetY){
+    getLocalData().bind.bound = bound;
     getLocalData().bind.time = time;
     getLocalData().bind.facing = facing;
     getLocalData().bind.offsetX = offsetX;
@@ -2589,8 +2590,8 @@ void Character::priorPalette(){
 }
         
 /* players are their own root normally, only helpers differ */
-const Character * Character::getRoot() const {
-    return this;
+CharacterId Character::getRoot() const {
+    return getId();
 }
 
 const PaintownUtil::ReferenceCount<Mugen::Sprite> Character::getCurrentFrame() const {
@@ -4329,8 +4330,8 @@ bool Character::isAttacking() const {
     return getMoveType() == Move::Attack;
 }
     
-void Character::useCharacterData(const Character * who){
-    getLocalData().characterData.who = who->getId();
+void Character::useCharacterData(const CharacterId & who){
+    getLocalData().characterData.who = who;
     getLocalData().characterData.enabled = true;
 }
     

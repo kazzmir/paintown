@@ -759,16 +759,16 @@ static bool anyBlocking(const vector<Mugen::Area> & boxes1, int x1, int y1, int 
     return false;
 }
 
-bool Mugen::Stage::doBlockingDetection(Mugen::Object * obj1, Mugen::Object * obj2){
+bool Mugen::Stage::doBlockingDetection(Mugen::Character * obj1, Mugen::Character * obj2){
     // return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj1->getAttackDistance(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
     return anyBlocking(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), 0, obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-bool Mugen::Stage::doCollisionDetection(Mugen::Object * obj1, Mugen::Object * obj2){
+bool Mugen::Stage::doCollisionDetection(Mugen::Character * obj1, Mugen::Character * obj2){
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getDefenseBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
-bool Mugen::Stage::doReversalDetection(Mugen::Object * obj1, Mugen::Object * obj2){
+bool Mugen::Stage::doReversalDetection(Mugen::Character * obj1, Mugen::Character * obj2){
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getAttackBoxes(), (int) obj2->getX(), (int) obj2->getY());
 }
 
@@ -842,7 +842,7 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
                       projectile->getAttackBoxes(), (int) projectile->getX(), (int) projectile->getY())){
         projectile->doCollision(mugen, *this);
 
-        Character * owner = projectile->getOwner();
+        Character * owner = getCharacter(projectile->getOwner());
 
         bool block = mugen->isBlocking(projectile->getHitDefinition());
 
@@ -852,7 +852,7 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
                      (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()),
                      projectile->getHitDefinition().guardSpark,
                      owner->getDefaultGuardSpark(),
-                     projectile->getOwner());
+                     getCharacter(projectile->getOwner()));
 
             playSound(owner, projectile->getHitDefinition().guardHitSound.group, projectile->getHitDefinition().guardHitSound.item, projectile->getHitDefinition().guardHitSound.own);
             mugen->guarded(*this, owner, projectile->getHitDefinition());
@@ -863,7 +863,7 @@ void Mugen::Stage::doProjectileCollision(Projectile * projectile, Character * mu
                      (int)(projectile->getHitDefinition().sparkPosition.y + projectile->getY()),
                      projectile->getHitDefinition().spark,
                      owner->getDefaultSpark(),
-                     projectile->getOwner());
+                     getCharacter(projectile->getOwner()));
 
             playSound(owner, projectile->getHitDefinition().hitSound.group, projectile->getHitDefinition().hitSound.item, projectile->getHitDefinition().hitSound.own);
             mugen->wasHit(*this, owner, projectile->getHitDefinition());
@@ -1006,7 +1006,7 @@ void Mugen::Stage::physics(Character * mugen){
 
     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
         Projectile * projectile = *it;
-        if (projectile->getOwner() != mugen && projectile->canCollide()){
+        if (projectile->getOwner() != mugen->getId() && projectile->canCollide()){
             doProjectileCollision(projectile, mugen);
         }
 
@@ -1253,7 +1253,7 @@ void Mugen::Stage::runCycle(){
     /* FIXME: Projectiles should not act during a pause or superpause */
     for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); /**/){
         Projectile * projectile = *it;
-        projectile->logic();
+        projectile->logic(*this);
 
         if (projectile->isDead()){
             delete projectile;
@@ -2469,7 +2469,7 @@ int Mugen::Stage::countMyHelpers(const Mugen::Character * owner) const {
         Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (helper->getParent() == owner){
+            if (helper->getParent() == owner->getId()){
                 count += 1;
             }
         }
@@ -2520,7 +2520,7 @@ void Mugen::Stage::removeHelper(Mugen::Character * who){
         for (vector<Mugen::Helper*>::iterator it = children.begin(); it != children.end(); it++){
             Mugen::Helper * helper = *it;
             /* lose parent association, still has root though */
-            helper->reParent(NULL);
+            helper->reParent(CharacterId(-1));
         }
 
     }
@@ -2566,7 +2566,7 @@ vector<Mugen::Projectile*> Mugen::Stage::findProjectile(int id, const Character 
 
     for (vector<Projectile*>::const_iterator it = projectiles.begin(); it != projectiles.end(); it++){
         Projectile * projectile = *it;
-        if ((id == 0 || projectile->getId() == id) && projectile->getOwner() == owner){
+        if ((id == 0 || projectile->getId() == id) && projectile->getOwner() == owner->getId()){
             found.push_back(projectile);
         }
     }
@@ -2580,7 +2580,7 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner,
         Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (helper->getHelperId() == id && helper->getParent() == owner){
+            if (helper->getHelperId() == id && helper->getParent() == owner->getId()){
                 out.push_back(helper);
             }
         }
@@ -2593,7 +2593,7 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner,
         Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (helper->getHelperId() == id && helper->getParent() == owner){
+            if (helper->getHelperId() == id && helper->getParent() == owner->getId()){
                 out.push_back(helper);
             }
         }
@@ -2607,7 +2607,7 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner)
         Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (helper->getParent() == owner){
+            if (helper->getParent() == owner->getId()){
                 out.push_back(helper);
             }
         }
@@ -2617,7 +2617,7 @@ vector<Mugen::Helper*> Mugen::Stage::findHelpers(const Mugen::Character * owner)
         Mugen::Character * who = *it;
         if (who->isHelper()){
             Mugen::Helper * helper = (Mugen::Helper*) who;
-            if (helper->getParent() == owner){
+            if (helper->getParent() == owner->getId()){
                 out.push_back(helper);
             }
         }

@@ -381,6 +381,10 @@ public:
             return getLocalData().animations;
         }
 
+        virtual const std::map<int, PaintownUtil::ReferenceCount<State> > & getStates() const {
+            return getLocalData().states;
+        }
+
         virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
 
         /*
@@ -810,12 +814,12 @@ public:
         void enableHit();
         void disableHit();
     
-        virtual const Character * getRoot() const;
+        virtual CharacterId getRoot() const;
 
         /* binds this character to 'bound' meaning this character's position
          * will be the same as 'bound' and adjusted by the facing and offsets
          */
-        virtual void bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY);
+        virtual void bindTo(const CharacterId & bound, int time, int facing, double offsetX, double offsetY);
         
         std::map<int, std::vector<CharacterId> > & getTargets();
         const std::map<int, std::vector<CharacterId> > & getTargets() const;
@@ -1181,7 +1185,7 @@ protected:
     virtual StateController * parseState(Ast::Section * section);
     virtual PaintownUtil::ReferenceCount<State> parseStateDefinition(Ast::Section * section, const Filesystem::AbsolutePath & path, std::map<int, PaintownUtil::ReferenceCount<State> > & states);
 
-    virtual void useCharacterData(const Character * who);
+    virtual void useCharacterData(const CharacterId & who);
 
     // InputMap<Mugen::Keys> & getInput();
 

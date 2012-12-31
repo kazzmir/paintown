@@ -5225,7 +5225,7 @@ public:
         double y = (double) evaluateNumber(this->posY, environment, 0);
         for (vector<Character*>::iterator it = targets.begin(); it != targets.end(); it++){
             Character * target = *it;
-            target->bindTo(&guy, time, 0, x, y);
+            target->bindTo(guy.getId(), time, 0, x, y);
         }
     }
 
@@ -6632,7 +6632,7 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         FullEnvironment environment(stage, guy, commands);
         /* FIXME */
-        Mugen::Helper * helper = new Mugen::Helper(&guy, guy.getRoot(), (int) evaluateNumber(id, environment, 0), name);
+        Mugen::Helper * helper = new Mugen::Helper(&guy, environment.getStage().getCharacter(guy.getRoot()), (int) evaluateNumber(id, environment, 0), name);
 
         helper->setOwnPalette(evaluateBool(ownPalette, environment, false));
 
@@ -6887,7 +6887,7 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             Mugen::Helper & helper = *(Mugen::Helper*)&guy;
-            Character * parent = helper.getParent();
+            Character * parent = stage.getCharacter(helper.getParent());
             if (parent == NULL){
                 throw MugenNormalRuntimeException("No parent for helper");
             }
@@ -6962,7 +6962,7 @@ public:
     virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
         if (guy.isHelper()){
             Mugen::Helper & helper = *(Mugen::Helper*)&guy;
-            Character * parent = helper.getParent();
+            Character * parent = stage.getCharacter(helper.getParent());
             if (parent == NULL){
                 throw MugenNormalRuntimeException("No parent for helper");
             }
@@ -7762,7 +7762,7 @@ public:
         }
 
         /* FIXME: we have to cast the root to a non-const Character* */
-        stage.addProjectile(new Mugen::Projectile(x, y, id, (Character*) guy.getRoot(), animation, hitAnimation, dieAnimation,
+        stage.addProjectile(new Mugen::Projectile(x, y, id, (Character*) stage.getCharacter(guy.getRoot()), animation, hitAnimation, dieAnimation,
                                            cancelAnimation, scaleX, scaleY, autoRemove, removeTime, 
                                            velocityX, velocityY, removeVelocityX, removeVelocityY,
                                            accelerateX, accelerateY, velocityXMultipler, 
@@ -8129,7 +8129,7 @@ public:
                 pointX = position.x;
                 pointY = position.y;
             }
-            guy.bindTo(target, time, 0, pointX + x, pointY + y);
+            guy.bindTo(target->getId(), time, 0, pointX + x, pointY + y);
         }
     }
 };

@@ -18,7 +18,7 @@ Projectile::Projectile(double x, double y, int id, Character * owner, int animat
                int edge, int stageDistance, int lowBound, int highBound, int shadowRed,
                int shadowGreen, int shadowBlue, int superMoveTime, int pauseMoveTime,
                int afterImageTime, int afterImageLength, Facing facing, const HitDefinition & hit):
-owner(owner),
+owner(owner->getId()),
 spritePriority(spritePriority),
 x(x),
 y(y),
@@ -56,7 +56,7 @@ lastCanceled(0){
 Projectile::~Projectile(){
 }
 
-Character * Projectile::getOwner() const {
+const CharacterId & Projectile::getOwner() const {
     return owner;
 }
 
@@ -100,7 +100,7 @@ const std::vector<Area> Projectile::getDefenseBoxes() const {
 void Projectile::doCollision(Object * mugen, const Stage & stage){
     hits -= 1;
     if (hits <= 0){
-        PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(hitAnimation);
+        PaintownUtil::ReferenceCount<Animation> his = stage.getCharacter(owner)->getAnimation(hitAnimation);
         if (his != NULL){
             this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
         }
@@ -144,13 +144,13 @@ void Projectile::canceled(const Stage & stage, Projectile * higher){
     velocityX = removeVelocityX;
     velocityY = removeVelocityY;
     lastCanceled = stage.getTicks();
-    PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(cancelAnimation);
+    PaintownUtil::ReferenceCount<Animation> his = stage.getCharacter(owner)->getAnimation(cancelAnimation);
     if (his != NULL){
         this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
     }
 }
     
-void Projectile::logic(){
+void Projectile::logic(Stage & stage){
     if (animation != NULL){
         animation->logic();
     }
@@ -165,7 +165,7 @@ void Projectile::logic(){
         removeTime -= 1;
 
         if (removeTime == 0){
-            PaintownUtil::ReferenceCount<Animation> his = owner->getAnimation(removeAnimation);
+            PaintownUtil::ReferenceCount<Animation> his = stage.getCharacter(owner)->getAnimation(removeAnimation);
             if (his != NULL){
                 this->animation = PaintownUtil::ReferenceCount<Animation>(his->copy());
             }

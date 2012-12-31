@@ -29,32 +29,32 @@ public:
     using Character::getState;
     virtual PaintownUtil::ReferenceCount<State> getState(int id, Stage & stage) const;
 
-    void reParent(Character * parent);
+    void reParent(const CharacterId & parent);
 
-    inline Character * getParent() const {
+    inline CharacterId getParent() const {
         return owner;
     }
         
     virtual void roundEnd(Mugen::Stage & stage);
 
-    virtual const Character * getRoot() const {
+    using Character::getRoot;
+    virtual CharacterId getRoot() const {
         return root;
     }
-        
-    virtual PaintownUtil::ReferenceCount<Mugen::Sound> getSound(int group, int item) const;
-    virtual PaintownUtil::ReferenceCount<Mugen::Sound> getCommonSound(int group, int item) const;
 
 protected:
     /* the character that spawned this helper */
-    Character * owner;
+    CharacterId owner;
     /* the root character. player -> helper A -> helper B
      * the root of B is the player
      */ 
-    const Character * root;
+    const CharacterId root;
     HitDefinition hit;
     DummyBehavior dummy;
     mutable std::map< int, PaintownUtil::ReferenceCount<Animation> > proxyAnimations;
     mutable std::map< int, PaintownUtil::ReferenceCount<State> > proxyStates;
+
+    /* Id of the helper according to mugen script */
     int id;
     std::string name;
 };

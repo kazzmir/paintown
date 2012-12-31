@@ -2041,7 +2041,7 @@ public:
                     const Character & guy = environment.getCharacter();
                     if (guy.isHelper()){
                         const Mugen::Helper & myhelper = *(const Mugen::Helper*)&guy;
-                        Character * parent = myhelper.getParent();
+                        Character * parent = environment.getStage().getCharacter(myhelper.getParent());
                         if (parent == NULL){
                             runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
@@ -2075,7 +2075,7 @@ public:
 
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character & guy = environment.getCharacter();
-                    const Character * parent = guy.getRoot();
+                    const Character * parent = environment.getStage().getCharacter(guy.getRoot());
                     if (parent == NULL){
                         runtimeError("object has no parent", __FILE__, __LINE__);
                     }
@@ -4696,7 +4696,7 @@ public:
                     const Character & helper = environment.getCharacter();
                     if (helper.isHelper()){
                         const Helper & realHelper = *(const Helper*) &helper;
-                        const Character * parent = realHelper.getParent();
+                        const Character * parent = environment.getStage().getCharacter(realHelper.getParent());
                         if (parent == NULL){
                             runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
@@ -4721,7 +4721,7 @@ public:
                     const Character & helper = environment.getCharacter();
                     if (helper.isHelper()){
                         const Helper & realHelper = *(const Helper*) &helper;
-                        const Character * parent = realHelper.getParent();
+                        const Character * parent = environment.getStage().getCharacter(realHelper.getParent());
                         if (parent == NULL){
                             runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
@@ -4787,7 +4787,7 @@ public:
             class RootDistX: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const Character * root = environment.getCharacter().getRoot();
+                    const Character * root = environment.getStage().getCharacter(environment.getCharacter().getRoot());
                     if (root == NULL){
                         runtimeError("No root", __FILE__, __LINE__);
                     }
@@ -4806,7 +4806,7 @@ public:
             class RootDistY: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const Character * root = environment.getCharacter().getRoot();
+                    const Character * root = environment.getStage().getCharacter(environment.getCharacter().getRoot());
                     if (root == NULL){
                         runtimeError("No root", __FILE__, __LINE__);
                     }

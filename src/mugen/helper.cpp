@@ -9,11 +9,15 @@ namespace Mugen{
 
 Helper::Helper(Character * owner, const Character * root, int id, const string & name):
 Character(*owner),
-owner(owner),
-root(root),
+owner(owner->getId()),
+root(root->getId()),
 id(id),
 name(owner->getName() + " " + name + " (helper)"){
     getLocalData().behavior = &dummy;
+    getLocalData().states = owner->getStates();
+    getLocalData().animations = owner->getAnimations();
+    getLocalData().sounds = owner->getSounds();
+    getLocalData().commonSounds = owner->getCommonSounds();
 }
 
 Helper::~Helper(){
@@ -24,7 +28,7 @@ void Helper::destroyed(Stage & stage){
     stage.removeHelper(this);
 }
     
-void Helper::reParent(Character * parent){
+void Helper::reParent(const CharacterId & parent){
     this->owner = parent;
 }
     
@@ -52,8 +56,8 @@ RefState Helper::getState(int id, Stage & stage) const {
         return RefState(NULL);
     }
     map<int, RefState>::const_iterator findIt = proxyStates.find(id);
-    if (findIt == proxyStates.end() && owner != NULL){
-        RefState dad = owner->getSelfState(id);
+    if (findIt == proxyStates.end()){
+        RefState dad = Character::getState(id, stage);
         if (dad != NULL){
             /* this is why proxyStates has to be mutable */
             proxyStates[id] = RefState(dad->deepCopy());
@@ -73,20 +77,6 @@ const std::string Helper::getName() const {
 const std::string Helper::getDisplayName() const {
     return name;
 }
-    
-PaintownUtil::ReferenceCount<Mugen::Sound> Helper::getSound(int group, int item) const {
-    if (owner != NULL){
-        return owner->getSound(group, item);
-    }
-    return PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
-}
-
-PaintownUtil::ReferenceCount<Mugen::Sound> Helper::getCommonSound(int group, int item) const {
-    if (owner != NULL){
-        return owner->getCommonSound(group, item);
-    }
-    return PaintownUtil::ReferenceCount<Mugen::Sound>(NULL);
-}
 
 /*
 bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, int stateNumber){
@@ -102,17 +92,18 @@ bool Helper::doStates(MugenStage & stage, const std::vector<string> & active, in
     
 PaintownUtil::ReferenceCount<Animation> Helper::getAnimation(int id) const {
     map<int, PaintownUtil::ReferenceCount<Animation> >::const_iterator findIt = proxyAnimations.find(id);
-    if (findIt == proxyAnimations.end() && owner != NULL){
-        if (owner->hasAnimation(id)){
-            PaintownUtil::ReferenceCount<Animation> dad = owner->getAnimation(id);
-            /* this is why proxyAnimations has to be mutable */
-            proxyAnimations[id] = PaintownUtil::ReferenceCount<Animation>(new Animation(*dad));
+    if (findIt == proxyAnimations.end()){
+        PaintownUtil::ReferenceCount<Animation> originalAnimation = Character::getAnimation(id);
+        if (originalAnimation != NULL){
+            /* We have to copy the animation because the animation stores state about
+             * which frame is being shown and we don't want to mess up the
+             * original characters animations.
+             * this is why proxyAnimations has to be mutable */
+            proxyAnimations[id] = PaintownUtil::ReferenceCount<Animation>(new Animation(*originalAnimation));
             return proxyAnimations[id];
         }
     } else {
-        if (findIt != proxyAnimations.end()){
-            return findIt->second;
-        }
+        return findIt->second;
     }
     return PaintownUtil::ReferenceCount<Animation>(NULL);
 }
