@@ -285,12 +285,22 @@ static Character * makeCharacter(const std::string & name, bool random, std::vec
         }
         throw MugenException("No characters left to choose from!", __FILE__, __LINE__);
     } else {
+        /* First check if the path is a def file */
+        try{
+            Filesystem::AbsolutePath path(Storage::instance().find(Filesystem::RelativePath("mugen/chars/" + name)));
+            if (maybeCharacter(path)){
+                return doLoad(path);
+            }
+        } catch (const Filesystem::NotFound & fail){
+        }
+
+        /* Then check if its a container (.7z, .zip) and mount it */
         try{
             Filesystem::AbsolutePath zip = Storage::instance().findContainer(Filesystem::RelativePath("mugen/chars/" + name));
             Storage::instance().addOverlay(zip, zip.getDirectory());
         } catch (const Filesystem::NotFound & fail){
         }
-        // Filesystem::AbsolutePath path = Storage::instance().findInsensitive(Filesystem::RelativePath("mugen/chars/" + name + "/" + Filesystem::RelativePath(name).getFilename().path() + ".def"));
+
         std::vector<Filesystem::AbsolutePath> allDef = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/").join(Filesystem::RelativePath(name))), "*.def");
 
         /* Search for a file that looks like it probably contains a character as
