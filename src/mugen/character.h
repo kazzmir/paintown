@@ -465,7 +465,14 @@ public:
         return getLocalData().currentState;
     }
 
-    virtual PaintownUtil::ReferenceCount<State> getState(int id) const;
+    /* Gets the state from this character regardless of what characterData holds */
+    virtual PaintownUtil::ReferenceCount<State> getSelfState(int id) const;
+
+    /* Like getState but potentially gets a state from another character if
+     * this one is borrowing their data.
+     */
+    virtual PaintownUtil::ReferenceCount<State> getState(int id, Stage & stage) const;
+
     virtual void setState(int id, PaintownUtil::ReferenceCount<State> what);
 
         virtual inline std::string getStateType() const {
@@ -810,8 +817,8 @@ public:
          */
         virtual void bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY);
         
-        std::map<int, std::vector<Character *> > & getTargets();
-        const std::map<int, std::vector<Character*> > & getTargets() const;
+        std::map<int, std::vector<CharacterId> > & getTargets();
+        const std::map<int, std::vector<CharacterId> > & getTargets() const;
 
         virtual inline int getHeight() const {
             return getLocalData().height;
@@ -1084,7 +1091,7 @@ public:
         virtual void setTargetId(int id, Character * enemy);
 
         /* get a target for a given id */
-        virtual Character * getTargetId(int id) const;
+        virtual CharacterId getTargetId(int id) const;
     
         virtual bool withinGuardDistance(const Mugen::Character * enemy) const;
 
@@ -1131,6 +1138,9 @@ public:
         
         virtual double getAirHitRecoverYAccel() const;
         virtual void setAirHitRecoverYAccel(double yaccel);
+    
+        const CharacterId & getId() const;
+        void setId(const CharacterId & id);
 
 protected:
     void initialize();
@@ -1195,6 +1205,8 @@ protected:
     struct LocalData{
         LocalData();
         LocalData(const LocalData & copy);
+
+        CharacterId id;
 
         /* Location is the directory passed in ctor
            This is where the def is loaded and all the relevant files
@@ -1551,7 +1563,6 @@ protected:
          */
         struct Bind{
             Bind():
-                bound(NULL),
                 time(0),
                 facing(0),
                 offsetX(0),
@@ -1566,7 +1577,7 @@ protected:
                 offsetY(you.offsetY){
                 }
 
-            const Character * bound;
+            CharacterId bound;
             int time;
             int facing;
             double offsetX;
@@ -1575,7 +1586,7 @@ protected:
 
         Bind bind;
 
-        std::map<int, std::vector<Character *> > targets;
+        std::map<int, std::vector<CharacterId> > targets;
 
         int spritePriority;
 
@@ -1594,11 +1605,10 @@ protected:
 
         struct CharacterData {
             CharacterData():
-                who(NULL),
                 enabled(false){
                 }
 
-            const Character * who;
+            CharacterId who;
             bool enabled;
         } characterData;
 

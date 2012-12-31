@@ -743,7 +743,7 @@ public:
             class ID: public Value{
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return RuntimeValue(environment.getCharacter().getObjectId());
+                    return RuntimeValue(environment.getCharacter().getId().intValue());
                 }
 
                 virtual std::string toString() const {
@@ -1583,10 +1583,10 @@ public:
             class NumTarget: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const map<int, vector<Character*> > & targets = environment.getCharacter().getTargets();
+                    const map<int, vector<CharacterId> > & targets = environment.getCharacter().getTargets();
                     double count = 0;
-                    for (map<int, vector<Character* > >::const_iterator it = targets.begin(); it != targets.end(); it++){
-                        const vector<Character*> & objects = it->second;
+                    for (map<int, vector<CharacterId > >::const_iterator it = targets.begin(); it != targets.end(); it++){
+                        const vector<CharacterId> & objects = it->second;
                         count += objects.size();
                     }
                     return count;
@@ -2981,7 +2981,7 @@ public:
               
                 RuntimeValue evaluate(const Environment & environment) const {
                     int id = (int) this->id->evaluate(environment).toNumber();
-                    return environment.getStage().findPlayerById(id) != NULL;
+                    return environment.getStage().getCharacter(CharacterId(id)) != NULL;
                 }
 
                 Value * copy() const {
@@ -4399,10 +4399,10 @@ public:
                 }
 
                 RuntimeValue evaluate(const Environment & environment) const {
-                    const map<int, vector<Character*> > & targets = environment.getCharacter().getTargets();
+                    const map<int, vector<CharacterId> > & targets = environment.getCharacter().getTargets();
                     int index = this->index->evaluate(environment).toNumber();
                     if (targets.find(index) != targets.end()){
-                        const vector<Character*> & found = targets.find(index)->second;
+                        const vector<CharacterId> & found = targets.find(index)->second;
                         return (int) found.size();
                     }
                     return 0;

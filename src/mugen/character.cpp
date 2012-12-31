@@ -88,6 +88,33 @@ namespace PhysicalAttack{
 }
 
 namespace PaintownUtil = ::Util;
+    
+CharacterId::CharacterId():
+id(-1){
+}
+    
+CharacterId::CharacterId(int value):
+id(value){
+}
+
+CharacterId::~CharacterId(){
+}
+    
+CharacterId::CharacterId(const CharacterId & copy):
+id(copy.id){
+}
+    
+bool CharacterId::operator==(const CharacterId & him) const {
+    return id == him.id;
+}
+    
+bool CharacterId::operator!=(const CharacterId & him) const {
+    return !(*this == him);
+}
+    
+int CharacterId::intValue() const {
+    return id;
+}
 
 static string sourceLocation(const Ast::AttributeSimple & simple, const Filesystem::AbsolutePath & path){
     ostringstream out;
@@ -410,7 +437,6 @@ virtualz(0),
 attack_ticket(0),
 alliance(alliance),
 facing(FacingLeft),
-objectId(-1),
 ticket(0){
 }
 
@@ -421,7 +447,6 @@ virtualz(0),
 attack_ticket(0),
 alliance(alliance),
 facing(FacingLeft),
-objectId(-1),
 ticket(0){
 }
 
@@ -433,7 +458,6 @@ virtualz(copy.virtualz),
 attack_ticket(copy.attack_ticket),
 alliance(copy.alliance),
 facing(copy.facing),
-objectId(copy.objectId),
 ticket(copy.ticket){
 }
     
@@ -549,14 +573,6 @@ Facing Object::getOppositeFacing() const {
     
 void Character::reverseFacing(){
     facing = getOppositeFacing();
-}
-    
-int Object::getObjectId() const {
-    return objectId;
-}
-    
-void Object::setObjectId(int id){
-    this->objectId = id;
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, int alliance):
@@ -812,8 +828,8 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                 } else {
                     /* not all states in the .cmd file will have a statedef */
                     StateController * controller = parseState(section);
-                    if (getState(controller->getState()) != NULL){
-                        getState(controller->getState())->addController(controller);
+                    if (getSelfState(controller->getState()) != NULL){
+                        getSelfState(controller->getState())->addController(controller);
                     } else {
                         delete controller;
                     }
@@ -1035,7 +1051,7 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
     getLocalData().hitCount = 0;
 
     ostringstream debug;
-    debug << getDisplayName() << "-" << getObjectId();
+    debug << getDisplayName() << "-" << getId().intValue();
     Global::debug(1, debug.str()) << "Change from state " << getLocalData().currentState << " to state " << stateNumber << endl;
     getLocalData().previousState = getLocalData().currentState;
     getLocalData().currentState = stateNumber;
@@ -1080,13 +1096,13 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
     getLocalData().hitCount = 0;
 
     ostringstream debug;
-    debug << getDisplayName() << "-" << getObjectId();
+    debug << getDisplayName() << "-" << getId().intValue();
     Global::debug(1, debug.str()) << "Change from state " << getLocalData().currentState << " to state " << stateNumber << endl;
     getLocalData().previousState = getLocalData().currentState;
     getLocalData().currentState = stateNumber;
     resetStateTime();
-    if (getState(getLocalData().currentState) != NULL){
-        PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState);
+    if (getState(getLocalData().currentState, stage) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState, stage);
         state->transitionTo(stage, *this);
         doStates(stage, getLocalData().active, getLocalData().currentState);
     } else {
@@ -1096,7 +1112,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
 /* TODO: get rid of the inputs parameter */
 void Character::changeOwnState(Mugen::Stage & stage, int state, const std::vector<std::string> & inputs){
-    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.who = CharacterId(-1);
     getLocalData().characterData.enabled = false;
     changeState(stage, state);
 }
@@ -2189,11 +2205,19 @@ bool Character::isBound() const {
 }
 
 void Character::bindTo(const Character * bound, int time, int facing, double offsetX, double offsetY){
-    getLocalData().bind.bound = bound;
+    getLocalData().bind.bound = bound->getId();
     getLocalData().bind.time = time;
     getLocalData().bind.facing = facing;
     getLocalData().bind.offsetX = offsetX;
     getLocalData().bind.offsetY = offsetY;
+}
+    
+const CharacterId & Character::getId() const {
+    return getLocalData().id;
+}
+        
+void Character::setId(const CharacterId & id){
+    getLocalData().id = id;
 }
 
 bool Character::hasAnimation(int index) const {
@@ -2795,8 +2819,8 @@ void Character::act(Stage * stage){
          * the new state that was set from delayChangeState.
          */
         if (getLocalData().stateTime == -1){
-            if (getState(getLocalData().currentState) != NULL){
-                PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState);
+            PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState, *stage);
+            if (state != NULL){
                 state->transitionTo(*stage, *this);
             } else {
                 Global::debug(0) << "Unknown state " << getLocalData().currentState << endl;
@@ -2928,8 +2952,8 @@ void Character::addPower(double d){
 }
         
 void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> & active, int stateNumber){
-    if (getState(stateNumber) != NULL){
-        PaintownUtil::ReferenceCount<State> state = getState(stateNumber);
+    if (getState(stateNumber, stage) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(stateNumber, stage);
         const vector<StateController*> & controllers = state->getControllers();
         FullEnvironment environment(stage, *this, active);
         for (vector<StateController*>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
@@ -2982,20 +3006,20 @@ void Character::destroyed(Stage & stage){
 }
 
 void Character::unbind(Character * who){
-    if (getLocalData().bind.bound == who){
-        getLocalData().bind.bound = NULL;
+    if (getLocalData().bind.bound == who->getId()){
+        getLocalData().bind.bound = CharacterId(-1);
         getLocalData().bind.time = 0;
     }
 
-    if (getLocalData().characterData.who == who){
-        getLocalData().characterData.who = NULL;
+    if (getLocalData().characterData.who == who->getId()){
+        getLocalData().characterData.who = CharacterId(-1);
         getLocalData().characterData.enabled = false;
     }
 
-    for (map<int, vector<Character*> >::iterator it = getLocalData().targets.begin(); it != getLocalData().targets.end(); it++){
-        vector<Character*> & objects = it->second;
-        for (vector<Character*>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
-            if (*it2 == who){
+    for (map<int, vector<CharacterId> >::iterator it = getLocalData().targets.begin(); it != getLocalData().targets.end(); it++){
+        vector<CharacterId> & objects = it->second;
+        for (vector<CharacterId>::iterator it2 = objects.begin(); it2 != objects.end(); /**/){
+            if (*it2 == who->getId()){
                 it2 = objects.erase(it2);
             } else {
                 it2++;
@@ -3005,14 +3029,15 @@ void Character::unbind(Character * who){
 }
 
 void Character::doMovement(Stage & stage){
-    if (getLocalData().bind.time > 0 && getLocalData().bind.bound != NULL){
+    if (getLocalData().bind.time > 0 && getLocalData().bind.bound != CharacterId(-1)){
         getLocalData().bind.time -= 1;
-        setX(getLocalData().bind.bound->getX() + getLocalData().bind.offsetX * (getLocalData().bind.bound->getFacing() == FacingLeft ? -1 : 1));
-        setY(getLocalData().bind.bound->getY() + getLocalData().bind.offsetY);
+        const Character * bound = stage.getCharacter(getLocalData().bind.bound);
+        setX(bound->getX() + getLocalData().bind.offsetX * (bound->getFacing() == FacingLeft ? -1 : 1));
+        setY(bound->getY() + getLocalData().bind.offsetY);
         switch (getLocalData().bind.facing){
-            case -1: setFacing(getLocalData().bind.bound->getOppositeFacing()); break;
+            case -1: setFacing(bound->getOppositeFacing()); break;
             case 0: maybeTurn(stage); break;
-            case 1: setFacing(getLocalData().bind.bound->getFacing()); break;
+            case 1: setFacing(bound->getFacing()); break;
         }
     } else {
         /* TODO: ensure that if shaketime > 0 that binding should still happen */
@@ -3060,26 +3085,26 @@ void Character::doMovement(Stage & stage){
 }
 
 void Character::setTargetId(int id, Character * enemy){
-    vector<Character*> & objects = getLocalData().targets[id];
+    vector<CharacterId> & objects = getLocalData().targets[id];
 
     /* Don't add a duplicate target */
-    for (vector<Character*>::iterator it = objects.begin(); it != objects.end(); it++){
-        if (*it == enemy){
+    for (vector<CharacterId>::iterator it = objects.begin(); it != objects.end(); it++){
+        if (*it == enemy->getId()){
             return;
         }
     }
-    objects.push_back(enemy);
+    objects.push_back(enemy->getId());
 }
         
-Character * Character::getTargetId(int id) const {
+CharacterId Character::getTargetId(int id) const {
     if (getLocalData().targets.find(id) != getLocalData().targets.end()){
-        const vector<Character*> & objects = getLocalData().targets.find(id)->second;
+        const vector<CharacterId> & objects = getLocalData().targets.find(id)->second;
         if (objects.size() > 0){
             /* FIXME: return a random target? */
             return objects[PaintownUtil::rnd(objects.size())];
         }
     }
-    return NULL;
+    return CharacterId(-1);
 }
         
 void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
@@ -3088,14 +3113,14 @@ void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     getLocalData().hitState.spritePriority = getHit().player1SpritePriority;
     getLocalData().hitState.moveContact = 1;
     addPower(getHit().getPower.guarded);
-    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.who = CharacterId(-1);
     getLocalData().characterData.enabled = false;
 
     disableHit();
 }
 
 void Character::didHit(Character * enemy, Mugen::Stage & stage){
-    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.who = CharacterId(-1);
     getLocalData().characterData.enabled = false;
     getLocalData().hitState.shakeTime = getHit().pause.player1;
     getLocalData().hitState.spritePriority = getHit().player1SpritePriority;
@@ -3184,7 +3209,7 @@ void Character::didReverse(Mugen::Stage & stage, Character * enemy, const Revers
 }
 
 void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinition & hisHit){
-    getLocalData().characterData.who = NULL;
+    getLocalData().characterData.who = CharacterId(-1);
     getLocalData().characterData.enabled = false;
 
     getLocalData().wasHitCounter += 1;
@@ -3273,8 +3298,8 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
 /* returns true if a state change occured */
 bool Character::doStates(Mugen::Stage & stage, const vector<string> & active, int stateNumber){
     int oldState = getCurrentState();
-    if (getState(stateNumber) != NULL){
-        PaintownUtil::ReferenceCount<State> state = getState(stateNumber);
+    if (getState(stateNumber, stage) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(stateNumber, stage);
         // Global::debug(0) << getDisplayName() << " evaluating state " << stateNumber << " states " << state->getControllers().size() << std::endl;
         const vector<StateController*> & controllers = state->getControllers();
         FullEnvironment environment(stage, *this, active);
@@ -4244,16 +4269,24 @@ void Character::setHitOverride(int slot, const HitAttributes & attribute, int st
 void Character::setDrawOffset(double x, double y){
     getLocalData().drawOffset.set(x, y);
 }
-    
-PaintownUtil::ReferenceCount<State> Character::getState(int id) const {
-    if (getLocalData().characterData.enabled && getLocalData().characterData.who != NULL){
-        return getLocalData().characterData.who->getState(id);
-    }
 
+PaintownUtil::ReferenceCount<State> Character::getSelfState(int id) const {
     if (getLocalData().states.find(id) != getLocalData().states.end()){
         return getLocalData().states.find(id)->second;
     }
     return PaintownUtil::ReferenceCount<State>(NULL);
+}
+
+PaintownUtil::ReferenceCount<State> Character::getState(int id, Stage & stage) const {
+    if (getLocalData().characterData.enabled &&
+        getLocalData().characterData.who != CharacterId(-1)){
+        Character * guy = stage.getCharacter(getLocalData().characterData.who);
+        if (guy != NULL){
+            return guy->getState(id, stage);
+        }
+    }
+
+    return getSelfState(id);
 }
 
 void Character::setState(int id, PaintownUtil::ReferenceCount<State> what){
@@ -4297,7 +4330,7 @@ bool Character::isAttacking() const {
 }
     
 void Character::useCharacterData(const Character * who){
-    getLocalData().characterData.who = who;
+    getLocalData().characterData.who = who->getId();
     getLocalData().characterData.enabled = true;
 }
     
@@ -4318,11 +4351,11 @@ bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
     return ok;
 }
         
-std::map<int, vector<Character *> > & Character::getTargets(){
+std::map<int, vector<CharacterId> > & Character::getTargets(){
     return getLocalData().targets;
 }
 
-const std::map<int, vector<Character*> > & Character::getTargets() const {
+const std::map<int, vector<CharacterId> > & Character::getTargets() const {
     return getLocalData().targets;
 }
         

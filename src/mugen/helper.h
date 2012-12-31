@@ -27,7 +27,7 @@ public:
     using Character::getAnimation;
     virtual PaintownUtil::ReferenceCount<Animation> getAnimation(int id) const;
     using Character::getState;
-    virtual PaintownUtil::ReferenceCount<State> getState(int id) const;
+    virtual PaintownUtil::ReferenceCount<State> getState(int id, Stage & stage) const;
 
     void reParent(Character * parent);
 

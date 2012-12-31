@@ -41,7 +41,7 @@ bool Helper::canBeHit(Character * enemy){
 
 typedef PaintownUtil::ReferenceCount<State> RefState;
 
-RefState Helper::getState(int id) const {
+RefState Helper::getState(int id, Stage & stage) const {
     /* states -3 and -2 are disabled for helpers */
     if (id == -3 || id == -2){
         return RefState(NULL);
@@ -53,7 +53,7 @@ RefState Helper::getState(int id) const {
     }
     map<int, RefState>::const_iterator findIt = proxyStates.find(id);
     if (findIt == proxyStates.end() && owner != NULL){
-        RefState dad = owner->getState(id);
+        RefState dad = owner->getSelfState(id);
         if (dad != NULL){
             /* this is why proxyStates has to be mutable */
             proxyStates[id] = RefState(dad->deepCopy());

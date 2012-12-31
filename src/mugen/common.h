@@ -17,6 +17,24 @@ enum Facing{
     FacingLeft, FacingRight
 };
 
+/* Wrapper class for a character id (int) */
+class CharacterId{
+private:
+    int id;
+
+public:
+    CharacterId();
+    CharacterId(const CharacterId & copy);
+    explicit CharacterId(int value);
+    virtual ~CharacterId();
+    bool operator==(const CharacterId &) const;
+    bool operator!=(const CharacterId &) const;
+
+    /* Used to pass the raw integer value to mugen script */
+    int intValue() const;
+};
+
+
 namespace AttackType{
     extern std::string Normal;
     extern std::string Special;

@@ -1805,7 +1805,7 @@ void Mugen::Stage::addPlayer1(Mugen::Character * o){
     o->setY(p1starty);
     o->setZ(currentZOffset());
     o->setFacing(FacingRight);
-    o->setObjectId(nextObjectId());
+    o->setId(nextId());
     objects.push_back(o);
     players.push_back(o);
 
@@ -1827,7 +1827,7 @@ void Mugen::Stage::addPlayer2(Mugen::Character * o){
     o->setY(p2starty);
     o->setZ(currentZOffset());
     o->setFacing(FacingLeft);
-    o->setObjectId(nextObjectId());
+    o->setId(nextId());
     objects.push_back(o);
     players.push_back(o);
     
@@ -1876,7 +1876,7 @@ void Mugen::Stage::draw( Graphics::Bitmap * work ){
 }
 
 void Mugen::Stage::addObject(Mugen::Character * o){
-    o->setObjectId(nextObjectId());
+    o->setId(nextId());
     addedObjects.push_back(o);
 }
 
@@ -1887,22 +1887,24 @@ void Mugen::Stage::reloadLevel(){
     load(); 
 }
     
-int Mugen::Stage::nextObjectId(){
+Mugen::CharacterId Mugen::Stage::nextId(){
     int now = objectId;
     objectId += 1;
-    return now;
+    return CharacterId(now);
 }
 
 /* bleh.. */
+/*
 Mugen::Character * Mugen::Stage::findObject(int id){ 
     for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
         Mugen::Character * object = *it;
-        if (object->getObjectId() == id){
+        if (object->getd() == id){
             return object;
         }
     }
     return NULL;
 }
+*/
 
 // These should be the same, but we'll see, mugen has some funny parameters
 int Mugen::Stage::getMaximumZ(){ return zoffset; }
@@ -2485,7 +2487,7 @@ vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Charact
             }
         }
     } else {
-        Mugen::Character * target = from->getTargetId(id);
+        Mugen::Character * target = getCharacter(from->getTargetId(id));
         if (target != NULL){
             targets.push_back(target);
         }
@@ -2535,11 +2537,11 @@ void Mugen::Stage::removeEffects(const Mugen::Character * owner, int id){
         }
     }
 }
-    
-Mugen::Character * Mugen::Stage::findPlayerById(int id) const {
+
+Mugen::Character * Mugen::Stage::getCharacter(const CharacterId & id) const {
     for (vector<Mugen::Character*>::const_iterator it = objects.begin(); it != objects.end(); it++){
         Mugen::Character * object = *it;
-        if (object->getObjectId() == id){
+        if (object->getId() == id){
             return object;
         }
     }

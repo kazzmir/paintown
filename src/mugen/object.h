@@ -70,8 +70,10 @@ public:
     virtual Facing getOppositeFacing() const;
     virtual int getHeight() const = 0;
 	
+    /*
     virtual int getObjectId() const;
     virtual void setObjectId(int id);
+    */
 
     /*
     virtual unsigned int getTicket() const;
@@ -121,7 +123,7 @@ protected:
     unsigned int attack_ticket;
     int alliance;
     Facing facing;
-    int objectId;
+    // int objectId;
     unsigned int ticket;
 };
 

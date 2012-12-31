@@ -1118,20 +1118,20 @@ public:
         /* FIXME: targets should be a map of int to vector<Object*> in which case 'keep'
          * would have an effect.
          */
-        map<int, vector<Character*> > & targets = guy.getTargets();
-        for (map<int, vector<Character*> >::iterator it = targets.begin(); it != targets.end(); /**/){
+        map<int, vector<CharacterId> > & targets = guy.getTargets();
+        for (map<int, vector<CharacterId> >::iterator it = targets.begin(); it != targets.end(); /**/){
             if (it->first != id){
                 if (keep){
-                    vector<Character*> & objects = it->second;
+                    vector<CharacterId> & objects = it->second;
                     if (objects.size() > 0){
                         /* Save a random object */
-                        Character * save = objects[PaintownUtil::rnd(objects.size())];
+                        CharacterId save = objects[PaintownUtil::rnd(objects.size())];
                         objects.clear();
                         objects.push_back(save);
                     }
                 } else {
                     /* Otherwise remove all targets */
-                    map<int, vector<Character*> >::iterator kill = it;
+                    map<int, vector<CharacterId> >::iterator kill = it;
                     it++;
                     targets.erase(kill);
                 }

@@ -9,6 +9,7 @@
 #include "exception.h"
 #include "util.h"
 #include "util/graphics/bitmap.h"
+#include "common.h"
 
 namespace Graphics{
 class Bitmap;
@@ -213,12 +214,14 @@ public:
     virtual void addObject(Character * o);
     virtual bool finished() const;
     virtual void reloadLevel();
-    virtual Character * findObject(int id);
+    // virtual Character * findObject(int id);
     virtual int getMaximumZ();
     virtual int getMinimumZ();
     static const std::string getStageName(const std::string &filename);
     
     bool isaPlayer(Character * o) const;
+
+    virtual Character * getCharacter(const CharacterId & id) const;
 
     virtual Character * getEnemy(const Character * who) const;
     virtual std::vector<Character *> getTargets(int id, const Character * from) const;
@@ -252,8 +255,6 @@ public:
     virtual void addProjectile(Projectile * projectile);
     virtual void addEffect(Effect * effect);
     virtual void removeEffects(const Character * owner, int id);
-
-    virtual Character * findPlayerById(int id) const;
 
     virtual int countMyHelpers(const Character * owner) const;
     virtual std::vector<Projectile*> findProjectile(int id, const Character * owner) const;
@@ -374,7 +375,7 @@ protected:
     bool doCollisionDetection(Object * obj1, Object * obj2);
     bool doReversalDetection(Object * obj1, Object * obj2);
 
-    int nextObjectId();
+    CharacterId nextId();
     
 protected:
 
