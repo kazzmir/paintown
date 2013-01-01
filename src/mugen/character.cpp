@@ -608,15 +608,15 @@ void Character::initialize(){
     getLocalData().max_health = 0;
     getLocalData().health = 0;
     getLocalData().maxChangeStates = 0;
-    getLocalData().currentState = Standing;
+    getStateData().currentState = Standing;
     getLocalData().currentPhysics = Physics::Stand;
     getLocalData().moveType = Move::Idle;
     getLocalData().wasHitCounter = 0;
     getLocalData().frozen = false;
     getLocalData().reversalActive = false;
-    getLocalData().previousState = getLocalData().currentState;
+    getStateData().previousState = getStateData().currentState;
     getLocalData().stateType = StateType::Stand;
-    getLocalData().currentAnimation = Standing;
+    getStateData().currentAnimation = Standing;
     getLocalData().ownPalette = false;
     getLocalData().drawAngle = 0;
     /* FIXME: whats the default sprite priority? */
@@ -713,7 +713,7 @@ void Character::addCommand(Command * command){
 void Character::setAnimation(int animation, int element){
     if (getAnimation(animation) != NULL){
         getLocalData().foreignAnimation = NULL;
-        getLocalData().currentAnimation = animation;
+        getStateData().currentAnimation = animation;
         if (getCurrentAnimation() != NULL){
             getCurrentAnimation()->reset();
             getCurrentAnimation()->setPosition(element);
@@ -1057,9 +1057,9 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getId().intValue();
-    Global::debug(1, debug.str()) << "Change from state " << getLocalData().currentState << " to state " << stateNumber << endl;
-    getLocalData().previousState = getLocalData().currentState;
-    getLocalData().currentState = stateNumber;
+    Global::debug(1, debug.str()) << "Change from state " << getCurrentState() << " to state " << stateNumber << endl;
+    getStateData().previousState = getCurrentState();
+    setCurrentState(stateNumber);
     getLocalData().stateTime = -1;
     /*
     if (getState(currentState) != NULL){
@@ -1102,16 +1102,16 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getId().intValue();
-    Global::debug(1, debug.str()) << "Change from state " << getLocalData().currentState << " to state " << stateNumber << endl;
-    getLocalData().previousState = getLocalData().currentState;
-    getLocalData().currentState = stateNumber;
+    Global::debug(1, debug.str()) << "Change from state " << getCurrentState() << " to state " << stateNumber << endl;
+    getStateData().previousState = getCurrentState();
+    setCurrentState(stateNumber);
     resetStateTime();
-    if (getState(getLocalData().currentState, stage) != NULL){
-        PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState, stage);
+    if (getState(getCurrentState(), stage) != NULL){
+        PaintownUtil::ReferenceCount<State> state = getState(getCurrentState(), stage);
         state->transitionTo(stage, *this);
-        doStates(stage, getLocalData().active, getLocalData().currentState);
+        doStates(stage, getLocalData().active, getCurrentState());
     } else {
-        Global::debug(0, debug.str()) << "Unknown state " << getLocalData().currentState << endl;
+        Global::debug(0, debug.str()) << "Unknown state " << getCurrentState() << endl;
     }
 }
 
@@ -2620,7 +2620,7 @@ int Character::getAnimation() const {
     if (getLocalData().foreignAnimation != NULL){
         return getLocalData().foreignAnimationNumber;
     }
-    return getLocalData().currentAnimation;
+    return getStateData().currentAnimation;
 }
 
 PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
@@ -2629,7 +2629,7 @@ PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
         return getLocalData().foreignAnimation;
     }
 
-    return getAnimation(getLocalData().currentAnimation);
+    return getAnimation(getStateData().currentAnimation);
     /*
     typedef std::map< int, Animation * > Animations;
     Animations::const_iterator it = getAnimations().find(currentAnimation);
@@ -2824,11 +2824,11 @@ void Character::act(Stage * stage){
          * the new state that was set from delayChangeState.
          */
         if (getLocalData().stateTime == -1){
-            PaintownUtil::ReferenceCount<State> state = getState(getLocalData().currentState, *stage);
+            PaintownUtil::ReferenceCount<State> state = getState(getCurrentState(), *stage);
             if (state != NULL){
                 state->transitionTo(*stage, *this);
             } else {
-                Global::debug(0) << "Unknown state " << getLocalData().currentState << endl;
+                Global::debug(0) << "Unknown state " << getCurrentState() << endl;
             }
         }
 
@@ -2897,7 +2897,7 @@ void Character::act(Stage * stage){
         doStates(*stage, getLocalData().active, -2);
         doStates(*stage, getLocalData().active, -1);
     }
-    doStates(*stage, getLocalData().active, getLocalData().currentState);
+    doStates(*stage, getLocalData().active, getCurrentState());
 
     /*! do regeneration if set, but only for main players */
     if (getLocalData().regenerateHealth && !isHelper()){
@@ -3790,7 +3790,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         Graphics::Color color = Graphics::makeColor(255, 255, 255);
         Graphics::Color backgroundColor = Graphics::MaskColor();
         FontRender * render = FontRender::getInstance();
-        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), getLocalData().currentAnimation);
+        render->addMessage(font, x, y, color, backgroundColor, "State %d Animation %d", getCurrentState(), getStateData().currentAnimation);
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Vx %f Vy %f", getXVelocity(), getYVelocity());
         y += font.getHeight();
@@ -4520,9 +4520,9 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     maxChangeStates = 0;
     C(xscale);
     C(yscale);
-    C(currentState);
-    C(previousState);
-    C(currentAnimation);
+    // C(currentState);
+    // C(previousState);
+    // C(currentAnimation);
     C(velocity_x);
     C(velocity_y);
     C(currentPhysics);
@@ -4601,9 +4601,11 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     C(crouchFriction);
     C(crouchFrictionThreshold);
     C(constants);
+    /*
     C(currentState);
     C(previousState);
     C(currentAnimation);
+    */
     C(debug);
     C(velocity_x);
     C(velocity_y);

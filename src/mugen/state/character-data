@@ -5,4 +5,8 @@ struct StateData{
     int juggleRemaining;
     /* number of juggle points the current move will take */
     int currentJuggle;
+
+    int currentState;
+    int previousState;
+    int currentAnimation;
 }

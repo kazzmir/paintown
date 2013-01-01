@@ -463,7 +463,7 @@ public:
     virtual int getAnimation() const;
     
     virtual inline int getCurrentState() const {
-        return getLocalData().currentState;
+        return getStateData().currentState;
     }
 
     /* Gets the state from this character regardless of what characterData holds */
@@ -653,7 +653,7 @@ public:
         virtual int getStateTime() const;
 
         virtual inline int getPreviousState() const {
-            return getLocalData().previousState;
+            return getStateData().previousState;
         }
 
         virtual inline const std::string & getMoveType() const {
@@ -1147,7 +1147,7 @@ protected:
     void initialize();
 
     virtual inline void setCurrentState(int state){
-        this->getLocalData().currentState = state;
+        this->getStateData().currentState = state;
     }
 
     void checkStateControllers();
@@ -1412,9 +1412,11 @@ protected:
 
         std::vector<Command *> commands;
 
+        /*
         int currentState;
         int previousState;
         int currentAnimation;
+        */
 
         // Debug state
         bool debug;

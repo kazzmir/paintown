@@ -184,9 +184,6 @@ struct StateData{
     
     // std::vector<Command *> commands;
     
-    int currentState;
-    int previousState;
-    int currentAnimation;
     
     // Debug state
     bool debug;

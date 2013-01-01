@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_0a020724969b38e0f98cea7f858a867e
-#define _serialize_Mugen_0a020724969b38e0f98cea7f858a867e
+#ifndef _serialize_Mugen_8f9d609bacb130c8d682d9332de0b59d
+#define _serialize_Mugen_8f9d609bacb130c8d682d9332de0b59d
 
 #include "common.h"
 
@@ -10,10 +10,16 @@ struct StateData{
     StateData(){
         juggleRemaining = 0;
         currentJuggle = 0;
+        currentState = 0;
+        previousState = 0;
+        currentAnimation = 0;
     }
 
     int juggleRemaining;
     int currentJuggle;
+    int currentState;
+    int previousState;
+    int currentAnimation;
 };
 
 }
