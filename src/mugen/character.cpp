@@ -621,7 +621,7 @@ void Character::initialize(){
     getLocalData().drawAngle = 0;
     /* FIXME: whats the default sprite priority? */
     getLocalData().spritePriority = 0;
-    getLocalData().juggleRemaining = 0;
+    // getLocalData().juggleRemaining = 0;
     getLocalData().koecho = false;
     getLocalData().defense = 0;
     getLocalData().fallDefenseUp = 0;
@@ -968,7 +968,7 @@ bool Character::canBeHit(Character * enemy){
     }
 
     return (getLocalData().moveType != Move::Hit) ||
-           (getLocalData().moveType == Move::Hit && getLocalData().juggleRemaining >= enemy->getCurrentJuggle());
+           (getLocalData().moveType == Move::Hit && getStateData().juggleRemaining >= enemy->getCurrentJuggle());
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
@@ -1016,7 +1016,7 @@ void Character::resetStateTime(){
 }
         
 void Character::resetJugglePoints(){
-    getLocalData().juggleRemaining = getJugglePoints();
+    getStateData().juggleRemaining = getJugglePoints();
 }
     
 /*
@@ -2709,7 +2709,7 @@ void Character::processAfterImages(){
         if (animation != NULL){
             // afterImage.currentTime -= afterImage.timegap;
             Frame * currentSprite = animation->getCurrentFrame();
-            getLocalData().afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, getLocalData().xscale, getLocalData().yscale), getLocalData().life, x, y, getLocalData().afterImage.lifetime > 0));
+            getLocalData().afterImage.frames.push_front(AfterImage::Image(*currentSprite, animation->getCurrentEffects(getFacing() == FacingLeft, false, getLocalData().xscale, getLocalData().yscale), x, y, getLocalData().afterImage.lifetime > 0));
         }
     }
     if (getLocalData().afterImage.length > 0 &&
@@ -3262,7 +3262,7 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     /* FIXME: not sure if disabling afterimage's is the right thing */
     getLocalData().afterImage.lifetime = 0;
 
-    getLocalData().juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
+    getStateData().juggleRemaining -= enemy->getCurrentJuggle() + hisHit.airJuggle;
 
     for (map<int, HitOverride>::iterator it = getLocalData().hitOverrides.begin(); it != getLocalData().hitOverrides.end(); it++){
         HitOverride & override = it->second;
@@ -4551,14 +4551,13 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     C(palFile);
     C(introFile);
     C(endingFile);
-    C(life);
     C(attack);
     C(defense);
     C(fallDefenseUp);
     C(lieDownTime);
     C(airjuggle);
-    C(juggleRemaining);
-    C(currentJuggle);
+    // C(juggleRemaining);
+    // C(currentJuggle);
     C(spark);
     C(guardSpark);
     C(koecho);

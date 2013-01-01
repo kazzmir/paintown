@@ -60,24 +60,6 @@ struct StateData{
     
     /* Section [Data] */
     
-    // Life
-    int life;
-    // Attack
-    int attack;
-    // Defence
-    int defense;
-    // How much to bring up defese on fall
-    int fallDefenseUp;
-    // How long to lie down when fall
-    int lieDownTime;
-    /* starting air juggle points */
-    int airjuggle;
-    
-    /* number of juggle points left */
-    int juggleRemaining;
-    
-    /* number of juggle points the current move will take */
-    int currentJuggle;
     
     // Default Hit Spark Number for hitdefs ???
     ResourceEffect spark;

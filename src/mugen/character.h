@@ -108,15 +108,13 @@ struct AfterImage{
 
     struct Image{
         Image():
-            sprite(false),
-        life(0){
+        sprite(false){
         }
 
-        Image(Frame sprite, Effects effects, int life, int x, int y, bool show):
+        Image(Frame sprite, Effects effects, int x, int y, bool show):
             sprite(sprite),
             extra(-1),
             effects(effects),
-            life(life),
             x(x),
             y(y),
             show(show){
@@ -126,7 +124,6 @@ struct AfterImage{
         // Bitmap cache;
         unsigned int extra;
         Effects effects;
-        int life;
         int x;
         int y;
         bool show;
@@ -914,11 +911,11 @@ public:
         virtual void resetJugglePoints();
 
         virtual inline void setCurrentJuggle(int j){
-            getLocalData().currentJuggle = j;
+            getStateData().currentJuggle = j;
         }
 
         virtual inline int getCurrentJuggle() const {
-            return getLocalData().currentJuggle;
+            return getStateData().currentJuggle;
         }
 
         virtual inline void setCommonSounds(const Mugen::SoundMap * sounds){
@@ -1275,8 +1272,6 @@ protected:
 
         /* Section [Data] */
 
-        // Life
-        int life;
         // Attack
         int attack;
         // Defence
@@ -1289,10 +1284,10 @@ protected:
         int airjuggle;
 
         /* number of juggle points left */
-        int juggleRemaining;
+        // int juggleRemaining;
 
         /* number of juggle points the current move will take */
-        int currentJuggle;
+        // int currentJuggle;
 
         // Default Hit Spark Number for hitdefs ???
         ResourceEffect spark;

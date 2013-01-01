@@ -1,4 +1,8 @@
 include "common.h"
 namespace Mugen
 struct StateData{
+    /* number of juggle points left */
+    int juggleRemaining;
+    /* number of juggle points the current move will take */
+    int currentJuggle;
 }

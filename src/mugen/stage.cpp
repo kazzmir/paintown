@@ -1525,7 +1525,14 @@ void Mugen::Stage::drawForegroundWithEffects(int x, int y, const Graphics::Bitma
 }
     
 PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
-    return PaintownUtil::ReferenceCount<Mugen::World>(new Mugen::World());
+    PaintownUtil::ReferenceCount<Mugen::World> world(new Mugen::World());
+
+    for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
+        Mugen::Character * character = *it;
+        world->addCharacter(*character);
+    }
+
+    return world;
 }
 
 /* Returns a sorted listed of sprite priorties */
