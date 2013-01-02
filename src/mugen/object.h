@@ -13,19 +13,6 @@ namespace Mugen{
 class Stage;
 struct HitDefinition;
 
-/* maybe put the physics stuff in a different file */
-namespace Physics{
-
-enum Type{
-    None, /* N */
-    Air, /* A */
-    Stand, /* S */
-    Crouch, /* C */
-    Unchanged /* U */
-};
-
-}
-
 class Object{
 private:
     Object();
@@ -91,7 +78,6 @@ public:
 
     /* paused from an attack */
     virtual bool isPaused() const = 0;
-    virtual Physics::Type getCurrentPhysics() const = 0;
     virtual double getGravity() const = 0;
     virtual void setYVelocity(double y) = 0;
     virtual double getYVelocity() const = 0;

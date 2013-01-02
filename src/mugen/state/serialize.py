@@ -17,8 +17,10 @@ import state
 }}
 rules:
     start = includes:include* name:namespace (!"\n" .)* newline s* obj:struct {{ value = state.Program(includes, name, obj) }}
-    include = "include" s+ what:string (!"\n" .)* s+ "\n"* {{ value = what }}
-    string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = ''.join(contents) }}
+    include = "include" s+ what:include-string (!"\n" .)* s+ "\n"* {{ value = what }}
+    include-string = string
+                   | "<" contents:(!">" .)* ">" {{ value = "<%s>" % ''.join(contents) }}
+    string = <quote> contents:(!<quote> !"\n" .)* <quote> {{ value = '"' + ''.join(contents) + '"' }}
     namespace = "namespace" s+ id:identifier
     struct = "struct" s* name:identifier s* "{" fields:(s* field)* s* "}" {{
         value = state.State(name)
@@ -112,7 +114,7 @@ def md5(what):
 
 def generate_program_cpp(program):
     header = "_serialize_%s_%s" % (program.namespace, md5(generate_cpp(program.struct)))
-    includes = '\n'.join(['#include "%s"' % x for x in program.includes])
+    includes = '\n'.join(['#include %s' % x for x in program.includes])
     data = """
 #ifndef %s
 #define %s

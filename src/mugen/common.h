@@ -35,6 +35,17 @@ public:
     int intValue() const;
 };
 
+namespace Physics{
+
+enum Type{
+    None, /* N */
+    Air, /* A */
+    Stand, /* S */
+    Crouch, /* C */
+    Unchanged /* U */
+};
+
+}
 
 namespace AttackType{
     extern std::string Normal;

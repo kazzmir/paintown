@@ -609,7 +609,7 @@ void Character::initialize(){
     getLocalData().health = 0;
     getLocalData().maxChangeStates = 0;
     getStateData().currentState = Standing;
-    getLocalData().currentPhysics = Physics::Stand;
+    getStateData().currentPhysics = Physics::Stand;
     getLocalData().moveType = Move::Idle;
     getLocalData().wasHitCounter = 0;
     getLocalData().frozen = false;
@@ -631,7 +631,7 @@ void Character::initialize(){
     getLocalData().xscale = 1;
     getLocalData().yscale = 1;
     getLocalData().debug = false;
-    getLocalData().has_control = true;
+    getStateData().has_control = true;
     getLocalData().blocking = false;
     getLocalData().airjumpnum = 0;
     getLocalData().airjumpheight = 35;
@@ -660,14 +660,14 @@ void Character::initialize(){
     getLocalData().runforwardy = 0;
     getLocalData().power = 0;
 
-    getLocalData().velocity_x = 0;
-    getLocalData().velocity_y = 0;
+    getStateData().velocity_x = 0;
+    getStateData().velocity_y = 0;
 
     getLocalData().gravity = 0.1;
     getLocalData().standFriction = 0.85;
     getLocalData().crouchFriction = 0.82;
 
-    getLocalData().stateTime = 0;
+    getStateData().stateTime = 0;
 
     /* Regeneration */
     getLocalData().regenerateHealth = false;
@@ -980,11 +980,11 @@ void Character::setConstant(std::string name, double value){
 }
 
 void Character::setFloatVariable(int index, const RuntimeValue & value){
-    getLocalData().floatVariables[index] = value;
+    getStateData().floatVariables[index] = value;
 }
 
 void Character::setVariable(int index, const RuntimeValue & value){
-    getLocalData().variables[index] = value;
+    getStateData().variables[index] = value;
 }
 
 static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int index){
@@ -996,23 +996,23 @@ static RuntimeValue extractVariable(const map<int, RuntimeValue> & stuff, int in
 }
 
 RuntimeValue Character::getVariable(int index) const {
-    return extractVariable(getLocalData().variables, index);
+    return extractVariable(getStateData().variables, index);
 }
 
 RuntimeValue Character::getFloatVariable(int index) const {
-    return extractVariable(getLocalData().floatVariables, index);
+    return extractVariable(getStateData().floatVariables, index);
 }
         
 void Character::setSystemVariable(int index, const RuntimeValue & value){
-    getLocalData().systemVariables[index] = value;
+    getStateData().systemVariables[index] = value;
 }
 
 RuntimeValue Character::getSystemVariable(int index) const {
-    return extractVariable(getLocalData().systemVariables, index);
+    return extractVariable(getStateData().systemVariables, index);
 }
         
 void Character::resetStateTime(){
-    getLocalData().stateTime = 0;
+    getStateData().stateTime = 0;
 }
         
 void Character::resetJugglePoints(){
@@ -1060,7 +1060,7 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
     Global::debug(1, debug.str()) << "Change from state " << getCurrentState() << " to state " << stateNumber << endl;
     getStateData().previousState = getCurrentState();
     setCurrentState(stateNumber);
-    getLocalData().stateTime = -1;
+    getStateData().stateTime = -1;
     /*
     if (getState(currentState) != NULL){
         PaintownUtil::ReferenceCount<State> state = getState(currentState);
@@ -2823,7 +2823,7 @@ void Character::act(Stage * stage){
          * from a hitdef or reversaldef. When shaketime reaches 0 we need to activate
          * the new state that was set from delayChangeState.
          */
-        if (getLocalData().stateTime == -1){
+        if (getStateTime() == -1){
             PaintownUtil::ReferenceCount<State> state = getState(getCurrentState(), *stage);
             if (state != NULL){
                 state->transitionTo(*stage, *this);
@@ -2863,7 +2863,7 @@ void Character::act(Stage * stage){
         }
 
         /* if shakeTime is non-zero should we update stateTime? */
-        getLocalData().stateTime += 1;
+        getStateData().stateTime += 1;
 
         /* FIXME: there are a bunch more states that are considered blocking */
         if (getLocalData().blocking && !blockingState(getCurrentState()) &&
@@ -3712,7 +3712,7 @@ void Character::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity
 }
         
 int Character::getStateTime() const {
-    return getLocalData().stateTime;
+    return getStateData().stateTime;
 }
 
 void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
@@ -4523,9 +4523,9 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     // C(currentState);
     // C(previousState);
     // C(currentAnimation);
-    C(velocity_x);
-    C(velocity_y);
-    C(currentPhysics);
+    // C(velocity_x);
+    // C(velocity_y);
+    // C(currentPhysics);
     // C(lastTicket);
     C(regenerateHealth);
     C(regenerating);
@@ -4607,14 +4607,14 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     C(currentAnimation);
     */
     C(debug);
-    C(velocity_x);
-    C(velocity_y);
-    C(has_control);
-    C(stateTime);
-    C(variables);
-    C(floatVariables);
-    C(systemVariables);
-    C(currentPhysics);
+    // C(velocity_x);
+    // C(velocity_y);
+    // C(has_control);
+    // C(stateTime);
+    // C(variables);
+    // C(floatVariables);
+    // C(systemVariables);
+    // C(currentPhysics);
     C(gravity);
     C(standFriction);
     C(standFrictionThreshold);

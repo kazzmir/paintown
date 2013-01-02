@@ -485,19 +485,19 @@ public:
         }
 
         virtual inline void setXVelocity(double x){
-            getLocalData().velocity_x = x;
+            getStateData().velocity_x = x;
         }
 
         virtual inline double getXVelocity() const {
-            return getLocalData().velocity_x;
+            return getStateData().velocity_x;
         }
         
         virtual inline void setYVelocity(double y){
-            getLocalData().velocity_y = y;
+            getStateData().velocity_y = y;
         }
         
         virtual inline double getYVelocity() const {
-            return getLocalData().velocity_y;
+            return getStateData().velocity_y;
         }
 
         virtual inline double getWalkBackX() const {
@@ -579,11 +579,11 @@ public:
         virtual void addPower(double d);
 
         virtual inline bool hasControl() const {
-            return getLocalData().has_control;
+            return getStateData().has_control;
         }
 
         virtual inline void setControl(bool b){
-            getLocalData().has_control = b;
+            getStateData().has_control = b;
         }
 
         virtual inline void setJumpBack(double x){
@@ -687,11 +687,11 @@ public:
         virtual RuntimeValue getSystemVariable(int index) const;
 
         virtual inline Physics::Type getCurrentPhysics() const {
-            return getLocalData().currentPhysics;
+            return getStateData().currentPhysics;
         }
 
         virtual void setCurrentPhysics(Physics::Type p){
-            getLocalData().currentPhysics = p;
+            getStateData().currentPhysics = p;
         }
 
         virtual void setGravity(double n){
@@ -1283,12 +1283,6 @@ protected:
         /* starting air juggle points */
         int airjuggle;
 
-        /* number of juggle points left */
-        // int juggleRemaining;
-
-        /* number of juggle points the current move will take */
-        // int currentJuggle;
-
         // Default Hit Spark Number for hitdefs ???
         ResourceEffect spark;
         // Default guard spark number
@@ -1412,32 +1406,13 @@ protected:
 
         std::vector<Command *> commands;
 
-        /*
-        int currentState;
-        int previousState;
-        int currentAnimation;
-        */
-
         // Debug state
         bool debug;
 
-        /*
-           InputMap<Mugen::Keys> inputLeft;
-           InputMap<Mugen::Keys> inputRight;
-           */
+        // double velocity_x, velocity_y;
+        // bool has_control;
 
-        double velocity_x, velocity_y;
-
-        bool has_control;
-
-        /* how much time the player has been in the current state */
-        int stateTime;
-
-        /* dont delete these in the destructor, the state controller will do that */
-        std::map<int, RuntimeValue> variables;
-        std::map<int, RuntimeValue> floatVariables;
-        std::map<int, RuntimeValue> systemVariables;
-        Physics::Type currentPhysics;
+        /* Last state checked here */
 
         /* yaccel */
         double gravity;

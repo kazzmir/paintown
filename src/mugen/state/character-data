@@ -1,4 +1,6 @@
 include "common.h"
+include "compiler.h"
+include <map>
 namespace Mugen
 struct StateData{
     /* number of juggle points left */
@@ -9,4 +11,18 @@ struct StateData{
     int currentState;
     int previousState;
     int currentAnimation;
+ 
+    double velocity_x;
+    double velocity_y;
+    
+    bool has_control;
+ 
+    /* how much time the player has been in the current state */
+    int stateTime;
+    
+    /* dont delete these in the destructor, the state controller will do that */
+    std::map<int, RuntimeValue> variables;
+    std::map<int, RuntimeValue> floatVariables;
+    std::map<int, RuntimeValue> systemVariables;
+    Physics::Type currentPhysics;
 }
