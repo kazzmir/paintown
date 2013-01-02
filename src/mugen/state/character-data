@@ -25,4 +25,12 @@ struct StateData{
     std::map<int, RuntimeValue> floatVariables;
     std::map<int, RuntimeValue> systemVariables;
     Physics::Type currentPhysics;
+ 
+    /* S (stand), C (crouch), A (air), L (lying down) */
+    std::string stateType;
+    std::string moveType;
+    
+    HitDefinition hit;
+    
+    HitState hitState;
 }

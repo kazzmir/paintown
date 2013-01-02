@@ -610,12 +610,12 @@ void Character::initialize(){
     getLocalData().maxChangeStates = 0;
     getStateData().currentState = Standing;
     getStateData().currentPhysics = Physics::Stand;
-    getLocalData().moveType = Move::Idle;
+    setMoveType(Move::Idle);
     getLocalData().wasHitCounter = 0;
     getLocalData().frozen = false;
     getLocalData().reversalActive = false;
     getStateData().previousState = getStateData().currentState;
-    getLocalData().stateType = StateType::Stand;
+    setStateType(StateType::Stand);
     getStateData().currentAnimation = Standing;
     getLocalData().ownPalette = false;
     getLocalData().drawAngle = 0;
@@ -967,8 +967,8 @@ bool Character::canBeHit(Character * enemy){
         }
     }
 
-    return (getLocalData().moveType != Move::Hit) ||
-           (getLocalData().moveType == Move::Hit && getStateData().juggleRemaining >= enemy->getCurrentJuggle());
+    return (getMoveType() != Move::Hit) ||
+           (getMoveType() == Move::Hit && getStateData().juggleRemaining >= enemy->getCurrentJuggle());
 }
     
 void Character::setConstant(std::string name, const vector<double> & values){
@@ -1050,7 +1050,7 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
     /* FIXME: handle movehitpersist
      * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
      */
-    getLocalData().hitState.moveContact = 0;
+    getHitState().moveContact = 0;
 
     /* reset hit count */
     getLocalData().hitCount = 0;
@@ -1095,7 +1095,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
     /* FIXME: handle movehitpersist
      * Note 2: the values of the four Move* triggers reset to 0 and stop incrementing after a state transition. See "movehitpersist" parameter for StateDefs (CNS docs) for how to override this behavior.
      */
-    getLocalData().hitState.moveContact = 0;
+    getHitState().moveContact = 0;
 
     /* reset hit count */
     getLocalData().hitCount = 0;
@@ -2273,9 +2273,9 @@ void Character::doubleJump(Mugen::Stage & stage, const vector<string> & inputs){
 /* TODO: get rid of inputs */
 void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs){
     getLocalData().guarding = false;
-    if (getLocalData().stateType == StateType::Crouch){
+    if (getStateType() == StateType::Crouch){
         changeState(stage, Crouching);
-    } else if (getLocalData().stateType == StateType::Air){
+    } else if (getStateType() == StateType::Air){
         changeState(stage, 51);
     } else {
         changeState(stage, Standing);
@@ -2657,11 +2657,11 @@ vector<string> Character::doInput(const Mugen::Stage & stage){
 }
 
 bool Character::isPaused() const {
-    return getLocalData().hitState.shakeTime > 0;
+    return getHitState().shakeTime > 0;
 }
 
 int Character::pauseTime() const {
-    return getLocalData().hitState.shakeTime;
+    return getHitState().shakeTime;
 }
     
 double Character::getHealth() const {
@@ -2803,15 +2803,15 @@ void Character::act(Stage * stage){
 
     recordCommands(getLocalData().active);
 
-    if (getLocalData().hitState.recoverTime > 0){
-        getLocalData().hitState.recoverTime -= 1;
+    if (getHitState().recoverTime > 0){
+        getHitState().recoverTime -= 1;
     }
 
     getLocalData().blocking = holdingBlock(getLocalData().active);
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
-    if (getLocalData().hitState.shakeTime > 0){
-        getLocalData().hitState.shakeTime -= 1;
+    if (getHitState().shakeTime > 0){
+        getHitState().shakeTime -= 1;
 
         /* Need to update the animation so it doesn't get stuck */
         PaintownUtil::ReferenceCount<Animation> animation = getCurrentAnimation();
@@ -2854,12 +2854,12 @@ void Character::act(Stage * stage){
             animation->logic();
         }
 
-        if (getLocalData().hitState.hitTime > -1){
-            getLocalData().hitState.hitTime -= 1;
+        if (getHitState().hitTime > -1){
+            getHitState().hitTime -= 1;
         }
 
-        if (isAttacking() && getLocalData().hitState.moveContact > 0){
-            getLocalData().hitState.moveContact += 1;
+        if (isAttacking() && getHitState().moveContact > 0){
+            getHitState().moveContact += 1;
         }
 
         /* if shakeTime is non-zero should we update stateTime? */
@@ -3046,7 +3046,7 @@ void Character::doMovement(Stage & stage){
         }
     } else {
         /* TODO: ensure that if shaketime > 0 that binding should still happen */
-        if (getLocalData().hitState.shakeTime > 0){
+        if (getHitState().shakeTime > 0){
             return;
         }
 
@@ -3114,9 +3114,9 @@ CharacterId Character::getTargetId(int id) const {
         
 void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
     /* TODO */
-    getLocalData().hitState.shakeTime = getHit().guardPause.player1;
-    getLocalData().hitState.spritePriority = getHit().player1SpritePriority;
-    getLocalData().hitState.moveContact = 1;
+    getHitState().shakeTime = getHit().guardPause.player1;
+    getHitState().spritePriority = getHit().player1SpritePriority;
+    getHitState().moveContact = 1;
     addPower(getHit().getPower.guarded);
     getLocalData().characterData.who = CharacterId(-1);
     getLocalData().characterData.enabled = false;
@@ -3127,9 +3127,9 @@ void Character::didHitGuarded(Character * enemy, Mugen::Stage & stage){
 void Character::didHit(Character * enemy, Mugen::Stage & stage){
     getLocalData().characterData.who = CharacterId(-1);
     getLocalData().characterData.enabled = false;
-    getLocalData().hitState.shakeTime = getHit().pause.player1;
-    getLocalData().hitState.spritePriority = getHit().player1SpritePriority;
-    getLocalData().hitState.moveContact = 1;
+    getHitState().shakeTime = getHit().pause.player1;
+    getHitState().spritePriority = getHit().player1SpritePriority;
+    getHitState().moveContact = 1;
     addPower(getHit().getPower.hit);
 
     /* Once a hitdef hits, it cannot hit again */
@@ -3194,9 +3194,9 @@ void Character::takeDamage(Stage & world, Object * obj, int amount){
 
 void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     disableHit();
-    getLocalData().hitState.shakeTime = data.player2Pause;
+    getHitState().shakeTime = data.player2Pause;
     /* FIXME: what should the sprite priority of a reversal be? */
-    getLocalData().hitState.spritePriority = 0;
+    getHitState().spritePriority = 0;
     if (data.player2State != -1){
         useCharacterData(enemy->getRoot());
         delayChangeState(stage, data.player2State);
@@ -3205,9 +3205,9 @@ void Character::wasReversed(Mugen::Stage & stage, Character * enemy, const Rever
 
 void Character::didReverse(Mugen::Stage & stage, Character * enemy, const ReversalData & data){
     setReversalInactive();
-    getLocalData().hitState.shakeTime = data.player1Pause;
+    getHitState().shakeTime = data.player1Pause;
     /* FIXME: what should the sprite priority of a reversal be? */
-    getLocalData().hitState.spritePriority = 0;
+    getHitState().spritePriority = 0;
     if (data.player1State != -1){
         delayChangeState(stage, data.player1State);
     }
@@ -3218,7 +3218,7 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     getLocalData().characterData.enabled = false;
 
     getLocalData().wasHitCounter += 1;
-    getLocalData().hitState.update(stage, *this, getY() < 0, hisHit);
+    getHitState().update(stage, *this, getY() < 0, hisHit);
     
     addPower(hisHit.givePower.hit);
 
@@ -3734,7 +3734,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         int y = getRY() - cameraY + getLocalData().drawOffset.y;
 
         /* shake, but only if we are the one being hit */
-        if (isPaused() && getLocalData().moveType == Move::Hit){
+        if (isPaused() && getMoveType() == Move::Hit){
             x += PaintownUtil::rnd(3) - 1;
         }
 
@@ -3802,7 +3802,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Attack type %s", getMoveType().c_str());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getLocalData().hit.isEnabled());
+        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getHit().isEnabled());
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Control %d", hasControl());
         y += font.getHeight();
@@ -3986,10 +3986,10 @@ bool Character::isGuarding() const {
         
 void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit){
     /* FIXME: call hitState.updateGuard */
-    getLocalData().hitState.guarded = true;
+    getHitState().guarded = true;
     // lastTicket = enemy->getTicket();
-    getLocalData().hitState.shakeTime = hit.guardPause.player2;
-    getLocalData().hitState.spritePriority = hit.player2SpritePriority;
+    getHitState().shakeTime = hit.guardPause.player2;
+    getHitState().spritePriority = hit.player2SpritePriority;
     addPower(hit.givePower.guarded);
     bool inAir = getY() > 0;
     if (inAir){
@@ -4056,11 +4056,11 @@ void Character::assertSpecial(Specials special){
 }
 
 void Character::enableHit(){
-    getLocalData().hit.enable();
+    getHit().enable();
 }
 
 void Character::disableHit(){
-    getLocalData().hit.disable();
+    getHit().disable();
 }
         
 void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack){
@@ -4154,8 +4154,8 @@ void Character::setSpritePriority(int priority){
         
 int Character::getSpritePriority() const {
     /* FIXME: figure out how long the hitdef's sprite priority should take effect. */
-    if (getLocalData().hitState.shakeTime > 0){
-        return getLocalData().hitState.spritePriority;
+    if (getHitState().shakeTime > 0){
+        return getHitState().spritePriority;
     } else {
         return getLocalData().spritePriority;
     }
@@ -4618,8 +4618,8 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     C(gravity);
     C(standFriction);
     C(standFrictionThreshold);
-    C(stateType);
-    C(moveType);
+    // C(stateType);
+    // C(moveType);
     // lastTicket = 0;
     combo = 0;
     hitCount = 0;

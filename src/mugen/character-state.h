@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_6a1de65a08ddc09c180b7a6b9bf898ec
-#define _serialize_Mugen_6a1de65a08ddc09c180b7a6b9bf898ec
+#ifndef _serialize_Mugen_72816d3e6c70a5177f67751565159b1c
+#define _serialize_Mugen_72816d3e6c70a5177f67751565159b1c
 
 #include "common.h"
 #include "compiler.h"
@@ -34,6 +34,10 @@ struct StateData{
     std::map<int, RuntimeValue > floatVariables;
     std::map<int, RuntimeValue > systemVariables;
     Physics::Type currentPhysics;
+    std::string stateType;
+    std::string moveType;
+    HitDefinition hit;
+    HitState hitState;
 };
 
 }

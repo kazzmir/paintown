@@ -203,14 +203,6 @@ struct StateData{
      * Mugen 1.0 variable
      */ 
     double standFrictionThreshold;
-    
-    /* S (stand), C (crouch), A (air), L (lying down) */
-    std::string stateType;
-    std::string moveType;
-    
-    HitDefinition hit;
-    
-    HitState hitState;
     // unsigned int lastTicket;
     
     int combo;

@@ -477,11 +477,11 @@ public:
     virtual void setState(int id, PaintownUtil::ReferenceCount<State> what);
 
         virtual inline std::string getStateType() const {
-            return getLocalData().stateType;
+            return getStateData().stateType;
         }
 
         virtual inline void setStateType(const std::string & str){
-            getLocalData().stateType = str;
+            getStateData().stateType = str;
         }
 
         virtual inline void setXVelocity(double x){
@@ -657,7 +657,7 @@ public:
         }
 
         virtual inline const std::string & getMoveType() const {
-            return getLocalData().moveType;
+            return getStateData().moveType;
         }
 
         virtual double getXScale() const;
@@ -669,7 +669,7 @@ public:
         virtual int getAirFront() const;
 
         virtual inline void setMoveType(const std::string & str){
-            getLocalData().moveType = str;
+            getStateData().moveType = str;
         }
 
         virtual void destroyed(Stage & stage);
@@ -801,11 +801,11 @@ public:
         }
 
         virtual HitDefinition & getHit(){
-            return getLocalData().hit;
+            return getStateData().hit;
         }
         
         virtual const HitDefinition & getHit() const {
-            return getLocalData().hit;
+            return getStateData().hit;
         }
         
         void enableHit();
@@ -859,11 +859,11 @@ public:
         void resetHitFlag();
 
         virtual const HitState & getHitState() const {
-            return getLocalData().hitState;
+            return getStateData().hitState;
         }
 
         virtual HitState & getHitState(){
-            return getLocalData().hitState;
+            return getStateData().hitState;
         }
 
         const std::vector<Area> getAttackBoxes() const;
@@ -1412,8 +1412,6 @@ protected:
         // double velocity_x, velocity_y;
         // bool has_control;
 
-        /* Last state checked here */
-
         /* yaccel */
         double gravity;
 
@@ -1424,15 +1422,8 @@ protected:
          * Mugen 1.0 variable
          */ 
         double standFrictionThreshold;
-
-        /* S (stand), C (crouch), A (air), L (lying down) */
-        std::string stateType;
-        std::string moveType;
-
-        HitDefinition hit;
-
-        HitState hitState;
-        // unsigned int lastTicket;
+        
+        /* Last state checked here */
 
         int combo;
         // int nextCombo;
