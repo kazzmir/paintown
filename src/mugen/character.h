@@ -85,17 +85,6 @@ struct RecordingInformation{
     }
 };
 
-struct HitOverride{
-    HitOverride():
-        time(0){
-        }
-
-    int time;
-    HitAttributes attributes;
-    int state;
-    bool forceAir;
-};
-
 struct AfterImage{
     AfterImage():
         currentTime(0),
@@ -1443,97 +1432,9 @@ protected:
         /* used to communicate the need to guard in the engine */
         // bool needToGuard;
 
-        struct HitByOverride{
-            HitByOverride():
-                time(0){
-                }
-
-            bool standing;
-            bool crouching;
-            bool aerial;
-            int time;
-            std::vector<AttackType::Attribute> attributes;
-        } hitByOverride[2];
-
-        /* reduces damage taken */
-        double defenseMultiplier;
-        /* increase attack damage */
-        double attackMultiplier;
-
-        /* if frozen then the player won't move */
-        bool frozen;
-
-        ReversalData reversal;
-        bool reversalActive;
-
-        struct TransOverride{
-            TransOverride():
-                enabled(false){
-                }
-
-            bool enabled;
-            TransType type;
-            int alphaSource;
-            int alphaDestination;
-        } transOverride;
-
         PaintownUtil::ReferenceCount<RecordingInformation> record;
 
-        // PushPlayer only one tick
-        int pushPlayer;
-        
-        struct SpecialStuff{
-            SpecialStuff():
-                invisible(false),
-                intro(false){
-                }
-
-            void reset(){
-                invisible = false;
-                intro = false;
-            }
-
-            bool invisible;
-            bool intro;
-        } special;
-
         double max_health;
-        double health;
-
-        /* keeps track of binds to other characters. Used for BindToRoot and
-         * BindToTarget
-         */
-        struct Bind{
-            Bind():
-                time(0),
-                facing(0),
-                offsetX(0),
-                offsetY(0){
-                }
-
-            Bind(const Bind & you):
-                bound(you.bound),
-                time(you.time),
-                facing(you.facing),
-                offsetX(you.offsetX),
-                offsetY(you.offsetY){
-                }
-
-            CharacterId bound;
-            int time;
-            int facing;
-            double offsetX;
-            double offsetY;
-        };
-
-        Bind bind;
-
-        std::map<int, std::vector<CharacterId> > targets;
-
-        int spritePriority;
-
-        /* number of times this character has been hit in total */
-        unsigned int wasHitCounter;
 
         /* TODO: what is this for?
          * Mugen 1.0
@@ -1545,39 +1446,11 @@ protected:
          */
         double airGetHitGroundLevel;
 
-        struct CharacterData {
-            CharacterData():
-                enabled(false){
-                }
-
-            CharacterId who;
-            bool enabled;
-        } characterData;
-
         bool ownPalette;
         /* keep a count of the number of times changeState was called to prevent
          * an infinite recursion.
          */
         int maxChangeStates;
-
-        double drawAngle;
-        struct DrawAngleEffect{
-            DrawAngleEffect():
-                enabled(false),
-                angle(0),
-                scaleX(0),
-                scaleY(0){
-                }
-
-            bool enabled;
-            double angle;
-            double scaleX;
-            double scaleY;
-        } drawAngleData;
-
-        /* Current set of commands, updated in act() */
-        std::vector<std::string> active;
-        std::map<int, HitOverride> hitOverrides;
 
         double velocity_air_gethit_groundrecover_x;
         double velocity_air_gethit_groundrecover_y;

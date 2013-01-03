@@ -224,65 +224,11 @@ struct StateData{
     /* used to communicate the need to guard in the engine */
     // bool needToGuard;
     
-       
-    struct HitByOverride{
-            bool standing;
-            bool crouching;
-            bool aerial;
-            int time;
-            std::vector<AttackType::Attribute> attributes;
-    } hitByOverride[2];
-    
-    /* reduces damage taken */
-    double defenseMultiplier;
-    /* increase attack damage */
-    double attackMultiplier;
-    
-    /* if frozen then the player won't move */
-    bool frozen;
-    
-    ReversalData reversal;
-    bool reversalActive;
-    
-    struct TransOverride{
-            bool enabled;
-            TransType type;
-            int alphaSource;
-            int alphaDestination;
-    } transOverride;
-    
     // PaintownUtil::ReferenceCount<RecordingInformation> record;
-    
-    // PushPlayer only one tick
-    int pushPlayer;
-    
-    struct SpecialStuff{
-            bool invisible;
-            bool intro;
-    } special;
-    
+      
     PaletteEffects paletteEffects;
     
     double max_health;
-    double health;
-    
-    /* keeps track of binds to other characters. Used for BindToRoot and
-     * BindToTarget
-     */
-    struct Bind{
-            // const Character * bound;
-            int time;
-            int facing;
-            double offsetX;
-            double offsetY;
-    } bind;
-    
-    // std::map<int, std::vector<Character *> > targets;
-    
-    int spritePriority;
-    
-    /* number of times this character has been hit in total */
-    unsigned int wasHitCounter;
     
     /* TODO: what is this for?
      * Mugen 1.0
@@ -293,37 +239,13 @@ struct StateData{
      * Mugen 1.0
      */
     double airGetHitGroundLevel;
-    
-    /*
-       struct CharacterData {
-       CharacterData():
-       who(NULL),
-       enabled(false){
-       }
-    
-       const Character * who;
-       bool enabled;
-       } characterData;
-     */
-    
+       
     bool ownPalette;
     /* keep a count of the number of times changeState was called to prevent
      * an infinite recursion.
      */
     int maxChangeStates;
-    
-    double drawAngle;
-    struct DrawAngleEffect{
-            bool enabled;
-            double angle;
-            double scaleX;
-            double scaleY;
-    } drawAngleData;
-    
-    /* Current set of commands, updated in act() */
-    std::vector<std::string> active;
-    std::map<int, HitOverride> hitOverrides;
-    
+     
     double velocity_air_gethit_groundrecover_x;
     double velocity_air_gethit_groundrecover_y;
     

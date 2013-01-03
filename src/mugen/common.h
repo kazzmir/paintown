@@ -562,6 +562,19 @@ struct WinGame{
 
 };
 
+struct HitOverride{
+    HitOverride():
+        time(0){
+        }
+
+    int time;
+    HitAttributes attributes;
+    int state;
+    bool forceAir;
+};
+
+
+
 }
 
 #endif

@@ -43,9 +43,13 @@ class Type:
         return me
 
 class Field:
-    def __init__(self, type_, name):
+    def __init__(self, type_, name, array = None):
         self.type_ = type_
         self.name = name
+        self.array = array
+
+    def isArray(self):
+        return self.array != None
 
     def zero(self):
         if self.type_.name == 'bool':

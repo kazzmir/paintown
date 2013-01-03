@@ -50,5 +50,74 @@ struct StateData{
         int playerFront;
         int playerBack;
     } widthOverride;
+       
+    struct HitByOverride{
+            bool standing;
+            bool crouching;
+            bool aerial;
+            int time;
+            std::vector<AttackType::Attribute> attributes;
+    } hitByOverride[2];
+   
+    /* reduces damage taken */
+    double defenseMultiplier;
+    /* increase attack damage */
+    double attackMultiplier;
+  
+    /* if frozen then the player won't move */
+    bool frozen;
+ 
+    ReversalData reversal;
+    bool reversalActive;
 
+    struct TransOverride{
+       bool enabled;
+       TransType type;
+       int alphaSource;
+       int alphaDestination;
+    } transOverride;
+
+    // PushPlayer only one tick
+    int pushPlayer;
+  
+    struct SpecialStuff{
+       bool invisible;
+       bool intro;
+    } special;
+
+    double health;
+ 
+    /* keeps track of binds to other characters. Used for BindToRoot and
+     * BindToTarget
+     */
+    struct Bind{
+        CharacterId bound;
+        int time;
+        int facing;
+        double offsetX;
+        double offsetY;
+    } bind;
+      
+    std::map<int, std::vector<CharacterId> > targets;
+    int spritePriority;
+
+    /* number of times this character has been hit in total */
+    unsigned int wasHitCounter;
+ 
+    struct CharacterData {
+        CharacterId who;
+        bool enabled;
+    } characterData;
+ 
+    double drawAngle;
+    struct DrawAngleEffect{
+        bool enabled;
+        double angle;
+        double scaleX;
+        double scaleY;
+    } drawAngleData;
+      
+    /* Current set of commands, updated in act() */
+    std::vector<std::string> active;
+    std::map<int, HitOverride> hitOverrides;
 }

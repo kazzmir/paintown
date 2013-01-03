@@ -30,11 +30,16 @@ for field in fields:
     identifier = a:letter rest:letter_digit* {{ value = a + ''.join(rest) }}
     letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
     digit = [0123456789]
-    number = digit+
+    number = all:digit+ {{ value = ''.join(all) }}
     letter_digit = letter
                   | digit
-    array = "[" s* number s* "]"
-    field = obj:struct s* name:identifier array? ";"? {{ value = state.Field(obj, name) }}
+    array = "[" s* out:number s* "]" {{ value = out }}
+    field = obj:struct s* name:identifier array:array? ";"? {{
+    if array != None:
+    value = state.Field(obj, name, array)
+else:
+    value = state.Field(obj, name)
+        }}
           | type:type-identifier s+ name:identifier ";"? {{ value = state.Field(type, name) }}
     # Hack to use unsigned here because we don't want to specialize for c/c++
     type-modifier = "unsigned"
@@ -60,18 +65,22 @@ def create_peg(grammar, kind = 'file'):
     # Then use it to parse the grammar and return a new peg
     return peg.create_peg(peg_parser(grammar), kind)
 
-def generate_cpp(object, name = None):
+def generate_cpp(object, name = None, array = None):
     def make_init_field(field):
-        if field.type_.isPOD():
+        if field.type_.isPOD() and not field.isArray():
             return '%(name)s = %(zero)s;' % {'name': field.name,
                                              'zero': field.zero()}
         return None
 
     def make_definition(field):
         if isinstance(field.type_, state.State):
-            return generate_cpp(field.type_, field.name)
-        return '%(type)s %(name)s;' % {'name': field.name,
-                                       'type': field.type_}
+            return generate_cpp(field.type_, field.name, field.array)
+        array = ''
+        if field.isArray():
+            array = field.array
+        return '%(type)s %(name)s%(array)s;' % {'name': field.name,
+                                                'type': field.type_,
+                                                'array': array}
 
     def indent(lines, much):
         if len(lines) == 0:
@@ -91,6 +100,9 @@ def generate_cpp(object, name = None):
     instance = "";
     if name != None:
         instance = " %s" % name;
+    arrayUse = ''
+    if array != None:
+        arrayUse = '[%s]' % array
     data = """
 struct %(name)s{
     %(name)s(){
@@ -98,11 +110,12 @@ struct %(name)s{
     }
 
     %(definitions)s
-}%(maybe-instance)s;
+}%(maybe-instance)s%(array)s;
 """ % {'name': object.name,
        'maybe-instance': instance,
        'init-fields': indent(inits, 2),
-       'definitions': indent(definitions, 1)
+       'definitions': indent(definitions, 1),
+       'array': arrayUse
       }
     return data
 

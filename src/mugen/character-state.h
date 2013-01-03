@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_0cf611f40fdec23bd9a6821dec031abe
-#define _serialize_Mugen_0cf611f40fdec23bd9a6821dec031abe
+#ifndef _serialize_Mugen_3b6e12b00abbd48c1c4cffd337d85e3d
+#define _serialize_Mugen_3b6e12b00abbd48c1c4cffd337d85e3d
 
 #include "common.h"
 #include "compiler.h"
@@ -23,6 +23,15 @@ struct StateData{
         hitCount = 0;
         blocking = false;
         guarding = false;
+        defenseMultiplier = 0;
+        attackMultiplier = 0;
+        frozen = false;
+        reversalActive = false;
+        pushPlayer = 0;
+        health = 0;
+        spritePriority = 0;
+        wasHitCounter = 0;
+        drawAngle = 0;
     }
 
     int juggleRemaining;
@@ -63,6 +72,101 @@ struct StateData{
         int playerBack;
     } widthOverride;
     
+    
+    struct HitByOverride{
+        HitByOverride(){
+            standing = false;
+            crouching = false;
+            aerial = false;
+            time = 0;
+        }
+    
+        bool standing;
+        bool crouching;
+        bool aerial;
+        int time;
+        std::vector<AttackType::Attribute > attributes;
+    } hitByOverride[2];
+    
+    double defenseMultiplier;
+    double attackMultiplier;
+    bool frozen;
+    ReversalData reversal;
+    bool reversalActive;
+    
+    struct TransOverride{
+        TransOverride(){
+            enabled = false;
+            alphaSource = 0;
+            alphaDestination = 0;
+        }
+    
+        bool enabled;
+        TransType type;
+        int alphaSource;
+        int alphaDestination;
+    } transOverride;
+    
+    int pushPlayer;
+    
+    struct SpecialStuff{
+        SpecialStuff(){
+            invisible = false;
+            intro = false;
+        }
+    
+        bool invisible;
+        bool intro;
+    } special;
+    
+    double health;
+    
+    struct Bind{
+        Bind(){
+            time = 0;
+            facing = 0;
+            offsetX = 0;
+            offsetY = 0;
+        }
+    
+        CharacterId bound;
+        int time;
+        int facing;
+        double offsetX;
+        double offsetY;
+    } bind;
+    
+    std::map<int, std::vector<CharacterId > > targets;
+    int spritePriority;
+    unsigned int wasHitCounter;
+    
+    struct CharacterData{
+        CharacterData(){
+            enabled = false;
+        }
+    
+        CharacterId who;
+        bool enabled;
+    } characterData;
+    
+    double drawAngle;
+    
+    struct DrawAngleEffect{
+        DrawAngleEffect(){
+            enabled = false;
+            angle = 0;
+            scaleX = 0;
+            scaleY = 0;
+        }
+    
+        bool enabled;
+        double angle;
+        double scaleX;
+        double scaleY;
+    } drawAngleData;
+    
+    std::vector<std::string > active;
+    std::map<int, HitOverride > hitOverrides;
 };
 
 }
