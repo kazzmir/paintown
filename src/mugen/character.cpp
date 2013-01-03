@@ -632,10 +632,10 @@ void Character::initialize(){
     getLocalData().yscale = 1;
     getLocalData().debug = false;
     getStateData().has_control = true;
-    getLocalData().blocking = false;
+    getStateData().blocking = false;
     getLocalData().airjumpnum = 0;
     getLocalData().airjumpheight = 35;
-    getLocalData().guarding = false;
+    getStateData().guarding = false;
     getLocalData().behavior = NULL;
 
     getLocalData().intpersistindex = 0;
@@ -643,7 +643,7 @@ void Character::initialize(){
 
     getLocalData().matchWins = 0;
 
-    getLocalData().combo = 1;
+    getStateData().combo = 1;
     // nextCombo = 0;
 
     // lastTicket = 0;
@@ -1053,7 +1053,7 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
     getHitState().moveContact = 0;
 
     /* reset hit count */
-    getLocalData().hitCount = 0;
+    getStateData().hitCount = 0;
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getId().intValue();
@@ -1098,7 +1098,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
     getHitState().moveContact = 0;
 
     /* reset hit count */
-    getLocalData().hitCount = 0;
+    getStateData().hitCount = 0;
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getId().intValue();
@@ -2272,7 +2272,7 @@ void Character::doubleJump(Mugen::Stage & stage, const vector<string> & inputs){
 
 /* TODO: get rid of inputs */
 void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs){
-    getLocalData().guarding = false;
+    getStateData().guarding = false;
     if (getStateType() == StateType::Crouch){
         changeState(stage, Crouching);
     } else if (getStateType() == StateType::Air){
@@ -2762,7 +2762,7 @@ void Character::act(Stage * stage){
     // reversalActive = false;
 
     getLocalData().special.reset();
-    getLocalData().blocking = false;
+    getStateData().blocking = false;
 
     if (getLocalData().frozen){
         getLocalData().frozen = false;
@@ -2774,7 +2774,7 @@ void Character::act(Stage * stage){
     }
 
     /* reset some stuff */
-    getLocalData().widthOverride.enabled = false;
+    getStateData().widthOverride.enabled = false;
     getLocalData().transOverride.enabled = false;
     getLocalData().drawAngleData.enabled = false;
 
@@ -2807,7 +2807,7 @@ void Character::act(Stage * stage){
         getHitState().recoverTime -= 1;
     }
 
-    getLocalData().blocking = holdingBlock(getLocalData().active);
+    getStateData().blocking = holdingBlock(getLocalData().active);
 
     // if (hitState.shakeTime > 0 && moveType != Move::Hit){
     if (getHitState().shakeTime > 0){
@@ -2866,7 +2866,7 @@ void Character::act(Stage * stage){
         getStateData().stateTime += 1;
 
         /* FIXME: there are a bunch more states that are considered blocking */
-        if (getLocalData().blocking && !blockingState(getCurrentState()) &&
+        if (getStateData().blocking && !blockingState(getCurrentState()) &&
             getMoveType() == Move::Idle &&
             stage->getEnemy(this)->getMoveType() == Move::Attack &&
             withinGuardDistance(stage->getEnemy(this))){
@@ -2977,9 +2977,9 @@ void Character::testStates(Mugen::Stage & stage, const std::vector<std::string> 
 }
 
 void Character::addCombo(int combo){
-    getLocalData().hitCount += combo;
-    if (getLocalData().hitCount < 0){
-        getLocalData().hitCount = 0;
+    getStateData().hitCount += combo;
+    if (getStateData().hitCount < 0){
+        getStateData().hitCount = 0;
     }
 }
 
@@ -3141,14 +3141,14 @@ void Character::didHit(Character * enemy, Mugen::Stage & stage){
 
     /* if he is already in a Hit state then increase combo */
     if (enemy->getMoveType() == Move::Hit){
-        getLocalData().combo += 1;
+        getStateData().combo += 1;
     } else {
-        getLocalData().combo = 1;
+        getStateData().combo = 1;
     }
 
     // nextCombo = 15;
 
-    getLocalData().hitCount += 1;
+    getStateData().hitCount += 1;
 
     /* Mainly used for AI so it can tell if a hit succeeded and thus learn which moves to do */
     if (getLocalData().behavior != NULL){
@@ -3910,23 +3910,23 @@ double Character::getForceY() const {
  * if the player is in the air. If so it should return airBack/front/etc..
  */
 int Character::getWidth() const {
-    if (getLocalData().widthOverride.enabled){
-        return getLocalData().widthOverride.playerFront;
+    if (getStateData().widthOverride.enabled){
+        return getStateData().widthOverride.playerFront;
     }
     return getLocalData().groundfront;
 }
 
 int Character::getBackWidth() const {
-    if (getLocalData().widthOverride.enabled){
-        return getLocalData().widthOverride.playerBack;
+    if (getStateData().widthOverride.enabled){
+        return getStateData().widthOverride.playerBack;
     }
     return getLocalData().groundback;
 }
         
 int Character::getBackX() const {
     int width = getBackWidth();
-    if (getLocalData().widthOverride.enabled){
-        width = getLocalData().widthOverride.edgeBack;
+    if (getStateData().widthOverride.enabled){
+        width = getStateData().widthOverride.edgeBack;
     }
     if (getFacing() == FacingLeft){
         return getX() + width;
@@ -3936,8 +3936,8 @@ int Character::getBackX() const {
 
 int Character::getFrontX() const {
     int width = getWidth();
-    if (getLocalData().widthOverride.enabled){
-        width = getLocalData().widthOverride.edgeFront;
+    if (getStateData().widthOverride.enabled){
+        width = getStateData().widthOverride.edgeFront;
     }
     if (getFacing() == FacingLeft){
         return getX() - width;
@@ -3946,7 +3946,7 @@ int Character::getFrontX() const {
 }
 
 int Character::getCurrentCombo() const {
-    return getLocalData().combo;
+    return getStateData().combo;
 }
 
 /* TODO: implement these */
@@ -3972,16 +3972,16 @@ void Character::resetPlayer(){
         
 bool Character::isBlocking(const HitDefinition & hit){
     /* FIXME: can only block if in the proper state relative to the hit def */
-    return hasControl() && getLocalData().blocking;
+    return hasControl() && getStateData().blocking;
 }
         
 void Character::resetHitFlag(){
     /* FIXME: not sure if this is right */
-    getLocalData().guarding = false;
+    getStateData().guarding = false;
 }
 
 bool Character::isGuarding() const {
-    return getLocalData().guarding;
+    return getStateData().guarding;
 }
         
 void Character::guarded(Mugen::Stage & stage, Object * enemy, const HitDefinition & hit){
@@ -4064,11 +4064,11 @@ void Character::disableHit(){
 }
         
 void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack){
-    getLocalData().widthOverride.enabled = true;
-    getLocalData().widthOverride.edgeFront = edgeFront;
-    getLocalData().widthOverride.edgeBack = edgeBack;
-    getLocalData().widthOverride.playerFront = playerFront;
-    getLocalData().widthOverride.playerBack = playerBack;
+    getStateData().widthOverride.enabled = true;
+    getStateData().widthOverride.edgeFront = edgeFront;
+    getStateData().widthOverride.edgeBack = edgeBack;
+    getStateData().widthOverride.playerFront = playerFront;
+    getStateData().widthOverride.playerBack = playerBack;
 }
         
 /* FIXME: it may be easier to put the foreign animation stuff here rather than keep track of
@@ -4621,9 +4621,9 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     // C(stateType);
     // C(moveType);
     // lastTicket = 0;
-    combo = 0;
-    hitCount = 0;
-    blocking = false;
+    // combo = 0;
+    // hitCount = 0;
+    // blocking = false;
     C(drawAngle);
     C(wins);
     C(matchWins);
@@ -4631,9 +4631,9 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     C(regenerating);
     C(regenerateTime);
     C(regenerateHealthDifference);
-    guarding = false;
+    // guarding = false;
     C(afterImage);
-    C(widthOverride);
+    // C(widthOverride);
     // C(hitByOverride);
     C(defenseMultiplier);
     C(attackMultiplier);

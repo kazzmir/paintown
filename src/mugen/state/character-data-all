@@ -204,12 +204,7 @@ struct StateData{
      */ 
     double standFrictionThreshold;
     // unsigned int lastTicket;
-    
-    int combo;
-    // int nextCombo;
-    
-    int hitCount;
-    
+       
     std::vector<WinGame> wins;
     
     int matchWins;
@@ -219,8 +214,6 @@ struct StateData{
     PaintownUtil::ReferenceCount<Animation> foreignAnimation;
     int foreignAnimationNumber;
     
-    /* true if the player is holding the back button */
-    bool blocking;
     
     //! regenerate health?
     bool regenerateHealth;
@@ -231,17 +224,7 @@ struct StateData{
     /* used to communicate the need to guard in the engine */
     // bool needToGuard;
     
-    /* true if the player is currently guarding an attack */
-    bool guarding;
-    
-    struct WidthOverride{
-            bool enabled;
-            int edgeFront;
-            int edgeBack;
-            int playerFront;
-            int playerBack;
-    } widthOverride;
-    
+       
     struct HitByOverride{
             bool standing;
             bool crouching;

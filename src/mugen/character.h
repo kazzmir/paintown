@@ -944,7 +944,7 @@ public:
         virtual int getCurrentCombo() const;
 
         virtual inline int getHitCount() const {
-            return getLocalData().hitCount;
+            return getStateData().hitCount;
         }
 
         virtual inline const std::vector<WinGame> & getWins() const {
@@ -1425,11 +1425,6 @@ protected:
         
         /* Last state checked here */
 
-        int combo;
-        // int nextCombo;
-
-        int hitCount;
-
         std::vector<WinGame> wins;
 
         int matchWins;
@@ -1439,9 +1434,6 @@ protected:
         PaintownUtil::ReferenceCount<Animation> foreignAnimation;
         int foreignAnimationNumber;
 
-        /* true if the player is holding the back button */
-        bool blocking;
-
         //! regenerate health?
         bool regenerateHealth;
         bool regenerating;
@@ -1450,23 +1442,6 @@ protected:
 
         /* used to communicate the need to guard in the engine */
         // bool needToGuard;
-
-        /* true if the player is currently guarding an attack */
-        bool guarding;
-
-        struct WidthOverride{
-            WidthOverride():
-                enabled(false),
-                edgeFront(0),
-                edgeBack(0),
-                playerFront(0),
-                playerBack(0){
-                }
-
-            bool enabled;
-            int edgeFront, edgeBack;
-            int playerFront, playerBack;
-        } widthOverride;
 
         struct HitByOverride{
             HitByOverride():

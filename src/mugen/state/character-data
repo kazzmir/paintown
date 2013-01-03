@@ -33,4 +33,22 @@ struct StateData{
     HitDefinition hit;
     
     HitState hitState;
+ 
+    int combo;
+    int hitCount;
+    
+    /* true if the player is holding the back button */
+    bool blocking;
+    
+    /* true if the player is currently guarding an attack */
+    bool guarding;
+ 
+    struct WidthOverride{
+        bool enabled;
+        int edgeFront;
+        int edgeBack;
+        int playerFront;
+        int playerBack;
+    } widthOverride;
+
 }
