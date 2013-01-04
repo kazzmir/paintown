@@ -3,16 +3,16 @@
 #include <iostream>
 #include "util/message-queue.h"
 #include "util/file-system.h"
+#include "util/font.h"
 #include "util/timedifference.h"
 #include "util/graphics/bitmap.h"
 #include "util/sound/sound.h"
 #include "util/input/input-manager.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/game/adventure_world.h"
 #include "paintown-engine/object/player.h"
 #include "paintown-engine/factory/object_factory.h"
-#include "paintown-engine/factory/heart_factory.h"
 #include "factory/collector.h"
 
 /*
@@ -54,7 +54,6 @@ static int load(const char * path){
             }
 
             ObjectFactory::destroy();
-            HeartFactory::destroy();
 
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
@@ -72,7 +71,9 @@ int paintown_main(int argc, char ** argv){
     Collector janitor;
     Sound::initialize();
     InputManager manager;
-    Util::Thread::initializeLock(&Global::messageLock);
+    Util::Thread::initializeLock(&MessageQueue::messageLock);
+
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
 
     Configuration::loadConfigurations();
 
@@ -80,10 +81,15 @@ int paintown_main(int argc, char ** argv){
     Global::setDebug(1);
 
     int die = 0;
-    if (argc < 2){
-        die = load("paintown/levels/1.txt");
-    } else {
-        die = load(argv[1]);
+    try{
+        if (argc < 2){
+            die = load("paintown/levels/1.txt");
+        } else {
+            die = load(argv[1]);
+        }
+    } catch (const Exception::Base & fail){
+        Global::debug(0) << "Fail: " << fail.getTrace() << std::endl;
+        die = 1;
     }
     Screen::fakeFinish();
     Sound::uninitialize();

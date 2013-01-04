@@ -10,7 +10,7 @@
 #include <allegro5/allegro_primitives.h>
 #endif
 
-#include "configuration.h"
+#include "util/configuration.h"
 #include "init.h"
 #include "util/graphics/bitmap.h"
 

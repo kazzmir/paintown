@@ -11,9 +11,7 @@ use = testEnv
 
 most_game_source = Split("""
 test/globals.cpp
-test/configuration.cpp
 test/factory/font_render.cpp
-test/factory/font_factory.cpp
 """)
 
 load_source = Split("""
@@ -25,9 +23,7 @@ stage_source = Split("""
 load-stage.cpp
 common/init.cpp
 test/globals.cpp
-test/configuration.cpp
 test/factory/font_render.cpp
-test/factory/font_factory.cpp
 """)
 
 select_source = most_game_source + Split("""
@@ -47,8 +43,6 @@ sffv2_source = Split("""
 sffv2.cpp
 sff.cpp
 test/globals.cpp
-test/factory/font_factory.cpp
-test/configuration.cpp
 """)
 
 parse_source = Split("""
@@ -59,16 +53,12 @@ test/mugen/exception.cpp
 
 match_source = Split("""
 run-match.cpp
-test/factory/font_factory.cpp
-test/configuration.cpp
 test/globals.cpp
 test/factory/font_render.cpp
 """)
 
 states_source = Split("""
 states.cpp
-test/factory/font_factory.cpp
-test/configuration.cpp
 test/globals.cpp
 test/factory/font_render.cpp
 """)
@@ -84,8 +74,6 @@ test/mugen/character-select.cpp
 view_source = Split("""
 view.cpp
 test/globals.cpp
-test/configuration.cpp
-test/factory/font_factory.cpp
 test/factory/font_render.cpp
 """)
 

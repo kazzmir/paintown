@@ -19,10 +19,8 @@ load_source = Split("""
 common/init.cpp
 load.cpp
 test/globals.cpp
-test/factory/font_factory.cpp
 test/factory/font_render.cpp
 test/factory/collector.cpp
-test/configuration.cpp
 test/openbor/mod.cpp
 test/openbor/pack-reader.cpp
 test/openbor/util.cpp
@@ -33,9 +31,7 @@ load_source.append(testEnv.Peg('test/openbor/data.peg'))
 source = Split("""
 common/init.cpp
 common/timer.cpp
-test/configuration.cpp
 test/globals.cpp
-test/factory/font_factory.cpp
 test/factory/font_render.cpp
 """)
 
@@ -50,10 +46,8 @@ game_source = Split("""
 common/init.cpp
 game.cpp
 test/globals.cpp
-test/factory/font_factory.cpp
 test/factory/font_render.cpp
 test/factory/collector.cpp
-test/configuration.cpp
 test/openbor/mod.cpp
 test/openbor/pack-reader.cpp
 test/openbor/util.cpp

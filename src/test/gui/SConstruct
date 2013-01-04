@@ -7,9 +7,7 @@ testEnv.VariantDir('common', '../common')
 source = Split("""
 common/init.cpp
 common/timer.cpp
-test/configuration.cpp
 test/globals.cpp
-test/factory/font_factory.cpp
 test/factory/font_render.cpp
 """)
 

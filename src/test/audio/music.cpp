@@ -1,6 +1,6 @@
 #include "util/sound/sound.h"
 #include "util/sound/music.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/file-system.h"
 #include "../common/init.h"
 #include <string>

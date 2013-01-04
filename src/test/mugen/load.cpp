@@ -72,7 +72,7 @@ int main(int argc, char ** argv){
 
     Global::setDebug(1);
     Mugen::ParseCache cache;
-    Util::Thread::initializeLock(&Global::messageLock);
+    Util::Thread::initializeLock(&MessageQueue::messageLock);
 
     int die = 0;
     if (argc < 2){

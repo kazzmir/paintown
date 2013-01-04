@@ -19,7 +19,6 @@ test/mugen/ast/ast.cpp
 test/openbor/pack-reader.cpp
 test/openbor/util.cpp
 test/openbor/mod.cpp
-test/configuration.cpp
 test/platformer/game/world.cpp
 test/platformer/game/animation.cpp
 test/platformer/game/background.cpp
@@ -27,7 +26,6 @@ test/platformer/game/camera.cpp
 test/platformer/game/game.cpp
 test/platformer/game/tile.cpp
 test/platformer/script/script.cpp
-test/factory/font_factory.cpp
 test/factory/font_render.cpp
 test/asteroids/game.cpp
 test/factory/collector.cpp

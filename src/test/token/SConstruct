@@ -3,9 +3,9 @@ Import('use')
 env = use.Clone()
 
 env.VariantDir('main', '../..')
-source = Split("""test.cpp main/globals.cpp main/factory/font_factory.cpp""")
+source = Split("""test.cpp main/globals.cpp""")
 
-parse_source = Split("""parse.cpp main/globals.cpp main/factory/font_factory.cpp""")
+parse_source = Split("""parse.cpp main/globals.cpp""")
 
 x = []
 token_test = env.Program('test', source)

@@ -3,10 +3,11 @@
 #include "util/token_exception.h"
 #include "util/file-system.h"
 #include "util/graphics/bitmap.h"
+#include "util/exceptions/load_exception.h"
 #include "paintown-engine/game/options.h"
 #include "factory/collector.h"
 #include "util/menu/menu.h"
-#include "configuration.h"
+#include "util/configuration.h"
 
 using namespace std;
 

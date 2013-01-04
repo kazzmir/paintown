@@ -1,7 +1,8 @@
 #include "../common/init.h"
 
 #include <iostream>
-#include "configuration.h"
+#include "util/configuration.h"
+#include "util/font.h"
 #include "util/message-queue.h"
 #include "util/file-system.h"
 #include "util/input/input-source.h"
@@ -58,8 +59,9 @@ int paintown_main(int argc, char ** argv){
     Screen::fakeInit();
     Collector janitor;
     Sound::initialize();
-    Util::Thread::initializeLock(&Global::messageLock);
+    Util::Thread::initializeLock(&MessageQueue::messageLock);
 
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
     Configuration::loadConfigurations();
     Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);

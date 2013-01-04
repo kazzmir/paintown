@@ -1,6 +1,6 @@
 #include "../common/init.h"
 
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/message-queue.h"
 #include <iostream>
 #include "util/file-system.h"
@@ -73,7 +73,7 @@ static int load(const char * path){
 int paintown_main(int argc, char ** argv){
     Screen::fakeInit();
     InputManager input;
-    Util::Thread::initializeLock(&Global::messageLock);
+    Util::Thread::initializeLock(&MessageQueue::messageLock);
     Configuration::loadConfigurations();
     // Filesystem::initialize();
 

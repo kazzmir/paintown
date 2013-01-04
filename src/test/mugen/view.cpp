@@ -9,7 +9,7 @@
 
 #include "globals.h"
 #include "util/init.h"
-#include "configuration.h"
+#include "util/configuration.h"
 #include "util/sound/music.h"
 #include "util/timedifference.h"
 
