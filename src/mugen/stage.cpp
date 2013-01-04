@@ -903,7 +903,7 @@ void Mugen::Stage::physics(Character * mugen){
             return;
         }
 
-        if (pause.who != mugen){
+        if (getCharacter(pause.who) != mugen){
             return;
         }
     }
@@ -1143,7 +1143,7 @@ void Mugen::Stage::updateZoom(){
          * the time that the zoom is focused to 0.
          */
         if (zoom.removeOnGetHit && exists(zoom.owner)){
-            if (zoom.owner->getWasHitCount() > zoom.hitCount && zoom.time > 0){
+            if (getCharacter(zoom.owner)->getWasHitCount() > zoom.hitCount && zoom.time > 0){
                 zoom.time = 0;
             }
         }
@@ -1183,8 +1183,8 @@ void Mugen::Stage::updateZoom(){
         if (zoom.bindTime > 0){
             zoom.bindTime -= 1;
             if (exists(zoom.bound)){
-                zoom.x = zoom.deltaX + zoom.bound->getX();
-                zoom.y = zoom.deltaY + zoom.bound->getRY();
+                zoom.x = zoom.deltaX + getCharacter(zoom.bound)->getX();
+                zoom.y = zoom.deltaY + getCharacter(zoom.bound)->getRY();
             }
         } else {
             /* move by velocity and acceleration */
@@ -1208,6 +1208,10 @@ bool Mugen::Stage::exists(Character * who){
         }
     }
     return false;
+}
+
+bool Mugen::Stage::exists(CharacterId id){
+    return getCharacter(id) != NULL;
 }
 
 /* A main cycle of the game */
@@ -1311,7 +1315,7 @@ void Mugen::Stage::runCycle(){
             /* If a pause is occuring then only allow the player who started the pause
              * to move if moveTime is > 0.
              */
-            if (pause.time <= 0 || (pause.time > 0 && pause.moveTime > 0 && pause.who == player)){
+            if (pause.time <= 0 || (pause.time > 0 && pause.moveTime > 0 && getCharacter(pause.who) == player)){
                 player->act(this);
             }
         }
@@ -2041,7 +2045,7 @@ int Mugen::Stage::getStartingRight() const {
 }
 
 int Mugen::Stage::maximumRight(const Character * who) const {
-    map<const Character*, ScreenBound>::const_iterator find = screenBound.find(who);
+    map<CharacterId, ScreenBound>::const_iterator find = screenBound.find(who->getId());
     if (find != screenBound.end() &&
         find->second.enabled && find->second.offScreen){
         return boundright + DEFAULT_WIDTH / 2;
@@ -2050,7 +2054,7 @@ int Mugen::Stage::maximumRight(const Character * who) const {
 }
 
 int Mugen::Stage::maximumLeft(const Character * who) const {
-    map<const Character*, ScreenBound>::const_iterator find = screenBound.find(who);
+    map<CharacterId, ScreenBound>::const_iterator find = screenBound.find(who->getId());
     if (find != screenBound.end() &&
         find->second.enabled && find->second.offScreen){
         return boundleft - DEFAULT_WIDTH / 2;
@@ -2168,8 +2172,8 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
     //Global::debug(0) << "Left Tension: " << inleft << " | Right Tension: "<< inright << endl;
     //Global::debug(0) << "Left Screen Edge: " << onLeftSide << " | Right Screen Edge: "<< onRightSide << endl;
 
-    if (!screenBound[player].enabled ||
-        screenBound[player].panX){
+    if (!screenBound[player->getId()].enabled ||
+        screenBound[player->getId()].panX){
         if (playerInfo[player].leftTension){
             if (pdiffx < 0){
                 if (!onRightSide){
@@ -2193,8 +2197,8 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
         }
     }
 
-    if (!screenBound[player].enabled ||
-        screenBound[player].panY){
+    if (!screenBound[player->getId()].enabled ||
+        screenBound[player->getId()].panY){
         // Vertical movement of camera
         if (playerInfo[player].oldy != py){
             if (verticalfollow > 0){
@@ -2464,7 +2468,7 @@ void Mugen::Stage::doPause(int time, int buffer, int moveAllowed, bool pauseBack
     pause.buffer = buffer;
     pause.moveTime = moveAllowed;
     pause.pauseBackground = pauseBackground;
-    pause.who = who;
+    pause.who = who->getId();
 }
     
 void Mugen::Stage::createDust(int x, int y){
@@ -2682,10 +2686,11 @@ void Mugen::Stage::Quake(int q){
 }
 
 void Mugen::Stage::enableScreenBound(Character * who, bool offScreen, bool panX, bool panY){
-    screenBound[who].enabled = true;
-    screenBound[who].offScreen = offScreen;
-    screenBound[who].panX = panX;
-    screenBound[who].panY = panY;
+    CharacterId id = who->getId();
+    screenBound[id].enabled = true;
+    screenBound[id].offScreen = offScreen;
+    screenBound[id].panX = panX;
+    screenBound[id].panY = panY;
 }
 
 void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int time,
@@ -2730,9 +2735,9 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
     zoom.superMoveTime = superMoveTime;
     zoom.pauseMoveTime = pauseMoveTime;
     zoom.removeOnGetHit = removeOnGetHit;
-    zoom.bound = bound;
+    zoom.bound = bound->getId();
     zoom.hitCount = 0;
-    zoom.owner = owner;
+    zoom.owner = owner->getId();
     if (owner != NULL){
         zoom.hitCount = owner->getWasHitCount();
     }

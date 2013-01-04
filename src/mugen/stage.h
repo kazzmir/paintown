@@ -383,6 +383,7 @@ protected:
 protected:
 
     bool exists(Character * who);
+    bool exists(CharacterId id);
 
     /* Current level of zoom scaling */
     double zoomScale() const;
@@ -774,16 +775,16 @@ private:
         bool removeOnGetHit;
         int hitCount;
         /* Character we are bound to, depending on the original postype */
-        Character * bound;
+        CharacterId bound;
 
         /* Character that started the zoom in case they get hit */
-        Character * owner;
+        CharacterId owner;
     } zoom;
    
     /* Screen bound is per character so make a map from character to their
      * ScreenBound data
      */
-    std::map<const Character*, ScreenBound> screenBound;
+    std::map<CharacterId, ScreenBound> screenBound;
 
     int objectId;
 
@@ -796,7 +797,7 @@ private:
         int buffer;
         int moveTime;
         bool pauseBackground;
-        Character * who;
+        CharacterId who;
     } pause;
 };
 
