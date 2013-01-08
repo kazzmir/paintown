@@ -149,6 +149,11 @@ static bool centerCollision(Mugen::Object *p1, Mugen::Object *p2){
     
     return true;
 }
+        
+Mugen::Stage::StateData::StateData():
+quake_time(0),
+cycles(0){
+}
 
 Mugen::Stage::Stage(const Filesystem::AbsolutePath & location):
 location(location),
@@ -219,8 +224,6 @@ loaded(false),
 gameHUD(NULL),
 gameOver(false),
 gameRate(1),
-cycles(0),
-quake_time(0),
 objectId(0){
 }
 
@@ -898,12 +901,12 @@ void Mugen::Stage::physics(Character * mugen){
         return;
     }
 
-    if (pause.time > 0){
-        if (pause.moveTime == 0){
+    if (getStateData().pause.time > 0){
+        if (getStateData().pause.moveTime == 0){
             return;
         }
 
-        if (getCharacter(pause.who) != mugen){
+        if (getCharacter(getStateData().pause.who) != mugen){
             return;
         }
     }
@@ -1134,7 +1137,7 @@ void Mugen::Stage::unbind(Mugen::Character * what){
 
 void Mugen::Stage::updateZoom(){
     /* Zoom in, then wait for the zoom time to expire, then zoom back out */
-    if (zoom.enabled){
+    if (getStateData().zoom.enabled){
 
         /* If the original owner got hit and we should remove then disable zoom.
          * We can't just set zoom.enabled to false immediately because the effect
@@ -1142,23 +1145,23 @@ void Mugen::Stage::updateZoom(){
          * finish and then immediately zoom back out. We can do this by setting
          * the time that the zoom is focused to 0.
          */
-        if (zoom.removeOnGetHit && exists(zoom.owner)){
-            if (getCharacter(zoom.owner)->getWasHitCount() > zoom.hitCount && zoom.time > 0){
-                zoom.time = 0;
+        if (getStateData().zoom.removeOnGetHit && exists(getStateData().zoom.owner)){
+            if (getCharacter(getStateData().zoom.owner)->getWasHitCount() > getStateData().zoom.hitCount && getStateData().zoom.time > 0){
+                getStateData().zoom.time = 0;
             }
         }
 
-        if (superPause.time > 0){
-            if (zoom.superMoveTime > 0){
-                zoom.superMoveTime -= 1;
+        if (getStateData().superPause.time > 0){
+            if (getStateData().zoom.superMoveTime > 0){
+                getStateData().zoom.superMoveTime -= 1;
             } else {
                 return;
             }
         }
 
-        if (pause.time > 0){
-            if (zoom.pauseMoveTime > 0){
-                zoom.pauseMoveTime -= 1;
+        if (getStateData().pause.time > 0){
+            if (getStateData().zoom.pauseMoveTime > 0){
+                getStateData().zoom.pauseMoveTime -= 1;
             } else {
                 return;
             }
@@ -1166,32 +1169,32 @@ void Mugen::Stage::updateZoom(){
 
         /* Also check for pause time */
 
-        if (zoom.zoom == 0){
-            if (zoom.in == true){
-                zoom.time -= 1;
-                if (zoom.time <= 0){
-                    zoom.in = false;
-                    zoom.zoom = zoom.zoomOutTime;
+        if (getStateData().zoom.zoom == 0){
+            if (getStateData().zoom.in == true){
+                getStateData().zoom.time -= 1;
+                if (getStateData().zoom.time <= 0){
+                    getStateData().zoom.in = false;
+                    getStateData().zoom.zoom = getStateData().zoom.zoomOutTime;
                 }
             } else {
-                zoom.enabled = false;
+                getStateData().zoom.enabled = false;
             }
         } else {
-            zoom.zoom -= 1;
+            getStateData().zoom.zoom -= 1;
         }
 
-        if (zoom.bindTime > 0){
-            zoom.bindTime -= 1;
-            if (exists(zoom.bound)){
-                zoom.x = zoom.deltaX + getCharacter(zoom.bound)->getX();
-                zoom.y = zoom.deltaY + getCharacter(zoom.bound)->getRY();
+        if (getStateData().zoom.bindTime > 0){
+            getStateData().zoom.bindTime -= 1;
+            if (exists(getStateData().zoom.bound)){
+                getStateData().zoom.x = getStateData().zoom.deltaX + getCharacter(getStateData().zoom.bound)->getX();
+                getStateData().zoom.y = getStateData().zoom.deltaY + getCharacter(getStateData().zoom.bound)->getRY();
             }
         } else {
             /* move by velocity and acceleration */
-            zoom.x += zoom.velocityX;
-            zoom.y += zoom.velocityY;
-            zoom.velocityX += zoom.accelX;
-            zoom.velocityY += zoom.accelY;
+            getStateData().zoom.x += getStateData().zoom.velocityX;
+            getStateData().zoom.y += getStateData().zoom.velocityY;
+            getStateData().zoom.velocityX += getStateData().zoom.accelX;
+            getStateData().zoom.velocityY += getStateData().zoom.accelY;
         }
     }
 }
@@ -1218,7 +1221,7 @@ bool Mugen::Stage::exists(CharacterId id){
 void Mugen::Stage::runCycle(){
     updateZoom();
 
-    if (superPause.time == 0){
+    if (getStateData().superPause.time == 0){
 
         // Global::debug(0) << "Stage " << ticker << " at " << System::currentMicroseconds() << std::endl;
         /* Start input early for network mode */
@@ -1230,7 +1233,7 @@ void Mugen::Stage::runCycle(){
 
     }
 
-    screenBound.clear();
+    getStateData().screenBound.clear();
 
     if (paletteEffects.time > 0){
         paletteEffects.time = 0;
@@ -1238,8 +1241,8 @@ void Mugen::Stage::runCycle(){
     }
                     
     // camera crap
-    if (quake_time > 0){
-        quake_time--;
+    if (getStateData().quake_time > 0){
+        getStateData().quake_time--;
     }
 
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); /**/){ 
@@ -1281,27 +1284,27 @@ void Mugen::Stage::runCycle(){
     const double diffy = starty - cameray;
     */
 
-    if (environmentColor.time > 0){
-        environmentColor.time -= 1;
+    if (getStateData().environmentColor.time > 0){
+        getStateData().environmentColor.time -= 1;
     }
 
-    if (superPause.time > 0){
-        superPause.time -= 1;
-        if (superPause.time == 0){
+    if (getStateData().superPause.time > 0){
+        getStateData().superPause.time -= 1;
+        if (getStateData().superPause.time == 0){
             for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
                 Mugen::Effect * effect = *it;
                 effect->superPauseEnd();
             }
         }
     } else {
-        if (pause.time > 0){
-            pause.time -= 1;
-            if (pause.moveTime > 0){
-                pause.moveTime -= 1;
+        if (getStateData().pause.time > 0){
+            getStateData().pause.time -= 1;
+            if (getStateData().pause.moveTime > 0){
+                getStateData().pause.moveTime -= 1;
             }
         }
 
-        if (pause.time <= 0 || (pause.time > 0 && !pause.pauseBackground)){
+        if (getStateData().pause.time <= 0 || (getStateData().pause.time > 0 && !getStateData().pause.pauseBackground)){
             background->act();
         }
        
@@ -1315,7 +1318,7 @@ void Mugen::Stage::runCycle(){
             /* If a pause is occuring then only allow the player who started the pause
              * to move if moveTime is > 0.
              */
-            if (pause.time <= 0 || (pause.time > 0 && pause.moveTime > 0 && getCharacter(pause.who) == player)){
+            if (getStateData().pause.time <= 0 || (getStateData().pause.time > 0 && getStateData().pause.moveTime > 0 && getCharacter(getStateData().pause.who) == player)){
                 player->act(this);
             }
         }
@@ -1365,9 +1368,9 @@ void Mugen::Stage::logic(){
     // Console::ConsoleEnd & cend = Console::Console::endl;
 
     /* cycles slow the stage down, like after ko */
-    cycles += 1;
-    if (cycles >= 1 / gameRate){
-        cycles = 0;
+    getStateData().cycles += 1;
+    if (getStateData().cycles >= 1 / gameRate){
+        getStateData().cycles = 0;
         runCycle();
     }
     
@@ -1589,21 +1592,21 @@ int Mugen::Stage::findMaximumSpritePriority(){
 
 void Mugen::Stage::render(Graphics::Bitmap *work){
 
-    if (environmentColor.time == 0){
+    if (getStateData().environmentColor.time == 0){
         if (paletteEffects.time > 0){
             drawBackgroundWithEffects((int) camerax, (int) cameray, *work);
         } else {
             background->renderBackground((int) camerax, (int) cameray, *work);
         }
-    } else if (environmentColor.under){
+    } else if (getStateData().environmentColor.under){
         /* FIXME: I'm not exactly sure where the environment color is supposed to go.
          * After the super pause? After the background hud elements?
          */
-        work->fill(environmentColor.color);
+        work->fill(getStateData().environmentColor.color);
     }
 
     /* darken the background */
-    if (superPause.time > 0){
+    if (getStateData().superPause.time > 0){
         /* FIXME: this should be faded I think */
         Graphics::Bitmap::transBlender(0, 0, 0, 128);
         work->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
@@ -1657,14 +1660,14 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 
     }
 
-    if (environmentColor.time > 0 && !environmentColor.under){
-        work->fill(environmentColor.color);
+    if (getStateData().environmentColor.time > 0 && !getStateData().environmentColor.under){
+        work->fill(getStateData().environmentColor.color);
     }
 
     //! Render layer 1 HUD
     gameHUD->render(Mugen::Element::Foreground, *work);
 
-    if (environmentColor.time == 0){
+    if (getStateData().environmentColor.time == 0){
         if (paletteEffects.time > 0){
             drawForegroundWithEffects((int) camerax, (int) cameray, *work);
         } else {
@@ -2045,8 +2048,8 @@ int Mugen::Stage::getStartingRight() const {
 }
 
 int Mugen::Stage::maximumRight(const Character * who) const {
-    map<CharacterId, ScreenBound>::const_iterator find = screenBound.find(who->getId());
-    if (find != screenBound.end() &&
+    map<CharacterId, ScreenBound>::const_iterator find = getStateData().screenBound.find(who->getId());
+    if (find != getStateData().screenBound.end() &&
         find->second.enabled && find->second.offScreen){
         return boundright + DEFAULT_WIDTH / 2;
     }
@@ -2054,8 +2057,8 @@ int Mugen::Stage::maximumRight(const Character * who) const {
 }
 
 int Mugen::Stage::maximumLeft(const Character * who) const {
-    map<CharacterId, ScreenBound>::const_iterator find = screenBound.find(who->getId());
-    if (find != screenBound.end() &&
+    map<CharacterId, ScreenBound>::const_iterator find = getStateData().screenBound.find(who->getId());
+    if (find != getStateData().screenBound.end() &&
         find->second.enabled && find->second.offScreen){
         return boundleft - DEFAULT_WIDTH / 2;
     }
@@ -2172,8 +2175,8 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
     //Global::debug(0) << "Left Tension: " << inleft << " | Right Tension: "<< inright << endl;
     //Global::debug(0) << "Left Screen Edge: " << onLeftSide << " | Right Screen Edge: "<< onRightSide << endl;
 
-    if (!screenBound[player->getId()].enabled ||
-        screenBound[player->getId()].panX){
+    if (!getStateData().screenBound[player->getId()].enabled ||
+        getStateData().screenBound[player->getId()].panX){
         if (playerInfo[player].leftTension){
             if (pdiffx < 0){
                 if (!onRightSide){
@@ -2197,8 +2200,8 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
         }
     }
 
-    if (!screenBound[player->getId()].enabled ||
-        screenBound[player->getId()].panY){
+    if (!getStateData().screenBound[player->getId()].enabled ||
+        getStateData().screenBound[player->getId()].panY){
         // Vertical movement of camera
         if (playerInfo[player].oldy != py){
             if (verticalfollow > 0){
@@ -2451,7 +2454,7 @@ int Mugen::Stage::getGameTime() const {
 }
     
 void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY){
-    superPause.time = time;
+    getStateData().superPause.time = time;
 
     for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){ 
         Mugen::Effect * effect = *it;
@@ -2464,11 +2467,11 @@ void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool o
 }
    
 void Mugen::Stage::doPause(int time, int buffer, int moveAllowed, bool pauseBackground, Character * who){
-    pause.time = time;
-    pause.buffer = buffer;
-    pause.moveTime = moveAllowed;
-    pause.pauseBackground = pauseBackground;
-    pause.who = who->getId();
+    getStateData().pause.time = time;
+    getStateData().pause.buffer = buffer;
+    getStateData().pause.moveTime = moveAllowed;
+    getStateData().pause.pauseBackground = pauseBackground;
+    getStateData().pause.who = who->getId();
 }
     
 void Mugen::Stage::createDust(int x, int y){
@@ -2513,9 +2516,9 @@ vector<Mugen::Character *> Mugen::Stage::getTargets(int id, const Mugen::Charact
     
 /* Set the background to a solid color for some length of time */
 void Mugen::Stage::setEnvironmentColor(Graphics::Color color, int time, bool under){
-    environmentColor.time = time;
-    environmentColor.under = under;
-    environmentColor.color = color;
+    getStateData().environmentColor.time = time;
+    getStateData().environmentColor.under = under;
+    getStateData().environmentColor.color = color;
 }
 
 void Mugen::Stage::removeHelper(Mugen::Character * who){
@@ -2682,15 +2685,15 @@ void Mugen::Stage::setPaletteEffects(int time, int addRed, int addGreen, int add
 }
 
 void Mugen::Stage::Quake(int q){
-    quake_time += q;
+    getStateData().quake_time += q;
 }
 
 void Mugen::Stage::enableScreenBound(Character * who, bool offScreen, bool panX, bool panY){
     CharacterId id = who->getId();
-    screenBound[id].enabled = true;
-    screenBound[id].offScreen = offScreen;
-    screenBound[id].panX = panX;
-    screenBound[id].panY = panY;
+    getStateData().screenBound[id].enabled = true;
+    getStateData().screenBound[id].offScreen = offScreen;
+    getStateData().screenBound[id].panX = panX;
+    getStateData().screenBound[id].panY = panY;
 }
 
 void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int time,
@@ -2700,81 +2703,88 @@ void Mugen::Stage::doZoom(double x, double y, int zoomTime, int zoomOutTime, int
                           Character * bound, Character * owner){
 
     /* Don't allow a new zoom to override an existing zoom */
-    if (zoom.enabled){
+    if (getStateData().zoom.enabled){
         return;
     }
 
-    zoom.enabled = true;
-    zoom.x = x;
-    zoom.y = y;
-    zoom.zoom = zoomTime;
-    zoom.in = true;
-    zoom.zoomTime = zoomTime;
-    zoom.zoomOutTime = zoomOutTime;
-    if (zoom.zoomTime < 1){
-        zoom.zoomTime = 1;
+    getStateData().zoom.enabled = true;
+    getStateData().zoom.x = x;
+    getStateData().zoom.y = y;
+    getStateData().zoom.zoom = zoomTime;
+    getStateData().zoom.in = true;
+    getStateData().zoom.zoomTime = zoomTime;
+    getStateData().zoom.zoomOutTime = zoomOutTime;
+    if (getStateData().zoom.zoomTime < 1){
+        getStateData().zoom.zoomTime = 1;
     }
-    if (zoom.zoomOutTime < 1){
-        zoom.zoomOutTime = 1;
+    if (getStateData().zoom.zoomOutTime < 1){
+        getStateData().zoom.zoomOutTime = 1;
     }
-    zoom.time = time;
-    zoom.bindTime = bindTime;
+    getStateData().zoom.time = time;
+    getStateData().zoom.bindTime = bindTime;
     if (scaleX < 1){
         scaleX = 1;
     }
     if (scaleY < 1){
         scaleY = 1;
     }
-    zoom.scaleX = 1.0 - 1.0/scaleX;
-    zoom.scaleY = 1.0 - 1.0/scaleY;
+    getStateData().zoom.scaleX = 1.0 - 1.0/scaleX;
+    getStateData().zoom.scaleY = 1.0 - 1.0/scaleY;
 
-    zoom.velocityX = velocityX;
-    zoom.velocityY = velocityY;
-    zoom.accelX = accelX;
-    zoom.accelY = accelY;
-    zoom.superMoveTime = superMoveTime;
-    zoom.pauseMoveTime = pauseMoveTime;
-    zoom.removeOnGetHit = removeOnGetHit;
-    zoom.bound = bound->getId();
-    zoom.hitCount = 0;
-    zoom.owner = owner->getId();
+    getStateData().zoom.velocityX = velocityX;
+    getStateData().zoom.velocityY = velocityY;
+    getStateData().zoom.accelX = accelX;
+    getStateData().zoom.accelY = accelY;
+    getStateData().zoom.superMoveTime = superMoveTime;
+    getStateData().zoom.pauseMoveTime = pauseMoveTime;
+    getStateData().zoom.removeOnGetHit = removeOnGetHit;
+    getStateData().zoom.bound = bound->getId();
+    getStateData().zoom.hitCount = 0;
+    getStateData().zoom.owner = owner->getId();
     if (owner != NULL){
-        zoom.hitCount = owner->getWasHitCount();
+        getStateData().zoom.hitCount = owner->getWasHitCount();
     }
     if (bound != NULL){
-        zoom.deltaX = zoom.x - bound->getX();
-        zoom.deltaY = zoom.y - bound->getRY();
+        getStateData().zoom.deltaX = getStateData().zoom.x - bound->getX();
+        getStateData().zoom.deltaY = getStateData().zoom.y - bound->getRY();
     } else {
-        zoom.deltaX = 0;
-        zoom.deltaY = 0;
+        getStateData().zoom.deltaX = 0;
+        getStateData().zoom.deltaY = 0;
     }
 }
 
 bool Mugen::Stage::isZoomed() const {
-    return zoom.enabled;
+    return getStateData().zoom.enabled;
 }
 
 double Mugen::Stage::zoomScale() const {
-    if (zoom.in){
-        return (double) (zoom.zoomTime - zoom.zoom) / (double) zoom.zoomTime;
+    if (getStateData().zoom.in){
+        return (double) (getStateData().zoom.zoomTime - getStateData().zoom.zoom) / (double) getStateData().zoom.zoomTime;
     } else {
-        return (double) zoom.zoom / (double) zoom.zoomOutTime;
+        return (double) getStateData().zoom.zoom / (double) getStateData().zoom.zoomOutTime;
     }
 }
 
 int Mugen::Stage::zoomX1() const {
-    return (zoom.x - maximumLeft(NULL)) * zoom.scaleX * zoomScale();
+    return (getStateData().zoom.x - maximumLeft(NULL)) * getStateData().zoom.scaleX * zoomScale();
 }
 
 int Mugen::Stage::zoomY1() const {
-    return zoom.y * zoom.scaleY * zoomScale();
+    return getStateData().zoom.y * getStateData().zoom.scaleY * zoomScale();
 }
 
 int Mugen::Stage::zoomX2() const {
-    return DEFAULT_WIDTH - (DEFAULT_WIDTH - (zoom.x - maximumLeft(NULL))) * zoom.scaleX * zoomScale();
+    return DEFAULT_WIDTH - (DEFAULT_WIDTH - (getStateData().zoom.x - maximumLeft(NULL))) * getStateData().zoom.scaleX * zoomScale();
 }
 
 int Mugen::Stage::zoomY2() const {
-    return DEFAULT_HEIGHT - (DEFAULT_HEIGHT - zoom.y) * zoom.scaleY * zoomScale();
+    return DEFAULT_HEIGHT - (DEFAULT_HEIGHT - getStateData().zoom.y) * getStateData().zoom.scaleY * zoomScale();
 }
 
+Mugen::Stage::StateData & Mugen::Stage::getStateData(){
+    return stateData;
+}
+    
+const Mugen::Stage::StateData & Mugen::Stage::getStateData() const {
+    return stateData;
+}
