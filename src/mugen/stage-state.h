@@ -110,8 +110,14 @@ namespace Mugen{
         int onLeftSide;
         int onRightSide;
         int inabove;
-    };
 
+        // Camera location on stage
+        double camerax;
+        double cameray;
+
+        // Our ticker/frames during duration of the entire stage lifetime
+        unsigned long int ticker;
+    };
 }
 
 #endif

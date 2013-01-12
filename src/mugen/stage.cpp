@@ -157,7 +157,10 @@ inleft(0),
 inright(0),
 onLeftSide(0),
 onRightSide(0),
-inabove(0){
+inabove(0),
+camerax(0),
+cameray(0),
+ticker(0){
 }
 
 Mugen::Stage::Stage(const Filesystem::AbsolutePath & location):
@@ -208,10 +211,7 @@ musicVolume(0),
 // board(0),
 xaxis(0),
 yaxis(0),
-camerax(0),
-cameray(0),
 stageStart(false),
-ticker(0),
 totalRounds(3),
 round(1),
 totalTime(99),
@@ -619,8 +619,8 @@ void Mugen::Stage::load(){
     // Nope we need it to be the size of the entire board... we then pan the blit so our characters will stay put without fiddling with their x coordinates
     // board = new Bitmap( abs(boundleft) + boundright + DEFAULT_WIDTH, abs(boundhigh) + boundlow + DEFAULT_HEIGHT);
     // board = new Graphics::Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-    camerax = startx;
-    cameray = starty;
+    getStateData().camerax = startx;
+    getStateData().cameray = starty;
     // xaxis = (abs(boundleft) + boundright + DEFAULT_WIDTH)/2;//abs(boundleft);
     // yaxis = abs(boundhigh);
     /* FIXME: do we need xaxis and yaxis anymore? I don't think so */
@@ -698,36 +698,36 @@ void Mugen::Stage::load(){
 }
 
 void Mugen::Stage::setCamera( const double x, const double y ){ 
-    camerax = x;
-    cameray = y; 
+    getStateData().camerax = x;
+    getStateData().cameray = y; 
     // Camera boundaries
-    if (camerax < boundleft){
-        camerax = boundleft;
-    } else if (camerax > boundright){
-        camerax = boundright;
+    if (getStateData().camerax < boundleft){
+        getStateData().camerax = boundleft;
+    } else if (getStateData().camerax > boundright){
+        getStateData().camerax = boundright;
     }
 
-    if (cameray < boundhigh){
-        cameray = boundhigh;
-    } else if (cameray > boundlow){
-        cameray = boundlow;
+    if (getStateData().cameray < boundhigh){
+        getStateData().cameray = boundhigh;
+    } else if (getStateData().cameray > boundlow){
+        getStateData().cameray = boundlow;
     }
 }
 void Mugen::Stage::moveCamera(const double x, const double y){ 
-    camerax += x;
-    cameray += y; 
+    getStateData().camerax += x;
+    getStateData().cameray += y; 
 
     // Camera boundaries
-    if (camerax < boundleft){
-        camerax = boundleft;
-    } else if (camerax > boundright){
-        camerax = boundright;
+    if (getStateData().camerax < boundleft){
+        getStateData().camerax = boundleft;
+    } else if (getStateData().camerax > boundright){
+        getStateData().camerax = boundright;
     }
 
-    if (cameray < boundhigh){
-        cameray = boundhigh;
-    } else if (cameray > boundlow){
-        cameray = boundlow;
+    if (getStateData().cameray < boundhigh){
+        getStateData().cameray = boundhigh;
+    } else if (getStateData().cameray > boundlow){
+        getStateData().cameray = boundlow;
     }
 }
 
@@ -921,7 +921,7 @@ void Mugen::Stage::physics(Character * mugen){
             mugen->setXVelocity(mugen->getXVelocity() * mugen->getGroundFriction());
             if (mugen->getMoveType() == Mugen::Move::Hit && 
                 mugen->getXVelocity() < 0 &&
-                ticker % 5 == 0){
+                getTicks() % 5 == 0){
                 createDust((int) mugen->getX(), (int) mugen->getRY());
             }
         }
@@ -1277,7 +1277,7 @@ void Mugen::Stage::runCycle(){
     }
 
     // Run our ticker on and on like energizer bunnies (tm)
-    ticker++;
+    getStateData().ticker++;
 
     /*
     const double diffx = startx - camerax;
@@ -1597,9 +1597,9 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 
     if (getStateData().environmentColor.time == 0){
         if (paletteEffects.time > 0){
-            drawBackgroundWithEffects((int) camerax, (int) cameray, *work);
+            drawBackgroundWithEffects((int) getStateData().camerax, (int) getStateData().cameray, *work);
         } else {
-            background->renderBackground((int) camerax, (int) cameray, *work);
+            background->renderBackground((int) getStateData().camerax, (int) getStateData().cameray, *work);
         }
     } else if (getStateData().environmentColor.under){
         /* FIXME: I'm not exactly sure where the environment color is supposed to go.
@@ -1636,28 +1636,28 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
                 /* Reflection */
                 /* FIXME: reflection and shade need camerax/y */
                 if (reflectionIntensity > 0){
-                    obj->drawReflection(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray, reflectionIntensity);
+                    obj->drawReflection(work, (int)(getStateData().camerax - DEFAULT_WIDTH / 2), (int) getStateData().cameray, reflectionIntensity);
                 }
 
                 /* Shadow */
-                obj->drawMugenShade(work, (int)(camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
+                obj->drawMugenShade(work, (int)(getStateData().camerax - DEFAULT_WIDTH / 2), shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeMid, shadowFadeRangeHigh);
 
                 /* draw the player */
-                obj->draw(work, (int)(camerax - DEFAULT_WIDTH / 2), (int) cameray);
+                obj->draw(work, (int)(getStateData().camerax - DEFAULT_WIDTH / 2), (int) getStateData().cameray);
             }
         }
 
         for (vector<Mugen::Effect*>::iterator it = showSparks.begin(); it != showSparks.end(); it++){
             Mugen::Effect * spark = *it;
             if (spark->getSpritePriority() == *spritePriority){
-                spark->draw(*work, (int) (camerax - DEFAULT_WIDTH / 2), (int) cameray);
+                spark->draw(*work, (int) (getStateData().camerax - DEFAULT_WIDTH / 2), (int) getStateData().cameray);
             }
         }
 
         for (vector<Projectile*>::iterator it = projectiles.begin(); it != projectiles.end(); it++){
             Projectile * projectile = *it;
             if (projectile->getSpritePriority() == *spritePriority){
-                projectile->draw(*work, camerax - DEFAULT_WIDTH / 2, cameray);
+                projectile->draw(*work, getStateData().camerax - DEFAULT_WIDTH / 2, getStateData().cameray);
             }
         }
 
@@ -1672,9 +1672,9 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 
     if (getStateData().environmentColor.time == 0){
         if (paletteEffects.time > 0){
-            drawForegroundWithEffects((int) camerax, (int) cameray, *work);
+            drawForegroundWithEffects((int) getStateData().camerax, (int) getStateData().cameray, *work);
         } else {
-            background->renderForeground((int) camerax, (int) cameray, *work);
+            background->renderForeground((int) getStateData().camerax, (int) getStateData().cameray, *work);
         }
     }
     
@@ -1735,8 +1735,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 }
 
 void Mugen::Stage::reset(){
-    camerax = startx;
-    cameray = starty;
+    getStateData().camerax = startx;
+    getStateData().cameray = starty;
     originalMaxLeft = maximumLeft(NULL);
     originalMaxRight = maximumRight(NULL);
     gameOver = false;
@@ -2056,7 +2056,7 @@ int Mugen::Stage::maximumRight(const Character * who) const {
         find->second.enabled && find->second.offScreen){
         return boundright + DEFAULT_WIDTH / 2;
     }
-    return (int)(camerax + DEFAULT_WIDTH / 2);
+    return (int)(getStateData().camerax + DEFAULT_WIDTH / 2);
 }
 
 int Mugen::Stage::maximumLeft(const Character * who) const {
@@ -2065,16 +2065,16 @@ int Mugen::Stage::maximumLeft(const Character * who) const {
         find->second.enabled && find->second.offScreen){
         return boundleft - DEFAULT_WIDTH / 2;
     }
-    return (int)(camerax - DEFAULT_WIDTH / 2);
+    return (int)(getStateData().camerax - DEFAULT_WIDTH / 2);
 }
 
 /* FIXME: I think screenbound should deal with maximumUp/Down */
 int Mugen::Stage::maximumUp() const {
-    return cameray;
+    return getStateData().cameray;
 }
 
 int Mugen::Stage::maximumDown() const {
-    return cameray + DEFAULT_HEIGHT;
+    return getStateData().cameray + DEFAULT_HEIGHT;
 }
     
 void Mugen::Stage::addProjectile(Projectile * projectile){
@@ -2431,7 +2431,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
     };
 
     Logic logic(input, character, this);
-    Draw draw(background, reflectionIntensity, character, cameray, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeHigh, shadowFadeRangeMid, font, logic);
+    Draw draw(background, reflectionIntensity, character, getStateData().cameray, shadowIntensity, shadowColor, shadowYscale, shadowFadeRangeHigh, shadowFadeRangeMid, font, logic);
 
     PaintownUtil::standardLoop(logic, draw);
 

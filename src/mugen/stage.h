@@ -133,15 +133,15 @@ public:
 
     virtual void begin();
 
-    inline double getCameraX() const { return camerax; }
-    inline double getCameraY() const { return cameray; }
+    inline double getCameraX() const { return getStateData().camerax; }
+    inline double getCameraY() const { return getStateData().cameray; }
     inline int getTension() const { return tension; }
     inline int getFloorTension() const { return floortension; }
     inline int getZ() const { return zoffset; }
     /* get position of the floor */
     int getFloor() const;
 
-    inline unsigned long int getTicks() const { return ticker; }
+    inline unsigned long int getTicks() const { return getStateData().ticker; }
 
     void setCamera( const double x, const double y );
     void moveCamera( const double x, const double y );
@@ -616,15 +616,8 @@ protected:
     int xaxis;
     int yaxis;
 
-    // Camera location on stage
-    double camerax;
-    double cameray;
-
     // Start the stage sometime
     bool stageStart;
-
-    // Our ticker/frames during duration of the entire stage lifetime
-    unsigned long int ticker;
 
     // Total rounds set to -1 for infinite rounds
     int totalRounds;
