@@ -1539,6 +1539,9 @@ PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
         world->addCharacter(*character);
     }
 
+    world->setStageData(getStateData());
+    world->setRandom(*Random::getState());
+
     return world;
 }
 

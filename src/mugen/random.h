@@ -24,6 +24,8 @@ public:
 
     static uint32_t random();
 
+    static PaintownUtil::ReferenceCount<Random> getState();
+
 protected:
     void init(uint32_t);
 

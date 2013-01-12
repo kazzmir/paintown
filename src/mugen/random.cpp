@@ -49,12 +49,16 @@ uint64_t Random::next(){
 }
 
 PaintownUtil::ReferenceCount<Random> Random::current;
-uint32_t Random::random(){
+PaintownUtil::ReferenceCount<Random> Random::getState(){
     if (current == NULL){
         current = PaintownUtil::ReferenceCount<Random>(new Random());
     }
 
-    return current->next();
+    return current;
+}
+
+uint32_t Random::random(){
+    return Random::getState()->next();
 }
 
 uint32_t random(){
