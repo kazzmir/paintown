@@ -150,7 +150,7 @@ static bool centerCollision(Mugen::Object *p1, Mugen::Object *p2){
     return true;
 }
         
-Mugen::Stage::StateData::StateData():
+Mugen::StageStateData::StageStateData():
 quake_time(0),
 cycles(0),
 inleft(0),
@@ -2781,10 +2781,10 @@ int Mugen::Stage::zoomY2() const {
     return DEFAULT_HEIGHT - (DEFAULT_HEIGHT - getStateData().zoom.y) * getStateData().zoom.scaleY * zoomScale();
 }
 
-Mugen::Stage::StateData & Mugen::Stage::getStateData(){
+Mugen::StageStateData & Mugen::Stage::getStateData(){
     return stateData;
 }
     
-const Mugen::Stage::StateData & Mugen::Stage::getStateData() const {
+const Mugen::StageStateData & Mugen::Stage::getStateData() const {
     return stateData;
 }
