@@ -48,4 +48,28 @@ uint64_t Random::next(){
     return state[index];
 }
 
+PaintownUtil::ReferenceCount<Random> Random::current;
+uint32_t Random::random(){
+    if (current == NULL){
+        current = PaintownUtil::ReferenceCount<Random>(new Random());
+    }
+
+    return current->next();
+}
+
+uint32_t random(){
+    return Random::random();
+}
+
+uint32_t random(int q){
+    if (q <= 0){
+        return 0;
+    }
+    return Mugen::random() % q;
+}
+
+uint32_t random(int low, int high){
+    return Mugen::random(high - low) + low;
+}
+
 }

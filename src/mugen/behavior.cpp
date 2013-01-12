@@ -5,6 +5,7 @@
 #include "util/input/input-map.h"
 #include "util/input/input-source.h"
 #include "command.h"
+#include "random.h"
 #include "util/debug.h"
 #include "character.h"
 #include "stage.h"
@@ -135,13 +136,13 @@ static string randomCommand(const vector<Command*> & commands){
         return "";
     }
 
-    int choice = PaintownUtil::rnd(commands.size());
+    int choice = Mugen::random(commands.size());
     return commands[choice]->getName();
 }
 
 vector<string> RandomAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
     vector<string> out;
-    if (PaintownUtil::rnd(100) > 90){
+    if (Mugen::random(100) > 90){
         out.push_back(randomCommand(commands));
     }
     return out;
@@ -199,7 +200,7 @@ string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*
         }
 
         Move & move = moves[name];
-        double morePoints = move.points + PaintownUtil::rnd(10);
+        double morePoints = move.points + Mugen::random(10);
         if (move.minimumDistance != -1){
             if (distance < move.maximumDistance + 10 && distance > move.minimumDistance - 10){
                 morePoints += 2;
@@ -239,7 +240,7 @@ void LearningAIBehavior::flip(){
 }
 
 static LearningAIBehavior::Direction randomDirection(){
-    int what = PaintownUtil::rnd(100);
+    int what = Mugen::random(100);
     if (what > 70){
         return LearningAIBehavior::Forward;
     } else if (what > 40){
@@ -256,7 +257,7 @@ vector<string> LearningAIBehavior::currentCommands(const Mugen::Stage & stage, C
     vector<string> out;
 
     /* maybe attack */
-    if (PaintownUtil::rnd(200) < difficulty * 2){
+    if (Mugen::random(200) < difficulty * 2){
         const Character * enemy = stage.getEnemy(owner);
         int xDistance = (int) fabs(owner->getX() - enemy->getX());
         string command = selectBestCommand(xDistance, commands);
@@ -276,13 +277,13 @@ vector<string> LearningAIBehavior::currentCommands(const Mugen::Stage & stage, C
         }
             
         /* after keeping a direction for 40 ticks, maybe change directions */
-        if (dontMove > 40 && PaintownUtil::rnd(10) > 8){
+        if (dontMove > 40 && Mugen::random(10) > 8){
             direction = randomDirection();
             dontMove = 0;
         }
 
         /* make the AI jump sometimes */
-        if (PaintownUtil::rnd(100) == 0){
+        if (Mugen::random(100) == 0){
             out.push_back("holdup");
         }
     }

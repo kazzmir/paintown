@@ -2,6 +2,9 @@
 #define _paintown_mugen_random_h
 
 #include <stdint.h>
+#include "util/pointer.h"
+
+namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 
@@ -19,12 +22,20 @@ public:
 
     uint64_t next();
 
+    static uint32_t random();
+
 protected:
     void init(uint32_t);
 
     uint64_t state[16];
     uint8_t index;
+
+    static PaintownUtil::ReferenceCount<Random> current;
 };
+
+uint32_t random();
+uint32_t random(int high);
+uint32_t random(int low, int high);
 
 }
 

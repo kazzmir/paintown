@@ -3,6 +3,7 @@
 #include "ast/all.h"
 #include "state-controller.h"
 #include "util/parameter.h"
+#include "random.h"
 #include "character.h"
 #include "helper.h"
 #include "config.h"
@@ -1125,7 +1126,7 @@ public:
                     vector<CharacterId> & objects = it->second;
                     if (objects.size() > 0){
                         /* Save a random object */
-                        CharacterId save = objects[PaintownUtil::rnd(objects.size())];
+                        CharacterId save = objects[Mugen::random(objects.size())];
                         objects.clear();
                         objects.push_back(save);
                     }
@@ -4720,8 +4721,8 @@ public:
 #define evaluateNumber(value, default_) (value != NULL ? value->evaluate(env).toNumber() : default_)
         int animation_value = (int) evaluateNumber(this->animation, -1);
         int id_value = (int) evaluateNumber(id, -1);
-        double posX_value = evaluateNumber(posX, 0) + PaintownUtil::rnd(randomX) - randomX / 2;
-        double posY_value = evaluateNumber(posY, 0) + PaintownUtil::rnd(randomY) - randomY / 2;
+        double posX_value = evaluateNumber(posX, 0) + Mugen::random(randomX) - randomX / 2;
+        double posY_value = evaluateNumber(posY, 0) + Mugen::random(randomY) - randomY / 2;
         double velocityX_value = evaluateNumber(velocityX, 0);
         double velocityY_value = evaluateNumber(velocityY, 0);
         double accelerationX_value = evaluateNumber(accelerationX, 0);
@@ -4842,8 +4843,8 @@ public:
         int y = (int)(evaluateNumber(posY, environment, 0) + guy.getRY());
 
         int random = evaluateNumber(this->random, environment, 0);
-        x += PaintownUtil::rnd(random) - random / 2;
-        y += PaintownUtil::rnd(random) - random / 2;
+        x += Mugen::random(random) - random / 2;
+        y += Mugen::random(random) - random / 2;
 
         PaintownUtil::ReferenceCount<Animation> animation;
         animation = stage.getFightAnimation(animation_value);
@@ -5387,7 +5388,7 @@ public:
         int index = (int) evaluateNumber(this->index, environment, 0);
         int minimum = (int) evaluateNumber(this->minimum, environment, 0);
         int maximum = (int) evaluateNumber(this->maximum, environment, 0);
-        guy.setVariable(index, PaintownUtil::rnd(minimum, maximum));
+        guy.setVariable(index, (int) Mugen::random(minimum, maximum));
     }
 
     StateController * deepCopy() const {

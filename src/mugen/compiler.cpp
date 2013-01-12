@@ -181,6 +181,7 @@ Win
 #include "characterhud.h"
 #include "character.h"
 #include "helper.h"
+#include "random.h"
 #include "stage.h"
 #include "util/funcs.h"
 #include "util/regex.h"
@@ -1240,7 +1241,7 @@ public:
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     /* Returns a random number between 0 and 999, inclusive. */
-                    return RuntimeValue(PaintownUtil::rnd(1000));
+                    return RuntimeValue((int) Mugen::random(1000));
                 }
 
                 Value * copy() const {
