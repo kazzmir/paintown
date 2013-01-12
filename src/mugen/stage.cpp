@@ -152,7 +152,12 @@ static bool centerCollision(Mugen::Object *p1, Mugen::Object *p2){
         
 Mugen::Stage::StateData::StateData():
 quake_time(0),
-cycles(0){
+cycles(0),
+inleft(0),
+inright(0),
+onLeftSide(0),
+onRightSide(0),
+inabove(0){
 }
 
 Mugen::Stage::Stage(const Filesystem::AbsolutePath & location):
@@ -215,11 +220,6 @@ p1points(0),
 p2points(0),
 // console(new Console::Console(CONSOLE_SIZE)),
 debugMode(false),
-inleft(0),
-inright(0),
-onLeftSide(0),
-onRightSide(0),
-inabove(0),
 loaded(false),
 gameHUD(NULL),
 gameOver(false),
@@ -1375,7 +1375,7 @@ void Mugen::Stage::logic(){
     }
     
     // Correct camera
-    if ((verticalfollow > 0) && !inabove && (getCameraY() < 0)){
+    if ((verticalfollow > 0) && !getStateData().inabove && (getCameraY() < 0)){
         /* FIXME: where did 3.2 come from? */
 	moveCamera(0, verticalfollow * 3.2);
     }
@@ -1801,7 +1801,7 @@ void Mugen::Stage::reset(){
         }
     }
     
-    inleft = inright = onLeftSide = onRightSide = 0;
+    getStateData().inleft = getStateData().inright = getStateData().onLeftSide = getStateData().onRightSide = 0;
     if (players.size() < 2){
         throw MugenException("Need at least 2 players", __FILE__, __LINE__);
     }
@@ -2117,12 +2117,12 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
     if (px <= leftTension){
         if (!playerInfo[player].leftTension){
             playerInfo[player].leftTension = true;
-            inleft++;
+            getStateData().inleft++;
         }
     } else if (px >= rightTension){
         if (!playerInfo[player].rightTension){
             playerInfo[player].rightTension = true;
-            inright++;
+            getStateData().inright++;
         }
     } 
 
@@ -2130,14 +2130,14 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
     if (px > leftTension){
         if (playerInfo[player].leftTension){
             playerInfo[player].leftTension = false;
-            inleft--;
+            getStateData().inleft--;
         }
     }
     // Release tension
     if (px < rightTension){
         if (playerInfo[player].rightTension){
             playerInfo[player].rightTension = false;
-            inright--;
+            getStateData().inright--;
         }
     }
 
@@ -2147,28 +2147,28 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
         playerInfo[player].oldx = px;
         if (!playerInfo[player].leftSide){
             playerInfo[player].leftSide = true;
-            onLeftSide++;
+            getStateData().onLeftSide++;
         }
     } else if (px >= screenRight){
         player->setX(screenRight);
         playerInfo[player].oldx = px;
         if (!playerInfo[player].rightSide){
             playerInfo[player].rightSide = true;
-            onRightSide++;
+            getStateData().onRightSide++;
         }
     } 
     // Release side
     if (px > screenLeft){
         if (playerInfo[player].leftSide){
             playerInfo[player].leftSide = false;
-            onLeftSide--;
+            getStateData().onLeftSide--;
         }
     }
     // Release side
     if (px < screenRight){
         if (playerInfo[player].rightSide){
             playerInfo[player].rightSide = false;
-            onRightSide--;
+            getStateData().onRightSide--;
         }
     }
 
@@ -2179,21 +2179,21 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
         getStateData().screenBound[player->getId()].panX){
         if (playerInfo[player].leftTension){
             if (pdiffx < 0){
-                if (!onRightSide){
+                if (!getStateData().onRightSide){
                     moveCamera(pdiffx, 0);
                 }
             } else if (pdiffx > 0){
-                if (inright){
+                if (getStateData().inright){
                     moveCamera(pdiffx, 0);
                 }
             }
         } else if (playerInfo[player].rightTension){
             if (pdiffx > 0){
-                if(!onLeftSide){
+                if(!getStateData().onLeftSide){
                     moveCamera(pdiffx, 0);
                 }
             } else if (pdiffx < 0){
-                if(inleft){
+                if(getStateData().inleft){
                     moveCamera(pdiffx, 0);
                 }
             }
@@ -2209,11 +2209,11 @@ void Mugen::Stage::updatePlayer(Mugen::Character * player){
                 if (py > floortension){
                     if (!playerInfo[player].above){
                         playerInfo[player].above = true;
-                        inabove++;
+                        getStateData().inabove++;
                     }
                 } else if ( playerInfo[player].above){
                     playerInfo[player].above = false;
-                    inabove--;
+                    getStateData().inabove--;
                 }
                 if (playerInfo[player].above && pdiffy < 0){
                     moveCamera( 0, verticalfollow * -3.2 );

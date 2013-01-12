@@ -670,13 +670,6 @@ private:
     // Hold information for players
     std::map<void *, PlayerData> playerInfo;
 
-    // This is for when characters are inside the tension area
-    int inleft;
-    int inright;
-    int onLeftSide;
-    int onRightSide;
-    int inabove;
-
     bool loaded;
 
     // Controllers
@@ -799,6 +792,13 @@ private:
 
         int quake_time;
         int cycles;
+
+        // This is for when characters are inside the tension area
+        int inleft;
+        int inright;
+        int onLeftSide;
+        int onRightSide;
+        int inabove;
     } stateData;
 
     StateData & getStateData();
