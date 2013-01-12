@@ -16,9 +16,11 @@
 #include "util/exceptions/shutdown_exception.h"
 #include "util/system.h"
 #include "character.h"
+#include "world.h"
 
 using std::string;
 using std::ostringstream;
+using std::vector;
 
 namespace PaintownUtil = ::Util;
 
@@ -312,6 +314,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         show_fps(show_fps),
         console(console),
         gameTicks(0),
+        totalTicks(0),
         options(options),
         show(true),
         showGameSpeed(0),
@@ -329,6 +332,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
 
             MessageQueue::registerInfo(&messages);
+            snapshots.push_back(stage->snapshotState());
         }
 
         virtual ~LogicDraw(){
@@ -343,8 +347,11 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         Console::Console & console;
         /* global info messages will appear in the console */
         MessageQueue messages;
+    
+        vector<PaintownUtil::ReferenceCount<World> > snapshots;
 
         double gameTicks;
+        unsigned int totalTicks;
         RunMatchOptions & options;
         bool show;
         int showGameSpeed;
@@ -425,11 +432,18 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             InputManager::handleEvents(gameInput, InputSource(), handler);
         }
 
+        int secondsInTicks(int seconds){
+            /* FIXME: replace 60 with a constant */
+            return 60 * seconds;
+        }
+
         virtual void run(){
+            unsigned oldTicks = totalTicks;
             gameTicks += gameSpeed;
             // Do stage logic catch match exception to handle the next match
             while (gameTicks > 0){
                 gameTicks -= 1;
+                totalTicks += 1;
                 stage->logic();
             }
             while (messages.hasAny()){
@@ -453,6 +467,14 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             }
 
             options.act();
+
+            /* Check if some time actually passed */
+            if (oldTicks != totalTicks){
+                /* If a second has gone by snapshot the state */
+                if (totalTicks % secondsInTicks(3) == 0){
+                    snapshots.push_back(stage->snapshotState());
+                }
+            }
         }
 
         virtual bool done(){
