@@ -38,6 +38,7 @@ sprite.cpp
 stage.cpp
 sff.cpp
 util.cpp
+random.cpp
 search.cpp
 state-controller.cpp
 option-options.cpp
