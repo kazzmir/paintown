@@ -1551,11 +1551,12 @@ void Mugen::Stage::updateState(const Mugen::World & world){
     Random::setState(world.getRandom());
     gameHUD->setGameTime(world.getGameTime());
 
-    const map<CharacterId, StateData> & data = world.getCharacterData();
-    for (map<CharacterId, StateData>::const_iterator it = data.begin(); it != data.end(); it++){
+    const map<CharacterId, AllCharacterData> & data = world.getCharacterData();
+    for (map<CharacterId, AllCharacterData>::const_iterator it = data.begin(); it != data.end(); it++){
         Mugen::Character * who = getCharacter(it->first);
         if (who != NULL){
-            who->setStateData(it->second);
+            who->setStateData(it->second.character);
+            who->setCurrentAnimationState(it->second.animation);
         }
     }
 }

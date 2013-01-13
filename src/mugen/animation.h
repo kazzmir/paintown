@@ -220,6 +220,7 @@ class Animation{
 
         const AnimationState & getState() const;
         AnimationState & getState();
+        void setState(const AnimationState & state);
 
     protected:
 

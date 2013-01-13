@@ -2567,6 +2567,20 @@ void Character::priorPalette(){
 CharacterId Character::getRoot() const {
     return getId();
 }
+        
+const AnimationState & Character::getCurrentAnimationState() const {
+    if (getCurrentAnimation() != NULL){
+        return getCurrentAnimation()->getState();
+    }
+
+    return AnimationState();
+}
+
+void Character::setCurrentAnimationState(const AnimationState & state){
+    if (getCurrentAnimation() != NULL){
+        getCurrentAnimation()->setState(state);
+    }
+}
 
 const PaintownUtil::ReferenceCount<Mugen::Sprite> Character::getCurrentFrame() const {
     if (getCurrentAnimation() != NULL){

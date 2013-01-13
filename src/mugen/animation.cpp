@@ -497,6 +497,10 @@ const AnimationState & Animation::getState() const {
 AnimationState & Animation::getState() {
     return state;
 }
+        
+void Animation::setState(const AnimationState & state){
+    this->state = state;
+}
 
 /* who uses this function? */
 /*

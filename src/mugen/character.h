@@ -394,6 +394,9 @@ public:
 
         virtual const PaintownUtil::ReferenceCount<Mugen::Sprite> getCurrentFrame() const;
         PaintownUtil::ReferenceCount<Animation> getCurrentAnimation() const;
+    
+        const AnimationState & getCurrentAnimationState() const;
+        void setCurrentAnimationState(const AnimationState & state);
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
             
