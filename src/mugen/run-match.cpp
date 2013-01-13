@@ -21,6 +21,7 @@
 using std::string;
 using std::ostringstream;
 using std::vector;
+using std::map;
 
 namespace PaintownUtil = ::Util;
 
@@ -35,6 +36,7 @@ enum MugenInput{
     Pause,
     ForwardFrame,
     NormalSpeed,
+    ReplayMode,
     ToggleDebug,
     QuitGame,
     SetHealth,
@@ -325,6 +327,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_F4, ToggleDebug);
             gameInput.set(Keyboard::Key_F6, Pause);
             gameInput.set(Keyboard::Key_F7, ForwardFrame);
+            gameInput.set(Keyboard::Key_F8, ReplayMode);
             gameInput.set(Keyboard::Key_ESC, QuitGame);
             gameInput.set(Joystick::Quit, QuitGame);
             gameInput.set(Keyboard::Key_F5, SetHealth);
@@ -332,7 +335,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
 
             MessageQueue::registerInfo(&messages);
-            snapshots.push_back(stage->snapshotState());
+            snapshots[totalTicks] = stage->snapshotState();
         }
 
         virtual ~LogicDraw(){
@@ -348,8 +351,20 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         /* global info messages will appear in the console */
         MessageQueue messages;
     
-        vector<PaintownUtil::ReferenceCount<World> > snapshots;
+        /* Map between game tick time and a world state */
+        map<unsigned int, PaintownUtil::ReferenceCount<World> > snapshots;
 
+        struct Replay{
+            Replay():
+            enabled(false),
+            ticks(0){
+            }
+
+            bool enabled;
+            unsigned int ticks;
+        };
+
+        Replay replay;
         double gameTicks;
         unsigned int totalTicks;
         RunMatchOptions & options;
@@ -357,6 +372,17 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         int showGameSpeed;
         
         EscapeMenu escapeMenu;
+
+        void doReplay(){
+            if (replay.enabled){
+                replay.enabled = false;
+            } else {
+                replay.enabled = true;
+                replay.ticks = totalTicks;
+                snapshots[totalTicks] = stage->snapshotState();
+                stage->updateState(*snapshots[totalTicks]);
+            }
+        }
 
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
@@ -390,6 +416,10 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                                 logic.showGameSpeed = DISPLAY_GAME_SPEED_TIME;
                                 logic.gameSpeed = 0;
                                 logic.gameTicks = 1;
+                                break;
+                            }
+                            case ReplayMode: {
+                                logic.doReplay();
                                 break;
                             }
                             case Pause: {
@@ -438,18 +468,48 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
         }
 
         virtual void run(){
+
             unsigned oldTicks = totalTicks;
             gameTicks += gameSpeed;
             // Do stage logic catch match exception to handle the next match
-            while (gameTicks > 0){
-                gameTicks -= 1;
-                totalTicks += 1;
-                stage->logic();
+
+            if (replay.enabled){
+                while (replay.ticks < totalTicks && gameTicks > 0){
+                    gameTicks -= 1;
+                    replay.ticks += 1;
+                    stage->logic();
+                }
+
+                if (replay.ticks == totalTicks){
+                    gameTicks = 0;
+                }
+
+                /* Once the current replay run is over transition back to normal mode */
+                /*
+                if (replay.ticks == totalTicks){
+                    replay.enabled = false;
+                }
+                */
+            } else {
+                while (gameTicks > 0){
+                    gameTicks -= 1;
+                    totalTicks += 1;
+                    stage->logic();
+                }
             }
+            /* Check if some time actually passed */
+            if (oldTicks != totalTicks){
+                /* If a second has gone by snapshot the state */
+                if (totalTicks % secondsInTicks(3) == 0){
+                    snapshots[totalTicks] = stage->snapshotState();
+                }
+            }
+
             while (messages.hasAny()){
                 console.addLine(messages.get());
             }
             console.act();
+
             endMatch = stage->isMatchOver();
 
             if (showGameSpeed > 0){
@@ -467,14 +527,6 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             }
 
             options.act();
-
-            /* Check if some time actually passed */
-            if (oldTicks != totalTicks){
-                /* If a second has gone by snapshot the state */
-                if (totalTicks % secondsInTicks(3) == 0){
-                    snapshots.push_back(stage->snapshotState());
-                }
-            }
         }
 
         virtual bool done(){
@@ -517,6 +569,13 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 const ::Font & font = ::Font::getDefaultFont(15, 15);
                 font.printf(1, screen.getHeight() - font.getHeight() - 5, Graphics::makeColor(255, 255, 255), screen, "Game speed %f", 0, gameSpeed);
             }
+
+            if (replay.enabled){
+                const ::Font & font = ::Font::getDefaultFont(32, 32);
+                font.printf(3, 4, Graphics::makeColor(0, 0, 0), screen, "Replay Mode", 0);
+                font.printf(1, 1, Graphics::makeColor(255, 255, 255), screen, "Replay Mode", 0);
+            }
+
             screen.BlitToScreen();
         }
 };

@@ -212,6 +212,7 @@ public:
     virtual void toggleDebug(int player);
 
     virtual PaintownUtil::ReferenceCount<World> snapshotState();
+    virtual void updateState(const World & world);
 
     // Inherited world actions
     virtual void draw(Graphics::Bitmap * work);

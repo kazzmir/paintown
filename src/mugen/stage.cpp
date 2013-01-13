@@ -1544,6 +1544,9 @@ PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
 
     return world;
 }
+    
+void Mugen::Stage::updateState(const Mugen::World & world){
+}
 
 /* Returns a sorted listed of sprite priorties */
 vector<int> Mugen::Stage::allSpritePriorities(){
