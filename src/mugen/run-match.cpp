@@ -606,6 +606,11 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             return Mugen::Util::gameTicks(system);
         }
 
+        void drawBold(const ::Font & font, int x, int y, const Graphics::Color & color, const Graphics::Bitmap & screen, const string & message){
+            font.printf(x + 3, y + 4, Graphics::makeColor(0, 0, 0), screen, message, 0);
+            font.printf(x, y, color, screen, message, 0);
+        }
+
         virtual void draw(const Graphics::Bitmap & screen){
             if (show_fps){
                 if (Global::second_counter % 2 == 0){
@@ -640,11 +645,16 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             }
 
             if (replay.enabled){
+                int width = ::Font::getDefaultFont(32, 32).textLength("Replay Mode");
+                const ::Font & small = ::Font::getDefaultFont(20, 20);
+                int x = screen.getWidth() - width - 10;
+                int y = screen.getHeight() - small.getHeight() - 2;
+
+                small.printf(x, y, Graphics::makeColor(255, 255, 255), screen, "Tick %u / %u", 0, replay.ticks, totalTicks);
+
                 const ::Font & font = ::Font::getDefaultFont(32, 32);
-                int x = screen.getWidth() - font.textLength("Replay Mode") - 10;
-                int y = screen.getHeight() - font.getHeight() - 5;
-                font.printf(x + 3, y + 4, Graphics::makeColor(0, 0, 0), screen, "Replay Mode", 0);
-                font.printf(x, y, Graphics::makeColor(255, 255, 255), screen, "Replay Mode", 0);
+                y -= font.getHeight() - 2;
+                drawBold(font, x, y, Graphics::makeColor(255, 255, 255), screen, "Replay Mode");
             }
 
             screen.BlitToScreen();
