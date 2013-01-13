@@ -37,6 +37,10 @@ enum MugenInput{
     ForwardFrame,
     NormalSpeed,
     ReplayMode,
+    ReplayRewindLarge,
+    ReplayForwardLarge,
+    ReplayRewind,
+    ReplayForward,
     ToggleDebug,
     QuitGame,
     SetHealth,
@@ -333,6 +337,10 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             gameInput.set(Keyboard::Key_F5, SetHealth);
             gameInput.set(Keyboard::Key_F9, ShowFps);
             gameInput.set(Keyboard::Key_TILDE, ToggleConsole);
+            gameInput.set(Keyboard::Key_LEFT, ReplayRewindLarge);
+            gameInput.set(Keyboard::Key_RIGHT, ReplayForwardLarge);
+            gameInput.set(Keyboard::Key_UP, ReplayForward);
+            gameInput.set(Keyboard::Key_DOWN, ReplayRewind);
 
             MessageQueue::registerInfo(&messages);
             snapshots[totalTicks] = stage->snapshotState();
@@ -384,6 +392,50 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             }
         }
 
+        /* find the last snapshot state before the tick count then update the
+         * stage to that state. then run the game forward until we are at
+         * the current replay tick count.
+         */
+        void updateReplayState(){
+            unsigned int use = 0;
+            for (map<unsigned int, PaintownUtil::ReferenceCount<World> >::iterator it = snapshots.begin(); it != snapshots.end(); it++){
+                if (it->first > use && it->first <= replay.ticks){
+                    use = it->first;
+                }
+            }
+            stage->updateState(*snapshots[use]);
+
+            Global::debug(0) << "Replay from tick " << use << ". Fast forward " << (replay.ticks - use) << " ticks" << std::endl;
+
+            /* FIXME: disable sounds here */
+            for (int i = use; i < replay.ticks; i++){
+                stage->logic();
+            }
+        }
+
+        void doReplayRewind(int ticks){
+            if (replay.enabled){
+                if (replay.ticks < ticks){
+                    replay.ticks = 0;
+                } else {
+                    replay.ticks -= ticks;
+                }
+
+                updateReplayState();
+            }
+        }
+                                
+        void doReplayForward(int ticks){
+            if (replay.enabled){
+                replay.ticks += ticks;
+                if (replay.ticks >= totalTicks){
+                    replay.ticks = totalTicks;
+                }
+                
+                updateReplayState();
+            }
+        }
+
         void doInput(){
             class Handler: public InputHandler<MugenInput> {
                 public:
@@ -420,6 +472,22 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                             }
                             case ReplayMode: {
                                 logic.doReplay();
+                                break;
+                            }
+                            case ReplayRewindLarge: {
+                                logic.doReplayRewind(60);
+                                break;
+                            }
+                            case ReplayForwardLarge: {
+                                logic.doReplayForward(60);
+                                break;
+                            }
+                            case ReplayRewind: {
+                                logic.doReplayRewind(1);
+                                break;
+                            }
+                            case ReplayForward: {
+                                logic.doReplayForward(1);
                                 break;
                             }
                             case Pause: {

@@ -692,6 +692,7 @@ private:
     StageStateData stateData;
     StageStateData & getStateData();
     const StageStateData & getStateData() const;
+    void setStateData(const StageStateData & data);
 };
 
 }

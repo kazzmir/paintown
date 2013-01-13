@@ -18,27 +18,12 @@ private:
     Object();
 public:
     Object(int alliance);
-    Object(const int x, const int y, int alliance);
     Object(const Object & copy);
 
     virtual ~Object();
 
-    virtual double getY() const;
-    virtual double getX() const;
-    virtual double getZ() const;
-    virtual void setZ(double what);
-
-    /* get the actual y coordinate on screen */
-    virtual double getRY() const;
-
-    virtual void setX(double what);
-    virtual void setY(double what);
-    virtual void moveX(double x, bool force = false);
-    virtual void moveY(double y, bool force = false);
-    virtual void moveLeft(double x);
-    virtual void moveRight(double y);
-    virtual void moveLeftForce(double x);
-    virtual void moveRightForce(double y);
+    /*
+        */
 
     // virtual void unbind(Object * who) = 0;
     
@@ -52,9 +37,8 @@ public:
     
     virtual int getAlliance() const;
     virtual void setAlliance(int alliance);
-    virtual Facing getFacing() const;
-    virtual void setFacing(Facing what);
-    virtual Facing getOppositeFacing() const;
+    /*
+        */
     virtual int getHeight() const = 0;
 	
     /*
@@ -103,12 +87,9 @@ public:
     // virtual void didHit(Object * enemy, Mugen::Stage & stage) = 0;
     // virtual void didHitGuarded(Object * enemy, Mugen::Stage & stage) = 0;
 protected:
-    double virtualx;
-    double virtualy;
-    double virtualz;
     unsigned int attack_ticket;
     int alliance;
-    Facing facing;
+    // Facing facing;
     // int objectId;
     unsigned int ticket;
 };

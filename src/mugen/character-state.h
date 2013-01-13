@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_3b6e12b00abbd48c1c4cffd337d85e3d
-#define _serialize_Mugen_3b6e12b00abbd48c1c4cffd337d85e3d
+#ifndef _serialize_Mugen_1798e2fd38b6c626e0b1a325b73f4ef3
+#define _serialize_Mugen_1798e2fd38b6c626e0b1a325b73f4ef3
 
 #include "common.h"
 #include "compiler.h"
@@ -32,6 +32,9 @@ struct StateData{
         spritePriority = 0;
         wasHitCounter = 0;
         drawAngle = 0;
+        virtualx = 0;
+        virtualy = 0;
+        virtualz = 0;
     }
 
     int juggleRemaining;
@@ -167,6 +170,10 @@ struct StateData{
     
     std::vector<std::string > active;
     std::map<int, HitOverride > hitOverrides;
+    double virtualx;
+    double virtualy;
+    double virtualz;
+    Facing facing;
 };
 
 }

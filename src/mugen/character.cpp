@@ -428,40 +428,18 @@ hit(NULL){
 }
 */
     
-Object::Object():
-virtualx(0),
-virtualy(0),
-virtualz(0){
+Object::Object(){
 }
 
 Object::Object(int alliance):
-virtualx(0),
-virtualy(0),
-virtualz(0),
 attack_ticket(0),
 alliance(alliance),
-facing(FacingLeft),
 ticket(0){
 }
-
-Object::Object(const int x, const int y, int alliance):
-virtualx(x),
-virtualy(y),
-virtualz(0),
-attack_ticket(0),
-alliance(alliance),
-facing(FacingLeft),
-ticket(0){
-}
-
 
 Object::Object(const Object & copy):
-virtualx(copy.virtualx),
-virtualy(copy.virtualy),
-virtualz(copy.virtualz),
 attack_ticket(copy.attack_ticket),
 alliance(copy.alliance),
-facing(copy.facing),
 ticket(copy.ticket){
 }
     
@@ -491,43 +469,35 @@ void Object::setAlliance(int alliance){
     this->alliance = alliance;
 }
     
-void Object::setZ(double what){
-    virtualz = what;
+void Character::setZ(double what){
+    getStateData().virtualz = what;
 }
     
-void Object::setX(double what){
-    virtualx = what;
+void Character::setX(double what){
+    getStateData().virtualx = what;
 }
 
-void Object::setY(double what){
-    virtualy = what;
+void Character::setY(double what){
+    getStateData().virtualy = what;
 }
 
-double Object::getY() const {
-    return virtualy;
+double Character::getY() const {
+    return getStateData().virtualy;
 }
 
-double Object::getX() const {
-    return virtualx;
+double Character::getX() const {
+    return getStateData().virtualx;
 }
 
-double Object::getZ() const {
-    return virtualz;
+double Character::getZ() const {
+    return getStateData().virtualz;
 }
     
-double Object::getRY() const {
+double Character::getRY() const {
     return getZ() + getY();
 }
-    
-void Object::moveX(double x, bool force){
-    virtualx += x;
-}
 
-void Object::moveY(double y, bool force){
-    virtualy += y;
-}
-    
-void Object::moveLeft(double x){
+void Character::moveLeft(double x){
     if (getFacing() == FacingLeft){
         moveX(x);
     } else {
@@ -535,7 +505,7 @@ void Object::moveLeft(double x){
     }
 }
 
-void Object::moveLeftForce(double x){
+void Character::moveLeftForce(double x){
     if (getFacing() == FacingLeft){
         moveX(x, true);
     } else {
@@ -543,7 +513,7 @@ void Object::moveLeftForce(double x){
     }
 }
 
-void Object::moveRight(double x){
+void Character::moveRight(double x){
     if (getFacing() == FacingRight){
         moveX(x);
     } else {
@@ -551,7 +521,7 @@ void Object::moveRight(double x){
     }
 }
 
-void Object::moveRightForce(double x){
+void Character::moveRightForce(double x){
     if (getFacing() == FacingRight){
         moveX(x, true);
     } else {
@@ -559,16 +529,16 @@ void Object::moveRightForce(double x){
     }
 }
 
-Facing Object::getFacing() const {
-    return facing;
+Facing Character::getFacing() const {
+    return getStateData().facing;
 }
 
-void Object::setFacing(Facing what){
-    this->facing = what;
+void Character::setFacing(Facing what){
+    this->getStateData().facing = what;
 }
 
-Facing Object::getOppositeFacing() const {
-    switch (facing){
+Facing Character::getOppositeFacing() const {
+    switch (getFacing()){
         case FacingLeft: return FacingRight;
         case FacingRight: return FacingLeft;
     }
@@ -576,7 +546,7 @@ Facing Object::getOppositeFacing() const {
 }
     
 void Character::reverseFacing(){
-    facing = getOppositeFacing();
+    setFacing(getOppositeFacing());
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, int alliance):
@@ -586,7 +556,7 @@ Object(alliance){
 }
 
 Character::Character(const Filesystem::AbsolutePath & s, const int x, const int y, int alliance):
-Object(x,y, alliance){
+Object(alliance){
     getLocalData().location = s;
     initialize();
 }
@@ -4106,16 +4076,16 @@ void Character::doFreeze(){
 void Character::moveX(double x, bool force){
     if (force || !getStateData().frozen){
 	if (getFacing() == FacingLeft){
-            virtualx -= x;
+            getStateData().virtualx -= x;
 	} else {
-            virtualx += x;
+            getStateData().virtualx += x;
 	}
     }
 }
 
 void Character::moveY(double y, bool force){
     if (force || !getStateData().frozen){
-        virtualy += y;
+        getStateData().virtualy += y;
     }
 }
         

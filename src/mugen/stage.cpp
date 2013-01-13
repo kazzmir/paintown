@@ -1541,11 +1541,23 @@ PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
 
     world->setStageData(getStateData());
     world->setRandom(*Random::getState());
+    world->setGameTime(gameHUD->getGameTime());
 
     return world;
 }
     
 void Mugen::Stage::updateState(const Mugen::World & world){
+    setStateData(world.getStageData());
+    Random::setState(world.getRandom());
+    gameHUD->setGameTime(world.getGameTime());
+
+    const map<CharacterId, StateData> & data = world.getCharacterData();
+    for (map<CharacterId, StateData>::const_iterator it = data.begin(); it != data.end(); it++){
+        Mugen::Character * who = getCharacter(it->first);
+        if (who != NULL){
+            who->setStateData(it->second);
+        }
+    }
 }
 
 /* Returns a sorted listed of sprite priorties */
@@ -2453,10 +2465,13 @@ Mugen::Character * Mugen::Stage::getEnemy(const Mugen::Character * who) const {
 }
 
 int Mugen::Stage::getGameTime() const {
+    return getTicks();
+    /*
     if (gameHUD){
         return gameHUD->getGameTime();
     }
     return 0;
+    */
 }
     
 void Mugen::Stage::doSuperPause(int time, Character & guy, int animation, bool ownAnimation, int positionX, int positionY){
@@ -2793,4 +2808,8 @@ Mugen::StageStateData & Mugen::Stage::getStateData(){
     
 const Mugen::StageStateData & Mugen::Stage::getStateData() const {
     return stateData;
+}
+    
+void Mugen::Stage::setStateData(const Mugen::StageStateData & data){
+    this->stateData = data;
 }

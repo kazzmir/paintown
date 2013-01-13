@@ -422,6 +422,10 @@ public:
     virtual void setHealth(double health);
     virtual double getHealth() const;
 
+    virtual Facing getFacing() const;
+    virtual void setFacing(Facing what);
+    virtual Facing getOppositeFacing() const;
+
     virtual void reverseFacing();
 
     virtual void doMovement(Stage & stage);
@@ -648,6 +652,23 @@ public:
         virtual inline const std::string & getMoveType() const {
             return getStateData().moveType;
         }
+
+        virtual double getY() const;
+        virtual double getX() const;
+        virtual double getZ() const;
+        virtual void setZ(double what);
+
+        /* get the actual y coordinate on screen */
+        virtual double getRY() const;
+
+        virtual void setX(double what);
+        virtual void setY(double what);
+        virtual void moveX(double x, bool force = false);
+        virtual void moveY(double y, bool force = false);
+        virtual void moveLeft(double x);
+        virtual void moveRight(double y);
+        virtual void moveLeftForce(double x);
+        virtual void moveRightForce(double y);
 
         virtual double getXScale() const;
         virtual double getYScale() const;
@@ -1043,9 +1064,6 @@ public:
 
         virtual void doFreeze();
 	
-        virtual void moveX(double x, bool force = false);
-        virtual void moveY(double y, bool force = false);
-
         virtual void setSpritePriority(int priority);
         virtual int getSpritePriority() const;
         

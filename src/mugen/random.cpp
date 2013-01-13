@@ -56,6 +56,10 @@ PaintownUtil::ReferenceCount<Random> Random::getState(){
 
     return current;
 }
+    
+void Random::setState(const Random & what){
+    current = PaintownUtil::ReferenceCount<Random>(new Random(what));
+}
 
 uint32_t Random::random(){
     return Random::getState()->next();

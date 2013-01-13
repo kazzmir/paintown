@@ -325,6 +325,10 @@ class GameTime{
 	virtual inline int getElapsedTicks(){
 	    return this->ticker;
 	}
+        virtual inline int getTime() const {
+            return time;
+        }
+        void setTime(int time);
 	virtual inline bool isStarted() const {
 	    return started;
 	}
@@ -802,8 +806,10 @@ class GameInfo{
         }
 	
 	virtual inline int getGameTime(){
-	    return this->timer.getElapsedTicks();
+	    return this->timer.getTime();
 	}
+
+        virtual void setGameTime(int time);
 
         virtual inline const Round & getRound() const {
             return roundControl;

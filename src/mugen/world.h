@@ -20,11 +20,20 @@ public:
     void addCharacter(const Character & who);
     void setStageData(const StageStateData & data);
     void setRandom(const Random & random);
+    void setGameTime(int gameTime);
+
+    const StageStateData & getStageData() const;
+    const Random & getRandom() const;
+    int getGameTime() const;
+
+    const std::map<CharacterId, StateData> & getCharacterData() const;
 
 protected:
     std::map<CharacterId, StateData> characterData;
     StageStateData stageData;
     Random random;
+
+    int gameTime;
 };
 
 }

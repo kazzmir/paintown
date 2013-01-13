@@ -120,4 +120,10 @@ struct StateData{
     /* Current set of commands, updated in act() */
     std::vector<std::string> active;
     std::map<int, HitOverride> hitOverrides;
+
+    double virtualx;
+    double virtualy;
+    double virtualz;
+
+    Facing facing;
 }

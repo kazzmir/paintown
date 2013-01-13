@@ -572,6 +572,10 @@ disabled(false){
 GameTime::~GameTime(){
 }
 
+void GameTime::setTime(int time){
+    this->time = time;
+}
+
 void GameTime::act(){
     if (started){
 	ticker++;
@@ -601,7 +605,7 @@ void GameTime::reset(){
     // Resets the time
     time = Mugen::Data::getInstance().getTime();
     // 0 or less is considered disabled
-    if (time <=0){
+    if (time <= 0){
         disabled = true;
         // Mugen hides the infinity symbol in the num font and sets it to o
         timer.setText("o");
@@ -1963,6 +1967,10 @@ GameInfo::GameInfo(const Filesystem::AbsolutePath & fightFile){
             section->walk(walk);
         } 
     }
+}
+        
+void GameInfo::setGameTime(int time){
+    timer.setTime(time);
 }
 
 GameInfo::~GameInfo(){
