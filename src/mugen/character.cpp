@@ -628,7 +628,7 @@ void Character::initialize(){
     getLocalData().runbacky = 0;
     getLocalData().runforwardx = 0;
     getLocalData().runforwardy = 0;
-    getLocalData().power = 0;
+    getStateData().power = 0;
 
     getStateData().velocity_x = 0;
     getStateData().velocity_y = 0;
@@ -2568,7 +2568,7 @@ CharacterId Character::getRoot() const {
     return getId();
 }
         
-const AnimationState & Character::getCurrentAnimationState() const {
+const AnimationState Character::getCurrentAnimationState() const {
     if (getCurrentAnimation() != NULL){
         return getCurrentAnimation()->getState();
     }
@@ -2782,10 +2782,20 @@ void Character::act(Stage * stage){
         }
     }
 
-    /* active is the current set of commands */
-    getStateData().active = doInput(*stage);
+    /* During replay the stage ticks will be less than the current size of the
+     * input history vector. If the stage ticks is larger or equal then we are
+     * in real-time and need to get raw inputs. Otherwise get the inputs
+     * from the input history.
+     */
+    if (stage->getTicks() >= getLocalData().inputHistory.size()){
+        /* active is the current set of commands */
+        getStateData().active = doInput(*stage);
+        getLocalData().inputHistory.push_back(getStateData().active);
 
-    recordCommands(getStateData().active);
+        recordCommands(getStateData().active);
+    } else {
+        getStateData().active = getLocalData().inputHistory[stage->getTicks()];
+    }
 
     if (getHitState().recoverTime > 0){
         getHitState().recoverTime -= 1;
@@ -2927,16 +2937,16 @@ void Character::act(Stage * stage){
 }
         
 void Character::addPower(double d){
-    getLocalData().power += d;
+    getStateData().power += d;
     /* max power is 3000. is that specified somewhere or just hard coded
      * in the engine?
      */
-    if (getLocalData().power > 3000){
-        getLocalData().power = 3000;
+    if (getStateData().power > 3000){
+        getStateData().power = 3000;
     }
 
-    if (getLocalData().power < 0){
-        getLocalData().power = 0;
+    if (getStateData().power < 0){
+        getStateData().power = 0;
     }
 }
         
@@ -3950,7 +3960,7 @@ void Character::addMatchWin(){
 
 void Character::resetPlayer(){
     clearWins();
-    getLocalData().power = 0;
+    getStateData().power = 0;
     setHealth(getMaxHealth());
 }
         
@@ -4578,7 +4588,6 @@ Character::LocalData::LocalData(const Character::LocalData & copy){
     C(airjumpneuy);
     C(airjumpback);
     C(airjumpfwd);
-    C(power);
     C(airjumpnum);
     C(airjumpheight);
     C(yaccel);

@@ -395,7 +395,7 @@ public:
         virtual const PaintownUtil::ReferenceCount<Mugen::Sprite> getCurrentFrame() const;
         PaintownUtil::ReferenceCount<Animation> getCurrentAnimation() const;
     
-        const AnimationState & getCurrentAnimationState() const;
+        const AnimationState getCurrentAnimationState() const;
         void setCurrentAnimationState(const AnimationState & state);
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
@@ -565,11 +565,11 @@ public:
         }
         
         virtual inline double getPower() const {
-            return getLocalData().power;
+            return getStateData().power;
         }
 
         virtual inline void setPower(double p){
-            getLocalData().power = p;
+            getStateData().power = p;
         }
 
         virtual void addPower(double d);
@@ -1375,8 +1375,6 @@ protected:
         double airjumpback;
         double airjumpfwd;
 
-        double power;
-
         /* Movement */
 
         //  = 1      ;Number of air jumps allowed (opt)
@@ -1454,6 +1452,9 @@ protected:
         // bool needToGuard;
 
         PaintownUtil::ReferenceCount<RecordingInformation> record;
+
+        /* records entire history of inputs */
+        std::vector< std::vector<std::string > > inputHistory;
 
         double max_health;
 

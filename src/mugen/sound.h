@@ -23,6 +23,13 @@ public:
     int sampleNumber;
     char * sample;
     ::Sound * sound;
+
+    static void enableSounds();
+    static void disableSounds();
+
+protected:
+    /* For globally disabling sounds, such as during replay */
+    static bool enabled;
 };
 
 }

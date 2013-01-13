@@ -126,4 +126,6 @@ struct StateData{
     double virtualz;
 
     Facing facing;
+
+    double power;
 }

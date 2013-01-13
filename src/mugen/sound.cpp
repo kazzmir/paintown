@@ -13,13 +13,22 @@ sample(0),
 sound(0){
     //Nothing
 }
+    
+bool Sound::enabled = true;
+void Sound::enableSounds(){
+    enabled = true;
+}
+
+void Sound::disableSounds(){
+    enabled = false;
+}
 
 void Sound::load(){
     sound = new ::Sound(sample, length);
 }
 
 void Sound::play(){
-    if (sound){
+    if (enabled && sound){
         sound->play();
     }
 }

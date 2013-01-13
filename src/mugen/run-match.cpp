@@ -405,12 +405,13 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             }
             stage->updateState(*snapshots[use]);
 
-            Global::debug(0) << "Replay from tick " << use << ". Fast forward " << (replay.ticks - use) << " ticks" << std::endl;
+            Global::debug(0) << "Replay from tick " << replay.ticks << ". Fast forward from " << use << " for " << (replay.ticks - use) << " ticks" << std::endl;
 
-            /* FIXME: disable sounds here */
+            Sound::disableSounds();
             for (int i = use; i < replay.ticks; i++){
                 stage->logic();
             }
+            Sound::enableSounds();
         }
 
         void doReplayRewind(int ticks){
@@ -640,8 +641,10 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
 
             if (replay.enabled){
                 const ::Font & font = ::Font::getDefaultFont(32, 32);
-                font.printf(3, 4, Graphics::makeColor(0, 0, 0), screen, "Replay Mode", 0);
-                font.printf(1, 1, Graphics::makeColor(255, 255, 255), screen, "Replay Mode", 0);
+                int x = screen.getWidth() - font.textLength("Replay Mode") - 10;
+                int y = screen.getHeight() - font.getHeight() - 5;
+                font.printf(x + 3, y + 4, Graphics::makeColor(0, 0, 0), screen, "Replay Mode", 0);
+                font.printf(x, y, Graphics::makeColor(255, 255, 255), screen, "Replay Mode", 0);
             }
 
             screen.BlitToScreen();

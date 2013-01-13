@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_1798e2fd38b6c626e0b1a325b73f4ef3
-#define _serialize_Mugen_1798e2fd38b6c626e0b1a325b73f4ef3
+#ifndef _serialize_Mugen_d9d6119a34afd096d0f6a858c325c80e
+#define _serialize_Mugen_d9d6119a34afd096d0f6a858c325c80e
 
 #include "common.h"
 #include "compiler.h"
@@ -35,6 +35,7 @@ struct StateData{
         virtualx = 0;
         virtualy = 0;
         virtualz = 0;
+        power = 0;
     }
 
     int juggleRemaining;
@@ -174,6 +175,7 @@ struct StateData{
     double virtualy;
     double virtualz;
     Facing facing;
+    double power;
 };
 
 }
