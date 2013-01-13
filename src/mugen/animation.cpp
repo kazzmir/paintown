@@ -136,41 +136,40 @@ Frame::~Frame(){
      */
 }
 
+AnimationState::AnimationState():
+position(0),
+looped(false),
+started(false),
+ticks(0),
+virtual_ticks(0){
+}
+
+
 /*
 Holds mugen animations, ie: player.air
 */
 Animation::Animation():
 loopPosition(0),
-position(0),
 playOnce(false),
-looped(false),
-started(false),
 type(Mugen::Unknown),
 showDefense(false),
-showOffense(false),
-ticks(0),
-virtual_ticks(0){
+showOffense(false){
 }
         
 Animation::Animation(const PaintownUtil::ReferenceCount<Sprite> & sprite, bool mask):
 loopPosition(0),
-position(0),
 playOnce(false),
-looped(false),
-started(false),
 type(Mugen::Unknown),
 showDefense(false),
-showOffense(false),
-ticks(0),
-virtual_ticks(0){
+showOffense(false){
     frames.push_back(new Frame(sprite, mask));
 }
 
 Animation::Animation(const Animation &copy):
 playOnce(copy.playOnce),
-looped(false){
+state(copy.state){
     this->loopPosition = copy.loopPosition;
-    this->position = 0;
+    this->getState().position = 0;
     this->type = copy.type;
     this->showDefense = copy.showDefense;
     this->showOffense = copy.showOffense;
@@ -178,9 +177,9 @@ looped(false){
         Frame * old = *it;
         this->frames.push_back(new Frame(*old));
     }
-    this->ticks = 0;
-    this->virtual_ticks = 0;
-    this->started = false;
+    this->getState().ticks = 0;
+    this->getState().virtual_ticks = 0;
+    this->getState().started = false;
 }
 
 Animation::~Animation(){
@@ -199,13 +198,13 @@ void Animation::addFrame(Frame *frame){
 }
 
 const Frame * Animation::getNext(){
-    if (position < frames.size() - 1){
-        position += 1;
+    if (getState().position < frames.size() - 1){
+        getState().position += 1;
     } else {
-        position = loopPosition;
+        getState().position = loopPosition;
     }
     
-    return frames[position];
+    return frames[getState().position];
 }
 
 /* time elapsed since a given element has been shown. negative if the
@@ -222,16 +221,16 @@ int Animation::animationElementElapsed(int position) const {
         throw MugenNormalRuntimeException(out.str());
     }
 
-    for (int from = (int) this->position; from < position - 1; from++){
+    for (int from = (int) this->getState().position; from < position - 1; from++){
         total -= frames[from]->time;
     }
 
-    if (position - 1 == (int) this->position){
-        total += ticks;
-        total += virtual_ticks;
+    if (position - 1 == (int) this->getState().position){
+        total += getState().ticks;
+        total += getState().virtual_ticks;
     }
 
-    for (int from = position - 1; from < (int) this->position; from++){
+    for (int from = position - 1; from < (int) this->getState().position; from++){
         total += frames[from]->time;
     }
 
@@ -241,13 +240,13 @@ int Animation::animationElementElapsed(int position) const {
 /* time left in the animation */
 int Animation::animationTime() const {
     // return (int) position - (int) frames.size() + 1;
-    if (frames[position]->time == -1){
+    if (frames[getState().position]->time == -1){
         return -1;
     }
 
-    int left = frames[position]->time - ticks - 1;
+    int left = frames[getState().position]->time - getState().ticks - 1;
     /* FIXME: might need to add virtual_ticks here for loop time */
-    for (unsigned int rest = position + 1; rest < frames.size(); rest++){
+    for (unsigned int rest = getState().position + 1; rest < frames.size(); rest++){
         if (frames[rest]->time == -1){
             return -1;
         }
@@ -294,7 +293,7 @@ static vector<Area> scaleBoxes(const vector<Area> & boxes, double x, double y){
 
 
 const std::vector<Area> Animation::getDefenseBoxes(bool reverse, double xscale, double yscale) const {
-    Frame * frame = frames[position];
+    Frame * frame = frames[getState().position];
     if (reverse){
         return scaleBoxes(reverseBoxes(frame->getDefenseBoxes()), xscale, yscale);
     }
@@ -302,7 +301,7 @@ const std::vector<Area> Animation::getDefenseBoxes(bool reverse, double xscale, 
 }
 
 const std::vector<Area> Animation::getAttackBoxes(bool reverse, double xscale, double yscale) const {
-    Frame * frame = frames[position];
+    Frame * frame = frames[getState().position];
     if (reverse){
         return scaleBoxes(reverseBoxes(frame->getAttackBoxes()), xscale, yscale);
     }
@@ -310,47 +309,47 @@ const std::vector<Area> Animation::getAttackBoxes(bool reverse, double xscale, d
 }
         
 void Animation::virtualTick(){
-    virtual_ticks += 1;
+    getState().virtual_ticks += 1;
 }
 
 void Animation::logic(){
-    if (position < frames.size()){
-        if (frames[position]->time != -1){
-            ticks += 1;
-            if (ticks >= frames[position]->time){
-                ticks = 0;
-                virtual_ticks = 0;
-                if (position < frames.size() - 1){
-                    position += 1;
+    if (getState().position < frames.size()){
+        if (frames[getState().position]->time != -1){
+            getState().ticks += 1;
+            if (getState().ticks >= frames[getState().position]->time){
+                getState().ticks = 0;
+                getState().virtual_ticks = 0;
+                if (getState().position < frames.size() - 1){
+                    getState().position += 1;
                 } else {
 		    if (!playOnce){
-			position = loopPosition;
-                        looped = true;
+			getState().position = loopPosition;
+                        getState().looped = true;
 		    }
                 }
             }
         } else {
-            virtual_ticks += 1;
+            getState().virtual_ticks += 1;
         }
     }
 }
         
 void Animation::setPosition(int position){
     if (position < frames.size() && position >= 0){
-        this->position = position;
-        this->ticks = 0;
-        this->virtual_ticks = 0;
+        this->getState().position = position;
+        this->getState().ticks = 0;
+        this->getState().virtual_ticks = 0;
     }
 }
 
 void Animation::reset(){ 
-    this->position = 0; 
+    this->getState().position = 0; 
     if (this->playOnce){
-        this->started = false;
+        this->getState().started = false;
     }
-    this->looped = false;
-    this->ticks = 0;
-    this->virtual_ticks = 0;
+    this->getState().looped = false;
+    this->getState().ticks = 0;
+    this->getState().virtual_ticks = 0;
 }
 
 void Animation::renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
@@ -367,12 +366,12 @@ void Animation::renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics:
 }
 
 void Animation::render(int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects){
-    if (position >= frames.size()){
+    if (getState().position >= frames.size()){
         return;
     }
 
-    Mugen::Effects combined = frames[position]->effects + effects;
-    renderFrame(frames[position], xaxis, yaxis, work, combined);
+    Mugen::Effects combined = frames[getState().position]->effects + effects;
+    renderFrame(frames[getState().position], xaxis, yaxis, work, combined);
 }
         
 Animation * Animation::copy() const {
@@ -380,15 +379,15 @@ Animation * Animation::copy() const {
 }
 
 void Animation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, double scalex, double scaley){
-    if (position >= frames.size()){
+    if (getState().position >= frames.size()){
         return;
     }
 
-    Mugen::Effects effects = frames[position]->effects;
+    Mugen::Effects effects = frames[getState().position]->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
 
-    renderFrame(frames[position], xaxis, yaxis, work, effects);
+    renderFrame(frames[getState().position], xaxis, yaxis, work, effects);
 
 #if 0
     // Modify with frame adjustment
@@ -413,7 +412,7 @@ void Animation::render(int xaxis, int yaxis, const Graphics::Bitmap &work, doubl
 }
 
 Mugen::Effects Animation::getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley){
-    Frame * frame = frames[position];
+    Frame * frame = frames[getState().position];
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
@@ -423,11 +422,11 @@ Mugen::Effects Animation::getCurrentEffects(bool facing, bool vfacing, double sc
 }
 
 void Animation::render(bool facing, bool vfacing, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley, Graphics::Bitmap::Filter * filter){
-    if (position >= frames.size()){
+    if (getState().position >= frames.size()){
         return;
     }
 
-    Frame * frame = frames[position];
+    Frame * frame = frames[getState().position];
     Mugen::Effects effects = frame->effects;
     effects.scalex = scalex;
     effects.scaley = scaley;
@@ -455,11 +454,11 @@ void Animation::render(bool facing, bool vfacing, const int xaxis, const int yax
 }
 
 void Animation::renderReflection(bool facing, bool vfacing, int alpha, const int xaxis, const int yaxis, const Graphics::Bitmap &work, const double scalex, const double scaley){
-    if (position >= frames.size()){
+    if (getState().position >= frames.size()){
         return;
     }
 
-    Frame * frame = frames[position];
+    Frame * frame = frames[getState().position];
     Mugen::Effects effects = frame->effects;
     effects.facing = facing;
     effects.vfacing = vfacing;
@@ -472,13 +471,31 @@ void Animation::renderReflection(bool facing, bool vfacing, int alpha, const int
 }
 
 void Animation::forwardFrame(){
-    if( position < frames.size() -1 )position++;
-    else position = loopPosition;
+    if (getState().position < frames.size() -1){
+        getState().position++;
+    } else {
+        getState().position = loopPosition;
+    }
 }
 
 void Animation::backFrame(){
-    if( position > loopPosition )position--;
-    else position = frames.size() - 1;
+    if (getState().position > loopPosition){
+        getState().position--;
+    } else {
+        getState().position = frames.size() - 1;
+    }
+}
+	
+Frame *Animation::getCurrentFrame(){
+    return frames[getPosition()];
+}
+        
+const AnimationState & Animation::getState() const {
+    return state;
+}
+
+AnimationState & Animation::getState() {
+    return state;
 }
 
 /* who uses this function? */

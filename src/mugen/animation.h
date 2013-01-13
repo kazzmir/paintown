@@ -95,6 +95,20 @@ class Frame{
 	//int colorDestination;
 };
 
+struct AnimationState{
+    AnimationState();
+    unsigned int position;
+    bool looped;
+    bool started;
+    /* incremented for each game tick as long as the animation is not
+     * in an infinite loop time frame (-1)
+     */
+    int ticks;
+
+    /* incremented when the animation specifies a looptime of -1 */
+    int virtual_ticks;
+}; 
+
 /*
  * Holds mugen animations, ie: player.air
  */
@@ -114,16 +128,16 @@ class Animation{
         virtual Animation * copy() const;
 	
 	// Add a frame
-	void addFrame( Frame * );
+	void addFrame(Frame *);
 
         virtual inline unsigned int getPosition() const {
-            return position;
+            return getState().position;
         }
 
         virtual void setPosition(int position);
 
         virtual inline int getTicks() const {
-            return ticks;
+            return getState().ticks;
         }
 	
 	// Get name of type of animation
@@ -160,8 +174,7 @@ class Animation{
 	// Reload bitmaps for things like palettes
 	// void reloadBitmaps();
 	
-	inline unsigned int getCurrentPosition() { return position; }
-	inline Frame *getCurrentFrame(){ return frames[position]; }
+	Frame *getCurrentFrame();
         Mugen::Effects getCurrentEffects(bool facing, bool vfacing, double scalex, double scaley);
 	
 	// Set type number
@@ -178,7 +191,7 @@ class Animation{
 	inline bool showingOffense() const { return showOffense; }
 
         inline bool hasLooped() const {
-            return looped;
+            return getState().looped;
         }
 	
         inline const std::vector<Frame*> & getFrames() const {
@@ -193,45 +206,38 @@ class Animation{
 	}
 	
 	virtual inline bool hasStarted() const {
-	    return (this->playOnce && this->started);
+	    return (this->playOnce && this->getState().started);
 	}
 	
 	virtual inline void play(){
-	    this->position = 0;
-            this->started = true;
+	    this->getState().position = 0;
+            this->getState().started = true;
 	}
 	
 	virtual inline bool isDone(){
-	    return (position == frames.size() -1);
+	    return (getState().position == frames.size() -1);
 	}
+
+        const AnimationState & getState() const;
+        AnimationState & getState();
 
     protected:
 
         void renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);
 	
     private:
-	
 	std::vector< Frame * > frames;
 	
 	unsigned int loopPosition;
-	unsigned int position;
 	
 	bool playOnce;
-        bool looped;
-	bool started;
 	
         Mugen::AnimationType type;
 	
 	bool showDefense;
 	bool showOffense;
-	
-        /* incremented for each game tick as long as the animation is not
-         * in an infinite loop time frame (-1)
-         */
-	int ticks;
 
-        /* incremented when the animation specifies a looptime of -1 */
-        int virtual_ticks;
+        AnimationState state;
 };
 
 }
