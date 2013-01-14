@@ -190,6 +190,10 @@ public:
         }
     }
 
+    Type getType() const {
+        return type;
+    }
+
     Type type;
     std::string string_value;
     bool bool_value;

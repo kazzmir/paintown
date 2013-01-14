@@ -6,6 +6,7 @@
 
 #include "state.h"
 #include "util.h"
+#include "common.h"
 
 namespace Graphics{
 class Bitmap;
@@ -94,20 +95,6 @@ class Frame{
 	//int colorSource;
 	//int colorDestination;
 };
-
-struct AnimationState{
-    AnimationState();
-    unsigned int position;
-    bool looped;
-    bool started;
-    /* incremented for each game tick as long as the animation is not
-     * in an infinite loop time frame (-1)
-     */
-    int ticks;
-
-    /* incremented when the animation specifies a looptime of -1 */
-    int virtual_ticks;
-}; 
 
 /*
  * Holds mugen animations, ie: player.air

@@ -4,9 +4,10 @@
 #include "common.h"
 #include "character-state.h"
 #include "stage-state.h"
-#include "animation.h"
 #include "random.h"
 #include <map>
+
+class Token;
 
 namespace Mugen{
 
@@ -36,6 +37,9 @@ public:
     int getGameTime() const;
 
     const std::map<CharacterId, AllCharacterData> & getCharacterData() const;
+
+    Token * serialize() const;
+    static World deserialize(Token * token);
 
 protected:
     std::map<CharacterId, AllCharacterData> characterData;
