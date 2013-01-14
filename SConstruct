@@ -136,6 +136,7 @@ useLLVM = makeUseEnvironment('llvm', False)
 useNacl = makeUseEnvironment('nacl', False)
 useMpg123 = makeUseEnvironment('mpg123', False)
 useMad = makeUseEnvironment('mad', False)
+useGCW = makeUseEnvironment('gcw', False)
 nativeCompile = makeUseEnvironment('native', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
@@ -1417,6 +1418,21 @@ rsx
         env.Append(LIBS = libs)
         wrapSymbols(env)
         return env
+    def gcw(env):
+        root = '/opt/gcw0-toolchain'
+        env.PrependENVPath('PATH', '%s/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/bin' % root)
+        env.PrependENVPath('PKG_CONFIG_PATH', '%s/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/lib/pkgconfig' % root)
+        env.Append(CPPPATH = '%s/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include' % root)
+        env.PrependENVPath('PATH', '%s/usr/bin' % root)
+        env.Append(CPPDEFINES = ['UCLIBC', '_FILE_OFFSET_BITS=64'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        def setup(x):
+            return 'mipsel-linux-%s' % x
+        env['CC'] = setup('gcc')
+        env['CXX'] = setup('g++')
+        env['AR'] = setup('ar')
+        env['LD'] = setup('ld')
+        return env
     def gcc(env):
         # Allow environment variables to overwrite the default compiler
         try:
@@ -1502,6 +1518,8 @@ rsx
                 return pandora(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useNDS():
                 return nds(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
+            elif useGCW():
+                return gcw(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useDingoo():
                 return dingux(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useXenon():
@@ -1694,7 +1712,7 @@ if showTiming():
     env.Replace(CCCOM = 'misc/show-current-time %s' % cccom)
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
-if not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useAndroidX86() and not useIos():
+if not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useAndroidX86() and not useIos() and not useGCW():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:
@@ -1793,6 +1811,8 @@ def buildType(env):
         properties.append('Pandora')
     if useNDS():
         properties.append('NDS')
+    if useGCW():
+        properties.append('gcw')
     if useWii():
         properties.append('wii')
     if useAllegro():
@@ -1856,6 +1876,8 @@ def display_build_properties(env):
         properties.append(colorize("Xenon", color))
     if useAndroid():
         properties.append(colorize("Android", color))
+    if useGCW():
+        properties.append(colorize("GCW", color))
     if useAndroidX86():
         properties.append(colorize("Android X86", color))
     if useIos():
