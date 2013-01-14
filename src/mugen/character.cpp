@@ -344,76 +344,76 @@ State::~State(){
 }
 
 /* Called when the player was hit */
-void HitState::update(Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit){
+static void update(HitState & state, Mugen::Stage & stage, const Character & guy, bool inAir, const HitDefinition & hit){
     /* FIXME: choose the proper ground/air/guard types */
 
-    guarded = false;
-    shakeTime = hit.pause.player2;
-    yAcceleration = hit.yAcceleration;
-    airType = hit.airType;
-    groundType = hit.groundType;
+    state.guarded = false;
+    state.shakeTime = hit.pause.player2;
+    state.yAcceleration = hit.yAcceleration;
+    state.airType = hit.airType;
+    state.groundType = hit.groundType;
 
-    recoverTime = guy.getLieDownTime();
+    state.recoverTime = guy.getLieDownTime();
 
-    chainId = hit.id;
+    state.chainId = hit.id;
 
-    spritePriority = hit.player2SpritePriority;
-    moveContact = 0;
+    state.spritePriority = hit.player2SpritePriority;
+    state.moveContact = 0;
 
     /* FIXME: set damage */
     
     /* if in the air */
     if (inAir){
-        hitType = hit.airType;
-        if (fall.fall){
+        state.hitType = hit.airType;
+        if (state.fall.fall){
             if (hit.animationTypeFall == AttackType::NoAnimation){
                 if (hit.animationTypeAir == AttackType::Up){
-                    animationType = AttackType::Up;
+                    state.animationType = AttackType::Up;
                 } else {
-                    animationType = AttackType::Back;
+                    state.animationType = AttackType::Back;
                 }
             } else {
-                animationType = hit.animationTypeFall;
+                state.animationType = hit.animationTypeFall;
             }
 
-            hitTime = 0;
+            state.hitTime = 0;
         } else {
             if (hit.animationTypeAir != AttackType::NoAnimation){
-                animationType = hit.animationTypeAir;
+                state.animationType = hit.animationTypeAir;
             } else {
-                animationType = hit.animationType;
+                state.animationType = hit.animationType;
             }
 
-            hitTime = hit.airHitTime;
+            state.hitTime = hit.airHitTime;
         }
         
-        xVelocity = hit.airVelocity.x;
-        yVelocity = hit.airVelocity.y;
+        state.xVelocity = hit.airVelocity.x;
+        state.yVelocity = hit.airVelocity.y;
 
-        fall.fall |= hit.fall.fall;
-        fall.yVelocity = hit.fall.yVelocity;
-        fall.xVelocity = hit.fall.xVelocity;
-        fall.changeXVelocity = hit.fall.changeXVelocity;
+        state.fall.fall |= hit.fall.fall;
+        state.fall.yVelocity = hit.fall.yVelocity;
+        state.fall.xVelocity = hit.fall.xVelocity;
+        state.fall.changeXVelocity = hit.fall.changeXVelocity;
         int groundSlideTime = 0;
         groundSlideTime = (int) hit.groundSlideTime;
-        returnControlTime = hit.airGuardControlTime;
+        state.returnControlTime = hit.airGuardControlTime;
     } else {
-        hitType = hit.groundType;
+        state.hitType = hit.groundType;
         int groundSlideTime = 0;
         groundSlideTime = (int) hit.groundSlideTime;
-        animationType = hit.animationType;
-        returnControlTime = hit.guardControlTime;
-        hitTime = hit.groundHitTime;
-        slideTime = groundSlideTime;
-        xVelocity = hit.groundVelocity.x;
-        yVelocity = hit.groundVelocity.y;
-        fall.fall = hit.fall.fall;
-        fall.yVelocity = hit.fall.yVelocity;
-        fall.xVelocity = hit.fall.xVelocity;
-        fall.changeXVelocity = hit.fall.changeXVelocity;
+        state.animationType = hit.animationType;
+        state.returnControlTime = hit.guardControlTime;
+        state.hitTime = hit.groundHitTime;
+        state.slideTime = groundSlideTime;
+        state.xVelocity = hit.groundVelocity.x;
+        state.yVelocity = hit.groundVelocity.y;
+        state.fall.fall = hit.fall.fall;
+        state.fall.yVelocity = hit.fall.yVelocity;
+        state.fall.xVelocity = hit.fall.xVelocity;
+        state.fall.changeXVelocity = hit.fall.changeXVelocity;
     }
 
-    fall.envShake.time = hit.fall.envShake.time;
+    state.fall.envShake.time = hit.fall.envShake.time;
 
     // Global::debug(0) << "Hit definition: shake time " << shakeTime << " hit time " << hitTime << endl;
 }
@@ -2718,7 +2718,7 @@ void Character::processAfterImages(){
     
 bool Character::withinGuardDistance(const Mugen::Character * enemy) const {
     if (enemy != NULL){
-        if (enemy->getHit().isEnabled() && enemy->getHit().guardDistance >= 0){
+        if (enemy->getHit().alive && enemy->getHit().guardDistance >= 0){
             return fabs(getX() - enemy->getX()) < enemy->getHit().guardDistance;
         }
 
@@ -2745,7 +2745,7 @@ void Character::act(Stage * stage){
     /* Reversals deactivate on state change or if a reversal actually occurs */
     // reversalActive = false;
 
-    getStateData().special = StateData::SpecialStuff();
+    getStateData().special = SpecialStuff();
     getStateData().blocking = false;
 
     if (getStateData().frozen){
@@ -3212,7 +3212,7 @@ void Character::wasHit(Mugen::Stage & stage, Character * enemy, const HitDefinit
     getStateData().characterData.enabled = false;
 
     getStateData().wasHitCounter += 1;
-    getHitState().update(stage, *this, getY() < 0, hisHit);
+    update(getHitState(), stage, *this, getY() < 0, hisHit);
     
     addPower(hisHit.givePower.hit);
 
@@ -3796,7 +3796,7 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Attack type %s", getMoveType().c_str());
         y += font.getHeight();
-        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getHit().isEnabled());
+        render->addMessage(font, x, y, color, backgroundColor, "Hit enabled %d", getHit().alive);
         y += font.getHeight();
         render->addMessage(font, x, y, color, backgroundColor, "Control %d", hasControl());
         y += font.getHeight();
@@ -4050,11 +4050,11 @@ void Character::assertSpecial(Specials special){
 }
 
 void Character::enableHit(){
-    getHit().enable();
+    getHit().alive = true;
 }
 
 void Character::disableHit(){
-    getHit().disable();
+    getHit().alive = false;
 }
         
 void Character::setWidthOverride(int edgeFront, int edgeBack, int playerFront, int playerBack){
@@ -4333,7 +4333,7 @@ void Character::useCharacterData(const CharacterId & who){
     getStateData().characterData.enabled = true;
 }
     
-bool Character::compatibleHitFlag(const HitDefinition::HitFlags & flags){
+bool Character::compatibleHitFlag(const HitFlags & flags){
     bool ok = false;
     ok = ok || (getStateType() == StateType::Air && flags.air);
     ok = ok || (getStateType() == StateType::Stand && flags.high);

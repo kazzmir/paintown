@@ -35,6 +35,8 @@ run-match.cpp
 section.cpp
 sound.cpp
 sprite.cpp
+serialize.cpp
+serialize-auto.cpp
 stage.cpp
 sff.cpp
 util.cpp

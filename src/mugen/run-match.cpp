@@ -345,10 +345,12 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             MessageQueue::registerInfo(&messages);
             snapshots[totalTicks] = stage->snapshotState();
 
+            /*
             Token * test = stage->snapshotState()->serialize();
             Global::debug(0) << "Snapshot: " << test->toString() << std::endl;
             Global::debug(0) << "Size: " << test->toStringCompact().size() << std::endl;
             delete test;
+            */
         }
 
         virtual ~LogicDraw(){

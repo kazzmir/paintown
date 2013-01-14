@@ -932,7 +932,7 @@ void Mugen::Stage::physics(Character * mugen){
         }
     }
 
-    if (mugen->isAttacking() && mugen->getHit().isEnabled()){
+    if (mugen->isAttacking() && mugen->getHit().alive){
 
         for (vector<Mugen::Character*>::iterator enem = objects.begin(); enem != objects.end(); ++enem){
             Mugen::Character * enemy = *enem;

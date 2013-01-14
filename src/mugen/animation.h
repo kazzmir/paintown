@@ -6,7 +6,7 @@
 
 #include "state.h"
 #include "util.h"
-#include "common.h"
+#include "character-state.h"
 
 namespace Graphics{
 class Bitmap;

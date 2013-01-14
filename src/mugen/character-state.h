@@ -1,12 +1,567 @@
 
-#ifndef _serialize_Mugen_d9d6119a34afd096d0f6a858c325c80e
-#define _serialize_Mugen_d9d6119a34afd096d0f6a858c325c80e
+#ifndef _serialize_Mugen_9a0c95379dd98b919a72e8b846c192d1
+#define _serialize_Mugen_9a0c95379dd98b919a72e8b846c192d1
 
 #include "common.h"
 #include "compiler.h"
+#include "util/token.h"
+#include "serialize.h"
 #include <map>
 
+class Token;
+
 namespace Mugen{
+
+
+struct HitAttributes{
+    HitAttributes(){
+        slot = 0;
+        standing = false;
+        crouching = false;
+        aerial = false;
+    }
+
+    int slot;
+    bool standing;
+    bool crouching;
+    bool aerial;
+    std::vector<AttackType::Attribute > attributes;
+};
+Token * serialize(const HitAttributes & data);
+
+
+struct ResourceEffect{
+    ResourceEffect(){
+        own = false;
+        group = 0;
+        item = 0;
+    }
+
+    bool own;
+    int group;
+    int item;
+};
+Token * serialize(const ResourceEffect & data);
+
+
+struct HitFlags{
+    HitFlags(){
+        high = false;
+        low = false;
+        air = false;
+        fall = false;
+        down = false;
+        getHitState = false;
+        notGetHitState = false;
+    }
+
+    bool high;
+    bool low;
+    bool air;
+    bool fall;
+    bool down;
+    bool getHitState;
+    bool notGetHitState;
+};
+Token * serialize(const HitFlags & data);
+
+
+struct PauseTime{
+    PauseTime(){
+        player1 = 0;
+        player2 = 0;
+    }
+
+    int player1;
+    int player2;
+};
+Token * serialize(const PauseTime & data);
+
+
+struct Distance{
+    Distance(){
+        x = 0;
+        y = 0;
+    }
+
+    int x;
+    int y;
+};
+Token * serialize(const Distance & data);
+
+
+
+struct Attribute{
+    Attribute(){
+        
+    }
+
+    std::string state;
+    std::string attackType;
+    std::string physics;
+};
+Token * serialize(const Attribute & data);
+
+
+struct Priority{
+    Priority(){
+        hit = 0;
+    }
+
+    int hit;
+    std::string type;
+};
+Token * serialize(const Priority & data);
+
+
+struct Damage{
+    Damage(){
+        damage = 0;
+        guardDamage = 0;
+    }
+
+    int damage;
+    int guardDamage;
+};
+Token * serialize(const Damage & data);
+
+
+struct SparkPosition{
+    SparkPosition(){
+        x = 0;
+        y = 0;
+    }
+
+    int x;
+    int y;
+};
+Token * serialize(const SparkPosition & data);
+
+
+struct GetPower{
+    GetPower(){
+        hit = 0;
+        guarded = 0;
+    }
+
+    int hit;
+    int guarded;
+};
+Token * serialize(const GetPower & data);
+
+
+struct GivePower{
+    GivePower(){
+        hit = 0;
+        guarded = 0;
+    }
+
+    int hit;
+    int guarded;
+};
+Token * serialize(const GivePower & data);
+
+
+struct GroundVelocity{
+    GroundVelocity(){
+        x = 0;
+        y = 0;
+    }
+
+    double x;
+    double y;
+};
+Token * serialize(const GroundVelocity & data);
+
+
+struct AirVelocity{
+    AirVelocity(){
+        x = 0;
+        y = 0;
+    }
+
+    double x;
+    double y;
+};
+Token * serialize(const AirVelocity & data);
+
+
+struct AirGuardVelocity{
+    AirGuardVelocity(){
+        x = 0;
+        y = 0;
+    }
+
+    double x;
+    double y;
+};
+Token * serialize(const AirGuardVelocity & data);
+
+
+
+struct Shake{
+    Shake(){
+        time = 0;
+    }
+
+    int time;
+};
+Token * serialize(const Shake & data);
+
+struct Fall{
+    Fall(){
+        fall = 0;
+        xVelocity = 0;
+        yVelocity = 0;
+        changeXVelocity = false;
+        recover = false;
+        recoverTime = 0;
+        damage = 0;
+        airFall = 0;
+        forceNoFall = 0;
+    }
+
+    Shake envShake;
+    int fall;
+    double xVelocity;
+    double yVelocity;
+    bool changeXVelocity;
+    bool recover;
+    int recoverTime;
+    int damage;
+    int airFall;
+    int forceNoFall;
+};
+Token * serialize(const Fall & data);
+
+struct HitDefinition{
+    HitDefinition(){
+        alive = false;
+        groundSlideTime = 0;
+        guardSlideTime = 0;
+        groundHitTime = 0;
+        guardGroundHitTime = 0;
+        airHitTime = 0;
+        guardControlTime = 0;
+        guardDistance = 0;
+        yAcceleration = 0;
+        guardVelocity = 0;
+        groundCornerPushoff = 0;
+        airCornerPushoff = 0;
+        downCornerPushoff = 0;
+        guardCornerPushoff = 0;
+        airGuardCornerPushoff = 0;
+        airGuardControlTime = 0;
+        airJuggle = 0;
+        id = 0;
+        chainId = 0;
+        player1SpritePriority = 0;
+        player2SpritePriority = 0;
+        player1Facing = 0;
+        player1GetPlayer2Facing = 0;
+        player2Facing = 0;
+        player1State = 0;
+        player2State = 0;
+        player2GetPlayer1State = 0;
+        forceStand = 0;
+    }
+
+    bool alive;
+    Attribute attribute;
+    HitFlags hitFlag;
+    HitFlags guardFlag;
+    AttackType::Animation animationType;
+    AttackType::Animation animationTypeAir;
+    AttackType::Animation animationTypeFall;
+    Priority priority;
+    Damage damage;
+    PauseTime pause;
+    PauseTime guardPause;
+    ResourceEffect spark;
+    ResourceEffect guardSpark;
+    SparkPosition sparkPosition;
+    ResourceEffect hitSound;
+    GetPower getPower;
+    GivePower givePower;
+    ResourceEffect guardHitSound;
+    AttackType::Ground groundType;
+    AttackType::Ground airType;
+    int groundSlideTime;
+    int guardSlideTime;
+    int groundHitTime;
+    int guardGroundHitTime;
+    int airHitTime;
+    int guardControlTime;
+    int guardDistance;
+    double yAcceleration;
+    GroundVelocity groundVelocity;
+    double guardVelocity;
+    AirVelocity airVelocity;
+    AirGuardVelocity airGuardVelocity;
+    double groundCornerPushoff;
+    double airCornerPushoff;
+    double downCornerPushoff;
+    double guardCornerPushoff;
+    double airGuardCornerPushoff;
+    int airGuardControlTime;
+    int airJuggle;
+    int id;
+    int chainId;
+    Distance minimum;
+    Distance maximum;
+    Distance snap;
+    int player1SpritePriority;
+    int player2SpritePriority;
+    int player1Facing;
+    int player1GetPlayer2Facing;
+    int player2Facing;
+    int player1State;
+    int player2State;
+    int player2GetPlayer1State;
+    int forceStand;
+    Fall fall;
+};
+Token * serialize(const HitDefinition & data);
+
+
+struct HitOverride{
+    HitOverride(){
+        time = 0;
+        state = 0;
+        forceAir = false;
+    }
+
+    int time;
+    HitAttributes attributes;
+    int state;
+    bool forceAir;
+};
+Token * serialize(const HitOverride & data);
+
+
+
+
+struct Shake1{
+    Shake1(){
+        time = 0;
+    }
+
+    int time;
+};
+Token * serialize(const Shake1 & data);
+
+struct Fall1{
+    Fall1(){
+        fall = false;
+        recover = false;
+        recoverTime = 0;
+        xVelocity = 0;
+        yVelocity = 0;
+        changeXVelocity = false;
+        damage = 0;
+    }
+
+    Shake1 envShake;
+    bool fall;
+    bool recover;
+    int recoverTime;
+    double xVelocity;
+    double yVelocity;
+    bool changeXVelocity;
+    double damage;
+};
+Token * serialize(const Fall1 & data);
+
+struct HitState{
+    HitState(){
+        shakeTime = 0;
+        hitTime = 0;
+        hits = 0;
+        slideTime = 0;
+        returnControlTime = 0;
+        recoverTime = 0;
+        yAcceleration = 0;
+        yVelocity = 0;
+        xVelocity = 0;
+        guarded = false;
+        damage = 0;
+        chainId = 0;
+        spritePriority = 0;
+        moveContact = 0;
+    }
+
+    int shakeTime;
+    int hitTime;
+    int hits;
+    int slideTime;
+    int returnControlTime;
+    int recoverTime;
+    double yAcceleration;
+    double yVelocity;
+    double xVelocity;
+    AttackType::Animation animationType;
+    AttackType::Ground airType;
+    AttackType::Ground groundType;
+    AttackType::Ground hitType;
+    bool guarded;
+    int damage;
+    int chainId;
+    int spritePriority;
+    Fall1 fall;
+    int moveContact;
+};
+Token * serialize(const HitState & data);
+
+
+
+struct HitSound{
+    HitSound(){
+        own = false;
+        group = 0;
+        item = 0;
+    }
+
+    bool own;
+    int group;
+    int item;
+};
+Token * serialize(const HitSound & data);
+
+struct ReversalData{
+    ReversalData(){
+        sparkX = 0;
+        sparkY = 0;
+        player1State = 0;
+        player2State = 0;
+        player1Pause = 0;
+        player2Pause = 0;
+        standing = false;
+        crouching = false;
+        aerial = false;
+    }
+
+    PauseTime pause;
+    ResourceEffect spark;
+    HitSound hitSound;
+    int sparkX;
+    int sparkY;
+    int player1State;
+    int player2State;
+    int player1Pause;
+    int player2Pause;
+    bool standing;
+    bool crouching;
+    bool aerial;
+    std::vector<AttackType::Attribute > attributes;
+};
+Token * serialize(const ReversalData & data);
+
+
+
+struct WidthOverride{
+    WidthOverride(){
+        enabled = false;
+        edgeFront = 0;
+        edgeBack = 0;
+        playerFront = 0;
+        playerBack = 0;
+    }
+
+    bool enabled;
+    int edgeFront;
+    int edgeBack;
+    int playerFront;
+    int playerBack;
+};
+Token * serialize(const WidthOverride & data);
+
+
+struct HitByOverride{
+    HitByOverride(){
+        standing = false;
+        crouching = false;
+        aerial = false;
+        time = 0;
+    }
+
+    bool standing;
+    bool crouching;
+    bool aerial;
+    int time;
+    std::vector<AttackType::Attribute > attributes;
+};
+Token * serialize(const HitByOverride & data);
+
+
+struct TransOverride{
+    TransOverride(){
+        enabled = false;
+        alphaSource = 0;
+        alphaDestination = 0;
+    }
+
+    bool enabled;
+    TransType type;
+    int alphaSource;
+    int alphaDestination;
+};
+Token * serialize(const TransOverride & data);
+
+
+struct SpecialStuff{
+    SpecialStuff(){
+        invisible = false;
+        intro = false;
+    }
+
+    bool invisible;
+    bool intro;
+};
+Token * serialize(const SpecialStuff & data);
+
+
+struct Bind{
+    Bind(){
+        time = 0;
+        facing = 0;
+        offsetX = 0;
+        offsetY = 0;
+    }
+
+    CharacterId bound;
+    int time;
+    int facing;
+    double offsetX;
+    double offsetY;
+};
+Token * serialize(const Bind & data);
+
+
+struct CharacterData{
+    CharacterData(){
+        enabled = false;
+    }
+
+    CharacterId who;
+    bool enabled;
+};
+Token * serialize(const CharacterData & data);
+
+
+struct DrawAngleEffect{
+    DrawAngleEffect(){
+        enabled = false;
+        angle = 0;
+        scaleX = 0;
+        scaleY = 0;
+    }
+
+    bool enabled;
+    double angle;
+    double scaleX;
+    double scaleY;
+};
+Token * serialize(const DrawAngleEffect & data);
 
 struct StateData{
     StateData(){
@@ -59,116 +614,24 @@ struct StateData{
     int hitCount;
     bool blocking;
     bool guarding;
-    
-    struct WidthOverride{
-        WidthOverride(){
-            enabled = false;
-            edgeFront = 0;
-            edgeBack = 0;
-            playerFront = 0;
-            playerBack = 0;
-        }
-    
-        bool enabled;
-        int edgeFront;
-        int edgeBack;
-        int playerFront;
-        int playerBack;
-    } widthOverride;
-    
-    
-    struct HitByOverride{
-        HitByOverride(){
-            standing = false;
-            crouching = false;
-            aerial = false;
-            time = 0;
-        }
-    
-        bool standing;
-        bool crouching;
-        bool aerial;
-        int time;
-        std::vector<AttackType::Attribute > attributes;
-    } hitByOverride[2];
-    
+    WidthOverride widthOverride;
+    HitByOverride hitByOverride[2];
     double defenseMultiplier;
     double attackMultiplier;
     bool frozen;
     ReversalData reversal;
     bool reversalActive;
-    
-    struct TransOverride{
-        TransOverride(){
-            enabled = false;
-            alphaSource = 0;
-            alphaDestination = 0;
-        }
-    
-        bool enabled;
-        TransType type;
-        int alphaSource;
-        int alphaDestination;
-    } transOverride;
-    
+    TransOverride transOverride;
     int pushPlayer;
-    
-    struct SpecialStuff{
-        SpecialStuff(){
-            invisible = false;
-            intro = false;
-        }
-    
-        bool invisible;
-        bool intro;
-    } special;
-    
+    SpecialStuff special;
     double health;
-    
-    struct Bind{
-        Bind(){
-            time = 0;
-            facing = 0;
-            offsetX = 0;
-            offsetY = 0;
-        }
-    
-        CharacterId bound;
-        int time;
-        int facing;
-        double offsetX;
-        double offsetY;
-    } bind;
-    
+    Bind bind;
     std::map<int, std::vector<CharacterId > > targets;
     int spritePriority;
     unsigned int wasHitCounter;
-    
-    struct CharacterData{
-        CharacterData(){
-            enabled = false;
-        }
-    
-        CharacterId who;
-        bool enabled;
-    } characterData;
-    
+    CharacterData characterData;
     double drawAngle;
-    
-    struct DrawAngleEffect{
-        DrawAngleEffect(){
-            enabled = false;
-            angle = 0;
-            scaleX = 0;
-            scaleY = 0;
-        }
-    
-        bool enabled;
-        double angle;
-        double scaleX;
-        double scaleY;
-    } drawAngleData;
-    
+    DrawAngleEffect drawAngleData;
     std::vector<std::string > active;
     std::map<int, HitOverride > hitOverrides;
     double virtualx;
@@ -177,6 +640,25 @@ struct StateData{
     Facing facing;
     double power;
 };
+Token * serialize(const StateData & data);
+
+
+struct AnimationState{
+    AnimationState(){
+        position = 0;
+        looped = false;
+        started = false;
+        ticks = 0;
+        virtual_ticks = 0;
+    }
+
+    unsigned int position;
+    bool looped;
+    bool started;
+    int ticks;
+    int virtual_ticks;
+};
+Token * serialize(const AnimationState & data);
 
 }
 

@@ -1115,7 +1115,7 @@ public:
         virtual bool isBound() const;
     
         /* True if the hitflags match our current state */
-        virtual bool compatibleHitFlag(const HitDefinition::HitFlags & flags);
+        virtual bool compatibleHitFlag(const HitFlags & flags);
                                 
         virtual double getAirHitRecoverMultiplierX() const;
         virtual double getAirHitRecoverMultiplierY() const;

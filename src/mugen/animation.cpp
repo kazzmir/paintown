@@ -136,15 +136,6 @@ Frame::~Frame(){
      */
 }
 
-AnimationState::AnimationState():
-position(0),
-looped(false),
-started(false),
-ticks(0),
-virtual_ticks(0){
-}
-
-
 /*
 Holds mugen animations, ie: player.air
 */

@@ -1,7 +1,242 @@
 include "common.h"
 include "compiler.h"
+include "util/token.h"
+include "serialize.h"
 include <map>
 namespace Mugen
+
+struct HitAttributes{
+    int slot;
+    bool standing;
+    bool crouching;
+    bool aerial;
+
+    std::vector<AttackType::Attribute> attributes;
+}
+
+struct ResourceEffect{
+    bool own;
+    int group;
+    int item;
+}
+
+struct HitFlags{
+    bool high;
+    bool low;
+    bool air;
+    bool fall;
+    bool down;
+    bool getHitState;
+    bool notGetHitState;
+}
+
+struct PauseTime{
+    int player1;
+    int player2;
+}
+
+struct Distance{
+    int x;
+    int y;
+}
+
+struct HitDefinition{
+    bool alive;
+
+    struct Attribute{
+        /* StateType */
+        std::string state;
+        /* AttackType */
+        std::string attackType;
+        /* PhysicalAttack */
+        std::string physics;
+    } attribute;
+   
+    HitFlags hitFlag;
+    HitFlags guardFlag;
+
+    AttackType::Animation animationType;
+    AttackType::Animation animationTypeAir;
+    AttackType::Animation animationTypeFall;
+
+    struct Priority{
+        int hit;
+        std::string type;
+    } priority;
+
+    struct Damage{
+        int damage;
+        int guardDamage;
+    } damage;
+    
+    PauseTime pause;
+    PauseTime guardPause;
+    
+    ResourceEffect spark;
+    ResourceEffect guardSpark;
+    
+    struct SparkPosition{
+        int x;
+        int y;
+    } sparkPosition;
+
+    ResourceEffect hitSound;
+
+    struct GetPower{
+        int hit;
+        int guarded;
+    } getPower;
+
+    struct GivePower{
+        int hit;
+        int guarded;
+    } givePower;
+
+    ResourceEffect guardHitSound;
+
+    AttackType::Ground groundType;
+    AttackType::Ground airType;
+    int groundSlideTime;
+    int guardSlideTime;
+    int groundHitTime;
+    int guardGroundHitTime;
+    int airHitTime;
+    int guardControlTime;
+    int guardDistance;
+    double yAcceleration;
+
+    struct GroundVelocity{
+        double x;
+        double y;
+    } groundVelocity;
+
+    double guardVelocity;
+
+    struct AirVelocity{
+        double x;
+        double y;
+    } airVelocity;
+
+    struct AirGuardVelocity{
+        double x;
+        double y;
+    } airGuardVelocity;
+
+    double groundCornerPushoff;
+    double airCornerPushoff;
+    double downCornerPushoff;
+    double guardCornerPushoff;
+    double airGuardCornerPushoff;
+    int airGuardControlTime;
+    int airJuggle;
+
+    int id;
+    /* FIXME: handle the chainid when a hitdef is activated */
+    int chainId;
+
+    Distance minimum;
+    Distance maximum;
+    Distance snap;
+    int player1SpritePriority;
+    int player2SpritePriority;
+    int player1Facing;
+    int player1GetPlayer2Facing;
+    int player2Facing;
+    int player1State;
+    int player2State;
+    int player2GetPlayer1State;
+    int forceStand;
+
+    struct Fall{
+        struct Shake{
+            int time;
+        } envShake;
+
+        int fall;
+        double xVelocity;
+        double yVelocity;
+        bool changeXVelocity;
+        bool recover;
+        int recoverTime;
+        int damage;
+        int airFall;
+        int forceNoFall;
+    } fall;
+}
+
+struct HitOverride{
+    int time;
+    HitAttributes attributes;
+    int state;
+    bool forceAir;
+}
+
+struct HitState{
+    int shakeTime;
+    int hitTime;
+    
+    /* FIXME: handle hits somehow. corresponds to hitcount
+     * hitcount: Returns the number of hits taken by the player in current combo. (int)
+     */
+    int hits;
+    int slideTime;
+    int returnControlTime;
+    int recoverTime;
+    double yAcceleration;
+    double yVelocity;
+    double xVelocity;
+    AttackType::Animation animationType;
+    AttackType::Ground airType;
+    AttackType::Ground groundType;
+    AttackType::Ground hitType;
+    bool guarded;
+    int damage;
+    int chainId;
+    int spritePriority;
+
+    struct Fall1{
+        struct Shake1{
+            int time;
+        } envShake;
+
+        bool fall;
+        bool recover;
+        int recoverTime;
+        double xVelocity;
+        double yVelocity;
+        bool changeXVelocity;
+        double damage;
+    } fall;
+
+    int moveContact;
+}
+
+/* subset of HitDefinition stuff, just for reversals */
+struct ReversalData{
+    PauseTime pause;
+    ResourceEffect spark;
+
+    struct HitSound{
+        bool own;
+        int group;
+        int item;
+    } hitSound;
+
+    int sparkX;
+    int sparkY;
+
+    int player1State;
+    int player2State;
+
+    int player1Pause;
+    int player2Pause;
+
+    bool standing;
+    bool crouching;
+    bool aerial;
+    std::vector<AttackType::Attribute> attributes;
+}
+
 struct StateData{
     /* number of juggle points left */
     int juggleRemaining;
@@ -52,11 +287,11 @@ struct StateData{
     } widthOverride;
        
     struct HitByOverride{
-            bool standing;
-            bool crouching;
-            bool aerial;
-            int time;
-            std::vector<AttackType::Attribute> attributes;
+        bool standing;
+        bool crouching;
+        bool aerial;
+        int time;
+        std::vector<AttackType::Attribute> attributes;
     } hitByOverride[2];
    
     /* reduces damage taken */
@@ -129,3 +364,17 @@ struct StateData{
 
     double power;
 }
+
+struct AnimationState{
+    unsigned int position;
+    bool looped;
+    bool started;
+    /* incremented for each game tick as long as the animation is not
+     * in an infinite loop time frame (-1)
+     */
+    int ticks;
+
+    /* incremented when the animation specifies a looptime of -1 */
+    int virtual_ticks;
+}
+

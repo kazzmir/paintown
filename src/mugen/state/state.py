@@ -6,14 +6,17 @@ class State:
     def isPOD(self):
         return False
 
+    def __str__(self):
+        return self.name
+
     def addField(self, field):
         self.fields.append(field)
 
 class Program:
-    def __init__(self, includes, namespace, struct):
+    def __init__(self, includes, namespace, structs):
         self.includes = includes
         self.namespace = namespace
-        self.struct = struct
+        self.structs = structs
 
 def combineTemplate(name, templates):
     if templates != None:

@@ -1895,7 +1895,7 @@ struct HitDefinitionData{
      * If omitted, this defaults to "MAF".
      */
     /* HitFlag */
-    HitDefinition::HitFlags hitFlag;
+    HitFlags hitFlag;
 
     /* guardflag = hit_flags (string)
      * This determines how P2 may guard the attack. hit_flags is a string containing a combination of the following characters:
@@ -1904,7 +1904,7 @@ struct HitDefinitionData{
      * affectteam = team_type (string)
      * team_type specifies which team's players can be hit by this HitDef. Use B for both teams (all players), E for enemy team (opponents), or F for friendly team (your own team). The default is E.
      */
-    HitDefinition::HitFlags guardFlag;
+    HitFlags guardFlag;
 
     /* animtype = anim_type (string)
      * This refers to the type of animation that P2 will go into when hit by the attack. Choose from "light", "medium", "hard", "back", "up", or "diagup". The first three are self-explanatory. "Back" is the animation where P2 is knocked off her feet. "Up" should be used when the character is knocked straight up in the air (for instance, by an uppercut), and "DiagUp" should be used when the character is knocked up and backwards in the air, eventually landing on his head. The default is "Light".
@@ -2433,6 +2433,16 @@ struct HitDefinitionData{
      */
 };
 
+static void defaultHitFlag(HitFlags & flags){
+    flags.high = true;
+    flags.low = true;
+    flags.air = true;
+    flags.fall = true;
+    flags.down = false;
+    flags.getHitState = false;
+    flags.notGetHitState = false;
+}
+
 static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
     class Walker: public Ast::Walker {
     public:
@@ -2476,11 +2486,8 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
             return isType(simple) || StateController::handled(simple);
         }
 
-        HitDefinition::HitFlags parseHitFlags(const string & flags){
-            HitDefinition::HitFlags hitFlags;
-
-            /* First disable all the flags, the default is MAF */
-            hitFlags.reset();
+        HitFlags parseHitFlags(const string & flags){
+            HitFlags hitFlags;
 
             for (unsigned int index = 0; index < flags.size(); index++){
                 switch (flags[index]){
@@ -2864,6 +2871,9 @@ static void parseHitDefinition(Ast::Section * section, HitDefinitionData & hit){
             }
         }
     };
+
+    defaultHitFlag(hit.hitFlag);
+    defaultHitFlag(hit.guardFlag);
 
     Walker walker(hit);
     section->walk(walker);
