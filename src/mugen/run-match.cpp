@@ -18,6 +18,8 @@
 #include "character.h"
 #include "world.h"
 
+#include "util/lz4/lz4.h"
+
 using std::string;
 using std::ostringstream;
 using std::vector;
@@ -347,7 +349,13 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
 
             Token * test = stage->snapshotState()->serialize();
             Global::debug(0) << "Snapshot: " << test->toString() << std::endl;
-            Global::debug(0) << "Size: " << test->toStringCompact().size() << std::endl;
+            string compact = test->toStringCompact();
+            Global::debug(0) << "Size: " << compact.size() << std::endl;
+            char * out = new char[LZ4_compressBound(compact.size())];
+            int compressed = LZ4_compress(compact.c_str(), out, compact.size());
+            Global::debug(0) << "Compressed size: " << compressed << std::endl;
+            delete[] out;
+
             delete test;
         }
 
