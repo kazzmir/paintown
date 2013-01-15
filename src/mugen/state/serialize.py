@@ -162,7 +162,10 @@ def generate_cpp(object, structs):
     fields = ""
     for field in object.fields:
         if field.type_.isPOD():
-            fields += """    *out->newToken() << "%(name)s" << data.%(name)s;\n""" % {'name': field.name}
+            fields += """    if (data.%(name)s != %(zero)s){
+        *out->newToken() << "%(name)s" << data.%(name)s;
+    }\n""" % {'name': field.name,
+              'zero': field.zero()}
         elif str(field.type_).startswith('std::vector'):
             name += 1
             fields += """

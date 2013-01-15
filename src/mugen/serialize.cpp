@@ -1,6 +1,7 @@
 #include "serialize.h"
 #include "util/token.h"
 #include "compiler.h"
+#include <sstream>
 
 using std::vector;
 using std::string;
@@ -71,27 +72,27 @@ Token * serialize(const AttackType::Attribute data){
 }
 
 Token * serialize(const AttackType::Animation data){
-    Token * token = new Token();
-    *token << data;
-    return token;
+    std::ostringstream out;
+    out << data;
+    return new Token(out.str());
 }
 
 Token * serialize(const AttackType::Ground data){
-    Token * token = new Token();
-    *token << data;
-    return token;
+    std::ostringstream out;
+    out << data;
+    return new Token(out.str());
 }
 
 Token * serialize(const TransType data){
-    Token * token = new Token();
-    *token << data;
-    return token;
+    std::ostringstream out;
+    out << data;
+    return new Token(out.str());
 }
 
 Token * serialize(const CharacterId & data){
-    Token * token = new Token();
-    *token << data.intValue();
-    return token;
+    std::ostringstream out;
+    out << data.intValue();
+    return new Token(out.str());
 }
 
 Token * serialize(const std::vector<CharacterId> & data){
@@ -104,9 +105,7 @@ Token * serialize(const std::vector<CharacterId> & data){
 }
 
 Token * serialize(const std::string & data){
-    Token * token = new Token();
-    *token << data;
-    return token;
+    return new Token(data);
 }
 
 }

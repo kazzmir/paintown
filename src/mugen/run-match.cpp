@@ -313,6 +313,22 @@ static void runEscape(EscapeMenu & menu){
     PaintownUtil::standardLoop(logic, draw);
     menu.toggle();
 }
+
+static Token * filterTokens(Token * start){
+    if (start->isData()){
+        return start->copy();
+    }
+
+    Token * out = new Token(start->getName());
+    for (vector<Token*>::const_iterator it = start->getTokens()->begin(); it != start->getTokens()->end(); it++){
+        Token * use = filterTokens(*it);
+        if (use->isData() || use->numTokens() > 0){
+            *out << use;
+        }
+    }
+    return out;
+}
+
 class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
     public:
         LogicDraw(Mugen::Stage * stage, bool & show_fps, Console::Console & console, RunMatchOptions & options):
@@ -348,8 +364,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             snapshots[totalTicks] = stage->snapshotState();
 
             Token * test = stage->snapshotState()->serialize();
-            Global::debug(0) << "Snapshot: " << test->toString() << std::endl;
-            string compact = test->toStringCompact();
+            Token * filtered = filterTokens(test);
+            Global::debug(0) << "Snapshot: " << filtered->toString() << std::endl;
+            string compact = filtered->toStringCompact();
             Global::debug(0) << "Size: " << compact.size() << std::endl;
             char * out = new char[LZ4_compressBound(compact.size())];
             int compressed = LZ4_compress(compact.c_str(), out, compact.size());
@@ -357,6 +374,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             delete[] out;
 
             delete test;
+            delete filtered;
         }
 
         virtual ~LogicDraw(){
