@@ -497,9 +497,9 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
     path = filename;
 
     Graphics::RestoreState graphicsState;
-    gibBloodImage = new Graphics::Bitmap(2, 2);
+    gibBloodImage = new Graphics::Bitmap(3, 3);
     gibBloodImage->clearToMask();
-    gibBloodImage->circleFill(gibBloodImage->getWidth() / 2, gibBloodImage->getHeight() / 2, 1, Graphics::makeColor(255, 0, 0));
+    gibBloodImage->circleFill(gibBloodImage->getWidth() / 2, gibBloodImage->getHeight() / 2, gibBloodImage->getWidth() / 2, Graphics::makeColor(255, 0, 0));
 }
     
 double Character::getSpriteScale() const {

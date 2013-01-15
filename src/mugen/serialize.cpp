@@ -65,31 +65,48 @@ Token * serialize(const RuntimeValue & value){
 }
 
 Token * serialize(const AttackType::Attribute data){
-    return NULL;
+    Token * token = new Token();
+    *token << data;
+    return token;
 }
 
 Token * serialize(const AttackType::Animation data){
-    return NULL;
+    Token * token = new Token();
+    *token << data;
+    return token;
 }
 
 Token * serialize(const AttackType::Ground data){
-    return NULL;
+    Token * token = new Token();
+    *token << data;
+    return token;
 }
 
 Token * serialize(const TransType data){
-    return NULL;
+    Token * token = new Token();
+    *token << data;
+    return token;
 }
 
 Token * serialize(const CharacterId & data){
-    return NULL;
+    Token * token = new Token();
+    *token << data.intValue();
+    return token;
 }
 
 Token * serialize(const std::vector<CharacterId> & data){
-    return NULL;
+    Token * token = new Token();
+    *token << "ids";
+    for (vector<CharacterId>::const_iterator it = data.begin(); it != data.end(); it++){
+        *token << it->intValue();
+    }
+    return token;
 }
 
 Token * serialize(const std::string & data){
-    return NULL;
+    Token * token = new Token();
+    *token << data;
+    return token;
 }
 
 }

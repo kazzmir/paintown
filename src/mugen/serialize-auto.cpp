@@ -172,7 +172,7 @@ Token * serialize(const Shake & data){
 Token * serialize(const Fall & data){
     Token * out = new Token();
     *out << "Fall";
-    *out->newToken() << serialize(data.envShake);
+    *out->newToken() << "envShake" << serialize(data.envShake);
     *out->newToken() << "fall" << data.fall;
     *out->newToken() << "xVelocity" << data.xVelocity;
     *out->newToken() << "yVelocity" << data.yVelocity;
@@ -190,22 +190,22 @@ Token * serialize(const HitDefinition & data){
     Token * out = new Token();
     *out << "HitDefinition";
     *out->newToken() << "alive" << data.alive;
-    *out->newToken() << serialize(data.attribute);
+    *out->newToken() << "attribute" << serialize(data.attribute);
     *out->newToken() << "hitFlag" << serialize(data.hitFlag);
     *out->newToken() << "guardFlag" << serialize(data.guardFlag);
     *out->newToken() << "animationType" << serialize(data.animationType);
     *out->newToken() << "animationTypeAir" << serialize(data.animationTypeAir);
     *out->newToken() << "animationTypeFall" << serialize(data.animationTypeFall);
-    *out->newToken() << serialize(data.priority);
-    *out->newToken() << serialize(data.damage);
+    *out->newToken() << "priority" << serialize(data.priority);
+    *out->newToken() << "damage" << serialize(data.damage);
     *out->newToken() << "pause" << serialize(data.pause);
     *out->newToken() << "guardPause" << serialize(data.guardPause);
     *out->newToken() << "spark" << serialize(data.spark);
     *out->newToken() << "guardSpark" << serialize(data.guardSpark);
-    *out->newToken() << serialize(data.sparkPosition);
+    *out->newToken() << "sparkPosition" << serialize(data.sparkPosition);
     *out->newToken() << "hitSound" << serialize(data.hitSound);
-    *out->newToken() << serialize(data.getPower);
-    *out->newToken() << serialize(data.givePower);
+    *out->newToken() << "getPower" << serialize(data.getPower);
+    *out->newToken() << "givePower" << serialize(data.givePower);
     *out->newToken() << "guardHitSound" << serialize(data.guardHitSound);
     *out->newToken() << "groundType" << serialize(data.groundType);
     *out->newToken() << "airType" << serialize(data.airType);
@@ -217,10 +217,10 @@ Token * serialize(const HitDefinition & data){
     *out->newToken() << "guardControlTime" << data.guardControlTime;
     *out->newToken() << "guardDistance" << data.guardDistance;
     *out->newToken() << "yAcceleration" << data.yAcceleration;
-    *out->newToken() << serialize(data.groundVelocity);
+    *out->newToken() << "groundVelocity" << serialize(data.groundVelocity);
     *out->newToken() << "guardVelocity" << data.guardVelocity;
-    *out->newToken() << serialize(data.airVelocity);
-    *out->newToken() << serialize(data.airGuardVelocity);
+    *out->newToken() << "airVelocity" << serialize(data.airVelocity);
+    *out->newToken() << "airGuardVelocity" << serialize(data.airGuardVelocity);
     *out->newToken() << "groundCornerPushoff" << data.groundCornerPushoff;
     *out->newToken() << "airCornerPushoff" << data.airCornerPushoff;
     *out->newToken() << "downCornerPushoff" << data.downCornerPushoff;
@@ -242,7 +242,7 @@ Token * serialize(const HitDefinition & data){
     *out->newToken() << "player2State" << data.player2State;
     *out->newToken() << "player2GetPlayer1State" << data.player2GetPlayer1State;
     *out->newToken() << "forceStand" << data.forceStand;
-    *out->newToken() << serialize(data.fall);
+    *out->newToken() << "fall" << serialize(data.fall);
 
     return out;
 }
@@ -273,7 +273,7 @@ Token * serialize(const Shake1 & data){
 Token * serialize(const Fall1 & data){
     Token * out = new Token();
     *out << "Fall1";
-    *out->newToken() << serialize(data.envShake);
+    *out->newToken() << "envShake" << serialize(data.envShake);
     *out->newToken() << "fall" << data.fall;
     *out->newToken() << "recover" << data.recover;
     *out->newToken() << "recoverTime" << data.recoverTime;
@@ -305,7 +305,7 @@ Token * serialize(const HitState & data){
     *out->newToken() << "damage" << data.damage;
     *out->newToken() << "chainId" << data.chainId;
     *out->newToken() << "spritePriority" << data.spritePriority;
-    *out->newToken() << serialize(data.fall);
+    *out->newToken() << "fall" << serialize(data.fall);
     *out->newToken() << "moveContact" << data.moveContact;
 
     return out;
@@ -328,7 +328,7 @@ Token * serialize(const ReversalData & data){
     *out << "ReversalData";
     *out->newToken() << "pause" << serialize(data.pause);
     *out->newToken() << "spark" << serialize(data.spark);
-    *out->newToken() << serialize(data.hitSound);
+    *out->newToken() << "hitSound" << serialize(data.hitSound);
     *out->newToken() << "sparkX" << data.sparkX;
     *out->newToken() << "sparkY" << data.sparkY;
     *out->newToken() << "player1State" << data.player1State;
@@ -476,7 +476,7 @@ Token * serialize(const StateData & data){
     *out->newToken() << "hitCount" << data.hitCount;
     *out->newToken() << "blocking" << data.blocking;
     *out->newToken() << "guarding" << data.guarding;
-    *out->newToken() << serialize(data.widthOverride);
+    *out->newToken() << "widthOverride" << serialize(data.widthOverride);
     Token * token_hitByOverride = out->newToken();
     *token_hitByOverride << "hitByOverride";
     *token_hitByOverride->newToken() << 0 << serialize(data.hitByOverride[0]);
@@ -486,11 +486,11 @@ Token * serialize(const StateData & data){
     *out->newToken() << "frozen" << data.frozen;
     *out->newToken() << "reversal" << serialize(data.reversal);
     *out->newToken() << "reversalActive" << data.reversalActive;
-    *out->newToken() << serialize(data.transOverride);
+    *out->newToken() << "transOverride" << serialize(data.transOverride);
     *out->newToken() << "pushPlayer" << data.pushPlayer;
-    *out->newToken() << serialize(data.special);
+    *out->newToken() << "special" << serialize(data.special);
     *out->newToken() << "health" << data.health;
-    *out->newToken() << serialize(data.bind);
+    *out->newToken() << "bind" << serialize(data.bind);
 
     Token * t4 = out->newToken();
     *t4 << "targets";
@@ -499,9 +499,9 @@ Token * serialize(const StateData & data){
     }
     *out->newToken() << "spritePriority" << data.spritePriority;
     *out->newToken() << "wasHitCounter" << data.wasHitCounter;
-    *out->newToken() << serialize(data.characterData);
+    *out->newToken() << "characterData" << serialize(data.characterData);
     *out->newToken() << "drawAngle" << data.drawAngle;
-    *out->newToken() << serialize(data.drawAngleData);
+    *out->newToken() << "drawAngleData" << serialize(data.drawAngleData);
 
     Token * t5 = out->newToken();
     *t5 << "active";

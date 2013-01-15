@@ -182,7 +182,7 @@ def generate_cpp(object, structs):
                 for i in xrange(0, times):
                     fields += """    *token_%(name)s->newToken() << %(index)d << serialize(data.%(name)s[%(index)d]);\n""" % {'name': field.name, 'index': i}
             else:
-                fields += """    *out->newToken() << serialize(data.%(name)s);\n""" % {'name': field.name}
+                fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s);\n""" % {'name': field.name}
         elif str(field.type_).startswith('std::map'):
             name += 1
             # FIXME: map only works if the key is an int

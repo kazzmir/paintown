@@ -38,15 +38,15 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
         Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
         image->translucent().draw(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work);
     } else {
-        Graphics::Bitmap::transBlender(0, 0, 0, 200);
+        // Graphics::Bitmap::transBlender(0, 0, 0, 200);
         /* hack to make sure bloodImage gets converted to a video bitmap */
         bloodImage->draw(-999999, 999999, *work);
         work->startDrawing();
         for (std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++){
             const Point & p = *it;
 
-            bloodImage->translucent().draw(p.x - rel_x, p.y, *work);
-            // bloodImage->draw(p.x - rel_x, p.y, *work);
+            // bloodImage->translucent().draw(p.x - rel_x, p.y, *work);
+            bloodImage->draw(p.x - rel_x - bloodImage->getWidth() / 2, p.y - bloodImage->getHeight() / 2, *work);
             /*
             int l = 200 + p.life * 15;
             Graphics::Color red = Graphics::makeColor(l > 255 ? 255 : l, 0, 0);
@@ -61,7 +61,7 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
 }
 	
 Object * Gib::copy(){
-    return new Gib( *this );
+    return new Gib(*this);
 }
 
 bool Gib::isCollidable(Object * obj){
@@ -87,10 +87,10 @@ Network::Message Gib::getCreateMessage(){
 }
 	
 void Gib::act(std::vector< Object * > * others, World * world, std::vector< Object * > * add){
-    if ( fade > 0 ){
+    if (fade > 0){
         fade += 2;
-        if ( fade > 255 ){
-            setHealth( -1 );
+        if (fade > 255){
+            setHealth(-1);
         }
     } else {
 
@@ -106,16 +106,10 @@ void Gib::act(std::vector< Object * > * others, World * world, std::vector< Obje
             if ( fade == 0 && fabs( dy ) < 0.1 ){
                 fade = 1;
             }
-
-            /*
-               if ( fabs( dy ) < 0.1 ){
-               setHealth( -1 );
-               }
-               */
         }
 
         double gibAmount = Configuration::getProperty(GibProperty, 5) / 5.0;
-        for (int i = 0; i < Util::rnd((int)(3 * gibAmount)) + 2; i++){
+        for (int i = 0; i < Util::rnd((int)(2 * gibAmount)) + 2; i++){
             int x = getRX() + Util::rnd(5) - 2;
             int y = getRY() + Util::rnd(5) - 2;
             blood.push_back(Point(x, y, Util::rnd(10) + 5));
