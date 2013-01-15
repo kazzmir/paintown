@@ -1424,7 +1424,7 @@ rsx
         env.PrependENVPath('PKG_CONFIG_PATH', '%s/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/lib/pkgconfig' % root)
         env.Append(CPPPATH = '%s/usr/mipsel-gcw0-linux-uclibc/sysroot/usr/include' % root)
         env.PrependENVPath('PATH', '%s/usr/bin' % root)
-        env.Append(CPPDEFINES = ['UCLIBC', '_FILE_OFFSET_BITS=64'])
+        env.Append(CPPDEFINES = ['UCLIBC', 'GCW0', '_FILE_OFFSET_BITS=64'])
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         def setup(x):
             return 'mipsel-linux-%s' % x
