@@ -6,11 +6,7 @@
 namespace Mugen{
 
 Random::Random(){
-    init(time(NULL));
-}
-
-Random::Random(uint32_t seed){
-    init(seed);
+    init();
 }
 
 Random::Random(const Random & copy){
@@ -24,11 +20,10 @@ Random & Random::operator=(const Random & copy){
     return *this;
 }
 
-void Random::init(uint32_t seed){
+void Random::init(){
     for (int i = 0; i < 16; i++){
-        /* By using rand_r we don't mess with any global state */
-        uint64_t low = rand_r(&seed);
-        uint64_t high = rand_r(&seed);
+        uint64_t low = rand();
+        uint64_t high = rand();
         state[i] = (high << 32) | low;
     }
 }

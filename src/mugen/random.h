@@ -15,7 +15,6 @@ class Random{
 public:
     /* Uses time() for default initialization */
     Random();
-    Random(uint32_t seed);
     Random(const Random & copy);
 
     Random & operator=(const Random &);
@@ -28,7 +27,7 @@ public:
     static void setState(const Random & what);
 
 protected:
-    void init(uint32_t);
+    void init();
 
     uint64_t state[16];
     uint8_t index;

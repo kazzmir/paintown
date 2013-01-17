@@ -2899,6 +2899,8 @@ static void evaluateHitDefinition(const HitDefinitionData & hit, HitDefinition &
     his.guardDistance = evaluateNumberLocal(hit.guardDistance, -1);
 
     his.yAcceleration = evaluateNumberLocal(hit.yAcceleration, 0.35);
+    his.animationType = hit.animationType;
+    his.animationTypeAir = hit.animationTypeAir;
     his.animationTypeFall = hit.animationTypeFall;
     his.airHitTime = evaluateNumberLocal(hit.airHitTime, 20);
     his.airVelocity.x = evaluateNumberLocal(hit.airVelocity.x, 0);
