@@ -603,7 +603,7 @@ class Runner: public Util::Logic, public Util::Draw {
             area.render(work, font);
             main.draw(work, font);
             work.finish();
-            buffer.BlitToScreen();
+            // buffer.BlitToScreen();
         }
 
         double ticks(double system){

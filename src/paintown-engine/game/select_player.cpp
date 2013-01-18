@@ -135,7 +135,7 @@ class Selecter: public Util::Logic, public Util::Draw {
             work.start();
             select.draw(work);
             work.finish();
-            buffer.BlitToScreen();
+            // buffer.BlitToScreen();
         }
 };
 

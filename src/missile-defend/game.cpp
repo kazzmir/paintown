@@ -2880,7 +2880,7 @@ public:
         work.clear();
         defend.draw(mouse, work);
         work.finish();
-        buffer.BlitToScreen();
+        // buffer.BlitToScreen();
     }
     
     void up(){

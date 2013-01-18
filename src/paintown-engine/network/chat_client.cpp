@@ -506,7 +506,7 @@ void ChatClient::run(){
                 work.clear();
                 client.draw(work);
                 work.finish();
-                buffer.BlitToScreen();
+                // buffer.BlitToScreen();
             }
         }
     };

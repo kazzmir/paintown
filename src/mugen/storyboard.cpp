@@ -520,7 +520,7 @@ void Storyboard::run(bool repeat){
                 if (Global::getDebug() > 0){
                     ::Font::getDefaultFont().printf( 15, 310, Graphics::makeColor(0,255,128), screen, "Scene: Time(%i) : EndTime(%i) : Fade in(%i) : Fade out(%i)",0, scene->getTicker(),scene->getEndTime(),scene->getFadeTool().getFadeInTime(),scene->getFadeTool().getFadeOutTime() );
                 }
-                screen.BlitToScreen();
+                // screen.BlitToScreen();
             }
         }
     };

@@ -358,7 +358,7 @@ public:
         work.start();
         versus.draw(work);
         work.finish();
-        buffer.BlitToScreen();
+        // buffer.BlitToScreen();
     }
 };
 

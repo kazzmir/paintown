@@ -3777,7 +3777,7 @@ public:
         work.start();
         select.draw(work);
         work.finish();
-        buffer.BlitToScreen();
+        // buffer.BlitToScreen();
     }
 };
 

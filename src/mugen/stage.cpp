@@ -2442,7 +2442,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
 
             board.finish();
             // board->Stretch(buffer);
-            screen.BlitToScreen();
+            // screen.BlitToScreen();
         }
     };
 

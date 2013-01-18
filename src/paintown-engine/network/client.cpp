@@ -704,7 +704,7 @@ void networkClient(){
                 font.printf( 20, min_y + font.getHeight() * 5, focus == Connect ? focusColor : unFocusColor, work, "Connect", 0 );
                 font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == FocusBack ? focusColor : unFocusColor, work, "Back", 0 );
 
-                work.BlitToScreen();
+                // work.BlitToScreen();
             }
         }
     };

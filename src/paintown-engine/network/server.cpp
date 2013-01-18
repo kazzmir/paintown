@@ -129,7 +129,7 @@ static int getServerPort(){
                 // work.Blit(100, drawY, background);
                 // background.BlitToScreen();
                 buffer.finish();
-                screen.BlitToScreen();
+                // screen.BlitToScreen();
             }
         }
     };

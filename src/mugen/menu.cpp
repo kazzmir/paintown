@@ -786,7 +786,7 @@ static void runNewMenu(Searcher & searcher){
         
         void draw(const Graphics::Bitmap & screen){
             menu->draw(screen);
-            screen.BlitToScreen();
+            // screen.BlitToScreen();
         }
     };
     

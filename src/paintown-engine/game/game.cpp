@@ -710,7 +710,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             /* getX/Y move when the world is quaking */
             // screen_buffer.BlitToScreen(world.getX(), world.getY());
-            screen.BlitToScreen();
+            // screen.BlitToScreen();
 
             if (state.takeScreenshot){
                 state.takeScreenshot = false;

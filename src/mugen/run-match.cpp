@@ -303,7 +303,7 @@ static void runEscape(EscapeMenu & menu){
         
         void draw(const Graphics::Bitmap & screen){
             menu.draw(screen);
-            screen.BlitToScreen();
+            // screen.BlitToScreen();
         }
     };
     
@@ -688,7 +688,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 drawBold(font, x, y, Graphics::makeColor(255, 255, 255), screen, "Replay Mode");
             }
 
-            screen.BlitToScreen();
+            // screen.BlitToScreen();
         }
 };
 

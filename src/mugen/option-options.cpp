@@ -1170,7 +1170,7 @@ public:
     
     void draw(const Graphics::Bitmap & screen){
         menu.draw(screen);
-        screen.BlitToScreen();
+        // screen.BlitToScreen();
     }
 };
 
@@ -1749,7 +1749,7 @@ public:
                         if (logic.changingKeys){
                             menu.drawInfo(screen.getWidth()/2, screen.getHeight()/4, "Press new key for " + logic.keyValues[logic.currentValue], screen );
                         }
-                        screen.BlitToScreen();
+                        // screen.BlitToScreen();
                     }
                 };
                 
@@ -2053,7 +2053,7 @@ public:
         menu.drawInfoWithBackground(title, 0,0, "", stretch);
         input.draw(160-width/2, 120+height/2, menu.getFont(), stretch);
         stretch.finish();
-        screen.BlitToScreen();
+        // screen.BlitToScreen();
     }
 };
 
