@@ -14,11 +14,12 @@ namespace Mugen{
 class Character;
 
 struct AllCharacterData{
-    AllCharacterData(const StateData & character, const AnimationState & animation);
+    AllCharacterData(const StateData & character, const AnimationState & animation, const std::map<int, std::map<unsigned int, int> > & statePersistent);
     AllCharacterData();
 
     StateData character;
     AnimationState animation;
+    std::map<int, std::map<unsigned int, int> > statePersistent;
 };
 
 /* Maintains a snapshot of all state data */

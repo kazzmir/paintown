@@ -462,6 +462,8 @@ public:
         return getStateData().currentState;
     }
 
+    virtual std::map<int, std::map<unsigned int, int> > getStatePersistent() const;
+
     /* Gets the state from this character regardless of what characterData holds */
     virtual PaintownUtil::ReferenceCount<State> getSelfState(int id) const;
 
@@ -1212,6 +1214,10 @@ protected:
     virtual void recordCommands(const std::vector<std::string> & commands);
 
 protected:
+
+    unsigned int stateControllerId;
+    unsigned int nextStateControllerId();
+
     /* Data that doesn't have to be sent to remote instances */
     struct LocalData{
         LocalData();

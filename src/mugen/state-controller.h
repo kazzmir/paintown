@@ -34,8 +34,8 @@ protected:
     */
 
 public:
-    StateController(const std::string & name, int state);
-    StateController(const std::string & name, int state, Ast::Section * section);
+    StateController(const std::string & name, int state, unsigned int id);
+    StateController(const std::string & name, int state, unsigned int id, Ast::Section * section);
     StateController(const StateController & you);
 
     /* from scrtls.html or more recently
@@ -136,7 +136,7 @@ public:
         Debug
     };
     
-    static StateController * compile(Ast::Section * section, const std::string & name, int state, Type type);
+    static StateController * compile(Ast::Section * section, const std::string & name, int state, unsigned int id,Type type);
 
     virtual bool canTrigger(const Environment & environment) const;
 
@@ -173,8 +173,13 @@ public:
         debug = what;
     }
 
+    virtual unsigned int getId() const;
+
     virtual void resetPersistent();
     virtual bool persistentOk();
+
+    virtual int getPersistent() const;
+    virtual int getCurrentPersistent() const;
 
     virtual bool ignoreHitPause(const Environment & environment) const;
 
@@ -202,6 +207,9 @@ protected:
 
     /* state number */
     int state;
+
+    /* unique id relative to all other state controllers owned by the character */
+    unsigned int id;
 
     ::Util::ClassPointer<Compiler::Value> spritePriority;
 };

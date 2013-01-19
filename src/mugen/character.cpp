@@ -563,6 +563,7 @@ Object(alliance){
 
 Character::Character(const Character & copy):
 Object(copy),
+stateControllerId(copy.stateControllerId),
 localData(copy.localData),
 stateData(copy.stateData){
 }
@@ -575,6 +576,8 @@ Character::~Character(){
 }
 
 void Character::initialize(){
+    stateControllerId = 0;
+
     getLocalData().max_health = 0;
     getStateData().health = 0;
     getLocalData().maxChangeStates = 0;
@@ -1677,7 +1680,7 @@ StateController * Character::parseState(Ast::Section * section){
         Global::debug(0) << "Warning: no type given for controller " << section->getName() << endl;
         return NULL;
     } else {
-        StateController * controller = StateController::compile(section, name, state, type);
+        StateController * controller = StateController::compile(section, name, state, nextStateControllerId(), type);
         return controller;
     }
 }
@@ -2252,7 +2255,7 @@ void Character::stopGuarding(Mugen::Stage & stage, const vector<string> & inputs
     }
 }
 
-static StateController * parseController(const string & input, const string & name, int state, StateController::Type type){
+static StateController * parseController(const string & input, const string & name, int state, unsigned int id, StateController::Type type){
     try{
         Ast::AstParse sections((list<Ast::Section*>*) Mugen::Cmd::parse(input.c_str()));
         if (sections.getSections()->size() == 0){
@@ -2261,7 +2264,7 @@ static StateController * parseController(const string & input, const string & na
             throw MugenException(out.str(), __FILE__, __LINE__);
         }
         Ast::Section * first = sections.getSections()->front();
-        return StateController::compile(first, name, state, type);
+        return StateController::compile(first, name, state, id, type);
     } catch (const Ast::Exception & e){
         throw MugenException(e.getReason(), __FILE__, __LINE__);
     } catch (const Mugen::Cmd::ParseException & e){
@@ -2269,6 +2272,11 @@ static StateController * parseController(const string & input, const string & na
         out << "Could not parse " << input << " because " << e.getReason();
         throw MugenException(out.str(), __FILE__, __LINE__);
     }
+}
+
+unsigned int Character::nextStateControllerId(){
+    stateControllerId += 1;
+    return stateControllerId;
 }
 
 void Character::fixAssumptions(){
@@ -2285,7 +2293,7 @@ void Character::fixAssumptions(){
             raw << "trigger1 = command = \"holdfwd\"\n";
             raw << "trigger2 = command = \"holdback\"\n";
             raw << "value = " << WalkingForwards << "\n";
-            getLocalData().states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, StateController::ChangeState));
+            getLocalData().states[-1]->addController(parseController(raw.str(), "paintown internal walk", -1, nextStateControllerId(), StateController::ChangeState));
         }
 
 
@@ -2299,15 +2307,15 @@ void Character::fixAssumptions(){
             raw << "trigger2 = stateno = " << WalkingForwards << "\n";
             raw << "triggerall = command = \"holddown\"\n";
 
-            getLocalData().states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, StateController::ChangeState));
+            getLocalData().states[-1]->addControllerFront(parseController(raw.str(), "paintown internal crouch", -1, nextStateControllerId(), StateController::ChangeState));
         }
 
         /* jump */
         {
             class InternalJumpController: public StateController {
             public:
-                InternalJumpController():
-                StateController("jump", -1){
+                InternalJumpController(unsigned int id):
+                StateController("jump", -1, id){
                 }
 
                 virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
@@ -2315,11 +2323,11 @@ void Character::fixAssumptions(){
                 }
 
                 virtual StateController * deepCopy() const {
-                    return new InternalJumpController();
+                    return new InternalJumpController(id);
                 }
             };
 
-            InternalJumpController * controller = new InternalJumpController();
+            InternalJumpController * controller = new InternalJumpController(nextStateControllerId());
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                         new Ast::SimpleIdentifier("statetype"),
@@ -2343,8 +2351,8 @@ void Character::fixAssumptions(){
 
             class InternalDoubleJumpController: public StateController {
             public:
-                InternalDoubleJumpController():
-                StateController("double jump", -1){
+                InternalDoubleJumpController(unsigned int id):
+                StateController("double jump", -1, id){
                 }
 
                 virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
@@ -2352,11 +2360,11 @@ void Character::fixAssumptions(){
                 }
 
                 StateController * deepCopy() const {
-                    return new InternalDoubleJumpController();
+                    return new InternalDoubleJumpController(id);
                 }
             };
 
-            InternalDoubleJumpController * controller = new InternalDoubleJumpController();
+            InternalDoubleJumpController * controller = new InternalDoubleJumpController(nextStateControllerId());
             // controller->setDebug(true);
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::SimpleIdentifier("ctrl")));
             controller->addTriggerAll(Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
@@ -2382,8 +2390,8 @@ void Character::fixAssumptions(){
         if (getLocalData().states[StopGuardStand] != 0){
             class StopGuardStandController: public StateController {
             public:
-                StopGuardStandController():
-                StateController("stop guarding", StopGuardStand){
+                StopGuardStandController(unsigned int id):
+                StateController("stop guarding", StopGuardStand, id){
                 }
 
                 virtual void activate(Mugen::Stage & stage, Character & guy, const vector<string> & commands) const {
@@ -2391,11 +2399,11 @@ void Character::fixAssumptions(){
                 }
 
                 StateController * deepCopy() const {
-                    return new StopGuardStandController();
+                    return new StopGuardStandController(id);
                 }
             };
 
-            StopGuardStandController * controller = new StopGuardStandController();
+            StopGuardStandController * controller = new StopGuardStandController(nextStateControllerId());
             controller->addTrigger(1, Compiler::compileAndDelete(new Ast::ExpressionInfix(-1, -1, Ast::ExpressionInfix::Equals,
                     new Ast::SimpleIdentifier("animtime"),
                     new Ast::Number(-1, -1, 0))));
@@ -2413,7 +2421,7 @@ void Character::fixAssumptions(){
         raw << "trigger1 = command != \"holdfwd\"\n";
         raw << "trigger1 = command != \"holdback\"\n";
 
-        getLocalData().states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, StateController::ChangeState));
+        getLocalData().states[20]->addController(parseController(raw.str(), "paintown internal stop walking", 20, nextStateControllerId(), StateController::ChangeState));
     }
 
     if (getLocalData().states[Standing] != 0){
@@ -2426,7 +2434,7 @@ void Character::fixAssumptions(){
         raw << "value = " << CrouchToStand << "\n";
         raw << "trigger1 = command != \"holddown\"\n";
 
-        getLocalData().states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, StateController::ChangeState));
+        getLocalData().states[StandToCrouch]->addController(parseController(raw.str(), "stand while crouching", StandToCrouch, nextStateControllerId(), StateController::ChangeState));
 
     }
 
@@ -2437,7 +2445,7 @@ void Character::fixAssumptions(){
         raw << "value = " << CrouchToStand << "\n";
         raw << "trigger1 = command != \"holddown\"\n";
 
-        getLocalData().states[11]->addController(parseController(raw.str(), "stand after crouching", 11, StateController::ChangeState));
+        getLocalData().states[11]->addController(parseController(raw.str(), "stand after crouching", 11, nextStateControllerId(), StateController::ChangeState));
     }
 
     /* get up kids */
@@ -2447,7 +2455,7 @@ void Character::fixAssumptions(){
         raw << "value = " << GetUpFromLiedown << "\n";
         raw << "trigger1 = time >= " << getLieDownTime() << "\n";
 
-        getLocalData().states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, StateController::ChangeState));
+        getLocalData().states[Liedown]->addController(parseController(raw.str(), "get up", Liedown, nextStateControllerId(), StateController::ChangeState));
     }
 
     /* standing turn state */
@@ -2462,7 +2470,7 @@ void Character::fixAssumptions(){
         raw << "value = " << Standing << "\n";
         raw << "trigger1 = animtime = 0\n";
 
-        turn->addController(parseController(raw.str(), "turn", StandTurning, StateController::ChangeState));
+        turn->addController(parseController(raw.str(), "turn", StandTurning, nextStateControllerId(), StateController::ChangeState));
     }
 
     /* standing turn state */
@@ -2477,7 +2485,7 @@ void Character::fixAssumptions(){
         raw << "value = " << Standing << "\n";
         raw << "trigger1 = animtime = 0\n";
 
-        turn->addController(parseController(raw.str(), "turn", CrouchTurning, StateController::ChangeState));
+        turn->addController(parseController(raw.str(), "turn", CrouchTurning, nextStateControllerId(), StateController::ChangeState));
     }
 
     /* if y reaches 0 then auto-transition to state 52.
@@ -2623,6 +2631,32 @@ PaintownUtil::ReferenceCount<Animation> Character::getCurrentAnimation() const {
     }
     return NULL;
     */
+}
+    
+std::map<int, std::map<unsigned int, int> > Character::getStatePersistent() const {
+    map<int, map<unsigned int, int> > data;
+        
+    for (map<int, PaintownUtil::ReferenceCount<State> >::const_iterator it = getLocalData().states.begin(); it != getLocalData().states.end(); it++){
+        const PaintownUtil::ReferenceCount<State> & state = it->second;
+        if (state != NULL){
+            const std::vector<StateController*> & controllers = state->getControllers();
+            map<unsigned int, int> use;
+
+            for (vector<StateController*>::const_iterator it2 = controllers.begin(); it2 != controllers.end(); it2++){
+                StateController * controller = *it2;
+                if (controller->getPersistent() != controller->getCurrentPersistent()){
+                    use[controller->getId()] = controller->getCurrentPersistent();
+                }
+            }
+
+            if (use.size() > 0){
+                data[state->getState()] = use;
+            }
+        }
+
+    }
+
+    return data;
 }
         
 void Character::startInput(const Mugen::Stage & stage){

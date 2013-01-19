@@ -17,16 +17,17 @@ World::World(){
 World::~World(){
 }
         
-AllCharacterData::AllCharacterData(const StateData & character, const AnimationState & animation):
+AllCharacterData::AllCharacterData(const StateData & character, const AnimationState & animation, const std::map<int, std::map<unsigned int, int> > & statePersistent):
 character(character),
-animation(animation){
+animation(animation),
+statePersistent(statePersistent){
 }
     
 AllCharacterData::AllCharacterData(){
 }
 
 void World::addCharacter(const Character & who){
-    characterData[who.getId()] = AllCharacterData(who.getStateData(), who.getCurrentAnimationState());
+    characterData[who.getId()] = AllCharacterData(who.getStateData(), who.getCurrentAnimationState(), who.getStatePersistent());
 }
     
 void World::setGameTime(int gameTime){
