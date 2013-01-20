@@ -3,6 +3,7 @@
 #include "util/token.h"
 #include <vector>
 #include <string>
+#include <sstream>
 #include <map>
 
 using std::vector;
@@ -75,6 +76,26 @@ static Token * serialize(const map<int, map<unsigned int, int> > & statePersiste
     return token;
 }
 
+static map<int, map<unsigned int, int> > deserializeStates(const Token * data){
+    map<int, map<unsigned int, int> > out;
+    /* TODO */
+
+    return out;
+}
+
+static StateData deserializeCharacter(const Token * data){
+    StateData out;
+    /* TODO */
+
+    return out;
+}
+
+static AnimationState deserializeAnimation(const Token * data){
+    AnimationState out;
+    /* TODO */
+    return out;
+}
+
 static Token * serialize(const AllCharacterData & data){
     Token * token = new Token();
     *token << "data";
@@ -82,6 +103,26 @@ static Token * serialize(const AllCharacterData & data){
     *token << serialize(data.animation);
     *token << serialize(data.statePersistent);
     return token;
+}
+
+static AllCharacterData deserializeCharacterData(const Token * token){
+    AllCharacterData out;
+    const Token * character = token->findToken("data/StateData");
+    if (character != NULL){
+        out.character = deserializeCharacter(character);
+    }
+
+    const Token * animation = token->findToken("data/AnimationState");
+    if (animation != NULL){
+        out.animation = deserializeAnimation(animation);
+    }
+
+    const Token * statePersistent = token->findToken("data/states");
+    if (statePersistent != NULL){
+        out.statePersistent = deserializeStates(statePersistent);
+    }
+
+    return out;
 }
 
 static Token * serialize(const std::map<CharacterId, AllCharacterData> & characters){
@@ -96,9 +137,17 @@ static Token * serialize(const std::map<CharacterId, AllCharacterData> & charact
     return token;
 }
 
+static StageStateData deserializeStage(const Token * token){
+    StageStateData out;
+    /* TODO */
+    return out;
+}
+
 static Token * serialize(const StageStateData & stage){
     Token * token = new Token();
     *token << "stage";
+
+    /* TODO */
 
     return token;
 }
@@ -120,8 +169,63 @@ Token * World::serialize() const {
     return head;
 }
 
-World World::deserialize(Token * token){
-    World out;
+static Random deserializeRandom(const Token * data){
+    Random out;
+    /* TODO */
+    return out;
+}
+
+static int deserializeGameTime(const Token * data){
+    int out;
+    data->view() >> out;
+    return out;
+}
+
+static int integer(const string & what){
+    int out = 0;
+    std::istringstream data(what);
+    data >> out;
+    return out;
+}
+
+static map<CharacterId, AllCharacterData> deserializeCharacters(const Token * data){
+    map<CharacterId, AllCharacterData> out;
+    TokenView look = data->view();
+    while (look.hasMore()){
+        const Token * use = NULL;
+        look >> use;
+        int id = integer(use->getName());
+
+        const Token * tokenData = NULL;
+        use->view() >> tokenData;
+
+        out[CharacterId(id)] = deserializeCharacterData(tokenData);
+    }
+    return out;
+}
+
+World * World::deserialize(Token * token){
+    World * out = new World();
+
+    const Token * characters = token->findToken("mugen-state/characters");
+    if (characters != NULL){
+        out->characterData = deserializeCharacters(characters);
+    }
+
+    const Token * stage = token->findToken("mugen-state/stage");
+    if (stage != NULL){
+        out->stageData = deserializeStage(stage);
+    }
+
+    const Token * random = token->findToken("mugen-state/random");
+    if (random != NULL){
+        out->random = deserializeRandom(random);
+    }
+
+    const Token * gameTime = token->findToken("mugen-state/game-time");
+    if (gameTime != NULL){
+        out->gameTime = deserializeGameTime(gameTime);
+    }
 
     return out;
 }

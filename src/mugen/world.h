@@ -40,7 +40,7 @@ public:
     const std::map<CharacterId, AllCharacterData> & getCharacterData() const;
 
     Token * serialize() const;
-    static World deserialize(Token * token);
+    static World * deserialize(Token * token);
 
 protected:
     std::map<CharacterId, AllCharacterData> characterData;
