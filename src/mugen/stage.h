@@ -105,6 +105,16 @@ namespace Mugen {
 class Sound;
 class Sprite;
 
+class Stage;
+class StageObserver{
+public:
+    StageObserver();
+    virtual ~StageObserver();
+
+    virtual void beforeLogic(Stage & stage) = 0;
+    virtual void afterLogic(Stage & stage) = 0;
+};
+
 class Stage{
 public:
     // Location at dataPath() + "mugen/stages/"
@@ -268,6 +278,8 @@ public:
     virtual std::vector<Helper*> findHelpers(const Character * owner, int id) const;
     virtual Effect * findEffect(const Character * owner, int id);
     virtual std::vector<Effect *> findEffects(const Character * owner, int id);
+    
+    virtual void setObserver(const PaintownUtil::ReferenceCount<StageObserver> & observer);
 
     virtual void setEnvironmentColor(Graphics::Color color, int time, bool under); 
 
@@ -693,6 +705,8 @@ private:
     StageStateData & getStateData();
     const StageStateData & getStateData() const;
     void setStateData(const StageStateData & data);
+
+    PaintownUtil::ReferenceCount<StageObserver> observer;
 };
 
 }

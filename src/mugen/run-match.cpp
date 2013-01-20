@@ -363,6 +363,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             MessageQueue::registerInfo(&messages);
             snapshots[totalTicks] = stage->snapshotState();
 
+            /*
             Token * test = stage->snapshotState()->serialize();
             Token * filtered = filterTokens(test);
             Global::debug(0) << "Snapshot: " << filtered->toString() << std::endl;
@@ -375,6 +376,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
 
             delete test;
             delete filtered;
+            */
         }
 
         virtual ~LogicDraw(){

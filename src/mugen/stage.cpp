@@ -1365,6 +1365,12 @@ void Mugen::Stage::runCycle(){
 }
 
 void Mugen::Stage::logic(){
+
+    /* This must be the first thing done in this function! */
+    if (observer != NULL){
+        observer->beforeLogic(*this);
+    }
+
     // Console::ConsoleEnd & cend = Console::Console::endl;
 
     /* cycles slow the stage down, like after ko */
@@ -1382,6 +1388,11 @@ void Mugen::Stage::logic(){
     
     // Player HUD Need to make this more ellegant than casting and passing from array
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
+
+    /* This must be the last thing done in this function! */
+    if (observer != NULL){
+        observer->afterLogic(*this);
+    }
 
 #if 0
     if (!gameOver){
@@ -2813,4 +2824,14 @@ const Mugen::StageStateData & Mugen::Stage::getStateData() const {
     
 void Mugen::Stage::setStateData(const Mugen::StageStateData & data){
     this->stateData = data;
+}
+
+Mugen::StageObserver::StageObserver(){
+}
+
+Mugen::StageObserver::~StageObserver(){
+}
+
+void Mugen::Stage::setObserver(const PaintownUtil::ReferenceCount<StageObserver> & observer){
+    this->observer = observer;
 }

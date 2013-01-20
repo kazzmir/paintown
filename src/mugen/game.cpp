@@ -40,6 +40,9 @@
 
 #include "versus.h"
 
+#include "world.h"
+#include "util/lz4/lz4.h"
+
 namespace PaintownUtil = ::Util;
 
 using namespace Mugen;
@@ -646,8 +649,170 @@ void Game::startArcade(const std::string & player1Name, const std::string & play
     arcade.run();
 }
 
+#ifdef HAVE_NETWORKING
+class NetworkObserver: public StageObserver {
+public:
+    NetworkObserver():
+    StageObserver(){
+    }
+
+    virtual void start() = 0;
+};
+
+static Token * filterTokens(Token * start){
+    if (start->isData()){
+        return start->copy();
+    }
+
+    Token * out = new Token(start->getName());
+    for (vector<Token*>::const_iterator it = start->getTokens()->begin(); it != start->getTokens()->end(); it++){
+        Token * use = filterTokens(*it);
+        if (use->isData() || use->numTokens() > 0){
+            *out << use;
+        }
+    }
+    return out;
+}
+
+class NetworkServerObserver: public NetworkObserver {
+public:
+    NetworkServerObserver(Network::Socket socket):
+    NetworkObserver(),
+    socket(socket),
+    thread(this, send){
+    }
+
+    PaintownUtil::Thread::LockObject lock;
+    Network::Socket socket;
+    PaintownUtil::Thread::ThreadObject thread;
+    vector<PaintownUtil::ReferenceCount<World> > states;
+
+    void sendState(char * data, int compressed, int uncompressed){
+        Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
+        Network::send16(socket, compressed);
+        Network::send16(socket, uncompressed);
+        Network::sendBytes(socket, (unsigned char *) data, compressed);
+    }
+
+    bool hasStates(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        return states.size() > 0;
+    }
+
+    PaintownUtil::ReferenceCount<World> getState(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        PaintownUtil::ReferenceCount<World> out = states.front();
+        states.erase(states.begin());
+        return out;
+    }
+
+    bool alive(){
+        return true;
+    }
+
+    void doSend(){
+        while (alive()){
+            if (hasStates()){
+                PaintownUtil::ReferenceCount<World> snapshot = getState();
+
+                Token * test = snapshot->serialize();
+                Token * filtered = filterTokens(test);
+                // Global::debug(0) << "Snapshot: " << filtered->toString() << std::endl;
+                string compact = filtered->toStringCompact();
+                // Global::debug(0) << "Size: " << compact.size() << std::endl;
+                char * out = new char[LZ4_compressBound(compact.size())];
+                int compressed = LZ4_compress(compact.c_str(), out, compact.size());
+
+                sendState(out, compressed, compact.size());
+
+                // Global::debug(0) << "Compressed size: " << compressed << std::endl;
+                delete[] out;
+
+                delete test;
+                delete filtered;
+
+            } else {
+                PaintownUtil::rest(1);
+            }
+        }
+    }
+
+    void addState(const PaintownUtil::ReferenceCount<World> & state){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        states.clear();
+        states.push_back(state);
+    }
+
+    static void * send(void * self_){
+        NetworkServerObserver * self = (NetworkServerObserver*) self_;
+        self->doSend();
+        return NULL;
+    }
+    
+    virtual void start(){
+        thread.start();
+    }
+    
+    virtual void beforeLogic(Stage & stage){
+        addState(stage.snapshotState());
+    }
+
+    virtual void afterLogic(Stage & stage){
+    }
+};
+
+class NetworkClientObserver: public NetworkObserver {
+public:
+    NetworkClientObserver(Network::Socket socket):
+    NetworkObserver(),
+    socket(socket),
+    thread(this, receive){
+    }
+
+    Network::Socket socket;
+    PaintownUtil::Thread::ThreadObject thread;
+
+    bool alive(){
+        return true;
+    }
+
+    void doReceive(){
+        while (alive()){
+            int16_t compressed = Network::read16(socket);
+            int16_t uncompressed = Network::read16(socket);
+            uint8_t * data = new uint8_t[compressed];
+            Network::readBytes(socket, data, compressed);
+            uint8_t * what = new uint8_t[uncompressed + 1];
+            what[uncompressed] = '\0';
+            LZ4_uncompress((const char *) data, (char *) what, uncompressed);
+            TokenReader reader;
+            std::string use((const char *) what);
+            Token * head = reader.readTokenFromString(use);
+            Global::debug(0) << "Client received token " << head->toString() << std::endl;
+        }
+    }
+
+    static void * receive(void * self){
+        ((NetworkClientObserver*)self)->doReceive();
+        return NULL;
+    }
+    
+    virtual void start(){
+        thread.start();
+    }
+    
+    virtual void beforeLogic(Stage & stage){
+    }
+
+    virtual void afterLogic(Stage & stage){
+    }
+};
+
+#endif
+
 /* FIXME: redo this as a StartGameMode class */
 void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, int port){
+#ifdef HAVE_NETWORKING
     /* This has its own parse cache because its started by the main menu and not
      * by Game::run()
      */
@@ -675,7 +840,6 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     }
 
     Network::Socket socket = 0;
-#ifdef HAVE_NETWORKING
     if (server){
         Network::Socket remote = Network::open(port);
         Network::listen(remote);
@@ -688,25 +852,31 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         socket = Network::connect("127.0.0.1", port); 
         Global::debug(0) << "Connected" << std::endl;
     }
-#endif
 
-    HumanBehavior local1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-    NetworkLocalBehavior player1Behavior(&local1Behavior, socket);
-    NetworkRemoteBehavior player2Behavior(socket);
+    HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+    DummyBehavior player2Behavior;
+    // NetworkLocalBehavior player1Behavior(&local1Behavior, socket);
+    // NetworkRemoteBehavior player2Behavior(socket);
+    
     // Set regenerative health
     player1->setRegeneration(false);
     player2->setRegeneration(false);
+    PaintownUtil::ReferenceCount<NetworkObserver> observer;
     if (server){
         player1->setBehavior(&player1Behavior);
         player2->setBehavior(&player2Behavior);
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket));
+        stage.setObserver(observer.convert<StageObserver>());
     } else {
         player2->setBehavior(&player1Behavior);
         player1->setBehavior(&player2Behavior);
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket));
+        stage.setObserver(observer.convert<StageObserver>());
     }
     
     RunMatchOptions options;
     
-    options.setBehavior(&local1Behavior, NULL);
+    options.setBehavior(&player1Behavior, NULL);
 
     stage.addPlayer1(player1.raw());
     stage.addPlayer2(player2.raw());
@@ -714,7 +884,6 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);
 
-#ifdef HAVE_NETWORKING
     if (server){
         int sync = Network::read16(socket);
         Network::send16(socket, sync);
@@ -723,13 +892,18 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Network::read16(socket);
     }
 
+    observer->start();
+
+    /*
     if (!Network::blocking(socket, false)){
         Global::debug(0) << "Could not set socket to be non-blocking" << std::endl;
     }
-#endif
+    */
 
+    /*
     player1Behavior.begin();
     player2Behavior.begin();
+    */
 
     /*
     if (!Network::noDelay(socket, true)){
@@ -743,12 +917,11 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     }
     Mugen::Data::getInstance().setTime(time);
 
-#ifdef HAVE_NETWORKING
     Network::close(socket);
-#endif
-    
-    throw QuitGameException();
 
+#endif
+
+    throw QuitGameException();
 }
 
 class StartTraining: public StartGameMode {
