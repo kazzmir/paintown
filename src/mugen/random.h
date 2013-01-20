@@ -28,6 +28,7 @@ public:
     static void setState(const Random & what);
 
     Token * serialize() const;
+    static Random deserialize(const Token * token);
 
 protected:
     void init();

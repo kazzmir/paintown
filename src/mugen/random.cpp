@@ -57,6 +57,23 @@ Token * Random::serialize() const {
 
     return token;
 }
+    
+Random Random::deserialize(const Token * token){
+    Random out;
+    token->match("_/index", out.index);
+    const Token * state = token->findToken("_/state");
+    if (state != NULL){
+        TokenView stuff = state->view();
+        int index = 0;
+        while (index < 16 && stuff.hasMore()){
+            uint64_t value = 0;
+            stuff >> value;
+            out.state[index] = value;
+            index += 1;
+        }
+    }
+    return out;
+}
 
 PaintownUtil::ReferenceCount<Random> Random::current;
 PaintownUtil::ReferenceCount<Random> Random::getState(){

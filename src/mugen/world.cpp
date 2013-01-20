@@ -169,12 +169,6 @@ Token * World::serialize() const {
     return head;
 }
 
-static Random deserializeRandom(const Token * data){
-    Random out;
-    /* TODO */
-    return out;
-}
-
 static int deserializeGameTime(const Token * data){
     int out;
     data->view() >> out;
@@ -219,7 +213,7 @@ World * World::deserialize(Token * token){
 
     const Token * random = token->findToken("mugen-state/random");
     if (random != NULL){
-        out->random = deserializeRandom(random);
+        out->random = Random::deserialize(random);
     }
 
     const Token * gameTime = token->findToken("mugen-state/game-time");
