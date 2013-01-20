@@ -8,6 +8,15 @@ using std::string;
 
 namespace Mugen{
 
+const char * BOOL_VALUE = "b";
+const char * STRING_VALUE = "s";
+const char * DOUBLE_VALUE = "d";
+const char * LIST_STRING_VALUE = "l";
+const char * RANGE_VALUE = "r";
+const char * STATE_VALUE = "v";
+const char * ATTACK_VALUE = "a";
+const char * INTS_VALUE = "i";
+
 Token * serialize(const RuntimeValue & value){
     Token * token = new Token();
     switch (value.getType()){
@@ -15,30 +24,33 @@ Token * serialize(const RuntimeValue & value){
             break;
         }
         case RuntimeValue::Bool: {
-            *token << "bool" << value.getBoolValue();
+            *token << BOOL_VALUE << value.getBoolValue();
             break;
         }
         case RuntimeValue::String: {
-            *token << "string" << value.getStringValue();
+            *token << STRING_VALUE << value.getStringValue();
             break;
         }
         case RuntimeValue::Double: {
-            *token << "double" << value.getDoubleValue();
+            *token << DOUBLE_VALUE;
+            if (value.getDoubleValue() != 0){
+                *token << value.getDoubleValue();
+            }
             break;
         }
         case RuntimeValue::ListOfString: {
-            *token << "list-string";
+            *token << LIST_STRING_VALUE;
             for (vector<string>::const_iterator it = value.strings_value.begin(); it != value.strings_value.end(); it++){
                 *token << *it;
             }
             break;
         }
         case RuntimeValue::RangeType: {
-            *token << "range" << value.range.low << value.range.high;
+            *token << RANGE_VALUE << value.range.low << value.range.high;
             break;
         }
         case RuntimeValue::StateType: {
-            *token << "state" <<
+            *token << STATE_VALUE <<
                 value.attribute.standing <<
                 value.attribute.crouching <<
                 value.attribute.lying <<
@@ -46,14 +58,14 @@ Token * serialize(const RuntimeValue & value){
             break;
         }
         case RuntimeValue::AttackAttribute: {
-            *token << "attack";
+            *token << ATTACK_VALUE; 
             for (vector<AttackType::Attribute>::const_iterator it = value.attackAttributes.begin(); it != value.attackAttributes.end(); it++){
                 *token << *it;
             }
             break;
         }
         case RuntimeValue::ListOfInt: {
-            *token << "ints";
+            *token << INTS_VALUE;
             for (vector<int>::const_iterator it = value.ints_value.begin(); it != value.ints_value.end(); it++){
                 *token << *it;
             }

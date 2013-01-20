@@ -104,9 +104,7 @@ static Token * serialize(const StageStateData & stage){
 }
 
 static Token * serialize(const Random & random){
-    Token * token = new Token();
-    *token << "random";
-    return token;
+    return random.serialize();
 }
 
 Token * World::serialize() const {

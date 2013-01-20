@@ -5,6 +5,7 @@
 #include "util/pointer.h"
 
 namespace PaintownUtil = ::Util;
+class Token;
 
 namespace Mugen{
 
@@ -25,6 +26,8 @@ public:
 
     static PaintownUtil::ReferenceCount<Random> getState();
     static void setState(const Random & what);
+
+    Token * serialize() const;
 
 protected:
     void init();

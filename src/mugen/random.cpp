@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+#include "util/token.h"
 
 namespace Mugen{
 
@@ -41,6 +42,19 @@ uint64_t Random::next(){
     a = state[index];
     state[index] = a^b^d^(a<<2)^(b<<18)^(c<<28);
     return state[index];
+}
+    
+Token * Random::serialize() const {
+    Token * token = new Token();
+    *token << "random";
+    *token->newToken() << "index" << index;
+    Token * data = token->newToken();
+    *data << "state";
+    for (int i = 0; i < 16; i++){
+        *data << state[i];
+    }
+
+    return token;
 }
 
 PaintownUtil::ReferenceCount<Random> Random::current;
