@@ -674,6 +674,63 @@ static Token * filterTokens(Token * start){
     return out;
 }
 
+class NetworkBuffer{
+public:
+    NetworkBuffer(){
+        length = 0;
+        actualLength = 128;
+        buffer = new char[actualLength];
+    }
+
+    ~NetworkBuffer(){
+        delete[] buffer;
+    }
+
+    NetworkBuffer & operator<<(int16_t data){
+        checkBuffer(sizeof(data));
+        Network::dump16(buffer + length, data);
+        length += sizeof(data);
+        return *this;
+    }
+
+    virtual void add(char * data, int size){
+        checkBuffer(size);
+        memcpy(buffer + length, data, size);
+        length += size;
+    }
+
+    char * getBuffer(){
+        return buffer;
+    }
+
+    /* make sure N bytes can be stored */
+    void checkBuffer(int bytes){
+        if (length + bytes >= actualLength){
+            increaseBuffer(bytes);
+        }
+    }
+
+    int getLength() const {
+        return length;
+    }
+
+    void increaseBuffer(int minimum){
+        int newLength = PaintownUtil::max(actualLength * 2, actualLength + minimum);
+        char * next = new char[newLength];
+        memcpy(next, buffer, length);
+        delete[] buffer;
+        buffer = next;
+        actualLength = newLength;
+    }
+
+protected:
+    int length;
+    char * buffer;
+    int actualLength;
+};
+
+static const int16_t NetworkMagic = 0xd97f; 
+
 class NetworkServerObserver: public NetworkObserver {
 public:
     NetworkServerObserver(Network::Socket socket):
@@ -689,9 +746,13 @@ public:
 
     void sendState(char * data, int compressed, int uncompressed){
         Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
-        Network::send16(socket, compressed);
-        Network::send16(socket, uncompressed);
-        Network::sendBytes(socket, (unsigned char *) data, compressed);
+        NetworkBuffer buffer;
+        buffer << (int16_t) NetworkMagic;
+        buffer << (int16_t) compressed;
+        buffer << (int16_t) uncompressed;
+        buffer.add(data, compressed);
+
+        Network::sendBytes(socket, (uint8_t*) buffer.getBuffer(), buffer.getLength());
     }
 
     bool hasStates(){
@@ -778,6 +839,13 @@ public:
 
     void doReceive(){
         while (alive()){
+
+            int16_t magic = Network::read16(socket);
+            if (magic != NetworkMagic){
+                Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                continue;
+            }
+
             int16_t compressed = Network::read16(socket);
             int16_t uncompressed = Network::read16(socket);
             uint8_t * data = new uint8_t[compressed];
@@ -789,6 +857,8 @@ public:
             std::string use((const char *) what);
             Token * head = reader.readTokenFromString(use);
             Global::debug(0) << "Client received token " << head->toString() << std::endl;
+            if (head != NULL){
+            }
         }
     }
 
