@@ -17,6 +17,8 @@ namespace Mugen{
     Token * serialize(const std::vector<CharacterId> &);
     Token * serialize(const std::string &);
     Token * serialize(const RuntimeValue &);
+    Token * serialize(const Physics::Type);
+    Token * serialize(const Facing);
 
     AttackType::Attribute deserializeAttackTypeAttribute(const Token * token);
     AttackType::Animation deserializeAttackTypeAnimation(const Token * token);

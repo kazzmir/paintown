@@ -67,19 +67,19 @@ public:
     double_value(0){
     }
 
-    RuntimeValue(bool b):
+    explicit RuntimeValue(bool b):
     type(Bool),
     bool_value(b),
     double_value(0){
     }
 
-    RuntimeValue(double d):
+    explicit RuntimeValue(double d):
     type(Double),
     bool_value(false),
     double_value(d){
     }
 
-    RuntimeValue(int i):
+    explicit RuntimeValue(int i):
     type(Double),
     bool_value(false),
     double_value(i){

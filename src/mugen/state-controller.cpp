@@ -5415,7 +5415,7 @@ public:
         int index = (int) evaluateNumber(this->index, environment, 0);
         int minimum = (int) evaluateNumber(this->minimum, environment, 0);
         int maximum = (int) evaluateNumber(this->maximum, environment, 0);
-        guy.setVariable(index, (int) Mugen::random(minimum, maximum));
+        guy.setVariable(index, RuntimeValue((int) Mugen::random(minimum, maximum)));
     }
 
     StateController * deepCopy() const {
@@ -5824,7 +5824,7 @@ public:
             int maximum = (int) evaluateNumber(end, environment, 59);
             int value = (int) evaluateNumber(this->value, environment, 0);
             for (int i = minimum; i < maximum; i++){
-                guy.setVariable(i, value);
+                guy.setVariable(i, RuntimeValue(value));
             }
         }
 
@@ -5833,7 +5833,7 @@ public:
             int maximum = (int) evaluateNumber(end, environment, 39);
             double value = evaluateNumber(this->value, environment, 0);
             for (int i = minimum; i < maximum; i++){
-                guy.setFloatVariable(i, value);
+                guy.setFloatVariable(i, RuntimeValue(value));
             }
         }
     }

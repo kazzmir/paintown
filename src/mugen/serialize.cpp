@@ -106,6 +106,18 @@ Token * serialize(const CharacterId & data){
     out << data.intValue();
     return new Token(out.str());
 }
+    
+Token * serialize(const Physics::Type data){
+    std::ostringstream out;
+    out << data;
+    return new Token(out.str());
+}
+
+Token * serialize(const Facing data){
+    std::ostringstream out;
+    out << data;
+    return new Token(out.str());
+}
 
 Token * serialize(const std::vector<CharacterId> & data){
     Token * token = new Token();
@@ -148,11 +160,19 @@ CharacterId deserializeCharacterId(const Token * token){
 }
 
 Physics::Type deserializePhysicsType(const Token * token){
-    return Physics::Type(integer(token->getName()));
+    int out = 0;
+    if (token->match("_", out)){
+        return Physics::Type(out);
+    }
+    return Physics::None;
 }
 
 Facing deserializeFacing(const Token * token){
-    return Facing(integer(token->getName()));
+    int out = FacingLeft;
+    if (token->match("_", out)){
+        return Facing(out);
+    }
+    return FacingLeft;
 }
  
 AttackType::Animation defaultAttackTypeAnimation(){

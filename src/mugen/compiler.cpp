@@ -1015,9 +1015,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getBackX();
                     switch (environment.getCharacter().getFacing()){
-                        case FacingRight: return x - environment.getStage().maximumLeft(&environment.getCharacter());
-                        case FacingLeft: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
-                        default: return 0;
+                        case FacingRight: return RuntimeValue(x - environment.getStage().maximumLeft(&environment.getCharacter()));
+                        case FacingLeft: return RuntimeValue(environment.getStage().maximumRight(&environment.getCharacter()) - x);
+                        default: return RuntimeValue(0);
                     }
                 }
 
@@ -1036,9 +1036,9 @@ public:
                     int x = environment.getCharacter().getX();
                     /* FIXME: handle screenbound in case maximumLeft/Right don't */
                     switch (environment.getCharacter().getFacing()){
-                        case FacingRight: return x - environment.getStage().maximumLeft(&environment.getCharacter());
-                        case FacingLeft: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
-                        default: return 0;
+                        case FacingRight: return RuntimeValue(x - environment.getStage().maximumLeft(&environment.getCharacter()));
+                        case FacingLeft: return RuntimeValue(environment.getStage().maximumRight(&environment.getCharacter()) - x);
+                        default: return RuntimeValue(0);
 
                     }
                 }
@@ -1057,9 +1057,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getFrontX();
                     switch (environment.getCharacter().getFacing()){
-                        case FacingLeft: return x - environment.getStage().maximumLeft(&environment.getCharacter());
-                        case FacingRight: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
-                        default: return 0;
+                        case FacingLeft: return RuntimeValue(x - environment.getStage().maximumLeft(&environment.getCharacter()));
+                        case FacingRight: return RuntimeValue(environment.getStage().maximumRight(&environment.getCharacter()) - x);
+                        default: return RuntimeValue(0);
                     }
                 }
 
@@ -1077,9 +1077,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     int x = environment.getCharacter().getX();
                     switch (environment.getCharacter().getFacing()){
-                        case FacingLeft: return x - environment.getStage().maximumLeft(&environment.getCharacter());
-                        case FacingRight: return environment.getStage().maximumRight(&environment.getCharacter()) - x;
-                        default: return 0;
+                        case FacingLeft: return RuntimeValue(x - environment.getStage().maximumLeft(&environment.getCharacter()));
+                        case FacingRight: return RuntimeValue(environment.getStage().maximumRight(&environment.getCharacter()) - x);
+                        default: return RuntimeValue(0);
                     }
                 }
 
@@ -1397,7 +1397,7 @@ public:
             class WinTime: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isWinnerTime(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isWinnerTime(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1412,7 +1412,7 @@ public:
             class Winko: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isWinnerKO(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isWinnerKO(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1427,7 +1427,7 @@ public:
             class WinPerfect: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isWinnerPerfect(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isWinnerPerfect(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1442,7 +1442,7 @@ public:
             class Win: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isWinner(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isWinner(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1457,7 +1457,7 @@ public:
             class Lose: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isLoser(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isLoser(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1472,7 +1472,7 @@ public:
             class LoseKO: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isLoserKO(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isLoserKO(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1487,7 +1487,7 @@ public:
             class LoseTime: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return environment.getStage().getGameInfo()->getRound().isLoserTime(environment.getCharacter());
+                    return RuntimeValue(environment.getStage().getGameInfo()->getRound().isLoserTime(environment.getCharacter()));
                 }
 
                 Value * copy() const {
@@ -1543,9 +1543,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character & guy = environment.getCharacter();
                     if (guy.isAttacking()){
-                        return guy.getHitState().moveContact;
+                        return RuntimeValue(guy.getHitState().moveContact);
                     } else {
-                        return 0;
+                        return RuntimeValue(0);
                     }
                 }
                 
@@ -1590,7 +1590,7 @@ public:
                         const vector<CharacterId> & objects = it->second;
                         count += objects.size();
                     }
-                    return count;
+                    return RuntimeValue(count);
                 }
 
                 Value * copy() const {
@@ -1682,7 +1682,7 @@ public:
             class NumExplod: public Value {
             public:
                 RuntimeValue evaluate(const Environment & environment) const {
-                    return (int) environment.getStage().findExplode(0, (&environment.getCharacter())).size();
+                    return RuntimeValue((int) environment.getStage().findExplode(0, (&environment.getCharacter())).size());
                 }
 
                 Value * copy() const {
@@ -2124,7 +2124,7 @@ public:
                         return original->evaluate(redirected);
                     }
                     runtimeError("No helpers found", __FILE__, __LINE__);
-                    return 0;
+                    return RuntimeValue(0);
                 }
             };
 
@@ -2557,7 +2557,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 /* FIXME: what if the effect has 'own' set? */
-                                return environment.getCharacter().getDefaultSpark().group;
+                                return RuntimeValue(environment.getCharacter().getDefaultSpark().group);
                             }
 
                             Value * copy() const {
@@ -2573,7 +2573,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 /* FIXME: what if the effect has 'own' set? */
-                                return environment.getCharacter().getDefaultGuardSpark().group;
+                                return RuntimeValue(environment.getCharacter().getDefaultGuardSpark().group);
                             }
 
                             Value * copy() const {
@@ -2800,7 +2800,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 Point point = environment.getCharacter().getHeadPosition();
-                                return point.x;
+                                return RuntimeValue(point.x);
                             }
 
                             string toString() const {
@@ -2820,7 +2820,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 Point point = environment.getCharacter().getHeadPosition();
-                                return point.y;
+                                return RuntimeValue(point.y);
                             }
 
                             string toString() const {
@@ -2840,7 +2840,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 Point point = environment.getCharacter().getMidPosition();
-                                return point.x;
+                                return RuntimeValue(point.x);
                             }
 
                             string toString() const {
@@ -2860,7 +2860,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 Point point = environment.getCharacter().getMidPosition();
-                                return point.y;
+                                return RuntimeValue(point.y);
                             }
 
                             string toString() const {
@@ -2886,7 +2886,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 Point point = environment.getCharacter().getDrawOffset();
-                                return point.x;
+                                return RuntimeValue(point.x);
                             }
 
                             string toString() const {
@@ -2906,7 +2906,7 @@ public:
                         public:
                             RuntimeValue evaluate(const Environment & environment) const {
                                 Point point = environment.getCharacter().getDrawOffset();
-                                return point.y;
+                                return RuntimeValue(point.y);
                             }
 
                             string toString() const {
@@ -2982,7 +2982,7 @@ public:
               
                 RuntimeValue evaluate(const Environment & environment) const {
                     int id = (int) this->id->evaluate(environment).toNumber();
-                    return environment.getStage().getCharacter(CharacterId(id)) != NULL;
+                    return RuntimeValue(environment.getStage().getCharacter(CharacterId(id)) != NULL);
                 }
 
                 Value * copy() const {
@@ -4404,9 +4404,9 @@ public:
                     int index = this->index->evaluate(environment).toNumber();
                     if (targets.find(index) != targets.end()){
                         const vector<CharacterId> & found = targets.find(index)->second;
-                        return (int) found.size();
+                        return RuntimeValue((int) found.size());
                     }
-                    return 0;
+                    return RuntimeValue(0);
                 }
             };
 
@@ -4652,9 +4652,9 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     const Character * enemy = environment.getStage().getEnemy(&environment.getCharacter());
                     switch (environment.getCharacter().getFacing()){
-                        case FacingLeft: return environment.getCharacter().getFrontX() - enemy->getFrontX();
-                        case FacingRight: return enemy->getFrontX() - environment.getCharacter().getFrontX();
-                        default: return 0;
+                        case FacingLeft: return RuntimeValue(environment.getCharacter().getFrontX() - enemy->getFrontX());
+                        case FacingRight: return RuntimeValue(enemy->getFrontX() - environment.getCharacter().getFrontX());
+                        default: return RuntimeValue(0);
                     }
                 }
 
@@ -4701,7 +4701,7 @@ public:
                         if (parent == NULL){
                             runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
-                        return parent->getX() - realHelper.getX();
+                        return RuntimeValue(parent->getX() - realHelper.getX());
                     }
                     runtimeError("Cannot use 'parentdist x' on a non-helper", __FILE__, __LINE__);
                     return RuntimeValue();
@@ -4726,7 +4726,7 @@ public:
                         if (parent == NULL){
                             runtimeError("Helper has no parent", __FILE__, __LINE__);
                         }
-                        return realHelper.getY() - parent->getY();
+                        return RuntimeValue(realHelper.getY() - parent->getY());
                     }
                     runtimeError("Cannot use 'parentdist x' on a non-helper", __FILE__, __LINE__);
                     return RuntimeValue();
@@ -4749,9 +4749,9 @@ public:
                      * the facing direction?
                      */
                     switch (environment.getCharacter().getFacing()){
-                        case FacingLeft: return environment.getCharacter().getX() - enemy->getX();
-                        case FacingRight: return enemy->getX() - environment.getCharacter().getX();
-                        default: return 0;
+                        case FacingLeft: return RuntimeValue(environment.getCharacter().getX() - enemy->getX());
+                        case FacingRight: return RuntimeValue(enemy->getX() - environment.getCharacter().getX());
+                        default: return RuntimeValue(0);
                     }
                 }
 
