@@ -154,6 +154,29 @@ Physics::Type deserializePhysicsType(const Token * token){
 Facing deserializeFacing(const Token * token){
     return Facing(integer(token->getName()));
 }
+ 
+AttackType::Animation defaultAttackTypeAnimation(){
+    return AttackType::NoAnimation;
+}
 
+AttackType::Ground defaultAttackTypeGround(){
+    return AttackType::None;
+}
+
+TransType defaultTransType(){
+    return None;
+}
+
+CharacterId defaultCharacterId(){
+    return CharacterId(-1);
+}
+
+Physics::Type defaultPhysicsType(){
+    return Physics::None;
+}
+
+Facing defaultFacing(){
+    return FacingLeft;
+}
 
 }

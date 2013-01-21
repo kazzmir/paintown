@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_c18999c816ce2907770aafb581cfd486
-#define _serialize_Mugen_c18999c816ce2907770aafb581cfd486
+#ifndef _serialize_Mugen_108488fe241b3134743a35d746e8909c
+#define _serialize_Mugen_108488fe241b3134743a35d746e8909c
 
 #include "common.h"
 #include "compiler.h"
@@ -253,6 +253,11 @@ Fall deserializeFall(const Token * data);
 struct HitDefinition{
     HitDefinition(){
         alive = false;
+        animationType = defaultAttackTypeAnimation();
+        animationTypeAir = defaultAttackTypeAnimation();
+        animationTypeFall = defaultAttackTypeAnimation();
+        groundType = defaultAttackTypeGround();
+        airType = defaultAttackTypeGround();
         groundSlideTime = 0;
         guardSlideTime = 0;
         groundHitTime = 0;
@@ -403,6 +408,10 @@ struct HitState{
         yAcceleration = 0;
         yVelocity = 0;
         xVelocity = 0;
+        animationType = defaultAttackTypeAnimation();
+        airType = defaultAttackTypeGround();
+        groundType = defaultAttackTypeGround();
+        hitType = defaultAttackTypeGround();
         guarded = false;
         damage = 0;
         chainId = 0;
@@ -521,6 +530,7 @@ HitByOverride deserializeHitByOverride(const Token * data);
 struct TransOverride{
     TransOverride(){
         enabled = false;
+        type = defaultTransType();
         alphaSource = 0;
         alphaDestination = 0;
     }
@@ -549,6 +559,7 @@ SpecialStuff deserializeSpecialStuff(const Token * data);
 
 struct Bind{
     Bind(){
+        bound = defaultCharacterId();
         time = 0;
         facing = 0;
         offsetX = 0;
@@ -567,6 +578,7 @@ Bind deserializeBind(const Token * data);
 
 struct CharacterData{
     CharacterData(){
+        who = defaultCharacterId();
         enabled = false;
     }
 
@@ -604,6 +616,7 @@ struct StateData{
         velocity_y = 0;
         has_control = false;
         stateTime = 0;
+        currentPhysics = defaultPhysicsType();
         combo = 0;
         hitCount = 0;
         blocking = false;
@@ -620,6 +633,7 @@ struct StateData{
         virtualx = 0;
         virtualy = 0;
         virtualz = 0;
+        facing = defaultFacing();
         power = 0;
     }
 

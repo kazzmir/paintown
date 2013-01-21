@@ -66,11 +66,18 @@ def create_peg(grammar, kind = 'file'):
     # Then use it to parse the grammar and return a new peg
     return peg.create_peg(peg_parser(grammar), kind)
 
-def generate_header(object, name = None, array = None):
+def generate_header(object, isState, name = None, array = None):
     def make_init_field(field):
-        if field.type_.isPOD() and not field.isArray():
+        if isinstance(field.type_, state.State) or isState(str(field.type_)):
+            return None
+        if field.isArray():
+            raise Exception("Handle arrays of non-structs")
+        if field.type_.isPOD():
             return '%(name)s = %(zero)s;' % {'name': field.name,
                                              'zero': field.zero()}
+        elif not str(field.type_).startswith('std::vector') and not str(field.type_).startswith('std::map') and not str(field.type_).startswith('std::string'):
+            import re
+            return '%(name)s = default%(type)s();' % {'name': field.name, 'type': re.sub(':', '', str(field.type_))}
         return None
 
     def make_definition(field):
@@ -106,7 +113,7 @@ def generate_header(object, name = None, array = None):
     more = ""
     for field in object.fields:
         if isinstance(field.type_, state.State):
-            more += generate_header(field.type_, field.name, field.array)
+            more += generate_header(field.type_, isState, field.name, field.array)
 
     data = """
 %(more)s
@@ -135,12 +142,19 @@ def md5(what):
     return m.hexdigest()
 
 def generate_program_header(program):
-    header = "_serialize_%s_%s" % (program.namespace, md5(''.join([generate_header(s) for s in program.structs])))
+
+    def isState(type_):
+        for struct in program.structs:
+            if struct.name == type_:
+                return True
+        return False
+
+    header = "_serialize_%s_%s" % (program.namespace, md5(''.join([generate_header(s, isState) for s in program.structs])))
     includes = '\n'.join(['#include %s' % x for x in program.includes])
 
     all = ""
     for struct in program.structs:
-        all += generate_header(struct)
+        all += generate_header(struct, isState)
 
     data = """
 #ifndef %s
@@ -314,7 +328,7 @@ def test1():
   bool frog
 }
 """
-    print generate_header(parser(test))
+    print generate_header(parser(test), lambda x: False)
 
 if len(sys.argv) < 2:
     print "Give an argument"

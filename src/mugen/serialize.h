@@ -25,6 +25,13 @@ namespace Mugen{
     CharacterId deserializeCharacterId(const Token * token);
     Physics::Type deserializePhysicsType(const Token * token);
     Facing deserializeFacing(const Token * token);
+        
+    AttackType::Animation defaultAttackTypeAnimation();
+    AttackType::Ground defaultAttackTypeGround();
+    TransType defaultTransType();
+    CharacterId defaultCharacterId();
+    Physics::Type defaultPhysicsType();
+    Facing defaultFacing();
 }
 
 #endif
