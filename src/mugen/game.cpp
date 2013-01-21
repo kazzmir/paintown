@@ -832,6 +832,20 @@ public:
 
     Network::Socket socket;
     PaintownUtil::Thread::ThreadObject thread;
+    PaintownUtil::ReferenceCount<World> world;
+    PaintownUtil::Thread::LockObject lock;
+
+    void setWorld(const PaintownUtil::ReferenceCount<World> & world){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        this->world = world;
+    }
+
+    PaintownUtil::ReferenceCount<World> getWorld(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        PaintownUtil::ReferenceCount<World> out = world;
+        world = NULL;
+        return out;
+    }
 
     bool alive(){
         return true;
@@ -856,10 +870,10 @@ public:
             TokenReader reader;
             std::string use((const char *) what);
             Token * head = reader.readTokenFromString(use);
-            Global::debug(0) << "Client received token " << head->toString() << std::endl;
+            // Global::debug(0) << "Client received token " << head->toString() << std::endl;
             if (head != NULL){
-                World * world = World::deserialize(head);
-                delete world;
+                PaintownUtil::ReferenceCount<World> world(World::deserialize(head));
+                setWorld(world);
             }
         }
     }
@@ -874,6 +888,10 @@ public:
     }
     
     virtual void beforeLogic(Stage & stage){
+        PaintownUtil::ReferenceCount<World> next = getWorld();
+        if (next != NULL){
+            stage.updateState(*next);
+        }
     }
 
     virtual void afterLogic(Stage & stage){
