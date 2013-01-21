@@ -118,6 +118,7 @@ struct %(name)s{
     %(definitions)s
 };
 Token * serialize(const %(name)s & data);
+%(name)s deserialize%(name)s(const Token * data);
 """ % {'name': object.name,
        'more': more,
        'maybe-instance': instance,
@@ -158,54 +159,111 @@ namespace %s{
     return data
 
 def generate_cpp(object, structs):
-    name = 0
-    fields = ""
-    for field in object.fields:
-        if field.type_.isPOD():
-            fields += """    if (data.%(name)s != %(zero)s){
+    def serialize_fields(object):
+        fields = ""
+        name = 0
+
+        for field in object.fields:
+            if field.type_.isPOD():
+                fields += """    if (data.%(name)s != %(zero)s){
         *out->newToken() << "%(name)s" << data.%(name)s;
     }\n""" % {'name': field.name,
-              'zero': field.zero()}
-        elif str(field.type_).startswith('std::vector'):
-            name += 1
-            fields += """
+                  'zero': field.zero()}
+            elif str(field.type_).startswith('std::vector'):
+                name += 1
+                fields += """
     Token * %(token)s = out->newToken();
     *%(token)s << "%(var)s";
     for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
         *%(token)s << serialize(*it);
     }
-""" % {'token': 't%d' % name,
-       'type': str(field.type_),
-       'var': field.name}
-        elif isinstance(field.type_, state.State):
-            if field.array != None:
-                times = int(field.array)
-                fields += "    Token * token_%(name)s = out->newToken();\n" % {'name': field.name}
-                fields += """    *token_%(name)s << "%(name)s";\n""" % {'name': field.name} 
-                for i in xrange(0, times):
-                    fields += """    *token_%(name)s->newToken() << %(index)d << serialize(data.%(name)s[%(index)d]);\n""" % {'name': field.name, 'index': i}
-            else:
-                fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s);\n""" % {'name': field.name}
-        elif str(field.type_).startswith('std::map'):
-            name += 1
-            # FIXME: map only works if the key is an int
-            fields += """
-    Token * %(token)s = out->newToken();
-    *%(token)s << "%(var)s";
-    for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
-        *%(token)s->newToken() << it->first << serialize(it->second);
-    }
-""" % {'token': 't%d' % name,
-       'type': str(field.type_),
-       'var': field.name}
+    """ % {'token': 't%d' % name,
+           'type': str(field.type_),
+           'var': field.name}
+            elif isinstance(field.type_, state.State):
+                if field.array != None:
+                    times = int(field.array)
+                    fields += "    Token * token_%(name)s = out->newToken();\n" % {'name': field.name}
+                    fields += """    *token_%(name)s << "%(name)s";\n""" % {'name': field.name} 
+                    for i in xrange(0, times):
+                        fields += """    *token_%(name)s->newToken() << %(index)d << serialize(data.%(name)s[%(index)d]);\n""" % {'name': field.name, 'index': i}
+                else:
+                    fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s);\n""" % {'name': field.name}
+            elif str(field.type_).startswith('std::map'):
+                name += 1
+                # FIXME: map only works if the key is an int
+                fields += """
+        Token * %(token)s = out->newToken();
+        *%(token)s << "%(var)s";
+        for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
+            *%(token)s->newToken() << it->first << serialize(it->second);
+        }
+    """ % {'token': 't%d' % name,
+           'type': str(field.type_),
+           'var': field.name}
 
-        else:
-            if field.array != None:
-                times = int(field.array)
-                for i in xrange(0, times):
-                    fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s[%(index)d]);\n""" % {'name': field.name, 'index': i}
             else:
-                fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s);\n""" % {'name': field.name}
+                if field.array != None:
+                    times = int(field.array)
+                    for i in xrange(0, times):
+                        fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s[%(index)d]);\n""" % {'name': field.name, 'index': i}
+                else:
+                    fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s);\n""" % {'name': field.name}
+
+        return fields
+
+    def deserialize_fields(object):
+        out = ""
+        name = 0
+        for field in object.fields:
+            if isinstance(field.type_, state.State):
+                if field.isArray():
+                    get = ""
+                else:
+                    get = "out.%(name)s = deserialize%(type)s(use);" % {'name': field.name,
+                                                                    'type': str(field.type_)}
+            elif field.type_.isPOD() or str(field.type_) == 'std::string':
+                get = "use->view() >> out.%(name)s;" % {'name': field.name}
+            elif str(field.type_).startswith('std::vector'):
+                import re
+                each = ""
+                if field.type_.isPOD() or field.type_.element() == 'std::string':
+                    type_ = str(field.type_)
+                    if not field.type_.isPOD():
+                        type_ = field.type_.element()
+                    each = """%(type)s element;
+            view >> element;
+            out.%(name)s.push_back(element);
+                    """ % {'name': field.name, 'type': type_}
+                else:
+                    each = """out.%(name)s.push_back(deserialize%(type)s(view.next()));""" % {'type': re.sub(':', '', str(field.type_.element())),
+                            'name': field.name}
+                get = """for (TokenView view = use->view(); view.hasMore(); /**/){
+            %(each)s
+        }
+""" % {'each': each}
+            elif str(field.type_).startswith('std::map'):
+                # TODO
+                # get = "map %(name)s" % {'name': field.name}
+                get = ""
+            else:
+                import re
+                if field.isArray():
+                    get = ""
+                else:
+                    get = "out.%(name)s = deserialize%(type)s(use);" % {'name': field.name,
+                        'type': re.sub(':', '', str(field.type_))}
+
+
+            out += """    use = data->findToken("_/%(name)s");
+    if (use != NULL){
+        %(get)s
+    }
+""" % {'name': field.name,
+       'get': get}
+
+        return out
+
 
     inner_structs = ""
     for field in object.fields:
@@ -220,9 +278,17 @@ Token * serialize(const %(name)s & data){
 %(field)s
     return out;
 }
+
+%(name)s deserialize%(name)s(const Token * data){
+    %(name)s out;
+    const Token * use = NULL;
+%(deserialize)s
+    return out;
+}
 """ % {'inner': inner_structs,
        'name': object.name,
-       'field': fields}
+       'deserialize': deserialize_fields(object),
+       'field': serialize_fields(object)}
     return data
 
 def generate_program_cpp(program):

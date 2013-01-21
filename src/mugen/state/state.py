@@ -39,6 +39,9 @@ class Type:
     def isPOD(self):
         return self.name in ['int', 'short', 'char', 'double', 'bool']
 
+    def element(self):
+        return ' '.join([str(x) for x in self.template])
+
     def __str__(self):
         me = combineModifier(self.modifier, combineTemplate(self.name, self.template))
         if self.namespace != None:

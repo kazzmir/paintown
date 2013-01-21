@@ -120,4 +120,40 @@ Token * serialize(const std::string & data){
     return new Token(data);
 }
 
+static int integer(const string & what){
+    int out = 0;
+    std::istringstream data(what);
+    data >> out;
+    return out;
+}
+
+AttackType::Attribute deserializeAttackTypeAttribute(const Token * token){
+    return AttackType::Attribute(integer(token->getName()));
+}
+
+AttackType::Animation deserializeAttackTypeAnimation(const Token * token){
+    return AttackType::Animation(integer(token->getName()));
+}
+
+AttackType::Ground deserializeAttackTypeGround(const Token * token){
+    return AttackType::Ground(integer(token->getName()));
+}
+
+TransType deserializeTransType(const Token * token){
+    return TransType(integer(token->getName()));
+}
+
+CharacterId deserializeCharacterId(const Token * token){
+    return CharacterId(integer(token->getName()));
+}
+
+Physics::Type deserializePhysicsType(const Token * token){
+    return Physics::Type(integer(token->getName()));
+}
+
+Facing deserializeFacing(const Token * token){
+    return Facing(integer(token->getName()));
+}
+
+
 }

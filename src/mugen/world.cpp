@@ -83,19 +83,6 @@ static map<int, map<unsigned int, int> > deserializeStates(const Token * data){
     return out;
 }
 
-static StateData deserializeCharacter(const Token * data){
-    StateData out;
-    /* TODO */
-
-    return out;
-}
-
-static AnimationState deserializeAnimation(const Token * data){
-    AnimationState out;
-    /* TODO */
-    return out;
-}
-
 static Token * serialize(const AllCharacterData & data){
     Token * token = new Token();
     *token << "data";
@@ -105,16 +92,16 @@ static Token * serialize(const AllCharacterData & data){
     return token;
 }
 
-static AllCharacterData deserializeCharacterData(const Token * token){
+static AllCharacterData deserializeAllCharacterData(const Token * token){
     AllCharacterData out;
     const Token * character = token->findToken("data/StateData");
     if (character != NULL){
-        out.character = deserializeCharacter(character);
+        out.character = deserializeStateData(character);
     }
 
     const Token * animation = token->findToken("data/AnimationState");
     if (animation != NULL){
-        out.animation = deserializeAnimation(animation);
+        out.animation = deserializeAnimationState(animation);
     }
 
     const Token * statePersistent = token->findToken("data/states");
@@ -193,7 +180,7 @@ static map<CharacterId, AllCharacterData> deserializeCharacters(const Token * da
         const Token * tokenData = NULL;
         use->view() >> tokenData;
 
-        out[CharacterId(id)] = deserializeCharacterData(tokenData);
+        out[CharacterId(id)] = deserializeAllCharacterData(tokenData);
     }
     return out;
 }

@@ -858,6 +858,8 @@ public:
             Token * head = reader.readTokenFromString(use);
             Global::debug(0) << "Client received token " << head->toString() << std::endl;
             if (head != NULL){
+                World * world = World::deserialize(head);
+                delete world;
             }
         }
     }

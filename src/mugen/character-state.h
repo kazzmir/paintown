@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_9a0c95379dd98b919a72e8b846c192d1
-#define _serialize_Mugen_9a0c95379dd98b919a72e8b846c192d1
+#ifndef _serialize_Mugen_c18999c816ce2907770aafb581cfd486
+#define _serialize_Mugen_c18999c816ce2907770aafb581cfd486
 
 #include "common.h"
 #include "compiler.h"
@@ -28,6 +28,7 @@ struct HitAttributes{
     std::vector<AttackType::Attribute > attributes;
 };
 Token * serialize(const HitAttributes & data);
+HitAttributes deserializeHitAttributes(const Token * data);
 
 
 struct ResourceEffect{
@@ -42,6 +43,7 @@ struct ResourceEffect{
     int item;
 };
 Token * serialize(const ResourceEffect & data);
+ResourceEffect deserializeResourceEffect(const Token * data);
 
 
 struct HitFlags{
@@ -64,6 +66,7 @@ struct HitFlags{
     bool notGetHitState;
 };
 Token * serialize(const HitFlags & data);
+HitFlags deserializeHitFlags(const Token * data);
 
 
 struct PauseTime{
@@ -76,6 +79,7 @@ struct PauseTime{
     int player2;
 };
 Token * serialize(const PauseTime & data);
+PauseTime deserializePauseTime(const Token * data);
 
 
 struct Distance{
@@ -88,6 +92,7 @@ struct Distance{
     int y;
 };
 Token * serialize(const Distance & data);
+Distance deserializeDistance(const Token * data);
 
 
 
@@ -101,6 +106,7 @@ struct Attribute{
     std::string physics;
 };
 Token * serialize(const Attribute & data);
+Attribute deserializeAttribute(const Token * data);
 
 
 struct Priority{
@@ -112,6 +118,7 @@ struct Priority{
     std::string type;
 };
 Token * serialize(const Priority & data);
+Priority deserializePriority(const Token * data);
 
 
 struct Damage{
@@ -124,6 +131,7 @@ struct Damage{
     int guardDamage;
 };
 Token * serialize(const Damage & data);
+Damage deserializeDamage(const Token * data);
 
 
 struct SparkPosition{
@@ -136,6 +144,7 @@ struct SparkPosition{
     int y;
 };
 Token * serialize(const SparkPosition & data);
+SparkPosition deserializeSparkPosition(const Token * data);
 
 
 struct GetPower{
@@ -148,6 +157,7 @@ struct GetPower{
     int guarded;
 };
 Token * serialize(const GetPower & data);
+GetPower deserializeGetPower(const Token * data);
 
 
 struct GivePower{
@@ -160,6 +170,7 @@ struct GivePower{
     int guarded;
 };
 Token * serialize(const GivePower & data);
+GivePower deserializeGivePower(const Token * data);
 
 
 struct GroundVelocity{
@@ -172,6 +183,7 @@ struct GroundVelocity{
     double y;
 };
 Token * serialize(const GroundVelocity & data);
+GroundVelocity deserializeGroundVelocity(const Token * data);
 
 
 struct AirVelocity{
@@ -184,6 +196,7 @@ struct AirVelocity{
     double y;
 };
 Token * serialize(const AirVelocity & data);
+AirVelocity deserializeAirVelocity(const Token * data);
 
 
 struct AirGuardVelocity{
@@ -196,6 +209,7 @@ struct AirGuardVelocity{
     double y;
 };
 Token * serialize(const AirGuardVelocity & data);
+AirGuardVelocity deserializeAirGuardVelocity(const Token * data);
 
 
 
@@ -207,6 +221,7 @@ struct Shake{
     int time;
 };
 Token * serialize(const Shake & data);
+Shake deserializeShake(const Token * data);
 
 struct Fall{
     Fall(){
@@ -233,6 +248,7 @@ struct Fall{
     int forceNoFall;
 };
 Token * serialize(const Fall & data);
+Fall deserializeFall(const Token * data);
 
 struct HitDefinition{
     HitDefinition(){
@@ -322,6 +338,7 @@ struct HitDefinition{
     Fall fall;
 };
 Token * serialize(const HitDefinition & data);
+HitDefinition deserializeHitDefinition(const Token * data);
 
 
 struct HitOverride{
@@ -337,6 +354,7 @@ struct HitOverride{
     bool forceAir;
 };
 Token * serialize(const HitOverride & data);
+HitOverride deserializeHitOverride(const Token * data);
 
 
 
@@ -349,6 +367,7 @@ struct Shake1{
     int time;
 };
 Token * serialize(const Shake1 & data);
+Shake1 deserializeShake1(const Token * data);
 
 struct Fall1{
     Fall1(){
@@ -371,6 +390,7 @@ struct Fall1{
     double damage;
 };
 Token * serialize(const Fall1 & data);
+Fall1 deserializeFall1(const Token * data);
 
 struct HitState{
     HitState(){
@@ -411,6 +431,7 @@ struct HitState{
     int moveContact;
 };
 Token * serialize(const HitState & data);
+HitState deserializeHitState(const Token * data);
 
 
 
@@ -426,6 +447,7 @@ struct HitSound{
     int item;
 };
 Token * serialize(const HitSound & data);
+HitSound deserializeHitSound(const Token * data);
 
 struct ReversalData{
     ReversalData(){
@@ -455,6 +477,7 @@ struct ReversalData{
     std::vector<AttackType::Attribute > attributes;
 };
 Token * serialize(const ReversalData & data);
+ReversalData deserializeReversalData(const Token * data);
 
 
 
@@ -474,6 +497,7 @@ struct WidthOverride{
     int playerBack;
 };
 Token * serialize(const WidthOverride & data);
+WidthOverride deserializeWidthOverride(const Token * data);
 
 
 struct HitByOverride{
@@ -491,6 +515,7 @@ struct HitByOverride{
     std::vector<AttackType::Attribute > attributes;
 };
 Token * serialize(const HitByOverride & data);
+HitByOverride deserializeHitByOverride(const Token * data);
 
 
 struct TransOverride{
@@ -506,6 +531,7 @@ struct TransOverride{
     int alphaDestination;
 };
 Token * serialize(const TransOverride & data);
+TransOverride deserializeTransOverride(const Token * data);
 
 
 struct SpecialStuff{
@@ -518,6 +544,7 @@ struct SpecialStuff{
     bool intro;
 };
 Token * serialize(const SpecialStuff & data);
+SpecialStuff deserializeSpecialStuff(const Token * data);
 
 
 struct Bind{
@@ -535,6 +562,7 @@ struct Bind{
     double offsetY;
 };
 Token * serialize(const Bind & data);
+Bind deserializeBind(const Token * data);
 
 
 struct CharacterData{
@@ -546,6 +574,7 @@ struct CharacterData{
     bool enabled;
 };
 Token * serialize(const CharacterData & data);
+CharacterData deserializeCharacterData(const Token * data);
 
 
 struct DrawAngleEffect{
@@ -562,6 +591,7 @@ struct DrawAngleEffect{
     double scaleY;
 };
 Token * serialize(const DrawAngleEffect & data);
+DrawAngleEffect deserializeDrawAngleEffect(const Token * data);
 
 struct StateData{
     StateData(){
@@ -641,6 +671,7 @@ struct StateData{
     double power;
 };
 Token * serialize(const StateData & data);
+StateData deserializeStateData(const Token * data);
 
 
 struct AnimationState{
@@ -659,6 +690,7 @@ struct AnimationState{
     int virtual_ticks;
 };
 Token * serialize(const AnimationState & data);
+AnimationState deserializeAnimationState(const Token * data);
 
 }
 
