@@ -130,7 +130,7 @@ public:
                     panel.setClient(ircClient->getName());
                 }
                 // Update userlist
-                users.replace(ircClient->getChannel().getUsers());
+                users.replace(ircClient->getChannel()->getUsers());
             }
             processMessages();
             if (server != NULL){
@@ -354,7 +354,7 @@ public:
                         ircClient->sendCommand(::Network::IRC::Command::Topic, channel);
                     }
                 } catch (const std::out_of_range & ex){
-                    ircClient->sendCommand(::Network::IRC::Command::Topic, ircClient->getChannel().getName());
+                    ircClient->sendCommand(::Network::IRC::Command::Topic, ircClient->getChannel()->getName());
                 }
             } else if (command.at(0) == "quit"){
                 const std::string & message = join(command, 1);
@@ -378,7 +378,7 @@ public:
         stretch.fill(Graphics::makeColor(0,0,0));
         if (ircClient != NULL){
             // display channel
-            panel.getFont().draw(160, panel.getFont().getHeight()+10, 0, "(" + ircClient->getChannel().getName() + ")", stretch);
+            panel.getFont().draw(160, panel.getFont().getHeight()+10, 0, "(" + ircClient->getChannel()->getName() + ")", stretch);
         }
         panel.draw(stretch);
         users.draw(265, 20, panel.getFont(), stretch);
