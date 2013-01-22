@@ -931,7 +931,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
 
     Network::Socket socket = 0;
     if (server){
-        Network::Socket remote = Network::open(port);
+        Network::Socket remote = Network::openReliable(port);
         Network::listen(remote);
         Global::debug(0) << "Waiting for a connection on port " << port << std::endl;
         socket = Network::accept(remote);
@@ -1711,7 +1711,7 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
         Network::Socket socket;
         if (isServer){
             port = getNumber(OptionMenu::doInputDialog("Enter Port", "8473", true, Graphics::makeColor(0,0,0), 128, true));
-            Network::Socket remote = Network::open(port);
+            Network::Socket remote = Network::openReliable(port);
             Network::listen(remote);
             Global::debug(0) << "Waiting for a connection on port " << port << std::endl;
             socket = Network::accept(remote);

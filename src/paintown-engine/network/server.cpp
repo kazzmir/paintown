@@ -608,7 +608,7 @@ Network::blocking( false );
 #endif
 */
         debug(1) << "Get socket" << endl;
-        Network::Socket server = Network::open(port);
+        Network::Socket server = Network::openReliable(port);
 
         /*
         // NLsocket server = nlOpen( port, NL_RELIABLE_PACKETS );
