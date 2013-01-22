@@ -1568,6 +1568,7 @@ void Mugen::Stage::updateState(const Mugen::World & world){
         if (who != NULL){
             who->setStateData(it->second.character);
             who->setCurrentAnimationState(it->second.animation);
+            who->setStatePersistent(it->second.statePersistent);
         }
     }
 }

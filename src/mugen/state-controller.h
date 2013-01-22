@@ -180,6 +180,7 @@ public:
 
     virtual int getPersistent() const;
     virtual int getCurrentPersistent() const;
+    virtual void setCurrentPersistent(int value);
 
     virtual bool ignoreHitPause(const Environment & environment) const;
 

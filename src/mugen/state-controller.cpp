@@ -129,6 +129,10 @@ int StateController::getCurrentPersistent() const {
     return currentPersistent;
 }
     
+void StateController::setCurrentPersistent(int value){
+    currentPersistent = value;
+}
+    
 unsigned int StateController::getId() const {
     return id;
 }

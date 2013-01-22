@@ -264,6 +264,8 @@ public:
         return hitDefPersist;
     }
 
+    virtual StateController * findControllerById(unsigned int id) const;
+
     virtual inline const std::vector<StateController*> & getControllers() const {
         return controllers;
     }
@@ -397,6 +399,8 @@ public:
     
         const AnimationState getCurrentAnimationState() const;
         void setCurrentAnimationState(const AnimationState & state);
+        void setStatePersistent(const std::map<int, std::map<unsigned int, int> > & statePersistent);
+        void resetStatePersistent();
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
             
