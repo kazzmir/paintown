@@ -79,20 +79,73 @@ static void * clientWorker(void * arg){
     return NULL;
 }
 
-static void test(){
+static int testReliable(){
+    testResult = 0;
     Util::Thread::ThreadObject server(NULL, serverWorker);
     Util::Thread::ThreadObject client(NULL, clientWorker);
 
     server.start();
     client.start();
+
+    return testResult;
+}
+
+static void * serverUnreliableWorker(void * ignore){
+    try{
+        Network::Socket socket = Network::openUnreliable(port);
+        Network::listen(socket);
+        Network::Socket client = Network::accept(socket);
+        short length = Network::read16(client);
+        if (length != string(message).size()){
+            testResult = 1;
+            return NULL;
+        }
+        string get = Network::readStr(client, length);
+        if (get != message){
+            testResult = 1;
+        }
+        std::cout << "Message received" << std::endl;
+        Network::close(socket);
+        Network::close(client);
+    } catch (...){
+        testResult = 1;
+    }
+    return NULL;
+}
+
+static void * clientUnreliableWorker(void * ignore){
+    try{
+        Network::Socket socket = Network::connectUnreliable("127.0.0.1", port);
+        short length = string(message).size();
+        Network::send16(socket, length);
+        Network::sendStr(socket, message);
+        Network::close(socket);
+    } catch (...){
+        testResult = 1;
+    }
+
+    return NULL;
+}
+
+static int testUnreliable(){
+    testResult = 0;
+    Util::Thread::ThreadObject server(NULL, serverUnreliableWorker);
+    Util::Thread::ThreadObject client(NULL, clientUnreliableWorker);
+    server.start();
+    client.start();
+    return testResult;
 }
 
 int main(){
     Network::init();
 
-    test();
+    int ok = 0;
+
+    /* run the tests even if some fail */
+    ok = testReliable() || ok;
+    ok = testUnreliable() || ok;
     
     Network::closeAll();
 
-    return testResult;
+    return ok;
 }
