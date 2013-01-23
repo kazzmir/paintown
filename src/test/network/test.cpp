@@ -45,7 +45,7 @@ const char * message = "f3;o41ijfio;13fj1i;oejf;iofj;aiosf;klasasf";
 
 static void * serverWorker(void * arg){
     try{
-        Network::Socket socket = Network::open(port);
+        Network::Socket socket = Network::openReliable(port);
         Network::listen(socket);
         Network::Socket client = Network::accept(socket);
         short length = Network::read16(client);
@@ -68,7 +68,7 @@ static void * serverWorker(void * arg){
 
 static void * clientWorker(void * arg){
     try{
-        Network::Socket socket = Network::connect("127.0.0.1", port);
+        Network::Socket socket = Network::connectReliable("127.0.0.1", port);
         short length = string(message).size();
         Network::send16(socket, length);
         Network::sendStr(socket, message);

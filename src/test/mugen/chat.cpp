@@ -83,7 +83,7 @@ public:
             server->start();
         } else if (type == Client){
             Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;
-            Network::Socket socket = Network::connect(host, port);
+            Network::Socket socket = Network::connectReliable(host, port);
             Global::debug(0) << "Connected" << std::endl;
             client = PaintownUtil::ReferenceCount< ::Network::Chat::Client >(new ::Network::Chat::Client(0, socket));
             client->start();
