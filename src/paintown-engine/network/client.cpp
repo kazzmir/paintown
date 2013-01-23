@@ -432,7 +432,7 @@ void runClient(const string & name, const string & host, const string & port){
     int portNumber;
     stream >> portNumber;
     Global::debug(1) << "Connecting to host " << host << " on port " << portNumber << std::endl;
-    Network::Socket socket = Network::connect(host, portNumber);
+    Network::Socket socket = Network::connectReliable(host, portNumber);
     try{
         ChatClient chat(socket, name);
         chat.run();

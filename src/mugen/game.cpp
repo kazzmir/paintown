@@ -939,7 +939,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Global::debug(0) << "Got a connection" << std::endl;
     } else {
         Global::debug(0) << "Connecting to 127.0.0.1 on port " << port << std::endl;
-        socket = Network::connect("127.0.0.1", port); 
+        socket = Network::connectReliable("127.0.0.1", port); 
         Global::debug(0) << "Connected" << std::endl;
     }
 
@@ -1726,7 +1726,7 @@ void Game::doNetworkVersus(bool isServer, Searcher & searcher){
             port = getNumber(OptionMenu::doInputDialog("Enter Port", "8473", true, Graphics::makeColor(0,0,0), 128, true, &options));
             host = OptionMenu::doInputDialog("Enter Hostname", "000.000.000.000", true, Graphics::makeColor(0,0,0), 128, true, &options);
             Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;
-            socket = Network::connect(host, port); 
+            socket = Network::connectReliable(host, port); 
             Global::debug(0) << "Connected" << std::endl;
             player2LocalBehavior = PaintownUtil::ReferenceCount<NetworkLocalBehavior>(new NetworkLocalBehavior(&behavior1, socket));
             player1RemoteBehavior = PaintownUtil::ReferenceCount<NetworkRemoteBehavior>(new NetworkRemoteBehavior(socket));
