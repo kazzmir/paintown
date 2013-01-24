@@ -657,6 +657,7 @@ public:
     }
 
     virtual void start() = 0;
+    virtual void kill() = 0;
 };
 
 static Token * filterTokens(Token * start){
@@ -731,18 +732,68 @@ protected:
 
 static const int16_t NetworkMagic = 0xd97f; 
 
+class Packet{
+public:
+    enum Type{
+        Input
+    };
+
+    Packet(Type type):
+    type(type){
+    }
+
+    Type type;
+};
+
+class InputPacket: public Packet {
+public:
+    InputPacket(const vector<string> & inputs):
+    Packet(Input),
+    inputs(inputs){
+    }
+
+    vector<string> inputs;
+};
+
+PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & socket){
+    int16_t type = Network::read16(socket);
+    switch (type){
+        case Packet::Input: {
+            int16_t inputCount = Network::read16(socket);
+            vector<string> inputs;
+            for (int i = 0; i < inputCount; i++){
+                int16_t size = Network::read16(socket);
+                string input = Network::readStr(socket, size);
+                inputs.push_back(input);
+            }
+            return PaintownUtil::ReferenceCount<Packet>(new InputPacket(inputs));
+            break;
+        }
+        default: {
+            throw MugenException("Unknown packet type", __FILE__, __LINE__);
+        }
+    }
+    return PaintownUtil::ReferenceCount<Packet>(NULL);
+}
+
 class NetworkServerObserver: public NetworkObserver {
 public:
-    NetworkServerObserver(Network::Socket socket):
+    NetworkServerObserver(Network::Socket reliable, Network::Socket unreliable):
     NetworkObserver(),
-    socket(socket),
-    thread(this, send){
+    reliable(reliable),
+    unreliable(unreliable),
+    thread(this, send),
+    clientThread(this, clientInput),
+    alive_(true){
     }
 
     PaintownUtil::Thread::LockObject lock;
-    Network::Socket socket;
+    Network::Socket reliable;
+    Network::Socket unreliable;
     PaintownUtil::Thread::ThreadObject thread;
+    PaintownUtil::Thread::ThreadObject clientThread;
     vector<PaintownUtil::ReferenceCount<World> > states;
+    bool alive_;
 
     void sendState(char * data, int compressed, int uncompressed){
         Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
@@ -752,7 +803,7 @@ public:
         buffer << (int16_t) uncompressed;
         buffer.add(data, compressed);
 
-        Network::sendBytes(socket, (uint8_t*) buffer.getBuffer(), buffer.getLength());
+        Network::sendBytes(reliable, (uint8_t*) buffer.getBuffer(), buffer.getLength());
     }
 
     bool hasStates(){
@@ -768,7 +819,13 @@ public:
     }
 
     bool alive(){
-        return true;
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        return alive_;
+    }
+
+    void kill(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        alive_ = false;
     }
 
     void doSend(){
@@ -809,6 +866,24 @@ public:
         self->doSend();
         return NULL;
     }
+
+    void doClientInput(){
+        while (alive()){
+            int16_t magic = Network::read16(unreliable);
+            if (magic != NetworkMagic){
+                Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                continue;
+            }
+
+            PaintownUtil::ReferenceCount<Packet> packet = readPacket(unreliable);
+        }
+    }
+
+    static void * clientInput(void * self_){
+        NetworkServerObserver * self = (NetworkServerObserver*) self_;
+        self->doClientInput();
+        return NULL;
+    }
     
     virtual void start(){
         thread.start();
@@ -824,16 +899,20 @@ public:
 
 class NetworkClientObserver: public NetworkObserver {
 public:
-    NetworkClientObserver(Network::Socket socket):
+    NetworkClientObserver(Network::Socket socket, Network::Socket unreliable):
     NetworkObserver(),
     socket(socket),
-    thread(this, receive){
+    unreliable(unreliable),
+    thread(this, receive),
+    alive_(true){
     }
 
     Network::Socket socket;
+    Network::Socket unreliable;
     PaintownUtil::Thread::ThreadObject thread;
     PaintownUtil::ReferenceCount<World> world;
     PaintownUtil::Thread::LockObject lock;
+    bool alive_;
 
     void setWorld(const PaintownUtil::ReferenceCount<World> & world){
         PaintownUtil::Thread::ScopedLock scoped(lock);
@@ -848,7 +927,13 @@ public:
     }
 
     bool alive(){
-        return true;
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        return alive_;
+    }
+
+    virtual void kill(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        alive_ = false;
     }
 
     void doReceive(){
@@ -955,12 +1040,17 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     if (server){
         player1->setBehavior(&player1Behavior);
         player2->setBehavior(&player2Behavior);
-        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket));
+        Network::Socket server = Network::openUnreliable(port);
+        Network::listen(server);
+        Network::Socket udp = Network::accept(server);
+        Network::close(server);
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp));
         stage.setObserver(observer.convert<StageObserver>());
     } else {
         player2->setBehavior(&player1Behavior);
         player1->setBehavior(&player2Behavior);
-        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket));
+        Network::Socket udp = Network::connectUnreliable("127.0.0.1", port);
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp));
         stage.setObserver(observer.convert<StageObserver>());
     }
     
@@ -1006,6 +1096,8 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     } catch (const QuitGameException & ex){
     }
     Mugen::Data::getInstance().setTime(time);
+
+    observer->kill();
 
     Network::close(socket);
 
