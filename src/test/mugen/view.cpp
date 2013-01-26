@@ -40,7 +40,7 @@ namespace PaintownUtil = ::Util;
 
 using namespace std;
 
-static void showCollision( const std::vector< Mugen::Area > &vec, Graphics::Bitmap &bmp, int x, int y, int color, int &start ){
+static void showCollision( const std::vector< Mugen::Area > &vec, Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
     int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
