@@ -205,12 +205,11 @@ def generate_cpp(object, structs):
                     fields += """    *out->newToken() << "%(name)s" << serialize(data.%(name)s);\n""" % {'name': field.name}
             elif str(field.type_).startswith('std::map'):
                 name += 1
-                # FIXME: map only works if the key is an int
                 fields += """
         Token * %(token)s = out->newToken();
         *%(token)s << "%(var)s";
         for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
-            *%(token)s->newToken() << it->first << serialize(it->second);
+            *%(token)s->newToken() << serialize(it->first) << serialize(it->second);
         }
     """ % {'token': 't%d' % name,
            'type': str(field.type_),

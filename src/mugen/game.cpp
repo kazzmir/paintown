@@ -784,7 +784,8 @@ public:
     unreliable(unreliable),
     thread(this, send),
     clientThread(this, clientInput),
-    alive_(true){
+    alive_(true),
+    count(0){
     }
 
     PaintownUtil::Thread::LockObject lock;
@@ -794,6 +795,7 @@ public:
     PaintownUtil::Thread::ThreadObject clientThread;
     vector<PaintownUtil::ReferenceCount<World> > states;
     bool alive_;
+    uint32_t count;
 
     void sendState(char * data, int compressed, int uncompressed){
         Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
@@ -890,7 +892,10 @@ public:
     }
     
     virtual void beforeLogic(Stage & stage){
-        addState(stage.snapshotState());
+        count += 1;
+        if (count % 30 == 0){
+            addState(stage.snapshotState());
+        }
     }
 
     virtual void afterLogic(Stage & stage){
@@ -1014,6 +1019,8 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         out << timer.printTime(" took") << std::endl;
     }
 
+    Network::reuseSockets(true);
+
     Network::Socket socket = 0;
     if (server){
         Network::Socket remote = Network::openReliable(port);
@@ -1049,6 +1056,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     } else {
         player2->setBehavior(&player1Behavior);
         player1->setBehavior(&player2Behavior);
+        Global::debug(0) << "Connecting to udp" << std::endl;
         Network::Socket udp = Network::connectUnreliable("127.0.0.1", port);
         observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp));
         stage.setObserver(observer.convert<StageObserver>());
@@ -1058,8 +1066,15 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     
     options.setBehavior(&player1Behavior, NULL);
 
-    stage.addPlayer1(player1.raw());
-    stage.addPlayer2(player2.raw());
+    /* server is player1 */
+    if (server){
+        stage.addPlayer1(player1.raw());
+        stage.addPlayer2(player2.raw());
+    } else {
+        stage.addPlayer1(player1.raw());
+        stage.addPlayer2(player2.raw());
+    }
+
     stage.reset();
     int time = Mugen::Data::getInstance().getTime();
     Mugen::Data::getInstance().setTime(-1);

@@ -19,6 +19,7 @@ namespace Mugen{
     Token * serialize(const RuntimeValue &);
     Token * serialize(const Physics::Type);
     Token * serialize(const Facing);
+    Token * serialize(int);
 
     AttackType::Attribute deserializeAttackTypeAttribute(const Token * token);
     AttackType::Animation deserializeAttackTypeAnimation(const Token * token);

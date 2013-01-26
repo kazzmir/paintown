@@ -107,6 +107,12 @@ Token * serialize(const CharacterId & data){
     return new Token(out.str());
 }
     
+Token * serialize(int data){
+    std::ostringstream out;
+    out << data;
+    return new Token(out.str());
+}
+    
 Token * serialize(const Physics::Type data){
     std::ostringstream out;
     out << data;

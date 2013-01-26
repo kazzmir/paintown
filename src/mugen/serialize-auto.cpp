@@ -1664,19 +1664,19 @@ Token * serialize(const StateData & data){
         Token * t1 = out->newToken();
         *t1 << "variables";
         for (std::map<int, RuntimeValue >::const_iterator it = data.variables.begin(); it != data.variables.end(); it++){
-            *t1->newToken() << it->first << serialize(it->second);
+            *t1->newToken() << serialize(it->first) << serialize(it->second);
         }
     
         Token * t2 = out->newToken();
         *t2 << "floatVariables";
         for (std::map<int, RuntimeValue >::const_iterator it = data.floatVariables.begin(); it != data.floatVariables.end(); it++){
-            *t2->newToken() << it->first << serialize(it->second);
+            *t2->newToken() << serialize(it->first) << serialize(it->second);
         }
     
         Token * t3 = out->newToken();
         *t3 << "systemVariables";
         for (std::map<int, RuntimeValue >::const_iterator it = data.systemVariables.begin(); it != data.systemVariables.end(); it++){
-            *t3->newToken() << it->first << serialize(it->second);
+            *t3->newToken() << serialize(it->first) << serialize(it->second);
         }
         *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
     *out->newToken() << "stateType" << serialize(data.stateType);
@@ -1726,7 +1726,7 @@ Token * serialize(const StateData & data){
         Token * t4 = out->newToken();
         *t4 << "targets";
         for (std::map<int, std::vector<CharacterId > >::const_iterator it = data.targets.begin(); it != data.targets.end(); it++){
-            *t4->newToken() << it->first << serialize(it->second);
+            *t4->newToken() << serialize(it->first) << serialize(it->second);
         }
         if (data.spritePriority != 0){
         *out->newToken() << "spritePriority" << data.spritePriority;
@@ -1749,7 +1749,7 @@ Token * serialize(const StateData & data){
         Token * t6 = out->newToken();
         *t6 << "hitOverrides";
         for (std::map<int, HitOverride >::const_iterator it = data.hitOverrides.begin(); it != data.hitOverrides.end(); it++){
-            *t6->newToken() << it->first << serialize(it->second);
+            *t6->newToken() << serialize(it->first) << serialize(it->second);
         }
         if (data.virtualx != 0){
         *out->newToken() << "virtualx" << data.virtualx;
