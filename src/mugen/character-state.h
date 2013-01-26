@@ -1,11 +1,12 @@
 
-#ifndef _serialize_Mugen_108488fe241b3134743a35d746e8909c
-#define _serialize_Mugen_108488fe241b3134743a35d746e8909c
+#ifndef _serialize_Mugen_2e6a6842fcaf3beb2ae5ea75539890cd
+#define _serialize_Mugen_2e6a6842fcaf3beb2ae5ea75539890cd
 
 #include "common.h"
 #include "compiler.h"
 #include "util/token.h"
 #include "serialize.h"
+#include "util/graphics/color.h"
 #include <map>
 
 class Token;
@@ -672,7 +673,7 @@ struct StateData{
     Bind bind;
     std::map<int, std::vector<CharacterId > > targets;
     int spritePriority;
-    unsigned int wasHitCounter;
+    uint32_t wasHitCounter;
     CharacterData characterData;
     double drawAngle;
     DrawAngleEffect drawAngleData;
@@ -697,7 +698,7 @@ struct AnimationState{
         virtual_ticks = 0;
     }
 
-    unsigned int position;
+    uint32_t position;
     bool looped;
     bool started;
     int ticks;
@@ -705,6 +706,165 @@ struct AnimationState{
 };
 Token * serialize(const AnimationState & data);
 AnimationState deserializeAnimationState(const Token * data);
+
+
+struct ScreenBound{
+    ScreenBound(){
+        enabled = false;
+        offScreen = false;
+        panX = false;
+        panY = false;
+    }
+
+    bool enabled;
+    bool offScreen;
+    bool panX;
+    bool panY;
+};
+Token * serialize(const ScreenBound & data);
+ScreenBound deserializeScreenBound(const Token * data);
+
+
+
+struct Pause{
+    Pause(){
+        time = 0;
+        buffer = 0;
+        moveTime = 0;
+        pauseBackground = false;
+        who = defaultCharacterId();
+    }
+
+    int time;
+    int buffer;
+    int moveTime;
+    bool pauseBackground;
+    CharacterId who;
+};
+Token * serialize(const Pause & data);
+Pause deserializePause(const Token * data);
+
+
+struct Zoom{
+    Zoom(){
+        enabled = false;
+        x = 0;
+        y = 0;
+        zoomTime = 0;
+        zoomOutTime = 0;
+        zoom = 0;
+        in = false;
+        time = 0;
+        bindTime = 0;
+        deltaX = 0;
+        deltaY = 0;
+        scaleX = 0;
+        scaleY = 0;
+        velocityX = 0;
+        velocityY = 0;
+        accelX = 0;
+        accelY = 0;
+        superMoveTime = 0;
+        pauseMoveTime = 0;
+        removeOnGetHit = false;
+        hitCount = 0;
+        bound = defaultCharacterId();
+        owner = defaultCharacterId();
+    }
+
+    bool enabled;
+    double x;
+    double y;
+    int zoomTime;
+    int zoomOutTime;
+    int zoom;
+    bool in;
+    int time;
+    int bindTime;
+    int deltaX;
+    int deltaY;
+    double scaleX;
+    double scaleY;
+    double velocityX;
+    double velocityY;
+    double accelX;
+    double accelY;
+    int superMoveTime;
+    int pauseMoveTime;
+    bool removeOnGetHit;
+    int hitCount;
+    CharacterId bound;
+    CharacterId owner;
+};
+Token * serialize(const Zoom & data);
+Zoom deserializeZoom(const Token * data);
+
+
+struct EnvironmentColor{
+    EnvironmentColor(){
+        color = defaultGraphicsColor();
+        time = 0;
+        under = false;
+    }
+
+    Graphics::Color color;
+    int time;
+    bool under;
+};
+Token * serialize(const EnvironmentColor & data);
+EnvironmentColor deserializeEnvironmentColor(const Token * data);
+
+
+struct SuperPause{
+    SuperPause(){
+        time = 0;
+        positionX = 0;
+        positionY = 0;
+        soundGroup = 0;
+        soundItem = 0;
+    }
+
+    int time;
+    int positionX;
+    int positionY;
+    int soundGroup;
+    int soundItem;
+};
+Token * serialize(const SuperPause & data);
+SuperPause deserializeSuperPause(const Token * data);
+
+struct StageStateData{
+    StageStateData(){
+        quake_time = 0;
+        cycles = 0;
+        inleft = 0;
+        inright = 0;
+        onLeftSide = 0;
+        onRightSide = 0;
+        inabove = 0;
+        camerax = 0;
+        cameray = 0;
+        ticker = 0;
+    }
+
+    Pause pause;
+    std::map<CharacterId, ScreenBound > screenBound;
+    Zoom zoom;
+    EnvironmentColor environmentColor;
+    SuperPause superPause;
+    int quake_time;
+    int cycles;
+    int inleft;
+    int inright;
+    int onLeftSide;
+    int onRightSide;
+    int inabove;
+    double camerax;
+    double cameray;
+    uint32_t ticker;
+};
+Token * serialize(const StageStateData & data);
+StageStateData deserializeStageStateData(const Token * data);
 
 }
 

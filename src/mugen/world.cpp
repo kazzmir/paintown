@@ -124,21 +124,6 @@ static Token * serialize(const std::map<CharacterId, AllCharacterData> & charact
     return token;
 }
 
-static StageStateData deserializeStage(const Token * token){
-    StageStateData out;
-    /* TODO */
-    return out;
-}
-
-static Token * serialize(const StageStateData & stage){
-    Token * token = new Token();
-    *token << "stage";
-
-    /* TODO */
-
-    return token;
-}
-
 static Token * serialize(const Random & random){
     return random.serialize();
 }
@@ -193,9 +178,9 @@ World * World::deserialize(Token * token){
         out->characterData = deserializeCharacters(characters);
     }
 
-    const Token * stage = token->findToken("mugen-state/stage");
+    const Token * stage = token->findToken("mugen-state/StageStateData");
     if (stage != NULL){
-        out->stageData = deserializeStage(stage);
+        out->stageData = deserializeStageStateData(stage);
     }
 
     const Token * random = token->findToken("mugen-state/random");

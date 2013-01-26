@@ -222,9 +222,9 @@ Distance deserializeDistance(const Token * data){
 Token * serialize(const Attribute & data){
     Token * out = new Token();
     *out << "Attribute";
-    *out->newToken() << "state" << serialize(data.state);
-    *out->newToken() << "attackType" << serialize(data.attackType);
-    *out->newToken() << "physics" << serialize(data.physics);
+*out->newToken() << "state" << serialize(data.state);
+*out->newToken() << "attackType" << serialize(data.attackType);
+*out->newToken() << "physics" << serialize(data.physics);
 
     return out;
 }
@@ -255,7 +255,7 @@ Token * serialize(const Priority & data){
     if (data.hit != 0){
         *out->newToken() << "hit" << data.hit;
     }
-    *out->newToken() << "type" << serialize(data.type);
+*out->newToken() << "type" << serialize(data.type);
 
     return out;
 }
@@ -541,7 +541,9 @@ Fall deserializeFall(const Token * data){
     const Token * use = NULL;
     use = data->findToken("_/envShake");
     if (use != NULL){
-        out.envShake = deserializeShake(use);
+        const Token * child;
+        use->view() >> child;
+        out.envShake = deserializeShake(child);
     }
     use = data->findToken("_/fall");
     if (use != NULL){
@@ -590,24 +592,24 @@ Token * serialize(const HitDefinition & data){
         *out->newToken() << "alive" << data.alive;
     }
     *out->newToken() << "attribute" << serialize(data.attribute);
-    *out->newToken() << "hitFlag" << serialize(data.hitFlag);
-    *out->newToken() << "guardFlag" << serialize(data.guardFlag);
-    *out->newToken() << "animationType" << serialize(data.animationType);
-    *out->newToken() << "animationTypeAir" << serialize(data.animationTypeAir);
-    *out->newToken() << "animationTypeFall" << serialize(data.animationTypeFall);
+*out->newToken() << "hitFlag" << serialize(data.hitFlag);
+*out->newToken() << "guardFlag" << serialize(data.guardFlag);
+*out->newToken() << "animationType" << serialize(data.animationType);
+*out->newToken() << "animationTypeAir" << serialize(data.animationTypeAir);
+*out->newToken() << "animationTypeFall" << serialize(data.animationTypeFall);
     *out->newToken() << "priority" << serialize(data.priority);
     *out->newToken() << "damage" << serialize(data.damage);
-    *out->newToken() << "pause" << serialize(data.pause);
-    *out->newToken() << "guardPause" << serialize(data.guardPause);
-    *out->newToken() << "spark" << serialize(data.spark);
-    *out->newToken() << "guardSpark" << serialize(data.guardSpark);
+*out->newToken() << "pause" << serialize(data.pause);
+*out->newToken() << "guardPause" << serialize(data.guardPause);
+*out->newToken() << "spark" << serialize(data.spark);
+*out->newToken() << "guardSpark" << serialize(data.guardSpark);
     *out->newToken() << "sparkPosition" << serialize(data.sparkPosition);
-    *out->newToken() << "hitSound" << serialize(data.hitSound);
+*out->newToken() << "hitSound" << serialize(data.hitSound);
     *out->newToken() << "getPower" << serialize(data.getPower);
     *out->newToken() << "givePower" << serialize(data.givePower);
-    *out->newToken() << "guardHitSound" << serialize(data.guardHitSound);
-    *out->newToken() << "groundType" << serialize(data.groundType);
-    *out->newToken() << "airType" << serialize(data.airType);
+*out->newToken() << "guardHitSound" << serialize(data.guardHitSound);
+*out->newToken() << "groundType" << serialize(data.groundType);
+*out->newToken() << "airType" << serialize(data.airType);
     if (data.groundSlideTime != 0){
         *out->newToken() << "groundSlideTime" << data.groundSlideTime;
     }
@@ -665,9 +667,9 @@ Token * serialize(const HitDefinition & data){
     if (data.chainId != 0){
         *out->newToken() << "chainId" << data.chainId;
     }
-    *out->newToken() << "minimum" << serialize(data.minimum);
-    *out->newToken() << "maximum" << serialize(data.maximum);
-    *out->newToken() << "snap" << serialize(data.snap);
+*out->newToken() << "minimum" << serialize(data.minimum);
+*out->newToken() << "maximum" << serialize(data.maximum);
+*out->newToken() << "snap" << serialize(data.snap);
     if (data.player1SpritePriority != 0){
         *out->newToken() << "player1SpritePriority" << data.player1SpritePriority;
     }
@@ -709,7 +711,9 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/attribute");
     if (use != NULL){
-        out.attribute = deserializeAttribute(use);
+        const Token * child;
+        use->view() >> child;
+        out.attribute = deserializeAttribute(child);
     }
     use = data->findToken("_/hitFlag");
     if (use != NULL){
@@ -733,11 +737,15 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/priority");
     if (use != NULL){
-        out.priority = deserializePriority(use);
+        const Token * child;
+        use->view() >> child;
+        out.priority = deserializePriority(child);
     }
     use = data->findToken("_/damage");
     if (use != NULL){
-        out.damage = deserializeDamage(use);
+        const Token * child;
+        use->view() >> child;
+        out.damage = deserializeDamage(child);
     }
     use = data->findToken("_/pause");
     if (use != NULL){
@@ -757,7 +765,9 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/sparkPosition");
     if (use != NULL){
-        out.sparkPosition = deserializeSparkPosition(use);
+        const Token * child;
+        use->view() >> child;
+        out.sparkPosition = deserializeSparkPosition(child);
     }
     use = data->findToken("_/hitSound");
     if (use != NULL){
@@ -765,11 +775,15 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/getPower");
     if (use != NULL){
-        out.getPower = deserializeGetPower(use);
+        const Token * child;
+        use->view() >> child;
+        out.getPower = deserializeGetPower(child);
     }
     use = data->findToken("_/givePower");
     if (use != NULL){
-        out.givePower = deserializeGivePower(use);
+        const Token * child;
+        use->view() >> child;
+        out.givePower = deserializeGivePower(child);
     }
     use = data->findToken("_/guardHitSound");
     if (use != NULL){
@@ -817,7 +831,9 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/groundVelocity");
     if (use != NULL){
-        out.groundVelocity = deserializeGroundVelocity(use);
+        const Token * child;
+        use->view() >> child;
+        out.groundVelocity = deserializeGroundVelocity(child);
     }
     use = data->findToken("_/guardVelocity");
     if (use != NULL){
@@ -825,11 +841,15 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/airVelocity");
     if (use != NULL){
-        out.airVelocity = deserializeAirVelocity(use);
+        const Token * child;
+        use->view() >> child;
+        out.airVelocity = deserializeAirVelocity(child);
     }
     use = data->findToken("_/airGuardVelocity");
     if (use != NULL){
-        out.airGuardVelocity = deserializeAirGuardVelocity(use);
+        const Token * child;
+        use->view() >> child;
+        out.airGuardVelocity = deserializeAirGuardVelocity(child);
     }
     use = data->findToken("_/groundCornerPushoff");
     if (use != NULL){
@@ -917,7 +937,9 @@ HitDefinition deserializeHitDefinition(const Token * data){
     }
     use = data->findToken("_/fall");
     if (use != NULL){
-        out.fall = deserializeFall(use);
+        const Token * child;
+        use->view() >> child;
+        out.fall = deserializeFall(child);
     }
 
     return out;
@@ -930,7 +952,7 @@ Token * serialize(const HitOverride & data){
     if (data.time != 0){
         *out->newToken() << "time" << data.time;
     }
-    *out->newToken() << "attributes" << serialize(data.attributes);
+*out->newToken() << "attributes" << serialize(data.attributes);
     if (data.state != 0){
         *out->newToken() << "state" << data.state;
     }
@@ -1022,7 +1044,9 @@ Fall1 deserializeFall1(const Token * data){
     const Token * use = NULL;
     use = data->findToken("_/envShake");
     if (use != NULL){
-        out.envShake = deserializeShake1(use);
+        const Token * child;
+        use->view() >> child;
+        out.envShake = deserializeShake1(child);
     }
     use = data->findToken("_/fall");
     if (use != NULL){
@@ -1086,10 +1110,10 @@ Token * serialize(const HitState & data){
     if (data.xVelocity != 0){
         *out->newToken() << "xVelocity" << data.xVelocity;
     }
-    *out->newToken() << "animationType" << serialize(data.animationType);
-    *out->newToken() << "airType" << serialize(data.airType);
-    *out->newToken() << "groundType" << serialize(data.groundType);
-    *out->newToken() << "hitType" << serialize(data.hitType);
+*out->newToken() << "animationType" << serialize(data.animationType);
+*out->newToken() << "airType" << serialize(data.airType);
+*out->newToken() << "groundType" << serialize(data.groundType);
+*out->newToken() << "hitType" << serialize(data.hitType);
     if (data.guarded != false){
         *out->newToken() << "guarded" << data.guarded;
     }
@@ -1183,7 +1207,9 @@ HitState deserializeHitState(const Token * data){
     }
     use = data->findToken("_/fall");
     if (use != NULL){
-        out.fall = deserializeFall1(use);
+        const Token * child;
+        use->view() >> child;
+        out.fall = deserializeFall1(child);
     }
     use = data->findToken("_/moveContact");
     if (use != NULL){
@@ -1233,8 +1259,8 @@ HitSound deserializeHitSound(const Token * data){
 Token * serialize(const ReversalData & data){
     Token * out = new Token();
     *out << "ReversalData";
-    *out->newToken() << "pause" << serialize(data.pause);
-    *out->newToken() << "spark" << serialize(data.spark);
+*out->newToken() << "pause" << serialize(data.pause);
+*out->newToken() << "spark" << serialize(data.spark);
     *out->newToken() << "hitSound" << serialize(data.hitSound);
     if (data.sparkX != 0){
         *out->newToken() << "sparkX" << data.sparkX;
@@ -1286,7 +1312,9 @@ ReversalData deserializeReversalData(const Token * data){
     }
     use = data->findToken("_/hitSound");
     if (use != NULL){
-        out.hitSound = deserializeHitSound(use);
+        const Token * child;
+        use->view() >> child;
+        out.hitSound = deserializeHitSound(child);
     }
     use = data->findToken("_/sparkX");
     if (use != NULL){
@@ -1449,7 +1477,7 @@ Token * serialize(const TransOverride & data){
     if (data.enabled != false){
         *out->newToken() << "enabled" << data.enabled;
     }
-    *out->newToken() << "type" << serialize(data.type);
+*out->newToken() << "type" << serialize(data.type);
     if (data.alphaSource != 0){
         *out->newToken() << "alphaSource" << data.alphaSource;
     }
@@ -1516,7 +1544,7 @@ SpecialStuff deserializeSpecialStuff(const Token * data){
 Token * serialize(const Bind & data){
     Token * out = new Token();
     *out << "Bind";
-    *out->newToken() << "bound" << serialize(data.bound);
+*out->newToken() << "bound" << serialize(data.bound);
     if (data.time != 0){
         *out->newToken() << "time" << data.time;
     }
@@ -1564,7 +1592,7 @@ Bind deserializeBind(const Token * data){
 Token * serialize(const CharacterData & data){
     Token * out = new Token();
     *out << "CharacterData";
-    *out->newToken() << "who" << serialize(data.who);
+*out->newToken() << "who" << serialize(data.who);
     if (data.enabled != false){
         *out->newToken() << "enabled" << data.enabled;
     }
@@ -1661,28 +1689,28 @@ Token * serialize(const StateData & data){
         *out->newToken() << "stateTime" << data.stateTime;
     }
 
-        Token * t1 = out->newToken();
-        *t1 << "variables";
-        for (std::map<int, RuntimeValue >::const_iterator it = data.variables.begin(); it != data.variables.end(); it++){
-            *t1->newToken() << serialize(it->first) << serialize(it->second);
-        }
+    Token * t1 = out->newToken();
+    *t1 << "variables";
+    for (std::map<int, RuntimeValue >::const_iterator it = data.variables.begin(); it != data.variables.end(); it++){
+        *t1->newToken() << serialize(it->first) << serialize(it->second);
+    }
     
-        Token * t2 = out->newToken();
-        *t2 << "floatVariables";
-        for (std::map<int, RuntimeValue >::const_iterator it = data.floatVariables.begin(); it != data.floatVariables.end(); it++){
-            *t2->newToken() << serialize(it->first) << serialize(it->second);
-        }
+    Token * t2 = out->newToken();
+    *t2 << "floatVariables";
+    for (std::map<int, RuntimeValue >::const_iterator it = data.floatVariables.begin(); it != data.floatVariables.end(); it++){
+        *t2->newToken() << serialize(it->first) << serialize(it->second);
+    }
     
-        Token * t3 = out->newToken();
-        *t3 << "systemVariables";
-        for (std::map<int, RuntimeValue >::const_iterator it = data.systemVariables.begin(); it != data.systemVariables.end(); it++){
-            *t3->newToken() << serialize(it->first) << serialize(it->second);
-        }
-        *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
-    *out->newToken() << "stateType" << serialize(data.stateType);
-    *out->newToken() << "moveType" << serialize(data.moveType);
-    *out->newToken() << "hit" << serialize(data.hit);
-    *out->newToken() << "hitState" << serialize(data.hitState);
+    Token * t3 = out->newToken();
+    *t3 << "systemVariables";
+    for (std::map<int, RuntimeValue >::const_iterator it = data.systemVariables.begin(); it != data.systemVariables.end(); it++){
+        *t3->newToken() << serialize(it->first) << serialize(it->second);
+    }
+    *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
+*out->newToken() << "stateType" << serialize(data.stateType);
+*out->newToken() << "moveType" << serialize(data.moveType);
+*out->newToken() << "hit" << serialize(data.hit);
+*out->newToken() << "hitState" << serialize(data.hitState);
     if (data.combo != 0){
         *out->newToken() << "combo" << data.combo;
     }
@@ -1709,7 +1737,7 @@ Token * serialize(const StateData & data){
     if (data.frozen != false){
         *out->newToken() << "frozen" << data.frozen;
     }
-    *out->newToken() << "reversal" << serialize(data.reversal);
+*out->newToken() << "reversal" << serialize(data.reversal);
     if (data.reversalActive != false){
         *out->newToken() << "reversalActive" << data.reversalActive;
     }
@@ -1723,11 +1751,11 @@ Token * serialize(const StateData & data){
     }
     *out->newToken() << "bind" << serialize(data.bind);
 
-        Token * t4 = out->newToken();
-        *t4 << "targets";
-        for (std::map<int, std::vector<CharacterId > >::const_iterator it = data.targets.begin(); it != data.targets.end(); it++){
-            *t4->newToken() << serialize(it->first) << serialize(it->second);
-        }
+    Token * t4 = out->newToken();
+    *t4 << "targets";
+    for (std::map<int, std::vector<CharacterId > >::const_iterator it = data.targets.begin(); it != data.targets.end(); it++){
+        *t4->newToken() << serialize(it->first) << serialize(it->second);
+    }
         if (data.spritePriority != 0){
         *out->newToken() << "spritePriority" << data.spritePriority;
     }
@@ -1746,11 +1774,11 @@ Token * serialize(const StateData & data){
         *t5 << serialize(*it);
     }
     
-        Token * t6 = out->newToken();
-        *t6 << "hitOverrides";
-        for (std::map<int, HitOverride >::const_iterator it = data.hitOverrides.begin(); it != data.hitOverrides.end(); it++){
-            *t6->newToken() << serialize(it->first) << serialize(it->second);
-        }
+    Token * t6 = out->newToken();
+    *t6 << "hitOverrides";
+    for (std::map<int, HitOverride >::const_iterator it = data.hitOverrides.begin(); it != data.hitOverrides.end(); it++){
+        *t6->newToken() << serialize(it->first) << serialize(it->second);
+    }
         if (data.virtualx != 0){
         *out->newToken() << "virtualx" << data.virtualx;
     }
@@ -1760,7 +1788,7 @@ Token * serialize(const StateData & data){
     if (data.virtualz != 0){
         *out->newToken() << "virtualz" << data.virtualz;
     }
-    *out->newToken() << "facing" << serialize(data.facing);
+*out->newToken() << "facing" << serialize(data.facing);
     if (data.power != 0){
         *out->newToken() << "power" << data.power;
     }
@@ -1857,7 +1885,9 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/widthOverride");
     if (use != NULL){
-        out.widthOverride = deserializeWidthOverride(use);
+        const Token * child;
+        use->view() >> child;
+        out.widthOverride = deserializeWidthOverride(child);
     }
     use = data->findToken("_/hitByOverride");
     if (use != NULL){
@@ -1885,7 +1915,9 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/transOverride");
     if (use != NULL){
-        out.transOverride = deserializeTransOverride(use);
+        const Token * child;
+        use->view() >> child;
+        out.transOverride = deserializeTransOverride(child);
     }
     use = data->findToken("_/pushPlayer");
     if (use != NULL){
@@ -1893,7 +1925,9 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/special");
     if (use != NULL){
-        out.special = deserializeSpecialStuff(use);
+        const Token * child;
+        use->view() >> child;
+        out.special = deserializeSpecialStuff(child);
     }
     use = data->findToken("_/health");
     if (use != NULL){
@@ -1901,7 +1935,9 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/bind");
     if (use != NULL){
-        out.bind = deserializeBind(use);
+        const Token * child;
+        use->view() >> child;
+        out.bind = deserializeBind(child);
     }
     use = data->findToken("_/targets");
     if (use != NULL){
@@ -1917,7 +1953,9 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/characterData");
     if (use != NULL){
-        out.characterData = deserializeCharacterData(use);
+        const Token * child;
+        use->view() >> child;
+        out.characterData = deserializeCharacterData(child);
     }
     use = data->findToken("_/drawAngle");
     if (use != NULL){
@@ -1925,7 +1963,9 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/drawAngleData");
     if (use != NULL){
-        out.drawAngleData = deserializeDrawAngleEffect(use);
+        const Token * child;
+        use->view() >> child;
+        out.drawAngleData = deserializeDrawAngleEffect(child);
     }
     use = data->findToken("_/active");
     if (use != NULL){
@@ -2010,6 +2050,476 @@ AnimationState deserializeAnimationState(const Token * data){
     use = data->findToken("_/virtual_ticks");
     if (use != NULL){
         use->view() >> out.virtual_ticks;
+    }
+
+    return out;
+}
+
+
+Token * serialize(const ScreenBound & data){
+    Token * out = new Token();
+    *out << "ScreenBound";
+    if (data.enabled != false){
+        *out->newToken() << "enabled" << data.enabled;
+    }
+    if (data.offScreen != false){
+        *out->newToken() << "offScreen" << data.offScreen;
+    }
+    if (data.panX != false){
+        *out->newToken() << "panX" << data.panX;
+    }
+    if (data.panY != false){
+        *out->newToken() << "panY" << data.panY;
+    }
+
+    return out;
+}
+
+ScreenBound deserializeScreenBound(const Token * data){
+    ScreenBound out;
+    const Token * use = NULL;
+    use = data->findToken("_/enabled");
+    if (use != NULL){
+        use->view() >> out.enabled;
+    }
+    use = data->findToken("_/offScreen");
+    if (use != NULL){
+        use->view() >> out.offScreen;
+    }
+    use = data->findToken("_/panX");
+    if (use != NULL){
+        use->view() >> out.panX;
+    }
+    use = data->findToken("_/panY");
+    if (use != NULL){
+        use->view() >> out.panY;
+    }
+
+    return out;
+}
+
+
+
+Token * serialize(const Pause & data){
+    Token * out = new Token();
+    *out << "Pause";
+    if (data.time != 0){
+        *out->newToken() << "time" << data.time;
+    }
+    if (data.buffer != 0){
+        *out->newToken() << "buffer" << data.buffer;
+    }
+    if (data.moveTime != 0){
+        *out->newToken() << "moveTime" << data.moveTime;
+    }
+    if (data.pauseBackground != false){
+        *out->newToken() << "pauseBackground" << data.pauseBackground;
+    }
+*out->newToken() << "who" << serialize(data.who);
+
+    return out;
+}
+
+Pause deserializePause(const Token * data){
+    Pause out;
+    const Token * use = NULL;
+    use = data->findToken("_/time");
+    if (use != NULL){
+        use->view() >> out.time;
+    }
+    use = data->findToken("_/buffer");
+    if (use != NULL){
+        use->view() >> out.buffer;
+    }
+    use = data->findToken("_/moveTime");
+    if (use != NULL){
+        use->view() >> out.moveTime;
+    }
+    use = data->findToken("_/pauseBackground");
+    if (use != NULL){
+        use->view() >> out.pauseBackground;
+    }
+    use = data->findToken("_/who");
+    if (use != NULL){
+        out.who = deserializeCharacterId(use);
+    }
+
+    return out;
+}
+
+
+Token * serialize(const Zoom & data){
+    Token * out = new Token();
+    *out << "Zoom";
+    if (data.enabled != false){
+        *out->newToken() << "enabled" << data.enabled;
+    }
+    if (data.x != 0){
+        *out->newToken() << "x" << data.x;
+    }
+    if (data.y != 0){
+        *out->newToken() << "y" << data.y;
+    }
+    if (data.zoomTime != 0){
+        *out->newToken() << "zoomTime" << data.zoomTime;
+    }
+    if (data.zoomOutTime != 0){
+        *out->newToken() << "zoomOutTime" << data.zoomOutTime;
+    }
+    if (data.zoom != 0){
+        *out->newToken() << "zoom" << data.zoom;
+    }
+    if (data.in != false){
+        *out->newToken() << "in" << data.in;
+    }
+    if (data.time != 0){
+        *out->newToken() << "time" << data.time;
+    }
+    if (data.bindTime != 0){
+        *out->newToken() << "bindTime" << data.bindTime;
+    }
+    if (data.deltaX != 0){
+        *out->newToken() << "deltaX" << data.deltaX;
+    }
+    if (data.deltaY != 0){
+        *out->newToken() << "deltaY" << data.deltaY;
+    }
+    if (data.scaleX != 0){
+        *out->newToken() << "scaleX" << data.scaleX;
+    }
+    if (data.scaleY != 0){
+        *out->newToken() << "scaleY" << data.scaleY;
+    }
+    if (data.velocityX != 0){
+        *out->newToken() << "velocityX" << data.velocityX;
+    }
+    if (data.velocityY != 0){
+        *out->newToken() << "velocityY" << data.velocityY;
+    }
+    if (data.accelX != 0){
+        *out->newToken() << "accelX" << data.accelX;
+    }
+    if (data.accelY != 0){
+        *out->newToken() << "accelY" << data.accelY;
+    }
+    if (data.superMoveTime != 0){
+        *out->newToken() << "superMoveTime" << data.superMoveTime;
+    }
+    if (data.pauseMoveTime != 0){
+        *out->newToken() << "pauseMoveTime" << data.pauseMoveTime;
+    }
+    if (data.removeOnGetHit != false){
+        *out->newToken() << "removeOnGetHit" << data.removeOnGetHit;
+    }
+    if (data.hitCount != 0){
+        *out->newToken() << "hitCount" << data.hitCount;
+    }
+*out->newToken() << "bound" << serialize(data.bound);
+*out->newToken() << "owner" << serialize(data.owner);
+
+    return out;
+}
+
+Zoom deserializeZoom(const Token * data){
+    Zoom out;
+    const Token * use = NULL;
+    use = data->findToken("_/enabled");
+    if (use != NULL){
+        use->view() >> out.enabled;
+    }
+    use = data->findToken("_/x");
+    if (use != NULL){
+        use->view() >> out.x;
+    }
+    use = data->findToken("_/y");
+    if (use != NULL){
+        use->view() >> out.y;
+    }
+    use = data->findToken("_/zoomTime");
+    if (use != NULL){
+        use->view() >> out.zoomTime;
+    }
+    use = data->findToken("_/zoomOutTime");
+    if (use != NULL){
+        use->view() >> out.zoomOutTime;
+    }
+    use = data->findToken("_/zoom");
+    if (use != NULL){
+        use->view() >> out.zoom;
+    }
+    use = data->findToken("_/in");
+    if (use != NULL){
+        use->view() >> out.in;
+    }
+    use = data->findToken("_/time");
+    if (use != NULL){
+        use->view() >> out.time;
+    }
+    use = data->findToken("_/bindTime");
+    if (use != NULL){
+        use->view() >> out.bindTime;
+    }
+    use = data->findToken("_/deltaX");
+    if (use != NULL){
+        use->view() >> out.deltaX;
+    }
+    use = data->findToken("_/deltaY");
+    if (use != NULL){
+        use->view() >> out.deltaY;
+    }
+    use = data->findToken("_/scaleX");
+    if (use != NULL){
+        use->view() >> out.scaleX;
+    }
+    use = data->findToken("_/scaleY");
+    if (use != NULL){
+        use->view() >> out.scaleY;
+    }
+    use = data->findToken("_/velocityX");
+    if (use != NULL){
+        use->view() >> out.velocityX;
+    }
+    use = data->findToken("_/velocityY");
+    if (use != NULL){
+        use->view() >> out.velocityY;
+    }
+    use = data->findToken("_/accelX");
+    if (use != NULL){
+        use->view() >> out.accelX;
+    }
+    use = data->findToken("_/accelY");
+    if (use != NULL){
+        use->view() >> out.accelY;
+    }
+    use = data->findToken("_/superMoveTime");
+    if (use != NULL){
+        use->view() >> out.superMoveTime;
+    }
+    use = data->findToken("_/pauseMoveTime");
+    if (use != NULL){
+        use->view() >> out.pauseMoveTime;
+    }
+    use = data->findToken("_/removeOnGetHit");
+    if (use != NULL){
+        use->view() >> out.removeOnGetHit;
+    }
+    use = data->findToken("_/hitCount");
+    if (use != NULL){
+        use->view() >> out.hitCount;
+    }
+    use = data->findToken("_/bound");
+    if (use != NULL){
+        out.bound = deserializeCharacterId(use);
+    }
+    use = data->findToken("_/owner");
+    if (use != NULL){
+        out.owner = deserializeCharacterId(use);
+    }
+
+    return out;
+}
+
+
+Token * serialize(const EnvironmentColor & data){
+    Token * out = new Token();
+    *out << "EnvironmentColor";
+*out->newToken() << "color" << serialize(data.color);
+    if (data.time != 0){
+        *out->newToken() << "time" << data.time;
+    }
+    if (data.under != false){
+        *out->newToken() << "under" << data.under;
+    }
+
+    return out;
+}
+
+EnvironmentColor deserializeEnvironmentColor(const Token * data){
+    EnvironmentColor out;
+    const Token * use = NULL;
+    use = data->findToken("_/color");
+    if (use != NULL){
+        out.color = deserializeGraphicsColor(use);
+    }
+    use = data->findToken("_/time");
+    if (use != NULL){
+        use->view() >> out.time;
+    }
+    use = data->findToken("_/under");
+    if (use != NULL){
+        use->view() >> out.under;
+    }
+
+    return out;
+}
+
+
+Token * serialize(const SuperPause & data){
+    Token * out = new Token();
+    *out << "SuperPause";
+    if (data.time != 0){
+        *out->newToken() << "time" << data.time;
+    }
+    if (data.positionX != 0){
+        *out->newToken() << "positionX" << data.positionX;
+    }
+    if (data.positionY != 0){
+        *out->newToken() << "positionY" << data.positionY;
+    }
+    if (data.soundGroup != 0){
+        *out->newToken() << "soundGroup" << data.soundGroup;
+    }
+    if (data.soundItem != 0){
+        *out->newToken() << "soundItem" << data.soundItem;
+    }
+
+    return out;
+}
+
+SuperPause deserializeSuperPause(const Token * data){
+    SuperPause out;
+    const Token * use = NULL;
+    use = data->findToken("_/time");
+    if (use != NULL){
+        use->view() >> out.time;
+    }
+    use = data->findToken("_/positionX");
+    if (use != NULL){
+        use->view() >> out.positionX;
+    }
+    use = data->findToken("_/positionY");
+    if (use != NULL){
+        use->view() >> out.positionY;
+    }
+    use = data->findToken("_/soundGroup");
+    if (use != NULL){
+        use->view() >> out.soundGroup;
+    }
+    use = data->findToken("_/soundItem");
+    if (use != NULL){
+        use->view() >> out.soundItem;
+    }
+
+    return out;
+}
+
+Token * serialize(const StageStateData & data){
+    Token * out = new Token();
+    *out << "StageStateData";
+    *out->newToken() << "pause" << serialize(data.pause);
+
+    Token * t1 = out->newToken();
+    *t1 << "screenBound";
+    for (std::map<CharacterId, ScreenBound >::const_iterator it = data.screenBound.begin(); it != data.screenBound.end(); it++){
+        *t1->newToken() << serialize(it->first) << serialize(it->second);
+    }
+        *out->newToken() << "zoom" << serialize(data.zoom);
+    *out->newToken() << "environmentColor" << serialize(data.environmentColor);
+    *out->newToken() << "superPause" << serialize(data.superPause);
+    if (data.quake_time != 0){
+        *out->newToken() << "quake_time" << data.quake_time;
+    }
+    if (data.cycles != 0){
+        *out->newToken() << "cycles" << data.cycles;
+    }
+    if (data.inleft != 0){
+        *out->newToken() << "inleft" << data.inleft;
+    }
+    if (data.inright != 0){
+        *out->newToken() << "inright" << data.inright;
+    }
+    if (data.onLeftSide != 0){
+        *out->newToken() << "onLeftSide" << data.onLeftSide;
+    }
+    if (data.onRightSide != 0){
+        *out->newToken() << "onRightSide" << data.onRightSide;
+    }
+    if (data.inabove != 0){
+        *out->newToken() << "inabove" << data.inabove;
+    }
+    if (data.camerax != 0){
+        *out->newToken() << "camerax" << data.camerax;
+    }
+    if (data.cameray != 0){
+        *out->newToken() << "cameray" << data.cameray;
+    }
+    if (data.ticker != 0){
+        *out->newToken() << "ticker" << data.ticker;
+    }
+
+    return out;
+}
+
+StageStateData deserializeStageStateData(const Token * data){
+    StageStateData out;
+    const Token * use = NULL;
+    use = data->findToken("_/pause");
+    if (use != NULL){
+        const Token * child;
+        use->view() >> child;
+        out.pause = deserializePause(child);
+    }
+    use = data->findToken("_/screenBound");
+    if (use != NULL){
+        
+    }
+    use = data->findToken("_/zoom");
+    if (use != NULL){
+        const Token * child;
+        use->view() >> child;
+        out.zoom = deserializeZoom(child);
+    }
+    use = data->findToken("_/environmentColor");
+    if (use != NULL){
+        const Token * child;
+        use->view() >> child;
+        out.environmentColor = deserializeEnvironmentColor(child);
+    }
+    use = data->findToken("_/superPause");
+    if (use != NULL){
+        const Token * child;
+        use->view() >> child;
+        out.superPause = deserializeSuperPause(child);
+    }
+    use = data->findToken("_/quake_time");
+    if (use != NULL){
+        use->view() >> out.quake_time;
+    }
+    use = data->findToken("_/cycles");
+    if (use != NULL){
+        use->view() >> out.cycles;
+    }
+    use = data->findToken("_/inleft");
+    if (use != NULL){
+        use->view() >> out.inleft;
+    }
+    use = data->findToken("_/inright");
+    if (use != NULL){
+        use->view() >> out.inright;
+    }
+    use = data->findToken("_/onLeftSide");
+    if (use != NULL){
+        use->view() >> out.onLeftSide;
+    }
+    use = data->findToken("_/onRightSide");
+    if (use != NULL){
+        use->view() >> out.onRightSide;
+    }
+    use = data->findToken("_/inabove");
+    if (use != NULL){
+        use->view() >> out.inabove;
+    }
+    use = data->findToken("_/camerax");
+    if (use != NULL){
+        use->view() >> out.camerax;
+    }
+    use = data->findToken("_/cameray");
+    if (use != NULL){
+        use->view() >> out.cameray;
+    }
+    use = data->findToken("_/ticker");
+    if (use != NULL){
+        use->view() >> out.ticker;
     }
 
     return out;

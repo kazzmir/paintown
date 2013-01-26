@@ -20,6 +20,7 @@ namespace Mugen{
     Token * serialize(const Physics::Type);
     Token * serialize(const Facing);
     Token * serialize(int);
+    Token * serialize(const Graphics::Color &);
 
     AttackType::Attribute deserializeAttackTypeAttribute(const Token * token);
     AttackType::Animation deserializeAttackTypeAnimation(const Token * token);
@@ -28,6 +29,7 @@ namespace Mugen{
     CharacterId deserializeCharacterId(const Token * token);
     Physics::Type deserializePhysicsType(const Token * token);
     Facing deserializeFacing(const Token * token);
+    Graphics::Color deserializeGraphicsColor(const Token * token);
         
     AttackType::Animation defaultAttackTypeAnimation();
     AttackType::Ground defaultAttackTypeGround();
@@ -35,6 +37,7 @@ namespace Mugen{
     CharacterId defaultCharacterId();
     Physics::Type defaultPhysicsType();
     Facing defaultFacing();
+    Graphics::Color defaultGraphicsColor();
 }
 
 #endif

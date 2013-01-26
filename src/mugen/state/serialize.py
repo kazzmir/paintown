@@ -206,11 +206,11 @@ def generate_cpp(object, structs):
             elif str(field.type_).startswith('std::map'):
                 name += 1
                 fields += """
-        Token * %(token)s = out->newToken();
-        *%(token)s << "%(var)s";
-        for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
-            *%(token)s->newToken() << serialize(it->first) << serialize(it->second);
-        }
+    Token * %(token)s = out->newToken();
+    *%(token)s << "%(var)s";
+    for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
+        *%(token)s->newToken() << serialize(it->first) << serialize(it->second);
+    }
     """ % {'token': 't%d' % name,
            'type': str(field.type_),
            'var': field.name}
@@ -233,7 +233,9 @@ def generate_cpp(object, structs):
                 if field.isArray():
                     get = ""
                 else:
-                    get = "out.%(name)s = deserialize%(type)s(use);" % {'name': field.name,
+                    get = """const Token * child;
+        use->view() >> child;
+        out.%(name)s = deserialize%(type)s(child);""" % {'name': field.name,
                                                                     'type': str(field.type_)}
             elif field.type_.isPOD() or str(field.type_) == 'std::string':
                 get = "use->view() >> out.%(name)s;" % {'name': field.name}

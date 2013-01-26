@@ -3,6 +3,9 @@
 
 #include "common.h"
 
+#include "character-state.h"
+
+#if 0
 namespace Mugen{
 
     struct ScreenBound{
@@ -119,5 +122,6 @@ namespace Mugen{
         unsigned long int ticker;
     };
 }
+#endif
 
 #endif

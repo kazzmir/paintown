@@ -1049,7 +1049,9 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         player2->setBehavior(&player2Behavior);
         Network::Socket server = Network::openUnreliable(port);
         Network::listen(server);
+        Global::debug(0) << "Waiting for udp connection" << std::endl;
         Network::Socket udp = Network::accept(server);
+        Global::debug(0) << "Got a connection" << std::endl;
         Network::close(server);
         observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp));
         stage.setObserver(observer.convert<StageObserver>());

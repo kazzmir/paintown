@@ -41,7 +41,7 @@ public:
 
 protected:
 
-    void drawLight(Graphics::Bitmap * original, Graphics::Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int black_alpha, const int light, const int light_alpha, bool draw_light);
+    void drawLight(Graphics::Bitmap * original, Graphics::Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int black_alpha, const Graphics::Color light, const int light_alpha, bool draw_light);
     void processLight(const Token * token);
     Graphics::Color getSkyColor() const;
     int getSkyDarkness() const;

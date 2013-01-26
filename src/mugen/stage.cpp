@@ -150,6 +150,7 @@ static bool centerCollision(Mugen::Object *p1, Mugen::Object *p2){
     return true;
 }
         
+/*
 Mugen::StageStateData::StageStateData():
 quake_time(0),
 cycles(0),
@@ -162,6 +163,7 @@ camerax(0),
 cameray(0),
 ticker(0){
 }
+*/
 
 Mugen::Stage::Stage(const Filesystem::AbsolutePath & location):
 location(location),

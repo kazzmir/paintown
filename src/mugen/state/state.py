@@ -37,7 +37,7 @@ class Type:
         self.name = name
 
     def isPOD(self):
-        return self.name in ['int', 'short', 'char', 'double', 'bool']
+        return self.name in ['int', 'short', 'char', 'double', 'bool', 'uint32_t']
 
     def element(self):
         return ' '.join([str(x) for x in self.template])

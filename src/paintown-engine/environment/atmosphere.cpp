@@ -147,7 +147,7 @@ NightAtmosphere::~NightAtmosphere(){
 
 /* lights should not overlap! the effect completely messes up if they do
  */
-void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int dark_alpha, const int light, const int light_alpha, bool draw_light){
+void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int dark_alpha, const Graphics::Color light, const int light_alpha, bool draw_light){
     int center_x = x;
     // int center_x = screenX();
     

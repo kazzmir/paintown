@@ -39,6 +39,11 @@ load-full.cpp
 common/init.cpp
 """)
 
+state_source = most_game_source + Split("""
+state.cpp
+common/init.cpp
+""")
+
 sffv2_source = Split("""
 sffv2.cpp
 sff.cpp
@@ -100,6 +105,7 @@ def makeTest(name, files):
 # x.append(testEnv.Program('load', load_source + most_game_source))
 makeTest('load-full', full_source)
 makeTest('load-select', select_source)
+makeTest('state', state_source)
 makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'])
 makeTest('load-stage', stage_source)

@@ -112,6 +112,21 @@ Token * serialize(int data){
     out << data;
     return new Token(out.str());
 }
+
+Token * serialize(const Graphics::Color & color){
+    Token * start = new Token();
+    *start << "color" << Graphics::getRed(color) << Graphics::getGreen(color) << Graphics::getBlue(color);
+    return start;
+}
+
+Graphics::Color deserializeGraphicsColor(const Token * token){
+    int red, green, blue;
+    if (token->match("_", red, green, blue)){
+        return Graphics::makeColor(red, green, blue);
+    }
+
+    return Graphics::Color();
+}
     
 Token * serialize(const Physics::Type data){
     std::ostringstream out;
@@ -203,6 +218,10 @@ Physics::Type defaultPhysicsType(){
 
 Facing defaultFacing(){
     return FacingLeft;
+}
+
+Graphics::Color defaultGraphicsColor(){
+    return Graphics::Color();
 }
 
 }

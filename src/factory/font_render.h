@@ -12,7 +12,7 @@ class Bitmap;
 }
 
 struct render_message{
-	render_message( const Font & f, int x, int y, int sizeX, int sizeY, Graphics::Color fg, Graphics::Color bg, int translucency, const std::string & str ):r_font( f ){
+	render_message( const Font & f, int x, int y, int sizeX, int sizeY, const Graphics::Color & fg, Graphics::Color bg, int translucency, const std::string & str ):r_font( f ){
             this->sizeX = sizeX;
             this->sizeY = sizeY;
             this->x = x;
