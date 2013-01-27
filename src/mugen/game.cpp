@@ -725,8 +725,22 @@ public:
     }
 
     NetworkBuffer & operator<<(const string & str){
-        *this << str.size();
+        *this << (int16_t) str.size();
         add(str.c_str(), str.size());
+        return *this;
+    }
+
+    NetworkBuffer & operator>>(string & str){
+        int16_t size = 0;
+        *this >> size;
+        Global::debug(0) << "Read string of length " << size << std::endl;
+        if (size > 0 && length + size <= contains){
+            char out[size+1];
+            memcpy(out, buffer + length, size);
+            length += size;
+            out[size] = 0;
+            str = string(out);
+        }
         return *this;
     }
 
@@ -812,15 +826,13 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(NetworkBuffer & buffer){
             buffer >> ticks;
             buffer >> inputCount;
             Global::debug(0) << "Tick " << ticks << " inputs " << inputCount << std::endl;
-            /*
             vector<string> inputs;
             for (int i = 0; i < inputCount; i++){
-                int16_t size = Network::read16(socket);
-                string input = Network::readStr(socket, size);
+                string input;
+                buffer >> input;
                 inputs.push_back(input);
             }
-            return PaintownUtil::ReferenceCount<Packet>(new InputPacket(inputs));
-            */
+            return PaintownUtil::ReferenceCount<Packet>(new InputPacket(inputs, ticks));
             break;
         }
         default: {
@@ -969,7 +981,7 @@ public:
                             PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
                             Global::debug(0) << "Received inputs " << input->inputs.size() << std::endl;
                             for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
-                                Global::debug(0) << " " << *it << std::endl;
+                                Global::debug(0) << " '" << *it << "'" << std::endl;
                             }
                             break;
                         }
@@ -1092,6 +1104,7 @@ public:
     virtual void afterLogic(Stage & stage){
         vector<string> inputs = player1->currentInputs();
         if (inputs.size() > 0){
+            Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
             for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
                 Global::debug(0) << "Input: " << *it << std::endl;
             }
@@ -1162,6 +1175,10 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         player2->setBehavior(&player2Behavior);
         Network::Socket server = Network::openUnreliable(port);
         Network::listen(server);
+        /* Synchronize with client to make sure he doesnt try to connect
+         * before the udp server is open
+         */
+        Network::send16(socket, 18);
         Global::debug(0) << "Waiting for udp connection" << std::endl;
         Network::Socket udp = Network::accept(server);
         Global::debug(0) << "Got a connection" << std::endl;
@@ -1172,6 +1189,9 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         player2->setBehavior(&player1Behavior);
         player1->setBehavior(&player2Behavior);
         Global::debug(0) << "Connecting to udp" << std::endl;
+        if (Network::read16(socket) != 18){
+            throw MugenException("Unable to synchronize with server", __FILE__, __LINE__);
+        }
         Network::Socket udp = Network::connectUnreliable("127.0.0.1", port);
         observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp, player2, player1));
         stage.setObserver(observer.convert<StageObserver>());
