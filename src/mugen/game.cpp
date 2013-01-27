@@ -660,6 +660,7 @@ public:
     virtual void kill() = 0;
 };
 
+/* FIXME: move this to token.h */
 static Token * filterTokens(Token * start){
     if (start->isData()){
         return start->copy();
@@ -675,6 +676,7 @@ static Token * filterTokens(Token * start){
     return out;
 }
 
+/* FIXME: split this into InputNetworkBuffer and OutputNetworkBuffer */
 class NetworkBuffer{
 public:
     NetworkBuffer(int size = 128){
@@ -921,6 +923,7 @@ public:
     void kill(){
         PaintownUtil::Thread::ScopedLock scoped(lock);
         alive_ = false;
+        Network::close(unreliable);
     }
 
     void doSend(){
@@ -1012,6 +1015,15 @@ public:
     }
 
     virtual void afterLogic(Stage & stage){
+        vector<string> inputs = player1->currentInputs();
+        if (inputs.size() > 0){
+            Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
+            for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
+                Global::debug(0) << "Input: " << *it << std::endl;
+            }
+            PaintownUtil::ReferenceCount<InputPacket> packet(new InputPacket(inputs, stage.getTicks()));
+            sendPacket(unreliable, packet.convert<Packet>());
+        }
     }
 };
 
@@ -1024,6 +1036,7 @@ public:
     player1(player1),
     player2(player2),
     thread(this, receive),
+    input(this, input_),
     alive_(true){
     }
 
@@ -1032,6 +1045,7 @@ public:
     PaintownUtil::ReferenceCount<Character> player1;
     PaintownUtil::ReferenceCount<Character> player2;
     PaintownUtil::Thread::ThreadObject thread;
+    PaintownUtil::Thread::ThreadObject input;
     PaintownUtil::ReferenceCount<World> world;
     PaintownUtil::Thread::LockObject lock;
     bool alive_;
@@ -1056,6 +1070,7 @@ public:
     virtual void kill(){
         PaintownUtil::Thread::ScopedLock scoped(lock);
         alive_ = false;
+        Network::close(unreliable);
     }
 
     void doReceive(){
@@ -1092,6 +1107,43 @@ public:
     
     virtual void start(){
         thread.start();
+        input.start();
+    }
+
+    static void * input_(void * self){
+        ((NetworkClientObserver*)self)->doClientInput();
+        return NULL;
+    }
+
+    void doClientInput(){
+        try{
+            while (alive()){
+                NetworkBuffer buffer(1024);
+                buffer.readAll(unreliable);
+                int16_t magic = 0;
+                buffer >> magic;
+                if (magic != NetworkMagic){
+                    Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                    continue;
+                }
+
+                PaintownUtil::ReferenceCount<Packet> packet = readPacket(buffer);
+                if (packet != NULL){
+                    switch (packet->type){
+                        case Packet::Input: {
+                            PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+                            Global::debug(0) << "Received inputs " << input->inputs.size() << std::endl;
+                            for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
+                                Global::debug(0) << " '" << *it << "'" << std::endl;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (const Exception::Base & ex){
+            Global::debug(0) << "Error in client read input thread. " << ex.getTrace() << std::endl;
+        }
     }
     
     virtual void beforeLogic(Stage & stage){
