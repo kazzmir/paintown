@@ -280,6 +280,7 @@ public:
     virtual std::vector<Effect *> findEffects(const Character * owner, int id);
     
     virtual void setObserver(const PaintownUtil::ReferenceCount<StageObserver> & observer);
+    virtual PaintownUtil::ReferenceCount<StageObserver> getObserver();
 
     virtual void setEnvironmentColor(Graphics::Color color, int time, bool under); 
 

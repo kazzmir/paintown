@@ -2817,6 +2817,18 @@ static bool blockingState(int state){
 std::vector<std::string> Character::currentInputs() const {
     return getStateData().active;
 }
+        
+void Character::setInputs(uint32_t tick, const std::vector<std::string> & inputs){
+    /*
+    while (tick <= getLocalData().inputHistory.size()){
+        getLocalData().inputHistory.push_back(vector<string>());
+    }
+    */
+    if (getLocalData().inputHistory.size() < tick){
+        getLocalData().inputHistory.resize(tick);
+    }
+    getLocalData().inputHistory[tick - 1] = inputs;
+}
 
 /* Inherited members */
 void Character::act(Stage * stage){
@@ -2868,14 +2880,14 @@ void Character::act(Stage * stage){
      * in real-time and need to get raw inputs. Otherwise get the inputs
      * from the input history.
      */
-    if (stage->getTicks() >= getLocalData().inputHistory.size()){
+    if (stage->getTicks() - 1 >= getLocalData().inputHistory.size()){
         /* active is the current set of commands */
         getStateData().active = doInput(*stage);
         getLocalData().inputHistory.push_back(getStateData().active);
 
         recordCommands(getStateData().active);
     } else {
-        getStateData().active = getLocalData().inputHistory[stage->getTicks()];
+        getStateData().active = getLocalData().inputHistory[stage->getTicks() - 1];
     }
 
     if (getHitState().recoverTime > 0){

@@ -1103,6 +1103,7 @@ public:
         virtual Point getDrawOffset() const;
 
         virtual std::vector<std::string> currentInputs() const;
+        virtual void setInputs(uint32_t tick, const std::vector<std::string> & inputs);
 
         /* bind the enemy to the target id. used for target redirection
          * and BindToTarget

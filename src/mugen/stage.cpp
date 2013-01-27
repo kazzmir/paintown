@@ -1369,9 +1369,11 @@ void Mugen::Stage::runCycle(){
 void Mugen::Stage::logic(){
 
     /* This must be the first thing done in this function! */
+    /*
     if (observer != NULL){
         observer->beforeLogic(*this);
     }
+    */
 
     // Console::ConsoleEnd & cend = Console::Console::endl;
 
@@ -1392,9 +1394,11 @@ void Mugen::Stage::logic(){
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 
     /* This must be the last thing done in this function! */
+    /*
     if (observer != NULL){
         observer->afterLogic(*this);
     }
+    */
 
 #if 0
     if (!gameOver){
@@ -2837,4 +2841,8 @@ Mugen::StageObserver::~StageObserver(){
 
 void Mugen::Stage::setObserver(const PaintownUtil::ReferenceCount<StageObserver> & observer){
     this->observer = observer;
+}
+    
+PaintownUtil::ReferenceCount<Mugen::StageObserver> Mugen::Stage::getObserver(){
+    return observer;
 }

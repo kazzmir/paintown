@@ -593,10 +593,17 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 }
                 */
             } else {
+                PaintownUtil::ReferenceCount<StageObserver> observer = stage->getObserver();
                 while (gameTicks > 0){
                     gameTicks -= 1;
                     totalTicks += 1;
+                    if (observer != NULL){
+                        observer->beforeLogic(*stage);
+                    }
                     stage->logic();
+                    if (observer != NULL){
+                        observer->afterLogic(*stage);
+                    }
                 }
             }
             /* Check if some time actually passed */

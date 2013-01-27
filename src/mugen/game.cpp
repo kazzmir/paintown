@@ -25,6 +25,7 @@
 
 #include "character.h"
 #include "util.h"
+#include "sound.h"
 #include "font.h"
 #include "menu.h"
 #include "stage.h"
@@ -814,6 +815,11 @@ public:
     tick(tick){
     }
 
+    InputPacket():
+    Packet(Input),
+    tick(0){
+    }
+
     vector<string> inputs;
     uint32_t tick;
 };
@@ -982,10 +988,13 @@ public:
                     switch (packet->type){
                         case Packet::Input: {
                             PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+                            addInput(*input);
+                            /*
                             Global::debug(0) << "Received inputs " << input->inputs.size() << std::endl;
                             for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
                                 Global::debug(0) << " '" << *it << "'" << std::endl;
                             }
+                            */
                             break;
                         }
                     }
@@ -1006,12 +1015,43 @@ public:
         thread.start();
         clientThread.start();
     }
+
+    PaintownUtil::ReferenceCount<World> lastState;
+    std::map<uint32_t, InputPacket> inputs;
+
+    void addInput(const InputPacket & input){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        inputs[input.tick] = input;
+    }
     
     virtual void beforeLogic(Stage & stage){
-        count += 1;
         if (count % 30 == 0){
-            addState(stage.snapshotState());
+            lastState = stage.snapshotState();
+            addState(lastState);
         }
+        count += 1;
+
+        uint32_t currentTicks = stage.getTicks();
+
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        if (inputs.size() > 0){
+            for (std::map<uint32_t, InputPacket>::iterator it = inputs.begin(); it != inputs.end(); it++){
+                uint32_t tick = it->first;
+                const InputPacket & input = it->second;
+                player2->setInputs(tick, input.inputs);
+            }
+            inputs.clear();
+
+            if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
+                stage.updateState(*lastState);
+                Mugen::Sound::disableSounds();
+                for (int i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
+                    stage.logic();
+                }
+                Mugen::Sound::enableSounds();
+            }
+        }
+
     }
 
     virtual void afterLogic(Stage & stage){
@@ -1049,6 +1089,7 @@ public:
     PaintownUtil::ReferenceCount<World> world;
     PaintownUtil::Thread::LockObject lock;
     bool alive_;
+    std::map<uint32_t, InputPacket> inputs;
 
     void setWorld(const PaintownUtil::ReferenceCount<World> & world){
         PaintownUtil::Thread::ScopedLock scoped(lock);
@@ -1115,6 +1156,11 @@ public:
         return NULL;
     }
 
+    void addInput(const InputPacket & input){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        inputs[input.tick] = input;
+    }
+
     void doClientInput(){
         try{
             while (alive()){
@@ -1132,10 +1178,13 @@ public:
                     switch (packet->type){
                         case Packet::Input: {
                             PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+                            addInput(*input);
+                            /*
                             Global::debug(0) << "Received inputs " << input->inputs.size() << std::endl;
                             for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
                                 Global::debug(0) << " '" << *it << "'" << std::endl;
                             }
+                            */
                             break;
                         }
                     }
@@ -1145,11 +1194,34 @@ public:
             Global::debug(0) << "Error in client read input thread. " << ex.getTrace() << std::endl;
         }
     }
+
+    PaintownUtil::ReferenceCount<World> lastState;
     
     virtual void beforeLogic(Stage & stage){
+        uint32_t currentTicks = stage.getTicks();
         PaintownUtil::ReferenceCount<World> next = getWorld();
         if (next != NULL){
             stage.updateState(*next);
+            lastState = next;
+        }
+
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        if (inputs.size() > 0){
+            for (std::map<uint32_t, InputPacket>::iterator it = inputs.begin(); it != inputs.end(); it++){
+                uint32_t tick = it->first;
+                const InputPacket & input = it->second;
+                player2->setInputs(tick, input.inputs);
+            }
+            inputs.clear();
+
+            if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
+                stage.updateState(*lastState);
+                Mugen::Sound::disableSounds();
+                for (int i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
+                    stage.logic();
+                }
+                Mugen::Sound::enableSounds();
+            }
         }
     }
 
