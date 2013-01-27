@@ -677,10 +677,11 @@ static Token * filterTokens(Token * start){
 
 class NetworkBuffer{
 public:
-    NetworkBuffer(){
+    NetworkBuffer(int size = 128){
         length = 0;
-        actualLength = 128;
+        actualLength = size;
         buffer = new char[actualLength];
+        contains = 0;
     }
 
     ~NetworkBuffer(){
@@ -694,7 +695,46 @@ public:
         return *this;
     }
 
-    virtual void add(char * data, int size){
+    NetworkBuffer & operator<<(uint32_t data){
+        checkBuffer(sizeof(data));
+        Network::dump32(buffer + length, data);
+        length += sizeof(data);
+        return *this;
+    }
+
+    NetworkBuffer & operator>>(int16_t & data){
+        if (length + sizeof(data) < contains){
+            char * where = buffer + length;
+            char * out = Network::parse16(where, (uint16_t*) &data);
+            length += out - where;
+        } else {
+            data = -1;
+        }
+        return *this;
+    }
+
+    NetworkBuffer & operator>>(uint32_t & data){
+        if (length + sizeof(data) < contains){
+            char * where = buffer + length;
+            char * out = Network::parse32(where, &data);
+            length += out - where;
+        } else {
+            data = -1;
+        }
+        return *this;
+    }
+
+    NetworkBuffer & operator<<(const string & str){
+        *this << str.size();
+        add(str.c_str(), str.size());
+        return *this;
+    }
+
+    virtual void readAll(const Network::Socket & socket){
+        contains = Network::readUptoBytes(socket, (uint8_t*) buffer, actualLength);
+    }
+
+    virtual void add(const char * data, int size){
         checkBuffer(size);
         memcpy(buffer + length, data, size);
         length += size;
@@ -709,6 +749,10 @@ public:
         if (length + bytes >= actualLength){
             increaseBuffer(bytes);
         }
+    }
+
+    void send(const Network::Socket & socket){
+        Network::sendBytes(socket, (uint8_t*) getBuffer(), getLength());
     }
 
     int getLength() const {
@@ -728,6 +772,7 @@ protected:
     int length;
     char * buffer;
     int actualLength;
+    int contains;
 };
 
 static const int16_t NetworkMagic = 0xd97f; 
@@ -747,19 +792,27 @@ public:
 
 class InputPacket: public Packet {
 public:
-    InputPacket(const vector<string> & inputs):
+    InputPacket(const vector<string> & inputs, uint32_t tick):
     Packet(Input),
-    inputs(inputs){
+    inputs(inputs),
+    tick(tick){
     }
 
     vector<string> inputs;
+    uint32_t tick;
 };
 
-PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & socket){
-    int16_t type = Network::read16(socket);
+static PaintownUtil::ReferenceCount<Packet> readPacket(NetworkBuffer & buffer){
+    int16_t type;
+    buffer >> type;
     switch (type){
         case Packet::Input: {
-            int16_t inputCount = Network::read16(socket);
+            uint32_t ticks = 0;
+            int16_t inputCount = 0;
+            buffer >> ticks;
+            buffer >> inputCount;
+            Global::debug(0) << "Tick " << ticks << " inputs " << inputCount << std::endl;
+            /*
             vector<string> inputs;
             for (int i = 0; i < inputCount; i++){
                 int16_t size = Network::read16(socket);
@@ -767,21 +820,48 @@ PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & socket){
                 inputs.push_back(input);
             }
             return PaintownUtil::ReferenceCount<Packet>(new InputPacket(inputs));
+            */
+            break;
+        }
+        default: {
+            std::ostringstream out;
+            out << "Unknown packet type: " << type;
+            throw MugenException(out.str(), __FILE__, __LINE__);
+        }
+    }
+    return PaintownUtil::ReferenceCount<Packet>(NULL);
+}
+
+static void sendPacket(const Network::Socket & socket, const PaintownUtil::ReferenceCount<Packet> & packet){
+    switch (packet->type){
+        case Packet::Input: {
+            NetworkBuffer buffer;
+            PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+            buffer << NetworkMagic;
+            buffer << (int16_t) Packet::Input;
+            buffer << input->tick;
+            buffer << (int16_t) input->inputs.size();
+            for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
+                buffer << *it;
+            }
+            Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
+            buffer.send(socket);
             break;
         }
         default: {
             throw MugenException("Unknown packet type", __FILE__, __LINE__);
         }
     }
-    return PaintownUtil::ReferenceCount<Packet>(NULL);
 }
 
 class NetworkServerObserver: public NetworkObserver {
 public:
-    NetworkServerObserver(Network::Socket reliable, Network::Socket unreliable):
+    NetworkServerObserver(Network::Socket reliable, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2):
     NetworkObserver(),
     reliable(reliable),
     unreliable(unreliable),
+    player1(player1),
+    player2(player2),
     thread(this, send),
     clientThread(this, clientInput),
     alive_(true),
@@ -791,6 +871,8 @@ public:
     PaintownUtil::Thread::LockObject lock;
     Network::Socket reliable;
     Network::Socket unreliable;
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
     PaintownUtil::Thread::ThreadObject thread;
     PaintownUtil::Thread::ThreadObject clientThread;
     vector<PaintownUtil::ReferenceCount<World> > states;
@@ -804,8 +886,7 @@ public:
         buffer << (int16_t) compressed;
         buffer << (int16_t) uncompressed;
         buffer.add(data, compressed);
-
-        Network::sendBytes(reliable, (uint8_t*) buffer.getBuffer(), buffer.getLength());
+        buffer.send(reliable);
     }
 
     bool hasStates(){
@@ -870,14 +951,33 @@ public:
     }
 
     void doClientInput(){
-        while (alive()){
-            int16_t magic = Network::read16(unreliable);
-            if (magic != NetworkMagic){
-                Global::debug(0) << "Garbage packet: " << magic << std::endl;
-                continue;
-            }
+        try{
+            while (alive()){
+                NetworkBuffer buffer(1024);
+                buffer.readAll(unreliable);
+                int16_t magic = 0;
+                buffer >> magic;
+                if (magic != NetworkMagic){
+                    Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                    continue;
+                }
 
-            PaintownUtil::ReferenceCount<Packet> packet = readPacket(unreliable);
+                PaintownUtil::ReferenceCount<Packet> packet = readPacket(buffer);
+                if (packet != NULL){
+                    switch (packet->type){
+                        case Packet::Input: {
+                            PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+                            Global::debug(0) << "Received inputs " << input->inputs.size() << std::endl;
+                            for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
+                                Global::debug(0) << " " << *it << std::endl;
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        } catch (const Exception::Base & ex){
+            Global::debug(0) << "Error in client read input thread. " << ex.getTrace() << std::endl;
         }
     }
 
@@ -889,6 +989,7 @@ public:
     
     virtual void start(){
         thread.start();
+        clientThread.start();
     }
     
     virtual void beforeLogic(Stage & stage){
@@ -904,16 +1005,20 @@ public:
 
 class NetworkClientObserver: public NetworkObserver {
 public:
-    NetworkClientObserver(Network::Socket socket, Network::Socket unreliable):
+    NetworkClientObserver(Network::Socket socket, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2):
     NetworkObserver(),
     socket(socket),
     unreliable(unreliable),
+    player1(player1),
+    player2(player2),
     thread(this, receive),
     alive_(true){
     }
 
     Network::Socket socket;
     Network::Socket unreliable;
+    PaintownUtil::ReferenceCount<Character> player1;
+    PaintownUtil::ReferenceCount<Character> player2;
     PaintownUtil::Thread::ThreadObject thread;
     PaintownUtil::ReferenceCount<World> world;
     PaintownUtil::Thread::LockObject lock;
@@ -985,6 +1090,14 @@ public:
     }
 
     virtual void afterLogic(Stage & stage){
+        vector<string> inputs = player1->currentInputs();
+        if (inputs.size() > 0){
+            for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
+                Global::debug(0) << "Input: " << *it << std::endl;
+            }
+            PaintownUtil::ReferenceCount<InputPacket> packet(new InputPacket(inputs, stage.getTicks()));
+            sendPacket(unreliable, packet.convert<Packet>());
+        }
     }
 };
 
@@ -1053,14 +1166,14 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Network::Socket udp = Network::accept(server);
         Global::debug(0) << "Got a connection" << std::endl;
         Network::close(server);
-        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp));
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp, player1, player2));
         stage.setObserver(observer.convert<StageObserver>());
     } else {
         player2->setBehavior(&player1Behavior);
         player1->setBehavior(&player2Behavior);
         Global::debug(0) << "Connecting to udp" << std::endl;
         Network::Socket udp = Network::connectUnreliable("127.0.0.1", port);
-        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp));
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp, player2, player1));
         stage.setObserver(observer.convert<StageObserver>());
     }
     
@@ -1110,7 +1223,11 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
 
     try{
         runMatch(&stage, "", options);
+    } catch (const MugenException & ex){
+        Global::debug(0) << ex.getTrace() << std::endl;
     } catch (const QuitGameException & ex){
+    } catch (const Exception::Base & ex){
+        Global::debug(0) << ex.getTrace() << std::endl;
     }
     Mugen::Data::getInstance().setTime(time);
 

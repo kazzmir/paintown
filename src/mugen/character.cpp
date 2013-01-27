@@ -2813,6 +2813,10 @@ static bool blockingState(int state){
            state == GuardCrouch ||
            state == GuardAir;
 }
+        
+std::vector<std::string> Character::currentInputs() const {
+    return getStateData().active;
+}
 
 /* Inherited members */
 void Character::act(Stage * stage){

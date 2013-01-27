@@ -1102,6 +1102,8 @@ public:
         virtual Point getHeadPosition() const;
         virtual Point getDrawOffset() const;
 
+        virtual std::vector<std::string> currentInputs() const;
+
         /* bind the enemy to the target id. used for target redirection
          * and BindToTarget
          */
