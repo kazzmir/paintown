@@ -198,6 +198,16 @@ struct WinGame{
 
 };
 
+enum PositionType{
+    PositionPlayer1, /* Interprets pos relative to p1's axis. A positive x offset is toward the front of p1. This is the default value for postype. Refer to the note at the end of this controller's description. */
+    PositionPlayer2, /* Interprets pos relative to p2's axis. A positive x offset is toward the front of p2. Refer to the note at the end of this controller's description. */
+    PositionFront, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
+    PositionBack, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
+    PositionLeft, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
+    PositionRight /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
+
+};
+
 }
 
 #endif

@@ -31,55 +31,6 @@ namespace Mugen{
     class Effect;
     class GameInfo;
     class World;
-
-class Effect{
-public:
-    Effect(const Character * owner, PaintownUtil::ReferenceCount<Animation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority);
-    
-    virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY);
-    virtual void logic();
-    virtual bool isDead();
-    virtual int getSpritePriority() const;
-
-    virtual inline const Character * getOwner() const {
-        return owner;
-    }
-
-    virtual void superPauseStart();
-    virtual void superPauseEnd();
-
-    virtual inline double getX() const {
-        return x;
-    }
-
-    virtual inline double getY() const {
-        return y;
-    }
-
-    virtual void setX(double x){
-        this->x = x;
-    }
-
-    virtual void setY(double y){
-        this->y = y;
-    }
-
-    virtual inline int getId() const {
-        return id;
-    }
-
-    virtual ~Effect();
-protected:
-    const Character * owner;
-    PaintownUtil::ReferenceCount<Animation> animation;
-    int id;
-    double x;
-    double y;
-    double scaleX;
-    double scaleY;
-    int spritePriority;
-};
-
 }
 
 namespace Ast{

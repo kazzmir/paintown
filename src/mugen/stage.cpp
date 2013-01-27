@@ -43,6 +43,7 @@
 #include "animation.h"
 #include "background.h"
 #include "config.h"
+#include "effect.h"
 #include "item.h"
 #include "item-content.h"
 #include "section.h"
@@ -71,59 +72,6 @@ static const double DEFAULT_JUMP_VELOCITY = 7.2;
 static const double DEFAULT_X_JUMP_VELOCITY = 2.2;
 
 namespace Mugen{
-
-Effect::Effect(const Character * owner, PaintownUtil::ReferenceCount<Animation> animation, int id, int x, int y, double scaleX, double scaleY, int spritePriority):
-owner(owner),
-/* Copy the animation here so that it can start from frame 0 and not accidentally
- * be shared with another Effect
- */
-animation(PaintownUtil::ReferenceCount<Animation>(new Animation(*animation))),
-id(id),
-x(x),
-y(y),
-scaleX(scaleX),
-scaleY(scaleY),
-spritePriority(spritePriority){
-}
-    
-void Effect::draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-    animation->render((int)(x - cameraX), (int)(y - cameraY), work, scaleX, scaleY);
-}
-
-void Effect::logic(){
-    animation->logic();
-}
-
-void Effect::superPauseStart(){
-}
-
-void Effect::superPauseEnd(){
-}
-    
-int Effect::getSpritePriority() const {
-    return spritePriority;
-}
-
-bool Effect::isDead(){
-    return animation->hasLooped();
-}
-
-Effect::~Effect(){
-}
-
-class Spark: public Effect {
-public:
-    Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<Animation> animation);
-    virtual ~Spark();
-};
-
-/* FIXME: can sparks be scaled? */
-Spark::Spark(int x, int y, int spritePriority, PaintownUtil::ReferenceCount<Animation> animation):
-Effect(NULL, animation, -1, x, y, 1, 1, spritePriority){
-}
-
-Spark::~Spark(){
-}
 
 }
 

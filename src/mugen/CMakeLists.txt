@@ -25,6 +25,7 @@ state.cpp
 projectile.cpp
 animation.cpp
 exception.cpp
+effect.cpp
 font.cpp
 item.cpp
 item-content.cpp

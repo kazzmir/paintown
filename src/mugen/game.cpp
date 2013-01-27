@@ -736,7 +736,7 @@ public:
     NetworkBuffer & operator>>(string & str){
         int16_t size = 0;
         *this >> size;
-        Global::debug(0) << "Read string of length " << size << std::endl;
+        // Global::debug(0) << "Read string of length " << size << std::endl;
         if (size > 0 && length + size <= contains){
             char out[size+1];
             memcpy(out, buffer + length, size);
@@ -833,7 +833,7 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(NetworkBuffer & buffer){
             int16_t inputCount = 0;
             buffer >> ticks;
             buffer >> inputCount;
-            Global::debug(0) << "Tick " << ticks << " inputs " << inputCount << std::endl;
+            // Global::debug(0) << "Tick " << ticks << " inputs " << inputCount << std::endl;
             vector<string> inputs;
             for (int i = 0; i < inputCount; i++){
                 string input;
@@ -864,7 +864,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
                 buffer << *it;
             }
-            Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
+            // Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
             buffer.send(socket);
             break;
         }
@@ -900,7 +900,7 @@ public:
     uint32_t count;
 
     void sendState(char * data, int compressed, int uncompressed){
-        Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
+        // Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
         NetworkBuffer buffer;
         buffer << (int16_t) NetworkMagic;
         buffer << (int16_t) compressed;
@@ -1057,10 +1057,12 @@ public:
     virtual void afterLogic(Stage & stage){
         vector<string> inputs = player1->currentInputs();
         if (inputs.size() > 0){
+            /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
             for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
                 Global::debug(0) << "Input: " << *it << std::endl;
             }
+            */
             PaintownUtil::ReferenceCount<InputPacket> packet(new InputPacket(inputs, stage.getTicks()));
             sendPacket(unreliable, packet.convert<Packet>());
         }
@@ -1228,10 +1230,12 @@ public:
     virtual void afterLogic(Stage & stage){
         vector<string> inputs = player1->currentInputs();
         if (inputs.size() > 0){
+            /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
             for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
                 Global::debug(0) << "Input: " << *it << std::endl;
             }
+            */
             PaintownUtil::ReferenceCount<InputPacket> packet(new InputPacket(inputs, stage.getTicks()));
             sendPacket(unreliable, packet.convert<Packet>());
         }
@@ -1247,6 +1251,8 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
      * by Game::run()
      */
     // ParseCache cache;
+    
+    string host = "127.0.0.1";
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
@@ -1280,8 +1286,8 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Network::close(remote);
         Global::debug(0) << "Got a connection" << std::endl;
     } else {
-        Global::debug(0) << "Connecting to 127.0.0.1 on port " << port << std::endl;
-        socket = Network::connectReliable("127.0.0.1", port); 
+        Global::debug(0) << "Connecting to " << host << " on port " << port << std::endl;
+        socket = Network::connectReliable(host, port); 
         Global::debug(0) << "Connected" << std::endl;
     }
 
@@ -1316,7 +1322,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         if (Network::read16(socket) != 18){
             throw MugenException("Unable to synchronize with server", __FILE__, __LINE__);
         }
-        Network::Socket udp = Network::connectUnreliable("127.0.0.1", port);
+        Network::Socket udp = Network::connectUnreliable(host, port);
         observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp, player2, player1));
         stage.setObserver(observer.convert<StageObserver>());
     }

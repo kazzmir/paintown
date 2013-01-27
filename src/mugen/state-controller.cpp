@@ -4,11 +4,13 @@
 #include "state-controller.h"
 #include "util/parameter.h"
 #include "random.h"
+#include "effect.h"
 #include "character.h"
 #include "helper.h"
 #include "config.h"
 #include "stage.h"
 #include "projectile.h"
+#include "common.h"
 #include "sound.h"
 #include "util/debug.h"
 #include <sstream>
@@ -1167,19 +1169,10 @@ public:
 };
 
 class ControllerZoom: public StateController {
-    enum PositionType{
-        Player1, /* Interprets pos relative to p1's axis. A positive x offset is toward the front of p1. This is the default value for postype. Refer to the note at the end of this controller's description. */
-        Player2, /* Interprets pos relative to p2's axis. A positive x offset is toward the front of p2. Refer to the note at the end of this controller's description. */
-        Front, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
-        Back, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
-        Left, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
-        Right /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
-    };
-
 public:
     ControllerZoom(Ast::Section * section, const string & name, int state, unsigned int id):
     StateController(name, state, id, section),
-    positionType(Player1){
+    positionType(PositionPlayer1){
         parse(section);
     }
 
@@ -1231,17 +1224,17 @@ public:
                     simple.view() >> type;
                     type = PaintownUtil::lowerCaseAll(type);
                     if (type == "p1"){
-                        controller.positionType = Player1;
+                        controller.positionType = PositionPlayer1;
                     } else if (type == "p2"){
-                        controller.positionType = Player2;
+                        controller.positionType = PositionPlayer2;
                     } else if (type == "front"){
-                        controller.positionType = Front;
+                        controller.positionType = PositionFront;
                     } else if (type == "back"){
-                        controller.positionType = Back;
+                        controller.positionType = PositionBack;
                     } else if (type == "left"){
-                        controller.positionType = Left;
+                        controller.positionType = PositionLeft;
                     } else if (type == "right"){
-                        controller.positionType = Right;
+                        controller.positionType = PositionRight;
                     }
                 } else if (simple == "pos"){
                     readValues(simple.getValue(), controller.posX, controller.posY);
@@ -1276,7 +1269,7 @@ public:
     /* Returns true if the sprite should flip */
     static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType){
         switch (positionType){
-            case Player1: {
+            case PositionPlayer1: {
                 if (facingPositive == 1){
                     return guy.getFacing() == FacingLeft;
                 } else {
@@ -1284,7 +1277,7 @@ public:
                 }
                 break;
             }
-            case Player2: {
+            case PositionPlayer2: {
                 Character * enemy = stage.getEnemy(&guy);
                 if (enemy != NULL){
                     if (facingPositive == 1){
@@ -1295,7 +1288,7 @@ public:
                 }
                 break;
             }
-            case Front: {
+            case PositionFront: {
                 if (facingPositive == -1){
                     return guy.getFacing() == FacingLeft;
                 } else {
@@ -1303,7 +1296,7 @@ public:
                 }
                 break;
             }
-            case Back: {
+            case PositionBack: {
                 if (facingPositive == 1){
                     return guy.getFacing() == FacingLeft;
                 } else {
@@ -1311,7 +1304,7 @@ public:
                 }
                 break;
             }
-            case Left: {
+            case PositionLeft: {
                 if (facingPositive == 1){
                     return false;
                 } else {
@@ -1319,7 +1312,7 @@ public:
                 }
                 break;
             }
-            case Right: {
+            case PositionRight: {
                 if (facingPositive == 1){
                     return true;
                 } else {
@@ -1335,12 +1328,12 @@ public:
     static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, bool horizontalFlip, double & x, double & y){
         posX *= horizontalFlip ? -1 : 1;
         switch (positionType){
-            case Player1: {
+            case PositionPlayer1: {
                 x = posX + owner->getX();
                 y = posY + owner->getRY();
                 break;
             }
-            case Player2: {
+            case PositionPlayer2: {
                 Character * enemy = stage.getEnemy(owner);
                 if (enemy != NULL){
                     x = posX + enemy->getX();
@@ -1348,7 +1341,7 @@ public:
                 }
                 break;
             }
-            case Front: {
+            case PositionFront: {
                 if (owner->getFacing() == FacingRight){
                     x = stage.maximumRight(owner) + posX;
                 } else {
@@ -1357,7 +1350,7 @@ public:
                 y = stage.maximumUp() + posY;
                 break;
             }
-            case Back: {
+            case PositionBack: {
                 if (owner->getFacing() == FacingLeft){
                     x = stage.maximumRight(owner) + posX;
                 } else {
@@ -1366,12 +1359,12 @@ public:
                 y = stage.maximumUp() + posY;
                 break;
             }
-            case Left: {
+            case PositionLeft: {
                 x = stage.maximumLeft(owner) + posX;
                 y = stage.maximumUp() + posY;
                 break;
             }
-            case Right: {
+            case PositionRight: {
                 x = stage.maximumRight(owner) + posX;
                 y = stage.maximumUp() + posY;
                 break;
@@ -1386,8 +1379,8 @@ public:
 
     Character * getBind(Mugen::Stage & stage, Character & guy, PositionType type) const {
         switch (type){
-            case Player1: return &guy;
-            case Player2: return stage.getEnemy(&guy);
+            case PositionPlayer1: return &guy;
+            case PositionPlayer2: return stage.getEnemy(&guy);
             default: return NULL;
         }
     }
@@ -4235,20 +4228,11 @@ public:
 
 class ControllerExplod: public StateController {
 private:
-    enum PositionType{
-        Player1, /* Interprets pos relative to p1's axis. A positive x offset is toward the front of p1. This is the default value for postype. Refer to the note at the end of this controller's description. */
-        Player2, /* Interprets pos relative to p2's axis. A positive x offset is toward the front of p2. Refer to the note at the end of this controller's description. */
-        Front, /* Interprets x_pos relative to the edge of the screen that p1 is facing toward, and y_pos relative to the top of the screen. A positive x offset is away from the center of the screen, whereas a negative x offset is toward the center. */
-        Back, /* Interprets x_pos relative to the edge of the screen that p1 is facing away from, and y_pos relative to the top of the screen. A positive x offset is toward the center of the screen, whereas a negative x offset is away from the center. */
-        Left, /* Interprets x_pos and y_pos relative to the upper-left corner of the screen. A positive x offset is toward the right of the screen. */
-        Right /* Interprets x_pos and y_pos relative to the upper-right corner of the screen. A positive x offset is toward the left of the screen. */
-        
-    };
-public:
+    public:
     ControllerExplod(Ast::Section * section, const string & name, int state, unsigned int id):
     StateController(name, state, id, section),
     ownAnimation(true),
-    positionType(Player1){
+    positionType(PositionPlayer1){
         parse(section);
     }
 
@@ -4305,7 +4289,7 @@ public:
     /* Returns true if the sprite should flip */
     static bool computeFacing(int facingPositive, const Character & guy, const Stage & stage, PositionType positionType, int bindTime){
         switch (positionType){
-            case Player1: {
+            case PositionPlayer1: {
                 if (facingPositive == 1){
                     return guy.getFacing() == FacingLeft;
                 } else {
@@ -4313,7 +4297,7 @@ public:
                 }
                 break;
             }
-            case Player2: {
+            case PositionPlayer2: {
                 Character * enemy = stage.getEnemy(&guy);
                 if (enemy != NULL){
                     if (facingPositive == 1){
@@ -4324,7 +4308,7 @@ public:
                 }
                 break;
             }
-            case Front: {
+            case PositionFront: {
                 /* Hm, is this a hack? */
                 if (bindTime == 0){
                     return guy.getFacing() == FacingLeft;
@@ -4337,7 +4321,7 @@ public:
                 }
                 break;
             }
-            case Back: {
+            case PositionBack: {
                 if (facingPositive == 1){
                     return guy.getFacing() == FacingLeft;
                 } else {
@@ -4345,7 +4329,7 @@ public:
                 }
                 break;
             }
-            case Left: {
+            case PositionLeft: {
                 if (facingPositive == 1){
                     return false;
                 } else {
@@ -4353,7 +4337,7 @@ public:
                 }
                 break;
             }
-            case Right: {
+            case PositionRight: {
                 if (bindTime == 0){
                     return false;
                 }
@@ -4383,18 +4367,18 @@ public:
          */
 
         switch (positionType){
-            case Player1: {
+            case PositionPlayer1: {
                 x = stage.maximumLeft(owner) + posX;
                 y = posY;
                 break;
             }
-            case Player2: {
+            case PositionPlayer2: {
                 /* FIXME: use the enemy for maximum left? */
                 x = stage.maximumLeft(owner) - posX;
                 y = posY;
                 break;
             }
-            case Front: {
+            case PositionFront: {
                 /* Means facing left */
                 if (horizontalFlip){
                     x = stage.getStartingLeft() - posX;
@@ -4405,7 +4389,7 @@ public:
                 }
                 break;
             }
-            case Back: {
+            case PositionBack: {
                 if (horizontalFlip){
                     x = stage.getStartingRight() + posX;
                     y = posY;
@@ -4415,12 +4399,12 @@ public:
                 }
                 break;
             }
-            case Left: {
+            case PositionLeft: {
                 x = stage.getStartingLeft() + posX;
                 y = posY;
                 break;
             }
-            case Right: {
+            case PositionRight: {
                 x = stage.getStartingRight() + posX;
                 y = posY;
                 break;
@@ -4434,12 +4418,12 @@ public:
     static void computePosition(double posX, double posY, const Character * owner, const Stage & stage, PositionType positionType, bool horizontalFlip, double & x, double & y){
         posX *= horizontalFlip ? -1 : 1;
         switch (positionType){
-            case Player1: {
+            case PositionPlayer1: {
                 x = posX + owner->getX();
                 y = posY + owner->getRY();
                 break;
             }
-            case Player2: {
+            case PositionPlayer2: {
                 Character * enemy = stage.getEnemy(owner);
                 if (enemy != NULL){
                     x = posX + enemy->getX();
@@ -4447,7 +4431,7 @@ public:
                 }
                 break;
             }
-            case Front: {
+            case PositionFront: {
                 if (owner->getFacing() == FacingRight){
                     x = stage.maximumRight(owner) + posX;
                 } else {
@@ -4456,7 +4440,7 @@ public:
                 y = stage.maximumUp() + posY;
                 break;
             }
-            case Back: {
+            case PositionBack: {
                 if (owner->getFacing() == FacingLeft){
                     x = stage.maximumRight(owner) + posX;
                 } else {
@@ -4465,12 +4449,12 @@ public:
                 y = stage.maximumUp() + posY;
                 break;
             }
-            case Left: {
+            case PositionLeft: {
                 x = stage.maximumLeft(owner) + posX;
                 y = stage.maximumUp() + posY;
                 break;
             }
-            case Right: {
+            case PositionRight: {
                 x = stage.maximumRight(owner) + posX;
                 y = stage.maximumUp() + posY;
                 break;
@@ -4483,177 +4467,7 @@ public:
         }
     }
 
-    class ExplodeEffect: public Effect {
-    public:
-        ExplodeEffect(const Character * owner, const Mugen::Stage & stage, PaintownUtil::ReferenceCount<Animation> animation, int id, int x, int y, double velocityX, double velocityY, double accelerationX, double accelerationY, int removeTime, int bindTime, PositionType positionType, int posX, int posY, double scaleX, double scaleY, int spritePriority, bool superMove, int superMoveTime, bool horizontalFlip, bool verticalFlip, bool ownPalette, bool removeOnHit):
-            Effect(owner, animation, id, x, y, scaleX, scaleY, spritePriority),
-            stage(stage),
-            velocityX(velocityX),
-            velocityY(velocityY),
-            accelerationX(accelerationX),
-            accelerationY(accelerationY),
-            removeTime(removeTime),
-            bindTime(bindTime),
-            positionType(positionType),
-            posX(posX),
-            posY(posY),
-            frozen(false),
-            superMovePersist(superMove),
-            superMoveTime(superMoveTime),
-            horizontalFlip(horizontalFlip),
-            verticalFlip(verticalFlip),
-            ownPalette(ownPalette),
-            removeOnHit(removeOnHit),
-            hitCount(owner->getWasHitCount()),
-            shouldRemove(false){
-            }
-
-        void setVelocityX(double x){
-            velocityX = x;
-        }
-
-        double getVelocityX() const {
-            return velocityX;
-        }
-
-        void setVelocityY(double y){
-            velocityY = y;
-        }
-        
-        double getVelocityY() const {
-            return velocityY;
-        }
-
-        void setAccelerationX(double x){
-            accelerationX = x;
-        }
-
-        void setBindTime(int time){
-            bindTime = time;
-        }
-
-        double getAccelerationX() const {
-            return accelerationX;
-        }
-
-        void setAccelerationY(double y){
-            accelerationY = y;
-        }
-
-        double getAccelerationY() const {
-            return accelerationY;
-        }
-
-        void setRemoveTime(int time){
-            removeTime = time;
-        }
-
-        int getRemoveTime() const {
-            return removeTime;
-        }
     
-        virtual void superPauseStart(){
-            if (!superMovePersist && superMoveTime == 0){
-                frozen = true;
-            }
-        }
-
-        virtual void superPauseEnd(){
-            /* Unfreeze no matter what */
-            frozen = false;
-            superMoveTime = 0;
-        }
-
-        const Mugen::Stage & stage;
-        double velocityX;
-        double velocityY;
-        double accelerationX;
-        double accelerationY;
-        int removeTime;
-        int bindTime;
-        PositionType positionType;
-        const int posX;
-        const int posY;
-        bool frozen;
-        const bool superMovePersist;
-        int superMoveTime;
-        const bool horizontalFlip;
-        const bool verticalFlip;
-        const bool ownPalette;
-        const bool removeOnHit;
-        const unsigned int hitCount;
-        bool shouldRemove;
-
-        virtual void logic(){
-
-            if (removeOnHit){
-                shouldRemove = owner->getWasHitCount() > hitCount;
-            }
-
-            if (!frozen){
-                Effect::logic();
-
-                /* either stopped or not set at all.
-                 * FIXME: sort of a hack.. find a more elegant solution
-                 */
-                if (bindTime == 0 || bindTime == -2){
-                    int reverse = horizontalFlip ? -1 : 1;
-                    x += velocityX * reverse;
-                    y += velocityY;
-                    velocityX += accelerationX * reverse;
-                    velocityY += accelerationY;
-                } else {
-                }
-
-                if (removeTime > 0){
-                    removeTime -= 1;
-                }
-            } else {
-                if (superMoveTime > 0){
-                    superMoveTime -= 1;
-                    /* If we run out of super move time then we should freeze */
-                    if (superMoveTime == 0){
-                        frozen = true;
-                    }
-                }
-            }
-
-            /* FIXME: should we do the bind even if we are frozen? */
-            if (bindTime != 0){
-                /* bindTime could be negative in which case its active forever */
-                if (bindTime > 0){
-                    bindTime -= 1;
-                }
-
-                /* -2 is the default bindtime that means it wasn't set in the explod.
-                 * if the bindtime is -1 then it should act indefinetely.
-                 */
-                if (bindTime != -2){
-                    /* FIXME: should we always use the same horizontalFlip here? */
-                    computePosition(posX, posY, owner, stage, positionType, horizontalFlip, x, y);
-                }
-            }
-        }
-	
-        virtual void draw(const Graphics::Bitmap & work, int cameraX, int cameraY){
-            animation->render(horizontalFlip, verticalFlip, (int)(getX() - cameraX), (int)(getY() - cameraY), work, scaleX, scaleY, NULL);
-        }
-
-        virtual bool isDead(){
-            if (shouldRemove){
-                return true;
-            }
-
-            switch (removeTime){
-                case -2: return Effect::isDead();
-                case -1: return false;
-                default : return removeTime == 0;
-            }
-
-            return true;
-        }
-    };
-
     virtual ~ControllerExplod(){
     }
 
@@ -4686,17 +4500,17 @@ public:
                     simple.view() >> type;
                     type = PaintownUtil::lowerCaseAll(type);
                     if (type == "p1"){
-                        controller.positionType = Player1;
+                        controller.positionType = PositionPlayer1;
                     } else if (type == "p2"){
-                        controller.positionType = Player2;
+                        controller.positionType = PositionPlayer2;
                     } else if (type == "front"){
-                        controller.positionType = Front;
+                        controller.positionType = PositionFront;
                     } else if (type == "back"){
-                        controller.positionType = Back;
+                        controller.positionType = PositionBack;
                     } else if (type == "left"){
-                        controller.positionType = Left;
+                        controller.positionType = PositionLeft;
                     } else if (type == "right"){
-                        controller.positionType = Right;
+                        controller.positionType = PositionRight;
                     } else {
                         Global::debug(0) << "Unknown position type '" << type << "'" << endl;
                     }
@@ -6439,18 +6253,9 @@ public:
 
 class ControllerHelper: public StateController {
 public:
-    enum PosType{
-        Player1,
-        Player2,
-        Front,
-        Back,
-        Left,
-        Right
-    };
-
     ControllerHelper(Ast::Section * section, const string & name, int state, unsigned int id):
     StateController(name, state, id, section),
-    posType(Player1){
+    posType(PositionPlayer1){
         parse(section);
     }
 
@@ -6480,7 +6285,7 @@ public:
     string name;
     Value id;
     Value posX, posY;
-    PosType posType;
+    PositionType posType;
     Value facing;
     Value state;
     Value key;
@@ -6531,21 +6336,21 @@ public:
 
             ControllerHelper & controller;
 
-            PosType parsePosType(const string & type){
+            PositionType parsePosType(const string & type){
                 if (type == "p1"){
-                    return Player1;
+                    return PositionPlayer1;
                 } else if (type == "p2"){
-                    return Player2;
+                    return PositionPlayer2;
                 } else if (type == "front"){
-                    return Front;
+                    return PositionFront;
                 } else if (type == "back"){
-                    return Back;
+                    return PositionBack;
                 } else if (type == "left"){
-                    return Left;
+                    return PositionLeft;
                 } else if (type == "right"){
-                    return Right;
+                    return PositionRight;
                 }
-                return Player1;
+                return PositionPlayer1;
             }
 
             /* extract an item and compile it */
@@ -6669,14 +6474,14 @@ public:
         helper->setOwnPalette(evaluateBool(ownPalette, environment, false));
 
         switch (posType){
-            case Player1: {
+            case PositionPlayer1: {
                 double x = evaluateNumber(posX, environment, 0) * (guy.getFacing() == FacingLeft ? -1 : 1) + guy.getX();
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
                 helper->setY(y);
                 break;
             }
-            case Player2: {
+            case PositionPlayer2: {
                 Character * enemy = stage.getEnemy(&guy);
                 if (enemy != NULL){
                     double x = evaluateNumber(posX, environment, 0) * (enemy->getFacing() == FacingLeft ? -1 : 1) + enemy->getX();
@@ -6686,7 +6491,7 @@ public:
                 }
                 break;
             }
-            case Front: {
+            case PositionFront: {
                 double x = evaluateNumber(posX, environment, 0);
                 switch (guy.getFacing()){
                     case FacingRight: x = environment.getStage().maximumRight(&guy) + x; break;
@@ -6697,7 +6502,7 @@ public:
                 helper->setY(y);
                 break;
             }
-            case Back: {
+            case PositionBack: {
                 double x = evaluateNumber(posX, environment, 0);
                 switch (guy.getFacing()){
                     case FacingRight: x = environment.getStage().maximumRight(&guy) - x; break;
@@ -6708,14 +6513,14 @@ public:
                 helper->setY(y);
                 break;
             }
-            case Left: {
+            case PositionLeft: {
                 double x = evaluateNumber(posX, environment, 0) + environment.getStage().maximumLeft(&guy);
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
                 helper->setY(y);
                 break;
             }
-            case Right: {
+            case PositionRight: {
                 double x = environment.getStage().maximumRight(&guy) - evaluateNumber(posX, environment, 0);
                 double y = evaluateNumber(posY, environment, 0) + guy.getY();
                 helper->setX(x);
@@ -7908,7 +7713,7 @@ public:
         vector<Effect*> effects = stage.findEffects(&guy, (int) evaluateNumber(id, environment, -1));
         int bind = (int) evaluateNumber(time, environment, 1);
         for (vector<Effect*>::iterator it = effects.begin(); it != effects.end(); it++){
-            ControllerExplod::ExplodeEffect * effect = (ControllerExplod::ExplodeEffect*) (*it);
+            ExplodeEffect * effect = (ExplodeEffect*) (*it);
             effect->setBindTime(bind);
         }
     }
