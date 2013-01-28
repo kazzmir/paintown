@@ -1358,6 +1358,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         out << timer.printTime(" took") << std::endl;
     }
 
+    try{
     Network::reuseSockets(true);
 
     Network::Socket socket = 0;
@@ -1467,6 +1468,10 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     observer->kill();
 
     Network::close(socket);
+
+    } catch (const Network::NetworkException & fail){
+        Global::debug(0) << "Network exception: " << fail.getMessage() << std::endl;
+    }
 
 #endif
 
