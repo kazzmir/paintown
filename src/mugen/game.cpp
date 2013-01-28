@@ -986,7 +986,7 @@ public:
         while (alive()){
             int16_t magic = Network::read16(reliable);
             if (magic != NetworkMagic){
-                Global::debug(0) << "Garbage packet" << std::endl;
+                Global::debug(0) << "Garbage ping packet" << std::endl;
                 continue;
             }
             int16_t type = Network::read16(reliable);
@@ -1043,7 +1043,7 @@ public:
                 int16_t magic = 0;
                 buffer >> magic;
                 if (magic != NetworkMagic){
-                    Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                    Global::debug(0) << "Garbage input packet: " << magic << std::endl;
                     continue;
                 }
 
@@ -1194,7 +1194,7 @@ public:
 
             int16_t magic = Network::read16(socket);
             if (magic != NetworkMagic){
-                Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                Global::debug(0) << "Garbage message packet: " << magic << std::endl;
                 continue;
             }
 
@@ -1256,7 +1256,7 @@ public:
                 int16_t magic = 0;
                 buffer >> magic;
                 if (magic != NetworkMagic){
-                    Global::debug(0) << "Garbage packet: " << magic << std::endl;
+                    Global::debug(0) << "Garbage udp packet: " << magic << std::endl;
                     continue;
                 }
 
