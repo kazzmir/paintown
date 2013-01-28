@@ -411,7 +411,7 @@ public:
     class Run: public ArgumentAction {
     public:
         void act(){
-            Game::startNetworkVersus("kfm", "kfm", "kfm", true, 8473);
+            Game::startNetworkVersus("kfm", "kfm", "kfm", true, "localhost", 8473);
         }
     };
 
@@ -430,18 +430,29 @@ public:
     }
 
     string description() const {
-        return " : Join a server on port 8473";
+        return " [host] : Join a server on port 8473";
     }
 
     class Run: public ArgumentAction {
     public:
+        Run(const string & host):
+        host(host){
+        }
+
+        string host;
+
         void act(){
-            Game::startNetworkVersus("kfm", "kfm", "kfm", false, 8473);
+            Game::startNetworkVersus("kfm", "kfm", "kfm", false, host, 8473);
         }
     };
 
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run()));
+        string host = "127.0.0.1";
+        current++;
+        if (current != end){
+            host = *current;
+        }
+        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(host)));
         return current;
     }
 };

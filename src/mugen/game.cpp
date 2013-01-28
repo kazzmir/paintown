@@ -772,6 +772,14 @@ public:
         Network::sendBytes(socket, (uint8_t*) getBuffer(), getLength());
     }
 
+    /* will do a single nlWrite instead of trying to send all the bytes.
+     * The buffer length had better be below the maximum packet size
+     * which is something around 64k
+     */
+    void sendAll(const Network::Socket & socket){
+        Network::sendAllBytes(socket, (uint8_t*) getBuffer(), getLength());
+    }
+
     int getLength() const {
         return length;
     }
@@ -870,7 +878,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
                 buffer << *it;
             }
             // Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
-            buffer.send(socket);
+            buffer.sendAll(socket);
             break;
         }
         default: {
@@ -1330,9 +1338,8 @@ public:
 #endif
 
 /* FIXME: redo this as a StartGameMode class */
-void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, int port){
+void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, const string & host, int port){
 #ifdef HAVE_NETWORKING
-    string host = "127.0.0.1";
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
     bool random1 = player1Name == "_";
