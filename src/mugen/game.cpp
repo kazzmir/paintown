@@ -1332,11 +1332,6 @@ public:
 /* FIXME: redo this as a StartGameMode class */
 void Game::startNetworkVersus(const string & player1Name, const string & player2Name, const string & stageName, bool server, int port){
 #ifdef HAVE_NETWORKING
-    /* This has its own parse cache because its started by the main menu and not
-     * by Game::run()
-     */
-    // ParseCache cache;
-    
     string host = "127.0.0.1";
     std::vector<Filesystem::AbsolutePath> allCharacters = Storage::instance().getFilesRecursive(Storage::instance().find(Filesystem::RelativePath("mugen/chars/")), "*.def");
     std::random_shuffle(allCharacters.begin(), allCharacters.end());
@@ -1345,8 +1340,11 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     PaintownUtil::ReferenceCount<Character> player1;
     PaintownUtil::ReferenceCount<Character> player2;
 
-    player1 = makeCharacter(player1Name, random1, allCharacters);
-    player2 = makeCharacter(player2Name, random2, allCharacters);
+    {
+        ParseCache cache;
+        player1 = makeCharacter(player1Name, random1, allCharacters);
+        player2 = makeCharacter(player2Name, random2, allCharacters);
+    }
 
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
     {
