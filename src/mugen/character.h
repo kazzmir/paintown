@@ -344,6 +344,9 @@ public:
 	// Change palettes
 	virtual void nextPalette();
 	virtual void priorPalette();
+
+        /* Reloads all the sprites and animations. Must call this after load() */
+        virtual void loadGraphics(int palette);
 	
 	virtual inline const std::string getName() const {
             return getLocalData().name;

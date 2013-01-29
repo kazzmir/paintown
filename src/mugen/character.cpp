@@ -2141,43 +2141,11 @@ void Character::load(int useAct){
 	}
     }
     */
-    std::string paletteFile = "";
-    getLocalData().currentPalette = useAct;
-    if (getLocalData().palFile.find(getLocalData().currentPalette) == getLocalData().palFile.end()){
-        /* FIXME: choose a default. its not just palette 1 because that palette
-         * might not exist
-         */
-	Global::debug(1) << "Couldn't find palette: " << getLocalData().currentPalette << " in palette collection. Defaulting to internal palette if available." << endl;
-        if (getLocalData().palFile.size() > 0){
-            paletteFile = getLocalData().palFile.begin()->second;
-        }
-    } else {
-        if (getLocalData().currentPalette < getLocalData().palFile.size()){
-            paletteFile = getLocalData().palFile[getLocalData().currentPalette];
-            Global::debug(2) << "Current pal: " << getLocalData().currentPalette << " | Palette File: " << paletteFile << endl;
-        }
-    }
-    /*
-    if (currentPalette > palFile.size() - 1){
-        currentPalette = 1;
-    }
-    */
-    Global::debug(2) << "Reading Sff (sprite) Data..." << endl; 
-    /* Sprites */
-    // Mugen::Util::readSprites( Mugen::Util::fixFileName(baseDir, sffFile), Mugen::Util::fixFileName(baseDir, paletteFile), sprites);
-    Filesystem::AbsolutePath finalPalette;
-    try{
-        finalPalette = Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(paletteFile));
-    } catch (const Filesystem::Exception & fail){
-        Global::debug(0) << "Couldn't find palette for '" << paletteFile << "' because " << fail.getTrace() << endl;
-        /* ignore palette */
-    }
-    Util::readSprites(Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(getLocalData().sffFile)), finalPalette, getLocalData().sprites, true);
-    Global::debug(2) << "Reading Air (animation) Data..." << endl;
-    /* Animations */
-    // animations = Mugen::Util::loadAnimations(Mugen::Util::fixFileName(baseDir, airFile), sprites);
-    getLocalData().animations = Util::loadAnimations(Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(getLocalData().airFile)), getLocalData().sprites, true);
 
+    getLocalData().currentPalette = useAct;
+
+    loadGraphics(getLocalData().currentPalette);
+    
     fixAssumptions();
 
     /*
@@ -2186,6 +2154,40 @@ void Character::load(int useAct){
         Global::debug(0) << "State -1: '" << (*it)->getName() << "'" << endl;
     }
     */
+}
+
+void Character::loadGraphics(int palette){
+    std::string paletteFile = "";
+    if (getLocalData().palFile.find(palette) == getLocalData().palFile.end()){
+        /* FIXME: choose a default. its not just palette 1 because that palette
+         * might not exist
+         */
+	Global::debug(1) << "Couldn't find palette: " << palette << " in palette collection. Defaulting to internal palette if available." << endl;
+        if (getLocalData().palFile.size() > 0){
+            paletteFile = getLocalData().palFile.begin()->second;
+        }
+    } else {
+        if (palette < getLocalData().palFile.size()){
+            paletteFile = getLocalData().palFile[palette];
+            Global::debug(2) << "Current pal: " << palette << " | Palette File: " << paletteFile << endl;
+        }
+    }
+    
+    Global::debug(2) << "Reading Sff (sprite) Data..." << endl; 
+    Filesystem::AbsolutePath finalPalette;
+    try{
+        finalPalette = Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(paletteFile));
+    } catch (const Filesystem::Exception & fail){
+        Global::debug(0) << "Couldn't find palette for '" << paletteFile << "' because " << fail.getTrace() << endl;
+        /* ignore palette */
+    }
+
+    getLocalData().sprites = SpriteMap();
+
+    Util::readSprites(Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(getLocalData().sffFile)), finalPalette, getLocalData().sprites, true);
+
+    Global::debug(2) << "Reading Air (animation) Data..." << endl;
+    getLocalData().animations = Util::loadAnimations(Storage::instance().lookupInsensitive(getLocalData().baseDir, Filesystem::RelativePath(getLocalData().airFile)), getLocalData().sprites, true);
 }
 
 bool Character::isBound() const {
@@ -2570,6 +2572,8 @@ void Character::nextPalette(){
         getLocalData().currentPalette = 0;
     }
     Global::debug(1) << "Current pal: " << getLocalData().currentPalette << " | Location: " << getLocalData().palDefaults[getLocalData().currentPalette] << " | Palette File: " << getLocalData().palFile[getLocalData().palDefaults[getLocalData().currentPalette]] << endl;
+
+    loadGraphics(getLocalData().currentPalette);
 }
 
 void Character::priorPalette(){
@@ -2579,6 +2583,8 @@ void Character::priorPalette(){
         getLocalData().currentPalette = getLocalData().palDefaults.size() -1;
     }
     Global::debug(1) << "Current pal: " << getLocalData().currentPalette << " | Palette File: " << getLocalData().palFile[getLocalData().palDefaults[getLocalData().currentPalette]] << endl;
+
+    loadGraphics(getLocalData().currentPalette);
 }
         
 /* players are their own root normally, only helpers differ */

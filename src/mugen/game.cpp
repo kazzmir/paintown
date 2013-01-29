@@ -1351,6 +1351,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         ParseCache cache;
         player1 = makeCharacter(player1Name, random1, allCharacters);
         player2 = makeCharacter(player2Name, random2, allCharacters);
+        player2->nextPalette();
     }
 
     Mugen::Stage stage(Storage::instance().find(Filesystem::RelativePath("mugen/stages/" + stageName + ".def")));
