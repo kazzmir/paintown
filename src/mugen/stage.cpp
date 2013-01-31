@@ -1171,18 +1171,6 @@ bool Mugen::Stage::exists(CharacterId id){
 void Mugen::Stage::runCycle(){
     updateZoom();
 
-    if (getStateData().superPause.time == 0){
-
-        // Global::debug(0) << "Stage " << ticker << " at " << System::currentMicroseconds() << std::endl;
-        /* Start input early for network mode */
-        for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
-            Mugen::Character * player = *it;
-            // Global::debug(0) << " input " << player << " at " << System::currentMicroseconds() << std::endl;
-            player->startInput(*this);
-        }
-
-    }
-
     getStateData().screenBound.clear();
 
     if (paletteEffects.time > 0){

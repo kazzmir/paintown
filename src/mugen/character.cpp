@@ -2707,12 +2707,6 @@ std::map<int, std::map<unsigned int, int> > Character::getStatePersistent() cons
 
     return data;
 }
-        
-void Character::startInput(const Mugen::Stage & stage){
-    if (getLocalData().behavior != NULL){
-        getLocalData().behavior->start(stage, this, getLocalData().commands, getFacing() == FacingRight);
-    }
-}
 
 /* returns all the commands that are currently active */
 vector<string> Character::doInput(const Mugen::Stage & stage){

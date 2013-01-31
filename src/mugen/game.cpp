@@ -887,14 +887,58 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
     }
 }
 
+/* We don't have the latest commands so just assume if holdfwd/back/down was pressed
+ * before that its still being pressed.
+ */
+class NetworkBehavior: public Behavior {
+public:
+    NetworkBehavior():
+    lastTick(0){
+    }
+
+    uint32_t lastTick;
+    vector<string> lastCommands;
+
+    virtual void setCommands(uint32_t tick, const vector<string> & commands){
+        if (tick > lastTick){
+            lastTick = tick;
+            lastCommands = commands;
+        }
+    }
+
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+        vector<string> out;
+        // if (stage.getTicks() > lastTick && stage.getTicks() - lastTick < 3){
+            for (vector<string>::iterator it = lastCommands.begin(); it != lastCommands.end(); it++){
+                if (*it == "holdfwd" ||
+                    *it == "holdback" ||
+                    *it == "holddown"){
+                    out.push_back(*it);
+                }
+            }
+        // }
+        return out;
+    }
+
+    /* called when the player changes direction. useful for updating
+     * the input mapping.
+     */
+    virtual void flip(){
+    }
+
+    virtual ~NetworkBehavior(){
+    }
+};
+
 class NetworkServerObserver: public NetworkObserver {
 public:
-    NetworkServerObserver(Network::Socket reliable, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2):
+    NetworkServerObserver(Network::Socket reliable, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2, NetworkBehavior & player2Behavior):
     NetworkObserver(),
     reliable(reliable),
     unreliable(unreliable),
     player1(player1),
     player2(player2),
+    player2Behavior(player2Behavior),
     thread(this, send),
     pingThread(this, readPings),
     clientThread(this, clientInput),
@@ -909,6 +953,7 @@ public:
     Network::Socket unreliable;
     PaintownUtil::ReferenceCount<Character> player1;
     PaintownUtil::ReferenceCount<Character> player2;
+    NetworkBehavior & player2Behavior;
     PaintownUtil::Thread::ThreadObject thread;
     PaintownUtil::Thread::ThreadObject pingThread;
     PaintownUtil::Thread::ThreadObject clientThread;
@@ -1112,6 +1157,7 @@ public:
                 uint32_t tick = it->first;
                 const InputPacket & input = it->second;
                 player2->setInputs(tick, input.inputs);
+                player2Behavior.setCommands(tick, input.inputs);
             }
             inputs.clear();
 
@@ -1129,7 +1175,7 @@ public:
 
     virtual void afterLogic(Stage & stage){
         vector<string> inputs = player1->currentInputs();
-        if (inputs.size() > 0){
+        if (inputs.size() >= 0){
             /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
             for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
@@ -1144,12 +1190,13 @@ public:
 
 class NetworkClientObserver: public NetworkObserver {
 public:
-    NetworkClientObserver(Network::Socket socket, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2):
+    NetworkClientObserver(Network::Socket socket, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2, NetworkBehavior & player2Behavior):
     NetworkObserver(),
     socket(socket),
     unreliable(unreliable),
     player1(player1),
     player2(player2),
+    player2Behavior(player2Behavior),
     thread(this, receive),
     input(this, input_),
     alive_(true){
@@ -1159,6 +1206,7 @@ public:
     Network::Socket unreliable;
     PaintownUtil::ReferenceCount<Character> player1;
     PaintownUtil::ReferenceCount<Character> player2;
+    NetworkBehavior & player2Behavior;
     PaintownUtil::Thread::ThreadObject thread;
     PaintownUtil::Thread::ThreadObject input;
     PaintownUtil::ReferenceCount<World> world;
@@ -1306,6 +1354,7 @@ public:
                 uint32_t tick = it->first;
                 const InputPacket & input = it->second;
                 player2->setInputs(tick, input.inputs);
+                player2Behavior.setCommands(tick, input.inputs);
             }
             inputs.clear();
 
@@ -1322,7 +1371,7 @@ public:
 
     virtual void afterLogic(Stage & stage){
         vector<string> inputs = player1->currentInputs();
-        if (inputs.size() > 0){
+        if (inputs.size() >= 0){
             /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
             for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
@@ -1384,7 +1433,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
     }
 
     HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-    DummyBehavior player2Behavior;
+    NetworkBehavior player2Behavior;
     // NetworkLocalBehavior player1Behavior(&local1Behavior, socket);
     // NetworkRemoteBehavior player2Behavior(socket);
     
@@ -1405,7 +1454,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
         Network::Socket udp = Network::accept(server);
         Global::debug(0) << "Got a connection" << std::endl;
         Network::close(server);
-        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp, player1, player2));
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp, player1, player2, player2Behavior));
         stage.setObserver(observer.convert<StageObserver>());
     } else {
         player2->setBehavior(&player1Behavior);
@@ -1415,7 +1464,7 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
             throw MugenException("Unable to synchronize with server", __FILE__, __LINE__);
         }
         Network::Socket udp = Network::connectUnreliable(host, port);
-        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp, player2, player1));
+        observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp, player2, player1, player2Behavior));
         stage.setObserver(observer.convert<StageObserver>());
     }
     
