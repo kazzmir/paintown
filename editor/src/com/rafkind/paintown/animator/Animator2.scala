@@ -193,7 +193,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
     val quickDisplayIcon = quickDisplay.getIcon();
     // quickDisplay.setIcon(quickDisplayIcon);
 
-    class QuickCharacterLoaderModel extends swing.ListModel {
+    class QuickCharacterLoaderModel extends swing.ListModel[File] {
       var listeners:List[swing.event.ListDataListener] = List()
       var data:List[File] = List()
       var filtered:List[File] = List()
@@ -266,8 +266,8 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
         listeners = listeners :+ listener
       }
 
-      override def getElementAt(index:Int):Object = {
-        return get(filtered, index)
+      override def getElementAt(index:Int) = {
+        get(filtered, index)
         // return this.filtered.get(index);
       }
 
@@ -302,7 +302,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       }
     });
 
-        val quickLoader = quickEngine.find("list").asInstanceOf[swing.JList];
+        val quickLoader = quickEngine.find("list").asInstanceOf[swing.JList[File]];
 
         def quickDoLoad(){
           val files = quickLoader.getSelectedValues().asInstanceOf[Array[Object]];

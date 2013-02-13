@@ -331,7 +331,7 @@ class NewEditor extends JFrame("Paintown Editor"){
           dialog.setVisible(true);
         }
   
-        class ObjectListModel extends ListModel {
+        class ObjectListModel extends ListModel[File] {
             var data:List[File] = defaultObjects();
             var listeners = List[ListDataListener]();
 
@@ -359,7 +359,7 @@ class NewEditor extends JFrame("Paintown Editor"){
                 listeners = listeners :+ listener;
             }
 
-            override def getElementAt(index:Int):Object = {
+            override def getElementAt(index:Int) = {
                 this.data.find(data.indexOf(_) == index) match {
                     case Some(obj) => obj
                     case None => throw new Exception("failed to find " + index)
@@ -678,7 +678,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         holder.add(new JScrollPane(blocks));
         holder.add(new JSeparator());
 
-        class ObjectList extends ListModel {
+        class ObjectList extends ListModel[Thing] {
           /* list listeners */
           var listeners:List[ListDataListener] = List[ListDataListener]()
           var things:List[Thing] = List[Thing]()
@@ -736,7 +736,7 @@ class NewEditor extends JFrame("Paintown Editor"){
                 this.listeners = this.listeners :+ listener
             }
 
-            override def getElementAt(index:Int):Object = {
+            override def getElementAt(index:Int) = {
                 get(things, index)
             }
 
@@ -758,7 +758,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         val objectsDelete = blockObjectsEngine.find( "delete" ).asInstanceOf[JButton];
         val objectsAddRandom = blockObjectsEngine.find( "add-random" ).asInstanceOf[JButton];
         val objectsDeleteAll = blockObjectsEngine.find( "delete-all" ).asInstanceOf[JButton];
-        val currentObjects = blockObjectsEngine.find( "current" ).asInstanceOf[JList];
+        val currentObjects = blockObjectsEngine.find( "current" ).asInstanceOf[JList[Thing]];
         currentObjects.setModel(objectList);
         holder.add(blockObjectsEngine.getRootComponent().asInstanceOf[JPanel]);
 
@@ -828,7 +828,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             }
 
             private def make():Character = {
-                val choose = objectsModel.getElementAt((Math.random * (objectsModel.getSize())).toInt).asInstanceOf[File];
+                val choose = objectsModel.getElementAt((Math.random * (objectsModel.getSize())).toInt)
                 val temp = new Token();
                 temp.addToken(new Token("character"));
                 temp.addToken(("name" :: "TempName" :: List[String]()).toArray)
@@ -868,7 +868,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         /* if an object is selected highlight it and scroll over to it */
         currentObjects.addListSelectionListener(new ListSelectionListener(){
             def valueChanged(event:ListSelectionEvent){
-                val thing = currentObjects.getSelectedValue().asInstanceOf[Thing];
+                val thing = currentObjects.getSelectedValue()
                 if (mousey.getSelected() != null){
                     val old = mousey.getSelected();
                     old.setSelected(false);
@@ -912,7 +912,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         currentObjects.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
         currentObjects.getActionMap().put("delete", new AbstractAction(){
             override def actionPerformed(event:ActionEvent){
-              val thing = currentObjects.getSelectedValue().asInstanceOf[Thing]
+              val thing = currentObjects.getSelectedValue()
               if (thing != null){
                 mousey.setSelected(null);
                 val block = level.findBlock(thing);
@@ -926,7 +926,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         currentObjects.addMouseListener(new MouseAdapter() {
             override def mouseClicked(clicked:MouseEvent){
               if (clicked.getClickCount() == 2){
-                val thing = currentObjects.getSelectedValue().asInstanceOf[Thing];
+                val thing = currentObjects.getSelectedValue()
                 editSelected(thing);
               }
             }
@@ -1028,7 +1028,7 @@ class NewEditor extends JFrame("Paintown Editor"){
         tabbed.add("Objects", objectEngine.getRootComponent().asInstanceOf[JComponent]);
 
         // final JList objects = new JList( allowableObjects );
-        val objects = objectEngine.find( "objects" ).asInstanceOf[JList];
+        val objects = objectEngine.find( "objects" ).asInstanceOf[JList[File]];
         /* objectsModel is declared way up top */
         objects.setModel(objectsModel);
 
@@ -1064,17 +1064,17 @@ class NewEditor extends JFrame("Paintown Editor"){
 
         val levelMinZ = levelEngine.find( "min-z" ).asInstanceOf[JSpinner];
         val levelMaxZ = levelEngine.find( "max-z" ).asInstanceOf[JSpinner];
-        val atmosphere = levelEngine.find( "atmosphere" ).asInstanceOf[JComboBox];
+        val atmosphere = levelEngine.find( "atmosphere" ).asInstanceOf[JComboBox[String]];
         val levelBackground = levelEngine.find( "background" ).asInstanceOf[JTextField];
         val levelDescription = levelEngine.find("description").asInstanceOf[JTextField];
         val levelChangeBackground = levelEngine.find( "change-background" ).asInstanceOf[JButton];
         val frontPanelsData = new java.util.Vector[String]();
-        val frontPanels = levelEngine.find( "front-panels" ).asInstanceOf[JList];
+        val frontPanels = levelEngine.find( "front-panels" ).asInstanceOf[JList[String]];
         frontPanels.setListData(frontPanelsData);
         val backPanelsData = new java.util.Vector[String]();
-        val backPanels = levelEngine.find( "back-panels" ).asInstanceOf[JList];
+        val backPanels = levelEngine.find( "back-panels" ).asInstanceOf[JList[String]];
         val order = levelEngine.find( "order" ).asInstanceOf[JTextArea];
-        val pickOrder = levelEngine.find( "pick-order" ).asInstanceOf[JComboBox];
+        val pickOrder = levelEngine.find( "pick-order" ).asInstanceOf[JComboBox[String]];
         val backgroundParallax = levelEngine.find( "background-parallax-slider" ).asInstanceOf[JSlider];
         val backgroundAmount = levelEngine.find( "background-parallax-amount" ).asInstanceOf[JLabel];
         val foregroundParallax = levelEngine.find( "foreground-parallax-slider" ).asInstanceOf[JSlider];
@@ -1122,12 +1122,13 @@ class NewEditor extends JFrame("Paintown Editor"){
 
         atmosphere.setEditable( false );
 
-        class BackPanelCombo(data:java.util.Vector[String]) extends ComboBoxModel {
-            var selected:Object = null
+        /* FIXME: the type parameter should probably be something other than Object */
+        class BackPanelCombo(data:java.util.Vector[String]) extends ComboBoxModel[String] {
+            var selected:String = null
             var listeners:List[ListDataListener] = List[ListDataListener]()
 
-            def getSelectedItem():Object = {
-                selected;
+            def getSelectedItem() = {
+                selected
             }
 
             def update(){
@@ -1138,26 +1139,30 @@ class NewEditor extends JFrame("Paintown Editor"){
                 }
             }
 
+            /* FIXME: what is going on here? why does scala force us to give
+             * a type parameter for ComboBoxModel and then the setSelectedItem
+             * method takes an Object? Looks like someone screwed up in Java-land..
+             */
             def setSelectedItem(item:Object){
-                selected = item
+                selected = item.asInstanceOf[String]
             }
 
             override def addListDataListener(listener:ListDataListener){
                 listeners = listeners :+ listener
             }
 
-            override def getElementAt(index:Int):Object = {
-                this.data.get(index);
+            override def getElementAt(index:Int) = {
+                this.data.get(index)
             }
 
             override def getSize():Int = {
-                this.data.size();
+                this.data.size()
             }
 
             override def removeListDataListener(listener:ListDataListener){
                 this.listeners = this.listeners - listener
             }
-        };
+        }
 
         val comboModel = new BackPanelCombo(backPanelsData);
         pickOrder.setModel(comboModel);
@@ -1553,6 +1558,9 @@ class NewEditor extends JFrame("Paintown Editor"){
         split
     }
 
+    /* FIXME: make this search in data for any .txt file that matches a
+     * (character) or (item) ... definition
+     */
     def defaultObjects():List[File] = {
         List[File]() :+ 
         new File("chars/angel/angel.txt") :+

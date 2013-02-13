@@ -626,7 +626,7 @@ class FrameEvent extends AnimationEventNotifier with AnimationEvent {
 
         // canvas.add(area);
 
-        val framebox = engine.find("frame").asInstanceOf[JComboBox]
+        val framebox = engine.find("frame").asInstanceOf[JComboBox[String]]
         var index = 0;
         var count = -1;
         for (name <- NewAnimator.getFiles(animation.getBaseDirectory())){
