@@ -3,6 +3,7 @@
 #
 #  PYTHON_EMBEDABLE - True if embedable
 
+set(PythonLibs_FIND_VERSION "2")
 find_package(PythonLibs)
 if(UNIX OR LINUX)
     # Some systems require these libs to be added explicitly
