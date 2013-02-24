@@ -5,5 +5,6 @@
 export DEBUG=1
 export timing=1
 export llvm=1
+export ALLEGRO5=1
 echo "Entering Jon's environment"
 bash

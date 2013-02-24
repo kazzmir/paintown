@@ -219,6 +219,7 @@ def checkAllegro5(debug):
                              make('allegro_image'),
                              make('allegro_primitives'),
                              make('allegro_audio'),
+                             make('allegro_shader'),
                              make('allegro_acodec')]
                 safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
                 env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
