@@ -80,6 +80,7 @@
       - cp /opt/android/platforms/android-9/arch-arm/usr/lib/libSDL.so src/android/libs/armeabi/
       - cd src/android
       - Update the project:
+        # Check 'android list' to see a list of targets and use -t if needed
         - /opt/android-sdk/tools/android update project -p . -s
       - Build the project (release requires a signature):
         - ant debug
