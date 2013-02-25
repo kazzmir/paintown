@@ -62,6 +62,8 @@ public:
             
     virtual Graphics::Color filter(Graphics::Color color) const;
 
+    virtual Util::ReferenceCount<Graphics::Shader> getShader();
+
     virtual inline const Filesystem::RelativePath & getFrom() const {
         return remapFrom;
     }

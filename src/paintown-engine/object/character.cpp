@@ -54,6 +54,10 @@ colors(copy.colors){
 Remap::~Remap(){
 }
     
+Util::ReferenceCount<Graphics::Shader> Remap::getShader(){
+    return Util::ReferenceCount<Graphics::Shader>(NULL);
+}
+    
 Graphics::Color Remap::filter(Graphics::Color pixel) const {
     map<Graphics::Color, Graphics::Color>::const_iterator replace = colors.find(pixel);
     if (replace != colors.end()){

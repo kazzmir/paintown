@@ -3600,6 +3600,11 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
             return out;
         }
 
+        PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
+            /* FIXME */
+            return PaintownUtil::ReferenceCount<Graphics::Shader>(NULL);
+        }
+
         Graphics::Color filter(Graphics::Color pixel) const {
             if (cache.find(pixel) != cache.end()){
                 return cache[pixel];
@@ -3726,6 +3731,11 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
             }
 
             return Graphics::makeColor(newRed, newGreen, newBlue);
+        }
+
+        PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
+            /* FIXME */
+            return PaintownUtil::ReferenceCount<Graphics::Shader>(NULL);
         }
 
         Graphics::Color filter(Graphics::Color pixel) const {
