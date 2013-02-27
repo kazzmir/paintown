@@ -53,9 +53,68 @@ colors(copy.colors){
 
 Remap::~Remap(){
 }
-    
+
+string str_color(const Graphics::Color & color){
+    ostringstream out;
+    out << "r: " << Graphics::getRed(color);
+    out << " g: " << Graphics::getGreen(color);
+    out << " b: " << Graphics::getBlue(color);
+    out << " a: " << Graphics::getAlpha(color);
+    return out.str();
+}
+
+Util::ReferenceCount<Graphics::Shader> Remap::create(){
+    Util::ReferenceCount<Graphics::Shader> out;
+
+#ifdef USE_ALLEGRO5
+    std::ostringstream vertex;
+    vertex << "#version 130\n";
+    vertex << Graphics::defaultVertexShader();
+    ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
+                                                        Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/remap.fragment.glsl"))));
+    out = Util::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+    if (colors.size() > 0){
+        /*
+        remapTexture = Graphics::Bitmap(200, 200);
+        remapTexture.lock();
+        for (int x = 0; x < 200; x++){
+            for (int y = 0; y < 200; y++){
+                remapTexture.putPixelNormal(x, y, Graphics::makeColor(0, y, 0));
+            }
+        }
+        remapTexture.unlock();
+        */
+
+        remapTexture = Graphics::Bitmap(2, colors.size());
+        remapTexture.lock();
+        int row = 0;
+        for (map<Graphics::Color, Graphics::Color>::const_iterator it = colors.begin(); it != colors.end(); it++, row++){
+            const Graphics::Color & original = it->first;
+            const Graphics::Color & replace = it->second;
+            remapTexture.putPixelNormal(0, row, original);
+            remapTexture.putPixelNormal(1, row, replace);
+
+            // Global::debug(0) << "Row " << row << " original " << str_color(remapTexture.getPixel(0, row)) << " replace " << str_color(remapTexture.getPixel(1, row)) << std::endl;
+            // Global::debug(0) << "   original " << str_color(original) << " replace " << str_color(replace) << std::endl;
+        }
+        remapTexture.unlock();
+    } else {
+        /* Hopefully this should never happen */
+        remapTexture = Graphics::Bitmap(2, 1);
+    }
+#endif
+
+    return out;
+}
+
 Util::ReferenceCount<Graphics::Shader> Remap::getShader(){
-    return Util::ReferenceCount<Graphics::Shader>(NULL);
+    if (shader == NULL){
+        shader = create();
+    }
+#ifdef USE_ALLEGRO5
+    Graphics::setShaderSampler(shader->getShader(), "remap", remapTexture, 1);
+#endif
+    return shader;
 }
     
 Graphics::Color Remap::filter(Graphics::Color pixel) const {
@@ -73,6 +132,9 @@ map<Graphics::Color, Graphics::Color> Remap::computeRemapColors(const Filesystem
 
     map<Graphics::Color, Graphics::Color> remap_colors;
 
+    b_from.lock();
+    b_to.lock();
+
     for (int x1 = 0; x1 < b_from.getWidth(); x1++){
         for (int y1 = 0; y1 < b_from.getHeight(); y1++){
             Graphics::Color from_col = b_from.getPixel(x1, y1);
@@ -83,6 +145,9 @@ map<Graphics::Color, Graphics::Color> Remap::computeRemapColors(const Filesystem
             }
         }
     }
+
+    b_from.unlock();
+    b_to.unlock();
 
     return remap_colors;
 

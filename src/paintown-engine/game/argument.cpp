@@ -46,7 +46,7 @@ public:
                 Global::debug(0) << "No levels" << std::endl;
                 return;
             }
-            int remap = 0;
+            int remap = 1;
             PlayerFuture future(data.player, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(0, 0)));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);

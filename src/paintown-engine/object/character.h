@@ -74,6 +74,8 @@ public:
 
 protected:
     std::map<Graphics::Color, Graphics::Color> computeRemapColors(const Filesystem::RelativePath & from, const Filesystem::RelativePath & to);
+    Util::ReferenceCount<Graphics::Shader> create();
+    Graphics::Bitmap remapTexture;
 
 
     /*
@@ -93,6 +95,8 @@ protected:
     Filesystem::RelativePath remapFrom;
     Filesystem::RelativePath remapTo;
     std::map<Graphics::Color, Graphics::Color> colors;
+
+    Util::ReferenceCount<Graphics::Shader> shader;
 };
 
 class Character: public ObjectAttack {
