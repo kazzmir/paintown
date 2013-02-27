@@ -102,6 +102,7 @@ Util::ReferenceCount<Graphics::Shader> Remap::create(){
         /* Hopefully this should never happen */
         remapTexture = Graphics::Bitmap(2, 1);
     }
+    // Graphics::setShaderSampler(a5shader, "remap", remapTexture, 1);
 #endif
 
     return out;
