@@ -3600,10 +3600,40 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
             return out;
         }
 
-        PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
-            /* FIXME */
-            return PaintownUtil::ReferenceCount<Graphics::Shader>(NULL);
+        PaintownUtil::ReferenceCount<Graphics::Shader> shader;
+
+        PaintownUtil::ReferenceCount<Graphics::Shader> create(){
+            PaintownUtil::ReferenceCount<Graphics::Shader> out;
+
+#ifdef USE_ALLEGRO5
+            std::ostringstream vertex;
+            vertex << "#version 110\n";
+            vertex << Graphics::defaultVertexShader();
+            ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
+                                                                Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/mugen-after-effect.fragment.glsl"))));
+            out = PaintownUtil::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+#endif
+
+            return out;
         }
+
+        PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
+            if (shader == NULL){
+                shader = create();
+            }
+
+#ifdef USE_ALLEGRO5
+            Graphics::setShaderFloat(shader->getShader(), "extra", extra);
+            Graphics::setShaderVec4(shader->getShader(), "bright", bright.red / 255.0, bright.green / 255.0, bright.blue / 255.0, 0);
+            Graphics::setShaderVec4(shader->getShader(), "contrast", contrast.red / 255.0, contrast.green / 255.0,  contrast.blue / 255.0, 0);
+            Graphics::setShaderVec4(shader->getShader(), "post", post.red / 255.0, post.green / 255.0, post.blue / 255.0, 0);
+            Graphics::setShaderVec4(shader->getShader(), "extraAdd", extraAdd.red / 255.0, extraAdd.green / 255.0, extraAdd.blue / 255.0, 0);
+            Graphics::setShaderVec4(shader->getShader(), "extraMultiplier", extraMultiplier.red, extraMultiplier.green, extraMultiplier.blue, 0);
+#endif
+
+            return shader;
+        }
+
 
         Graphics::Color filter(Graphics::Color pixel) const {
             if (cache.find(pixel) != cache.end()){
@@ -3733,9 +3763,39 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
             return Graphics::makeColor(newRed, newGreen, newBlue);
         }
 
+        PaintownUtil::ReferenceCount<Graphics::Shader> shader;
+
+        PaintownUtil::ReferenceCount<Graphics::Shader> create(){
+            PaintownUtil::ReferenceCount<Graphics::Shader> out;
+
+#ifdef USE_ALLEGRO5
+            std::ostringstream vertex;
+            vertex << "#version 110\n";
+            vertex << Graphics::defaultVertexShader();
+            ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
+                                                                Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/mugen-palette-effect.fragment.glsl"))));
+            out = PaintownUtil::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+#endif
+
+            return out;
+        }
+
         PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
-            /* FIXME */
-            return PaintownUtil::ReferenceCount<Graphics::Shader>(NULL);
+            if (shader == NULL){
+                shader = create();
+            }
+
+#ifdef USE_ALLEGRO5
+            Graphics::setShaderBool(shader->getShader(), "invert", invert > 0);
+            Graphics::setShaderInt(shader->getShader(), "time", time);
+            Graphics::setShaderInt(shader->getShader(), "period", period);
+            Graphics::setShaderFloat(shader->getShader(), "color", (float) color / 255.0);
+            Graphics::setShaderVec4(shader->getShader(), "add", (float) addRed / 255.0, (float) addGreen / 255.0, (float) addBlue / 255.0, 0);
+            Graphics::setShaderVec4(shader->getShader(), "multiply", (float) multiplyRed / 256.0, (float) multiplyGreen / 256.0, (float) multiplyBlue / 256.0, 0);
+            Graphics::setShaderVec4(shader->getShader(), "sin_", (float) sinRed / 255.0, (float) sinGreen / 255.0, (float) sinBlue / 255.0, 0);
+#endif
+
+            return shader;
         }
 
         Graphics::Color filter(Graphics::Color pixel) const {
