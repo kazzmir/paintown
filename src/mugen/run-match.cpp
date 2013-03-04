@@ -702,6 +702,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
 };
 
 void Game::runMatch(Mugen::Stage * stage, const std::string & musicOverride, RunMatchOptions options){
+
+    PaintownUtil::Parameter<PaintownUtil::ReferenceCount<Graphics::ShaderManager> > shaderManager(Graphics::shaderManager, PaintownUtil::ReferenceCount<Graphics::ShaderManager>(new Graphics::ShaderManager()));
+
     //Music::changeSong();
     // *NOTE according to bgs.txt they belong in sound directory
     Filesystem::AbsolutePath file;

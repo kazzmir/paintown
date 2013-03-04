@@ -3602,7 +3602,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
 
         PaintownUtil::ReferenceCount<Graphics::Shader> shader;
 
-        PaintownUtil::ReferenceCount<Graphics::Shader> create(){
+        static PaintownUtil::ReferenceCount<Graphics::Shader> create(){
             PaintownUtil::ReferenceCount<Graphics::Shader> out;
 
 #ifdef USE_ALLEGRO5
@@ -3619,7 +3619,8 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
 
         PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
             if (shader == NULL){
-                shader = create();
+                PaintownUtil::ReferenceCount<Graphics::ShaderManager> manager = Graphics::shaderManager.current();
+                shader = manager->getShader("mugen-after-effect", create);
             }
 
 #ifdef USE_ALLEGRO5
@@ -3765,7 +3766,7 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
 
         PaintownUtil::ReferenceCount<Graphics::Shader> shader;
 
-        PaintownUtil::ReferenceCount<Graphics::Shader> create(){
+        static PaintownUtil::ReferenceCount<Graphics::Shader> create(){
             PaintownUtil::ReferenceCount<Graphics::Shader> out;
 
 #ifdef USE_ALLEGRO5
@@ -3782,7 +3783,8 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
 
         PaintownUtil::ReferenceCount<Graphics::Shader> getShader(){
             if (shader == NULL){
-                shader = create();
+                PaintownUtil::ReferenceCount<Graphics::ShaderManager> manager = Graphics::shaderManager.current();
+                shader = manager->getShader("mugen-palfx", create);
             }
 
 #ifdef USE_ALLEGRO5
