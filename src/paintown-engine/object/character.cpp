@@ -63,16 +63,24 @@ string str_color(const Graphics::Color & color){
     return out.str();
 }
 
-Util::ReferenceCount<Graphics::Shader> Remap::create(){
-    Util::ReferenceCount<Graphics::Shader> out;
-
+static Util::ReferenceCount<Graphics::Shader> remapShader(){
 #ifdef USE_ALLEGRO5
     std::ostringstream vertex;
     vertex << "#version 130\n";
     vertex << Graphics::defaultVertexShader();
     ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
                                                         Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/remap.fragment.glsl"))));
-    out = Util::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+    return Util::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+#else
+    return Util::ReferenceCount<Graphics::Shader>(NULL);
+#endif
+}
+
+Util::ReferenceCount<Graphics::Shader> Remap::create(){
+    Util::ReferenceCount<Graphics::Shader> out;
+    Util::ReferenceCount<Graphics::ShaderManager> manager = Graphics::shaderManager.current();
+    out = manager->getShader("paintown:remap", remapShader);
+
     if (colors.size() > 0){
         /*
         remapTexture = Graphics::Bitmap(200, 200);
@@ -103,7 +111,6 @@ Util::ReferenceCount<Graphics::Shader> Remap::create(){
         remapTexture = Graphics::Bitmap(2, 1);
     }
     // Graphics::setShaderSampler(a5shader, "remap", remapTexture, 1);
-#endif
 
     return out;
 }
