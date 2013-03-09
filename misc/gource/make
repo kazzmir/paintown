@@ -17,7 +17,14 @@ echo "Converting to gource log format"
 python svn-gource.py --filter-dirs paintown.xml > paintown.log
 echo "Running gource"
 # gource -1280x720 -o - paintown.log | ffmpeg -y -b 10000K -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -vpre slow -threads 0 -bf 0 gource.x264.mp4
+
+#gource -s 0.0001 -1280x720 -o - paintown.log | avconv -y -qscale 31 -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf 1 -threads 4 -bf 0 gource.mp4
+
 # gource -s 0.001 -o - paintown.log | netcat -l -p 8426
 
-gource -s 0.0001 -o - paintown.log | avconv -y -b 10000K -r 60 -f image2pipe -vcodec ppm -i - -bf 0 gource.mp4
+# gource -1280x720 -s 0.0001 -o - paintown.log | avconv -y -b 20000K -r 60 -f image2pipe -vcodec ppm -i - -bf 0 gource.mp4
+
+quality=10
+gource -s 0.0001 -1280x720 -o - paintown.log | avconv -y -r 60 -f image2pipe -vcodec ppm -i - -vcodec libx264 -preset ultrafast -crf $quality -threads 4 -bf 0 gource.mp4
+
 echo "Output is gource.mp4"
