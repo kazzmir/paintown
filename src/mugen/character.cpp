@@ -3623,6 +3623,10 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
                 shader = manager->getShader("mugen-after-effect", create);
             }
 
+            return shader;
+        }
+
+        void setupShader(const PaintownUtil::ReferenceCount<Graphics::Shader> & what){
 #ifdef USE_ALLEGRO5
             Graphics::setShaderFloat(shader->getShader(), "extra", extra);
             Graphics::setShaderVec4(shader->getShader(), "bright", bright.red / 255.0, bright.green / 255.0, bright.blue / 255.0, 0);
@@ -3631,10 +3635,7 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
             Graphics::setShaderVec4(shader->getShader(), "extraAdd", extraAdd.red / 255.0, extraAdd.green / 255.0, extraAdd.blue / 255.0, 0);
             Graphics::setShaderVec4(shader->getShader(), "extraMultiplier", extraMultiplier.red, extraMultiplier.green, extraMultiplier.blue, 0);
 #endif
-
-            return shader;
         }
-
 
         Graphics::Color filter(Graphics::Color pixel) const {
             if (cache.find(pixel) != cache.end()){
@@ -3787,6 +3788,10 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
                 shader = manager->getShader("mugen-palfx", create);
             }
 
+            return shader;
+        }
+
+        void setupShader(const PaintownUtil::ReferenceCount<Graphics::Shader> & what){
 #ifdef USE_ALLEGRO5
             Graphics::setShaderBool(shader->getShader(), "invert", invert > 0);
             Graphics::setShaderInt(shader->getShader(), "time", time);
@@ -3796,8 +3801,6 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
             Graphics::setShaderVec4(shader->getShader(), "multiply", (float) multiplyRed / 256.0, (float) multiplyGreen / 256.0, (float) multiplyBlue / 256.0, 0);
             Graphics::setShaderVec4(shader->getShader(), "sin_", (float) sinRed / 255.0, (float) sinGreen / 255.0, (float) sinBlue / 255.0, 0);
 #endif
-
-            return shader;
         }
 
         Graphics::Color filter(Graphics::Color pixel) const {

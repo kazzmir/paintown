@@ -115,13 +115,16 @@ Util::ReferenceCount<Graphics::Shader> Remap::create(){
     return out;
 }
 
+void Remap::setupShader(const Util::ReferenceCount<Graphics::Shader> & what){
+#ifdef USE_ALLEGRO5
+    Graphics::setShaderSampler(what->getShader(), "remap", remapTexture, 1);
+#endif
+}
+
 Util::ReferenceCount<Graphics::Shader> Remap::getShader(){
     if (shader == NULL){
         shader = create();
     }
-#ifdef USE_ALLEGRO5
-    Graphics::setShaderSampler(shader->getShader(), "remap", remapTexture, 1);
-#endif
     return shader;
 }
     

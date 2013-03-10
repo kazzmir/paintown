@@ -64,6 +64,8 @@ public:
 
     virtual Util::ReferenceCount<Graphics::Shader> getShader();
 
+    virtual void setupShader(const Util::ReferenceCount<Graphics::Shader> & what);
+
     virtual inline const Filesystem::RelativePath & getFrom() const {
         return remapFrom;
     }

@@ -1474,6 +1474,10 @@ public:
             shader = manager->getShader("mugen-palfx", create);
         }
 
+        return shader;
+    }
+
+    void setupShader(const PaintownUtil::ReferenceCount<Graphics::Shader> & what){
 #ifdef USE_ALLEGRO5
         Graphics::setShaderBool(shader->getShader(), "invert", invert > 0);
         Graphics::setShaderInt(shader->getShader(), "time", time);
@@ -1483,7 +1487,7 @@ public:
         Graphics::setShaderVec4(shader->getShader(), "multiply", (float) multiplyRed / 256.0, (float) multiplyGreen / 256.0, (float) multiplyBlue / 256.0, 0);
         Graphics::setShaderVec4(shader->getShader(), "sin_", (float) sinRed / 255.0, (float) sinGreen / 255.0, (float) sinBlue / 255.0, 0);
 #endif
-        return shader;
+
     }
 
     Graphics::Color filter(Graphics::Color pixel) const {
