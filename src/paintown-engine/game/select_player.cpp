@@ -51,8 +51,8 @@ class Selecter: public Util::Logic, public Util::Draw {
         source(source),
         is_done(false){
             // input.set(Keyboard::Key_ESC, 0, true, Quit);
-            if (source.useKeyboard()){
-                int player = source.getKeyboard();
+            for (vector<int>::const_iterator it = source.getKeyboard().begin(); it != source.getKeyboard().end(); it++){
+                int player = *it;
                 input.set(Configuration::getRight(player), Select::Right);
                 input.set(Configuration::getUp(player), Select::Up);
                 input.set(Configuration::getDown(player), Select::Down);
@@ -65,11 +65,11 @@ class Selecter: public Util::Logic, public Util::Draw {
             }
 
             if (source.useJoystick()){
-                int joystick = source.getJoystick();
                 input.set(Joystick::Up, Select::Up);
                 input.set(Joystick::Down, Select::Down);
                 input.set(Joystick::Left, Select::Left);
                 input.set(Joystick::Right, Select::Right);
+                input.set(Joystick::Start, Select::Choose);
                 input.set(Joystick::Button1, Select::Choose);
                 input.set(Joystick::Button2, Select::Choose);
                 input.set(Joystick::Button3, Select::Remap);

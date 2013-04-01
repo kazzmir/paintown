@@ -457,7 +457,7 @@ void Storyboard::run(bool repeat){
         }
 
         void run(){
-            vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(input, InputSource());
+            vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(input, InputSource(true));
             for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
                 InputMap<Keys>::InputEvent event = *it;
 

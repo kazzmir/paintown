@@ -50,7 +50,7 @@ name_id(-1),
 attack_bonus(0),
 invincible(false),
 ignore_lives(false),
-source(new InputSource()),
+source(new InputSource(true)),
 invincibilityEffect(NULL){
     lives = DEFAULT_LIVES;
 
@@ -102,7 +102,7 @@ name_id(-1),
 attack_bonus(0),
 invincible( false ),
 ignore_lives(false),
-source(new InputSource()),
+source(new InputSource(true)),
 invincibilityEffect(NULL){
     show_life = getHealth();
     lives = DEFAULT_LIVES;
@@ -190,7 +190,7 @@ const InputSource & Player::getInput() const {
     throw std::exception();
 }
 
-static Configuration::JoystickInput getJoystickKey(int player, Input::PaintownInput which, int facing){
+static Configuration::JoystickInput getJoystickKey(Input::PaintownInput which, int facing){
     switch (which){
         case Input::Forward : {
             if (facing == Paintown::Object::FACING_LEFT){ 
@@ -262,7 +262,7 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     */
 
     InputMap<Input::PaintownInput> input;
-    InputSource useSource;
+    InputSource useSource(true);
     if (source != NULL){
         useSource = *source;
     }
@@ -271,16 +271,19 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     /* set up keyboard */
     if (useSource.useKeyboard()){
         enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
-        for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
-            input.set(getKey(useSource.getKeyboard(), all[i], facing), 0, false, all[i]);
+        for (vector<int>::const_iterator it = useSource.getKeyboard().begin(); it != useSource.getKeyboard().end(); it++){
+            for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
+                input.set(getKey(*it, all[i], facing), 0, false, all[i]);
+            }
         }
     }
 
     /* set up joystick */
     if (useSource.useJoystick()){
         enum Input::PaintownInput all[] = {Input::Forward, Input::Back, Input::Up, Input::Down, Input::Attack1, Input::Attack2, Input::Attack3, Input::Attack4, Input::Attack5, Input::Attack6, Input::Jump, Input::Grab};
+
         for (unsigned int i = 0; i < sizeof(all) / sizeof(Input::PaintownInput); i++){
-            input.set(getJoystickKey(useSource.getJoystick(), all[i], facing), 0, false, all[i]);
+            input.set(getJoystickKey( all[i], facing), 0, false, all[i]);
         }
     }
 
@@ -325,11 +328,12 @@ vector<Input::PaintownInput> Player::fillKeyCache(){
     int facingHold = FACING_LEFT;
     enum Input::PaintownInput allHold[] = {Input::Forward, Input::Back, Input::Up, Input::Down};
     for (unsigned int i = 0; i < sizeof(allHold) / sizeof(Input::PaintownInput); i++){
-        if (useSource.useKeyboard()){
-            inputHold.set(getKey(useSource.getKeyboard(), allHold[i], facingHold), 0, false, allHold[i]);
+        for (vector<int>::const_iterator it = useSource.getKeyboard().begin(); it != useSource.getKeyboard().end(); it++){
+            inputHold.set(getKey(*it, allHold[i], facingHold), 0, false, allHold[i]);
         }
+
         if (useSource.useJoystick()){
-            inputHold.set(getJoystickKey(useSource.getJoystick(), allHold[i], facingHold), 0, false, allHold[i]);
+            inputHold.set(getJoystickKey(allHold[i], facingHold), 0, false, allHold[i]);
         }
     }
 

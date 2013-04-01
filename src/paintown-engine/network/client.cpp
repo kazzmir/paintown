@@ -101,7 +101,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
 
         virtual void load(){
             MessageQueue::info("Create player " + playerPath.path());
-            player = new Paintown::Player(playerPath, Util::ReferenceCount<InputSource>(new InputSource(0, 0)));
+            player = new Paintown::Player(playerPath, Util::ReferenceCount<InputSource>(new InputSource(true)));
             player->setMap(remap);
             player->ignoreLives();
             Filesystem::RelativePath cleanPath = Storage::instance().cleanse(playerPath);
@@ -137,7 +137,7 @@ static Paintown::Player * createNetworkPlayer(Socket socket){
 
     /* remap will be modified by the selectPlayer method */
     int remap = 0;
-    Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource());
+    Filesystem::AbsolutePath playerPath = Paintown::Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource(true));
 
     Context context(socket, info, playerPath, remap);
     Loader::loadScreen(context, Level::convert(info));
@@ -583,7 +583,7 @@ void networkClient(){
 
         void run(){
             Focus oldFocus = focus;
-            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input, InputSource());
+            vector<InputMap<ClientActions>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
 
             switch (focus){
                 case Name: state.draw = state.draw || nameInput.doInput(); break;
@@ -618,14 +618,14 @@ void networkClient(){
                         case Connect: {
                             is_done = true;
                             try{
-                                InputManager::waitForRelease(input, InputSource(), Action);
+                                InputManager::waitForRelease(input, InputSource(true), Action);
                                 runClient(nameInput.getText(), hostInput.getText(), portInput.getText());
                             } catch (const NetworkException & e){
                                 const Font & font = Font::getDefaultFont(20, 20);
                                 popup(font, e.getMessage());
-                                InputManager::waitForRelease(input, InputSource(), Action);
-                                InputManager::waitForPress(input, InputSource(), Action);
-                                InputManager::waitForRelease(input, InputSource(), Action);
+                                InputManager::waitForRelease(input, InputSource(true), Action);
+                                InputManager::waitForPress(input, InputSource(true), Action);
+                                InputManager::waitForRelease(input, InputSource(true), Action);
                                 
                                 is_done = false;
                                 state.draw = true;

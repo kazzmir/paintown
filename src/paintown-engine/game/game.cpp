@@ -518,7 +518,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                     force_quit = true;
                 }
             } else {
-                vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input, InputSource());
+                vector<InputMap<Game::Input>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
 
                 bool pressed = false;
                 for (vector<InputMap<Game::Input>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
@@ -657,7 +657,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
 
         void waitForQuit(){
-            InputManager::waitForRelease(input, InputSource(), Game::Quit);
+            InputManager::waitForRelease(input, InputSource(true), Game::Quit);
         }
     };
 

@@ -448,7 +448,7 @@ void ChatClient::run(){
         }
 
         void run(){
-            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource());
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
 
             bool hasInputFocus = client.focus == INPUT_BOX;
             bool next = false;

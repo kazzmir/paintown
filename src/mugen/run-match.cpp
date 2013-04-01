@@ -244,8 +244,8 @@ static void runEscape(EscapeMenu & menu){
         }
 
         void run(){
-            InputSource input1;
-            InputSource input2;
+            InputSource input1(true);
+            InputSource input2(true);
             std::vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
             std::vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
             out1.insert(out1.end(), out2.begin(), out2.end());
@@ -561,7 +561,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             };
 
             Handler handler(*this);
-            InputManager::handleEvents(gameInput, InputSource(), handler);
+            InputManager::handleEvents(gameInput, InputSource(true), handler);
         }
 
         int secondsInTicks(int seconds){

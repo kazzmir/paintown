@@ -1108,8 +1108,8 @@ public:
     }
 
     void run(){
-        InputSource input1;
-        InputSource input2;
+        InputSource input1(true);
+        InputSource input2(true);
         vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
         vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
         out1.insert(out1.end(), out2.begin(), out2.end());
@@ -1661,8 +1661,8 @@ public:
 
                     void run(){
                         if (!changingKeys){
-                            InputSource input1;
-                            InputSource input2;
+                            InputSource input1(true);
+                            InputSource input2(true);
                             vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
                             vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
                             out1.insert(out1.end(), out2.begin(), out2.end());
@@ -2178,7 +2178,7 @@ public:
             out << "\n";
             out << "We are very sorry but an error has occured while trying to load MUGEN.";
             PaintownUtil::showError(le, out.str());
-            InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
+            InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource(true));
         }
         throw ::Menu::Reload(__FILE__, __LINE__);
         // throw Exception::Return(__FILE__, __LINE__);

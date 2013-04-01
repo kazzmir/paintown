@@ -72,7 +72,7 @@ void HumanBehavior::flip(){
 }
 
 Mugen::Input HumanBehavior::updateInput(InputMap<Keys> & keys, Mugen::Input old){
-    vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(keys, InputSource());
+    vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(keys, InputSource(true));
     for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
         InputMap<Keys>::InputEvent event = *it;
 

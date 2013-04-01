@@ -128,7 +128,7 @@ void Game::run(Searcher & searcher){
         out << "We are very sorry but an error has occured while trying to load MUGEN.";
         Graphics::Bitmap screen(*Graphics::screenParameter.current());
         PaintownUtil::showError(screen, e, out.str());
-        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource());
+        InputManager::waitForKeys(Keyboard::Key_ENTER, Keyboard::Key_ESC, InputSource(true));
     }
 
     /* Continue the searcher */

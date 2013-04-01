@@ -856,7 +856,7 @@ void ChatServer::run(){
         }
 
         void handleInput(bool inputHadFocus){
-            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource());
+            vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
             bool select = false;
             bool next = false;
             bool quit = false;

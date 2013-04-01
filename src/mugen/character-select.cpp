@@ -3687,7 +3687,7 @@ public:
     }
 
     void doInput(int side){
-        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource());
+        std::vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input1, InputSource(true));
         for (std::vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
             const InputMap<Mugen::Keys>::InputEvent & event = *it;
             if (event.enabled){

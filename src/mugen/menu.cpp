@@ -812,8 +812,8 @@ static void runNewMenu(Searcher & searcher){
         }
 
         void run(){
-            InputSource input1;
-            InputSource input2;
+            InputSource input1(true);
+            InputSource input2(true);
             vector<InputMap<Mugen::Keys>::InputEvent> out1 = InputManager::getEvents(player1Input, input1);
             vector<InputMap<Mugen::Keys>::InputEvent> out2 = InputManager::getEvents(player2Input, input2);
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out1.begin(); it != out1.end(); it++){

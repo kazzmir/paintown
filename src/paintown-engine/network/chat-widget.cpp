@@ -31,7 +31,7 @@ ChatWidget::~ChatWidget(){
 }
 
 void ChatWidget::act(){
-    vector<InputMap<Inputs>::InputEvent> events = InputManager::getEvents(input, InputSource());
+    vector<InputMap<Inputs>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
 
     for (vector<InputMap<Inputs>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
         const InputMap<Inputs>::InputEvent & event = *it;

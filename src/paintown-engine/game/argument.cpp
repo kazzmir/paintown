@@ -47,7 +47,7 @@ public:
                 return;
             }
             int remap = 0;
-            PlayerFuture future(data.player, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(0, 0)));
+            PlayerFuture future(data.player, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0))));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);
             Game::realGame(players, levels[0]);

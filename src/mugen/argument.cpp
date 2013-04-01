@@ -75,7 +75,7 @@ public:
 };
 
 static bool parseMugenInstant(string input, string * player1, string * player2, string * stage){
-    unsigned int comma = input.find(',');
+    size_t comma = input.find(',');
     if (comma == string::npos){
         Global::debug(0) << "Expected three arguments separated by a comma, only 1 was given: " << input << endl;
         return false;
@@ -98,7 +98,7 @@ static bool parseMugenInstant(string input, string * player1, string * player2, 
 
 /* TODO: refactor this (and the above method) */
 static bool parseMugenInstant(string input, string * player1, string * player2, string * player3, string * player4, string * stage){
-    unsigned int comma = input.find(',');
+    size_t comma = input.find(',');
     if (comma == string::npos){
         Global::debug(0) << "Expected five arguments separated by a comma, only 1 was given: " << input << endl;
         return false;

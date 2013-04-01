@@ -2710,6 +2710,7 @@ enum GameInput{
 class Game: public Util::Logic, public Util::Draw {
 public:
     Game():
+    source(true),
     quit(false),
     upheld(false),
     downheld(false),

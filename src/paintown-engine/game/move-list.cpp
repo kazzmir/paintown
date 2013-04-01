@@ -240,12 +240,14 @@ public:
             if (source.useKeyboard()){
                 input.set(Keyboard::Key_ESC, 0, false, Quit);
                 /* some standard way to set up the keys should be used here */
-                input.set(Configuration::getUp(source.getKeyboard()), 0, true, Up);
-                input.set(Configuration::getDown(source.getKeyboard()), 0, true, Down);
+                for (vector<int>::const_iterator it = source.getKeyboard().begin(); it != source.getKeyboard().end(); it++){
+                    input.set(Configuration::getUp(*it), 0, true, Up);
+                    input.set(Configuration::getDown(*it), 0, true, Down);
+                }
             }
 
             if (source.useJoystick()){
-                int config = source.getJoystick();
+                // int config = source.getJoystick();
                 input.set(Joystick::Up, 0, true, Up);
                 input.set(Joystick::Down, 0, true, Down);
                 input.set(Joystick::Quit, 0, false, Quit);
@@ -334,7 +336,7 @@ public:
     }
 
     void handleInput(){
-        vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input, InputSource());
+        vector<InputMap<MoveListInput>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
         unsigned int old = list.getCurrentIndex();
         for (vector<InputMap<MoveListInput>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
             const InputMap<MoveListInput>::InputEvent & event = *it;

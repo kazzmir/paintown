@@ -2333,7 +2333,7 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         }
 
         void run(){
-            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input, InputSource());
+            vector<InputMap<Mugen::Keys>::InputEvent> out = InputManager::getEvents(input, InputSource(true));
             for (vector<InputMap<Mugen::Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
                 const InputMap<Mugen::Keys>::InputEvent & event = *it;
                 if (!event.enabled){
