@@ -190,7 +190,7 @@ const InputSource & Player::getInput() const {
     throw std::exception();
 }
 
-static Configuration::JoystickInput getJoystickKey(Input::PaintownInput which, int facing){
+static Joystick::Key getJoystickKey(Input::PaintownInput which, int facing){
     switch (which){
         case Input::Forward : {
             if (facing == Paintown::Object::FACING_LEFT){ 
