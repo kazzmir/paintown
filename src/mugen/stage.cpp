@@ -312,7 +312,7 @@ void Mugen::Stage::loadSectionInfo(Ast::Section * section){
                 simple->view() >> temp;
                 Global::debug(1) << "Made by this guy: '" << temp << "'" << endl;
             } else {
-                throw MugenException( "Unhandled option in Info Section: " + simple->toString(), __FILE__, __LINE__);
+                Global::debug(0) << "Ignoring option in Info Section: " + simple->toString() << std::endl;
             }
         }
     }
