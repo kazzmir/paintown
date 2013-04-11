@@ -31,6 +31,7 @@ item.cpp
 item-content.cpp
 match.cpp
 menu.cpp
+network.cpp
 reader.cpp
 run-match.cpp
 section.cpp

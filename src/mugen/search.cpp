@@ -147,16 +147,19 @@ owner(owner),
 thread(PaintownUtil::Thread::uninitializedValue),
 searching(false),
 searchingCheck(searching, searchingLock.getLock()){
+    /* data/<motif>/chars */
     try{
         paths.push_back(Data::getInstance().getMotifDirectory().join(Filesystem::RelativePath("chars")));
     } catch (const Filesystem::NotFound & fail){
     }
 
+    /* data/mugen/chars */
     try{
         paths.push_back(Storage::instance().find(Data::getInstance().getCharDirectory()));
     } catch (const Filesystem::NotFound & fail){
     }
 
+    /* ~/.paintown/mugen */
     try{
         paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
     } catch (const Filesystem::NotFound & fail){
@@ -171,8 +174,10 @@ void Searcher::CharacterSearch::search(){
         Filesystem::AbsolutePath path = paths.front();
         paths.erase(paths.begin());
         owner.addCharacters(findFiles(path, "def"));
-        /* FIXME: change this to add all container files */
-        owner.addCharacters(findFiles(path, "zip"));
+        vector<std::string> containers = Storage::containerTypes();
+        for (vector<std::string>::iterator it = containers.begin(); it != containers.end(); it++){
+            owner.addCharacters(findFiles(path, *it));
+        }
     }
 }
 
