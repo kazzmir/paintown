@@ -3234,11 +3234,16 @@ int CharacterSelect::stageCount() const {
 
 /* Only call this if you hold the lock */
 void CharacterSelect::doAddStage(const Filesystem::AbsolutePath & stage){
+    /* Check if it looks like a character, in which case ignore the stage */
     try{
-        /* Make sure its a real stage */
-        Util::probeDef(stage, "info", "name");
-        stages.add(stage);
+        Util::probeDef(stage, "files", "cns");
     } catch (const MugenException & fail){
+        try{
+            /* Make sure its a real stage */
+            Util::probeDef(stage, "info", "name");
+            stages.add(stage);
+        } catch (const MugenException & fail){
+        }
     }
 }
 
