@@ -159,9 +159,9 @@ searchingCheck(searching, searchingLock.getLock()){
     } catch (const Filesystem::NotFound & fail){
     }
 
-    /* ~/.paintown/mugen */
+    /* ~/.paintown/mugen/chars */
     try{
-        paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+        paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen/chars")));
     } catch (const Filesystem::NotFound & fail){
     }
 }
@@ -225,7 +225,7 @@ isDone(false){
     }
 
     try{
-        paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen")));
+        paths.push_back(Storage::instance().userDirectory().join(Filesystem::RelativePath("mugen/stages")));
     } catch (const Filesystem::NotFound & fail){
     }
 }
