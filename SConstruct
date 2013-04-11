@@ -1911,21 +1911,22 @@ if isWindows():
     
     env = config.Finish()
 
+    # Removed regex.dll
     if useAllegro():
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
-        env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', ] )
     elif useAllegro5():
         env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO5'])
-        env.Append(LIBS = ['allegro-5.0.3-monolith-md', 'wsock32', 'regex.dll', 'z', 'freetype', 'png', 'psapi'])
+        env.Append(LIBS = ['allegro-5.0.3-monolith-md', 'wsock32', 'z', 'freetype', 'png', 'psapi'])
     elif useSDL():
         if not useMinpspw() and not usePs3() and not useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             # TODO: move this to a configure check
             env.Append(CPPPATH = ['c:/gcc4.5/include/SDL'])
             staticEnv.Append(CPPDEFINES = ['USE_SDL'])
-            env.Append(LIBS = Split("""SDL pthread png user32 gdi32 winmm freetype z wsock32 regex.dll psapi mpg123 vorbisfile vorbis ogg"""))
+            env.Append(LIBS = Split("""SDL pthread png user32 gdi32 winmm freetype z wsock32 psapi mpg123 vorbisfile vorbis ogg"""))
             env['HAVE_MP3_MPG123'] = True
             env.Append(CPPDEFINES = ['HAVE_MP3_MPG123'])
             env.Append(CPPDEFINES = ['HAVE_OGG'])
@@ -1944,9 +1945,9 @@ if isWindows():
             env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
     if useSDL() and not useMinpspw() or not usePs3() or not useWii():
-        staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32'] )
     elif useAllegro():
-        staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', 'regex.dll'] )
+        staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32'] )
     
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
 else:
