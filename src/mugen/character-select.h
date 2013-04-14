@@ -91,28 +91,56 @@ private:
     
 class Cell: public Gui::SelectItem {
 public:
+    enum State{
+        /* empty means the cell should not contain anything. this is used for spacing
+         * the character selection screen. cannot be chosen.
+         */
+        Empty,
+
+        /* Contains a character */
+        Character,
+    
+        /* random means any character will be selected if this cell is chosen */
+        Random,
+
+        /* a cell that doesn't have anything in it yet but potentially could. this
+         * is different from empty because its not used to explicitly create the shape
+         * of the selection screen, instead its used to remind the system that a character
+         * might appear there.
+         */
+        Unused
+    };
+
     Cell(unsigned int index, const Gui::SelectListInterface *);
     virtual ~Cell();
     
     virtual void act();
     virtual void draw(int x, int y, int width, int height, const Graphics::Bitmap &, const ::Font &) const;
-    virtual bool isEmpty() const;
-    
+
     virtual void setCharacter(const Mugen::ArcadeData::CharacterInfo &);
-    
-    virtual void setRandom(bool r);
     
     virtual void select();
     
     virtual inline unsigned int getIndex() const {
         return index;
     }
-    virtual inline bool getRandom() const {
-        return this->isRandom;
+
+    virtual inline bool isRandom() const {
+        return this->state == Random;
     }
-    virtual inline void setEmpty(bool empty){
-        this->empty = empty;
+
+    virtual inline bool isEmpty() const {
+        return this->state == Empty;
     }
+
+    virtual inline bool isUnused() const {
+        return this->state == Unused;
+    }
+
+    virtual void setRandom();
+    virtual inline void setEmpty();
+    virtual void setUnused();
+
     virtual inline const Mugen::ArcadeData::CharacterInfo & getCharacter() const {
         return this->character;
     }
@@ -140,8 +168,9 @@ protected:
     
     unsigned int index;
     const Gui::SelectListInterface * parent;
-    bool empty;
-    bool isRandom;
+
+    State state;
+
     int flash;
     
     //! Character

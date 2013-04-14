@@ -81,8 +81,7 @@ void FontHandler::draw(const std::string & text, const Graphics::Bitmap & work, 
 Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent):
 index(index),
 parent(parent),
-empty(true),
-isRandom(false),
+state(Empty),
 flash(0){
 }
 
@@ -100,13 +99,24 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
         background->render(x, y, work);
     }
     
-    // If random draw random icon otherwise draw character image if available
-    if (isRandom){
-        if (randomIcon != NULL){
-            randomIcon->render(x + offsetX, y + offsetY, work, effects);
+    switch (state){
+        case Random: {
+            if (randomIcon != NULL){
+                randomIcon->render(x + offsetX, y + offsetY, work, effects);
+            }
+            break;
         }
-    } else if (!empty) {
-        character.drawIcon(x + offsetX, y + offsetY, work, effects);
+        case Empty: {
+            break;
+        }
+        case Character: {
+            character.drawIcon(x + offsetX, y + offsetY, work, effects);
+            break;
+        }
+        case Unused: {
+            /* FIXME: ??? */
+            break;
+        }
     }
     
     /*
@@ -144,18 +154,21 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     }
 }
 
-bool Cell::isEmpty() const {
-    return empty;
+void Cell::setUnused(){
+    this->state = Unused;
 }
 
-void Cell::setRandom(bool r){
-    empty = !r;
-    isRandom = r;
+void Cell::setRandom(){
+    this->state = Random;
+}
+
+void Cell::setEmpty(){
+    this->state = Empty;
 }
 
 void Cell::setCharacter(const Mugen::ArcadeData::CharacterInfo & character){
     this->character = character;
-    empty = false;
+    this->state = Character;
 }
 
 void Cell::select(){
@@ -667,7 +680,7 @@ Player::~Player(){
 }
 
 void Player::act(){
-    if (cells[grid.getCurrentIndex(cursor)]->getRandom() && (selectState == Character || selectState == Opponent)){
+    if (cells[grid.getCurrentIndex(cursor)]->isRandom() && (selectState == Character || selectState == Opponent)){
         switchTime++;
         if (switchTime >= randomSwitchTime){
             switchTime = 0;
@@ -1482,7 +1495,7 @@ void Player::select(int act){
         case Character:
             if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
                 sounds.play(doneSound);
-                if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+                if (cells[grid.getCurrentIndex(cursor)]->isRandom()){
                     cells[currentRandom]->select();
                 } else {
                     cells[grid.getCurrentIndex(cursor)]->select();
@@ -1493,7 +1506,7 @@ void Player::select(int act){
         case Opponent:
             if (!cells[grid.getCurrentIndex(cursor)]->isEmpty()){
                 sounds.play(doneSound);
-                if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+                if (cells[grid.getCurrentIndex(cursor)]->isRandom()){
                     cells[currentRandom]->select();
                 } else {
                     cells[grid.getCurrentIndex(cursor)]->select();
@@ -1833,7 +1846,7 @@ void Player::drawPortrait(const Mugen::ArcadeData::CharacterCollection & current
     }
     
     if (!currentCollection.checkSet()){
-        if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+        if (cells[grid.getCurrentIndex(cursor)]->isRandom()){
             // NOTE I'd prefer to randomize the name, but mugen originally just puts the words random there
             currentFont.draw("Random", work, heightMod);
         } else {
@@ -1862,7 +1875,7 @@ void Player::setCooperativeData(const Player & cooperativePlayer){
 }
 
 const Mugen::ArcadeData::CharacterInfo & Player::getCurrentCell(){
-    if (cells[grid.getCurrentIndex(cursor)]->getRandom()){
+    if (cells[grid.getCurrentIndex(cursor)]->isRandom()){
         return characters[currentRandom];
     } 
     return cells[grid.getCurrentIndex(cursor)]->getCharacter();
@@ -3200,9 +3213,7 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
          */
         for (std::vector<PaintownUtil::ReferenceCount<Cell> >::iterator it = cells.begin(); it != cells.end(); it++){
             PaintownUtil::ReferenceCount<Cell> cell = *it;
-            if (cell->getRandom()){
-                cell->setRandom(false);
-                cell->setEmpty(false);
+            if (cell->isRandom()){
                 cell->setCharacter(character);
                 return true;
             }
@@ -3214,7 +3225,7 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
 void CharacterSelect::addEmpty(){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     if (nextCell < cells.size()){
-        cells[nextCell]->setEmpty(true);
+        cells[nextCell]->setEmpty();
         nextCell++;
     }
 }
@@ -3222,7 +3233,7 @@ void CharacterSelect::addEmpty(){
 void CharacterSelect::addRandom(){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     if (nextCell < cells.size()){
-        cells[nextCell]->setRandom(true);
+        cells[nextCell]->setRandom();
         nextCell++;
     }
 }
