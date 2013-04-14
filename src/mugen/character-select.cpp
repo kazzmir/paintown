@@ -5,9 +5,10 @@
 
 #include "util/graphics/bitmap.h"
 #include "util/timedifference.h"
-#include "mugen/ast/all.h"
-#include "mugen/sound.h"
-#include "mugen/config.h"
+#include "ast/all.h"
+#include "sound.h"
+#include "config.h"
+#include "util.h"
 
 #include "util/input/input.h"
 #include "util/input/input-manager.h"
@@ -3052,7 +3053,9 @@ void CharacterSelect::draw(const Graphics::Bitmap & work){
     background->renderBackground(0, 0, work);
     
     // Temporary bitmap for grid
-    const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
+    // const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(grid.getWidth(), grid.getHeight());
+    /* FIXME: do we need this temporary bitmap? */
+    Graphics::Bitmap temp(grid.getWidth(), grid.getHeight());
     temp.clearToMask();
     grid.render(temp, ::Font::getDefaultFont());
     // Minus 1 since it's been offset
@@ -3192,6 +3195,24 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
             return false;
         }
     }*/
+
+
+    /* Find an unused cell if available */
+    for (int i = 0; i < nextCell && i < cells.size(); i++){
+        PaintownUtil::ReferenceCount<Cell> cell = cells[i];
+        if (cell->isUnused()){
+            characters.push_back(character);
+            // Include stage if required
+            if (character.getIncludeStage()){
+                /* We hold the lock so call doAddStage directly */
+                doAddStage(character.getStage());
+            }
+
+            cell->setCharacter(character);
+            return true;
+        }
+    }
+
     // Check if we don't exceed the cell count of the current grid
     if (nextCell < cells.size()){
         // Add to list
@@ -3214,6 +3235,13 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
         for (std::vector<PaintownUtil::ReferenceCount<Cell> >::iterator it = cells.begin(); it != cells.end(); it++){
             PaintownUtil::ReferenceCount<Cell> cell = *it;
             if (cell->isRandom()){
+                characters.push_back(character);
+                // Include stage if required
+                if (character.getIncludeStage()){
+                    /* We hold the lock so call doAddStage directly */
+                    doAddStage(character.getStage());
+                }
+
                 cell->setCharacter(character);
                 return true;
             }
@@ -3226,6 +3254,14 @@ void CharacterSelect::addEmpty(){
     PaintownUtil::Thread::ScopedLock scoped(lock);
     if (nextCell < cells.size()){
         cells[nextCell]->setEmpty();
+        nextCell++;
+    }
+}
+
+void CharacterSelect::addUnused(){
+    PaintownUtil::Thread::ScopedLock scoped(lock);
+    if (nextCell < cells.size()){
+        cells[nextCell]->setUnused();
         nextCell++;
     }
 }
@@ -3286,6 +3322,10 @@ const std::vector<Mugen::ArcadeData::CharacterInfo> & CharacterSelect::getCharac
 const std::vector<Filesystem::AbsolutePath> & CharacterSelect::getStages() const {
     return stages.getStages();
 }
+    
+void CharacterSelect::setSelectInfo(const std::vector<SelectInfo> & infos){
+    characterInfos.insert(characterInfos.end(), infos.begin(), infos.end());
+}
 
 void CharacterSelect::parseSelect(){
     const Filesystem::AbsolutePath file = Util::findFile(Filesystem::RelativePath(selectFile.getFilename().path()));
@@ -3310,6 +3350,8 @@ void CharacterSelect::parseSelect(){
                 virtual ~CharacterWalker(){}
             
                 CharacterSelect & self;
+
+                std::vector<SelectInfo> infos;
                 
                 virtual void onValueList(const Ast::ValueList & list){
                     // Grab Character
@@ -3322,25 +3364,32 @@ void CharacterSelect::parseSelect(){
                     } else if (temp == "randomselect"){
                         self.addRandom();
                     } else {
-                        // Only add characters if we auto search is off
                         if (Data::getInstance().getSearchType() == Data::SelectDef ||
                             Data::getInstance().getSearchType() == Data::SelectDefAndAuto){
 
+                            SelectInfo info;
+                            info.name = temp;
+
                             try{
+                                /*
                                 Filesystem::AbsolutePath tempPath;
                                 tempPath = Util::findCharacterDef(temp);
                                 Mugen::ArcadeData::CharacterInfo character(tempPath);              
+                                */
                                 try{
                                     // Grab stage
                                     view >> temp;
                                     if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("order = "))){
                                         temp.replace(0,std::string("order = ").size(),"");
-                                        character.setOrder((int)atoi(temp.c_str()));
+                                        // character.setOrder((int)atoi(temp.c_str()));
+                                        info.order = (int)atoi(temp.c_str());
                                     } else if (temp == "random"){
-                                        character.setRandomStage(true);
+                                        // character.setRandomStage(true);
+                                        info.randomStage = true;
                                     } else {
                                         try{
-                                            character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
+                                            info.stage = temp;
+                                            // character.setStage(Util::findFile(Filesystem::RelativePath(temp)));
                                         } catch (const Filesystem::NotFound & ex){
                                             Global::debug(0) << "Could not find stage " << temp << ": " << ex.getTrace() << std::endl;
                                         }
@@ -3353,19 +3402,24 @@ void CharacterSelect::parseSelect(){
                                         view >> temp;
                                         if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("includestage = "))){
                                             temp.replace(0,std::string("includestage = ").size(),"");
-                                            character.setIncludeStage((bool)atoi(temp.c_str()));
+                                            info.includeStage = (bool)atoi(temp.c_str());
+                                            // character.setIncludeStage((bool)atoi(temp.c_str()));
                                         } else if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("music = "))){
                                             temp.replace(0,std::string("music = ").size(),"");
-                                            character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
+                                            info.music = temp;
+                                            // character.setMusic(Util::findFile(Filesystem::RelativePath(temp)));
                                         } else if (PaintownUtil::matchRegex(temp, PaintownUtil::Regex("order = "))){
                                             temp.replace(0,std::string("order = ").size(),"");
-                                            character.setOrder((int)atoi(temp.c_str()));
+                                            info.order = (int)atoi(temp.c_str());
+                                            // character.setOrder((int)atoi(temp.c_str()));
                                         }
                                     }
                                 } catch (const Ast::Exception & e){
                                 }
 
-                                self.addCharacter(character);
+                                self.addUnused();
+                                // self.addCharacter(character);
+                                infos.push_back(info);
                             } catch (const Storage::NotFound & fail){
                                 Global::debug(0) << "Could not add character from " << temp << " because " << fail.getTrace() << std::endl;
                                 self.addEmpty();
@@ -3380,6 +3434,7 @@ void CharacterSelect::parseSelect(){
 
             CharacterWalker walk(*this);
             section->walk(walk);
+            setSelectInfo(walk.infos);
         } else if (head == "extrastages"){
             class StageWalker: public Ast::Walker{
             public:
@@ -3484,6 +3539,10 @@ void CharacterSelect::setPlayer2DoneCursor(PaintownUtil::ReferenceCount<Animatio
     player2DoneCursor = cursor;
 }
 
+const std::vector<CharacterSelect::SelectInfo> & CharacterSelect::getSelectInfo() const {
+    return characterInfos;
+}
+
 class SelectLogic: public PaintownUtil::Logic {
 public:
     SelectLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Mugen::CharacterSelect & select, Searcher & search):
@@ -3495,7 +3554,7 @@ public:
     search(search),
     // characterAddThread(PaintownUtil::Thread::uninitializedValue),
     subscription(*this),
-    withSubscription(search, subscription){
+    withSubscription(search, subscription, select.getSelectInfo(), select){
     }
 
     bool is_done, canceled;
@@ -3616,16 +3675,28 @@ public:
     
     class WithSubscription{
     public:
-        WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
+        WithSubscription(Searcher & search, Searcher::Subscriber & subscription, const std::vector<CharacterSelect::SelectInfo> & infos, CharacterSelect & select):
         subscribeThread(PaintownUtil::Thread::uninitializedValue),
         search(search),
-        subscription(subscription){
+        subscription(subscription),
+        stop(false),
+        check(stop, lock.getLock()),
+        infos(infos),
+        select(select){
             if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
                 doSubscribe();
             }
         }
 
         PaintownUtil::Thread::Id subscribeThread;
+        Searcher & search;
+        Searcher::Subscriber & subscription;
+        volatile bool stop;
+        PaintownUtil::ThreadBoolean check;
+        PaintownUtil::Thread::LockObject lock;
+
+        std::vector<CharacterSelect::SelectInfo> infos;
+        CharacterSelect & select;
 
         /* Start the subscription in a thread so that characters that are already found
          * will be added in a separate thread instead of the main one
@@ -3636,18 +3707,60 @@ public:
             return NULL;
         }
 
+        void addInfo(const CharacterSelect::SelectInfo & info){
+            try{
+                Mugen::ArcadeData::CharacterInfo character(Mugen::Util::findCharacterDef(info.name));
+                character.setOrder(info.order);
+                character.setRandomStage(info.randomStage);
+                try{
+                    character.setStage(Mugen::Util::findFile(Filesystem::RelativePath(info.stage)));
+                } catch (const Filesystem::NotFound & ex){
+                    Global::debug(0) << "Could not find stage " << info.stage << ": " << ex.getTrace() << std::endl;
+                }
+                character.setIncludeStage(info.includeStage);
+                try{
+                    character.setMusic(Mugen::Util::findFile(Filesystem::RelativePath(info.music)));
+                } catch (const Filesystem::NotFound & ex){
+                    Global::debug(0) << "Could not find music " << info.music << ":" << ex.getTrace() << std::endl;
+                }
+
+                select.addCharacter(character);
+            } catch (const Storage::NotFound & fail){
+                Global::debug(0) << "Could not add character " << info.name << " because " << fail.getTrace() << std::endl;
+            } catch (const MugenException & fail){
+                Global::debug(0) << "Could not add character " << info.name << " because " << fail.getTrace() << std::endl;
+            }
+        }
+
         void doSubscribe(){
-            // Only subscribe if auto search is enabled
+            /* First add all infos that were specified in the select.def */
+            while (!check.get() && infos.size() > 0){
+                CharacterSelect::SelectInfo info = infos.front();
+                infos.erase(infos.begin());
+                addInfo(info);
+            }
+
+            /* Then start the subscriber and add characters that are found.
+             * Only subscribe if auto search is enabled.
+             */
             if (Data::getInstance().autoSearch()){
                 search.subscribe(&subscription);
             }
         }
 
-        Searcher & search;
-        Searcher::Subscriber & subscription;
 
         virtual ~WithSubscription(){
-            /* Make sure we wait for the initial join to finish before trying to unsubscribe */
+            check.set(true);
+
+            /* Make sure we wait for the initial join to finish before trying to unsubscribe.
+             * Is it a race condition if the subscribeThread was never started before we get here?
+             * I don't think so because the constructor will ensure that subscribeThread is either
+             * the uninitialized value or is some thread value, possibly not started. If the thread
+             * is uninitialized then joining is a no-op, which means the subscription must have been
+             * started in the constructor (by virtue of the thread not being created), or if the
+             * thread was created, even if not started, then it will eventually start and joinThread
+             * will wait for it to finish.
+             */
             PaintownUtil::Thread::joinThread(subscribeThread);
             search.unsubscribe(&subscription);
         }

@@ -1307,6 +1307,7 @@ bool runArcade(const Filesystem::AbsolutePath & systemFile, ArcadeData::Characte
         PaintownUtil::ReferenceCount<PlayerLoader> loader = preLoadCharacters(*player, *enemy);
         showLoadPlayers(systemFile, playerCollection, enemyCollection, keys1, keys2);
 
+        Global::debug(0) << "Load stage " << stagePath.path() << std::endl;
         // FIXME use override music later
         Mugen::Stage stage(stagePath);
         prepareStage(loader, stage);

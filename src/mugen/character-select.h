@@ -483,6 +483,22 @@ protected:
 
 class CharacterSelect{
 public:
+    struct SelectInfo{
+        SelectInfo():
+            order(1),
+            randomStage(false),
+            includeStage(true){
+            }
+
+        std::string name;
+        std::string stage;
+        int order;
+        bool randomStage;
+        bool includeStage;
+        std::string music;
+    };
+
+public:
     CharacterSelect(const Filesystem::AbsolutePath &);
     virtual ~CharacterSelect();
     
@@ -522,6 +538,10 @@ public:
     virtual bool addCharacter(const Mugen::ArcadeData::CharacterInfo &);
     //! Add Empty slot
     virtual void addEmpty();
+
+    /* add unused slot */
+    virtual void addUnused();
+
     //! Make slot a random selector
     virtual void addRandom();
     //! Add stage
@@ -585,8 +605,13 @@ public:
     inline void setBlinkCursor(bool blink){
         blinkCursor = blink;
     }
+
+    const std::vector<SelectInfo> & getSelectInfo() const;
     
 protected:
+
+    /* Found some character info lines in the select.def, so add it to our running list */
+    void setSelectInfo(const std::vector<SelectInfo> & infos);
 
     void drawPlayer1Cursor(int x, int y, Gui::SelectListInterface::CursorState state, const Graphics::Bitmap &) const;
     void drawPlayer2Cursor(int x, int y, Gui::SelectListInterface::CursorState state, const Graphics::Bitmap &, bool blink=false) const;
@@ -662,6 +687,8 @@ protected:
     
     bool blinkCursor;
     int blinkTime;
+    
+    std::vector<SelectInfo> characterInfos;
 };
 
 }
