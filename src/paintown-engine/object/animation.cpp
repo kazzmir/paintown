@@ -129,6 +129,7 @@ shadowY( 0 ),
 range( 0 ),
 is_attack( false ),
 status( Status_Ground ),
+perpetual(false),
 commision( true ),
 contact( NULL ),
 changedAttacks(false){
@@ -334,6 +335,10 @@ changedAttacks(false){
                 // AnimationEvent * ani = new AnimationEventAttack( x1, y1, x2, y2, damage, force );
                 AnimationEvent * ani = new AnimationEventAttack(parseAttacks(current));
                 events.push_back(ani);
+            } else if (current == "perpetual"){
+                bool enabled = false;
+                current.view() >> enabled;
+                events.push_back(new AnimationPerpetual(enabled));
             } else if (current == "z-distance" ){
                 double d;
                 current.view() >> d;
@@ -583,13 +588,21 @@ void Animation::createProjectile(int x, int y, Projectile * projectile){
         delete projectile;
     }
 }
+        
+bool Animation::isPerpetual() const {
+    return perpetual;
+}
+        
+void Animation::setPerpetual(bool enabled){
+    this->perpetual = enabled;
+}
 	
 int Animation::getRange() const {
     return range * getScale();
 }
 	
 void Animation::nextTicket(){
-    if (parent){
+    if (parent && !isPerpetual()){
         parent->nextTicket();
     }
 }

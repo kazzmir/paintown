@@ -356,4 +356,16 @@ AnimationEvent::Type AnimationEventCanBeHit::getType(){
     return CanBeHit;
 }
 
+AnimationPerpetual::AnimationPerpetual(bool enabled):
+enabled(enabled){
+}
+
+void AnimationPerpetual::Interact(Animation * animation){
+    animation->setPerpetual(enabled);
+}
+
+AnimationEvent::Type AnimationPerpetual::getType(){
+    return Perpetual;
+}
+
 }

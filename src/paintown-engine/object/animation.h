@@ -196,6 +196,8 @@ public:
 		return enable_animations;
 	}
 
+        bool isPerpetual() const;
+
 	/* isAttack:
 	 * True if this animation is an attacking sequence
 	 */
@@ -261,6 +263,7 @@ public:
 	void DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
 	void setDelay(double delay);
 	void setStatus( const int status );
+        void setPerpetual(bool enabled);
 	void setFrame( const std::string & path );
 	void setFrame( const int fr );
 	void setBBox( int x1, int y1, int x2, int y2 );
@@ -335,6 +338,9 @@ protected:
 	bool own_events;
 	bool is_attack;
 	int status;
+
+        /* true if the object should live as long as possible */
+        bool perpetual;
 
 	/* can we use this animation? */
 	bool commision;

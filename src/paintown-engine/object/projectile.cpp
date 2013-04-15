@@ -156,16 +156,16 @@ vector<ECollide*> Projectile::getCollide() const {
 }
 
 Object * Projectile::copy(){
-	return new Projectile( this );
+    return new Projectile(this);
 }
 	
 Network::Message Projectile::getCreateMessage(){
-	Network::Message message;
+    Network::Message message;
 
-	message.id = 0;
-	message << World::CREATE_PROJECTILE;
+    message.id = 0;
+    message << World::CREATE_PROJECTILE;
 
-	return message;
+    return message;
 }
 
 const std::string Projectile::getAttackName(){
@@ -173,11 +173,11 @@ const std::string Projectile::getAttackName(){
 }
 
 bool Projectile::isAttacking(){
-	return true;
+    return true;
 }
 
 bool Projectile::collision( ObjectAttack * obj ){
-	return false;
+    return false;
 }
 
 int Projectile::getDamage() const {
@@ -193,11 +193,11 @@ double Projectile::getForceY() const {
 }
 
 bool Projectile::isCollidable( Object * obj ){
-	return true;
+    return true;
 }
 
 bool Projectile::isGettable(){
-	return false;
+    return false;
 }
         
 bool Projectile::isGrabbable(Object * object){
@@ -205,11 +205,11 @@ bool Projectile::isGrabbable(Object * object){
 }
 
 int Projectile::getWidth() const {
-	return currentAnimation->getWidth();
+    return currentAnimation->getWidth();
 }
 
 int Projectile::getHeight() const {
-	return currentAnimation->getHeight();
+    return currentAnimation->getHeight();
 }
 
 /*
@@ -226,11 +226,13 @@ void Projectile::getAttackCoords( int & x, int & y){
 */
 
 double Projectile::minZDistance() const {
-	return currentAnimation->getMinZDistance();
+    return currentAnimation->getMinZDistance();
 }
 
 void Projectile::attacked(World * world, Object * something, vector< Object * > & objects ){
-	setLife( 0 );
+    if (!currentAnimation->isPerpetual()){
+        setLife(0);
+    }
 }
 
 }

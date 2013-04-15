@@ -17,15 +17,34 @@ class AnimationEvent{
 public:
     /* Event is suffixed when the name conflicts with some other type */
     enum Type{
+        /* Defines an attack box and associated parameters (damage, force) */
         AttackEvent,
+
+        /* Moves the objects in x/y/z planes */
         Move,
+
+        /* Animation trails */
         Trail,
+
+        /* Forces the object to increase its attack ticket */
         Ticket,
+
+        /* Change status - ground, jumping, etc */
         Status,
+
+        /* Play a sound */
         Sound,
+
+        /* ?? */
         Shadow,
+
+        /* Absolute animation offset */
         Offset,
+
+        /* Relative animation offset */
         RelativeOffset,
+
+        /* Nothing */
         Nop,
         Coords,
         Jump,
@@ -35,7 +54,8 @@ public:
         Facing,
         ProjectileEvent,
         BBox,
-        CanBeHit
+        CanBeHit,
+        Perpetual
     };
 
     AnimationEvent();
@@ -294,13 +314,22 @@ class AnimationEventCanBeHit: public AnimationEvent {
 public:
     AnimationEventCanBeHit(bool hit);
 
-    virtual void Interact( Animation * animation ); 
+    virtual void Interact(Animation * animation);
     virtual Type getType();
 
 protected:
     bool hit;
 };
 
+class AnimationPerpetual: public AnimationEvent {
+public:
+    AnimationPerpetual(bool enabled);
+    virtual void Interact(Animation * animation);
+    virtual Type getType();
+
+protected:
+    bool enabled;
+};
 
 }
 
