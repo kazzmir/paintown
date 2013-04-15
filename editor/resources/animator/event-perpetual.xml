@@ -1,0 +1,16 @@
+<panel layout="GridBagLayout" size="200">
+	<hbox>
+		<gridbagconstraints
+			gridx="0"
+			gridy="0"
+			weightx="1"
+			weighty="1"
+			gridheight="1"
+			anchor="GridBagConstraints.NORTHWEST"
+			fill="GridBagConstraints.BOTH"
+			/>
+        <label text="Set perpetual" />
+        <combobox id="choose" />
+        <glue />
+	</hbox>
+</panel>

@@ -1078,3 +1078,54 @@ class RelativeOffsetEvent extends AnimationEventNotifier with AnimationEvent {
 
     def getDescription():String = "Moves the location of the sprite by the given x and y amounts. Use offset to make sure sprites line up within an animation."
 }
+
+class PerpetualEvent extends AnimationEventNotifier with AnimationEvent {
+  var enabled:Boolean = false
+
+  def loadToken(token:Token){
+    enabled = token.readBoolean(0)
+  }
+
+   def copy():AnimationEvent = {
+     val event = new PerpetualEvent()
+     event.enabled = enabled
+     event
+  }
+
+   def interact(animation:Animation){
+   }
+
+   def getName():String = getToken().toString()
+
+   def getEditor(animation:Animation, area:DrawArea):JPanel = {
+     val engine = new SwingEngine("animator/event-perpetual.xml");
+     engine.getRootComponent().asInstanceOf[JPanel].setSize(200,100);
+
+        val self = this
+
+        val choose = engine.find("choose").asInstanceOf[JComboBox[Boolean]]
+        choose.addItem(true)
+        choose.addItem(false)
+        choose.setSelectedItem(enabled)
+
+        choose.addActionListener(new ActionListener(){
+            override def actionPerformed(event:ActionEvent){
+                self.enabled = choose.getSelectedItem().asInstanceOf[Boolean]
+            }
+        });
+
+        engine.getRootComponent().asInstanceOf[JPanel]
+    }
+
+    def getToken():Token = {
+      val temp = new Token()
+      temp.addToken(new Token("perpetual"))
+      temp.addToken(new Token(enabled.toString()))
+      temp
+   }
+        
+    def destroy(){
+    }
+
+    def getDescription():String = "Allows projectiles to not die immediately when they collide with an enemy."
+}
