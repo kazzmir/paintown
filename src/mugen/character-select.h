@@ -111,7 +111,7 @@ public:
         Unused
     };
 
-    Cell(unsigned int index, const Gui::SelectListInterface *);
+    Cell(unsigned int index, const Gui::SelectListInterface *, const PaintownUtil::ReferenceCount<Sprite> & background, const PaintownUtil::ReferenceCount<Sprite> & randomIcon);
     virtual ~Cell();
     
     virtual void act();
@@ -145,11 +145,8 @@ public:
         return this->character;
     }
     
-    /* Why are all these things static? Shouldn't the CharacterSelect class
-     * just own these objects?
-     */
-    static void setBackground(PaintownUtil::ReferenceCount<Sprite> background);
-    static void setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon);
+    void setBackground(PaintownUtil::ReferenceCount<Sprite> background);
+    void setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon);
 
     static inline void setEffects(const Mugen::Effects & effects){
         Cell::effects = effects;
@@ -160,9 +157,10 @@ public:
     }
     
 protected:
-    static PaintownUtil::ReferenceCount<Sprite> background;
-    static PaintownUtil::ReferenceCount<Sprite> randomIcon;
+    PaintownUtil::ReferenceCount<Sprite> background;
+    PaintownUtil::ReferenceCount<Sprite> randomIcon;
         
+    /* Why are these static? */
     static Mugen::Effects effects;
     static int offsetX, offsetY;
     

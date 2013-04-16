@@ -20,8 +20,6 @@ static const int DEFAULT_SELECT_WIDTH = 320;
 static const int DEFAULT_SELECT_HEIGHT = 240;
 
 // Cell static members
-PaintownUtil::ReferenceCount<Sprite> Cell::background;
-PaintownUtil::ReferenceCount<Sprite> Cell::randomIcon;
 Mugen::Effects Cell::effects = Mugen::Effects();
 int Cell::offsetX = 0;
 int Cell::offsetY = 0;
@@ -79,7 +77,9 @@ void FontHandler::draw(const std::string & text, const Graphics::Bitmap & work, 
     }
 }
 
-Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent):
+Cell::Cell(unsigned int index, const Gui::SelectListInterface * parent, const PaintownUtil::ReferenceCount<Sprite> & background, const PaintownUtil::ReferenceCount<Sprite> & randomIcon):
+background(background),
+randomIcon(randomIcon),
 index(index),
 parent(parent),
 state(Empty),
@@ -177,11 +177,11 @@ void Cell::select(){
 }
 
 void Cell::setBackground(PaintownUtil::ReferenceCount<Sprite> background){
-    Cell::background = background;
+    background = background;
 }
 
 void Cell::setRandomIcon(PaintownUtil::ReferenceCount<Sprite> randomIcon){
-    Cell::randomIcon = randomIcon;
+    randomIcon = randomIcon;
 }
 
 /*
@@ -1918,6 +1918,9 @@ void CharacterSelect::init(){
             throw MugenException( out.str(), __FILE__, __LINE__);
         }
 
+        PaintownUtil::ReferenceCount<Sprite> cellBackground;
+        PaintownUtil::ReferenceCount<Sprite> cellRandomIcon;
+
         TimeDifference diff;
         diff.startTime();
         AstRef parsed(Util::parseDef(file));
@@ -1982,10 +1985,12 @@ void CharacterSelect::init(){
             } else if (head == "select info"){
                 class SelectInfoWalker: public Ast::Walker{
                 public:
-                    SelectInfoWalker(const AstRef & parsed, CharacterSelect & self, Mugen::SpriteMap & sprites):
+                    SelectInfoWalker(const AstRef & parsed, CharacterSelect & self, Mugen::SpriteMap & sprites, PaintownUtil::ReferenceCount<Sprite> & cellBackground, PaintownUtil::ReferenceCount<Sprite> & cellRandomIcon):
                         parsed(parsed),
                         self(self),
-                        sprites(sprites){
+                        sprites(sprites),
+                        cellBackground(cellBackground),
+                        cellRandomIcon(cellRandomIcon){
                         }
 
                     const AstRef & parsed;
@@ -1994,6 +1999,8 @@ void CharacterSelect::init(){
                     
                     Mugen::Effects player1Effects;
                     Mugen::Effects player2Effects;
+                    PaintownUtil::ReferenceCount<Sprite> & cellBackground;
+                    PaintownUtil::ReferenceCount<Sprite> & cellRandomIcon;
 
                     PaintownUtil::ReferenceCount<Animation> findAnimation(const AstRef & parse, int animation){
                         std::ostringstream all;
@@ -2094,14 +2101,14 @@ void CharacterSelect::init(){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setBackground(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
+                                cellBackground = PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.spr"){
                             try{
                                 int group, sprite;
                                 simple.view() >> group >> sprite;
-                                Cell::setRandomIcon(PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]));
+                                cellRandomIcon = PaintownUtil::ReferenceCount<Sprite>(sprites[group][sprite]);
                             } catch (const Ast::Exception & e){
                             }
                         } else if (simple == "cell.random.switchtime"){
@@ -2704,7 +2711,7 @@ void CharacterSelect::init(){
                     }
                 };
 
-                SelectInfoWalker walker(parsed, *this, sprites);
+                SelectInfoWalker walker(parsed, *this, sprites, cellBackground, cellRandomIcon);
                 section->walk(walker);
                 player1.setPortraitEffects(walker.player1Effects, walker.player2Effects);
                 player2.setPortraitEffects(walker.player2Effects, walker.player1Effects);
@@ -2746,7 +2753,7 @@ void CharacterSelect::init(){
         grid.setGridSize(gridX, gridY);
         // Set up cells
         for (unsigned int i = 0; i < (unsigned int)(gridX * gridY); ++i){
-            PaintownUtil::ReferenceCount<Cell> cell = PaintownUtil::ReferenceCount<Cell>(new Cell(i, &grid));
+            PaintownUtil::ReferenceCount<Cell> cell = PaintownUtil::ReferenceCount<Cell>(new Cell(i, &grid, cellBackground, cellRandomIcon));
             cells.push_back(cell);
             grid.addItem(cell.convert<Gui::SelectItem>());
         }
