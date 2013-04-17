@@ -235,7 +235,8 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> SpriteV1::getFinalBitmap(const Mu
 
     PaintownUtil::ReferenceCount<Graphics::Bitmap> modImage = use;
     if (isScaled(effects)){
-        modImage = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley))));
+        // modImage = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::Bitmap::temporaryBitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley))));
+        modImage = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap((int) (use->getWidth() * effects.scalex), (int) (use->getHeight() * effects.scaley)));
         use->Stretch(*(modImage.raw()));
     }
 
