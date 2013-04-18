@@ -185,13 +185,19 @@ public:
             while (ircClient->hasCommands()){
                 ::Network::IRC::Command command = ircClient->nextCommand();
                 std::vector<std::string> params = command.getParameters();
-                //Global::debug(0) << "Got message: " << command.getSendable() << std::endl;
+                Global::debug(0) << "Got message: " << command.getSendable() << std::endl;
                 try {
                     if (command.getType() == ::Network::IRC::Command::Ping){
                         ircClient->sendPong(command);
                         panel.addMessage(command.getOwner(), "*** Ping!");
-                    } else if (command.getType() == ::Network::IRC::Command::PrivateMessage || 
-                               command.getType() == ::Network::IRC::Command::Notice){
+                    } else if (command.getType() == ::Network::IRC::Command::PrivateMessage){
+                        // Check channel
+                        const std::string & channel = params.at(0);
+                        if (ircClient->isCurrentChannel(channel)){
+                            // Username and message 
+                            panel.addMessage(command.getOwner(), params.at(1));
+                        }
+                    } else if (command.getType() == ::Network::IRC::Command::Notice){
                         // Username and message 
                         panel.addMessage(command.getOwner(), params.at(1));
                     } else if (command.getType() == ::Network::IRC::Command::ReplyMOTD ||
@@ -290,7 +296,7 @@ public:
             }
         } else if (ircClient != NULL){
             if (command.at(0) == "help"){
-                panel.addMessage("* commands: help, nick, whisper, ping, join, names, topic, quit");
+                panel.addMessage("* commands: help, nick, whisper, ping, join, names, topic, previous, next, channels, quit");
             } else if (command.at(0) == "nick"){
                 try {
                     const std::string & nick = command.at(1);
@@ -356,6 +362,12 @@ public:
                 } catch (const std::out_of_range & ex){
                     ircClient->sendCommand(::Network::IRC::Command::Topic, ircClient->getChannel()->getName());
                 }
+            } else if (command.at(0) == "previous"){
+                ircClient->previousChannel();
+            } else if (command.at(0) == "next"){
+                ircClient->nextChannel();
+            } else if (command.at(0) == "channels"){
+                panel.addMessage("* Current Channels: " + ircClient->channelListAsString());
             } else if (command.at(0) == "quit"){
                 const std::string & message = join(command, 1);
                 if (!message.empty()){
