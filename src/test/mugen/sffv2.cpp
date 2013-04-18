@@ -828,7 +828,7 @@ int main(int argc, char ** argv){
                 bool ok = false;
                 while (!ok){
                     InputManager::poll();
-                    vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource());
+                    vector<InputMap<int>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
                     for (vector<InputMap<int>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                         InputMap<int>::InputEvent event = *it;
 

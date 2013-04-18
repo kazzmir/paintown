@@ -35,7 +35,7 @@ static void run(string path){
 
     /* done */
     screen.BlitToScreen();
-    InputManager::waitForKeys(Keyboard::Key_SPACE, Keyboard::Key_ESC, InputSource());
+    InputManager::waitForKeys(Keyboard::Key_SPACE, Keyboard::Key_ESC, InputSource(true));
 }
 
 int main(int argc, char ** argv){

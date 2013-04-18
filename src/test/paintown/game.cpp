@@ -47,7 +47,7 @@ static int load(const char * path){
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
             {
-                Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(playerPath)), Util::ReferenceCount<InputSource>(new InputSource()));
+                Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(playerPath)), Util::ReferenceCount<InputSource>(new InputSource(true)));
                 vector<Paintown::Object*> players;
                 players.push_back(&player);
                 AdventureWorld world(players, Storage::instance().find(Filesystem::RelativePath(path)));

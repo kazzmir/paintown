@@ -428,7 +428,7 @@ void showFont(const string & ourFile){
                 InputManager::poll();
                 runCounter -= 1;
                 draw = true;
-                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource());
+                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
                 for (vector<InputMap<LocalKeyboard::Keys>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                     const InputMap<LocalKeyboard::Keys>::InputEvent & event = *it;
                     if (event.enabled){
@@ -517,7 +517,7 @@ void showSFF(const string & ourFile, const std::string &actFile){
                 runCounter -= 1;
                 draw = true;
 
-                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource());
+                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
                 for (vector<InputMap<LocalKeyboard::Keys>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
                     const InputMap<LocalKeyboard::Keys>::InputEvent & event = *it;
                     if (event.enabled){

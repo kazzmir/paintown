@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+#include <unistd.h>
 #include "util/debug.h"
 #include <stdlib.h>
 #include "util/file-system.h"
