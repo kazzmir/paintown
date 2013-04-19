@@ -13,6 +13,8 @@ env = testEnv
 
 x = []
 test = testEnv.Program('network', source)
+irc = testEnv.Program('irc', Split("""test/globals.cpp common/init.cpp common/timer.cpp irc.cpp"""))
 x.extend(test)
+x.extend(irc)
 use.AddPostAction(test, use['PAINTOWN_TEST'])
 Return('x')
