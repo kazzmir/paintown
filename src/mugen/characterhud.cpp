@@ -432,7 +432,10 @@ void Bar::render(Element::Layer layer, const Graphics::Bitmap & bmp){
         middle.render(layer, position.x, position.y, bmp, (int)(damage * range.y / maxHealth));
 
         double width = currentHealth * range.y / maxHealth;
-        front.render(layer, position.x, position.y, bmp, (int) width);
+        if ((int) width > 0){
+            /* Don't draw a bar with width of 0 */
+            front.render(layer, position.x, position.y, bmp, (int) width);
+        }
 
 #if 0
         // Middle is the damage indicator

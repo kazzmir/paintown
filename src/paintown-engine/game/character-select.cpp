@@ -584,40 +584,42 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
     profile.bitmap->clearToMask();
     const int stand = 50;
     Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
-    if (profile.facingRight){
-        character->setFacing(Paintown::Object::FACING_RIGHT);
-    } else {
-        character->setFacing(Paintown::Object::FACING_LEFT);
+    if (character->isLoaded()){
+        if (profile.facingRight){
+            character->setFacing(Paintown::Object::FACING_RIGHT);
+        } else {
+            character->setFacing(Paintown::Object::FACING_LEFT);
+        }
+        Paintown::Character copy(*character);
+        Graphics::Bitmap temp(copy.getWidth(), copy.getHeight() * 2);
+        temp.clearToMask();
+        copy.setDrawShadow(false);
+        copy.setX(temp.getWidth()/2);
+        copy.setY(0);
+        copy.setZ(copy.getHeight());
+
+        /* FIXME: the y parameter actually isn't used in the outline and reflection. */
+        copy.drawOutline(&temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
+        copy.drawReflection(&temp, 0, temp.getHeight() - stand - stand, 128);
+        copy.draw(&temp, 0, temp.getHeight()/2);
+
+        /*
+           double widthRatio = (double) profile.bitmap->getWidth() / temp.getWidth();
+           double heightRatio = (double) profile.bitmap->getHeight() / temp.getHeight();
+
+           / * use smallest ratio * /
+           double use = widthRatio < heightRatio ? widthRatio : heightRatio;
+           */
+
+        // temp.draw(work.getWidth() / 2 - temp.getWidth() / 2, work.getHeight() / 2 - temp.getHeight() / 2, work);
+
+        temp.drawStretched(profile.bitmap->getWidth() / 2 - temp.getWidth() * profile.scale / 2,
+                           profile.bitmap->getHeight() / 2 - temp.getHeight() * profile.scale / 2,
+                           temp.getWidth() * profile.scale, temp.getHeight() * profile.scale,
+                           *profile.bitmap);
+
+        profile.bitmap->draw(profile.window.x, profile.window.y, work);
     }
-    Paintown::Character copy(*character);
-    Graphics::Bitmap temp(copy.getWidth(), copy.getHeight() * 2);
-    temp.clearToMask();
-    copy.setDrawShadow(false);
-    copy.setX(temp.getWidth()/2);
-    copy.setY(0);
-    copy.setZ(copy.getHeight());
-    
-    /* FIXME: the y parameter actually isn't used in the outline and reflection. */
-    copy.drawOutline(&temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
-    copy.drawReflection(&temp, 0, temp.getHeight() - stand - stand, 128);
-    copy.draw(&temp, 0, temp.getHeight()/2);
-
-    /*
-    double widthRatio = (double) profile.bitmap->getWidth() / temp.getWidth();
-    double heightRatio = (double) profile.bitmap->getHeight() / temp.getHeight();
-
-    / * use smallest ratio * /
-    double use = widthRatio < heightRatio ? widthRatio : heightRatio;
-    */
-
-    // temp.draw(work.getWidth() / 2 - temp.getWidth() / 2, work.getHeight() / 2 - temp.getHeight() / 2, work);
-
-    temp.drawStretched(profile.bitmap->getWidth() / 2 - temp.getWidth() * profile.scale / 2,
-                       profile.bitmap->getHeight() / 2 - temp.getHeight() * profile.scale / 2,
-                       temp.getWidth() * profile.scale, temp.getHeight() * profile.scale,
-                       *profile.bitmap);
-    
-    profile.bitmap->draw(profile.window.x, profile.window.y, work);
 }
 
 const std::string CharacterItem::getName(){
