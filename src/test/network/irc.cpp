@@ -15,7 +15,6 @@
 #include "util/sound/sound.h"
 #include "util/exceptions/exception.h"
 #include "util/network/network.h"
-#include "util/network/chat.h"
 #include "util/network/irc.h"
 #include "util/thread.h"
 #include "util/pointer.h"
@@ -50,6 +49,7 @@ class InputLogicDraw: public Util::Logic, public Util::Draw {
 public:
     InputLogicDraw(int port, const std::string & host = "127.0.0.1"):
     //panel(10, 20, 250, 200),
+    chatInterface(host, port),
     escaped(false){
         //users.setWidth(45);
         std::vector< Util::ReferenceCount<Gui::ScrollItem> > list;
@@ -62,9 +62,10 @@ public:
         //panel.setClient(ircClient->getName());
     }
     
-    bool escaped;
-    
+    ::Network::IRC::ChatInterface chatInterface;
     Util::ReferenceCount< ::Network::IRC::Client > ircClient;
+    
+    bool escaped;
     
     std::queue< ::Network::Chat::Message > sendable;
     std::queue< ::Network::Chat::Message > messages;
@@ -82,6 +83,7 @@ public:
 
     void run(){
         try {
+            chatInterface.act();
             //panel.act();
             // Check nick and fix
             /*if (ircClient->getName() != panel.getClient()){
@@ -282,6 +284,7 @@ public:
             // display channel
             //panel.getFont().draw(160, panel.getFont().getHeight()+10, 0, "(" + ircClient->getChannel()->getName() + ")", stretch);
         }
+        chatInterface.draw(screen);
         //panel.draw(stretch);
         //users.draw(265, 20, panel.getFont(), stretch);
         stretch.finish();
@@ -317,6 +320,9 @@ int main(int argc, char ** argv){
         Keyboard::pushRepeatState(true);
         
         InputManager manager;
+        
+        Util::Parameter<Util::ReferenceCount<Path::RelativePath> > 
+            defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
         
         Network::init();
             
