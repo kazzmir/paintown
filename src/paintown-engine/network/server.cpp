@@ -78,17 +78,15 @@ static int getServerPort(){
 
     class Logic: public Util::Logic {
     public:
-        Logic(TextInput & input, bool & draw):
+        Logic(TextInput & input):
         input(input),
-        is_done(false),
-        draw(draw){
+        is_done(false){
             input.addBlockingHandle(Keyboard::Key_ENTER, set_to_true, &is_done);
             input.enable();
         }
 
         TextInput & input;
         bool is_done;
-        bool & draw;
 
         bool done(){
             return is_done;
@@ -99,44 +97,39 @@ static int getServerPort(){
         }
 
         void run(){
-            draw = input.doInput();
+            input.doInput();
         }
     };
 
     class Draw: public Util::Draw {
     public:
-        Draw(const Graphics::Bitmap & background, const TextInput & input, int drawY, bool & need_draw):
+        Draw(const Graphics::Bitmap & background, const TextInput & input, int drawY):
         background(background),
         input(input),
-        drawY(drawY),
-        need_draw(need_draw){
+        drawY(drawY){
         }
 
         const Graphics::Bitmap & background;
         const TextInput & input;
         int drawY;
-        bool & need_draw;
 
         void draw(const Graphics::Bitmap & screen){
-            if (need_draw){
-                Graphics::StretchedBitmap buffer(640, 480, screen);
-                buffer.start();
-                background.Blit(buffer);
-                Graphics::Bitmap work(buffer, 100, drawY, 200, 25);
-                work.clear();
-                const Font & font = Font::getDefaultFont(20, 20 );
-                font.printf(0, 0, Graphics::makeColor(255, 255, 255), work, input.getText(), 0);
-                // work.Blit(100, drawY, background);
-                // background.BlitToScreen();
-                buffer.finish();
-                // screen.BlitToScreen();
-            }
+            Graphics::StretchedBitmap buffer(640, 480, screen);
+            buffer.start();
+            background.Blit(buffer);
+            Graphics::Bitmap work(buffer, 100, drawY, 200, 25);
+            work.clear();
+            const Font & font = Font::getDefaultFont(20, 20 );
+            font.printf(0, 0, Graphics::makeColor(255, 255, 255), work, input.getText(), 0);
+            // work.Blit(100, drawY, background);
+            // background.BlitToScreen();
+            buffer.finish();
+            // screen.BlitToScreen();
         }
     };
     
-    bool draw = true;
-    Logic logic(input, draw);
-    Draw drawer(background, input, drawY, draw);
+    Logic logic(input);
+    Draw drawer(background, input, drawY);
     drawer.draw(*Graphics::screenParameter.current());
 
     Util::standardLoop(logic, drawer);

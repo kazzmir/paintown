@@ -932,13 +932,10 @@ void ChatServer::run(){
         Focus & focus;
 
         void draw(const Graphics::Bitmap & buffer){
-            if (server.needToDraw()){
-                Graphics::StretchedBitmap work(640, 480, buffer);
-                work.start();
-                server.draw(work, lineEdit, focus);
-                work.finish();
-                buffer.BlitToScreen();
-            }
+            Graphics::StretchedBitmap work(640, 480, buffer);
+            work.start();
+            server.draw(work, lineEdit, focus);
+            work.finish();
         }
     };
 

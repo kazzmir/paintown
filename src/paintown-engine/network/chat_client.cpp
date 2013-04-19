@@ -498,14 +498,11 @@ void ChatClient::run(){
         ChatClient & client;
 
         void draw(const Graphics::Bitmap & buffer){
-            if (client.needToDraw()){
-                Graphics::StretchedBitmap work(640, 480, buffer);
-                work.start();
-                work.clear();
-                client.draw(work);
-                work.finish();
-                // buffer.BlitToScreen();
-            }
+            Graphics::StretchedBitmap work(640, 480, buffer);
+            work.start();
+            work.clear();
+            client.draw(work);
+            work.finish();
         }
     };
 

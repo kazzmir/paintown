@@ -670,42 +670,40 @@ void networkClient(){
         }
 
         void draw(const Graphics::Bitmap & work){
-            if (state.draw){
-                state.draw = false;
-                const Font & font = Font::getDefaultFont(20, 20 );
-                background.Blit(work);
+            state.draw = false;
+            const Font & font = Font::getDefaultFont(20, 20 );
+            background.Blit(work);
 
-                const int inputBoxLength = font.textLength("a") * 40;
-                const int min_y = 140;
+            const int inputBoxLength = font.textLength("a") * 40;
+            const int min_y = 140;
 
-                font.printf( 20, min_y - font.getHeight() * 3 - 1, Graphics::makeColor( 255, 255, 255 ), work, "Your name", 0 );
-                Graphics::Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
-                Graphics::Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
-                nameBox.Blit(copyNameBox);
+            font.printf( 20, min_y - font.getHeight() * 3 - 1, Graphics::makeColor( 255, 255, 255 ), work, "Your name", 0 );
+            Graphics::Bitmap nameBox( work, 20, min_y - font.getHeight() * 2, inputBoxLength, font.getHeight() );
+            Graphics::Bitmap copyNameBox( nameBox.getWidth(), nameBox.getHeight() );
+            nameBox.Blit(copyNameBox);
 
-                font.printf( 20, min_y - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
-                Graphics::Bitmap hostBox(work, 20, min_y, inputBoxLength, font.getHeight());
-                Graphics::Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
-                hostBox.Blit(copyHostBox);
+            font.printf( 20, min_y - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Host (IP address or name)", 0 );
+            Graphics::Bitmap hostBox(work, 20, min_y, inputBoxLength, font.getHeight());
+            Graphics::Bitmap copyHostBox( hostBox.getWidth(), hostBox.getHeight() );
+            hostBox.Blit(copyHostBox);
 
-                font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
-                Graphics::Bitmap portBox(work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight());
-                Graphics::Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
-                portBox.Blit(copyPortBox);
+            font.printf( 20, min_y + font.getHeight() * 2 - font.getHeight() - 1, Graphics::makeColor( 255, 255, 255 ), work, "Network Host Port", 0 );
+            Graphics::Bitmap portBox(work, 20, min_y + font.getHeight() * 2, inputBoxLength, font.getHeight());
+            Graphics::Bitmap copyPortBox( portBox.getWidth(), portBox.getHeight() );
+            portBox.Blit(copyPortBox);
 
-                font.printf( 20, 20, Graphics::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
+            font.printf( 20, 20, Graphics::makeColor( 255, 255, 255 ), work, "Press TAB to cycle the next input", 0 );
 
-                Graphics::Color focusColor = Graphics::makeColor( 255, 255, 0 );
-                Graphics::Color unFocusColor = Graphics::makeColor( 255, 255, 255 );
+            Graphics::Color focusColor = Graphics::makeColor( 255, 255, 0 );
+            Graphics::Color unFocusColor = Graphics::makeColor( 255, 255, 255 );
 
-                drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
-                drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);
-                drawBox(portBox, copyPortBox, portInput.getText(), font, focus == Port);
-                font.printf( 20, min_y + font.getHeight() * 5, focus == Connect ? focusColor : unFocusColor, work, "Connect", 0 );
-                font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == FocusBack ? focusColor : unFocusColor, work, "Back", 0 );
+            drawBox(nameBox, copyNameBox, nameInput.getText(), font, focus == Name);
+            drawBox(hostBox, copyHostBox, hostInput.getText(), font, focus == Host);
+            drawBox(portBox, copyPortBox, portInput.getText(), font, focus == Port);
+            font.printf( 20, min_y + font.getHeight() * 5, focus == Connect ? focusColor : unFocusColor, work, "Connect", 0 );
+            font.printf( 20, min_y + font.getHeight() * 6 + 5, focus == FocusBack ? focusColor : unFocusColor, work, "Back", 0 );
 
-                // work.BlitToScreen();
-            }
+            // work.BlitToScreen();
         }
     };
 
