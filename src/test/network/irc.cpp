@@ -45,6 +45,11 @@ static std::string join(const std::vector< std::string > & message, unsigned int
     return all;
 }
 
+static void set_to_true(void * b){
+    bool * what = (bool*) b;
+    *what = true;
+}
+
 class InputLogicDraw: public Util::Logic, public Util::Draw {
 public:
     InputLogicDraw(int port, const std::string & host = "127.0.0.1"):
@@ -60,6 +65,7 @@ public:
         ircClient = Util::ReferenceCount< ::Network::IRC::Client >(new ::Network::IRC::Client(host, port));
         ircClient->connect();
         //panel.setClient(ircClient->getName());
+        chatInterface.getInputBox().addHook(Keyboard::Key_ESC, set_to_true, &escaped);
     }
     
     ::Network::IRC::ChatInterface chatInterface;
