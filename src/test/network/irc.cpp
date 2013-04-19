@@ -277,9 +277,7 @@ public:
     }
     
     void draw(const Graphics::Bitmap & screen){
-        Graphics::StretchedBitmap stretch(320, 240, screen);
-        stretch.start();
-        stretch.fill(Graphics::makeColor(0,0,0));
+        screen.fill(Graphics::makeColor(0,0,0));
         if (ircClient != NULL){
             // display channel
             //panel.getFont().draw(160, panel.getFont().getHeight()+10, 0, "(" + ircClient->getChannel()->getName() + ")", stretch);
@@ -287,7 +285,7 @@ public:
         chatInterface.draw(screen);
         //panel.draw(stretch);
         //users.draw(265, 20, panel.getFont(), stretch);
-        stretch.finish();
+        //stretch.finish();
         screen.BlitToScreen();
     }
 };

@@ -324,7 +324,7 @@ accepting(true){
 void ChatServer::addLine(Gui::LineEdit & line){
     if (line.getText().size() > 0){
         addMessage(name + ": " + line.getText(), 0);
-        line.clearText();
+        line.clear();
         needUpdate();
     }
 }
@@ -731,7 +731,7 @@ void ChatServer::draw(const Graphics::Bitmap & work, Gui::LineEdit & lineEdit, F
     font.printf(start_x, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor(START_GAME, focus), work, "Start the game", 0);
     font.printf(start_x + font.textLength("Start the game") + 20, start_y + messages.getHeight() + 5 + font.getHeight() * 2 + 5, focusColor(QUIT, focus), work, "Quit", 0);
 
-    lineEdit.render(work);
+    lineEdit.draw(Font::getDefaultFont(20, 20), work);
 
     need_update = false;
 }
@@ -776,12 +776,10 @@ void ChatServer::run(){
     lineEdit.colors.body = Graphics::makeColor( 0, 0, 0 );
     lineEdit.colors.bodyAlpha = 128;
     lineEdit.colors.border = Graphics::makeColor( 255, 255, 0 );
-    lineEdit.setHorizontalAlign(Gui::LineEdit::T_Left);
     lineEdit.setTextColor( Graphics::makeColor( 255, 255, 255 ) );
 
     lineEdit.setText(welcomeMessage());
-    // lineEdit->setFont(Menu::getFont());
-    lineEdit.setFont(& Font::getDefaultFont(20, 20));
+    //lineEdit.setFont(& Font::getDefaultFont(20, 20));
     lineEdit.setFocused(true);
 
     class Logic: public Util::Logic {
@@ -796,9 +794,9 @@ void ChatServer::run(){
             input.set(Keyboard::Key_TAB, 0, true, 0);
             input.set(Keyboard::Key_ENTER, 0, true, 1);
             input.set(Keyboard::Key_ESC, 0, true, 2);
-            lineEdit.hookKey(Keyboard::Key_ENTER, enter_pressed, this);
-            lineEdit.hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
-            lineEdit.hookKey(Keyboard::Key_TAB, next_focus, this);
+            lineEdit.addHook(Keyboard::Key_ENTER, enter_pressed, this);
+            lineEdit.addHook(Keyboard::Key_ESC, set_to_true, &forceQuit);
+            lineEdit.addHook(Keyboard::Key_TAB, next_focus, this);
         }
 
         InputMap<int> input;

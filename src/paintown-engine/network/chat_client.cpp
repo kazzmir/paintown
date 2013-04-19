@@ -95,7 +95,7 @@ void ChatClient::enter_pressed(void * self){
     if (chat->lineEdit->getText().size() > 0){
         chat->addMessage("You: " + chat->lineEdit->getText(), 0);
         chat->toSend.push(chat->lineEdit->getText());
-        chat->lineEdit->clearText();
+        chat->lineEdit->clear();
         chat->needUpdate();
     }
 }
@@ -131,14 +131,12 @@ enterPressed( false ){
     lineEdit->colors.body = Graphics::makeColor(0, 0, 0);
     lineEdit->colors.bodyAlpha = 128;
     lineEdit->colors.border = Graphics::makeColor(255, 255, 0);
-    lineEdit->setHorizontalAlign(Gui::LineEdit::T_Left);
     lineEdit->setTextColor(Graphics::makeColor(255, 255, 255));
 
     lineEdit->setText("Hi!");
-    // lineEdit->setFont(Menu::getFont());
-    lineEdit->setFont(& Font::getDefaultFont(20, 20));
-    lineEdit->hookKey(Keyboard::Key_ENTER, enter_pressed, this);
-    lineEdit->hookKey(Keyboard::Key_TAB, next_focus, this);
+    //lineEdit->setFont(& Font::getDefaultFont(20, 20));
+    lineEdit->addHook(Keyboard::Key_ENTER, enter_pressed, this);
+    lineEdit->addHook(Keyboard::Key_TAB, next_focus, this);
     lineEdit->setFocused(true);
 
     editCounter = 0;
@@ -378,7 +376,7 @@ void ChatClient::draw( const Graphics::Bitmap & work ){
     background->Blit( work );
     messages.draw( start_x, start_y, work, font );
     // drawInputBox( start_x, start_y + messages.getHeight() + 5, work );
-    lineEdit->render(work);
+    lineEdit->draw(Font::getDefaultFont(20, 20), work);
     drawBuddies( work, start_x + messages.getWidth() + 10, start_y, font );
 
     Graphics::Color color = Graphics::makeColor( 255, 255, 255 );
@@ -430,7 +428,7 @@ void ChatClient::run(){
             input.set(Keyboard::Key_TAB, 0, true, 0);
             input.set(Keyboard::Key_ENTER, 0, true, 1);
             input.set(Keyboard::Key_ESC, 0, true, 2);
-            client.lineEdit->hookKey(Keyboard::Key_ESC, set_to_true, &forceQuit);
+            client.lineEdit->addHook(Keyboard::Key_ESC, set_to_true, &forceQuit);
         }
 
         InputMap<int> input;
