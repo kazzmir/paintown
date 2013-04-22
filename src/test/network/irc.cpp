@@ -57,7 +57,7 @@ public:
     chatInterface(host, port),
     escaped(false){
         //users.setWidth(45);
-        std::vector< Util::ReferenceCount<Gui::ScrollItem> > list;
+        //std::vector< Util::ReferenceCount<Gui::ScrollItem> > list;
         //Mugen::OptionMenu menu(list);
         //panel.setFont(menu.getFont());
         //panel.setClient("You");
