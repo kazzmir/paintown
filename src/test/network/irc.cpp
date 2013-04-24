@@ -63,7 +63,7 @@ public:
         //panel.setClient("You");
         //panel.subscribe(this);
         ircClient = Util::ReferenceCount< ::Network::IRC::Client >(new ::Network::IRC::Client(host, port));
-        ircClient->connect();
+        //ircClient->connect();
         //panel.setClient(ircClient->getName());
         chatInterface.getInputBox().addHook(Keyboard::Key_ESC, set_to_true, &escaped);
     }
