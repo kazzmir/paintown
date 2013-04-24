@@ -127,7 +127,7 @@ int main(int argc, char ** argv){
     write(driver_code, driver)
 
     exe = './.cpp-test'
-    subprocess.call(["g++", "-g3", cpp, driver, "-o", exe])
+    subprocess.call(["g++", "-fpermissive", "-g3", cpp, driver, "-o", exe])
     # out = subprocess.call([exe, input])
     cpp_out = subprocess.Popen([exe, input], stdout = subprocess.PIPE)
     code = cpp_out.wait()
