@@ -45,7 +45,7 @@ static std::string join(const std::vector< std::string > & message, unsigned int
     return all;
 }
 
-static void set_to_true(void * b){
+static void setTrue(void * b){
     bool * what = (bool*) b;
     *what = true;
 }
@@ -65,7 +65,7 @@ public:
         ircClient = Util::ReferenceCount< ::Network::IRC::Client >(new ::Network::IRC::Client(host, port));
         //ircClient->connect();
         //panel.setClient(ircClient->getName());
-        chatInterface.getInputBox().addHook(Keyboard::Key_ESC, set_to_true, &escaped);
+        chatInterface.getInputBox().addHook(Keyboard::Key_ESC, setTrue, &escaped);
     }
     
     ::Network::IRC::ChatInterface chatInterface;
