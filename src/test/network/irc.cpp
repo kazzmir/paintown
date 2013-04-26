@@ -50,6 +50,16 @@ static void setTrue(void * b){
     *what = true;
 }
 
+static void nextTab(void * i){
+    ::Network::IRC::ChatInterface * interface = (::Network::IRC::ChatInterface *)i;
+    interface->nextChannel();
+}
+
+static void previousTab(void * i){
+    ::Network::IRC::ChatInterface * interface = (::Network::IRC::ChatInterface *)i;
+    interface->previousChannel();
+}
+
 class InputLogicDraw: public Util::Logic, public Util::Draw {
 public:
     InputLogicDraw(int port, const std::string & host = "127.0.0.1"):
@@ -66,6 +76,8 @@ public:
         //ircClient->connect();
         //panel.setClient(ircClient->getName());
         chatInterface.getInputBox().addHook(Keyboard::Key_ESC, setTrue, &escaped);
+        chatInterface.getInputBox().addHook(Keyboard::Key_TAB, nextTab, &chatInterface);
+        //chatInterface.getInputBox().addHook(Keyboard::Key_TAB, previousTab, &chatBox);
     }
     
     ::Network::IRC::ChatInterface chatInterface;
