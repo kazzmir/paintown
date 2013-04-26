@@ -254,7 +254,7 @@ vector<string> LearningAIBehavior::currentCommands(const Mugen::Stage & stage, C
     vector<string> out;
 
     /* maybe attack */
-    if (Mugen::random(200) < difficulty * 2){
+    if ((int) Mugen::random(200) < difficulty * 2){
         const Character * enemy = stage.getEnemy(owner);
         int xDistance = (int) fabs(owner->getX() - enemy->getX());
         string command = selectBestCommand(xDistance, commands);

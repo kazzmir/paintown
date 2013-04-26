@@ -1015,7 +1015,7 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
 
     bool first = true;
     const std::vector<std::string> & levels = levelInfo.getLevels();
-    for (int level = 0; level < levels.size(); level++){
+    for (int level = 0; level < (int) levels.size(); level++){
         try{
             realGame(futurePlayers, levelInfo, levels[level], setup_players, first);
         } catch (const StageNext & next){
@@ -1026,7 +1026,7 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
             }
         } catch (const StageIndex & index){
             /* Stage index starts at 1, so we need to subtract 2 to get a 0-based index */
-            if (index.index >= 1 && index.index <= levels.size()){
+            if (index.index >= 1 && index.index <= (int) levels.size()){
                 level = index.index - 2;
             }
         }

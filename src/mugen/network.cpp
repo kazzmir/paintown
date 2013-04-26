@@ -73,7 +73,7 @@ public:
     }
 
     NetworkBuffer & operator>>(int16_t & data){
-        if (length + sizeof(data) < contains){
+        if ((int)(length + sizeof(data)) < contains){
             char * where = buffer + length;
             char * out = Network::parse16(where, (uint16_t*) &data);
             length += out - where;
@@ -84,7 +84,7 @@ public:
     }
 
     NetworkBuffer & operator>>(uint32_t & data){
-        if (length + sizeof(data) < contains){
+        if ((int)(length + sizeof(data)) < contains){
             char * where = buffer + length;
             char * out = Network::parse32(where, &data);
             length += out - where;
@@ -531,7 +531,7 @@ public:
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
                 Mugen::Sound::disableSounds();
-                for (int i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
+                for (uint32_t i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
                     stage.logic();
                 }
                 Mugen::Sound::enableSounds();
@@ -728,7 +728,7 @@ public:
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
                 Mugen::Sound::disableSounds();
-                for (int i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
+                for (uint32_t i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
                     stage.logic();
                 }
                 Mugen::Sound::enableSounds();

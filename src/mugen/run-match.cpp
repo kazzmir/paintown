@@ -441,13 +441,13 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             Global::debug(0) << "Replay from tick " << replay.ticks << ". Fast forward from " << use << " for " << (replay.ticks - use) << " ticks" << std::endl;
 
             Sound::disableSounds();
-            for (int i = use; i < replay.ticks; i++){
+            for (unsigned int i = use; i < replay.ticks; i++){
                 stage->logic();
             }
             Sound::enableSounds();
         }
 
-        void doReplayRewind(int ticks){
+        void doReplayRewind(unsigned int ticks){
             if (replay.enabled){
                 if (replay.ticks < ticks){
                     replay.ticks = 0;
@@ -821,7 +821,7 @@ void Game::runMatch(Mugen::Stage * stage, const std::string & musicOverride, Run
             string act(const string & line){
                 std::istringstream input(line);
                 string command;
-                int character = 0;
+                unsigned int character = 0;
                 int state = 0;
                 input >> command >> character >> state;
                 std::vector<Character*> players = stage->getPlayers();
@@ -854,7 +854,7 @@ void Game::runMatch(Mugen::Stage * stage, const std::string & musicOverride, Run
             string act(const string & line){
                 std::istringstream input(line);
                 string command;
-                int character = 0;
+                unsigned int character = 0;
                 input >> command >> character;
                 std::vector<Character*> players = stage->getPlayers();
                 int count = 0;

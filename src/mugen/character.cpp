@@ -404,13 +404,11 @@ static void update(HitState & state, Mugen::Stage & stage, const Character & guy
         state.fall.yVelocity = hit.fall.yVelocity;
         state.fall.xVelocity = hit.fall.xVelocity;
         state.fall.changeXVelocity = hit.fall.changeXVelocity;
-        int groundSlideTime = 0;
-        groundSlideTime = (int) hit.groundSlideTime;
+        int groundSlideTime = (int) hit.groundSlideTime;
         state.returnControlTime = hit.airGuardControlTime;
     } else {
         state.hitType = hit.groundType;
-        int groundSlideTime = 0;
-        groundSlideTime = (int) hit.groundSlideTime;
+        int groundSlideTime = (int) hit.groundSlideTime;
         state.animationType = hit.animationType;
         state.returnControlTime = hit.guardControlTime;
         state.hitTime = hit.groundHitTime;
@@ -2167,7 +2165,7 @@ void Character::loadGraphics(int palette){
             paletteFile = getLocalData().palFile.begin()->second;
         }
     } else {
-        if (palette < getLocalData().palFile.size()){
+        if (palette < (int) getLocalData().palFile.size()){
             paletteFile = getLocalData().palFile[palette];
             Global::debug(2) << "Current pal: " << palette << " | Palette File: " << paletteFile << endl;
         }

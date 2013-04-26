@@ -326,7 +326,7 @@ void Animation::logic(){
 }
         
 void Animation::setPosition(int position){
-    if (position < frames.size() && position >= 0){
+    if (position < (int) frames.size() && position >= 0){
         this->getState().position = position;
         this->getState().ticks = 0;
         this->getState().virtual_ticks = 0;

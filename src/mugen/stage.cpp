@@ -1096,7 +1096,8 @@ void Mugen::Stage::updateZoom(){
          * the time that the zoom is focused to 0.
          */
         if (getStateData().zoom.removeOnGetHit && exists(getStateData().zoom.owner)){
-            if (getCharacter(getStateData().zoom.owner)->getWasHitCount() > getStateData().zoom.hitCount && getStateData().zoom.time > 0){
+            if (getCharacter(getStateData().zoom.owner)->getWasHitCount() > getStateData().zoom.hitCount &&
+                getStateData().zoom.time > 0){
                 getStateData().zoom.time = 0;
             }
         }

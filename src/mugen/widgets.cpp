@@ -261,7 +261,7 @@ void ChatPanel::addMessage(const std::string & message){
     }
     
     // Drop out of sight
-    if ((buffer.size() * (font.getHeight()+2)) > height){
+    if (((int) buffer.size() * (font.getHeight()+2)) > height){
         buffer.pop_back();
     }
 }

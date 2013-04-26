@@ -767,9 +767,9 @@ void Game::startNetworkVersus(const string & player1Name, const string & player2
 
         try{
             runMatch(&stage, "", options);
+        } catch (const QuitGameException & ex){
         } catch (const MugenException & ex){
             Global::debug(0) << ex.getTrace() << std::endl;
-        } catch (const QuitGameException & ex){
         } catch (const Exception::Base & ex){
             Global::debug(0) << ex.getTrace() << std::endl;
         }
@@ -1793,7 +1793,7 @@ void Game::startDemo(Searcher & searcher){
         Filesystem::AbsolutePath path1;
         Filesystem::AbsolutePath path2;
         
-        int currentTime = System::currentSeconds();
+        uint64_t currentTime = System::currentSeconds();
         Global::debug(1) << "Waiting for search..." << std::endl;
         int i = 0;
         while (collections.isEmpty()){

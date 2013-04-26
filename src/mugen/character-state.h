@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_2e6a6842fcaf3beb2ae5ea75539890cd
-#define _serialize_Mugen_2e6a6842fcaf3beb2ae5ea75539890cd
+#ifndef _serialize_Mugen_b5253b51e62be90e1706161d76d3c674
+#define _serialize_Mugen_b5253b51e62be90e1706161d76d3c674
 
 #include "common.h"
 #include "compiler.h"
@@ -792,7 +792,7 @@ struct Zoom{
     int superMoveTime;
     int pauseMoveTime;
     bool removeOnGetHit;
-    int hitCount;
+    uint32_t hitCount;
     CharacterId bound;
     CharacterId owner;
 };

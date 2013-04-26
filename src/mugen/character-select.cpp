@@ -3205,7 +3205,7 @@ bool CharacterSelect::addCharacter(const Mugen::ArcadeData::CharacterInfo & char
 
 
     /* Find an unused cell if available */
-    for (int i = 0; i < nextCell && i < cells.size(); i++){
+    for (unsigned int i = 0; i < nextCell && i < cells.size(); i++){
         PaintownUtil::ReferenceCount<Cell> cell = cells[i];
         if (cell->isUnused()){
             characters.push_back(character);

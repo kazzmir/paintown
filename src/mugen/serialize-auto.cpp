@@ -222,9 +222,9 @@ Distance deserializeDistance(const Token * data){
 Token * serialize(const Attribute & data){
     Token * out = new Token();
     *out << "Attribute";
-*out->newToken() << "state" << serialize(data.state);
-*out->newToken() << "attackType" << serialize(data.attackType);
-*out->newToken() << "physics" << serialize(data.physics);
+    *out->newToken() << "state" << serialize(data.state);
+    *out->newToken() << "attackType" << serialize(data.attackType);
+    *out->newToken() << "physics" << serialize(data.physics);
 
     return out;
 }
@@ -255,7 +255,7 @@ Token * serialize(const Priority & data){
     if (data.hit != 0){
         *out->newToken() << "hit" << data.hit;
     }
-*out->newToken() << "type" << serialize(data.type);
+    *out->newToken() << "type" << serialize(data.type);
 
     return out;
 }
@@ -592,24 +592,24 @@ Token * serialize(const HitDefinition & data){
         *out->newToken() << "alive" << data.alive;
     }
     *out->newToken() << "attribute" << serialize(data.attribute);
-*out->newToken() << "hitFlag" << serialize(data.hitFlag);
-*out->newToken() << "guardFlag" << serialize(data.guardFlag);
-*out->newToken() << "animationType" << serialize(data.animationType);
-*out->newToken() << "animationTypeAir" << serialize(data.animationTypeAir);
-*out->newToken() << "animationTypeFall" << serialize(data.animationTypeFall);
+    *out->newToken() << "hitFlag" << serialize(data.hitFlag);
+    *out->newToken() << "guardFlag" << serialize(data.guardFlag);
+    *out->newToken() << "animationType" << serialize(data.animationType);
+    *out->newToken() << "animationTypeAir" << serialize(data.animationTypeAir);
+    *out->newToken() << "animationTypeFall" << serialize(data.animationTypeFall);
     *out->newToken() << "priority" << serialize(data.priority);
     *out->newToken() << "damage" << serialize(data.damage);
-*out->newToken() << "pause" << serialize(data.pause);
-*out->newToken() << "guardPause" << serialize(data.guardPause);
-*out->newToken() << "spark" << serialize(data.spark);
-*out->newToken() << "guardSpark" << serialize(data.guardSpark);
+    *out->newToken() << "pause" << serialize(data.pause);
+    *out->newToken() << "guardPause" << serialize(data.guardPause);
+    *out->newToken() << "spark" << serialize(data.spark);
+    *out->newToken() << "guardSpark" << serialize(data.guardSpark);
     *out->newToken() << "sparkPosition" << serialize(data.sparkPosition);
-*out->newToken() << "hitSound" << serialize(data.hitSound);
+    *out->newToken() << "hitSound" << serialize(data.hitSound);
     *out->newToken() << "getPower" << serialize(data.getPower);
     *out->newToken() << "givePower" << serialize(data.givePower);
-*out->newToken() << "guardHitSound" << serialize(data.guardHitSound);
-*out->newToken() << "groundType" << serialize(data.groundType);
-*out->newToken() << "airType" << serialize(data.airType);
+    *out->newToken() << "guardHitSound" << serialize(data.guardHitSound);
+    *out->newToken() << "groundType" << serialize(data.groundType);
+    *out->newToken() << "airType" << serialize(data.airType);
     if (data.groundSlideTime != 0){
         *out->newToken() << "groundSlideTime" << data.groundSlideTime;
     }
@@ -667,9 +667,9 @@ Token * serialize(const HitDefinition & data){
     if (data.chainId != 0){
         *out->newToken() << "chainId" << data.chainId;
     }
-*out->newToken() << "minimum" << serialize(data.minimum);
-*out->newToken() << "maximum" << serialize(data.maximum);
-*out->newToken() << "snap" << serialize(data.snap);
+    *out->newToken() << "minimum" << serialize(data.minimum);
+    *out->newToken() << "maximum" << serialize(data.maximum);
+    *out->newToken() << "snap" << serialize(data.snap);
     if (data.player1SpritePriority != 0){
         *out->newToken() << "player1SpritePriority" << data.player1SpritePriority;
     }
@@ -952,7 +952,7 @@ Token * serialize(const HitOverride & data){
     if (data.time != 0){
         *out->newToken() << "time" << data.time;
     }
-*out->newToken() << "attributes" << serialize(data.attributes);
+    *out->newToken() << "attributes" << serialize(data.attributes);
     if (data.state != 0){
         *out->newToken() << "state" << data.state;
     }
@@ -1110,10 +1110,10 @@ Token * serialize(const HitState & data){
     if (data.xVelocity != 0){
         *out->newToken() << "xVelocity" << data.xVelocity;
     }
-*out->newToken() << "animationType" << serialize(data.animationType);
-*out->newToken() << "airType" << serialize(data.airType);
-*out->newToken() << "groundType" << serialize(data.groundType);
-*out->newToken() << "hitType" << serialize(data.hitType);
+    *out->newToken() << "animationType" << serialize(data.animationType);
+    *out->newToken() << "airType" << serialize(data.airType);
+    *out->newToken() << "groundType" << serialize(data.groundType);
+    *out->newToken() << "hitType" << serialize(data.hitType);
     if (data.guarded != false){
         *out->newToken() << "guarded" << data.guarded;
     }
@@ -1259,8 +1259,8 @@ HitSound deserializeHitSound(const Token * data){
 Token * serialize(const ReversalData & data){
     Token * out = new Token();
     *out << "ReversalData";
-*out->newToken() << "pause" << serialize(data.pause);
-*out->newToken() << "spark" << serialize(data.spark);
+    *out->newToken() << "pause" << serialize(data.pause);
+    *out->newToken() << "spark" << serialize(data.spark);
     *out->newToken() << "hitSound" << serialize(data.hitSound);
     if (data.sparkX != 0){
         *out->newToken() << "sparkX" << data.sparkX;
@@ -1477,7 +1477,7 @@ Token * serialize(const TransOverride & data){
     if (data.enabled != false){
         *out->newToken() << "enabled" << data.enabled;
     }
-*out->newToken() << "type" << serialize(data.type);
+    *out->newToken() << "type" << serialize(data.type);
     if (data.alphaSource != 0){
         *out->newToken() << "alphaSource" << data.alphaSource;
     }
@@ -1544,7 +1544,7 @@ SpecialStuff deserializeSpecialStuff(const Token * data){
 Token * serialize(const Bind & data){
     Token * out = new Token();
     *out << "Bind";
-*out->newToken() << "bound" << serialize(data.bound);
+    *out->newToken() << "bound" << serialize(data.bound);
     if (data.time != 0){
         *out->newToken() << "time" << data.time;
     }
@@ -1592,7 +1592,7 @@ Bind deserializeBind(const Token * data){
 Token * serialize(const CharacterData & data){
     Token * out = new Token();
     *out << "CharacterData";
-*out->newToken() << "who" << serialize(data.who);
+    *out->newToken() << "who" << serialize(data.who);
     if (data.enabled != false){
         *out->newToken() << "enabled" << data.enabled;
     }
@@ -1706,11 +1706,11 @@ Token * serialize(const StateData & data){
     for (std::map<int, RuntimeValue >::const_iterator it = data.systemVariables.begin(); it != data.systemVariables.end(); it++){
         *t3->newToken() << serialize(it->first) << serialize(it->second);
     }
-    *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
-*out->newToken() << "stateType" << serialize(data.stateType);
-*out->newToken() << "moveType" << serialize(data.moveType);
-*out->newToken() << "hit" << serialize(data.hit);
-*out->newToken() << "hitState" << serialize(data.hitState);
+        *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
+    *out->newToken() << "stateType" << serialize(data.stateType);
+    *out->newToken() << "moveType" << serialize(data.moveType);
+    *out->newToken() << "hit" << serialize(data.hit);
+    *out->newToken() << "hitState" << serialize(data.hitState);
     if (data.combo != 0){
         *out->newToken() << "combo" << data.combo;
     }
@@ -1737,7 +1737,7 @@ Token * serialize(const StateData & data){
     if (data.frozen != false){
         *out->newToken() << "frozen" << data.frozen;
     }
-*out->newToken() << "reversal" << serialize(data.reversal);
+    *out->newToken() << "reversal" << serialize(data.reversal);
     if (data.reversalActive != false){
         *out->newToken() << "reversalActive" << data.reversalActive;
     }
@@ -1788,7 +1788,7 @@ Token * serialize(const StateData & data){
     if (data.virtualz != 0){
         *out->newToken() << "virtualz" << data.virtualz;
     }
-*out->newToken() << "facing" << serialize(data.facing);
+    *out->newToken() << "facing" << serialize(data.facing);
     if (data.power != 0){
         *out->newToken() << "power" << data.power;
     }
@@ -2115,7 +2115,7 @@ Token * serialize(const Pause & data){
     if (data.pauseBackground != false){
         *out->newToken() << "pauseBackground" << data.pauseBackground;
     }
-*out->newToken() << "who" << serialize(data.who);
+    *out->newToken() << "who" << serialize(data.who);
 
     return out;
 }
@@ -2214,8 +2214,8 @@ Token * serialize(const Zoom & data){
     if (data.hitCount != 0){
         *out->newToken() << "hitCount" << data.hitCount;
     }
-*out->newToken() << "bound" << serialize(data.bound);
-*out->newToken() << "owner" << serialize(data.owner);
+    *out->newToken() << "bound" << serialize(data.bound);
+    *out->newToken() << "owner" << serialize(data.owner);
 
     return out;
 }
@@ -2323,7 +2323,7 @@ Zoom deserializeZoom(const Token * data){
 Token * serialize(const EnvironmentColor & data){
     Token * out = new Token();
     *out << "EnvironmentColor";
-*out->newToken() << "color" << serialize(data.color);
+    *out->newToken() << "color" << serialize(data.color);
     if (data.time != 0){
         *out->newToken() << "time" << data.time;
     }

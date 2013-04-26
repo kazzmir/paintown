@@ -333,7 +333,7 @@ playing(false){
                                 "sprites/rain-drop/drop3.png",
                                 "sprites/rain-drop/drop4.png",
                                 "sprites/rain-drop/drop5.png"};
-        for (int i = 0; i < sizeof(files) / sizeof(const char*); i++){
+        for (unsigned int i = 0; i < sizeof(files) / sizeof(const char*); i++){
             splashes.push_back(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(files[i]))))));
         }
     } catch (const Filesystem::NotFound & ignore){
@@ -344,7 +344,7 @@ RainAtmosphere::~RainAtmosphere(){
 }
 
 void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
-    const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
+    // const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
     Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Util::ReferenceCount<Puddle> >::iterator it = puddles.begin(); it != puddles.end(); it++){
         Util::ReferenceCount<Puddle> puddle = *it;
@@ -355,7 +355,7 @@ void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
         int rx = (int) puddle->current;
         int ry = (int)(puddle->current * 0.8);
         int use = puddle->size;
-        if (use >= 0 && use < splashes.size()){
+        if (use >= 0 && use < (int) splashes.size()){
             Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
             splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
                                        puddle->y - splash->getHeight(),
@@ -375,7 +375,6 @@ void RainAtmosphere::interpret(const Token * message){
 }
 
 void RainAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
-    const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
     Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Util::ReferenceCount<Puddle> >::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
         Util::ReferenceCount<Puddle> puddle = *it;
@@ -383,7 +382,7 @@ void RainAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
         int ry = (int)(puddle->current * 0.8);
         // work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
         int use = puddle->size;
-        if (use >= 0 && use < splashes.size()){
+        if (use >= 0 && use < (int) splashes.size()){
             Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
             splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
                                        puddle->y - splash->getHeight(),
