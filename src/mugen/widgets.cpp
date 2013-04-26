@@ -1,11 +1,14 @@
 #include "widgets.h"
 
+#include "util/funcs.h"
 #include "util/graphics/bitmap.h"
 #include "util/network/network.h"
 #include "util/input/keyboard.h"
 #include "util/exceptions/exception.h"
 
 #include <stdexcept>
+
+namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 namespace Widgets{
@@ -85,29 +88,13 @@ void InputBox::renderCursor(int x, int y, const FontSystem::Font & font, const G
     }
 }
 
-/* FIXME: move this to some utils module */
-static std::vector<std::string> split(std::string str, char splitter){
-    std::vector<std::string> strings;
-    size_t next = str.find(splitter);
-    while (next != std::string::npos){
-        strings.push_back(str.substr(0, next));
-        str = str.substr(next+1);
-        next = str.find(splitter);
-    }
-    if (str != ""){
-        strings.push_back(str);
-    }
-
-    return strings;
-}
-
 static void submit(void * panel){
     ChatPanel * chat = (ChatPanel *)panel;
     if (!chat->getInput().getText().empty()){
         const std::string & text = chat->getInput().getText();
         // check if it's a command
         if (PaintownUtil::matchRegex(text, PaintownUtil::Regex("^/.*"))){
-            const std::vector<std::string> & command = split(text.substr(1), ' ');
+            const std::vector<std::string> & command = PaintownUtil::splitString(text.substr(1), ' ');
             chat->handleCommand(command);
         } else {
             if (!chat->getClient().empty()){
