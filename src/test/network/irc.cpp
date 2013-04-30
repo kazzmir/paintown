@@ -37,14 +37,6 @@ static std::vector<std::string> split(std::string str, char splitter){
     return strings;
 }
 
-static std::string join(const std::vector< std::string > & message, unsigned int start = 0){
-    std::string all;
-    for (unsigned int i = start; i < message.size(); ++i){
-        all+=message.at(i) + (i < message.size()-1 ? " " : "");
-    }
-    return all;
-}
-
 static void setTrue(void * b){
     bool * what = (bool*) b;
     *what = true;
