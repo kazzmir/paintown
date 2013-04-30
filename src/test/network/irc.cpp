@@ -19,6 +19,7 @@
 #include "util/thread.h"
 #include "util/pointer.h"
 #include "util/system.h"
+#include "util/timedifference.h"
 
 #include <queue>
 
@@ -95,9 +96,7 @@ public:
     }
     
     void draw(const Graphics::Bitmap & screen){
-        screen.fill(Graphics::makeColor(0,0,0));
         chatInterface.draw(screen);
-        screen.BlitToScreen();
     }
 };
 
