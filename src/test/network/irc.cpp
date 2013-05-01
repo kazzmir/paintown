@@ -53,7 +53,7 @@ static void previousTab(void * i){
     interface->previousChannel();
 }
 
-class InputLogicDraw: public Util::Logic, public Util::Draw {
+class InputLogicDraw: public Util::Logic, public Util::Draw, public ::Network::IRC::Message::EventInterface {
 public:
     InputLogicDraw(int port, const std::string & host = "127.0.0.1"):
     chatInterface(host, port),
@@ -61,6 +61,7 @@ public:
         ircClient = Util::ReferenceCount< ::Network::IRC::Client >(new ::Network::IRC::Client(host, port));
         chatInterface.getInputBox().addHook(Keyboard::Key_ESC, setTrue, &escaped);
         chatInterface.getInputBox().addHook(Keyboard::Key_TAB, nextTab, &chatInterface);
+        chatInterface.subscribe(this);
     }
     
     ::Network::IRC::ChatInterface chatInterface;
@@ -68,15 +69,37 @@ public:
     
     bool escaped;
     
-    std::queue< ::Network::Chat::Message > sendable;
-    std::queue< ::Network::Chat::Message > messages;
+    void remoteCommand(const ::Network::IRC::Command & command){
+        if (command.hasCtcp()){
+            const std::vector<std::string> & ctcp = command.getCtcp();
+            try {
+                if (ctcp.at(0) == "GAME-START"){
+                    if (command.getType() == ::Network::IRC::Command::PrivateMessage){
+                        chatInterface.addMessageToTab("Game start aknowledged.");
+                    }
+                } else {
+                    Global::debug(0) << "Got ctcp: " << ctcp.at(0) << std::endl;
+                }
+            } catch (const std::out_of_range & ex){
+            }
+        }
+    }
     
-    ::Util::Thread::LockObject lock;
-    ::Util::Thread::Id thread;
-    
-    // check ctcp reply
-    std::map<std::string, uint64_t> pingReply;
-    std::map< std::string, std::vector<std::string> > namesRequest;
+    void localCommand(const std::vector<std::string> & command){
+        if (command.at(0) == "help"){
+            chatInterface.addMessageToTab("* commands: lol, start-game");
+        } else if (command.at(0) == "lol"){
+            chatInterface.addMessageToTab("* You LOLOLOLOLLOLOLOL yourself.");
+        } else if (command.at(0) == "start-game"){
+            chatInterface.addMessageToTab("*** Starting game.");
+            chatInterface.getClient()->sendCommand(::Network::IRC::Command::PrivateMessage,
+                                                    //chatInterface.getCurrentTab()->getName(), 
+                                                    chatInterface.getClient()->getName(),
+                                                    ":\001GAME-START TEST\001");
+        } else {
+            //chatInterface.addMessageToTab("* Uknown command.");
+        }
+    }
     
     double ticks(double system){
         return system;
