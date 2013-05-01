@@ -270,6 +270,31 @@ public:
 };
 
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
+    /* user presses ESC in the game and brings up the menu. ESC in the menu
+     * should go back to the game. selecting the 'exit' option should quit the game
+     * to the main menu.
+     */ 
+
+    struct GameState{
+        GameState():
+            menu_quit(false),
+            helpTime(0),
+            pressed(0),
+            done(false),
+            show_fps(false),
+            takeScreenshot(false){
+            }
+
+        bool menu_quit;
+        double helpTime;
+        int pressed;
+        bool done;
+        bool show_fps;
+        bool takeScreenshot;
+    };
+    
+    GameState state;
+
     /* 150 pixel tall console */
     Console::Console console(150);
     {
@@ -284,6 +309,35 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
             string act(const string & line){
                 throw ShutdownException();
+            }
+        };
+
+        class CommandShowFps: public Console::Command {
+        public:
+            CommandShowFps(GameState & state):
+            state(state){
+            }
+
+            GameState & state;
+
+            string getDescription() const {
+                return "showfps 1/0 - enable/disable fps drawing";
+            }
+
+            string act(const string & line){
+                bool what = false;
+                std::istringstream in(line);
+                string first;
+                in >> first >> what;
+                state.show_fps = what;
+                std::ostringstream out;
+                out << "Fps ";
+                if (what){
+                    out << "enabled";
+                } else {
+                    out << "disabled";
+                }
+                return out.str();
             }
         };
 
@@ -423,6 +477,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         console.addCommand("god-mode", Util::ReferenceCount<Console::Command>(new CommandGodMode(players)));
         console.addCommand("clear", Util::ReferenceCount<Console::Command>(new CommandClear(console)));
         console.addCommand("stage", Util::ReferenceCount<Console::Command>(new CommandStage()));
+        console.addCommand("showfps", Util::ReferenceCount<Console::Command>(new CommandShowFps(state)));
     }
     // bool toggleConsole = false;
     // const int consoleKey = Keyboard::Key_TILDE;
@@ -438,29 +493,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         LoseException():
         Exception::Base(__FILE__, __LINE__){
         }
-    };
-
-    /* user presses ESC in the game and brings up the menu. ESC in the menu
-     * should go back to the game. selecting the 'exit' option should quit the game
-     * to the main menu.
-     */ 
-
-    struct GameState{
-        GameState():
-            menu_quit(false),
-            helpTime(0),
-            pressed(0),
-            done(false),
-            show_fps(false),
-            takeScreenshot(false){
-            }
-
-        bool menu_quit;
-        double helpTime;
-        int pressed;
-        bool done;
-        bool show_fps;
-        bool takeScreenshot;
     };
 
     class Logic: public Util::Logic {
@@ -756,7 +788,6 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
     Token * menuData = reader.readTokenFromFile(*Storage::instance().open(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("menu/in-game.txt"))));
 
     bool finish = true;
-    GameState state;
     Logic logic(players, world, console, state, menuData);
     Draw drawer(console, world, state);
     // state.helpTime = helpTime;
