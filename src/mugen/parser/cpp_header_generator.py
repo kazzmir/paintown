@@ -40,6 +40,8 @@ def generate(peg):
 #ifndef _%s_
 #define _%s_
 
+#include <string>
+
 %s
 
 #endif

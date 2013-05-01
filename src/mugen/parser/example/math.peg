@@ -1,0 +1,50 @@
+start-symbol: start
+include: {{
+#include "ast.h"
+}}
+code: {{
+static Number * makeNumber(int number){
+    return new Number(number);
+}
+
+static BinaryOperator * makeBinaryOperator(BinaryOperator::Type type, AstNode * left, AstNode * right){
+    return new BinaryOperator(type, left, right);
+}
+
+template <class What>
+What as(const Value & value){
+    return (What) value.getValue();
+}
+
+}}
+
+rules:
+        start = expression sw <eof> {{ value = $1; }}
+        expression = expression2 sw expression1_rest($1)
+        expression1_rest(left) = "+" sw right:expression2 op:{{value = makeBinaryOperator(BinaryOperator::Addition, as<AstNode*>(left), as<AstNode*>(right));}} sw expression1_rest(op)
+                               | "-" sw right:expression2 op:{{value = makeBinaryOperator(BinaryOperator::Subtraction, as<AstNode*>(left), as<AstNode*>(right));}} sw expression1_rest(op)
+                               | <void> {{ value = left; }}
+
+        expression2 = expression3 sw expression2_rest($1)
+        expression2_rest(left) = "*" sw right:expression3 op:{{value = makeBinaryOperator(BinaryOperator::Multiply, as<AstNode*>(left), as<AstNode*>(right));}} sw expression2_rest(op)
+                               | "/" sw right:expression3 op:{{value = makeBinaryOperator(BinaryOperator::Division, as<AstNode*>(left), as<AstNode*>(right));}} sw expression2_rest(op)
+                               | <void> {{ value = left; }}
+
+        expression3 = number {{ value = makeNumber((int) as<long>($1)); }}
+                    | "(" sw e:expression sw ")" {{ value = e; }}
+
+        inline number = digit+ {{
+            long total = 0;
+            for (Value::iterator it = $1.getValues().begin(); it != $1.getValues().end(); it++){
+                const Value & v = *it;
+                char letter = (char) (long) v.getValue();
+                total = (total * 10) + letter - '0';
+            }
+            value = (void*) total;
+        }}
+        inline sw = s*
+        inline s = "\n"
+          | " "
+          | "\t"
+          | "\r"
+        inline digit = [0123456789]

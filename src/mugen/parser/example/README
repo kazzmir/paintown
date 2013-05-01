@@ -1,0 +1,33 @@
+This directory contains a simple example usage of Vembyr. To use it first symlink or copy in
+all the Vembyr python files (if you use symlinks then you only have to symlink peg.py).
+
+ $ ln -s ../peg.py .
+  
+   OR
+
+ $ cp ../*.py .
+
+Then just run make
+
+ $ make
+
+It should produce 'math' which you can run
+
+ $ ./math
+ Ast node 0x256d9b0
+ Input: 1 * 2 + 3 - 12 * 9 / 4
+ Ast tree: (- (+ (* 1 2) 3) (/ (* 12 9) 4))
+ Result: -22
+
+* Files
+
+driver.cpp: Runs the parser on a sample piece of input, and then visits the resulting AST with
+two visitors. The first prints a representation of the AST as an s-expression. The second visitor
+acts as a simple interpreter and computes the mathematical expression.
+
+math.peg: PEG grammar. Only handles +, -, *, and /. Only positive integers are supported.
+
+ast.h: Defines a simple AST with one base class and two AST nodes, one for binary operators and
+one for numbers. Also defines a visitor class that knows how to visit each of the nodes.
+
+ast.cpp: Implementation of the AST nodes.
