@@ -146,8 +146,7 @@ int main(int argc, char ** argv){
         
         Global::setDebug(2);
         
-        Graphics::Bitmap screen(*Graphics::getScreenBuffer());
-        Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
+        Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());
         Keyboard::pushRepeatState(true);
         
         InputManager manager;
