@@ -20,6 +20,7 @@
 #include "util/pointer.h"
 #include "util/system.h"
 #include "util/timedifference.h"
+#include "util/configuration.h"
 
 #include <queue>
 
@@ -138,7 +139,7 @@ int main(int argc, char ** argv){
         int port = atoi(argv[1]);
         std::string hostname = argv[2];
         
-        Screen::realInit();
+        Screen::realInit(Configuration::getScreenWidth(), Configuration::getScreenHeight());
         atexit(Screen::realFinish);
         Common::startTimers();
         
