@@ -8,6 +8,7 @@
 #include "util/input/input-manager.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
+#include "util/timedifference.h"
 #include "util/exceptions/load_exception.h"
 
 #include "util/gui/select-list.h"
@@ -460,15 +461,15 @@ void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap 
         } else {
             switch (shape){
                 case ROUND:{
-                    Graphics::Bitmap temp = Graphics::Bitmap(work, x + width / 2 - radius, y + height / 2 - radius, radius*2 + thickness, radius*2 + thickness);
-                    temp.circle(radius, radius, radius, thickness, gradient.current());
+                    Graphics::Bitmap subWork(work, x + width / 2 - radius, y + height / 2 - radius, radius*2 + thickness, radius*2 + thickness);
+                    subWork.circle(radius, radius, radius, thickness, gradient.current());
                     break;
                 }
                 case SQUARE:{
                 default:
                     //const Graphics::Bitmap & temp = Graphics::Bitmap::temporaryBitmap(width+1,height+1);
-                    Graphics::Bitmap temp = Graphics::Bitmap(work, x, y, width+1, height+1);
-                    temp.border(0, thickness, gradient.current());
+                    Graphics::Bitmap subWork(work, x, y, width+1, height+1);
+                    subWork.border(0, thickness, gradient.current());
                     break;
                 }
             }
@@ -496,13 +497,11 @@ private:
     const std::map<std::string, Util::ReferenceCount<CellData> > & cells;
 };
 
-
-
 CharacterItem::CharacterItem(unsigned int index, const Util::ReferenceCount<Gui::SelectListInterface> parent, Util::ReferenceCount<playerInfo> player, const std::map<std::string, Util::ReferenceCount<CellData> > & cells):
 index(index),
 parent(parent),
 player(player),
-cells(cells){ 
+cells(cells){
 }
 
 CharacterItem::~CharacterItem(){
@@ -518,7 +517,7 @@ void CharacterItem::act(){
 }
 
 typedef std::map<std::string, Util::ReferenceCount<CellData> > cellmap;
-void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const{
+void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bitmap & bmp, const Font & font) const {
     cellmap::const_iterator back = cells.find("back");
     cellmap::const_iterator top = cells.find("top");
     cellmap::const_iterator select0 = cells.find("select0");
@@ -531,7 +530,7 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     // Player 
     Util::ReferenceCount<Paintown::DisplayCharacter> displayed = player->guy;
     if (displayed->isLoaded()){
-        Graphics::Bitmap temp = Graphics::Bitmap(width, height);
+        Graphics::Bitmap temp(width, height);
         temp.clearToMask();
         Paintown::Character smaller(*displayed);
         smaller.setX( width / 2 );
@@ -1172,7 +1171,7 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
     if (hasMoreHigh != NULL && list->hasMoreHigh()){
         hasMoreHigh->draw(depth, work);
     }
-    
+
     // Profiles next
     for (unsigned int i = 0; i < profiles.size(); ++i){
         Util::ReferenceCount<Profile> profile = profiles[i];
