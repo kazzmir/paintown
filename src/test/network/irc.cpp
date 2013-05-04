@@ -14,6 +14,7 @@
 #include "util/input/input-manager.h"
 #include "util/sound/sound.h"
 #include "util/exceptions/exception.h"
+#include "util/network/chat.h"
 #include "util/network/network.h"
 #include "util/network/irc.h"
 #include "util/thread.h"
@@ -76,9 +77,41 @@ public:
         return clientlist.substr(0, clientlist.size() - 2);
     }
     
-    void start(const std::string & hostip) {
-        Global::debug(0) << "Game " << name << " is starting." << std::endl;
-        Global::debug(0) << "Connecting to " << hostip << "...." << std::endl;
+    void start(const std::string & ip, const std::string & hostip) {
+        // TODO move to a thread, otherwise the server is going to hang...
+        int port = 9991;
+        if (isHost()){
+            Global::debug(0) << "Game " << name << " is starting." << std::endl;
+            Global::debug(0) << "Starting server on port " << port << "...." << std::endl;
+            ::Network::Chat::Server server(port);
+            server.start();
+            // Wait for all clients to send a message
+            unsigned int allReceived = 0;
+            while (allReceived < clients.size()){
+                server.poll();
+                while (server.hasMessages()){
+                    ::Network::Chat::Message message = server.nextMessage();
+                    std::map<std::string, std::string>::iterator check = clients.find(message.getName());
+                    if (check != clients.end()){
+                        Global::debug(0) << "Message Received: " << message.getMessage() << std::endl;
+                        allReceived++;
+                    }
+                }
+            }
+            Global::debug(0) << "Received all messages. Shutting down." << std::endl;
+            server.shutdown();
+        } else {
+            Global::debug(0) << "Game " << name << " is starting." << std::endl;
+            Global::debug(0) << "Connecting to " << hostip << "...." << std::endl;
+            Network::Socket socket = Network::connectReliable(hostip, port);
+            Global::debug(0) << "Connected" << std::endl;
+            ::Network::Chat::Client client(0, socket);
+            client.start();
+            ::Network::Chat::Message ourMessage(::Network::Chat::Message::Chat, ip, "Hello from: " + ip);    
+            client.sendMessage(ourMessage);
+            Global::debug(0) << "Message sent. Shutting down." << std::endl;
+            client.shutdown();
+        }
     }
     
     std::map<std::string, std::string> & getClients(){
@@ -158,7 +191,7 @@ public:
                                 const std::string & gameName = ctcp.at(2);
                                 const std::string & serverIp = ctcp.at(3);
                                 chatInterface.addMessageToTab("* Host has started game " + gameName);
-                                game->start(serverIp);
+                                game->start(ipAddress, serverIp);
                             }
                         }
                     } else {
@@ -190,6 +223,7 @@ public:
                 } else if (command.at(1) == "start"){
                     if (game != NULL && game->isHost()){
                         chatInterface.addMessageToTab("* Starting game " + game->getName());
+                        game->start(ipAddress, ipAddress);
                         for (std::map<std::string, std::string>::iterator i = game->getClients().begin(); i != game->getClients().end(); i++){
                             chatInterface.getClient()->sendCommand(::Network::IRC::Command::PrivateMessage,
                                                                     (*i).first,
