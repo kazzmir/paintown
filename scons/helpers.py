@@ -25,6 +25,9 @@ def read_cmake_list(name):
                     current.append(path)
     return lists
 
+def findFile(name):
+    return findDirectory(name)
+
 def findDirectory(name):
     import os.path
     where = '.'
