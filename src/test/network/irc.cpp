@@ -83,6 +83,9 @@ public:
         if (isHost()){
             Global::debug(0) << "Game " << name << " is starting." << std::endl;
             Global::debug(0) << "Starting server on port " << port << "...." << std::endl;
+            Util::Thread::Id id;
+            Util::Thread::createThread(&id, NULL, (::Util::Thread::ThreadFunction) runServer, this);
+#if 0
             ::Network::Chat::Server server(port);
             server.start();
             // Wait for all clients to send a message
@@ -100,6 +103,7 @@ public:
             }
             Global::debug(0) << "Received all messages. Shutting down." << std::endl;
             server.shutdown();
+#endif
         } else {
             Global::debug(0) << "Game " << name << " is starting." << std::endl;
             Global::debug(0) << "Connecting to " << hostip << "...." << std::endl;
@@ -112,6 +116,28 @@ public:
             Global::debug(0) << "Message sent. Shutting down." << std::endl;
             client.shutdown();
         }
+    }
+    
+    static void runServer(void * i){
+        Game * game = (Game *)i;
+        ::Network::Chat::Server server(9991);
+        server.start();
+        // Wait for all clients to send a message
+        unsigned int allReceived = 0;
+        std::map<std::string, std::string> & clients = game->getClients();
+        while (allReceived < clients.size()){
+            server.poll();
+            while (server.hasMessages()){
+                ::Network::Chat::Message message = server.nextMessage();
+                std::map<std::string, std::string>::iterator check = clients.find(message.getName());
+                if (check != clients.end()){
+                    Global::debug(0) << "Message Received: " << message.getMessage() << std::endl;
+                    allReceived++;
+                }
+            }
+        }
+        Global::debug(0) << "Received all messages. Shutting down." << std::endl;
+        server.shutdown();
     }
     
     std::map<std::string, std::string> & getClients(){
@@ -221,7 +247,7 @@ public:
                         chatInterface.addMessageToTab("* /game new [name]");
                     }
                 } else if (command.at(1) == "start"){
-                    if (game != NULL && game->isHost()){
+                    if (game != NULL && game->isHost() && game->getClients().size() > 0){
                         chatInterface.addMessageToTab("* Starting game " + game->getName());
                         game->start(ipAddress, ipAddress);
                         for (std::map<std::string, std::string>::iterator i = game->getClients().begin(); i != game->getClients().end(); i++){
@@ -236,7 +262,7 @@ public:
                     if (game != NULL){
                         chatInterface.addMessageToTab("* Users who accepted game request: " + game->clientsAsString());
                     } else {
-                        chatInterface.addMessageToTab("* Create a game first...");
+                        chatInterface.addMessageToTab("* Create a game first or have people join your game...");
                     }
                 } else if (command.at(1) == "list-hosts"){
                     if (!hosts.empty()){
