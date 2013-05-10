@@ -43,6 +43,8 @@ public:
     virtual ~HumanBehavior();
     
     virtual void updateKeys(const InputMap<Keys> &, const InputMap<Keys> &);
+    
+    const Mugen::Input & getInput() const;
 
 protected:
     InputMap<Keys> & getInput(bool facing);

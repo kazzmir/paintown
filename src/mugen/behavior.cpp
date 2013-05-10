@@ -111,7 +111,10 @@ vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Charac
     }
 
     return out;
-
+}
+    
+const Mugen::Input & HumanBehavior::getInput() const {
+    return input;
 }
 
 HumanBehavior::~HumanBehavior(){

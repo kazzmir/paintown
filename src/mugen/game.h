@@ -64,6 +64,13 @@ class Game {
         /* start a scripted match */
         static void startScript(const std::string & player1Name, const std::string & player1Script, const std::string & player2Name, const std::string & player2Script, const std::string & stageName);
     private:
+#ifdef HAVE_NETWORKING
+        static void startNetworkVersus1(const PaintownUtil::ReferenceCount<Character> & player1,
+                                        const PaintownUtil::ReferenceCount<Character> & player2,
+                                        Stage & stage,
+                                        bool server, const std::string & host, int port);
+#endif
+
         void doArcade(Searcher &);
         void doTraining(Searcher &);
         void doVersus(Searcher &);
