@@ -1,5 +1,17 @@
 #ifdef HAVE_NETWORKING
 
+/* Server and client communicate to each other over a single TCP connection. Both send their inputs as soon
+ * as possible to the other side. Occasionally the server will send a full world state. Once a second or so
+ * the server will send a ping packet.
+ *
+ * Both client and server will run the game independant of the other. When any side receives an input
+ * then that side will replay the game state from the time the input happened, or sometime soon before it.
+ * In this way both the server and client should end up with the same game state.
+ *
+ * Due to subtle problems in floating point calculations it becomes necessary to update the client state
+ * with the full world state.
+ */
+
 #include "network.h"
 #include "behavior.h"
 #include "util/system.h"
@@ -7,6 +19,7 @@
 #include "character.h"
 #include "game.h"
 #include "config.h"
+#include "command.h"
 
 #include "util/network/network.h"
 #include "util/thread.h"
@@ -105,6 +118,9 @@ public:
     NetworkBuffer & operator>>(string & str){
         int16_t size = 0;
         *this >> size;
+        /* FIXME: if we read less bytes than we need make sure to read the rest
+         * before continuing.
+         */
         // Global::debug(0) << "Read string of length " << size << std::endl;
         if (size > 0 && length + size <= contains){
             char out[size+1];
@@ -145,7 +161,8 @@ public:
      * The buffer length had better be below the maximum packet size
      * which is something around 64k
      */
-    void sendAll(const Network::Socket & socket){
+    /* mostly useful for udp */
+    void sendAllxx(const Network::Socket & socket){
         Network::sendAllBytes(socket, (uint8_t*) getBuffer(), getLength());
     }
 
@@ -171,19 +188,20 @@ protected:
 
 static const int16_t NetworkMagic = 0xd97f; 
 
-enum MessageType{
-    WorldState = 0,
-    Ping
-};
-
 class Packet{
 public:
     enum Type{
-        Input
+        InputType,
+        PingType,
+        WorldType
     };
 
     Packet(Type type):
     type(type){
+    }
+
+    Type getType() const {
+        return type;
     }
 
     Type type;
@@ -191,26 +209,67 @@ public:
 
 class InputPacket: public Packet {
 public:
-    InputPacket(const vector<string> & inputs, uint32_t tick):
-    Packet(Input),
+    InputPacket(const Input & inputs, uint32_t tick):
+    Packet(InputType),
     inputs(inputs),
     tick(tick){
     }
 
     InputPacket():
-    Packet(Input),
+    Packet(InputType),
     tick(0){
     }
 
-    vector<string> inputs;
+    Input inputs;
     uint32_t tick;
 };
 
+class PingPacket: public Packet {
+public:
+    PingPacket(int ping):
+    Packet(PingType),
+    ping(ping){
+    }
+
+    int16_t ping;
+
+    int16_t getPing() const {
+        return ping;
+    }
+};
+
+class WorldPacket: public Packet {
+public:
+    WorldPacket(const PaintownUtil::ReferenceCount<World> & world):
+    Packet(WorldType),
+    world(world){
+    }
+
+    PaintownUtil::ReferenceCount<World> world;
+
+    const PaintownUtil::ReferenceCount<World> & getWorld() const {
+        return world;
+    }
+    
+};
+
+static PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & socket){
+    /* TODO */
+    return PaintownUtil::ReferenceCount<Packet>(NULL);
+}
+
 static PaintownUtil::ReferenceCount<Packet> readPacket(NetworkBuffer & buffer){
+    int16_t magic;
+    buffer >> magic;
+    if (magic != NetworkMagic){
+        return PaintownUtil::ReferenceCount<Packet>(NULL);
+    }
     int16_t type;
     buffer >> type;
     switch (type){
-        case Packet::Input: {
+        case Packet::InputType: {
+            /* FIXME! */
+            /*
             uint32_t ticks = 0;
             int16_t inputCount = 0;
             buffer >> ticks;
@@ -223,6 +282,17 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(NetworkBuffer & buffer){
                 inputs.push_back(input);
             }
             return PaintownUtil::ReferenceCount<Packet>(new InputPacket(inputs, ticks));
+            */
+            break;
+        }
+        case Packet::PingType: {
+            int16_t clientPing = 0;
+            buffer >> clientPing;
+            return PaintownUtil::ReferenceCount<Packet>(new PingPacket((uint16_t) clientPing));
+            break;
+        }
+        case Packet::WorldType: {
+            /* FIXME! */
             break;
         }
         default: {
@@ -236,18 +306,66 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(NetworkBuffer & buffer){
 
 static void sendPacket(const Network::Socket & socket, const PaintownUtil::ReferenceCount<Packet> & packet){
     switch (packet->type){
-        case Packet::Input: {
+        case Packet::InputType: {
             NetworkBuffer buffer;
             PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
             buffer << NetworkMagic;
-            buffer << (int16_t) Packet::Input;
+            buffer << (int16_t) Packet::InputType;
             buffer << input->tick;
-            buffer << (int16_t) input->inputs.size();
-            for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
-                buffer << *it;
-            }
+
+            Token * data = new Token("input");
+
+            *data->newToken() << "a" << input->inputs.a;
+            *data->newToken() << "b" << input->inputs.b;
+            *data->newToken() << "c" << input->inputs.c;
+            *data->newToken() << "x" << input->inputs.x;
+            *data->newToken() << "y" << input->inputs.y;
+            *data->newToken() << "z" << input->inputs.z;
+            *data->newToken() << "back" << input->inputs.back;
+            *data->newToken() << "forward" << input->inputs.forward;
+            *data->newToken() << "up" << input->inputs.up;
+            *data->newToken() << "down" << input->inputs.down;
+
+            buffer << data->toStringCompact();
+            delete data;
+
             // Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
-            buffer.sendAll(socket);
+            buffer.send(socket);
+            break;
+        }
+        case Packet::WorldType: {
+            PaintownUtil::ReferenceCount<WorldPacket> world = packet.convert<WorldPacket>();
+            Token * test = world->getWorld()->serialize();
+            Token * filtered = filterTokens(test);
+            // Global::debug(0) << "Snapshot: " << filtered->toString() << std::endl;
+            string compact = filtered->toStringCompact();
+            // Global::debug(0) << "Size: " << compact.size() << std::endl;
+            char * out = new char[LZ4_compressBound(compact.size())];
+            int compressed = LZ4_compress(compact.c_str(), out, compact.size());
+
+            NetworkBuffer buffer;
+            buffer << (int16_t) NetworkMagic;
+            buffer << (int16_t) Packet::WorldType;
+            buffer << (int16_t) compressed;
+            buffer << (int16_t) compact.size();
+            buffer.add(out, compressed);
+            buffer.send(socket);
+
+            // Global::debug(0) << "Compressed size: " << compressed << std::endl;
+            delete[] out;
+
+            delete test;
+            delete filtered;
+
+            break;
+        }
+        case Packet::PingType: {
+            PaintownUtil::ReferenceCount<PingPacket> ping = packet.convert<PingPacket>();
+            NetworkBuffer buffer;
+            buffer << (int16_t) NetworkMagic;
+            buffer << (int16_t) Packet::PingType;
+            buffer << (int16_t) ping->getPing();
+            buffer.send(socket);
             break;
         }
         default: {
@@ -266,26 +384,18 @@ public:
     }
 
     uint32_t lastTick;
-    vector<string> lastCommands;
+    Input lastInput;
+    std::map<uint32_t, Input> history;
 
-    virtual void setCommands(uint32_t tick, const vector<string> & commands){
+    virtual void setInput(uint32_t tick, const Input & input){
         if (tick > lastTick){
             lastTick = tick;
-            lastCommands = commands;
+            lastInput = input;
         }
     }
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
         vector<string> out;
-        // if (stage.getTicks() > lastTick && stage.getTicks() - lastTick < 3){
-            for (vector<string>::iterator it = lastCommands.begin(); it != lastCommands.end(); it++){
-                if (*it == "holdfwd" ||
-                    *it == "holdback" ||
-                    *it == "holddown"){
-                    out.push_back(*it);
-                }
-            }
-        // }
         return out;
     }
 
@@ -301,16 +411,15 @@ public:
 
 class NetworkServerObserver: public NetworkObserver {
 public:
-    NetworkServerObserver(Network::Socket reliable, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2, NetworkBehavior & player2Behavior):
+    NetworkServerObserver(Network::Socket reliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2, HumanBehavior & player1Behavior, NetworkBehavior & player2Behavior):
     NetworkObserver(),
     reliable(reliable),
-    unreliable(unreliable),
     player1(player1),
     player2(player2),
+    player1Behavior(player1Behavior),
     player2Behavior(player2Behavior),
-    thread(this, send),
-    pingThread(this, readPings),
-    clientThread(this, clientInput),
+    sendThread(this, send),
+    receiveThread(this, receive),
     alive_(true),
     count(0),
     lastPing(System::currentMilliseconds()),
@@ -319,14 +428,17 @@ public:
 
     PaintownUtil::Thread::LockObject lock;
     Network::Socket reliable;
-    Network::Socket unreliable;
     PaintownUtil::ReferenceCount<Character> player1;
     PaintownUtil::ReferenceCount<Character> player2;
+    HumanBehavior & player1Behavior;
     NetworkBehavior & player2Behavior;
-    PaintownUtil::Thread::ThreadObject thread;
-    PaintownUtil::Thread::ThreadObject pingThread;
-    PaintownUtil::Thread::ThreadObject clientThread;
-    vector<PaintownUtil::ReferenceCount<World> > states;
+    PaintownUtil::Thread::ThreadObject sendThread;
+    PaintownUtil::Thread::ThreadObject receiveThread;
+
+    vector<PaintownUtil::ReferenceCount<Packet> > outBox;
+    vector<PaintownUtil::ReferenceCount<Packet> > inBox;
+
+    Input lastInput;
     
     /* mapping from logical ping to the time in milliseconds when the ping was sent */
     std::map<int, uint64_t> pings;
@@ -336,29 +448,6 @@ public:
     uint64_t lastPing;
     uint16_t ping;
 
-    void sendState(char * data, int compressed, int uncompressed){
-        // Global::debug(0, "server") << "Send " << compressed << " bytes" << std::endl;
-        NetworkBuffer buffer;
-        buffer << (int16_t) NetworkMagic;
-        buffer << (int16_t) WorldState;
-        buffer << (int16_t) compressed;
-        buffer << (int16_t) uncompressed;
-        buffer.add(data, compressed);
-        buffer.send(reliable);
-    }
-
-    bool hasStates(){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
-        return states.size() > 0;
-    }
-
-    PaintownUtil::ReferenceCount<World> getState(){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
-        PaintownUtil::ReferenceCount<World> out = states.front();
-        states.erase(states.begin());
-        return out;
-    }
-
     bool alive(){
         PaintownUtil::Thread::ScopedLock scoped(lock);
         return alive_;
@@ -367,27 +456,6 @@ public:
     void kill(){
         PaintownUtil::Thread::ScopedLock scoped(lock);
         alive_ = false;
-        Network::close(unreliable);
-    }
-
-    void sendWorldState(){
-        PaintownUtil::ReferenceCount<World> snapshot = getState();
-
-        Token * test = snapshot->serialize();
-        Token * filtered = filterTokens(test);
-        // Global::debug(0) << "Snapshot: " << filtered->toString() << std::endl;
-        string compact = filtered->toStringCompact();
-        // Global::debug(0) << "Size: " << compact.size() << std::endl;
-        char * out = new char[LZ4_compressBound(compact.size())];
-        int compressed = LZ4_compress(compact.c_str(), out, compact.size());
-
-        sendState(out, compressed, compact.size());
-
-        // Global::debug(0) << "Compressed size: " << compressed << std::endl;
-        delete[] out;
-
-        delete test;
-        delete filtered;
     }
 
     uint16_t nextPing(){
@@ -396,53 +464,34 @@ public:
         return out;
     }
 
-    void sendPing(uint16_t ping){
-        NetworkBuffer buffer;
-        buffer << (int16_t) NetworkMagic;
-        buffer << (int16_t) Ping;
-        buffer << (int16_t) ping;
-        buffer.send(reliable);
+    void sendPacket(const PaintownUtil::ReferenceCount<Packet> & packet){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        outBox.push_back(packet);
     }
 
-    void doHandlePings(){
-        while (alive()){
-            int16_t magic = Network::read16(reliable);
-            if (magic != NetworkMagic){
-                Global::debug(0) << "Garbage ping packet" << std::endl;
-                continue;
-            }
-            int16_t type = Network::read16(reliable);
-            if (type != Ping){
-                Global::debug(0) << "Invalid ping type: " << type << std::endl;
-            }
-            uint16_t clientPing = (uint16_t) Network::read16(reliable);
-            if (pings.find(clientPing) != pings.end()){
-                Global::debug(0) << "Client ping: " << (System::currentMilliseconds() - pings[clientPing]) << std::endl;
-                pings.erase(clientPing);
+    PaintownUtil::ReferenceCount<Packet> getSendPacket(){
+        PaintownUtil::ReferenceCount<Packet> out;
+
+        {
+            PaintownUtil::Thread::ScopedLock scoped(lock);
+            if (outBox.size() > 0){
+                out = outBox.front();
+                outBox.erase(outBox.begin());
             }
         }
+
+        return out;
     }
 
     void doSend(){
         while (alive()){
-            if (hasStates()){
-                sendWorldState();
+            PaintownUtil::ReferenceCount<Packet> nextPacket = getSendPacket();
+            if (nextPacket != NULL){
+                Mugen::sendPacket(reliable, nextPacket);
             } else {
-                if (System::currentMilliseconds() - lastPing > 1000){
-                    lastPing = System::currentMilliseconds();
-                    uint16_t ping = nextPing();
-                    pings[ping] = lastPing;
-                    sendPing(ping);
-                }
                 PaintownUtil::rest(1);
             }
         }
-    }
-
-    void addState(const PaintownUtil::ReferenceCount<World> & state){
-        PaintownUtil::Thread::ScopedLock scoped(lock);
-        states.clear();
-        states.push_back(state);
     }
 
     static void * send(void * self_){
@@ -451,56 +500,47 @@ public:
         return NULL;
     }
 
-    static void * readPings(void * self_){
-        NetworkServerObserver * self = (NetworkServerObserver*) self_;
-        self->doHandlePings();
-        return NULL;
-    }
-
-    void doClientInput(){
-        try{
-            while (alive()){
-                NetworkBuffer buffer(1024);
-                buffer.readAll(unreliable);
-                int16_t magic = 0;
-                buffer >> magic;
-                if (magic != NetworkMagic){
-                    Global::debug(0) << "Garbage input packet: " << magic << std::endl;
-                    continue;
+    void handlePacket(const PaintownUtil::ReferenceCount<Packet> & packet){
+        switch (packet->getType()){
+            case Packet::PingType: {
+                PaintownUtil::ReferenceCount<PingPacket> ping = packet.convert<PingPacket>();
+                int16_t client = ping->getPing();
+                if (pings.find(client) != pings.end()){
+                    Global::debug(0) << "Client ping: " << (System::currentMilliseconds() - pings[client]) << std::endl;
+                    pings.erase(client);
                 }
-
-                PaintownUtil::ReferenceCount<Packet> packet = readPacket(buffer);
-                if (packet != NULL){
-                    switch (packet->type){
-                        case Packet::Input: {
-                            PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
-                            addInput(*input);
-                            /*
-                            Global::debug(0) << "Received inputs " << input->inputs.size() << std::endl;
-                            for (vector<string>::iterator it = input->inputs.begin(); it != input->inputs.end(); it++){
-                                Global::debug(0) << " '" << *it << "'" << std::endl;
-                            }
-                            */
-                            break;
-                        }
-                    }
-                }
+                break;
             }
-        } catch (const Exception::Base & ex){
-            Global::debug(0) << "Error in client read input thread. " << ex.getTrace() << std::endl;
+            case Packet::InputType: {
+                PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+                addInput(*input);
+                break;
+            }
+            case Packet::WorldType: {
+                Global::debug(0) << "Should not have gotten a world packet from the client" << std::endl;
+                break;
+            }
         }
     }
 
-    static void * clientInput(void * self_){
+    void doReceive(){
+        while (alive()){
+            PaintownUtil::ReferenceCount<Packet> nextPacket = readPacket(reliable);
+            if (nextPacket != NULL){
+                handlePacket(nextPacket);
+            }
+        }
+    }
+
+    static void * receive(void * self_){
         NetworkServerObserver * self = (NetworkServerObserver*) self_;
-        self->doClientInput();
+        self->doReceive();
         return NULL;
     }
     
     virtual void start(){
-        thread.start();
-        pingThread.start();
-        clientThread.start();
+        sendThread.start();
+        receiveThread.start();
     }
 
     PaintownUtil::ReferenceCount<World> lastState;
@@ -510,25 +550,30 @@ public:
         PaintownUtil::Thread::ScopedLock scoped(lock);
         inputs[input.tick] = input;
     }
+
+    std::map<uint32_t, InputPacket> getInputs(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        std::map<uint32_t, InputPacket> out = inputs;
+        inputs.clear();
+        return out;
+    }
     
     virtual void beforeLogic(Stage & stage){
         if (count % 30 == 0){
-            lastState = stage.snapshotState();
-            addState(lastState);
+            sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(stage.snapshotState())));
         }
         count += 1;
 
         uint32_t currentTicks = stage.getTicks();
 
-        PaintownUtil::Thread::ScopedLock scoped(lock);
+        std::map<uint32_t, InputPacket> useInputs = getInputs();
         if (inputs.size() > 0){
-            for (std::map<uint32_t, InputPacket>::iterator it = inputs.begin(); it != inputs.end(); it++){
+            for (std::map<uint32_t, InputPacket>::iterator it = useInputs.begin(); it != useInputs.end(); it++){
                 uint32_t tick = it->first;
                 const InputPacket & input = it->second;
-                player2->setInputs(tick, input.inputs);
-                player2Behavior.setCommands(tick, input.inputs);
+                // player2->setInputs(tick, input.inputs);
+                // player2Behavior.setInput(tick, input.inputs);
             }
-            inputs.clear();
 
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
@@ -540,23 +585,30 @@ public:
             }
         }
 
+        if (System::currentMilliseconds() - lastPing > 1000){
+            lastPing = System::currentMilliseconds();
+            uint16_t ping = nextPing();
+            pings[ping] = lastPing;
+            sendPacket(PaintownUtil::ReferenceCount<Packet>(new PingPacket(ping)));
+        }
     }
 
     virtual void afterLogic(Stage & stage){
-        vector<string> inputs = player1->currentInputs();
-        if (inputs.size() >= 0){
+        Input latest = player1Behavior.getInput();
+        if (latest != lastInput){
+            lastInput = latest;
             /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
             for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
                 Global::debug(0) << "Input: " << *it << std::endl;
             }
             */
-            PaintownUtil::ReferenceCount<InputPacket> packet(new InputPacket(inputs, stage.getTicks()));
-            sendPacket(unreliable, packet.convert<Packet>());
+            sendPacket(PaintownUtil::ReferenceCount<Packet>(new InputPacket(latest, stage.getTicks())));
         }
     }
 };
 
+/* FIXME: fix the whole client */
 class NetworkClientObserver: public NetworkObserver {
 public:
     NetworkClientObserver(Network::Socket socket, Network::Socket unreliable, const PaintownUtil::ReferenceCount<Character> & player1, const PaintownUtil::ReferenceCount<Character> & player2, NetworkBehavior & player2Behavior):
@@ -609,7 +661,7 @@ public:
     void sendPing(int16_t ping, Network::Socket socket){
         NetworkBuffer buffer;
         buffer << (int16_t) NetworkMagic;
-        buffer << (int16_t) Ping;
+        buffer << (int16_t) Packet::PingType;
         buffer << (int16_t) ping;
         buffer.send(socket);
     }
@@ -626,7 +678,7 @@ public:
             int16_t type = Network::read16(socket);
 
             switch (type){
-                case WorldState: {
+                case Packet::WorldType: {
                     int16_t compressed = Network::read16(socket);
                     int16_t uncompressed = Network::read16(socket);
                     uint8_t * data = new uint8_t[compressed];
@@ -644,7 +696,7 @@ public:
                     }
                     break;
                 }
-                case Ping: {
+                case Packet::PingType: {
                     int16_t ping = Network::read16(socket);
                     sendPing(ping, socket);
                     break;
@@ -688,7 +740,7 @@ public:
                 PaintownUtil::ReferenceCount<Packet> packet = readPacket(buffer);
                 if (packet != NULL){
                     switch (packet->type){
-                        case Packet::Input: {
+                        case Packet::InputType: {
                             PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
                             addInput(*input);
                             /*
@@ -722,8 +774,10 @@ public:
             for (std::map<uint32_t, InputPacket>::iterator it = inputs.begin(); it != inputs.end(); it++){
                 uint32_t tick = it->first;
                 const InputPacket & input = it->second;
+                /*
                 player2->setInputs(tick, input.inputs);
                 player2Behavior.setCommands(tick, input.inputs);
+                */
             }
             inputs.clear();
 
@@ -739,6 +793,7 @@ public:
     }
 
     virtual void afterLogic(Stage & stage){
+        /* FIXME! */
         vector<string> inputs = player1->currentInputs();
         if (inputs.size() >= 0){
             /*
@@ -747,8 +802,11 @@ public:
                 Global::debug(0) << "Input: " << *it << std::endl;
             }
             */
+
+            /*
             PaintownUtil::ReferenceCount<InputPacket> packet(new InputPacket(inputs, stage.getTicks()));
             sendPacket(unreliable, packet.convert<Packet>());
+            */
         }
     }
 };
@@ -789,8 +847,8 @@ void Game::startNetworkVersus1(const PaintownUtil::ReferenceCount<Character> & p
         }
 
         HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
-        // NetworkBehavior player2Behavior;
-        DummyBehavior player2Behavior;
+        NetworkBehavior player2Behavior;
+        // DummyBehavior player2Behavior;
 
         // NetworkLocalBehavior player1Behavior(&local1Behavior, socket);
         // NetworkRemoteBehavior player2Behavior(socket);
@@ -802,17 +860,15 @@ void Game::startNetworkVersus1(const PaintownUtil::ReferenceCount<Character> & p
         if (server){
             player1->setBehavior(&player1Behavior);
             player2->setBehavior(&player2Behavior);
-            /*
-            observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, udp, player1, player2, player2Behavior));
+            observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, player1, player2, player1Behavior, player2Behavior));
             stage.setObserver(observer.convert<StageObserver>());
-            */
         } else {
             player2->setBehavior(&player1Behavior);
             player1->setBehavior(&player2Behavior);
             /*
             observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, udp, player2, player1, player2Behavior));
             stage.setObserver(observer.convert<StageObserver>());
-            o*/
+            */
         }
 
         RunMatchOptions options;

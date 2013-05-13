@@ -133,6 +133,9 @@ public:
     // Set player health
     virtual void setPlayerHealth(int health);
 
+    virtual bool replayEnabled() const;
+    virtual void setReplay(bool what);
+
     //! Set match
     virtual void setMatchOver(bool over){
         this->gameOver = over;
@@ -659,6 +662,8 @@ private:
     void setStateData(const StageStateData & data);
 
     PaintownUtil::ReferenceCount<StageObserver> observer;
+    /* true if doing in-game replay */
+    bool replay;
 };
 
 }

@@ -423,6 +423,8 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 snapshots[totalTicks] = stage->snapshotState();
                 stage->updateState(*snapshots[totalTicks]);
             }
+
+            stage->setReplay(replay.enabled);
         }
 
         /* find the last snapshot state before the tick count then update the

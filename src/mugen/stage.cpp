@@ -174,7 +174,8 @@ loaded(false),
 gameHUD(NULL),
 gameOver(false),
 gameRate(1),
-objectId(0){
+objectId(0),
+replay(false){
 }
 
 #if 0
@@ -724,6 +725,14 @@ bool Mugen::Stage::doCollisionDetection(Mugen::Character * obj1, Mugen::Characte
 
 bool Mugen::Stage::doReversalDetection(Mugen::Character * obj1, Mugen::Character * obj2){
     return anyCollisions(obj1->getAttackBoxes(), (int) obj1->getX(), (int) obj1->getY(), obj2->getAttackBoxes(), (int) obj2->getX(), (int) obj2->getY());
+}
+    
+bool Mugen::Stage::replayEnabled() const {
+    return replay;
+}
+
+void Mugen::Stage::setReplay(bool what){
+    this->replay = what;
 }
 
 PaintownUtil::ReferenceCount<Mugen::Animation> Mugen::Stage::getFightAnimation(int id){

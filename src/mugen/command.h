@@ -34,6 +34,10 @@ struct Input{
                start == him.start;
     }
 
+    bool operator!=(const Input & him) const {
+        return !(*this == him);
+    }
+
     bool a, b, c;
     bool x, y, z;
     bool back, forward;

@@ -2878,7 +2878,8 @@ void Character::act(Stage * stage){
      * in real-time and need to get raw inputs. Otherwise get the inputs
      * from the input history.
      */
-    if (stage->getTicks() - 1 >= getLocalData().inputHistory.size()){
+    if (! stage->replayEnabled()){
+        // stage->getTicks() - 1 >= getLocalData().inputHistory.size()){
         /* active is the current set of commands */
         getStateData().active = doInput(*stage);
         getLocalData().inputHistory.push_back(getStateData().active);
