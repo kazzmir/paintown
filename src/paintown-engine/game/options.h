@@ -15,7 +15,7 @@ namespace Gui{
 
 namespace Paintown{
 
-/* FIXME figure out what to do with this, since network depends on it." */
+/* FIXME figure out what to do with this, since network depends on it. */
 Level::LevelInfo doLevelMenu(const std::string dir, const Menu::Context & context);
 
 class OptionFactory: public Menu::OptionFactory {

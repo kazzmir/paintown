@@ -4,6 +4,7 @@
 #include "util/menu/menu-exception.h"
 #include "../object/player.h"
 #include "../object/buddy_player.h"
+#include "../object/gib.h"
 #include "../level/utils.h"
 #include "mod.h"
 #include "util/menu/menu.h"
@@ -691,6 +692,279 @@ public:
 };
 #endif
 
+class OptionGibs: public MenuOption {
+public:
+    OptionGibs(const Gui::ContextBox & parent, const Token *token):
+    MenuOption(parent, token){
+        setRunnable(false);
+
+        if (*token != "gibs" ){
+            throw LoadException(__FILE__, __LINE__, "Not a gibs option");
+        }
+
+        readName(token);
+        originalName = getName();
+    }
+
+    void logic(){
+        ostringstream temp;
+        temp << originalName << ": " << Configuration::getProperty(Gib::GibProperty, 5);
+        setText(temp.str());
+    }
+
+    void run(const Menu::Context & context){
+    }
+
+    void changeGibs(int much){
+        int gibs = Configuration::getProperty("paintown/gibs", 5);
+        gibs += much;
+        if (gibs < 0){
+            gibs = 0;
+        }
+
+        if (gibs > 10){
+            gibs = 10;
+        }
+
+        Configuration::setProperty("paintown/gibs", gibs);
+    }
+
+    bool leftKey(){
+        changeGibs(-1);
+        return true;
+    }
+
+    bool rightKey(){
+        changeGibs(+1);
+        return true;
+    }
+
+    ~OptionGibs(){
+    }
+
+private:
+    std::string originalName;
+};
+
+class OptionPlayMode: public MenuOption {
+public:
+    OptionPlayMode(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token),
+        lblue(255),
+        lgreen(255),
+        rblue(255),
+        rgreen(255){
+            setRunnable(false);
+
+            if ( *token != "play-mode" ){
+                throw LoadException(__FILE__, __LINE__, "Not a play-mode");
+            }
+
+            readName(token);
+        }
+
+    ~OptionPlayMode(){
+        // Nothing
+    }
+    
+    std::string getText() const {
+        ostringstream out;
+        out << MenuOption::getText() << ": ";
+
+        /* TODO: language translations of these */
+        if (Configuration::getPlayMode() == Configuration::FreeForAll){
+            out << "Free for all";
+        } else if (Configuration::getPlayMode() == Configuration::Cooperative){
+            out << "Cooperative";
+        }
+
+        return out.str();
+    }
+
+    void logic(){
+    }
+
+    void run(const Menu::Context & context){
+    }
+    
+    void changeMode(){
+        if (Configuration::getPlayMode() == Configuration::FreeForAll){
+            Configuration::setPlayMode(Configuration::Cooperative);
+        } else if (Configuration::getPlayMode() == Configuration::Cooperative){
+            Configuration::setPlayMode(Configuration::FreeForAll);
+        }
+    }
+
+    bool leftKey(){
+        changeMode();
+        lblue = lgreen = 0;
+        return true;
+    }
+
+    bool rightKey(){
+        changeMode();
+        rblue = rgreen = 0;
+        return true;
+    }
+
+private:
+
+    int lblue, lgreen;
+    int rblue, rgreen;
+};
+
+class OptionNpcBuddies: public MenuOption {
+public:
+    OptionNpcBuddies(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token),
+        lblue(255),
+        lgreen(255),
+        rblue(255),
+        rgreen(255){
+            setRunnable(false);
+
+            if ( *token != "npc" ){
+                throw LoadException(__FILE__, __LINE__,  "Not npc option" );
+            }
+
+            readName(token);
+        }
+
+    ~OptionNpcBuddies(){
+        // Nothing
+    }
+        
+    std::string getText() const {
+        ostringstream out;
+        out << MenuOption::getText() << ": " << Configuration::getNpcBuddies();
+        return out.str();
+    }
+
+    void logic(){
+    }
+
+    void run(const Menu::Context & context){
+    }
+
+    bool leftKey(){
+        Configuration::setNpcBuddies(Configuration::getNpcBuddies() - 1);
+        if ( Configuration::getNpcBuddies() < 1 ){
+            Configuration::setNpcBuddies(1);
+        }
+
+        return false;
+    }
+
+    bool rightKey(){
+        Configuration::setNpcBuddies( Configuration::getNpcBuddies() + 1 );
+        rblue = rgreen = 0;
+        return false;
+    }
+
+private:
+    int lblue, lgreen;
+    int rblue, rgreen;
+};
+
+class OptionInvincible: public MenuOption {
+public:
+
+    OptionInvincible(const Gui::ContextBox & parent, const Token *token):
+        MenuOption(parent, token),
+        lblue(255),
+        lgreen(255),
+        rblue(255),
+        rgreen(255){
+            setRunnable(false);
+
+            if ( *token != "invincible" )
+                throw LoadException(__FILE__, __LINE__, "Not invincible option");
+
+            readName(token);
+        }
+
+    ~OptionInvincible(){
+    }
+
+    std::string getText() const {
+        ostringstream out;
+        out << MenuOption::getText() << ": " << (Configuration::getInvincible() ? "Yes" : "No");
+        return out.str();
+    }
+
+    void logic(){
+    }
+
+    void run(const Menu::Context & context){
+    }
+
+    bool leftKey(){
+        Configuration::setInvincible(!Configuration::getInvincible());
+        return true;
+    }
+
+    bool rightKey(){
+        Configuration::setInvincible(!Configuration::getInvincible());
+        return true;
+    }
+
+private:
+    int lblue, lgreen;
+    int rblue, rgreen;
+};
+
+class OptionLives: public MenuOption {
+public:
+
+    OptionLives(const Gui::ContextBox & parent, const Token * token):
+        MenuOption(parent, token),
+        lblue(255),
+        lgreen(255),
+        rblue(255),
+        rgreen(255){
+            setRunnable(false);
+
+            if ( *token != "lives" ){
+                throw LoadException(__FILE__, __LINE__,  "Not lives option" );
+            }
+
+            readName(token);
+        }
+
+    ~OptionLives(){
+    }
+    
+    std::string getText() const {
+        ostringstream out;
+        out << MenuOption::getText() << ": " << Configuration::getLives();
+        return out.str();
+    }
+
+    void logic(){
+    }
+
+    void run(const Menu::Context & context){
+    }
+
+    bool leftKey(){
+        Configuration::setLives(Configuration::getLives() - 1);
+        if ( Configuration::getLives() < 1 ){
+            Configuration::setLives(1);
+        }
+
+        return false;
+    }
+
+    bool rightKey(){
+        Configuration::setLives(Configuration::getLives() + 1);
+        return false;
+    }
+
+private:
+    int lblue, lgreen;
+    int rblue, rgreen;
+};
+
 MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Token *token) const {
     const Token * child;
     token->view() >> child;
@@ -703,6 +977,16 @@ MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Toke
         return new OptionAdventureLocal(parent, child);
     } else if (*child == "change-mod"){
         return new OptionChangeMod(parent, child);
+    } else if (*child == "gibs"){
+        return new OptionGibs(parent, child);
+    } else if (*child == "play-mode"){
+        return new OptionPlayMode(parent, child);
+    } else if (*child == "npc"){
+        return new OptionNpcBuddies(parent, child);
+    } else if (*child == "lives" ){
+        return new OptionLives(parent, child);
+    } else if (*child == "invincible" ){
+        return new OptionInvincible(parent, child);
 #ifdef HAVE_NETWORKING
     } else if (*child == "network-host" ){
         return new OptionNetworkHost(parent, child);
