@@ -272,11 +272,13 @@ Input deserializeInput(const Token * token){
     token->match("input/x", out.x);
     token->match("input/y", out.y);
     token->match("input/back", out.back);
-    token->match("input/forward", out.forward);
+    if (!token->match("input/forward", out.forward)){
+        Global::debug(0) << "Could not read forward" << std::endl;
+    }
     token->match("input/up", out.up);
     token->match("input/down", out.down);
 
-    return Input();
+    return out;
 }
 
 static std::string readLz4(const Network::Socket & socket){
@@ -318,6 +320,7 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & s
             */
 
             std::string use = readLz4(socket);
+            Global::debug(0) << "Read raw input string " << use << std::endl;
 
             TokenReader reader;
             Token * head = reader.readTokenFromString(use);
@@ -371,7 +374,8 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             buffer << (int16_t) Packet::InputType;
             buffer << input->tick;
 
-            Token * data = new Token("input");
+            Token * data = new Token();
+            *data << "input";
 
             *data->newToken() << "a" << input->inputs.a;
             *data->newToken() << "b" << input->inputs.b;
@@ -385,6 +389,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             *data->newToken() << "down" << input->inputs.down;
 
             buffer << data->toStringCompact();
+            Global::debug(0) << "Sending input " << data->toStringCompact() << std::endl;
             delete data;
 
             // Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
@@ -457,10 +462,37 @@ public:
             lastTick = tick;
             lastInput = input;
         }
+        history[tick] = input;
+    }
+
+    Input getInput(uint32_t last){
+        while (last > 0){
+            if (history.find(last) != history.end()){
+                return history[last];
+            }
+            last -= 1;
+        }
+
+        return Input();
+    }
+
+    Input getInput(const Stage & stage){
+        return getInput(stage.getTicks());
     }
 
     virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
         vector<string> out;
+
+        Input input = getInput(stage);
+
+        for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+            Command * command = *it;
+            if (command->handle(input)){
+                Global::debug(1) << "command: " << command->getName() << std::endl;
+                out.push_back(command->getName());
+            }
+        }
+
         return out;
     }
 
@@ -649,6 +681,11 @@ public:
 
     virtual void handleInput(const PaintownUtil::ReferenceCount<InputPacket> & input){
         PaintownUtil::Thread::ScopedLock scoped(lock);
+        Global::debug(0) << "Input back: " << input->inputs.back <<
+                                 " forward: " << input->inputs.forward <<
+                                 " up: " << input->inputs.up <<
+                                 " down: " << input->inputs.down <<
+                                 std::endl;
         inputs[input->tick] = input->inputs;
     }
 
@@ -671,20 +708,21 @@ public:
     }
     
     virtual void beforeLogic(Stage & stage){
-        if (count % 30 == 0){
-            handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(stage.snapshotState())));
+        if (lastState == NULL){
+            lastState = stage.snapshotState();
         }
+
         count += 1;
 
         uint32_t currentTicks = stage.getTicks();
 
         std::map<uint32_t, Input> useInputs = getInputs();
-        if (inputs.size() > 0){
+        if (useInputs.size() > 0){
             for (std::map<uint32_t, Input>::iterator it = useInputs.begin(); it != useInputs.end(); it++){
                 uint32_t tick = it->first;
                 const Input & input = it->second;
                 // player2->setInputs(tick, input.inputs);
-                // player2Behavior.setInput(tick, input.inputs);
+                player2Behavior.setInput(tick, input);
             }
 
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
@@ -695,6 +733,11 @@ public:
                 }
                 Mugen::Sound::enableSounds();
             }
+        }
+
+        if (count % 30 == 0){
+            lastState = stage.snapshotState();
+            handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(lastState)));
         }
 
         if (System::currentMilliseconds() - lastPing > 1000){
@@ -787,36 +830,6 @@ public:
     void addInput(uint32_t tick, const Input & input){
         PaintownUtil::Thread::ScopedLock scoped(lock);
         inputs[tick] = input;
-    }
-
-    void doClientInput(){
-        /*
-        try{
-            while (alive()){
-                NetworkBuffer buffer(1024);
-                buffer.readAll(unreliable);
-                int16_t magic = 0;
-                buffer >> magic;
-                if (magic != NetworkMagic){
-                    Global::debug(0) << "Garbage udp packet: " << magic << std::endl;
-                    continue;
-                }
-
-                PaintownUtil::ReferenceCount<Packet> packet = readPacket(buffer);
-                if (packet != NULL){
-                    switch (packet->type){
-                        case Packet::InputType: {
-                            PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
-                            addInput(*input);
-                            break;
-                        }
-                    }
-                }
-            }
-        } catch (const Exception::Base & ex){
-            Global::debug(0) << "Error in client read input thread. " << ex.getTrace() << std::endl;
-        }
-        */
     }
 
     PaintownUtil::ReferenceCount<World> lastState;
