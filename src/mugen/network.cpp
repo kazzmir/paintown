@@ -305,20 +305,6 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & s
     switch (type){
         case Packet::InputType: {
             uint32_t tick = Network::read32(socket);
-
-            /*
-            int16_t compressed = Network::read16(socket);
-            int16_t uncompressed = Network::read16(socket);
-            uint8_t * data = new uint8_t[compressed];
-            Network::readBytes(socket, data, compressed);
-            uint8_t * what = new uint8_t[uncompressed + 1];
-            what[uncompressed] = '\0';
-            LZ4_uncompress((const char *) data, (char *) what, uncompressed);
-            std::string use((const char *) what);
-            delete[] data;
-            delete[] what;
-            */
-
             std::string use = readLz4(socket);
             Global::debug(0) << "Read raw input string " << use << std::endl;
 
@@ -336,17 +322,6 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & s
             break;
         }
         case Packet::WorldType: {
-            /*
-            int16_t compressed = Network::read16(socket);
-            int16_t uncompressed = Network::read16(socket);
-            uint8_t * data = new uint8_t[compressed];
-            Network::readBytes(socket, data, compressed);
-            uint8_t * what = new uint8_t[uncompressed + 1];
-            what[uncompressed] = '\0';
-            LZ4_uncompress((const char *) data, (char *) what, uncompressed);
-            delete[] data;
-            delete[] what;
-            */
             TokenReader reader;
             std::string use = readLz4(socket);
             Token * head = reader.readTokenFromString(use);
@@ -465,6 +440,14 @@ public:
         history[tick] = input;
     }
 
+    /* finds the most recent input starting from `last' and working backwards.
+     * if there is only an input for last-1 then we predict that the input for `last'
+     * will be the same.
+     *
+     * this could potentially take time proportional to `last' but most of the time
+     * the found input will be within 100 or so ticks so we won't have to search
+     * that far.
+     */
     Input getInput(uint32_t last){
         while (last > 0){
             if (history.find(last) != history.end()){
@@ -735,11 +718,6 @@ public:
             }
         }
 
-        if (count % 30 == 0){
-            lastState = stage.snapshotState();
-            handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(lastState)));
-        }
-
         if (System::currentMilliseconds() - lastPing > 1000){
             lastPing = System::currentMilliseconds();
             uint16_t ping = nextPing();
@@ -759,6 +737,11 @@ public:
             }
             */
             handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new InputPacket(latest, stage.getTicks())));
+        }
+
+        if (count % 30 == 0){
+            lastState = stage.snapshotState();
+            handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(lastState)));
         }
     }
 };
@@ -832,6 +815,13 @@ public:
         inputs[tick] = input;
     }
 
+    std::map<uint32_t, Input> getInputs(){
+        PaintownUtil::Thread::ScopedLock scoped(lock);
+        std::map<uint32_t, Input> out = inputs;
+        inputs.clear();
+        return out;
+    }
+
     PaintownUtil::ReferenceCount<World> lastState;
     
     virtual void beforeLogic(Stage & stage){
@@ -842,17 +832,16 @@ public:
             lastState = next;
         }
 
-        PaintownUtil::Thread::ScopedLock scoped(lock);
-        if (inputs.size() > 0){
-            for (std::map<uint32_t, Input>::iterator it = inputs.begin(); it != inputs.end(); it++){
+        std::map<uint32_t, Input> useInputs = getInputs();
+        if (useInputs.size() > 0){
+            for (std::map<uint32_t, Input>::iterator it = useInputs.begin(); it != useInputs.end(); it++){
                 uint32_t tick = it->first;
                 const Input & input = it->second;
+                player2Behavior.setInput(tick, input);
                 /*
                 player2->setInputs(tick, input.inputs);
-                player2Behavior.setCommands(tick, input.inputs);
                 */
             }
-            inputs.clear();
 
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
