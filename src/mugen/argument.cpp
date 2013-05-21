@@ -405,18 +405,27 @@ public:
     }
 
     string description() const {
-        return " : Start a server on port 8473";
+        return " [port] : Start a server on port 8473";
     }
 
     class Run: public ArgumentAction {
     public:
+        Run(int port):
+        port(port){
+        }
+        int port;
         void act(){
-            Game::startNetworkVersus("kfm", "kfm", "kfm", true, "localhost", 8473);
+            Game::startNetworkVersus("kfm", "kfm", "kfm", true, "localhost", port);
         }
     };
 
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run()));
+        int port = 8473;
+        current++;
+        if (current != end){
+            port = atoi((*current).c_str());
+        }
+        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(port)));
         return current;
     }
 };
@@ -430,29 +439,36 @@ public:
     }
 
     string description() const {
-        return " [host] : Join a server on port 8473";
+        return " [host] [port] : Join a server on port (defaults to 8473)";
     }
 
     class Run: public ArgumentAction {
     public:
-        Run(const string & host):
-        host(host){
+        Run(const string & host, int port):
+        host(host),
+        port(port){
         }
 
         string host;
+        int port;
 
         void act(){
-            Game::startNetworkVersus("kfm", "kfm", "kfm", false, host, 8473);
+            Game::startNetworkVersus("kfm", "kfm", "kfm", false, host, port);
         }
     };
 
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
         string host = "127.0.0.1";
+        int port = 8473;
         current++;
         if (current != end){
             host = *current;
         }
-        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(host)));
+        current++;
+        if (current != end){
+            port = atoi((*current).c_str());
+        }
+        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(host, port)));
         return current;
     }
 };
