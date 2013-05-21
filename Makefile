@@ -32,7 +32,7 @@ install:
 buildbot: buildbot_normal buildbot_static buildbot_editor buildbot_cmake
 buildbot_normal:
 	@$(scons) gch=0 colors=0
-	@$(scons) gch=0 colors=0 allegro=1
+	# @$(scons) gch=0 colors=0 allegro=1
 buildbot_static:
 	@$(scons) static gch=0 colors=0
 buildbot_editor:
