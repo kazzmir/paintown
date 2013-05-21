@@ -1038,7 +1038,7 @@ void Character::delayChangeState(Mugen::Stage & stage, int stateNumber){
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getId().intValue();
-    Global::debug(1, debug.str()) << "Change from state " << getCurrentState() << " to state " << stateNumber << endl;
+    Global::debug(0, debug.str()) << "Tick " << stage.getTicks() << " Change from state " << getCurrentState() << " to state " << stateNumber << endl;
     getStateData().previousState = getCurrentState();
     setCurrentState(stateNumber);
     getStateData().stateTime = -1;
@@ -1083,7 +1083,7 @@ void Character::changeState(Mugen::Stage & stage, int stateNumber){
 
     ostringstream debug;
     debug << getDisplayName() << "-" << getId().intValue();
-    Global::debug(1, debug.str()) << "Change from state " << getCurrentState() << " to state " << stateNumber << endl;
+    Global::debug(0, debug.str()) << "Tick " << stage.getTicks() << " Change from state " << getCurrentState() << " to state " << stateNumber << endl;
     getStateData().previousState = getCurrentState();
     setCurrentState(stateNumber);
     resetStateTime();

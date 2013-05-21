@@ -77,6 +77,7 @@ Token * serialize(const RuntimeValue & value){
     return token;
 }
 
+/* FIXME: probably output a full token like (AttackTypeAttribute ..data..) */
 Token * serialize(const AttackType::Attribute data){
     Token * token = new Token();
     *token << data;
@@ -84,27 +85,35 @@ Token * serialize(const AttackType::Attribute data){
 }
 
 Token * serialize(const AttackType::Animation data){
+    Token * token = new Token();
     std::ostringstream out;
     out << data;
-    return new Token(out.str());
+    *token << "AttackTypeAnimation" << out.str();
+    return token;
 }
 
 Token * serialize(const AttackType::Ground data){
+    Token * token = new Token();
     std::ostringstream out;
     out << data;
-    return new Token(out.str());
+    *token << "AttackTypeGround" << out.str();
+    return token;
 }
 
 Token * serialize(const TransType data){
+    Token * token = new Token();
     std::ostringstream out;
     out << data;
-    return new Token(out.str());
+    *token << "TransType" << out.str();
+    return token;
 }
 
 Token * serialize(const CharacterId & data){
+    Token * token = new Token();
     std::ostringstream out;
     out << data.intValue();
-    return new Token(out.str());
+    *token << "CharacterId" << out.str();
+    return token;
 }
     
 Token * serialize(int data){
@@ -129,15 +138,19 @@ Graphics::Color deserializeGraphicsColor(const Token * token){
 }
     
 Token * serialize(const Physics::Type data){
+    Token * token = new Token();
     std::ostringstream out;
     out << data;
-    return new Token(out.str());
+    *token << "PhysicsType" << out.str();
+    return token;
 }
 
 Token * serialize(const Facing data){
     std::ostringstream out;
     out << data;
-    return new Token(out.str());
+    Token * token = new Token();
+    *token << "Facing" << out.str();
+    return token;
 }
 
 Token * serialize(const std::vector<CharacterId> & data){
@@ -165,19 +178,35 @@ AttackType::Attribute deserializeAttackTypeAttribute(const Token * token){
 }
 
 AttackType::Animation deserializeAttackTypeAnimation(const Token * token){
-    return AttackType::Animation(integer(token->getName()));
+    int out = defaultAttackTypeAnimation();
+    if (token->match("_", out)){
+        return AttackType::Animation(out);
+    }
+    return AttackType::Animation(out);
 }
 
 AttackType::Ground deserializeAttackTypeGround(const Token * token){
-    return AttackType::Ground(integer(token->getName()));
+    int out = defaultAttackTypeGround();
+    if (token->match("_", out)){
+        return AttackType::Ground(out);
+    }
+    return AttackType::Ground(out);
 }
 
 TransType deserializeTransType(const Token * token){
-    return TransType(integer(token->getName()));
+    int out = defaultTransType();
+    if (token->match("_", out)){
+        return TransType(out);
+    }
+    return TransType(out);
 }
 
 CharacterId deserializeCharacterId(const Token * token){
-    return CharacterId(integer(token->getName()));
+    int out = -1;
+    if (token->match("_", out)){
+        return CharacterId(out);
+    }
+    return CharacterId(out);
 }
 
 Physics::Type deserializePhysicsType(const Token * token){

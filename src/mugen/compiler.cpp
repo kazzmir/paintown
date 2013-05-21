@@ -1714,6 +1714,10 @@ public:
                 RuntimeValue evaluate(const Environment & environment) const {
                     return RuntimeValue(environment.getCharacter().getHitState().shakeTime <= 0);
                 }
+                
+                virtual std::string toString() const {
+                    return "HitShakeOver";
+                }
 
                 Value * copy() const {
                     return new HitShakeOver();
@@ -3832,6 +3836,10 @@ public:
                         return RuntimeValue(state(environment).yVelocity);
                     }
 
+                    virtual std::string toString() const {
+                        return "GetHitVar(yvel)";
+                    }
+
                     Value * copy() const {
                         return new HitVarYVel();
                     }
@@ -3884,6 +3892,10 @@ public:
                 public:
                     RuntimeValue evaluate(const Environment & environment) const {
                         return RuntimeValue(state(environment).fall.fall);
+                    }
+                    
+                    virtual std::string toString() const {
+                        return "GetHitVar(fall)";
                     }
 
                     Value * copy() const {

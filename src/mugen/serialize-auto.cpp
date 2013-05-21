@@ -222,9 +222,15 @@ Distance deserializeDistance(const Token * data){
 Token * serialize(const Attribute & data){
     Token * out = new Token();
     *out << "Attribute";
-    *out->newToken() << "state" << serialize(data.state);
-    *out->newToken() << "attackType" << serialize(data.attackType);
-    *out->newToken() << "physics" << serialize(data.physics);
+    if (data.state != ""){
+        *out->newToken() << "state" << data.state;
+    }
+    if (data.attackType != ""){
+        *out->newToken() << "attackType" << data.attackType;
+    }
+    if (data.physics != ""){
+        *out->newToken() << "physics" << data.physics;
+    }
 
     return out;
 }
@@ -255,7 +261,9 @@ Token * serialize(const Priority & data){
     if (data.hit != 0){
         *out->newToken() << "hit" << data.hit;
     }
-    *out->newToken() << "type" << serialize(data.type);
+    if (data.type != ""){
+        *out->newToken() << "type" << data.type;
+    }
 
     return out;
 }
@@ -715,23 +723,23 @@ HitDefinition deserializeHitDefinition(const Token * data){
         use->view() >> child;
         out.attribute = deserializeAttribute(child);
     }
-    use = data->findToken("_/hitFlag");
+    use = data->findToken("_/hitFlag/HitFlags");
     if (use != NULL){
         out.hitFlag = deserializeHitFlags(use);
     }
-    use = data->findToken("_/guardFlag");
+    use = data->findToken("_/guardFlag/HitFlags");
     if (use != NULL){
         out.guardFlag = deserializeHitFlags(use);
     }
-    use = data->findToken("_/animationType");
+    use = data->findToken("_/animationType/AttackTypeAnimation");
     if (use != NULL){
         out.animationType = deserializeAttackTypeAnimation(use);
     }
-    use = data->findToken("_/animationTypeAir");
+    use = data->findToken("_/animationTypeAir/AttackTypeAnimation");
     if (use != NULL){
         out.animationTypeAir = deserializeAttackTypeAnimation(use);
     }
-    use = data->findToken("_/animationTypeFall");
+    use = data->findToken("_/animationTypeFall/AttackTypeAnimation");
     if (use != NULL){
         out.animationTypeFall = deserializeAttackTypeAnimation(use);
     }
@@ -747,19 +755,19 @@ HitDefinition deserializeHitDefinition(const Token * data){
         use->view() >> child;
         out.damage = deserializeDamage(child);
     }
-    use = data->findToken("_/pause");
+    use = data->findToken("_/pause/PauseTime");
     if (use != NULL){
         out.pause = deserializePauseTime(use);
     }
-    use = data->findToken("_/guardPause");
+    use = data->findToken("_/guardPause/PauseTime");
     if (use != NULL){
         out.guardPause = deserializePauseTime(use);
     }
-    use = data->findToken("_/spark");
+    use = data->findToken("_/spark/ResourceEffect");
     if (use != NULL){
         out.spark = deserializeResourceEffect(use);
     }
-    use = data->findToken("_/guardSpark");
+    use = data->findToken("_/guardSpark/ResourceEffect");
     if (use != NULL){
         out.guardSpark = deserializeResourceEffect(use);
     }
@@ -769,7 +777,7 @@ HitDefinition deserializeHitDefinition(const Token * data){
         use->view() >> child;
         out.sparkPosition = deserializeSparkPosition(child);
     }
-    use = data->findToken("_/hitSound");
+    use = data->findToken("_/hitSound/ResourceEffect");
     if (use != NULL){
         out.hitSound = deserializeResourceEffect(use);
     }
@@ -785,15 +793,15 @@ HitDefinition deserializeHitDefinition(const Token * data){
         use->view() >> child;
         out.givePower = deserializeGivePower(child);
     }
-    use = data->findToken("_/guardHitSound");
+    use = data->findToken("_/guardHitSound/ResourceEffect");
     if (use != NULL){
         out.guardHitSound = deserializeResourceEffect(use);
     }
-    use = data->findToken("_/groundType");
+    use = data->findToken("_/groundType/AttackTypeGround");
     if (use != NULL){
         out.groundType = deserializeAttackTypeGround(use);
     }
-    use = data->findToken("_/airType");
+    use = data->findToken("_/airType/AttackTypeGround");
     if (use != NULL){
         out.airType = deserializeAttackTypeGround(use);
     }
@@ -887,15 +895,15 @@ HitDefinition deserializeHitDefinition(const Token * data){
     if (use != NULL){
         use->view() >> out.chainId;
     }
-    use = data->findToken("_/minimum");
+    use = data->findToken("_/minimum/Distance");
     if (use != NULL){
         out.minimum = deserializeDistance(use);
     }
-    use = data->findToken("_/maximum");
+    use = data->findToken("_/maximum/Distance");
     if (use != NULL){
         out.maximum = deserializeDistance(use);
     }
-    use = data->findToken("_/snap");
+    use = data->findToken("_/snap/Distance");
     if (use != NULL){
         out.snap = deserializeDistance(use);
     }
@@ -970,7 +978,7 @@ HitOverride deserializeHitOverride(const Token * data){
     if (use != NULL){
         use->view() >> out.time;
     }
-    use = data->findToken("_/attributes");
+    use = data->findToken("_/attributes/HitAttributes");
     if (use != NULL){
         out.attributes = deserializeHitAttributes(use);
     }
@@ -1173,19 +1181,19 @@ HitState deserializeHitState(const Token * data){
     if (use != NULL){
         use->view() >> out.xVelocity;
     }
-    use = data->findToken("_/animationType");
+    use = data->findToken("_/animationType/AttackTypeAnimation");
     if (use != NULL){
         out.animationType = deserializeAttackTypeAnimation(use);
     }
-    use = data->findToken("_/airType");
+    use = data->findToken("_/airType/AttackTypeGround");
     if (use != NULL){
         out.airType = deserializeAttackTypeGround(use);
     }
-    use = data->findToken("_/groundType");
+    use = data->findToken("_/groundType/AttackTypeGround");
     if (use != NULL){
         out.groundType = deserializeAttackTypeGround(use);
     }
-    use = data->findToken("_/hitType");
+    use = data->findToken("_/hitType/AttackTypeGround");
     if (use != NULL){
         out.hitType = deserializeAttackTypeGround(use);
     }
@@ -1302,11 +1310,11 @@ Token * serialize(const ReversalData & data){
 ReversalData deserializeReversalData(const Token * data){
     ReversalData out;
     const Token * use = NULL;
-    use = data->findToken("_/pause");
+    use = data->findToken("_/pause/PauseTime");
     if (use != NULL){
         out.pause = deserializePauseTime(use);
     }
-    use = data->findToken("_/spark");
+    use = data->findToken("_/spark/ResourceEffect");
     if (use != NULL){
         out.spark = deserializeResourceEffect(use);
     }
@@ -1495,7 +1503,7 @@ TransOverride deserializeTransOverride(const Token * data){
     if (use != NULL){
         use->view() >> out.enabled;
     }
-    use = data->findToken("_/type");
+    use = data->findToken("_/type/TransType");
     if (use != NULL){
         out.type = deserializeTransType(use);
     }
@@ -1564,7 +1572,7 @@ Token * serialize(const Bind & data){
 Bind deserializeBind(const Token * data){
     Bind out;
     const Token * use = NULL;
-    use = data->findToken("_/bound");
+    use = data->findToken("_/bound/CharacterId");
     if (use != NULL){
         out.bound = deserializeCharacterId(use);
     }
@@ -1603,7 +1611,7 @@ Token * serialize(const CharacterData & data){
 CharacterData deserializeCharacterData(const Token * data){
     CharacterData out;
     const Token * use = NULL;
-    use = data->findToken("_/who");
+    use = data->findToken("_/who/CharacterId");
     if (use != NULL){
         out.who = deserializeCharacterId(use);
     }
@@ -1707,8 +1715,12 @@ Token * serialize(const StateData & data){
         *t3->newToken() << serialize(it->first) << serialize(it->second);
     }
         *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
-    *out->newToken() << "stateType" << serialize(data.stateType);
-    *out->newToken() << "moveType" << serialize(data.moveType);
+    if (data.stateType != ""){
+        *out->newToken() << "stateType" << data.stateType;
+    }
+    if (data.moveType != ""){
+        *out->newToken() << "moveType" << data.moveType;
+    }
     *out->newToken() << "hit" << serialize(data.hit);
     *out->newToken() << "hitState" << serialize(data.hitState);
     if (data.combo != 0){
@@ -1847,7 +1859,7 @@ StateData deserializeStateData(const Token * data){
     if (use != NULL){
         
     }
-    use = data->findToken("_/currentPhysics");
+    use = data->findToken("_/currentPhysics/PhysicsType");
     if (use != NULL){
         out.currentPhysics = deserializePhysicsType(use);
     }
@@ -1859,11 +1871,11 @@ StateData deserializeStateData(const Token * data){
     if (use != NULL){
         use->view() >> out.moveType;
     }
-    use = data->findToken("_/hit");
+    use = data->findToken("_/hit/HitDefinition");
     if (use != NULL){
         out.hit = deserializeHitDefinition(use);
     }
-    use = data->findToken("_/hitState");
+    use = data->findToken("_/hitState/HitState");
     if (use != NULL){
         out.hitState = deserializeHitState(use);
     }
@@ -1905,7 +1917,7 @@ StateData deserializeStateData(const Token * data){
     if (use != NULL){
         use->view() >> out.frozen;
     }
-    use = data->findToken("_/reversal");
+    use = data->findToken("_/reversal/ReversalData");
     if (use != NULL){
         out.reversal = deserializeReversalData(use);
     }
@@ -1993,7 +2005,7 @@ StateData deserializeStateData(const Token * data){
     if (use != NULL){
         use->view() >> out.virtualz;
     }
-    use = data->findToken("_/facing");
+    use = data->findToken("_/facing/Facing");
     if (use != NULL){
         out.facing = deserializeFacing(use);
     }
@@ -2139,7 +2151,7 @@ Pause deserializePause(const Token * data){
     if (use != NULL){
         use->view() >> out.pauseBackground;
     }
-    use = data->findToken("_/who");
+    use = data->findToken("_/who/CharacterId");
     if (use != NULL){
         out.who = deserializeCharacterId(use);
     }
@@ -2307,11 +2319,11 @@ Zoom deserializeZoom(const Token * data){
     if (use != NULL){
         use->view() >> out.hitCount;
     }
-    use = data->findToken("_/bound");
+    use = data->findToken("_/bound/CharacterId");
     if (use != NULL){
         out.bound = deserializeCharacterId(use);
     }
-    use = data->findToken("_/owner");
+    use = data->findToken("_/owner/CharacterId");
     if (use != NULL){
         out.owner = deserializeCharacterId(use);
     }
@@ -2337,7 +2349,7 @@ Token * serialize(const EnvironmentColor & data){
 EnvironmentColor deserializeEnvironmentColor(const Token * data){
     EnvironmentColor out;
     const Token * use = NULL;
-    use = data->findToken("_/color");
+    use = data->findToken("_/color/GraphicsColor");
     if (use != NULL){
         out.color = deserializeGraphicsColor(use);
     }

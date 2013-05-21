@@ -122,6 +122,8 @@ public:
         return *this;
     }
 
+#if 0
+    // currently broken
     NetworkBuffer & operator>>(string & str){
         int16_t size = 0;
         *this >> size;
@@ -138,6 +140,7 @@ public:
         }
         return *this;
     }
+#endif
 
     virtual void readAll(const Network::Socket & socket){
         contains = Network::readUptoBytes(socket, (uint8_t*) buffer, actualLength);
@@ -272,9 +275,7 @@ Input deserializeInput(const Token * token){
     token->match("input/x", out.x);
     token->match("input/y", out.y);
     token->match("input/back", out.back);
-    if (!token->match("input/forward", out.forward)){
-        Global::debug(0) << "Could not read forward" << std::endl;
-    }
+    token->match("input/forward", out.forward);
     token->match("input/up", out.up);
     token->match("input/down", out.down);
 
@@ -306,7 +307,7 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & s
         case Packet::InputType: {
             uint32_t tick = Network::read32(socket);
             std::string use = readLz4(socket);
-            Global::debug(0) << "Read raw input string " << use << std::endl;
+            Global::debug(1) << "Read raw input string " << use << std::endl;
 
             TokenReader reader;
             Token * head = reader.readTokenFromString(use);
@@ -325,7 +326,7 @@ static PaintownUtil::ReferenceCount<Packet> readPacket(const Network::Socket & s
             TokenReader reader;
             std::string use = readLz4(socket);
             Token * head = reader.readTokenFromString(use);
-            // Global::debug(0) << "Client received token " << head->toString() << std::endl;
+            Global::debug(1) << "World: " << head->toString() << std::endl;
             if (head != NULL){
                 return PaintownUtil::ReferenceCount<Packet>(new WorldPacket(PaintownUtil::ReferenceCount<World>(World::deserialize(head))));
             }
@@ -364,7 +365,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             *data->newToken() << "down" << input->inputs.down;
 
             buffer << data->toStringCompact();
-            Global::debug(0) << "Sending input " << data->toStringCompact() << std::endl;
+            Global::debug(1) << "Sending input " << data->toStringCompact() << std::endl;
             delete data;
 
             // Global::debug(0) << "Send packet of " << buffer.getLength() << " bytes " << std::endl;
@@ -381,6 +382,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             Token * filtered = filterTokens(test);
 
             buffer << filtered->toStringCompact();
+            Global::debug(1) << "World: " << filtered->toString() << std::endl;
             buffer.send(socket);
 
             /*
@@ -489,6 +491,59 @@ public:
     }
 };
 
+/* Acts like human behavior except it captures history */
+class HumanNetworkBehavior: public HumanBehavior {
+public:
+    HumanNetworkBehavior(const InputMap<Keys> & right, const InputMap<Keys> & left):
+    HumanBehavior(right, left){
+    }
+
+    std::map<uint32_t, Input> history;
+
+    virtual void setInput(uint32_t tick, const Input & input){
+        history[tick] = input;
+    }
+
+    using HumanBehavior::getInput;
+    Input getInput(const Stage & stage, bool reversed){
+        if (history.find(stage.getTicks()) != history.end()){
+            return history[stage.getTicks()];
+        }
+
+        input = updateInput(getInput(reversed), input);
+        return input;
+    }
+    
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+        vector<string> out;
+
+        Input use = getInput(stage, reversed);
+        history[stage.getTicks()] = use;
+
+        for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+            Command * command = *it;
+            if (command->handle(use)){
+                Global::debug(1) << "command: " << command->getName() << std::endl;
+                out.push_back(command->getName());
+            }
+        }
+
+        return out;
+    }
+
+    /* called when the player changes direction. useful for updating
+     * the input mapping.
+     */
+    virtual void flip(){
+        bool forward = input.forward;
+        input.forward = input.back;
+        input.back = forward;
+    }
+
+    virtual ~HumanNetworkBehavior(){
+    }
+};
+
 class HostHandler{
 public:
     HostHandler(){
@@ -558,7 +613,7 @@ public:
         while (alive()){
             PaintownUtil::ReferenceCount<Packet> nextPacket = getSendPacket();
             if (nextPacket != NULL){
-                Global::debug(0) << "Send packet type " << nextPacket->getType() << " at " << System::currentMilliseconds() << std::endl;
+                Global::debug(1) << "Send packet type " << nextPacket->getType() << " at " << System::currentMilliseconds() << std::endl;
                 Mugen::sendPacket(socket, nextPacket);
             } else {
                 PaintownUtil::rest(1);
@@ -573,7 +628,7 @@ public:
     }
 
     void handlePacket(const PaintownUtil::ReferenceCount<Packet> & packet){
-        Global::debug(0) << "Received packet type " << packet->getType() << " at " << System::currentMilliseconds() << std::endl;
+        Global::debug(1) << "Received packet type " << packet->getType() << " at " << System::currentMilliseconds() << std::endl;
         switch (packet->getType()){
             case Packet::PingType: {
                 host.handlePing(packet.convert<PingPacket>());
@@ -657,14 +712,14 @@ public:
     virtual void handlePing(const PaintownUtil::ReferenceCount<PingPacket> & ping){
         int16_t client = ping->getPing();
         if (pings.find(client) != pings.end()){
-            Global::debug(0) << "Client ping: " << (System::currentMilliseconds() - pings[client]) << std::endl;
+            Global::debug(1) << "Client ping: " << (System::currentMilliseconds() - pings[client]) << std::endl;
             pings.erase(client);
         }
     }
 
     virtual void handleInput(const PaintownUtil::ReferenceCount<InputPacket> & input){
         PaintownUtil::Thread::ScopedLock scoped(lock);
-        Global::debug(0) << "Input back: " << input->inputs.back <<
+        Global::debug(1) << "Input back: " << input->inputs.back <<
                                  " forward: " << input->inputs.forward <<
                                  " up: " << input->inputs.up <<
                                  " down: " << input->inputs.down <<
@@ -691,6 +746,7 @@ public:
     }
     
     virtual void beforeLogic(Stage & stage){
+
         if (lastState == NULL){
             lastState = stage.snapshotState();
         }
@@ -745,6 +801,16 @@ public:
         }
     }
 };
+
+static void debugWorld(const std::string & what, Stage & stage){
+    PaintownUtil::ReferenceCount<World> world = stage.snapshotState();
+    Token * test = world->serialize();
+    Token * filtered = filterTokens(test);
+
+    Global::debug(0) << stage.getTicks() << " " << what << ": " << filtered->toString() << std::endl;
+    delete test;
+    delete filtered;
+}
 
 class NetworkClientObserver: public NetworkObserver, public HostHandler {
 public:
@@ -827,13 +893,16 @@ public:
     virtual void beforeLogic(Stage & stage){
         uint32_t currentTicks = stage.getTicks();
         PaintownUtil::ReferenceCount<World> next = getWorld();
+        bool replay = false;
         if (next != NULL){
+            replay = true;
             stage.updateState(*next);
             lastState = next;
         }
 
         std::map<uint32_t, Input> useInputs = getInputs();
         if (useInputs.size() > 0){
+            replay = true;
             for (std::map<uint32_t, Input>::iterator it = useInputs.begin(); it != useInputs.end(); it++){
                 uint32_t tick = it->first;
                 const Input & input = it->second;
@@ -842,10 +911,13 @@ public:
                 player2->setInputs(tick, input.inputs);
                 */
             }
+        }
 
+        if (replay){
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
                 Mugen::Sound::disableSounds();
+                Global::debug(1) << "At " << currentTicks << " Client replaying " << (currentTicks - lastState->getStageData().ticker) << std::endl;
                 for (uint32_t i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
                     stage.logic();
                 }
@@ -904,7 +976,7 @@ void Game::startNetworkVersus1(const PaintownUtil::ReferenceCount<Character> & p
             }
         }
 
-        HumanBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
+        HumanNetworkBehavior player1Behavior(getPlayer1Keys(), getPlayer1InputLeft());
         NetworkBehavior player2Behavior;
         // DummyBehavior player2Behavior;
 

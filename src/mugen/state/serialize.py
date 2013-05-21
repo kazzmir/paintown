@@ -183,6 +183,10 @@ def generate_cpp(object, structs):
         *out->newToken() << "%(name)s" << data.%(name)s;
     }\n""" % {'name': field.name,
                   'zero': field.zero()}
+            elif str(field.type_) == 'std::string':
+                fields += """    if (data.%(name)s != ""){
+        *out->newToken() << "%(name)s" << data.%(name)s;
+    }\n""" % {'name': field.name}
             elif str(field.type_).startswith('std::vector'):
                 name += 1
                 fields += """
@@ -229,6 +233,7 @@ def generate_cpp(object, structs):
         out = ""
         name = 0
         for field in object.fields:
+            path = "_/%(name)s" % {'name': field.name}
             if isinstance(field.type_, state.State):
                 if field.isArray():
                     get = ""
@@ -266,15 +271,19 @@ def generate_cpp(object, structs):
                 if field.isArray():
                     get = ""
                 else:
+                    type_name = re.sub(':', '', str(field.type_))
                     get = "out.%(name)s = deserialize%(type)s(use);" % {'name': field.name,
-                        'type': re.sub(':', '', str(field.type_))}
+                                                                        'type': type_name}
+                    path = "_/%(name)s/%(type)s" % {'name': field.name,
+                                                    'type': type_name}
 
 
-            out += """    use = data->findToken("_/%(name)s");
+            out += """    use = data->findToken("%(path)s");
     if (use != NULL){
         %(get)s
     }
 """ % {'name': field.name,
+       'path': path,
        'get': get}
 
         return out
