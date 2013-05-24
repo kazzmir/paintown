@@ -21,6 +21,18 @@ packages.each do |pkg|
   end
 end
 
+bash "setup-profile" do
+  user "root"
+  code <<-EOH
+    echo 'export PS3DEV=/home/vagrant/ps3-toolchain' >> /etc/profile
+    echo 'export PATH=$PATH:\$PS3DEV/bin' >> /etc/profile
+    echo 'export PATH=$PATH:\$PS3DEV/ppu/bin' >> /etc/profile
+    echo 'export PATH=$PATH:\$PS3DEV/spu/bin' >> /etc/profile
+    echo 'export PSL1GHT=$PS3DEV/psl1ght' >> /etc/profile
+    echo 'export ps3=1' >> /etc/profile
+  EOH
+end
+
 bash "co-paintown" do
   user "vagrant"
   cwd home
