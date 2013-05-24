@@ -13,8 +13,8 @@ Vagrant::Config.run do |config|
   # config.vm.share_folder "paintown", "/vagrant_data", "../data"
 
   config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = "cookbooks"
-    chef.add_recipe "paintown"
+    chef.cookbooks_path = "../chef-cookbooks"
+    chef.add_recipe "ps3"
     #chef.roles_path = "../my-recipes/roles"
     #chef.data_bags_path = "../my-recipes/data_bags"
     #chef.add_role "web"
