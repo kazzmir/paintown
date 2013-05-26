@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant::Config.run do |config|
+  config.vm.box = "squeeze32-vanilla"
+  config.vm.box_url = "https://dl.dropbox.com/u/2289657/squeeze32-vanilla.box"
+  config.vm.network :hostonly, "192.168.33.10"
+  # config.vm.network :bridged
+  # config.vm.forward_port 80, 8080
+  
+  # Other directories
+  # config.vm.share_folder "paintown", "/vagrant_data", "../data"
+
+  config.vm.provision :chef_solo do |chef|
+    chef.cookbooks_path = "../chef-cookbooks"
+    chef.add_recipe "android"
+    #chef.roles_path = "../my-recipes/roles"
+    #chef.data_bags_path = "../my-recipes/data_bags"
+    #chef.add_role "web"
+  #   # You may also specify custom JSON attributes:
+  #   chef.json = { :mysql_password => "foo" }
+  end
+end
