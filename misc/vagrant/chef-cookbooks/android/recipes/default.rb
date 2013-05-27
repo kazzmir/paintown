@@ -3,17 +3,15 @@ execute "apt-get-update" do
   ignore_failure true 
 end
 
-packages = %w{scons wget make python expect python-pip python-dev libtool subversion pkg-config}
+packages = %w{scons wget make python expect python-pip python-dev libtool subversion pkg-config cmake}
 
 home = "/home/vagrant"
 
-ENV['DEVKITPRO'] = '/opt/devkitpro'
-ENV['DEVKITPPC'] = ENV['DEVKITPRO']+'/devkitPPC'
+ENV['ANDROID_TOOLCHAIN'] = '/opt/android/android-toolchain'
 ENV['PATH'] = ENV['PATH'] + 
-              ':' + ENV['DEVKITPPC'] + '/bin' +
-              ':' + ENV['DEVKITPRO'] + 'libogc/bin'
-ENV['SDL'] = '1'
-ENV['wii'] = '1'
+              ':/opt/android/build/tools'
+ENV['ALLEGRO5'] = '1'
+ENV['android'] = '1'
 
 packages.each do |pkg|
   package pkg do
@@ -24,11 +22,10 @@ end
 bash "setup-profile" do
   user "root"
   code <<-EOH
-    echo 'export DEVKITPRO=/opt/devkitpro' >> /etc/profile
-    echo 'export DEVKITPPC=$DEVKITPRO/devkitPPC' >> /etc/profile
-    echo 'export PATH=$PATH:$DEVKITPRO/libogc/bin:$DEVKITPPC/bin' >> /etc/profile
-    echo 'export SDL=1' >> /etc/profile
-    echo 'export wii=1' >> /etc/profile
+    echo 'export ANDROID_TOOLCHAIN=/opt/android/android-toolchain' >> /etc/profile
+    echo 'export PATH=$PATH:/opt/android/build/tools' >> /etc/profile
+    echo 'export ALLEGRO5=1' >> /etc/profile
+    echo 'export android=1' >> /etc/profile
   EOH
 end
 
@@ -44,22 +41,37 @@ bash "grab-android-sdk" do
   user "root"
   cwd '/opt'
   code <<-EOH
-    mod=0
+mod=0
+time=$(date +%m%d --date="-$mod day")
+bundle=adt-bundle-linux-x86-2013$time
+value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
+while [ $? -ne 0 ]; do
+    mod=$((mod+1))
     time=$(date +%m%d --date="-$mod day")
     bundle=adt-bundle-linux-x86-2013$time
     value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
-    while [ $? -ne 0 ]; do
-        mod=$((mod+1))
-        time=$(date +%m%d --date="-$mod day")
-        bundle=adt-bundle-linux-x86-2013$time
-        value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
-    done
-    unzip $bundle
-    ln -s /opt/$bundle /opt/android-sdk
-    android=android-ndk-r8e
-    wget http://dl.google.com/android/ndk/$android-linux-x86.tar.bz2
-    tar xvjf $android-linux-x86.tar.bz2
-    ln -s /opt/$android /opt/android
+done
+unzip $bundle
+ln -s /opt/$bundle /opt/android-sdk
+  EOH
+end
+
+bash 'grab-android-ndk' do
+  user 'root'
+  cwd '/opt'
+  code <<-EOH
+android=android-ndk-r8e
+wget http://dl.google.com/android/ndk/$android-linux-x86.tar.bz2
+tar xjf $android-linux-x86.tar.bz2
+ln -s /opt/$android /opt/android
+  EOH
+end
+
+bash 'co-allegro' do
+  user 'root'
+  cwd '/opt'
+  code <<-EOH
+svn co https://alleg.svn.sourceforge.net/svnroot/alleg/allegro/branches/5.1 allegro5
   EOH
 end
 
@@ -78,13 +90,13 @@ expect {
 end
 
 bash 'setup-android' do
-  user "vagrant"
+  user "root"
   cwd '/opt'
   code <<-EOH
     cd /opt/android-sdk/sdk/tools
     ./install.sh
     cd /opt/android
-    build/tools/make-standalone-toolchain.sh --install-dir=/opt/android/android-toolchain --platform=android-9
+    make-standalone-toolchain.sh --install-dir=/opt/android/android-toolchain --platform=android-9
     mkdir -p /opt/android/android-toolchain/user/armeabi /opt/android/android-toolchain/user/armeabi-v7a
     cp /opt/android/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a /opt/android/android-toolchain/arm-linux-androideabi/lib/
     cd /opt
@@ -95,6 +107,21 @@ bash 'setup-android' do
     ln -s /opt/freetype2-android/include/ft2build.h /opt/android/android-toolchain/user/armeabi/include
     ln -s /opt/freetype2-android/include/freetype/ /opt/android/android-toolchain/user/armeabi/include
     ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a /opt/android/android-toolchain/user/armeabi/lib
+    cd /opt
+    git clone https://github.com/julienr/libpng-android.git
+    cd libpng-android/jni
+    sed -i 's/android-8/android-9/g' Application.mk
+    sed -i 's/APP_ABI.*$/APP_ABI := all/g' Application.mk
+    /opt/android/ndk-build
+    ln -s /opt/libpng-android/jni/png.h /opt/android/android-toolchain/user/armeabi/include
+    ln -s /opt/libpng-android/jni/pngconf.h /opt/android/android-toolchain/user/armeabi/include
+    ln -s /opt/libpng-android/obj/local/armeabi/libpng.a /opt/android/android-toolchain/user/armeabi/lib
+    cd /opt/allegro5
+    make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
+    mkdir build
+    cd build
+    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Debug WANT_OPENSL=on WANT_GLES2=off WANT_SHADERS=off
+    make && make install
   EOH
 end
 
@@ -103,7 +130,6 @@ bash "build-paintown" do
   cwd home+"/paintown"
   code <<-EOH
     make
-    elf2dol paintown paintown.dol
   EOH
 end
 

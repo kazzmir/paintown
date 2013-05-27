@@ -5,6 +5,7 @@ Vagrant::Config.run do |config|
   config.vm.box = "squeeze32-vanilla"
   config.vm.box_url = "https://dl.dropbox.com/u/2289657/squeeze32-vanilla.box"
   config.vm.network :hostonly, "192.168.33.10"
+  config.vm.customize ["modifyvm", :id, "--memory", 512]
   # config.vm.network :bridged
   # config.vm.forward_port 80, 8080
   
