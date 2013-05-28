@@ -3,7 +3,7 @@ execute "apt-get-update" do
   ignore_failure true 
 end
 
-packages = %w{scons wget make python expect python-pip python-dev libtool subversion pkg-config cmake}
+packages = %w{scons curl wget make python expect python-pip python-dev libtool subversion git-core pkg-config cmake}
 
 home = "/home/vagrant"
 
@@ -44,12 +44,14 @@ bash "grab-android-sdk" do
 mod=0
 time=$(date +%m%d --date="-$mod day")
 bundle=adt-bundle-linux-x86-2013$time
-value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
+#value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
+value=`curl -f -s -O http://dl.google.com/android/adt/$bundle.zip`
 while [ $? -ne 0 ]; do
     mod=$((mod+1))
     time=$(date +%m%d --date="-$mod day")
     bundle=adt-bundle-linux-x86-2013$time
-    value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
+#    value=`wget -q http://dl.google.com/android/adt/$bundle.zip`
+    value=`curl -f -s -O http://dl.google.com/android/adt/$bundle.zip`
 done
 unzip $bundle
 ln -s /opt/$bundle /opt/android-sdk
@@ -61,7 +63,8 @@ bash 'grab-android-ndk' do
   cwd '/opt'
   code <<-EOH
 android=android-ndk-r8e
-wget http://dl.google.com/android/ndk/$android-linux-x86.tar.bz2
+#wget -q http://dl.google.com/android/ndk/$android-linux-x86.tar.bz2
+curl -f -s -O http://dl.google.com/android/ndk/$android-linux-x86.tar.bz2
 tar xjf $android-linux-x86.tar.bz2
 ln -s /opt/$android /opt/android
   EOH
@@ -120,7 +123,7 @@ bash 'setup-android' do
     make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
     mkdir build
     cd build
-    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Debug WANT_OPENSL=on WANT_GLES2=off WANT_SHADERS=off
+    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Debug -DWANT_OPENSL=on -DWANT_GLES2=off -DWANT_SHADERS=off
     make && make install
   EOH
 end
