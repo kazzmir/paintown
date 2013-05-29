@@ -76,7 +76,7 @@ bash 'co-allegro' do
   user 'root'
   cwd '/opt'
   code <<-EOH
-svn co https://alleg.svn.sourceforge.net/svnroot/alleg/allegro/branches/5.1 allegro5
+git clone http://git.code.sf.net/p/alleg/allegro allegro5
   EOH
 end
 
@@ -101,28 +101,29 @@ bash 'setup-android' do
     cd /opt/android-sdk/sdk/tools
     ./install.sh
     cd /opt/android
-    make-standalone-toolchain.sh --install-dir=/opt/android/android-toolchain --platform=android-9
-    mkdir -p /opt/android/android-toolchain/user/armeabi /opt/android/android-toolchain/user/armeabi-v7a
-    cp /opt/android/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a /opt/android/android-toolchain/arm-linux-androideabi/lib/
+    make-standalone-toolchain.sh --install-dir=$ANDROID_TOOLCHAIN --platform=android-9
+    mkdir -p $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include $ANDROID_TOOLCHAIN/user/armeabi/lib $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib
+    cp /opt/android/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a $ANDROID_TOOLCHAIN/arm-linux-androideabi/lib/
     cd /opt
     git clone https://github.com/cdave1/freetype2-android
     cd freetype2-android/Android/jni
     sed -i 's/android-8/android-9/g' Application.mk
     /opt/android/ndk-build freetype2-static
-    ln -s /opt/freetype2-android/include/ft2build.h /opt/android/android-toolchain/user/armeabi/include
-    ln -s /opt/freetype2-android/include/freetype/ /opt/android/android-toolchain/user/armeabi/include
-    ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a /opt/android/android-toolchain/user/armeabi/lib
+    ln -s /opt/freetype2-android/include/ft2build.h $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
+    ln -s /opt/freetype2-android/include/freetype/ $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
+    ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi/lib/libfreetype.a
+    ln -s /opt/freetype2-android/Android/obj/local/armeabi-v7a/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib/libfreetype.a
     cd /opt
     git clone https://github.com/julienr/libpng-android.git
     cd libpng-android/jni
     sed -i 's/android-8/android-9/g' Application.mk
     sed -i 's/APP_ABI.*$/APP_ABI := all/g' Application.mk
     /opt/android/ndk-build
-    ln -s /opt/libpng-android/jni/png.h /opt/android/android-toolchain/user/armeabi/include
-    ln -s /opt/libpng-android/jni/pngconf.h /opt/android/android-toolchain/user/armeabi/include
-    ln -s /opt/libpng-android/obj/local/armeabi/libpng.a /opt/android/android-toolchain/user/armeabi/lib
+    ln -s /opt/libpng-android/jni/png.h $ANDROID_TOOLCHAIN/user/armeabi/include
+    ln -s /opt/libpng-android/jni/pngconf.h $ANDROID_TOOLCHAIN/user/armeabi/include
+    ln -s /opt/libpng-android/obj/local/armeabi/libpng.a $ANDROID_TOOLCHAIN/user/armeabi/lib
     cd /opt/allegro5
-    make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
+    # make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
     mkdir build
     cd build
     cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Release -DWANT_OPENSL=on -DWANT_GLES2=on -DWANT_SHADERS=on
