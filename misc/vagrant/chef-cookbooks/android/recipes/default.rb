@@ -38,7 +38,7 @@ bash "co-paintown" do
 end
 
 bash "grab-android-sdk" do
-  user "root"
+  user "vagrant"
   cwd '/opt'
   code <<-EOH
 mod=0
@@ -59,7 +59,7 @@ ln -s /opt/$bundle /opt/android-sdk
 end
 
 bash 'grab-android-ndk' do
-  user 'root'
+  user 'vagrant'
   cwd '/opt'
   code <<-EOH
 android=android-ndk-r8e
@@ -71,7 +71,7 @@ ln -s /opt/$android /opt/android
 end
 
 bash 'co-allegro' do
-  user 'root'
+  user 'vagrant'
   cwd '/opt'
   code <<-EOH
 svn co https://alleg.svn.sourceforge.net/svnroot/alleg/allegro/branches/5.1 allegro5
@@ -85,7 +85,7 @@ file '/opt/android-sdk/sdk/tools/install.sh' do
 set timeout -1
 spawn ./android update sdk --filter 2 --no-ui
 expect {
-    "\[y/n\]" { send "y\r"; expect { eof } } \
+    "\\[y/n\\]" { send "y\\r"; expect { eof } } \\
     eof
 }
   EOH
@@ -93,7 +93,7 @@ expect {
 end
 
 bash 'setup-android' do
-  user "root"
+  user "vagrant"
   cwd '/opt'
   code <<-EOH
     cd /opt/android-sdk/sdk/tools
@@ -123,7 +123,7 @@ bash 'setup-android' do
     make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
     mkdir build
     cd build
-    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Debug -DWANT_OPENSL=on -DWANT_GLES2=off -DWANT_SHADERS=off
+    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Debug -DWANT_OPENSL=on -DWANT_GLES2=on -DWANT_SHADERS=on
     make && make install
   EOH
 end
