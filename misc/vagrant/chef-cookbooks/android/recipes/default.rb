@@ -11,6 +11,7 @@ ENV['ANDROID_TOOLCHAIN'] = '/opt/android/android-toolchain'
 ENV['PATH'] = ENV['PATH'] + 
               ':/opt/android/build/tools'
 ENV['ALLEGRO5'] = '1'
+ENV['PKG_CONFIG_PATH'] = '/opt/android/android-toolchain/user/armeabi-v7a/lib/pkgconfig/'
 ENV['android'] = '1'
 
 packages.each do |pkg|
@@ -26,6 +27,7 @@ bash "setup-profile" do
     echo 'export PATH=$PATH:/opt/android/build/tools' >> /etc/profile
     echo 'export ALLEGRO5=1' >> /etc/profile
     echo 'export android=1' >> /etc/profile
+    echo 'export PKG_CONFIG_PATH=/opt/android/android-toolchain/user/armeabi-v7a/lib/pkgconfig/' >> /etc/profile
   EOH
 end
 
@@ -38,7 +40,7 @@ bash "co-paintown" do
 end
 
 bash "grab-android-sdk" do
-  user "vagrant"
+  user "root"
   cwd '/opt'
   code <<-EOH
 mod=0
@@ -59,7 +61,7 @@ ln -s /opt/$bundle /opt/android-sdk
 end
 
 bash 'grab-android-ndk' do
-  user 'vagrant'
+  user 'root'
   cwd '/opt'
   code <<-EOH
 android=android-ndk-r8e
@@ -71,7 +73,7 @@ ln -s /opt/$android /opt/android
 end
 
 bash 'co-allegro' do
-  user 'vagrant'
+  user 'root'
   cwd '/opt'
   code <<-EOH
 svn co https://alleg.svn.sourceforge.net/svnroot/alleg/allegro/branches/5.1 allegro5
@@ -93,7 +95,7 @@ expect {
 end
 
 bash 'setup-android' do
-  user "vagrant"
+  user "root"
   cwd '/opt'
   code <<-EOH
     cd /opt/android-sdk/sdk/tools
@@ -123,7 +125,7 @@ bash 'setup-android' do
     make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
     mkdir build
     cd build
-    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Debug -DWANT_OPENSL=on -DWANT_GLES2=on -DWANT_SHADERS=on
+    cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Release -DWANT_OPENSL=on -DWANT_GLES2=on -DWANT_SHADERS=on
     make && make install
   EOH
 end
