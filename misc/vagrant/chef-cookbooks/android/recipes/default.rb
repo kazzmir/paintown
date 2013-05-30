@@ -113,8 +113,8 @@ bash 'setup-android' do
     /opt/android/ndk-build freetype2-static
     ln -s /opt/freetype2-android/include/ft2build.h $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
     ln -s /opt/freetype2-android/include/freetype/ $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
-    ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi/lib
-    ln -s /opt/freetype2-android/Android/obj/local/armeabi-v7a/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib
+    ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi/lib/libfreetype.a
+    ln -s /opt/freetype2-android/Android/obj/local/armeabi-v7a/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib/libfreetype.a
     cd /opt
     git clone https://github.com/julienr/libpng-android.git
     cd libpng-android/jni
@@ -154,8 +154,8 @@ template ENV['ANDROID_TOOLCHAIN'] + '/bin/freetype-config' do
     :version => '2',
     :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi-v7a',
     :include_dir => 'freetype',
-    :libs => '-lfreetype-static',
-    :all_libs => '-lfreetype-static -lz '
+    :libs => '-lfreetype',
+    :all_libs => '-lfreetype -lz '
   })
 end
 
