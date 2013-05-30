@@ -9,7 +9,8 @@ home = "/home/vagrant"
 
 ENV['ANDROID_TOOLCHAIN'] = '/opt/android/android-toolchain'
 ENV['PATH'] = ENV['PATH'] + 
-              ':/opt/android/build/tools'
+              ':/opt/android/build/tools' +
+              ':/opt/android/android-toolchain/bin'
 ENV['ALLEGRO5'] = '1'
 ENV['PKG_CONFIG_PATH'] = '/opt/android/android-toolchain/user/armeabi-v7a/lib/pkgconfig/'
 ENV['android'] = '1'
@@ -24,7 +25,7 @@ bash "setup-profile" do
   user "root"
   code <<-EOH
     echo 'export ANDROID_TOOLCHAIN=/opt/android/android-toolchain' >> /etc/profile
-    echo 'export PATH=$PATH:/opt/android/build/tools' >> /etc/profile
+    echo 'export PATH=$PATH:/opt/android/build/tools:/opt/android/android-toolchain/bin' >> /etc/profile
     echo 'export ALLEGRO5=1' >> /etc/profile
     echo 'export android=1' >> /etc/profile
     echo 'export PKG_CONFIG_PATH=/opt/android/android-toolchain/user/armeabi-v7a/lib/pkgconfig/' >> /etc/profile
@@ -57,6 +58,7 @@ while [ $? -ne 0 ]; do
 done
 unzip $bundle
 ln -s /opt/$bundle /opt/android-sdk
+chmod -R 755 /opt/$bundle
   EOH
 end
 
@@ -102,8 +104,8 @@ bash 'setup-android' do
     ./install.sh
     cd /opt/android
     make-standalone-toolchain.sh --install-dir=$ANDROID_TOOLCHAIN --platform=android-9
-    mkdir -p $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include $ANDROID_TOOLCHAIN/user/armeabi/lib $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib
-    cp /opt/android/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a $ANDROID_TOOLCHAIN/arm-linux-androideabi/lib/
+    mkdir -p $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include $ANDROID_TOOLCHAIN/user/armeabi/lib $ANDROID_TOOLCHAIN/user/armeabi-v7a/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib
+    cp /opt/android/sources/cxx-stl/gnu-libstdc++/4.7/libs/armeabi/libgnustl_static.a $ANDROID_TOOLCHAIN/arm-linux-androideabi/lib
     cd /opt
     git clone https://github.com/cdave1/freetype2-android
     cd freetype2-android/Android/jni
@@ -121,7 +123,7 @@ bash 'setup-android' do
     /opt/android/ndk-build
     ln -s /opt/libpng-android/jni/png.h $ANDROID_TOOLCHAIN/user/armeabi/include
     ln -s /opt/libpng-android/jni/pngconf.h $ANDROID_TOOLCHAIN/user/armeabi/include
-    ln -s /opt/libpng-android/obj/local/armeabi/libpng.a $ANDROID_TOOLCHAIN/user/armeabi/lib
+    ln -s /opt/libpng-android/obj/local/armeabi-v7a/libpng.a $ANDROID_TOOLCHAIN/user/armeabi/lib
     cd /opt/allegro5
     # make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
     mkdir build
@@ -129,6 +131,30 @@ bash 'setup-android' do
     cmake .. -DANDROID_NDK_TOOLCHAIN_ROOT=$ANDROID_TOOLCHAIN -DWANT_ANDROID=on -DWANT_EXAMPLES=OFF -DWANT_DEMO=OFF -DCMAKE_BUILD_TYPE=Release -DWANT_OPENSL=on -DWANT_GLES2=on -DWANT_SHADERS=on
     make && make install
   EOH
+end
+
+template ENV['ANDROID_TOOLCHAIN'] + '/bin/libpng-config' do
+  source "lib-config.erb"
+  mode 0755
+  variables({
+    :version => '1.2',
+    :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi',
+    :include_dir => '',
+    :libs => '-lpng',
+    :all_libs => '-lpng -lz -lm '
+  })
+end
+
+template ENV['ANDROID_TOOLCHAIN'] + '/bin/freetype-config' do
+  source "lib-config.erb"
+  mode 0755
+  variables({
+    :version => '2',
+    :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi-7a',
+    :include_dir => 'freetype',
+    :libs => '-lfreetype',
+    :all_libs => '-lfreetype -lz '
+  })
 end
 
 bash "build-paintown" do
