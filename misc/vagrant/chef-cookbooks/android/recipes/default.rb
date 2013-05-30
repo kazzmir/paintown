@@ -113,17 +113,19 @@ bash 'setup-android' do
     /opt/android/ndk-build freetype2-static
     ln -s /opt/freetype2-android/include/ft2build.h $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
     ln -s /opt/freetype2-android/include/freetype/ $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
-    ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi/lib/libfreetype.a
-    ln -s /opt/freetype2-android/Android/obj/local/armeabi-v7a/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib/libfreetype.a
+    ln -s /opt/freetype2-android/Android/obj/local/armeabi/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi/lib
+    ln -s /opt/freetype2-android/Android/obj/local/armeabi-v7a/libfreetype2-static.a $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib
     cd /opt
     git clone https://github.com/julienr/libpng-android.git
     cd libpng-android/jni
     sed -i 's/android-8/android-9/g' Application.mk
     sed -i 's/APP_ABI.*$/APP_ABI := all/g' Application.mk
+    echo "APP_ABI := armeabi armeabi-v7a" >> Application.mk
     /opt/android/ndk-build
-    ln -s /opt/libpng-android/jni/png.h $ANDROID_TOOLCHAIN/user/armeabi/include
-    ln -s /opt/libpng-android/jni/pngconf.h $ANDROID_TOOLCHAIN/user/armeabi/include
-    ln -s /opt/libpng-android/obj/local/armeabi-v7a/libpng.a $ANDROID_TOOLCHAIN/user/armeabi/lib
+    ln -s /opt/libpng-android/jni/png.h $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
+    ln -s /opt/libpng-android/jni/pngconf.h $ANDROID_TOOLCHAIN/user/armeabi/include $ANDROID_TOOLCHAIN/user/armeabi-v7a/include
+    ln -s /opt/libpng-android/obj/local/armeabi/libpng.a $ANDROID_TOOLCHAIN/user/armeabi/lib
+    ln -s /opt/libpng-android/obj/local/armeabi-v7a/libpng.a $ANDROID_TOOLCHAIN/user/armeabi-v7a/lib
     cd /opt/allegro5
     # make-standalone-toolchain.sh --platform=android-9 --install-dir=$ANDROID_TOOLCHAIN
     mkdir build
@@ -138,7 +140,7 @@ template ENV['ANDROID_TOOLCHAIN'] + '/bin/libpng-config' do
   mode 0755
   variables({
     :version => '1.2',
-    :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi',
+    :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi-v7a',
     :include_dir => '',
     :libs => '-lpng',
     :all_libs => '-lpng -lz -lm '
@@ -150,10 +152,10 @@ template ENV['ANDROID_TOOLCHAIN'] + '/bin/freetype-config' do
   mode 0755
   variables({
     :version => '2',
-    :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi-7a',
+    :prefix => ENV['ANDROID_TOOLCHAIN'] + '/user/armeabi-v7a',
     :include_dir => 'freetype',
-    :libs => '-lfreetype',
-    :all_libs => '-lfreetype -lz '
+    :libs => '-lfreetype-static',
+    :all_libs => '-lfreetype-static -lz '
   })
 end
 
