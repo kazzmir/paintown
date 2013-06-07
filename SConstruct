@@ -47,7 +47,6 @@ def makeUseArgument(key, default):
 # If `makeUseEnvironment' is used instead then a shell variable should be set:
 # $ export prx=1
 # $ scons
-useGch = makeUseArgument('gch', True)
 usePrx = makeUseEnvironment('prx', False)
 isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
@@ -63,7 +62,6 @@ usePandora = makeUseEnvironment('pandora', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
 useNacl = makeUseEnvironment('nacl', False)
-useMpg123 = makeUseEnvironment('mpg123', False)
 useMad = makeUseEnvironment('mad', False)
 useGCW = makeUseEnvironment('gcw', False)
 nativeCompile = makeUseEnvironment('native', False)
@@ -75,138 +73,6 @@ def ps3devPath():
         return os.environ['PS3DEV']
     except KeyError:
         return '/opt/ps3dev'
-
-def checkSDL(context):
-    context.Message("Checking for SDL ... ")
-
-    def build(x):
-        return context.TryLink("""
-        #include <SDL.h>
-        int main(int argc, char ** argv){
-          int %sok = SDL_INIT_VIDEO;
-          return SDL_Init(0);
-        }
-    """ % x, ".c")
-
-    def tryNormal():
-        tmp = context.env.Clone()
-        env = context.env
-        try:
-            scons.utils.safeParseConfig(env, 'sdl-config --cflags --libs')
-            env.Append(CPPDEFINES = ['USE_SDL'])
-            if build('a'):
-                return True
-            else:
-                raise Exception()
-        except Exception:
-            context.sconf.env = tmp
-            return False
-
-    # Put any system libraries after SDL
-    def tryMoveLibs():
-        tmp = context.env.Clone()
-        env = context.env
-        try:
-            libs = []
-            try:
-                libs = env['LIBS']
-            except KeyError:
-                pass
-            env.Replace(LIBS = [])
-            scons.utils.safeParseConfig(env, 'sdl-config --cflags --libs')
-            env.Append(LIBS = libs)
-            env.Append(CPPDEFINES = ['USE_SDL'])
-            m = build('b')
-            if m:
-                return True
-            else:
-                raise Exception("Couldn't build it")
-        except Exception, e:
-            # print "Moving libraries failed! because '%s'" % e
-            context.sconf.env = tmp
-            return False
-
-    def tryFramework():
-        tmp = context.env.Clone()
-        env = context.env
-        env.Append(FRAMEWORKS = ['SDL', 'Cocoa'])
-        env.Append(CPPDEFINES = ['USE_SDL'])
-        env.Append(CPPPATH = ['/Library/Frameworks/SDL.framework/Headers',
-                              '/System/Library/Frameworks/Foundation.framework/Headers'])
-        main = env.StaticLibrary('src/util/graphics/sdl/SDLMain.m')
-        env.Append(LIBS = [main])
-        m = build('c')
-        if m:
-            return True
-        else:
-            context.sconf.env = tmp
-            return False
-
-    ok = int(tryNormal() or tryMoveLibs() or tryFramework())
-    context.Result(scons.utils.colorResult(ok))
-    return ok
-
-def checkSDLMain(context):
-    context.Message("Checking for SDL main... ")
-    tmp = context.env.Clone()
-    env = context.env
-
-    env['HAVE_SDL_MAIN'] = False
-
-    ok = False
-    if useAndroid():
-        ok = True
-    else:
-        ok = context.TryLink("""
-#include <SDL.h>
-int SDL_main(int argc, char ** argv){
-    return 0;
-}
-""", ".c")
-
-    if not ok:
-        context.sconf.env = tmp
-    else:
-        env.Append(CPPDEFINES = ['USE_SDL_MAIN'])
-        env['HAVE_SDL_MAIN'] = True
-    
-    context.Result(scons.utils.colorResult(ok))
-    return ok
-
-def checkStaticSDL(context):
-    context.Message("Checking for static SDL... ")
-    env = context.env
-
-    try:
-        scons.utils.safeParseConfig(env, 'sdl-config --static-libs --cflags')
-        env.Append(CPPDEFINES = ['USE_SDL'])
-    except Exception:
-        context.Result(scons.utils.colorResult(0))
-        return 0
-
-    if False:
-        sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
-        env.Append(LIBS = [sdl])
-        scons.utils.safeParseConfig(env, 'sdl-config --cflags')
-        env.Append(CPPDEFINES = ['USE_SDL'])
-        if isOSX() or isOSX104():
-            def framework(x):
-                return "-framework %s" % x
-            frameworks = Split("""
-Cocoa
-Carbon
-IOKit
-System
-CoreAudio
-AudioUnit
-AudioToolbox
-QuickTime
-OpenGL
-""")
-            # env.Append(LINKFLAGS = map(framework, frameworks))
-            env.Append(FRAMEWORKS = frameworks)
-    context.Result(scons.utils.colorResult(1))
-    return 1
 
 def wrapSymbols(env):
     wrapped_symbols = Split("""open read close lseek lstat access""")
@@ -274,34 +140,6 @@ def checkAllegro(context):
     context.Result(scons.utils.colorResult(ok))
     return ok
 
-def checkPthreads(context):
-    context.Message("Checking for threads... ")
-    if useAndroid() or useAndroidX86():
-        context.Message(" android threads")
-        context.Result(scons.utils.colorResult(1))
-        return 1
-    if useAllegro():
-        env = context.env
-        env.Append(LIBS = ['pthread'])
-        context.Message(" pthreads")
-        context.Result(scons.utils.colorResult(1))
-        return 1
-    if useAllegro5():
-        env = context.env
-        env.Append(LIBS = ['pthread'])
-        context.Message(' pthreads')
-        context.Result(scons.utils.colorResult(1))
-        return 1
-    if useSDL():
-        context.Message(" SDL threads")
-        context.Result(scons.utils.colorResult(1))
-        return 1
-    context.Message(" defaulting to pthreads")
-    context.Result(scons.utils.colorResult(1))
-    return 1
-        #if not useWii() and not useMinpspw():
-        #    env.Append(LIBS = [ 'pthread' ])
-
 def checkNativeOgg(context):
     context.Message("Checking for ogg and vorbis... ")
     tmp = context.env.Clone()
@@ -335,77 +173,6 @@ def checkNativeOgg(context):
           return 0;
         }
     """ % {'main' : main}, ".c")
-
-    if not ret:
-        context.sconf.env = tmp
-
-    context.Result(scons.utils.colorResult(ret))
-    return ret
-    
-def checkMpg123(context):
-    context.Message("Checking for libmpg123... ")
-    tmp = context.env.Clone()
-    env = context.env
-    env['HAVE_MP3_MPG123'] = True
-    env.Append(CPPDEFINES = ['HAVE_MP3_MPG123'])
-    (ok, stuff) = context.TryAction(Action("pkg-config --version"))
-    if ok:
-        try:
-            scons.utils.safeParseConfig(env,'pkg-config libmpg123 --libs --cflags') 
-        except OSError:
-            context.sconf.env = tmp
-            context.Result(scons.utils.colorResult(0))
-            return 0
-            
-    ret = context.TryLink("""
-        #include <mpg123.h>
-        int main(int argc, char ** argv){
-          int err = mpg123_init();
-          if (err == MPG123_OK){
-            return 0;
-          } 
-          return 1;
-        }
-    """, ".c")
-
-    if not ret:
-        context.sconf.env = tmp
-
-    context.Result(scons.utils.colorResult(ret))
-    return ret
-
-# Alternatively use libmad if mpg123 is not available
-def checkMad(context):
-    context.Message("Checking for libmad... ")
-    tmp = context.env.Clone()
-    env = context.env
-    env['HAVE_MP3_MAD'] = True
-    env.Append(CPPDEFINES = ['HAVE_MP3_MAD'])
-    def tryPkgConfig():
-        (ok, stuff) = context.TryAction(Action("pkg-config --version"))
-        if ok:
-            try:
-                scons.utils.safeParseConfig(env, 'pkg-config mad --libs --cflags') 
-                return True
-            except OSError:
-                # context.sconf.env = tmp
-                # context.Result(scons.utils.colorResult(0))
-                return False
-        return False
-
-    def tryLib():
-        env.Append(LIBS = ['mad'])
-
-    tryPkgConfig() or tryLib()
-                
-    ret = context.TryLink("""
-        #include <mad.h>
-        int main(int argc, char ** argv){
-          struct mad_stream stream;
-          mad_stream_init(&stream);
-          return 0;
-        }
-    """, ".c")
 
     if not ret:
         context.sconf.env = tmp
@@ -1605,8 +1372,8 @@ def configEnvironment(env):
     else:
         custom_tests = {"CheckAllegro" : checkAllegro,
                         "CheckAllegro5" : scons.checks.checkAllegro5(getDebug()),
-                        "CheckSDL" : checkSDL,
-                        "CheckSDLMain" : checkSDLMain}
+                        "CheckSDL" : scons.checks.checkSDL,
+                        "CheckSDLMain" : scons.checks.checkSDLMain}
         config = env.Configure(custom_tests = custom_tests)
         if useAllegro():
             if not config.CheckAllegro():
@@ -1679,12 +1446,12 @@ custom_tests = {"CheckPython" : checkPython,
                 "CheckRTTI" : scons.checks.checkRTTI,
                 "CheckAllegro" : checkAllegro,
                 "CheckAllegro5" : scons.checks.checkAllegro5(getDebug()),
-                "CheckPthreads" : checkPthreads,
-                "CheckSDL" : checkSDL,
-                "CheckSDLMain" : checkSDLMain,
+                "CheckPthreads" : scons.checks.checkPthreads,
+                "CheckSDL" : scons.checks.checkSDL,
+                "CheckSDLMain" : scons.checks.checkSDLMain,
                 "CheckOgg" : checkNativeOgg,
-                "CheckMpg123" : checkMpg123,
-                "CheckMad" : checkMad}
+                "CheckMpg123" : scons.checks.checkMpg123,
+                "CheckMad" : scons.checks.checkMad}
 
 def display_build_properties(env):
     color = 'light-green'
@@ -1792,7 +1559,7 @@ else:
     # find the system tool path by attaching SCons/Tool to everything
     def fix(q):
         return q + "/SCons/Tool"
-    if useGch():
+    if scons.utils.useGch():
         env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
         if not getDebug() and not isVerbose():
             env['GCHFROMHCOMSTR'] = "%s %s" % (scons.utils.colorize('Compiling header', 'green'), scons.utils.colorize('$SOURCE', 'cyan'))
@@ -1899,7 +1666,7 @@ else:
     #    config.CheckMpg123()
     # Prefer mpg123 over mad because mpg123 can stream from the disk and
     # libmad is not so great at this
-    if useMpg123():
+    if scons.utils.useMpg123():
         config.CheckMpg123()
     elif useMad():
         config.CheckMad()
@@ -1915,9 +1682,9 @@ else:
     static_custom_tests = {"CheckPython" : checkPython,
                            "CheckRuby" : checkStaticRuby,
                            "CheckAllegro" : checkAllegro,
-                           "CheckSDL" : checkStaticSDL,
-                           "CheckSDLMain" : checkSDLMain,
-                           "CheckPthreads" : checkPthreads,
+                           "CheckSDL" : scons.checks.checkStaticSDL,
+                           "CheckSDLMain" : scons.checks.checkSDLMain,
+                           "CheckPthreads" : scons.checks.checkPthreads,
                            "CheckRTTI" : scons.checks.checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)

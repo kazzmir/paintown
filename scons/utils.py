@@ -1,4 +1,5 @@
 from SCons.Script import ARGUMENTS
+import os
 
 def noColors():
     try:
@@ -128,6 +129,56 @@ def makeUseEnvironment(key, default):
             return default
     return use
 
+def makeUseArgument(key, default):
+    def use():
+        try:
+            return int(ARGUMENTS[key]) == 1
+        except KeyError:
+            return default
+    return use
+
+useGch = makeUseArgument('gch', True)
+usePrx = makeUseEnvironment('prx', False)
+isVerbose = makeUseArgument('verbose', False)
+useIntel = makeUseEnvironment('intel', False)
+useMinpspw = makeUseEnvironment('minpspw', False)
+useAndroid = makeUseEnvironment('android', False)
+useAndroidX86 = makeUseEnvironment('androidx86', False)
+useIos = makeUseEnvironment('ios', False)
+usePs3 = makeUseEnvironment('ps3', False)
+useNDS = makeUseEnvironment('nds', False)
+useDingoo = makeUseEnvironment('dingoo', False)
+useXenon = makeUseEnvironment('xenon', False)
+usePandora = makeUseEnvironment('pandora', False)
+useWii = makeUseEnvironment('wii', False)
+useLLVM = makeUseEnvironment('llvm', False)
+useNacl = makeUseEnvironment('nacl', False)
+useMpg123 = makeUseEnvironment('mpg123', False)
+useMad = makeUseEnvironment('mad', False)
+useGCW = makeUseEnvironment('gcw', False)
+nativeCompile = makeUseEnvironment('native', False)
+enableProfiled = makeUseEnvironment('PROFILE', False)
+showTiming = makeUseEnvironment('timing', False)
+useSDL = makeUseEnvironment('sdl', False)
+useAllegro4 = makeUseEnvironment('allegro4', False)
+useAllegro5 = makeUseEnvironment('allegro5', False)
+useWii = makeUseEnvironment('wii', False)
+
+def useAllegro():
+    def byEnv():
+        try:
+            return os.environ['ALLEGRO'] == '1'
+        except KeyError:
+            return False
+
+    def byArgument():
+        try:
+            return int(ARGUMENTS['allegro']) == 1
+        except KeyError:
+            return False
+        
+    return byEnv() or byArgument()
+
 # Replace standard tool invocations with nice colored text
 def lessVerbose(env):
     link_color = 'light-red'
@@ -144,12 +195,6 @@ def lessVerbose(env):
     env['RANLIBCOMSTR'] = "%s %s" % (colorize('Indexing library', ranlib_color), colorize('$TARGET', 'light-blue'))
     env['PEG_MAKE'] = "%s %s" % (colorize('Creating peg parser', peg_color), colorize('$TARGET', 'light-blue'))
     return env
-
-useLLVM = makeUseEnvironment('llvm', False)
-useSDL = makeUseEnvironment('sdl', False)
-useAllegro4 = makeUseEnvironment('allegro4', False)
-useAllegro5 = makeUseEnvironment('allegro5', False)
-useWii = makeUseEnvironment('wii', False)
 
 def configure_backend(environment, backends, custom_tests):
     config = environment.Configure(custom_tests = custom_tests)
