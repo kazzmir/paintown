@@ -1,4 +1,5 @@
 import os
+import scons.utils
 
 def isQuiet():
     import sys
@@ -19,81 +20,8 @@ def isOSX104():
 def isOSX():
     return isPlatform("darwin") and not isOSX104()
 
-def isLinux():
-    return isPlatform("linux")
-
 def file_exists(path):
     return os.path.exists(path)
-
-def noColors():
-    try:
-        return int(ARGUMENTS['colors']) == 0
-    except KeyError:
-        return False
-
-def xterm_color(string, color):
-    colors = {'none': "0",
-              'black': "0;30",
-              'red': "0;31",
-              'green': "0;32",
-              'brown': "0;33",
-              'blue': "0;34",
-              'purple': "0;35",
-              'cyan': "0;36",
-              'light-gray': "0;37",
-              'dark-gray': "1:30",
-              'light-red': "1;31",
-              'light-green': "1;32",
-              'yellow': "1;33",
-              'light-blue': "1;34",
-              'light-purple': "1;35",
-              'light-cyan': "1;36",
-              'white': "1;37"}
-    return "\033[%sm%s\033[0m" % (colors[color], string)
-
-# todo: figure out when we are on an xterm
-def isXterm():
-    # assume linux and osx are ok
-    return not isWindows()
-
-def colorize(string, color):
-    if noColors():
-        return string
-    if isXterm():
-        return xterm_color(string, color)
-    return string
-
-def colorResult(what):
-    if what != 0:
-        return colorize('yes', 'light-green')
-    else:
-        return colorize('no', 'light-red')
-
-def safeParseConfig(environment, config):
-    # redirects stderr, not super safe
-    def version1():
-        out = open('fail.log', 'w')
-        old_stderr = sys.stderr
-        try:
-            sys.stderr = out
-            environment.ParseConfig(config)
-            out.close()
-            sys.stderr = old_stderr
-        except Exception, e:
-            out.close()
-            sys.stderr = old_stderr
-            raise e
-    # use the subprocess module to pass the output of stdout directly
-    # to mergeflags and trash stderr
-    # Not done yet!! This requires python 2.4
-    def version2():
-        import subprocess
-        process = subprocess.Popen(config.split(' '), stdout = subprocess.PIPE)
-        # p = subprocess.Popen(["ruby", "-e", code], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-        out = p.stdout.readline().strip()
-        environment.MergeFlags(out)
-
-    version1()
 
 def makeUseEnvironment(key, default):
     def use():
@@ -197,7 +125,7 @@ def checkRTTI(context):
         context.sconf.env = tmp
         foo = 1
 
-    context.Result(colorResult(foo))
+    context.Result(scons.utils.colorResult(foo))
     return foo
 
 def checkAllegro5(debug):
@@ -220,7 +148,7 @@ def checkAllegro5(debug):
                              make('allegro_primitives'),
                              make('allegro_audio'),
                              make('allegro_acodec')]
-                safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
+                scons.utils.safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
                 env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
                 context.Message('found version %s' % version)
                 return True
@@ -232,11 +160,11 @@ def checkAllegro5(debug):
             # if find(5.1) or find(5.0):
             if find(5):
                 ok = 1
-            context.Result(colorResult(ok))
+            context.Result(scons.utils.colorResult(ok))
             return ok
         except:
             context.sconf.env = tmp
-        context.Result(colorResult(0))
+        context.Result(scons.utils.colorResult(0))
         return 0
 
     return make
@@ -257,7 +185,7 @@ def checkSDL(context):
         tmp = context.env.Clone()
         env = context.env
         try:
-            safeParseConfig(env, 'sdl-config --cflags --libs')
+            scons.utils.safeParseConfig(env, 'sdl-config --cflags --libs')
             env.Append(CPPDEFINES = ['USE_SDL'])
             if build('a'):
                 return True
@@ -278,7 +206,7 @@ def checkSDL(context):
             except KeyError:
                 pass
             env.Replace(LIBS = [])
-            safeParseConfig(env, 'sdl-config --cflags --libs')
+            scons.utils.safeParseConfig(env, 'sdl-config --cflags --libs')
             env.Append(LIBS = libs)
             env.Append(CPPDEFINES = ['USE_SDL'])
             m = build('b')
@@ -308,7 +236,7 @@ def checkSDL(context):
             return False
 
     ok = int(tryNormal() or tryMoveLibs() or tryFramework())
-    context.Result(colorResult(ok))
+    context.Result(scons.utils.colorResult(ok))
     return ok
 
 def checkSDLMain(context):
@@ -335,7 +263,7 @@ int SDL_main(int argc, char ** argv){
         env.Append(CPPDEFINES = ['USE_SDL_MAIN'])
         env['HAVE_SDL_MAIN'] = True
     
-    context.Result(colorResult(ok))
+    context.Result(scons.utils.colorResult(ok))
     return ok
 
 def checkStaticSDL(context):
@@ -343,16 +271,16 @@ def checkStaticSDL(context):
     env = context.env
 
     try:
-        safeParseConfig(env, 'sdl-config --static-libs --cflags')
+        scons.utils.safeParseConfig(env, 'sdl-config --static-libs --cflags')
         env.Append(CPPDEFINES = ['USE_SDL'])
     except Exception:
-        context.Result(colorResult(0))
+        context.Result(scons.utils.colorResult(0))
         return 0
 
     if False:
         sdl = env.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
         env.Append(LIBS = [sdl])
-        safeParseConfig(env, 'sdl-config --cflags')
+        scons.utils.safeParseConfig(env, 'sdl-config --cflags')
         env.Append(CPPDEFINES = ['USE_SDL'])
         if isOSX() or isOSX104():
             def framework(x):
@@ -370,7 +298,7 @@ OpenGL
 """)
             # env.Append(LINKFLAGS = map(framework, frameworks))
             env.Append(FRAMEWORKS = frameworks)
-    context.Result(colorResult(1))
+    context.Result(scons.utils.colorResult(1))
     return 1
 
 def wrapSymbols(env):
@@ -398,7 +326,7 @@ def checkAllegro(context):
         env = context.env
         ok = 1
         try:
-            safeParseConfig(env, 'pkg-config allegro --cflags --libs')
+            scons.utils.safeParseConfig(env, 'pkg-config allegro --cflags --libs')
             env.Append(CPPDEFINES = ['USE_ALLEGRO'])
             ok = testAllegro(context)
         except OSError:
@@ -418,9 +346,9 @@ def checkAllegro(context):
         ok = 1
         try:
             def enableAllegro(env2):
-                safeParseConfig(env2, 'allegro-config --cflags --libs')
+                scons.utils.safeParseConfig(env2, 'allegro-config --cflags --libs')
                 env2.Append(CPPDEFINES = ['USE_ALLEGRO'])
-            safeParseConfig(env, 'allegro-config --cflags --libs')
+            scons.utils.safeParseConfig(env, 'allegro-config --cflags --libs')
             env['paintown_enableAllegro'] = enableAllegro
             env.Append(CPPDEFINES = ['USE_ALLEGRO'])
             ok = testAllegro(context)
@@ -436,33 +364,33 @@ def checkAllegro(context):
 
     ok = allegro44(context) or allegro42(context)
 
-    context.Result(colorResult(ok))
+    context.Result(scons.utils.colorResult(ok))
     return ok
 
 def checkPthreads(context):
     context.Message("Checking for threads... ")
     if useAndroid() or useAndroidX86():
         context.Message(" android threads")
-        context.Result(colorResult(1))
+        context.Result(scons.utils.colorResult(1))
         return 1
     if useAllegro():
         env = context.env
         env.Append(LIBS = ['pthread'])
         context.Message(" pthreads")
-        context.Result(colorResult(1))
+        context.Result(scons.utils.colorResult(1))
         return 1
     if useAllegro5():
         env = context.env
         env.Append(LIBS = ['pthread'])
         context.Message(' pthreads')
-        context.Result(colorResult(1))
+        context.Result(scons.utils.colorResult(1))
         return 1
     if useSDL():
         context.Message(" SDL threads")
-        context.Result(colorResult(1))
+        context.Result(scons.utils.colorResult(1))
         return 1
     context.Message(" defaulting to pthreads")
-    context.Result(colorResult(1))
+    context.Result(scons.utils.colorResult(1))
     return 1
         #if not useWii() and not useMinpspw():
         #    env.Append(LIBS = [ 'pthread' ])
@@ -476,10 +404,10 @@ def checkNativeOgg(context):
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:
-            safeParseConfig(env, 'pkg-config vorbisfile --libs --cflags')
+            scons.utils.safeParseConfig(env, 'pkg-config vorbisfile --libs --cflags')
         except OSError:
             context.sconf.env = tmp
-            context.Result(colorResult(0))
+            context.Result(scons.utils.colorResult(0))
             return 0
     
     main = 'int main(int argc, char ** argv)'
@@ -504,7 +432,7 @@ def checkNativeOgg(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(colorResult(ret))
+    context.Result(scons.utils.colorResult(ret))
     return ret
     
 def checkMpg123(context):
@@ -516,10 +444,10 @@ def checkMpg123(context):
     (ok, stuff) = context.TryAction(Action("pkg-config --version"))
     if ok:
         try:
-            safeParseConfig(env,'pkg-config libmpg123 --libs --cflags') 
+            scons.utils.safeParseConfig(env,'pkg-config libmpg123 --libs --cflags') 
         except OSError:
             context.sconf.env = tmp
-            context.Result(colorResult(0))
+            context.Result(scons.utils.colorResult(0))
             return 0
             
     ret = context.TryLink("""
@@ -536,7 +464,7 @@ def checkMpg123(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(colorResult(ret))
+    context.Result(scons.utils.colorResult(ret))
     return ret
 
 # Alternatively use libmad if mpg123 is not available
@@ -550,11 +478,11 @@ def checkMad(context):
         (ok, stuff) = context.TryAction(Action("pkg-config --version"))
         if ok:
             try:
-                safeParseConfig(env, 'pkg-config mad --libs --cflags') 
+                scons.utils.safeParseConfig(env, 'pkg-config mad --libs --cflags') 
                 return True
             except OSError:
                 # context.sconf.env = tmp
-                # context.Result(colorResult(0))
+                # context.Result(scons.utils.colorResult(0))
                 return False
         return False
 
@@ -575,7 +503,7 @@ def checkMad(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(colorResult(ret))
+    context.Result(scons.utils.colorResult(ret))
     return ret
 
 def checkPython(context):
@@ -628,7 +556,7 @@ def checkPython(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(colorResult(ret))
+    context.Result(scons.utils.colorResult(ret))
     return ret
 
 def rubyConfigVariable(var):
@@ -661,7 +589,7 @@ def rubyStaticLib():
 def checkRuby(context):
     context.Message("Checking if ruby is embeddable... ")
     if not canRunRuby(context):
-        context.Result(colorResult(0))
+        context.Result(scons.utils.colorResult(0))
         return 0
     tmp = context.env.Clone()
     env = context.env
@@ -683,13 +611,13 @@ def checkRuby(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(colorResult(ret))
+    context.Result(scons.utils.colorResult(ret))
     return ret
 
 def checkStaticRuby(context):
     context.Message("Checking if ruby is statically embeddable... ")
     if not canRunRuby(context):
-        context.Result(colorResult(0))
+        context.Result(scons.utils.colorResult(0))
         return 0
 
     tmp = context.env.Clone()
@@ -712,7 +640,7 @@ def checkStaticRuby(context):
     if not ret:
         context.sconf.env = tmp
 
-    context.Result(colorResult(ret))
+    context.Result(scons.utils.colorResult(ret))
     return ret
 
 def canRunRuby(context):
@@ -721,11 +649,11 @@ def canRunRuby(context):
 
 def checkRunRuby(context):
     # just fail for now
-    context.Result(colorResult(0))
+    context.Result(scons.utils.colorResult(0))
     return 0
     context.Message("Checking if we can run ruby... ")
     (ok, stuff) = context.TryAction(Action("ruby -v"))
-    context.Result(colorResult(ok))
+    context.Result(scons.utils.colorResult(ok))
     return ok
 
 # find freetype in windows since we dont have freetype-config
@@ -748,14 +676,14 @@ int main(int argc, char ** argv){
             context.env.Append(CPPPATH = ["%s/include/freetype2" % mingw])
             if not build():
                 context.env = tmp
-                context.Result(colorResult(0))
+                context.Result(scons.utils.colorResult(0))
                 return 0
         else:
             context.Message("don't know how to find freetype for a non-mingw compiler")
-            context.Result(colorResult(0))
+            context.Result(scons.utils.colorResult(0))
             return 0
 
-    context.Result(colorResult(1))
+    context.Result(scons.utils.colorResult(1))
     return 1
 
 def useAllegro5():
@@ -827,15 +755,15 @@ def less_verbose(env):
     ar_color = 'yellow'
     ranlib_color = 'light-purple'
     peg_color = 'light-cyan'
-    env['CCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
-    env['SHCCCOMSTR'] = "%s %s" % (colorize('Compiling c file', 'light-green'), colorize('$SOURCE', 'light-blue'))
-    env['CXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
-    env['SHCXXCOMSTR'] = "%s %s" % (colorize('Compiling c++ file', 'light-green'), colorize('$SOURCE', 'light-blue'))
-    env['LINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
-    env['SHLINKCOMSTR'] = "%s %s" % (colorize('Linking', link_color), colorize('$TARGET', 'light-blue'))
-    env['ARCOMSTR'] = "%s %s" % (colorize('Building library', ar_color), colorize('$TARGET', 'light-blue'))
-    env['RANLIBCOMSTR'] = "%s %s" % (colorize('Indexing library', ranlib_color), colorize('$TARGET', 'light-blue'))
-    env['PEG_MAKE'] = "%s %s" % (colorize('Creating peg parser', peg_color), colorize('$TARGET', 'light-blue'))
+    env['CCCOMSTR'] = "%s %s" % (scons.utils.colorize('Compiling c file', 'light-green'), scons.utils.colorize('$SOURCE', 'light-blue'))
+    env['SHCCCOMSTR'] = "%s %s" % (scons.utils.colorize('Compiling c file', 'light-green'), scons.utils.colorize('$SOURCE', 'light-blue'))
+    env['CXXCOMSTR'] = "%s %s" % (scons.utils.colorize('Compiling c++ file', 'light-green'), scons.utils.colorize('$SOURCE', 'light-blue'))
+    env['SHCXXCOMSTR'] = "%s %s" % (scons.utils.colorize('Compiling c++ file', 'light-green'), scons.utils.colorize('$SOURCE', 'light-blue'))
+    env['LINKCOMSTR'] = "%s %s" % (scons.utils.colorize('Linking', link_color), scons.utils.colorize('$TARGET', 'light-blue'))
+    env['SHLINKCOMSTR'] = "%s %s" % (scons.utils.colorize('Linking', link_color), scons.utils.colorize('$TARGET', 'light-blue'))
+    env['ARCOMSTR'] = "%s %s" % (scons.utils.colorize('Building library', ar_color), scons.utils.colorize('$TARGET', 'light-blue'))
+    env['RANLIBCOMSTR'] = "%s %s" % (scons.utils.colorize('Indexing library', ranlib_color), scons.utils.colorize('$TARGET', 'light-blue'))
+    env['PEG_MAKE'] = "%s %s" % (scons.utils.colorize('Creating peg parser', peg_color), scons.utils.colorize('$TARGET', 'light-blue'))
     return env
 
 def getEnvironment(debug):
@@ -1078,8 +1006,8 @@ pspnet_inet
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # FIXME: try to use sdl-config to find these paths
         # instead of hard coding them
-        safeParseConfig(env, path + '/portlibs/ppu/bin/freetype-config --cflags --libs')
-        safeParseConfig(env, path + '/portlibs/ppu/bin/libpng-config --cflags --libs')
+        scons.utils.safeParseConfig(env, path + '/portlibs/ppu/bin/freetype-config --cflags --libs')
+        scons.utils.safeParseConfig(env, path + '/portlibs/ppu/bin/libpng-config --cflags --libs')
 
         # FIXME: it uses -lc-glue-ppu which I can't find maybe I missed something in the setup for now I'll put it down below
         #env.ParseConfig(bin_path +'sdl-config --cflags --libs') 
@@ -1402,9 +1330,9 @@ rsx
         env['AR'] = set_prefix('ar')
         env['OBJCOPY'] = set_prefix('objcopy')
         
-        safeParseConfig(env, usr_path + '/bin/libpng-config --cflags --libs')
-        safeParseConfig(env, usr_path + '/bin/freetype-config --cflags --libs')
-        safeParseConfig(env, usr_path + '/bin/sdl-config --cflags --libs')
+        scons.utils.safeParseConfig(env, usr_path + '/bin/libpng-config --cflags --libs')
+        scons.utils.safeParseConfig(env, usr_path + '/bin/freetype-config --cflags --libs')
+        scons.utils.safeParseConfig(env, usr_path + '/bin/sdl-config --cflags --libs')
 
         compile_flags = ['-fno-builtin', '-fno-stack-protector', '-fdiagnostics-show-option']
 
@@ -1664,7 +1592,7 @@ def newGetEnvironments():
 
     if isOSX():
         return osxEnvironments()
-    elif isLinux():
+    elif scons.utils.isLinux():
         return unixEnvironments()
     # ... do rest of platforms ...
 
@@ -1855,41 +1783,41 @@ def display_build_properties(env):
     color = 'light-green'
     properties = []
     if useAllegro():
-        properties.append(colorize("Allegro", color))
+        properties.append(scons.utils.colorize("Allegro", color))
     if useAllegro5():
-        properties.append(colorize('Allegro5', color))
+        properties.append(scons.utils.colorize('Allegro5', color))
     if useSDL():
-        properties.append(colorize("SDL", color))
+        properties.append(scons.utils.colorize("SDL", color))
     if getDebug():
-        properties.append(colorize("Debug", color))
+        properties.append(scons.utils.colorize("Debug", color))
     if enableProfiled():
-        properties.append(colorize("Profiling", color))
+        properties.append(scons.utils.colorize("Profiling", color))
     if useWii():
-        properties.append(colorize("Wii", color))
+        properties.append(scons.utils.colorize("Wii", color))
     if usePandora():
         properties.append('Pandora')
     if useNDS():
-        properties.append(colorize("NDS", color))
+        properties.append(scons.utils.colorize("NDS", color))
     if useMinpspw():
-        properties.append(colorize("PSP", color))
+        properties.append(scons.utils.colorize("PSP", color))
     if useXenon():
-        properties.append(colorize("Xenon", color))
+        properties.append(scons.utils.colorize("Xenon", color))
     if useAndroid():
-        properties.append(colorize("Android", color))
+        properties.append(scons.utils.colorize("Android", color))
     if useGCW():
-        properties.append(colorize("GCW", color))
+        properties.append(scons.utils.colorize("GCW", color))
     if useAndroidX86():
-        properties.append(colorize("Android X86", color))
+        properties.append(scons.utils.colorize("Android X86", color))
     if useIos():
-        properties.append(colorize("IOS", color))
+        properties.append(scons.utils.colorize("IOS", color))
     if usePs3():
-        properties.append(colorize("PS3", color))
+        properties.append(scons.utils.colorize("PS3", color))
     if useNacl():
-        properties.append(colorize("NACL%s" % env['PAINTOWN_NACL_ARCH'], color))
+        properties.append(scons.utils.colorize("NACL%s" % env['PAINTOWN_NACL_ARCH'], color))
     if useLLVM():
-        properties.append(colorize("LLVM", color))
+        properties.append(scons.utils.colorize("LLVM", color))
     if useIntel():
-        properties.append(colorize("Intel", color))
+        properties.append(scons.utils.colorize("Intel", color))
     type = ' '.join(properties)
     if not isQuiet():
         print "Build type: %s" % type
@@ -1897,7 +1825,7 @@ def display_build_properties(env):
 display_build_properties(env)
 
 env['PAINTOWN_TESTS'] = custom_tests
-env['PAINTOWN_COLORIZE'] = colorize
+env['PAINTOWN_COLORIZE'] = scons.utils.colorize
 
 if isWindows():
     staticEnv = env.Clone()
@@ -1960,13 +1888,13 @@ else:
     if useGch():
         env.Tool('gch', toolpath = ['misc'] + [fix(e) for e in sys.path if os.path.isdir(e)])
         if not getDebug() and not isVerbose():
-            env['GCHFROMHCOMSTR'] = "%s %s" % (colorize('Compiling header', 'green'), colorize('$SOURCE', 'cyan'))
+            env['GCHFROMHCOMSTR'] = "%s %s" % (scons.utils.colorize('Compiling header', 'green'), scons.utils.colorize('$SOURCE', 'cyan'))
 
     if isOSX104():
         # Build a universal binary
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
-    elif isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useAndroidX86() and not useNacl() and not useXenon():
+    elif scons.utils.isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useAndroidX86() and not useNacl() and not useXenon():
         staticEnv.Append(CPPDEFINES = 'LINUX')
         env.Append(CPPDEFINES = 'LINUX')
     
@@ -2005,12 +1933,12 @@ else:
             config.CheckAllegro5()
         
         if not usePs3() and not useNacl() and not useAndroid() and not useAndroidX86():
-            safeParseConfig(config.env, 'freetype-config --libs --cflags')
-            safeParseConfig(config.env, 'libpng-config --libs --ldflags --cflags')
+            scons.utils.safeParseConfig(config.env, 'freetype-config --libs --cflags')
+            scons.utils.safeParseConfig(config.env, 'libpng-config --libs --ldflags --cflags')
         
             # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
-            safeParseConfig(staticEnv, 'freetype-config --cflags')
-            safeParseConfig(staticEnv, 'libpng-config --cflags')
+            scons.utils.safeParseConfig(staticEnv, 'freetype-config --cflags')
+            scons.utils.safeParseConfig(staticEnv, 'libpng-config --cflags')
     except OSError:
         pass
 
@@ -2021,8 +1949,8 @@ else:
         png = staticEnv.Install('misc', readExec('libpng-config --libdir' ) + '/libpng.a')
         staticEnv.Append(LIBS = [png])
     else:
-        safeParseConfig(staticEnv, 'freetype-config --libs')
-        safeParseConfig(staticEnv, 'libpng-config --libs --ldflags --cflags')
+        scons.utils.safeParseConfig(staticEnv, 'freetype-config --libs')
+        scons.utils.safeParseConfig(staticEnv, 'libpng-config --libs --ldflags --cflags')
 
     #if useSDL():
     #    sdl = staticEnv.Install('misc', readExec('sdl-config --prefix') + '/lib/libSDL.a')
@@ -2038,7 +1966,7 @@ else:
             freetype = staticEnv.Install('misc', path)
             staticEnv.Append(LIBS = freetype)
         else:
-            safeParseConfig(staticEnv, 'freetype-config --libs')
+            scons.utils.safeParseConfig(staticEnv, 'freetype-config --libs')
 
     if not config.TryCompile("int main(){ return 0; }\n", ".c"):
         print "You need a C compiler such as gcc installed"
@@ -2179,7 +2107,7 @@ def wii_elf2dol(target, source, env):
     return 0
 
 def wii_show_data(target, source, env):
-    print "Wii data path is %s" % colorize(getDataPath(), 'light-green')
+    print "Wii data path is %s" % scons.utils.colorize(getDataPath(), 'light-green')
     return 0
 
 for i in shared:
