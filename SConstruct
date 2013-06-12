@@ -140,196 +140,6 @@ def checkAllegro(context):
     context.Result(scons.utils.colorResult(ok))
     return ok
 
-def checkNativeOgg(context):
-    context.Message("Checking for ogg and vorbis... ")
-    tmp = context.env.Clone()
-    env = context.env
-    env['HAVE_OGG'] = True
-    env.Append(CPPDEFINES = ['HAVE_OGG'])
-    (ok, stuff) = context.TryAction(Action("pkg-config --version"))
-    if ok:
-        try:
-            scons.utils.safeParseConfig(env, 'pkg-config vorbisfile --libs --cflags')
-        except OSError:
-            context.sconf.env = tmp
-            context.Result(scons.utils.colorResult(0))
-            return 0
-    
-    main = 'int main(int argc, char ** argv)'
-    try:
-        if env['HAVE_SDL_MAIN']:
-            main = 'int SDL_main(int argc, char ** argv)'
-    except KeyError:
-        pass
-
-    ret = context.TryLink("""
-        #include <vorbis/vorbisfile.h>
-        #include <stdio.h>
-
-        %(main)s {
-          OggVorbis_File ovf;
-          FILE * f;
-          ov_open_callbacks(f, &ovf, 0, 0, OV_CALLBACKS_DEFAULT);
-          return 0;
-        }
-    """ % {'main' : main}, ".c")
-
-    if not ret:
-        context.sconf.env = tmp
-
-    context.Result(scons.utils.colorResult(ret))
-    return ret
-
-def checkPython(context):
-    import distutils.sysconfig
-    context.Message("Checking if python is embeddable... ")
-
-    include_path = distutils.sysconfig.get_config_var('INCLUDEPY')
-    link_stuff = distutils.sysconfig.get_config_var('LINKFORSHARED')
-    # libs = distutils.sysconfig.get_config_var('LDLIBRARY')
-    libs = distutils.sysconfig.get_config_var('LIBRARY')
-    lib_path = distutils.sysconfig.get_config_var('LIBP')
-
-    # hacks for windows because distutils is broken
-    if libs == None and isWindows():
-        libs = ['python26']
-    if lib_path == None and isWindows():
-        import os
-        lib_path = os.path.join(os.path.dirname(include_path),'libs')
-
-    # hacks for osx because distutils doesn't quote things
-    if isOSX() or isOSX104():
-        import re
-        f = re.compile('(-framework System Python.framework/Versions/.*/Python)')
-        link_stuff = re.sub(f, r"'\1'", link_stuff)
-
-    tmp = context.env.Clone()
-    env = context.env
-    if include_path != None:
-        env.Append(CPPPATH = [include_path])
-    if link_stuff != None:
-        env.Append(LINKFLAGS = link_stuff.split(' '))
-    if lib_path != None:
-        env.Append(LIBPATH = [lib_path])
-    new_libs = []
-    if libs != None:
-        new_libs = libs
-    old_libs = env['LIBS']
-    env.Replace(LIBS = [new_libs])
-    env.Append(CPPDEFINES = ['HAVE_PYTHON'])
-    ret = context.TryLink("""
-        #include <Python.h>
-        int main(int argc, char *argv[]) {
-            Py_Initialize();
-            return 0;
-        }
-    """, ".c");
-
-    env.Append(LIBS = old_libs)
-
-    if not ret:
-        context.sconf.env = tmp
-
-    context.Result(scons.utils.colorResult(ret))
-    return ret
-
-def rubyConfigVariable(var):
-    # gets the ruby configuration stuff and expands config variables
-    import subprocess
-    code = """
-require 'mkmf'
-
-def replace(str)
-    str.gsub(/\$\(\w+\)/){|x| replace(CONFIG[x[/\w+/]]) }
-end     
-
-puts replace(CONFIG['%s'])
-    """ % var
-    try:
-        p = subprocess.Popen(["ruby", "-e", code], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-        return p.stdout.readline().strip()
-    except Exception:
-        return ""
-
-def rubyDir():
-    return rubyConfigVariable('archdir')
-
-def rubyLib():
-    return rubyConfigVariable('RUBY_SO_NAME')
-
-def rubyStaticLib():
-    return rubyConfigVariable('LIBRUBY_A')
-
-def checkRuby(context):
-    context.Message("Checking if ruby is embeddable... ")
-    if not canRunRuby(context):
-        context.Result(scons.utils.colorResult(0))
-        return 0
-    tmp = context.env.Clone()
-    env = context.env
-    env.Append(CPPDEFINES = ['HAVE_RUBY'])
-    env.Append(CPPPATH = [rubyDir()])
-    old_libs = env['LIBS']
-    env.Replace(LIBS = [rubyLib()])
-
-    ret = context.TryLink("""
-        #include <ruby.h>
-        int main(int argc, char ** argv){
-            ruby_init();
-            return 0;
-        }
-    """, ".c")
-
-    env.Replace(LIBS = old_libs + [rubyLib()])
-
-    if not ret:
-        context.sconf.env = tmp
-
-    context.Result(scons.utils.colorResult(ret))
-    return ret
-
-def checkStaticRuby(context):
-    context.Message("Checking if ruby is statically embeddable... ")
-    if not canRunRuby(context):
-        context.Result(scons.utils.colorResult(0))
-        return 0
-
-    tmp = context.env.Clone()
-    env = context.env
-    env.Append(CPPDEFINES = ['HAVE_RUBY'])
-    env.Append(CPPPATH = [rubyDir()])
-    old_libs = env['LIBS']
-    env.Replace(LIBS = [rubyStaticLib(), 'crypt', 'pthread', 'm', 'dl'])
-
-    ret = context.TryLink("""
-        #include <ruby.h>
-        int main(int argc, char ** argv){
-            ruby_init();
-            return 0;
-        }
-    """, ".c")
-    
-    env.Replace(LIBS = old_libs + [rubyLib()])
-
-    if not ret:
-        context.sconf.env = tmp
-
-    context.Result(scons.utils.colorResult(ret))
-    return ret
-
-def canRunRuby(context):
-    (ok, stuff) = context.TryAction(Action("ruby -v"))
-    return ok == 1
-
-def checkRunRuby(context):
-    # just fail for now
-    context.Result(scons.utils.colorResult(0))
-    return 0
-    context.Message("Checking if we can run ruby... ")
-    (ok, stuff) = context.TryAction(Action("ruby -v"))
-    context.Result(scons.utils.colorResult(ok))
-    return ok
-
 # find freetype in windows since we dont have freetype-config
 def checkWindowsFreeType(context):
     context.Message("Checking for Freetype... ")
@@ -1441,15 +1251,15 @@ if enableProfiled():
     env.Append(CCFLAGS = '-pg')
     env.Append(LINKFLAGS = '-pg')
 
-custom_tests = {"CheckPython" : checkPython,
-                "CheckRuby" : checkRuby,
+custom_tests = {"CheckPython" : scons.checks.checkPython,
+                "CheckRuby" : scons.checks.checkRuby,
                 "CheckRTTI" : scons.checks.checkRTTI,
                 "CheckAllegro" : checkAllegro,
                 "CheckAllegro5" : scons.checks.checkAllegro5(getDebug()),
                 "CheckPthreads" : scons.checks.checkPthreads,
                 "CheckSDL" : scons.checks.checkSDL,
                 "CheckSDLMain" : scons.checks.checkSDLMain,
-                "CheckOgg" : checkNativeOgg,
+                "CheckOgg" : scons.checks.checkNativeOgg,
                 "CheckMpg123" : scons.checks.checkMpg123,
                 "CheckMad" : scons.checks.checkMad}
 
@@ -1679,8 +1489,8 @@ else:
     
     env = config.Finish()
 
-    static_custom_tests = {"CheckPython" : checkPython,
-                           "CheckRuby" : checkStaticRuby,
+    static_custom_tests = {"CheckPython" : scons.checks.checkPython,
+                           "CheckRuby" : scons.checks.checkStaticRuby,
                            "CheckAllegro" : checkAllegro,
                            "CheckSDL" : scons.checks.checkStaticSDL,
                            "CheckSDLMain" : scons.checks.checkSDLMain,
