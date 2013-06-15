@@ -463,10 +463,10 @@ public:
         current++;
         if (current != end){
             host = *current;
-        }
-        current++;
-        if (current != end){
-            port = atoi((*current).c_str());
+            current++;
+            if (current != end){
+                port = atoi((*current).c_str());
+            }
         }
         actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(host, port)));
         return current;
