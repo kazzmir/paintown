@@ -2072,19 +2072,23 @@ int Mugen::Stage::getStartingRight() const {
 }
 
 int Mugen::Stage::maximumRight(const Character * who) const {
-    map<CharacterId, ScreenBound>::const_iterator find = getStateData().screenBound.find(who->getId());
-    if (find != getStateData().screenBound.end() &&
-        find->second.enabled && find->second.offScreen){
-        return boundright + DEFAULT_WIDTH / 2;
+    if (who != NULL){
+        map<CharacterId, ScreenBound>::const_iterator find = getStateData().screenBound.find(who->getId());
+        if (find != getStateData().screenBound.end() &&
+            find->second.enabled && find->second.offScreen){
+            return boundright + DEFAULT_WIDTH / 2;
+        }
     }
     return (int)(getStateData().camerax + DEFAULT_WIDTH / 2);
 }
 
 int Mugen::Stage::maximumLeft(const Character * who) const {
-    map<CharacterId, ScreenBound>::const_iterator find = getStateData().screenBound.find(who->getId());
-    if (find != getStateData().screenBound.end() &&
-        find->second.enabled && find->second.offScreen){
-        return boundleft - DEFAULT_WIDTH / 2;
+    if (who != NULL){
+        map<CharacterId, ScreenBound>::const_iterator find = getStateData().screenBound.find(who->getId());
+        if (find != getStateData().screenBound.end() &&
+            find->second.enabled && find->second.offScreen){
+            return boundleft - DEFAULT_WIDTH / 2;
+        }
     }
     return (int)(getStateData().camerax - DEFAULT_WIDTH / 2);
 }
