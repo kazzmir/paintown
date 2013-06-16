@@ -196,4 +196,18 @@ World * World::deserialize(Token * token){
     return out;
 }
 
+/* Checks that the serialized version matches. This depends on serialization being right */
+bool World::operator==(const World & him) const {
+    Token * meToken = serialize();
+    Token * himToken = him.serialize();
+    bool out = meToken->toString() == himToken->toString();
+    delete meToken;
+    delete himToken;
+    return out;
+}
+
+bool World::operator!=(const World & him) const {
+    return !(*this == him);
+}
+
 }

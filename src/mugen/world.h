@@ -39,6 +39,9 @@ public:
 
     const std::map<CharacterId, AllCharacterData> & getCharacterData() const;
 
+    bool operator==(const World & him) const;
+    bool operator!=(const World & him) const;
+
     Token * serialize() const;
     static World * deserialize(Token * token);
 
