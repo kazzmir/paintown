@@ -155,6 +155,66 @@ int run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kf
     return 0;
 }
 
+class RecordHumanBehavior: public Mugen::HumanBehavior {
+public:
+    RecordHumanBehavior(const InputMap<Mugen::Keys> & right, const InputMap<Mugen::Keys> & left):
+    HumanBehavior(right, left){
+    }
+
+    void writeInput(const Mugen::Input & input){
+        std::ostream & out = Global::debug(0);
+        vector<string> inputs;
+        if (input.forward){
+            inputs.push_back("F");
+        }
+        if (input.back){
+            inputs.push_back("B");
+        }
+        if (input.up){
+            inputs.push_back("U");
+        }
+        if (input.down){
+            inputs.push_back("D");
+        }
+        if (input.a){
+            inputs.push_back("a");
+        }
+        if (input.b){
+            inputs.push_back("b");
+        }
+        if (input.c){
+            inputs.push_back("c");
+        }
+        if (input.x){
+            inputs.push_back("x");
+        }
+        if (input.y){
+            inputs.push_back("y");
+        }
+        if (input.z){
+            inputs.push_back("z");
+        }
+        if (input.start){
+            inputs.push_back("s");
+        }
+        bool first = true;
+        for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
+            if (!first){
+                out << ",";
+            }
+            out << *it;
+            first = false;
+        }
+        out << "\n";
+    }
+
+    vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command*> & commands, bool reversed){
+        vector<string> out = Mugen::HumanBehavior::currentCommands(stage, owner, commands, reversed);
+        writeInput(getInput());
+        return out;
+    }
+};
+
 void record(){
     Music music(false);
     Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
@@ -166,7 +226,7 @@ void record(){
     Mugen::Random randomState(*Mugen::Random::getState());
     game.load();
 
-    Mugen::HumanBehavior human(Mugen::getPlayer1Keys(), Mugen::getPlayer1InputLeft());
+    RecordHumanBehavior human(Mugen::getPlayer1Keys(), Mugen::getPlayer1InputLeft());
     game.player1->setBehavior(&human);
     PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
     stage->reset();
@@ -180,7 +240,10 @@ int main(int argc, char ** argv){
         Global::setDebug(0);
         srand(0);
 
-        record();
+        try{
+            record();
+        } catch (QuitGameException & quit){
+        }
     } else {
     }
 
