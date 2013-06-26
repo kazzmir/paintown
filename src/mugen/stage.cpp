@@ -1754,6 +1754,10 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     // Render console
     // console->draw(*work);
 }
+    
+void Mugen::Stage::setMatchWins(int wins){
+    this->gameHUD->setMatchWins(wins);
+}
 
 void Mugen::Stage::reset(){
     getStateData().camerax = startx;

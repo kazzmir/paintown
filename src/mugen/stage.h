@@ -124,6 +124,9 @@ public:
     
     virtual std::vector<Character *> getPlayers() const;
 
+    /* Use this to override the default number of wins required to win a match */
+    virtual void setMatchWins(int wins);
+
     // Add player1 people
     virtual void addPlayer1(Character * o);
 

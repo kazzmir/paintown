@@ -1,4 +1,5 @@
 #include <string>
+#include <fstream>
 #include "util/init.h"
 #include "util/debug.h"
 #include "util/timedifference.h"
@@ -14,6 +15,8 @@
 #include "util/file-system.h"
 
 using namespace std;
+
+static const char * REPLAY_FILE = "src/test/mugen/replay.txt";
 
 class Game{
 public:
@@ -158,11 +161,17 @@ int run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kf
 class RecordHumanBehavior: public Mugen::HumanBehavior {
 public:
     RecordHumanBehavior(const InputMap<Mugen::Keys> & right, const InputMap<Mugen::Keys> & left):
-    HumanBehavior(right, left){
+    HumanBehavior(right, left),
+    out(REPLAY_FILE){
+    }
+
+    std::ofstream out;
+
+    ~RecordHumanBehavior(){
+        out.close();
     }
 
     void writeInput(const Mugen::Input & input){
-        std::ostream & out = Global::debug(0);
         vector<string> inputs;
         if (input.forward){
             inputs.push_back("F");
@@ -230,6 +239,7 @@ void record(){
     game.player1->setBehavior(&human);
     PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
     stage->reset();
+    stage->setMatchWins(1);
     Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
 }
 
