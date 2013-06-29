@@ -3671,8 +3671,11 @@ public:
         SelectLogic & owner;
 
         volatile bool going;
-        PaintownUtil::ThreadBoolean check;
+
+        /* order matters */
         PaintownUtil::Thread::LockObject lock;
+        PaintownUtil::ThreadBoolean check;
+
         PaintownUtil::Thread::Id thread;
         std::vector<Filesystem::AbsolutePath> characters;
         std::vector<Filesystem::AbsolutePath> stages;
@@ -3699,8 +3702,8 @@ public:
         Searcher & search;
         Searcher::Subscriber & subscription;
         volatile bool stop;
-        PaintownUtil::ThreadBoolean check;
         PaintownUtil::Thread::LockObject lock;
+        PaintownUtil::ThreadBoolean check;
 
         std::vector<CharacterSelect::SelectInfo> infos;
         CharacterSelect & select;
