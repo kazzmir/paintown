@@ -874,6 +874,11 @@ rsx
         env['CC'] = 'clang'
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
 
+        if getDebug():
+            env.Append(CCFLAGS = ['-fsanitize=undefined'])
+            env.Append(CXXFLAGS = ['-fsanitize=undefined'])
+            env.Append(LINKFLAGS = ['-fsanitize=undefined'])
+
         # Speeds up compiles by not shelling out to 'as', but not mature yet
         # env.Append(CCFLAGS = ['-integrated-as'])
 
