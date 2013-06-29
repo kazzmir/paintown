@@ -119,7 +119,7 @@ readFrom(0){
 Message::Message(const Message & m):
 timestamp(m.timestamp),
 readFrom(m.readFrom){
-    memcpy( data, m.data, sizeof(data) );
+    memcpy(data, m.data, sizeof(data));
     position = data;
     position += m.position - m.data;
     path = m.path;
@@ -157,25 +157,34 @@ Message::Message(Socket socket){
 #endif
 }
 
+/* copies data into buffer and increments buffer by the number of bits
+ * in Size
+ */
+template<class Size> static void mcopy(uint8_t *& buffer, Size data){
+    memcpy(buffer, &data, sizeof(data));
+    buffer += sizeof(data);
+}
+
 uint8_t * Message::dump(uint8_t * buffer) const {
-    *(uint32_t *) buffer = htonl(id);
+    mcopy<uint32_t>(buffer, htonl(id));
+    // *(uint32_t *) buffer = htonl(id);
     // Global::debug(1, "network") << "Dumped id " << id << " as " << htonl(id) << std::endl;
-    buffer += sizeof(id);
+    // buffer += sizeof(id);
     memcpy(buffer, data, DATA_SIZE);
     buffer += DATA_SIZE;
     if (path != ""){
-        *(uint16_t *) buffer = htons(path.length() + 1);
-        buffer += sizeof(uint16_t);
+        // *(uint16_t *) buffer = htons(path.length() + 1);
+        // buffer += sizeof(uint16_t);
+        mcopy<uint16_t>(buffer, htons(path.length() + 1));
         memcpy(buffer, path.c_str(), path.length() + 1);
         buffer += path.length() + 1;
     } else {
-        *(uint16_t *) buffer = htons((uint16_t) -1);
-        buffer += sizeof(uint16_t);
+        // *(uint16_t *) buffer = htons((uint16_t) -1);
+        // buffer += sizeof(uint16_t);
+        mcopy<uint16_t>(buffer, htons((uint16_t) -1));
     }
     return buffer;
 }
-
-
 	
 void Message::reset(){
     position = data;
@@ -186,8 +195,9 @@ Message & Message::operator<<(int x){
         throw NetworkException("Tried to set too much data");
     }
 
-    *(int16_t *) position = htons(x);
-    position += sizeof(int16_t);
+    // *(int16_t *) position = htons(x);
+    // position += sizeof(int16_t);
+    mcopy<int16_t>(position, htons(x));
 
     return *this;
 }
@@ -197,8 +207,12 @@ Message & Message::operator<<(unsigned int x){
         throw NetworkException("Tried to set too much data");
     }
 
-    *(int32_t *) position = htonl(x);
-    position += sizeof(int32_t);
+    mcopy<int32_t>(position, htonl(x));
+    /*
+    int32_t use = htonl(x);
+    memcpy(position, &use, sizeof(use));
+    */
+    // *(int32_t *) position = htonl(x);
     return *this;
 }
 	
@@ -207,8 +221,15 @@ Message & Message::operator>>(int & x){
         throw NetworkException("Tried to read too much data");
     }
 
+    /*
     x = ntohs(*(int16_t *) position);
     position += sizeof(int16_t);
+    */
+    int16_t out;
+    memcpy(&out, position, sizeof(out));
+    position += sizeof(out);
+    x = ntohs(out);
+
     return *this;
 }
 
@@ -217,8 +238,15 @@ Message & Message::operator>>(unsigned int & x){
         throw NetworkException("Tried to read too much data");
     }
 
+    /*
     x = htonl(*(int32_t *) position);
     position += sizeof(int32_t);
+    */
+    int32_t out;
+    memcpy(&out, position, sizeof(out));
+    position += sizeof(out);
+    x = ntohl(out);
+
     return *this;
 }
         
