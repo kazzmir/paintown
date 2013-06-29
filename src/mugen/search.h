@@ -55,6 +55,7 @@ protected:
         PaintownUtil::Thread::Id thread;
         std::vector<Filesystem::AbsolutePath> paths;
         volatile bool searching;
+        /* Searching lock *must be* initialized before searchingCheck */
         PaintownUtil::Thread::LockObject searchingLock;
         PaintownUtil::ThreadBoolean searchingCheck;
 
@@ -75,8 +76,9 @@ protected:
         PaintownUtil::Thread::Id thread;
         std::vector<Filesystem::AbsolutePath> paths;
         volatile bool searching;
-        PaintownUtil::ThreadBoolean searchingCheck;
+        /* Searching lock *must be* initialized before searchingCheck */
         PaintownUtil::Thread::LockObject searchingLock;
+        PaintownUtil::ThreadBoolean searchingCheck;
         bool isDone;
 
         static void * runSearch(void * self_);
