@@ -719,12 +719,21 @@ bool Command::handle(Input keys){
     }
 
     bool emit = false;
-    if (states[currentState]->transition(keys, emit)){
-        currentState = (currentState + 1) % states.size();
+    /* Keep transitioning through states until we hit the end */
+    while ((states[currentState]->transition(keys, emit)) && currentState < states.size()){
+        currentState += 1;
     }
+
+    /* Once we hit the end start over */
+    if (currentState == states.size()){
+        currentState = 0;
+    }
+
+    /* If one of the states was an accept state then this command will fire */
     if (emit){
         successTime = bufferTime;
     }
+
     return emit;
 }
 
