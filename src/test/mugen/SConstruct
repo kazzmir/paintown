@@ -96,6 +96,12 @@ test/mugen/widgets.cpp
 test/util/exceptions/exception.cpp
 """)
 
+command_source = Split("""
+command.cpp
+test/mugen/command.cpp
+test/util/debug.cpp
+""")
+
 x = []
 def makeTest(name, files):
     test = testEnv.Program(name, files)
@@ -113,6 +119,7 @@ makeTest('sffv2', sffv2_source)
 makeTest('load-sff', ['load-sff.cpp', 'common/init.cpp'] + most_game_source)
 makeTest('world', ['world.cpp'] + most_game_source)
 makeTest('replay', ['replay.cpp'] + most_game_source)
+makeTest('command', command_source)
 x.extend(testEnv.Program('run-match', match_source))
 x.extend(testEnv.Program('states', states_source))
 x.extend(testEnv.Program('parse', parse_source))
