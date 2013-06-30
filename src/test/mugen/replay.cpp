@@ -328,11 +328,15 @@ void record(){
     Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
 }
 
-void play(){
+int play(){
+    /*
+    Global::init(Global::WINDOWED);
+    Global::setDebug(0);
     Music music(false);
     Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
     Util::Parameter<Util::ReferenceCount<Graphics::ShaderManager> > defaultShaderManager(Graphics::shaderManager, Util::ReferenceCount<Graphics::ShaderManager>(new Graphics::ShaderManager()));
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());
+    */
 
     string kfm = "mugen/chars/kfm/kfm.def";
     Game game(kfm, kfm, "mugen/stages/kfm.def");
@@ -340,12 +344,53 @@ void play(){
     Mugen::Random randomState(*Mugen::Random::getState());
     game.load();
 
-    PlayBehavior human(REPLAY_FILE);
-    game.player1->setBehavior(&human);
-    PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
-    stage->reset();
-    stage->setMatchWins(1);
-    Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
+    vector<PaintownUtil::ReferenceCount<Mugen::World> > worlds;
+
+    {
+        PlayBehavior human(REPLAY_FILE);
+        game.player1->setBehavior(&human);
+        PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
+        stage->reset();
+        stage->setMatchWins(1);
+        while (!stage->isMatchOver()){
+            worlds.push_back(stage->snapshotState());
+            stage->logic();
+        }
+    }
+    
+    Mugen::Random::setState(randomState);
+    {
+        int count = 200;
+        game.load();
+        PlayBehavior human(REPLAY_FILE);
+        game.player1->setBehavior(&human);
+        PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
+        stage->reset();
+        stage->setMatchWins(1);
+        while (!stage->isMatchOver()){
+            PaintownUtil::ReferenceCount<Mugen::World> newWorld = stage->snapshotState();
+            PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[stage->getTicks()];
+            if (*newWorld != *oldWorld){
+                Global::debug(0) << "Worlds are not the same at tick " << stage->getTicks() << std::endl;
+                Global::debug(0) << "Old World: " << oldWorld->serialize()->toString() << std::endl;
+                Global::debug(0) << "New World: " << newWorld->serialize()->toString() << std::endl;
+                return 1;
+            }
+            stage->logic();
+
+            /* Go back 100 ticks and rerun the simulation */
+            if (stage->getTicks() == count){
+                int before = count - 100;
+                Global::debug(0) << "Rewinding by 100 ticks to " << before << std::endl;
+                stage->updateState(*worlds[before]);
+                count += 100;
+            }
+        }
+    }
+
+    return 0;
+
+    // Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
 }
 
 int main(int argc, char ** argv){
@@ -360,9 +405,7 @@ int main(int argc, char ** argv){
         } catch (QuitGameException & quit){
         }
     } else {
-        Global::init(Global::WINDOWED);
-        Global::setDebug(0);
-        play();
+        return play();
     }
 
     return 0;
