@@ -3,6 +3,7 @@
 #include "util/init.h"
 #include "util/debug.h"
 #include "util/timedifference.h"
+#include "util/funcs.h"
 #include "util/sound/music.h"
 #include "mugen/character.h"
 #include "mugen/config.h"
@@ -158,6 +159,90 @@ int run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kf
     return 0;
 }
 
+class PlayBehavior: public Mugen::Behavior {
+public:
+    PlayBehavior(const std::string & path){
+        load(path);
+    }
+
+    void load(const std::string & path){
+        ifstream file(path.c_str());
+        while (file.good()){
+            char line[256];
+            file.getline(line, sizeof(line) - 1);
+            line[255] = 0;
+            inputs.push_back(parse(line));
+        }
+        file.close();
+    }
+    
+    /* a,b,c */
+    Mugen::Input parse(const std::string & line){
+        Mugen::Input out;
+        
+        vector<string> keys = Util::splitString(line, ',');
+        for (vector<string>::iterator it = keys.begin(); it != keys.end(); it++){
+            string key = *it;
+            if (key == "F"){
+                out.forward = true;
+            }
+            if (key == "B"){
+                out.back = true;
+            }
+            if (key == "U"){
+                out.up = true;
+            }
+            if (key == "D"){
+                out.down = true;
+            }
+            if (key == "a"){
+                out.a = true;
+            }
+            if (key == "b"){
+                out.b = true;
+            }
+            if (key == "c"){
+                out.c = true;
+            }
+            if (key == "x"){
+                out.x = true;
+            }
+            if (key == "y"){
+                out.y = true;
+            }
+            if (key == "z"){
+                out.z = true;
+            }
+            if (key == "s"){
+                out.start = true;
+            }
+        }
+
+        return out;
+    }
+
+    void flip(){
+    }
+
+    vector<Mugen::Input> inputs;
+
+    vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command*> & commands, bool reversed){
+        vector<string> out;
+
+        Mugen::Input input = inputs[stage.getTicks()];
+
+        for (vector<Mugen::Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+            Mugen::Command * command = *it;
+            if (command->handle(input)){
+                Global::debug(1) << "command: " << command->getName() << endl;
+                out.push_back(command->getName());
+            }
+        }
+
+        return out;
+    }
+};
+
 class RecordHumanBehavior: public Mugen::HumanBehavior {
 public:
     RecordHumanBehavior(const InputMap<Mugen::Keys> & right, const InputMap<Mugen::Keys> & left):
@@ -243,6 +328,26 @@ void record(){
     Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
 }
 
+void play(){
+    Music music(false);
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
+    Util::Parameter<Util::ReferenceCount<Graphics::ShaderManager> > defaultShaderManager(Graphics::shaderManager, Util::ReferenceCount<Graphics::ShaderManager>(new Graphics::ShaderManager()));
+    Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, Graphics::getScreenBuffer());
+
+    string kfm = "mugen/chars/kfm/kfm.def";
+    Game game(kfm, kfm, "mugen/stages/kfm.def");
+    srand(0);
+    Mugen::Random randomState(*Mugen::Random::getState());
+    game.load();
+
+    PlayBehavior human(REPLAY_FILE);
+    game.player1->setBehavior(&human);
+    PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
+    stage->reset();
+    stage->setMatchWins(1);
+    Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
+}
+
 int main(int argc, char ** argv){
     InputManager manager;
     if (argc >= 2 && string("record") == argv[1]){
@@ -255,6 +360,9 @@ int main(int argc, char ** argv){
         } catch (QuitGameException & quit){
         }
     } else {
+        Global::init(Global::WINDOWED);
+        Global::setDebug(0);
+        play();
     }
 
     return 0;
