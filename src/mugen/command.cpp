@@ -420,6 +420,139 @@ static vector<CompiledKey*> compile(Ast::KeyList * keys){
     return compiled;
 }
 
+class KeyStateSingle: public KeyDFA {
+public:
+    enum Keys{
+        A, B, C, X, Y, Z,
+        Back, Forward, Down, Up,
+        DownBack, UpBack,
+        DownForward, UpForward,
+        Start,
+    };
+
+    Keys key;
+    Constraint constraint;
+
+    KeyStateSingle(int id, const Ast::KeySingle & key, const Constraint & constraint):
+    KeyDFA(id),
+    constraint(constraint){
+        if (key == "a"){
+            this->key = A;
+        }
+        if (key == "b"){
+            this->key = B;
+        }
+    }
+
+    void nextState(){
+    }
+
+    bool transitionOn(bool pressed, bool & emit){
+        bool canTransition = (constraint == Pressed && pressed) ||
+                             (constraint == Released && !pressed);
+        if (canTransition){
+            emit = getEmit();
+            return true;
+        }
+        return false;
+    }
+
+    virtual bool transition(const Input & input, bool & emit){
+        switch (key){
+            case A: return transitionOn(input.a, emit); break;
+            case B: return transitionOn(input.b, emit); break;
+        }
+        return false;
+    }
+};
+
+/*
+ * /D : 0 press D -> 1
+ *
+ * a : 0 press a, emit -> 1. release a -> state 0
+ */
+
+void convertToState(vector<KeyDFA*> & chain, Ast::Key * key, bool last){
+    class Walker: public Ast::Walker {
+    public:
+        Walker(vector<KeyDFA*> & chain, const bool last):
+        chain(chain),
+        last(last){
+        }
+
+        vector<KeyDFA*> & chain;
+        KeyDFA * state;
+        bool last;
+
+        KeyDFA * addState(KeyDFA * newState){
+            chain.push_back(newState);
+            return newState;
+        }
+
+        /*
+        CompiledKey* compile(const Ast::KeySingle & key){
+            return NULL;
+            return new CompiledKeySingle(key);
+        }
+        
+        CompiledKey* compile(const Ast::KeyModifier & key){
+            return NULL;
+            switch (key.getModifierType()){
+                case Ast::KeyModifier::MustBeHeldDown: return new CompiledKeyMustBeHeldDown(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Release: return new CompiledKeyRelease(key, Mugen::compile(key.getKey()));
+                // case Ast::KeyModifier::Direction: return new CompiledKeyDirection(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Direction: return Mugen::compile(key.getKey());
+                case Ast::KeyModifier::Only: return new CompiledKeyOnly(key, Mugen::compile(key.getKey()));
+            }
+            throw Command::Exception();
+        }
+        
+        CompiledKey* compile(const Ast::KeyCombined & key){
+            return new CompiledKeyCombined(Mugen::compile(key.getKey1()), Mugen::compile(key.getKey2()));
+        }
+        */
+
+        int getId(){
+            if (chain.size() == 0){
+                return 0;
+            }
+
+            return chain.back()->getId() + 1;
+        }
+
+        virtual void onKeySingle(const Ast::KeySingle & key){
+            KeyDFA * state0 = addState(new KeyStateSingle(getId(), key, KeyDFA::Pressed));
+            if (last){
+                state0->setEmit();
+            }
+            KeyDFA * state1 = addState(new KeyStateSingle(getId(), key, KeyDFA::Released));
+            // this->key = compile(key);
+        }
+        
+        virtual void onKeyModifier(const Ast::KeyModifier & key){
+            // this->key = compile(key);
+        }
+        
+        virtual void onKeyCombined(const Ast::KeyCombined & key){
+            // this->key = compile(key);
+        }
+    };
+
+    Walker walk(chain, last);
+    key->walk(walk);
+}
+
+vector<KeyDFA*> convertToState(Ast::KeyList * keys){
+    vector<KeyDFA*> out;
+    const vector<Ast::Key*> & each = keys->getKeys();
+    for (vector<Ast::Key*>::const_iterator it = each.begin(); it != each.end(); it++){
+        vector<Ast::Key*>::const_iterator check = it;
+        check++;
+        convertToState(out, *it, check == each.end());
+    }
+    return out;
+}
+
 Command::Command(string name, Ast::KeyList * keys, int maxTime, int bufferTime):
 name(name),
 keys(keys),
@@ -430,6 +563,8 @@ ticks(-1),
 holdKey(-1),
 current(compiledKeys.begin()),
 holder(NULL),
+states(convertToState(keys)),
+currentState(0),
 successTime(0),
 needRelease(NULL){
 }
@@ -575,8 +710,25 @@ bool Command::interpret(const Ast::Key * key, const Input & keys, const Input & 
 
     return walker.ok;
 }
-
+    
 bool Command::handle(Input keys){
+    if (successTime > 0){
+        successTime -= 1;
+        Global::debug(1) << "Pressed " << name << endl;
+        return true;
+    }
+
+    bool emit = false;
+    if (states[currentState]->transition(keys, emit)){
+        currentState = (currentState + 1) % states.size();
+    }
+    if (emit){
+        successTime = bufferTime;
+    }
+    return emit;
+}
+
+bool Command::handle2(Input keys){
 
     if (compiledKeys.size() == 0){
         return false;
@@ -704,6 +856,9 @@ bool Command::handle(Input keys){
 
 Command::~Command(){
     delete keys;
+    for (vector<KeyDFA*>::iterator it = states.begin(); it != states.end(); it++){
+        delete *it;
+    }
     for (vector<CompiledKey*>::iterator it = compiledKeys.begin(); it != compiledKeys.end(); it++){
         delete (*it);
     }

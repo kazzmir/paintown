@@ -69,6 +69,51 @@ public:
     virtual ~CompiledKey();
 };
 
+/* A finite state automata that can map a single integer to a state.
+ * This is convenient for serialization (for network mode).
+ */
+class KeyDFA{
+public:
+    enum Constraint{
+        Pressed,
+        Released
+    };
+
+    KeyDFA(int id):
+    emit(false),
+    id(id),
+    next(NULL){
+    }
+    
+    virtual bool transition(const Input & input, bool & emit) = 0;
+    virtual void setEmit(){
+        emit = true;
+    }
+
+    virtual bool getEmit() const {
+        return emit;
+    }
+
+    virtual void setNextState(KeyDFA * next){
+        this->next = next;
+    }
+
+    const int getId() const {
+        return id;
+    }
+
+    virtual ~KeyDFA(){
+    }
+
+protected:
+    /* If `emit' is true then when this state transitions it will act
+     * like an accept state and emit a value.
+     */
+    bool emit;
+    const int id;
+    KeyDFA * next;
+};
+
 /* key command */
 class Command{
 public:
@@ -85,6 +130,7 @@ public:
     }
 
     virtual bool handle(Input keys);
+    virtual bool handle2(Input keys);
 
     virtual ~Command();
 
@@ -103,6 +149,8 @@ protected:
     std::vector<CompiledKey*>::const_iterator current;
     Input oldKeys;
     const CompiledKey * holder;
+    std::vector<KeyDFA*> states;
+    unsigned int currentState;
     int successTime;
     const CompiledKey * needRelease;
 };

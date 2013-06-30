@@ -874,7 +874,7 @@ rsx
         env['CC'] = 'clang'
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES -Wl,--end-group $_LIBDIRFLAGS $_LIBFLAGS -o $TARGET'
 
-        if getDebug():
+        if getDebug() and False:
             sanitize_flags = ['-fsanitize=undefined', '-fsanitize=integer']
             env.Append(CCFLAGS = sanitize_flags)
             env.Append(CXXFLAGS = sanitize_flags)
