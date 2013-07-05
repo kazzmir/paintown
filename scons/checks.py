@@ -266,7 +266,7 @@ def checkMad(context):
     env['HAVE_MP3_MAD'] = True
     env.Append(CPPDEFINES = ['HAVE_MP3_MAD'])
     def tryPkgConfig():
-        (ok, stuff) = context.TryAction(Action("pkg-config --version"))
+        (ok, stuff) = context.TryAction(env.Action("pkg-config --version"))
         if ok:
             try:
                 utils.safeParseConfig(env, 'pkg-config mad --libs --cflags') 
