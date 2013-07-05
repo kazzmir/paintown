@@ -12,37 +12,48 @@ namespace Ast{
 namespace Mugen{
 
 struct Input{
-    Input():
-        a(false), b(false), c(false),
-        x(false), y(false), z(false),
-        back(false), forward(false),
-        up(false), down(false),
-        start(false){
-        }
+    Input(){
+    }
 
     bool operator==(const Input & him) const {
-        return a == him.a &&
-               b == him.b &&
-               c == him.c &&
-               x == him.x &&
-               y == him.y &&
-               z == him.z &&
-               back == him.back &&
-               forward == him.forward &&
-               up == him.up &&
-               down == him.down &&
-               start == him.start;
+        return pressed == him.pressed && released == him.released;
     }
 
     bool operator!=(const Input & him) const {
         return !(*this == him);
     }
 
-    bool a, b, c;
-    bool x, y, z;
-    bool back, forward;
-    bool up, down;
-    bool start;
+    struct Key{
+        bool a, b, c;
+        bool x, y, z;
+        bool back, forward;
+        bool up, down;
+        bool start;
+
+        Key():
+            a(false), b(false), c(false),
+            x(false), y(false), z(false),
+            back(false), forward(false),
+            up(false), down(false),
+            start(false){
+            }
+
+        bool operator==(const Key & him) const {
+            return a == him.a &&
+                   b == him.b &&
+                   c == him.c &&
+                   x == him.x &&
+                   y == him.y &&
+                   z == him.z &&
+                   back == him.back &&
+                   forward == him.forward &&
+                   up == him.up &&
+                   down == him.down &&
+                   start == him.start;
+        }
+    };
+
+    Key pressed, released;
 };
 
 class CompiledKeySingle;

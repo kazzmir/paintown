@@ -269,15 +269,15 @@ Input deserializeInput(const Token * token){
     /* FIXME: its more efficient to iterate over the elements in the token rather than explicitly
      * searching for each element by name
      */
-    token->match("input/a", out.a);
-    token->match("input/b", out.b);
-    token->match("input/c", out.c);
-    token->match("input/x", out.x);
-    token->match("input/y", out.y);
-    token->match("input/back", out.back);
-    token->match("input/forward", out.forward);
-    token->match("input/up", out.up);
-    token->match("input/down", out.down);
+    token->match("input/a", out.pressed.a);
+    token->match("input/b", out.pressed.b);
+    token->match("input/c", out.pressed.c);
+    token->match("input/x", out.pressed.x);
+    token->match("input/y", out.pressed.y);
+    token->match("input/back", out.pressed.back);
+    token->match("input/forward", out.pressed.forward);
+    token->match("input/up", out.pressed.up);
+    token->match("input/down", out.pressed.down);
 
     return out;
 }
@@ -353,16 +353,16 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             Token * data = new Token();
             *data << "input";
 
-            *data->newToken() << "a" << input->inputs.a;
-            *data->newToken() << "b" << input->inputs.b;
-            *data->newToken() << "c" << input->inputs.c;
-            *data->newToken() << "x" << input->inputs.x;
-            *data->newToken() << "y" << input->inputs.y;
-            *data->newToken() << "z" << input->inputs.z;
-            *data->newToken() << "back" << input->inputs.back;
-            *data->newToken() << "forward" << input->inputs.forward;
-            *data->newToken() << "up" << input->inputs.up;
-            *data->newToken() << "down" << input->inputs.down;
+            *data->newToken() << "a" << input->inputs.pressed.a;
+            *data->newToken() << "b" << input->inputs.pressed.b;
+            *data->newToken() << "c" << input->inputs.pressed.c;
+            *data->newToken() << "x" << input->inputs.pressed.x;
+            *data->newToken() << "y" << input->inputs.pressed.y;
+            *data->newToken() << "z" << input->inputs.pressed.z;
+            *data->newToken() << "back" << input->inputs.pressed.back;
+            *data->newToken() << "forward" << input->inputs.pressed.forward;
+            *data->newToken() << "up" << input->inputs.pressed.up;
+            *data->newToken() << "down" << input->inputs.pressed.down;
 
             buffer << data->toStringCompact();
             Global::debug(1) << "Sending input " << data->toStringCompact() << std::endl;
@@ -535,9 +535,9 @@ public:
      * the input mapping.
      */
     virtual void flip(){
-        bool forward = input.forward;
-        input.forward = input.back;
-        input.back = forward;
+        bool forward = input.pressed.forward;
+        input.pressed.forward = input.pressed.back;
+        input.pressed.back = forward;
     }
 
     virtual ~HumanNetworkBehavior(){
@@ -719,10 +719,10 @@ public:
 
     virtual void handleInput(const PaintownUtil::ReferenceCount<InputPacket> & input){
         PaintownUtil::Thread::ScopedLock scoped(lock);
-        Global::debug(1) << "Input back: " << input->inputs.back <<
-                                 " forward: " << input->inputs.forward <<
-                                 " up: " << input->inputs.up <<
-                                 " down: " << input->inputs.down <<
+        Global::debug(1) << "Input back: " << input->inputs.pressed.back <<
+                                 " forward: " << input->inputs.pressed.forward <<
+                                 " up: " << input->inputs.pressed.up <<
+                                 " down: " << input->inputs.pressed.down <<
                                  std::endl;
         inputs[input->tick] = input->inputs;
     }

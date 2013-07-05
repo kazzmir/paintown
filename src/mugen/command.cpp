@@ -6,6 +6,56 @@ using namespace std;
 
 namespace Mugen{
 
+/* We have way too many namespaces.. */
+namespace Action{
+
+enum Keys{
+    A, B, C, X, Y, Z,
+    Back, Forward, Down, Up,
+    DownBack, UpBack,
+    DownForward, UpForward,
+    Start
+};
+
+Keys toKey(const std::string & name){
+    if (name == "a"){
+        return A;
+    } else if (name == "b"){
+        return B;
+    } else if (name == "c"){
+        return C;
+    } else if (name == "x"){
+        return X;
+    } else if (name == "y"){
+        return Y;
+    } else if (name == "z"){
+        return Z;
+    } else if (name == "B"){
+        return Back;
+    } else if (name == "DB"){
+        return DownBack;
+    } else if (name == "D"){
+        return Down;
+    } else if (name == "DF"){
+        return DownForward;
+    } else if (name == "F"){
+        return Forward;
+    } else if (name == "UF"){
+        return UpForward;
+    } else if (name == "U"){
+        return Up;
+    } else if (name == "UB"){
+        return UpBack;
+    } else if (name == "s"){
+        return Start;
+    }
+
+    /* maybe throw an exception? */
+    return Start;
+}
+
+}
+
 CompiledKey::CompiledKey(){
 }
 
@@ -14,14 +64,6 @@ CompiledKey::~CompiledKey(){
 
 class CompiledKeySingle: public CompiledKey {
 public:
-    enum Keys{
-        A, B, C, X, Y, Z,
-        Back, Forward, Down, Up,
-        DownBack, UpBack,
-        DownForward, UpForward,
-        Start,
-    };
-
     CompiledKeySingle(const Ast::KeySingle & name):
     key(convertKey(name)){
     }
@@ -37,79 +79,46 @@ public:
     
     std::string toString() const{
         switch (key){
-            case A : return "a";
-            case B : return "b";
-            case C : return "c";
-            case X : return "x";
-            case Y : return "y";
-            case Z : return "z";
-            case Back : return "B";
-            case Forward : return "F";
-            case Down : return "D";
-            case Up : return "U";
-            case DownBack : return "DB";
-            case UpBack : return "UB";
-            case DownForward : return "DF";
-            case UpForward : return "UF";
-            case Start : return "s";
+            case Action::A : return "a";
+            case Action::B : return "b";
+            case Action::C : return "c";
+            case Action::X : return "x";
+            case Action::Y : return "y";
+            case Action::Z : return "z";
+            case Action::Back : return "B";
+            case Action::Forward : return "F";
+            case Action::Down : return "D";
+            case Action::Up : return "U";
+            case Action::DownBack : return "DB";
+            case Action::UpBack : return "UB";
+            case Action::DownForward : return "DF";
+            case Action::UpForward : return "UF";
+            case Action::Start : return "s";
         }
         return "???";
     }
 
-    static Keys convertKey(const Ast::KeySingle & name){
-        if (name == "a"){
-            return A;
-        } else if (name == "b"){
-            return B;
-        } else if (name == "c"){
-            return C;
-        } else if (name == "x"){
-            return X;
-        } else if (name == "y"){
-            return Y;
-        } else if (name == "z"){
-            return Z;
-        } else if (name == "B"){
-            return Back;
-        } else if (name == "DB"){
-            return DownBack;
-        } else if (name == "D"){
-            return Down;
-        } else if (name == "DF"){
-            return DownForward;
-        } else if (name == "F"){
-            return Forward;
-        } else if (name == "UF"){
-            return UpForward;
-        } else if (name == "U"){
-            return Up;
-        } else if (name == "UB"){
-            return UpBack;
-        } else if (name == "s"){
-            return Start;
-        }
-
-        /* maybe throw an exception? */
-        return Start;
+    static Action::Keys convertKey(const Ast::KeySingle & name){
+        return Action::toKey(name.toString());
     }
 
     bool pressedKey(const Input & keys) const {
         switch (key){
-            case A: return keys.a;
-            case B: return keys.b;
-            case C: return keys.c;
-            case X: return keys.x;
-            case Y: return keys.y;
-            case Z: return keys.z;
-            case Back: return keys.back;
-            case Forward: return keys.forward;
-            case Down: return keys.down;
-            case Up: return keys.up;
-            case DownBack: return keys.down && keys.back;
-            case UpBack: return keys.up && keys.back;
-            case DownForward: return keys.down && keys.forward;
-            case UpForward: return keys.up && keys.forward;
-            case Start: return keys.start;
+            case Action::A: return keys.pressed.a;
+            case Action::B: return keys.pressed.b;
+            case Action::C: return keys.pressed.c;
+            case Action::X: return keys.pressed.x;
+            case Action::Y: return keys.pressed.y;
+            case Action::Z: return keys.pressed.z;
+            case Action::Back: return keys.pressed.back;
+            case Action::Forward: return keys.pressed.forward;
+            case Action::Down: return keys.pressed.down;
+            case Action::Up: return keys.pressed.up;
+            case Action::DownBack: return keys.pressed.down && keys.pressed.back;
+            case Action::UpBack: return keys.pressed.up && keys.pressed.back;
+            case Action::DownForward: return keys.pressed.down && keys.pressed.forward;
+            case Action::UpForward: return keys.pressed.up && keys.pressed.forward;
+            case Action::Start: return keys.pressed.start;
             default: return false;
         }
     }
@@ -124,7 +133,7 @@ public:
     }
 
 protected:
-    Keys key;
+    Action::Keys key;
 };
 
 class CompiledKeyCombined: public CompiledKey {
@@ -422,29 +431,13 @@ static vector<CompiledKey*> compile(Ast::KeyList * keys){
 
 class KeyStateSingle: public KeyDFA {
 public:
-    enum Keys{
-        A, B, C, X, Y, Z,
-        Back, Forward, Down, Up,
-        DownBack, UpBack,
-        DownForward, UpForward,
-        Start,
-    };
-
-    Keys key;
+    Action::Keys key;
     Constraint constraint;
 
     KeyStateSingle(int id, const Ast::KeySingle & key, const Constraint & constraint):
     KeyDFA(id),
+    key(Action::toKey(key.toString())),
     constraint(constraint){
-        if (key == "a"){
-            this->key = A;
-        }
-        if (key == "b"){
-            this->key = B;
-        }
-    }
-
-    void nextState(){
     }
 
     bool transitionOn(bool pressed, bool & emit){
@@ -459,8 +452,21 @@ public:
 
     virtual bool transition(const Input & input, bool & emit){
         switch (key){
-            case A: return transitionOn(input.a, emit); break;
-            case B: return transitionOn(input.b, emit); break;
+            case Action::A: return transitionOn(input.pressed.a, emit); break;
+            case Action::B: return transitionOn(input.pressed.b, emit); break;
+            case Action::C: return transitionOn(input.pressed.c, emit); break;
+            case Action::X: return transitionOn(input.pressed.x, emit); break;
+            case Action::Y: return transitionOn(input.pressed.y, emit); break;
+            case Action::Z: return transitionOn(input.pressed.z, emit); break;
+            case Action::Start: return transitionOn(input.pressed.start, emit); break;
+            case Action::Up: return transitionOn(input.pressed.up, emit); break;
+            case Action::Down: return transitionOn(input.pressed.down, emit); break;
+            case Action::Forward: return transitionOn(input.pressed.forward, emit); break;
+            case Action::Back: return transitionOn(input.pressed.back, emit); break;
+            case Action::UpForward: return transitionOn(input.pressed.up || input.pressed.forward, emit); break;
+            case Action::DownForward: return transitionOn(input.pressed.down || input.pressed.forward, emit); break;
+            case Action::UpBack: return transitionOn(input.pressed.up || input.pressed.back, emit); break;
+            case Action::DownBack: return transitionOn(input.pressed.down || input.pressed.back, emit); break;
         }
         return false;
     }
@@ -513,13 +519,10 @@ void convertToState(vector<KeyDFA*> & chain, Ast::Key * key, bool last){
         */
 
         int getId(){
-            if (chain.size() == 0){
-                return 0;
-            }
-
-            return chain.back()->getId() + 1;
+            return chain.size();
         }
 
+        /* For a single key the key must be pressed and then released */
         virtual void onKeySingle(const Ast::KeySingle & key){
             KeyDFA * state0 = addState(new KeyStateSingle(getId(), key, KeyDFA::Pressed));
             if (last){
@@ -530,7 +533,45 @@ void convertToState(vector<KeyDFA*> & chain, Ast::Key * key, bool last){
         }
         
         virtual void onKeyModifier(const Ast::KeyModifier & key){
-            // this->key = compile(key);
+            switch (key.getModifierType()){
+                case Ast::KeyModifier::Release: {
+                    class ReleaseWalker: public Ast::Walker {
+                    public:
+                        ReleaseWalker(vector<KeyDFA*> & chain, bool last):
+                        chain(chain),
+                        last(last){
+                        }
+
+                        vector<KeyDFA*> & chain;
+                        bool last;
+        
+                        virtual void onKeySingle(const Ast::KeySingle & key){
+                            KeyDFA * state = new KeyStateSingle(chain.size(), key, KeyDFA::Pressed);
+                            if (last){
+                                state->setEmit();
+                            }
+                            chain.push_back(state);
+                        }
+        
+                        virtual void onKeyCombined(const Ast::KeyCombined & key){
+                            Global::debug(0) << "Uh oh, we don't handle key release modifiers on combined keys" << std::endl;
+                        }
+
+                        virtual void onKeyModifier(const Ast::KeyModifier & key){
+                            Global::debug(0) << "Uh oh, we don't handle key release modifiers on modifier keys" << std::endl;
+                        }
+                    };
+
+                    ReleaseWalker walker(chain, last);
+                    key.getKey()->walk(walker);
+                    break;
+                }
+                /*
+                case Ast::KeyModifier::MustBeHeldDown: return new CompiledKeyMustBeHeldDown(key, Mugen::compile(key.getKey()));
+                case Ast::KeyModifier::Direction: return Mugen::compile(key.getKey());
+                case Ast::KeyModifier::Only: return new CompiledKeyOnly(key, Mugen::compile(key.getKey()));
+                */
+            }
         }
         
         virtual void onKeyCombined(const Ast::KeyCombined & key){
@@ -593,35 +634,35 @@ bool Command::interpret(const Ast::Key * key, const Input & keys, const Input & 
 
         virtual void onKeySingle(const Ast::KeySingle & key){
             if (key == "a"){
-                ok = keys.a;
+                ok = keys.pressed.a;
             } else if (key == "b"){
-                ok = keys.b;
+                ok = keys.pressed.b;
             } else if (key == "c"){
-                ok = keys.c;
+                ok = keys.pressed.c;
             } else if (key == "x"){
-                ok = keys.x;
+                ok = keys.pressed.x;
             } else if (key == "y"){
-                ok = keys.y;
+                ok = keys.pressed.y;
             } else if (key == "z"){
-                ok = keys.z;
+                ok = keys.pressed.z;
             } else if (key == "B"){
-                ok = keys.back;
+                ok = keys.pressed.back;
             } else if (key == "DB"){
-                ok = keys.back && keys.down;
+                ok = keys.pressed.back && keys.pressed.down;
             } else if (key == "D"){
-                ok = keys.down;
+                ok = keys.pressed.down;
             } else if (key == "DF"){
-                ok = keys.forward && keys.down;
+                ok = keys.pressed.forward && keys.pressed.down;
             } else if (key == "F"){
-                ok = keys.forward;
+                ok = keys.pressed.forward;
             } else if (key == "UF"){
-                ok = keys.forward && keys.up;
+                ok = keys.pressed.forward && keys.pressed.up;
             } else if (key == "U"){
-                ok = keys.up;
+                ok = keys.pressed.up;
             } else if (key == "UB"){
-                ok = keys.back && keys.up;
+                ok = keys.pressed.back && keys.pressed.up;
             } else if (key == "start"){
-                ok = keys.start;
+                ok = keys.pressed.start;
             }
             if (ok){
                 needRelease = &key;

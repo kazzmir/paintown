@@ -66,32 +66,61 @@ InputMap<Keys> & HumanBehavior::getInput(bool facingRight){
 
 /* turned around so we have to swap forward/backward */
 void HumanBehavior::flip(){
-    bool forward = input.forward;
-    input.forward = input.back;
-    input.back = forward;
+    bool forward = input.pressed.forward;
+    input.pressed.forward = input.pressed.back;
+    input.pressed.back = forward;
 }
 
 Mugen::Input HumanBehavior::updateInput(InputMap<Keys> & keys, Mugen::Input old){
+    /* Reset released events */
+    old.released = Input::Key();
+
     vector<InputMap<Keys>::InputEvent> eventsHold = InputManager::getEvents(keys, InputSource(true));
     for (vector<InputMap<Keys>::InputEvent>::iterator it = eventsHold.begin(); it != eventsHold.end(); it++){
         InputMap<Keys>::InputEvent event = *it;
 
+        /* Release event if the key was pressed but now its not */
+#define DoKey(Name, accessor) case Mugen::Name: \
+                                old.released.accessor = old.pressed.accessor && !event.enabled; \
+                                old.pressed.accessor = event.enabled; break;
+
         switch (event.out){
-            /* the keys map already sets up left/right to be forward/backward */
-            case Mugen::Right: old.forward = event.enabled; break;
-            case Mugen::Left: old.back = event.enabled; break;
-            case Mugen::Up: old.up = event.enabled; break;
-            case Mugen::Down: old.down = event.enabled; break;
-            case Mugen::A: old.a = event.enabled; break;
-            case Mugen::B: old.b = event.enabled; break;
-            case Mugen::C: old.c = event.enabled; break;
-            case Mugen::X: old.x = event.enabled; break;
-            case Mugen::Y: old.y = event.enabled; break;
-            case Mugen::Z: old.z = event.enabled; break;
-            case Mugen::Start: old.start = event.enabled; break;
+            DoKey(Right, forward)
+            DoKey(Left, back)
+            DoKey(Up, up)
+            DoKey(Down, down)
+            DoKey(A, a)
+            DoKey(B, b)
+            DoKey(C, c)
+            DoKey(X, x)
+            DoKey(Y, y)
+            DoKey(Z, z)
+            DoKey(Start, start)
             default: break;
+            /* the keys map already sets up left/right to be forward/backward */
+
+            /*
+            case Mugen::Right: {
+                old.released.forward = old.pressed.forward && !event.enabled;
+                old.pressed.forward = event.enabled;
+                break;
+            }
+            case Mugen::Left: old.pressed.back = event.enabled; break;
+            case Mugen::Up: old.pressed.up = event.enabled; break;
+            case Mugen::Down: old.pressed.down = event.enabled; break;
+            case Mugen::A: old.pressed.a = event.enabled; break;
+            case Mugen::B: old.pressed.b = event.enabled; break;
+            case Mugen::C: old.pressed.c = event.enabled; break;
+            case Mugen::X: old.pressed.x = event.enabled; break;
+            case Mugen::Y: old.pressed.y = event.enabled; break;
+            case Mugen::Z: old.pressed.z = event.enabled; break;
+            case Mugen::Start: old.pressed.start = event.enabled; break;
+            default: break;
+            */
         }
     }
+
+#undef DoKey
 
     return old;
 }
