@@ -20,13 +20,13 @@ Topics:
 * Get Source:
 
   If you are reading this you might already have the source. If not get it from here
-  Game engine: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/trunk
+  Game engine: $ svn co http://svn.code.sourceforge.net/p/paintown/code/trunk paintown
 
   You need the svn program, which is part of subversion - http://subversion.tigris.org/, to do this. Put the data directory inside the trunk directory, trunk/data.
 
   As of r1124 the data/ directory is an external resource for trunk, so you only have to check out trunk and svn will automatically get data/ for you.
   
-  Data: $ svn co https://paintown.svn.sourceforge.net/svnroot/paintown/data
+  Data: $ svn co http://svn.code.sourceforge.net/p/paintown/code/data
 
 * Compilation:
   
@@ -156,7 +156,7 @@ Topics:
 
   * Detailed windows instructions
     *Note* it may be easier to get the gcc4.5 environment from svn:
-      https://paintown.svn.sourceforge.net/svnroot/paintown/build-environments/gcc4.5
+      http://svn.code.sourceforge.net/p/paintown/code/build-environments/gcc4.5
     Get unxutils for things like mv, rm, cp - http://www.sf.net/projects/unxutils
       Find the .zip. It unzips as usr\local\wbin, so put that in your path or just
       copy all the files in usr\local\wbin to your c:\mingw\bin directory.
