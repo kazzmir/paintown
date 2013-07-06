@@ -761,12 +761,12 @@ bool Command::handle(Input keys){
 
     bool emit = false;
     /* Keep transitioning through states until we hit the end */
-    while ((states[currentState]->transition(keys, emit)) && currentState < states.size()){
+    while (currentState < states.size() && (states[currentState]->transition(keys, emit))){
         currentState += 1;
     }
 
     /* Once we hit the end start over */
-    if (currentState == states.size()){
+    if (currentState >= states.size()){
         currentState = 0;
     }
 
