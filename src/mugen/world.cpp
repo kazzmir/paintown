@@ -18,7 +18,7 @@ World::World(){
 World::~World(){
 }
         
-AllCharacterData::AllCharacterData(const StateData & character, const AnimationState & animation, const std::map<int, std::map<unsigned int, int> > & statePersistent):
+AllCharacterData::AllCharacterData(const StateData & character, const AnimationState & animation, const std::map<int, std::map<uint32_t, int> > & statePersistent):
 character(character),
 animation(animation),
 statePersistent(statePersistent){
@@ -59,15 +59,15 @@ const std::map<CharacterId, AllCharacterData> & World::getCharacterData() const 
     return this->characterData;
 }
 
-static Token * serialize(const map<int, map<unsigned int, int> > & statePersistent){
+static Token * serialize(const map<int, map<uint32_t, int> > & statePersistent){
     Token * token = new Token();
 
     *token << "states";
-    for (map<int, map<unsigned int, int> >::const_iterator it = statePersistent.begin(); it != statePersistent.end(); it++){
-        const map<unsigned int, int> & controllers = it->second;
+    for (map<int, map<uint32_t, int> >::const_iterator it = statePersistent.begin(); it != statePersistent.end(); it++){
+        const map<uint32_t, int> & controllers = it->second;
         Token * out = token->newToken();
         *out << it->first;
-        for (map<unsigned int, int>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
+        for (map<uint32_t, int>::const_iterator it = controllers.begin(); it != controllers.end(); it++){
             Token * what = out->newToken();
             *what << it->first << it->second;
         }
@@ -76,8 +76,8 @@ static Token * serialize(const map<int, map<unsigned int, int> > & statePersiste
     return token;
 }
 
-static map<int, map<unsigned int, int> > deserializeStates(const Token * data){
-    map<int, map<unsigned int, int> > out;
+static map<int, map<uint32_t, int> > deserializeStates(const Token * data){
+    map<int, map<uint32_t, int> > out;
     /* TODO */
 
     return out;

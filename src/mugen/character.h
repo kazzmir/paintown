@@ -402,7 +402,7 @@ public:
     
         const AnimationState getCurrentAnimationState() const;
         void setCurrentAnimationState(const AnimationState & state);
-        void setStatePersistent(const std::map<int, std::map<unsigned int, int> > & statePersistent);
+        void setStatePersistent(const std::map<int, std::map<uint32_t, int> > & statePersistent);
         void resetStatePersistent();
 
         virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
@@ -467,7 +467,7 @@ public:
         return getStateData().currentState;
     }
 
-    virtual std::map<int, std::map<unsigned int, int> > getStatePersistent() const;
+    virtual std::map<int, std::map<uint32_t, int> > getStatePersistent() const;
 
     /* Gets the state from this character regardless of what characterData holds */
     virtual PaintownUtil::ReferenceCount<State> getSelfState(int id) const;

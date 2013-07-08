@@ -2662,15 +2662,15 @@ void Character::resetStatePersistent(){
     }
 }
 
-void Character::setStatePersistent(const std::map<int, std::map<unsigned int, int> > & statePersistent){
+void Character::setStatePersistent(const std::map<int, std::map<uint32_t, int> > & statePersistent){
     resetStatePersistent();
 
-    for (std::map<int, std::map<unsigned int, int> >::const_iterator it = statePersistent.begin(); it != statePersistent.end(); it++){
+    for (std::map<int, std::map<uint32_t, int> >::const_iterator it = statePersistent.begin(); it != statePersistent.end(); it++){
         PaintownUtil::ReferenceCount<State> state = getSelfState(it->first);
         if (state != NULL){
-            const map<unsigned int, int> & persistent = it->second;
+            const map<uint32_t, int> & persistent = it->second;
 
-            for (map<unsigned int, int>::const_iterator it2 = persistent.begin(); it2 != persistent.end(); it2++){
+            for (map<uint32_t, int>::const_iterator it2 = persistent.begin(); it2 != persistent.end(); it2++){
                 StateController * controller = state->findControllerById(it2->first);
                 if (controller != NULL){
                     controller->setCurrentPersistent(it2->second);
@@ -2680,14 +2680,14 @@ void Character::setStatePersistent(const std::map<int, std::map<unsigned int, in
     }
 }
 
-std::map<int, std::map<unsigned int, int> > Character::getStatePersistent() const {
-    map<int, map<unsigned int, int> > data;
+std::map<int, std::map<uint32_t, int> > Character::getStatePersistent() const {
+    map<int, map<uint32_t, int> > data;
         
     for (map<int, PaintownUtil::ReferenceCount<State> >::const_iterator it = getLocalData().states.begin(); it != getLocalData().states.end(); it++){
         const PaintownUtil::ReferenceCount<State> & state = it->second;
         if (state != NULL){
             const std::vector<StateController*> & controllers = state->getControllers();
-            map<unsigned int, int> use;
+            map<uint32_t, int> use;
 
             for (vector<StateController*>::const_iterator it2 = controllers.begin(); it2 != controllers.end(); it2++){
                 StateController * controller = *it2;
