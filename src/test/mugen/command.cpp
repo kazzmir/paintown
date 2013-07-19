@@ -23,7 +23,8 @@ public:
     type(type),
     satisfied(false),
     dominate(dominate),
-    time(time){
+    time(time),
+    emit(false){
     }
 
     virtual ~Constraint(){
@@ -31,6 +32,14 @@ public:
 
     Type getType() const {
         return type;
+    }
+
+    void setEmit(){
+        this->emit = true;
+    }
+
+    bool isEmit() const {
+        return emit;
     }
 
     void setUpConstraints(const vector<Util::ReferenceCount<Constraint> > & constraints){
@@ -138,25 +147,34 @@ protected:
     bool satisfied;
     bool dominate;
     double time;
+    bool emit;
     std::set<Util::ReferenceCount<Constraint> > dependsOn;
 };
 
-vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::Key * key, double time){
+vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::Key * key, double time, bool last){
     vector<Util::ReferenceCount<Constraint> > constraints;
 
-    class Walker: public Ast::Walker {
+    class ConstraintWalker: public Ast::Walker {
     public:
-        Walker(vector<Util::ReferenceCount<Constraint> > & constraints, double time):
+        ConstraintWalker(vector<Util::ReferenceCount<Constraint> > & constraints, double time, bool last):
         constraints(constraints),
-        time(time){
+        time(time),
+        last(last){
         }
         
         vector<Util::ReferenceCount<Constraint> > & constraints;
         double time;
+        bool last;
 
         virtual void addPressRelease(Constraint::Type pressKey, Constraint::Type releaseKey){
-            constraints.push_back(Util::ReferenceCount<Constraint>(new Constraint(pressKey, time, true)));
-            constraints.push_back(Util::ReferenceCount<Constraint>(new Constraint(releaseKey, time + 0.5, false)));
+            Util::ReferenceCount<Constraint> press = Util::ReferenceCount<Constraint>(new Constraint(pressKey, time, true));
+            Util::ReferenceCount<Constraint> release = Util::ReferenceCount<Constraint>(new Constraint(releaseKey, time + 0.5, false));
+            constraints.push_back(press);
+            constraints.push_back(release);
+
+            if (last){
+                press->setEmit();
+            }
         }
 
         virtual void onKeySingle(const Ast::KeySingle & key){
@@ -166,16 +184,64 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::Key * key, double
             } else if (name == "b"){
                 addPressRelease(Constraint::PressB, Constraint::ReleaseB);
             }
+
+            /* TODO: rest */
         }
 
         virtual void onKeyModifier(const Ast::KeyModifier & key){
+            switch (key.getModifierType()){
+                case Ast::KeyModifier::MustBeHeldDown: {
+                    break;
+                }
+                case Ast::KeyModifier::Release: {
+
+                    class ReleaseWalker: public Ast::Walker {
+                    public:
+                        ReleaseWalker(ConstraintWalker & outer):
+                        outer(outer){
+                        }
+
+                        ConstraintWalker & outer;
+
+                        virtual void onKeySingle(const Ast::KeySingle & key){
+                            string name = key.toString();
+                            if (name == "a"){
+                                outer.addPressRelease(Constraint::ReleaseA, Constraint::PressA);
+                            } else if (name == "b"){
+                                outer.addPressRelease(Constraint::ReleaseB, Constraint::PressB);
+                            }
+                            /* TODO: rest */
+                        }
+        
+                        virtual void onKeyCombined(const Ast::KeyCombined & key){
+                            throw std::exception();
+                        }
+        
+                        virtual void onKeyModifier(const Ast::KeyModifier & key){
+                            throw std::exception();
+                        }
+                    };
+
+                    const Ast::Key * sub = key.getKey();
+                    ReleaseWalker walker(*this);
+                    sub->walk(walker);
+
+                    break;
+                }
+                case Ast::KeyModifier::Direction: {
+                    break;
+                }
+                case Ast::KeyModifier::Only: {
+                    break;
+                }
+            }
         }
 
         virtual void onKeyCombined(const Ast::KeyCombined & key){
         }
     };
 
-    Walker walker(constraints, time);
+    ConstraintWalker walker(constraints, time, last);
     key->walk(walker);
 
     return constraints;
@@ -192,7 +258,13 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::KeyList * keys){
     vector<Util::ReferenceCount<Constraint> > constraints;
     double time = 1;
     for (vector<Ast::Key*>::const_iterator it = keys->getKeys().begin(); it != keys->getKeys().end(); it++){
-        vector<Util::ReferenceCount<Constraint> > more = makeConstraints(*it, time);
+        bool last = false;
+        Ast::Key * key = *it;
+        if (key == keys->getKeys().back()){
+            last = true;
+        }
+
+        vector<Util::ReferenceCount<Constraint> > more = makeConstraints(*it, time, last);
         time += 1;
         constraints.insert(constraints.end(), more.begin(), more.end());
     }   
@@ -201,6 +273,39 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::KeyList * keys){
 
     return constraints;
 }
+
+class NewCommand{
+public:
+    NewCommand(Ast::KeyList * keys):
+    constraints(makeConstraints(keys)){
+    }
+            
+    bool handle(const Mugen::Input & input){
+        /* keep checking constraints until we reach a fix point. */
+        bool more = true;
+        bool emit = false;
+        while (more){
+            more = false;
+
+            for (vector<Util::ReferenceCount<Constraint> >::iterator it = constraints.begin(); it != constraints.end(); it++){
+                Util::ReferenceCount<Constraint> constraint = *it;
+                if (!constraint->isSatisfied()){
+                    constraint->satisfy(input);
+                    if (constraint->isSatisfied()){
+                        more = true;
+                        if (constraint->isEmit()){
+                            emit = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return emit;
+    }
+
+    vector<Util::ReferenceCount<Constraint> > constraints;
+};
 
 void parseKey(Mugen::Input & input, const string & key){
     if (key == "a"){
@@ -274,7 +379,10 @@ vector<Mugen::Input> loadScript(const string & input){
     return out;
 }
 
-int testKeys(Mugen::Command & command, const vector<Mugen::Input> & inputs){
+int testKeys(Ast::KeyList * keys, const vector<Mugen::Input> & inputs){
+    // Mugen::Command command("test", keys, 100, 1);
+    NewCommand command(keys);
+
     /* Make sure we emit something */
     bool emitted = false;
     for (vector<Mugen::Input>::const_iterator it = inputs.begin(); it != inputs.end(); it++){
@@ -306,12 +414,12 @@ int test1(){
     std::vector<Ast::Key*> keys;
     keys.push_back(new Ast::KeySingle(0, 0, "a"));
     Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
-    Mugen::Command command("test", list, 100, 1);
+    // Mugen::Command command("test", list, 100, 1);
     
     std::ostringstream script;
     script << "a;";
 
-    return testKeys(command, loadScript(script.str()));
+    return testKeys(list, loadScript(script.str()));
 }
 
 int test2(){
@@ -319,13 +427,12 @@ int test2(){
     keys.push_back(new Ast::KeySingle(0, 0, "a"));
     keys.push_back(new Ast::KeySingle(0, 0, "b"));
     Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
-    Mugen::Command command("test", list, 100, 1);
 
     std::ostringstream script;
     script << "a;";
     script << "b;";
 
-    return testKeys(command, loadScript(script.str()));
+    return testKeys(list, loadScript(script.str()));
 }
 
 /* test that 'a, b' makes 'a' be let go before b can fire */
@@ -356,14 +463,13 @@ int test4(){
     keys.push_back(new Ast::KeySingle(0, 0, "a"));
     keys.push_back(new Ast::KeySingle(0, 0, "b"));
     Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
-    Mugen::Command command("test", list, 100, 1);
     
     std::ostringstream script;
     script << "a;a;a;a;a;";
     script << "a;a;a;a;a;";
     script << "b;";
 
-    return testKeys(command, loadScript(script.str()));
+    return testKeys(list, loadScript(script.str()));
 
     /*
     Mugen::Input input;
@@ -390,7 +496,6 @@ int test5(){
     keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "a"), 0));
     keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "a"), 0));
     Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
-    Mugen::Command command("test", list, 100, 1);
 
     std::ostringstream script;
     script << "a;~a;";
@@ -399,55 +504,7 @@ int test5(){
     script << ";";
     script << "a;~a;";
 
-    return testKeys(command, loadScript(script.str()));
-
-    /*
-    Mugen::Input input;
-    input.pressed.a = true;
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input = Mugen::Input();
-    input.released.a = true;
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input = Mugen::Input();
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input.pressed.a = true;
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input.pressed.a = false;
-    input.released.a = true;
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input = Mugen::Input();
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input.pressed.a = true;
-    if (command.handle(input)){
-        return 1;
-    }
-
-    input.pressed.a = false;
-    input.released.a = true;
-    if (!command.handle(input)){
-        return 1;
-    }
-
-    return 0;
-    */
+    return testKeys(list, loadScript(script.str()));
 }
 
 int runTest(int (*test)(), const std::string & name){
