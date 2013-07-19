@@ -3,11 +3,204 @@
 #include "util/debug.h"
 #include <vector>
 #include <string>
+#include <set>
 #include <sstream>
 
 using std::vector;
 using std::string;
 using std::ostringstream;
+
+class Constraint{
+public:
+    enum Type{
+        PressA,
+        ReleaseA,
+        PressB,
+        ReleaseB
+    };
+
+    Constraint(Type type, double time, bool dominate):
+    type(type),
+    satisfied(false),
+    dominate(dominate),
+    time(time){
+    }
+
+    virtual ~Constraint(){
+    }
+
+    Type getType() const {
+        return type;
+    }
+
+    void setUpConstraints(const vector<Util::ReferenceCount<Constraint> > & constraints){
+        for (vector<Util::ReferenceCount<Constraint> >::const_iterator it = constraints.begin(); it != constraints.end(); it++){
+            const Util::ReferenceCount<Constraint> & constraint = *it;
+            if (constraint == this){
+                continue;
+            }
+
+            bool depends = false;
+            if (constraint->getTime() < getTime() &&
+                constraint->isDominate()){
+
+                depends = true;
+            }
+
+            /* If the key was generated as a response to a press/release and this is the same key
+             * then this depends on that key.
+             */
+            if (constraint->getTime() < getTime() &&
+                sameKey(*constraint)){
+
+                depends = true;
+            }
+
+            if (depends){
+                dependsOn.insert(constraint);
+            }
+        }
+    }
+
+    bool sameKey(const Constraint & him){
+        switch (type){
+            case PressA:
+            case ReleaseA: return him.getType() == PressA ||
+                                  him.getType() == ReleaseA;
+
+            case PressB:
+            case ReleaseB: return him.getType() == PressB ||
+                                  him.getType() == ReleaseB;
+        }
+
+        return false;
+    }
+
+    virtual std::string toString() const {
+        std::ostringstream out;
+
+        switch (type){
+            case PressA: out << "a"; break;
+            case ReleaseA: out << "~a"; break;
+            case PressB: out << "b"; break;
+            case ReleaseB: out << "~b"; break;
+        }
+
+        out << ":" << time;
+
+        return out.str();
+    }
+
+    virtual void satisfy(const Mugen::Input & input){
+        if (dependenciesSatisfied()){
+            switch (type){
+                case PressA: satisfied = input.pressed.a; break;
+                case ReleaseA: satisfied = input.released.a; break;
+                case PressB: satisfied = input.pressed.b; break;
+                case ReleaseB: satisfied = input.released.b; break;
+            }
+        }
+    }
+
+    virtual bool dependenciesSatisfied() const {
+        for (std::set<Util::ReferenceCount<Constraint> >::const_iterator it = dependsOn.begin(); it != dependsOn.end(); it++){
+            const Util::ReferenceCount<Constraint> & constraint = *it;
+            if (!constraint->isSatisfied()){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    virtual void depends(const Util::ReferenceCount<Constraint> & him){
+        dependsOn.insert(him);
+    }
+
+    virtual void reset(){
+        satisfied = false;
+    }
+
+    bool isDominate() const {
+        return dominate;
+    }
+
+    double getTime() const {
+        return time;
+    }
+    
+    virtual bool isSatisfied() const {
+        return satisfied;
+    }
+
+protected:
+    Type type;
+    bool satisfied;
+    bool dominate;
+    double time;
+    std::set<Util::ReferenceCount<Constraint> > dependsOn;
+};
+
+vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::Key * key, double time){
+    vector<Util::ReferenceCount<Constraint> > constraints;
+
+    class Walker: public Ast::Walker {
+    public:
+        Walker(vector<Util::ReferenceCount<Constraint> > & constraints, double time):
+        constraints(constraints),
+        time(time){
+        }
+        
+        vector<Util::ReferenceCount<Constraint> > & constraints;
+        double time;
+
+        virtual void addPressRelease(Constraint::Type pressKey, Constraint::Type releaseKey){
+            constraints.push_back(Util::ReferenceCount<Constraint>(new Constraint(pressKey, time, true)));
+            constraints.push_back(Util::ReferenceCount<Constraint>(new Constraint(releaseKey, time + 0.5, false)));
+        }
+
+        virtual void onKeySingle(const Ast::KeySingle & key){
+            string name = key.toString();
+            if (name == "a"){
+                addPressRelease(Constraint::PressA, Constraint::ReleaseA);
+            } else if (name == "b"){
+                addPressRelease(Constraint::PressB, Constraint::ReleaseB);
+            }
+        }
+
+        virtual void onKeyModifier(const Ast::KeyModifier & key){
+        }
+
+        virtual void onKeyCombined(const Ast::KeyCombined & key){
+        }
+    };
+
+    Walker walker(constraints, time);
+    key->walk(walker);
+
+    return constraints;
+}
+
+void constructDependencies(const vector<Util::ReferenceCount<Constraint> > & constraints){
+    for (vector<Util::ReferenceCount<Constraint> >::const_iterator it = constraints.begin(); it != constraints.end(); it++){
+        const Util::ReferenceCount<Constraint> & constraint = *it;
+        constraint->setUpConstraints(constraints);
+    }
+}
+
+vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::KeyList * keys){
+    vector<Util::ReferenceCount<Constraint> > constraints;
+    double time = 1;
+    for (vector<Ast::Key*>::const_iterator it = keys->getKeys().begin(); it != keys->getKeys().end(); it++){
+        vector<Util::ReferenceCount<Constraint> > more = makeConstraints(*it, time);
+        time += 1;
+        constraints.insert(constraints.end(), more.begin(), more.end());
+    }   
+
+    constructDependencies(constraints);
+
+    return constraints;
+}
 
 void parseKey(Mugen::Input & input, const string & key){
     if (key == "a"){
