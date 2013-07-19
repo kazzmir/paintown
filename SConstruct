@@ -170,22 +170,6 @@ int main(int argc, char ** argv){
     context.Result(scons.utils.colorResult(1))
     return 1
 
-def useAllegro5():
-    def byEnv():
-        try:
-            return os.environ['ALLEGRO5'] == '1'
-        except KeyError:
-            return False
-
-    def byArgument():
-        try:
-            return int(ARGUMENTS['allegro5']) == 1
-        except KeyError:
-            return False
-
-    # FIXME: hack to specify android here
-    return byEnv() or byArgument() or useAndroid() or useAndroidX86()
-
 def useAllegro():
     def byEnv():
         try:
@@ -202,7 +186,7 @@ def useAllegro():
     return byEnv() or byArgument()
 
 def useSDL():
-    return not useAllegro() and not useAllegro5()
+    return not useAllegro() and not scons.utils.useAllegro5()
 
 def isCygwin():
     try:
@@ -1102,7 +1086,7 @@ if useSDL():
     env['PAINTOWN_BACKEND'] = 'sdl'
 elif useAllegro():
     env['PAINTOWN_BACKEND'] = 'allegro'
-elif useAllegro5():
+elif scons.utils.useAllegro5():
     env['PAINTOWN_BACKEND'] = 'allegro5'
 else:
     env['PAINTOWN_BACKEND'] = 'unknown'
@@ -1194,7 +1178,7 @@ def configEnvironment(env):
         if useAllegro():
             if not config.CheckAllegro():
                 Exit(1)
-        if useAllegro5():
+        if scons.utils.useAllegro5():
             if not config.CheckAllegro5():
                 Exit(1)
         if useSDL():
@@ -1239,7 +1223,7 @@ def buildType(env):
         properties.append('dingoo')
     if useXenon():
         properties.append('xenon')
-    if useAllegro5():
+    if scons.utils.useAllegro5():
         properties.append('allegro5')
     if getDebug():
         properties.append('debug')
@@ -1274,7 +1258,7 @@ def display_build_properties(env):
     properties = []
     if useAllegro():
         properties.append(scons.utils.colorize("Allegro", color))
-    if useAllegro5():
+    if scons.utils.useAllegro5():
         properties.append(scons.utils.colorize('Allegro5', color))
     if useSDL():
         properties.append(scons.utils.colorize("SDL", color))
@@ -1334,7 +1318,7 @@ if isWindows():
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
         env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', ] )
-    elif useAllegro5():
+    elif scons.utils.useAllegro5():
         env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         env.Append(LIBS = ['allegro-5.0.3-monolith-md', 'wsock32', 'z', 'freetype', 'png', 'psapi'])
@@ -1397,7 +1381,7 @@ else:
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
             Exit(1)
 
-        if useAllegro5() and not config.CheckAllegro5():
+        if scons.utils.useAllegro5() and not config.CheckAllegro5():
             print "Allegro5 not found"
             Exit(1)
 

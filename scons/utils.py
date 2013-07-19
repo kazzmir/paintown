@@ -161,7 +161,6 @@ enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
 useSDL = makeUseEnvironment('sdl', False)
 useAllegro4 = makeUseEnvironment('allegro4', False)
-useAllegro5 = makeUseEnvironment('allegro5', False)
 useWii = makeUseEnvironment('wii', False)
 
 def useAllegro():
@@ -178,6 +177,22 @@ def useAllegro():
             return False
         
     return byEnv() or byArgument()
+
+def useAllegro5():
+    def byEnv():
+        try:
+            return os.environ['ALLEGRO5'] == '1'
+        except KeyError:
+            return False
+
+    def byArgument():
+        try:
+            return int(ARGUMENTS['allegro5']) == 1
+        except KeyError:
+            return False
+
+    # FIXME: hack to specify android here
+    return byEnv() or byArgument() or useAndroid() or useAndroidX86()
 
 # Replace standard tool invocations with nice colored text
 def lessVerbose(env):
