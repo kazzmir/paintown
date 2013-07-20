@@ -435,27 +435,16 @@ int test2(){
     return testKeys(list, loadScript(script.str()));
 }
 
-/* test that 'a, b' makes 'a' be let go before b can fire */
 int test3(){
     std::vector<Ast::Key*> keys;
     keys.push_back(new Ast::KeySingle(0, 0, "a"));
     keys.push_back(new Ast::KeySingle(0, 0, "b"));
     Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
-    Mugen::Command command("test", list, 100, 1);
+    
+    std::ostringstream script;
+    script << "a;a,b";
 
-    Mugen::Input input;
-    input.pressed.a = true;
-    if (command.handle(input)){
-        return 1;
-    }
-    input = Mugen::Input();
-    input.pressed.a = true;
-    input.pressed.b = true;
-    if (command.handle(input)){
-        return 1;
-    }
-
-    return 0;
+    return testKeys(list, loadScript(script.str()));
 }
 
 int test4(){
@@ -470,23 +459,6 @@ int test4(){
     script << "b;";
 
     return testKeys(list, loadScript(script.str()));
-
-    /*
-    Mugen::Input input;
-    input.pressed.a = true;
-    for (int i = 0; i < 10; i++){
-        if (command.handle(input)){
-            return 1;
-        }
-    }
-    input = Mugen::Input();
-    input.pressed.b = true;
-    if (!command.handle(input)){
-        return 1;
-    }
-
-    return 0;
-    */
 }
 
 /* ~a, ~a, ~a */
@@ -507,6 +479,42 @@ int test5(){
     return testKeys(list, loadScript(script.str()));
 }
 
+int test6(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;b;~a;~b;a;";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test7(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;~a;b;a";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test8(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;b;~b;~a;a";
+    return testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -521,6 +529,9 @@ int main(int argc, char ** argv){
         runTest(test3, "Test3") ||
         runTest(test4, "Test4") ||
         runTest(test5, "Test5") ||
+        runTest(test6, "Test6") ||
+        runTest(test7, "Test7") ||
+        runTest(test8, "Test8") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){

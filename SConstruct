@@ -170,23 +170,8 @@ int main(int argc, char ** argv){
     context.Result(scons.utils.colorResult(1))
     return 1
 
-def useAllegro():
-    def byEnv():
-        try:
-            return os.environ['ALLEGRO'] == '1'
-        except KeyError:
-            return False
-
-    def byArgument():
-        try:
-            return int(ARGUMENTS['allegro']) == 1
-        except KeyError:
-            return False
-        
-    return byEnv() or byArgument()
-
 def useSDL():
-    return not useAllegro() and not scons.utils.useAllegro5()
+    return not scons.utils.useAllegro() and not scons.utils.useAllegro5()
 
 def isCygwin():
     try:
@@ -1084,7 +1069,7 @@ env = getEnvironment(getDebug())
 env['ARCHIVES'] = []
 if useSDL():
     env['PAINTOWN_BACKEND'] = 'sdl'
-elif useAllegro():
+elif scons.utils.useAllegro():
     env['PAINTOWN_BACKEND'] = 'allegro'
 elif scons.utils.useAllegro5():
     env['PAINTOWN_BACKEND'] = 'allegro5'
@@ -1175,7 +1160,7 @@ def configEnvironment(env):
                         "CheckSDL" : scons.checks.checkSDL,
                         "CheckSDLMain" : scons.checks.checkSDLMain}
         config = env.Configure(custom_tests = custom_tests)
-        if useAllegro():
+        if scons.utils.useAllegro():
             if not config.CheckAllegro():
                 Exit(1)
         if scons.utils.useAllegro5():
@@ -1217,7 +1202,7 @@ def buildType(env):
         properties.append('gcw')
     if useWii():
         properties.append('wii')
-    if useAllegro():
+    if scons.utils.useAllegro():
         properties.append('allegro')
     if useDingoo():
         properties.append('dingoo')
@@ -1256,7 +1241,7 @@ custom_tests = {"CheckPython" : scons.checks.checkPython,
 def display_build_properties(env):
     color = 'light-green'
     properties = []
-    if useAllegro():
+    if scons.utils.useAllegro():
         properties.append(scons.utils.colorize("Allegro", color))
     if scons.utils.useAllegro5():
         properties.append(scons.utils.colorize('Allegro5', color))
@@ -1314,7 +1299,7 @@ if isWindows():
     env = config.Finish()
 
     # Removed regex.dll
-    if useAllegro():
+    if scons.utils.useAllegro():
         env.Append(CPPDEFINES = ['USE_ALLEGRO'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO'])
         env.Append( LIBS = ['alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32', ] )
@@ -1348,7 +1333,7 @@ if isWindows():
     
     if useSDL() and not useMinpspw() or not usePs3() or not useWii():
         staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32'] )
-    elif useAllegro():
+    elif scons.utils.useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32'] )
     
     staticEnv.Append(CPPDEFINES = 'WINDOWS')
@@ -1377,7 +1362,7 @@ else:
     config = env.Configure(custom_tests = custom_tests)
     try:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
-        if useAllegro() and not config.CheckAllegro():
+        if scons.utils.useAllegro() and not config.CheckAllegro():
             print "You need the development files for Allegro. Visit Allegro's website at http://alleg.sf.net or use your package manager to install them."
             Exit(1)
 
@@ -1488,7 +1473,7 @@ else:
                            "CheckRTTI" : scons.checks.checkRTTI}
     staticEnv['PAINTOWN_TESTS'] = static_custom_tests
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
-    if useAllegro():
+    if scons.utils.useAllegro():
         static_config.CheckAllegro()
     if useSDL() and not useMinpspw() or usePs3():
         static_config.CheckSDL()
