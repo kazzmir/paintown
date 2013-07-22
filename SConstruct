@@ -170,9 +170,6 @@ int main(int argc, char ** argv){
     context.Result(scons.utils.colorResult(1))
     return 1
 
-def useSDL():
-    return not scons.utils.useAllegro() and not scons.utils.useAllegro5()
-
 def isCygwin():
     try:
         return os.environ['CYGWIN'] == '1'
@@ -1067,7 +1064,7 @@ env = getEnvironment(getDebug())
 #unix.configure(env)
 
 env['ARCHIVES'] = []
-if useSDL():
+if scons.utils.useSDL():
     env['PAINTOWN_BACKEND'] = 'sdl'
 elif scons.utils.useAllegro():
     env['PAINTOWN_BACKEND'] = 'allegro'
@@ -1166,7 +1163,7 @@ def configEnvironment(env):
         if scons.utils.useAllegro5():
             if not config.CheckAllegro5():
                 Exit(1)
-        if useSDL():
+        if scons.utils.useSDL():
             if not config.CheckSDL():
                 Exit(1)
             config.CheckSDLMain()
@@ -1180,7 +1177,7 @@ def buildType(env):
     if isWindows() and useMinpspw():
         properties.append('psp')
     else:
-        if useSDL():
+        if scons.utils.useSDL():
             properties.append('sdl')
         if useMinpspw():
             properties.append('psp')
@@ -1245,7 +1242,7 @@ def display_build_properties(env):
         properties.append(scons.utils.colorize("Allegro", color))
     if scons.utils.useAllegro5():
         properties.append(scons.utils.colorize('Allegro5', color))
-    if useSDL():
+    if scons.utils.useSDL():
         properties.append(scons.utils.colorize("SDL", color))
     if getDebug():
         properties.append(scons.utils.colorize("Debug", color))
@@ -1307,7 +1304,7 @@ if isWindows():
         env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         staticEnv.Append(CPPDEFINES = ['USE_ALLEGRO5'])
         env.Append(LIBS = ['allegro-5.0.3-monolith-md', 'wsock32', 'z', 'freetype', 'png', 'psapi'])
-    elif useSDL():
+    elif scons.utils.useSDL():
         if not useMinpspw() and not usePs3() and not useWii():
             env.Append(CPPDEFINES = ['USE_SDL'])
             # TODO: move this to a configure check
@@ -1331,7 +1328,7 @@ if isWindows():
             env.Append( CCFLAGS = ['-mwindows','-mthreads'] )
             env.Append( LINKFLAGS = ['-mwindows','-mthreads'] )
     
-    if useSDL() and not useMinpspw() or not usePs3() or not useWii():
+    if scons.utils.useSDL() and not useMinpspw() or not usePs3() or not useWii():
         staticEnv.Append(LIBS = ['SDL', 'pthread', 'png', 'freetype', 'z', 'wsock32'] )
     elif scons.utils.useAllegro():
         staticEnv.Append(LIBS = [ 'alleg', 'pthread', 'png', 'freetype', 'z', 'wsock32'] )
@@ -1376,7 +1373,7 @@ else:
         #    env.Append(LIBS = [ 'pthread' ])
         #    staticEnv.Append(LIBS = [ 'pthread' ])
 
-        if useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useAndroid() and not useAndroidX86() and not useNacl():
+        if scons.utils.useSDL() and not useMinpspw() and not usePs3() and not useNDS() and not useAndroid() and not useAndroidX86() and not useNacl():
             if not config.CheckSDL():
                 print "Install libsdl 1.2"
                 Exit(1)
@@ -1475,7 +1472,7 @@ else:
     static_config = staticEnv.Configure(custom_tests = static_custom_tests)
     if scons.utils.useAllegro():
         static_config.CheckAllegro()
-    if useSDL() and not useMinpspw() or usePs3():
+    if scons.utils.useSDL() and not useMinpspw() or usePs3():
         static_config.CheckSDL()
         static_config.CheckSDLMain()
 

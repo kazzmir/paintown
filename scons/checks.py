@@ -316,7 +316,10 @@ def checkPthreads(context):
         context.Result(utils.colorResult(1))
         return 1
     if utils.useSDL():
-        context.Message(" SDL threads")
+        # context.Message(" SDL threads")
+        env = context.env
+        env.Append(LIBS = ['pthread'])
+        context.Message(' pthreads')
         context.Result(utils.colorResult(1))
         return 1
     context.Message(" defaulting to pthreads")

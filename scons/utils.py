@@ -159,7 +159,6 @@ useGCW = makeUseEnvironment('gcw', False)
 nativeCompile = makeUseEnvironment('native', False)
 enableProfiled = makeUseEnvironment('PROFILE', False)
 showTiming = makeUseEnvironment('timing', False)
-useSDL = makeUseEnvironment('sdl', False)
 useAllegro4 = makeUseEnvironment('allegro4', False)
 useWii = makeUseEnvironment('wii', False)
 
@@ -193,6 +192,9 @@ def useAllegro5():
 
     # FIXME: hack to specify android here
     return byEnv() or byArgument() or useAndroid() or useAndroidX86()
+
+def useSDL():
+    return not useAllegro() and not useAllegro5()
 
 # Replace standard tool invocations with nice colored text
 def lessVerbose(env):

@@ -515,6 +515,17 @@ int test8(){
     return testKeys(list, loadScript(script.str()));
 }
 
+int test9(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyCombined(0, 0, new Ast::KeySingle(0, 0, "a"),
+                                              new Ast::KeySingle(0, 0, "b")));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a,b";
+    return testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -532,6 +543,7 @@ int main(int argc, char ** argv){
         runTest(test6, "Test6") ||
         runTest(test7, "Test7") ||
         runTest(test8, "Test8") ||
+        runTest(test9, "Test9") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
