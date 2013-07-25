@@ -1,6 +1,7 @@
 #include "mugen/command.h"
 #include "mugen/ast/key.h"
 #include "util/debug.h"
+#include <math.h>
 #include <vector>
 #include <string>
 #include <set>
@@ -16,7 +17,8 @@ public:
         PressA,
         ReleaseA,
         PressB,
-        ReleaseB
+        ReleaseB,
+        Combine
     };
 
     Constraint(Type type, double time, bool dominate):
@@ -24,7 +26,8 @@ public:
     satisfied(false),
     dominate(dominate),
     time(time),
-    emit(false){
+    emit(false),
+    satisfiedTick(0){
     }
 
     virtual ~Constraint(){
@@ -80,6 +83,7 @@ public:
             case PressB:
             case ReleaseB: return him.getType() == PressB ||
                                   him.getType() == ReleaseB;
+            case Combine: return false;
         }
 
         return false;
@@ -93,6 +97,7 @@ public:
             case ReleaseA: out << "~a"; break;
             case PressB: out << "b"; break;
             case ReleaseB: out << "~b"; break;
+            case Combine: break;
         }
 
         out << ":" << time;
@@ -100,15 +105,32 @@ public:
         return out.str();
     }
 
-    virtual void satisfy(const Mugen::Input & input){
-        if (dependenciesSatisfied()){
-            switch (type){
-                case PressA: satisfied = input.pressed.a; break;
-                case ReleaseA: satisfied = input.released.a; break;
-                case PressB: satisfied = input.pressed.b; break;
-                case ReleaseB: satisfied = input.released.b; break;
+    virtual bool doSatisfy(const Mugen::Input & input, int tick){
+        switch (type){
+            case PressA: return input.pressed.a; break;
+            case ReleaseA: return input.released.a; break;
+            case PressB: return input.pressed.b; break;
+            case ReleaseB: return input.released.b; break;
+            case Combine: break;
+        }
+
+        return false;
+    }
+
+    virtual void satisfy(const Mugen::Input & input, int tick){
+        if (!satisfied){
+            if (dependenciesSatisfied()){
+                satisfied = doSatisfy(input, tick);
+            }
+
+            if (satisfied){
+                satisfiedTick = tick;
             }
         }
+    }
+
+    int getSatisfiedTick() const {
+        return satisfiedTick;
     }
 
     virtual bool dependenciesSatisfied() const {
@@ -148,10 +170,39 @@ protected:
     bool dominate;
     double time;
     bool emit;
+    int satisfiedTick;
     std::set<Util::ReferenceCount<Constraint> > dependsOn;
 };
 
-vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::Key * key, double time, bool last){
+class CombinedConstraint: public Constraint {
+public:
+    CombinedConstraint(const Util::ReferenceCount<Constraint> & key1,
+                       const Util::ReferenceCount<Constraint> & key2,
+                       double time, bool dominate):
+    Constraint(Combine, time, dominate),
+    key1(key1),
+    key2(key2){
+    }
+
+    virtual bool doSatisfy(const Mugen::Input & input, int tick){
+        const int threshold = 4;
+
+        key1->satisfy(input, tick);
+        key2->satisfy(input, tick);
+
+        if (key1->isSatisfied() && key2->isSatisfied() &&
+            fabs(key1->getSatisfiedTick() - key2->getSatisfiedTick()) < threshold){
+            return true;
+        }
+
+        return false;
+    }
+
+    Util::ReferenceCount<Constraint> key1;
+    Util::ReferenceCount<Constraint> key2;
+};
+
+vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, double time, bool last){
     vector<Util::ReferenceCount<Constraint> > constraints;
 
     class ConstraintWalker: public Ast::Walker {
@@ -237,7 +288,35 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::Key * key, double
             }
         }
 
+        Util::ReferenceCount<Constraint> findDominate(const vector<Util::ReferenceCount<Constraint> > & keys){
+            for (vector<Util::ReferenceCount<Constraint> >::const_iterator it = keys.begin(); it != keys.end(); it++){
+                const Util::ReferenceCount<Constraint> & constraint = *it;
+                if (constraint->isDominate()){
+                    return constraint;
+                }
+            }
+
+            return Util::ReferenceCount<Constraint>(NULL);
+        }
+
+        /* For a combined key we have to check that the two sub-keys were pressed
+         * at roughly the same time. We can implement that by checking when their Press
+         * constraint was satisfied. If both constraints are satisfied within 0-4 ticks, or whatever,
+         * then the combined constraint should satisfy.
+         */
         virtual void onKeyCombined(const Ast::KeyCombined & key){
+            vector<Util::ReferenceCount<Constraint> > key1 = makeConstraints(key.getKey1(), time, false);
+            vector<Util::ReferenceCount<Constraint> > key2 = makeConstraints(key.getKey2(), time, false);
+            
+            constraints.insert(constraints.end(), key1.begin(), key1.end()); 
+            constraints.insert(constraints.end(), key2.begin(), key2.end()); 
+            Util::ReferenceCount<Constraint> dominateKey1 = findDominate(key1);
+            Util::ReferenceCount<Constraint> dominateKey2 = findDominate(key2);
+            Util::ReferenceCount<Constraint> combined = Util::ReferenceCount<Constraint>(new CombinedConstraint(dominateKey1, dominateKey2, time + 0.9, true));
+            constraints.push_back(combined);
+            if (last){
+                combined->setEmit();
+            }
         }
     };
 
@@ -280,7 +359,7 @@ public:
     constraints(makeConstraints(keys)){
     }
             
-    bool handle(const Mugen::Input & input){
+    bool handle(const Mugen::Input & input, int ticks){
         /* keep checking constraints until we reach a fix point. */
         bool more = true;
         bool emit = false;
@@ -290,7 +369,7 @@ public:
             for (vector<Util::ReferenceCount<Constraint> >::iterator it = constraints.begin(); it != constraints.end(); it++){
                 Util::ReferenceCount<Constraint> constraint = *it;
                 if (!constraint->isSatisfied()){
-                    constraint->satisfy(input);
+                    constraint->satisfy(input, ticks);
                     if (constraint->isSatisfied()){
                         more = true;
                         if (constraint->isEmit()){
@@ -385,21 +464,23 @@ int testKeys(Ast::KeyList * keys, const vector<Mugen::Input> & inputs){
 
     /* Make sure we emit something */
     bool emitted = false;
+    int tick = 0;
     for (vector<Mugen::Input>::const_iterator it = inputs.begin(); it != inputs.end(); it++){
         const Mugen::Input & input = *it;
         bool last = false;
+        tick += 1;
         if (&input == &inputs.back()){
             last = true;
         }
 
         if (!last){
             /* If its not the last input then the command should not fire, so if it does then its an error */
-            if (command.handle(input)){
+            if (command.handle(input, tick)){
                 return 1;
             }
         } else {
             /* And similarly if its the last input the command should fire, otherwise error */
-            if (!command.handle(input)){
+            if (!command.handle(input, tick)){
                 return 1;
             } else {
                 emitted = true;
@@ -526,6 +607,45 @@ int test9(){
     return testKeys(list, loadScript(script.str()));
 }
 
+int test10(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeyCombined(0, 0, new Ast::KeySingle(0, 0, "a"),
+                                              new Ast::KeySingle(0, 0, "b")));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;a;~a;";
+    script << "a,b";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test11(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeyCombined(0, 0, new Ast::KeySingle(0, 0, "a"),
+                                              new Ast::KeySingle(0, 0, "b")));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;a;~a;";
+    script << "a,b;";
+    script << "~b;b";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test12(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyCombined(0, 0, new Ast::KeySingle(0, 0, "a"),
+                                              new Ast::KeySingle(0, 0, "b")));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a";
+    return !testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -544,6 +664,9 @@ int main(int argc, char ** argv){
         runTest(test7, "Test7") ||
         runTest(test8, "Test8") ||
         runTest(test9, "Test9") ||
+        runTest(test10, "Test10") ||
+        runTest(test11, "Test11") ||
+        runTest(test12, "Test12") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
