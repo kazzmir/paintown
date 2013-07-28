@@ -10,6 +10,7 @@
 using std::vector;
 using std::string;
 using std::ostringstream;
+using std::set;
 
 class Constraint{
 public:
@@ -117,7 +118,7 @@ public:
         return false;
     }
 
-    virtual void satisfy(const Mugen::Input & input, int tick){
+    virtual bool satisfy(const Mugen::Input & input, int tick){
         if (!satisfied){
             if (dependenciesSatisfied()){
                 satisfied = doSatisfy(input, tick);
@@ -127,6 +128,8 @@ public:
                 satisfiedTick = tick;
             }
         }
+
+        return satisfied;
     }
 
     int getSatisfiedTick() const {
@@ -163,6 +166,10 @@ public:
     virtual bool isSatisfied() const {
         return satisfied;
     }
+    
+    const std::set<Util::ReferenceCount<Constraint> > & getDepends(){
+        return dependsOn;
+    }
 
 protected:
     Type type;
@@ -172,6 +179,35 @@ protected:
     bool emit;
     int satisfiedTick;
     std::set<Util::ReferenceCount<Constraint> > dependsOn;
+};
+
+typedef Util::ReferenceCount<Constraint> ConstraintRef;
+
+class DelayConstraint: public Constraint {
+public:
+    DelayConstraint(int delayTime, Constraint::Type type, double time, bool dominate):
+    Constraint(type, time, dominate),
+    delayTime(delayTime),
+    held(0){
+    }
+    
+    virtual bool satisfy(const Mugen::Input & input, int tick){
+        if (satisfied){
+            return satisfied;
+        } else {
+            /* this logic works even if delayTime is 0, which means don't hold the key */
+            bool pressed = Constraint::doSatisfy(input, tick);
+            if (pressed){
+                held += 1;
+            }
+            satisfied = held >= delayTime;
+        }
+
+        return satisfied;
+    }
+
+    int delayTime;
+    int held;
 };
 
 class CombinedConstraint: public Constraint {
@@ -248,16 +284,37 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
 
                     class ReleaseWalker: public Ast::Walker {
                     public:
-                        ReleaseWalker(ConstraintWalker & outer):
-                        outer(outer){
+                        ReleaseWalker(ConstraintWalker & outer, int hold, double time):
+                        outer(outer),
+                        hold(hold),
+                        time(time){
                         }
 
                         ConstraintWalker & outer;
+                        int hold;
+                        double time;
 
                         virtual void onKeySingle(const Ast::KeySingle & key){
                             string name = key.toString();
                             if (name == "a"){
-                                outer.addPressRelease(Constraint::ReleaseA, Constraint::PressA);
+                                if (hold < 1){
+                                    hold = 1;
+                                }
+                                /*
+                                for (int i = 0; i < hold; i++){
+                                    Util::ReferenceCount<Constraint> press = Util::ReferenceCount<Constraint>(new DelayConstraint(1, Constraint::PressA, time, true));
+                                    outer.constraints.push_back(press);
+                                    time += 0.01;
+                                }
+                                */
+                                outer.constraints.push_back(ConstraintRef(new DelayConstraint(hold, Constraint::PressA, time, true)));
+                                Util::ReferenceCount<Constraint> release = Util::ReferenceCount<Constraint>(new Constraint(Constraint::ReleaseA, time + 0.1, true));
+                                if (outer.last){
+                                    release->setEmit();
+                                }
+                                outer.constraints.push_back(release);
+                                
+                                // outer.addPressRelease(Constraint::ReleaseA, Constraint::PressA);
                             } else if (name == "b"){
                                 outer.addPressRelease(Constraint::ReleaseB, Constraint::PressB);
                             }
@@ -274,7 +331,7 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
                     };
 
                     const Ast::Key * sub = key.getKey();
-                    ReleaseWalker walker(*this);
+                    ReleaseWalker walker(*this, key.getExtra(), time);
                     sub->walk(walker);
 
                     break;
@@ -333,6 +390,33 @@ void constructDependencies(const vector<Util::ReferenceCount<Constraint> > & con
     }
 }
 
+static void topologicalVisit(ConstraintRef constraint, vector<ConstraintRef> & sorted, set<ConstraintRef> & unsorted){
+    const set<ConstraintRef> & depends = constraint->getDepends();
+    unsorted.erase(constraint);
+    for (set<ConstraintRef>::const_iterator it = depends.begin(); it != depends.end(); it++){
+        ConstraintRef depend = *it;
+        if (unsorted.find(depend) != unsorted.end()){
+            topologicalVisit(depend, sorted, unsorted);
+        }
+    }
+    sorted.push_back(constraint);
+}
+
+vector<Util::ReferenceCount<Constraint> > topologicalSort(const vector<ConstraintRef> & constraints){
+    vector<ConstraintRef> out;
+    set<ConstraintRef> unsorted;
+    for (vector<ConstraintRef>::const_iterator it = constraints.begin(); it != constraints.end(); it++){
+        unsorted.insert(*it);
+    }
+
+    while (unsorted.size() > 0){
+        ConstraintRef first = *unsorted.begin();
+        topologicalVisit(first, out, unsorted);
+    }
+
+    return out;
+}
+
 vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::KeyList * keys){
     vector<Util::ReferenceCount<Constraint> > constraints;
     double time = 1;
@@ -350,7 +434,22 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(Ast::KeyList * keys){
 
     constructDependencies(constraints);
 
-    return constraints;
+    return topologicalSort(constraints);
+}
+
+string debugInput(const Mugen::Input & input){
+    std::ostringstream out;
+
+    if (input.pressed.a){
+        out << "a, ";
+    }
+    if (input.released.a){
+        out << "~a, ";
+    }
+
+    /* TODO: rest.. */
+    
+    return out.str();
 }
 
 class NewCommand{
@@ -361,6 +460,44 @@ public:
             
     bool handle(const Mugen::Input & input, int ticks){
         /* keep checking constraints until we reach a fix point. */
+
+        bool emit = false;
+        std::set<ConstraintRef> satisfied;
+        for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
+            bool all = true;
+            ConstraintRef constraint = *it;
+            const std::set<ConstraintRef> & depends = constraint->getDepends();
+            for (std::set<ConstraintRef>::const_iterator it2 = depends.begin(); it2 != depends.end(); it2++){
+                /* If its not in the satisified set then not all dependencies can be satisifed */
+                if (satisfied.find(*it2) == satisfied.end()){
+                    all = false;
+                    break;
+                }
+            }
+
+            /* If `all' is still true then all dependencies have been satisfied and we can continue */
+            if (all){
+                if (constraint->satisfy(input, ticks)){
+                    satisfied.insert(constraint);
+                    if (constraint->isEmit()){
+                        emit = true;
+                    }
+                }
+            }
+        }
+
+        /*
+        Global::debug(0) << "Tick: " << ticks << " Input " << debugInput(input) << std::endl;
+        for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
+            ConstraintRef constraint = *it;
+            Global::debug(0) << " Constraint " << constraint->getTime() << " satisfied " << constraint->isSatisfied() << std::endl;
+        }
+        Global::debug(0) << std::endl;
+        */
+
+        return emit;
+
+        /*
         bool more = true;
         bool emit = false;
         while (more){
@@ -381,6 +518,7 @@ public:
         }
 
         return emit;
+        */
     }
 
     vector<Util::ReferenceCount<Constraint> > constraints;
@@ -646,6 +784,26 @@ int test12(){
     return !testKeys(list, loadScript(script.str()));
 }
 
+int test13(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "a"), 5));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;~a";
+    return !testKeys(list, loadScript(script.str()));
+}
+
+int test14(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "a"), 5));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;a;a;a;a;~a";
+    return testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -655,7 +813,8 @@ int runTest(int (*test)(), const std::string & name){
 }
 
 int main(int argc, char ** argv){
-    if (runTest(test1, "Test1") ||
+    if (
+        runTest(test1, "Test1") ||
         runTest(test2, "Test2") ||
         runTest(test3, "Test3") ||
         runTest(test4, "Test4") ||
@@ -667,6 +826,8 @@ int main(int argc, char ** argv){
         runTest(test10, "Test10") ||
         runTest(test11, "Test11") ||
         runTest(test12, "Test12") ||
+        runTest(test13, "Test13") ||
+        runTest(test14, "Test14") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
