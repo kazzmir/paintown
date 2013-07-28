@@ -199,6 +199,8 @@ public:
             bool pressed = Constraint::doSatisfy(input, tick);
             if (pressed){
                 held += 1;
+            } else {
+                held = 0;
             }
             satisfied = held >= delayTime;
         }
@@ -804,6 +806,16 @@ int test14(){
     return testKeys(list, loadScript(script.str()));
 }
 
+int test15(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "a"), 5));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;a;;a;a;a;~a";
+    return !testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -828,6 +840,7 @@ int main(int argc, char ** argv){
         runTest(test12, "Test12") ||
         runTest(test13, "Test13") ||
         runTest(test14, "Test14") ||
+        runTest(test15, "Test15") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
