@@ -1,0 +1,66 @@
+---
+driver_plugin: vagrant
+platforms:
+- name: ubuntu-12.04
+  driver_config:
+    box: opscode-ubuntu-12.04
+    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-12.04_provisionerless.box
+    require_chef_omnibus: true
+    customize:
+      memory: 1024
+  run_list:
+  - recipe[apt]
+- name: ubuntu-10.04
+  driver_config:
+    box: opscode-ubuntu-10.04
+    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_ubuntu-10.04_provisionerless.box
+    require_chef_omnibus: true
+    customize:
+      memory: 1024
+  run_list:
+  - recipe[apt]
+- name: centos-6.4
+  driver_config:
+    box: opscode-centos-6.4
+    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-6.4_provisionerless.box
+    require_chef_omnibus: true
+    customize:
+      memory: 1024
+  run_list:
+  - recipe[yum::epel]
+- name: centos-5.9
+  driver_config:
+    box: opscode-centos-5.9
+    box_url: https://opscode-vm.s3.amazonaws.com/vagrant/opscode_centos-5.9_provisionerless.box
+    require_chef_omnibus: true
+    customize:
+      memory: 1024
+  run_list:
+  - recipe[yum::epel]
+
+suites:
+- name: default
+  run_list:
+  - recipe[php]
+  attributes: {}
+
+- name: source
+  run_list:
+  - recipe[php]
+  attributes:
+    php:
+      install_method: source
+
+- name: module-packages
+  run_list:
+  - recipe[php]
+  - recipe[php::module_apc]
+  - recipe[php::module_curl]
+  - recipe[php::module_fpdf]
+  - recipe[php::module_gd]
+  - recipe[php::module_ldap]
+  - recipe[php::module_memcache]
+  - recipe[php::module_mysql]
+  - recipe[php::module_pgsql]
+  - recipe[php::module_sqlite3]
+  attributes: {}
