@@ -6,6 +6,7 @@
 #include <string>
 #include <set>
 #include <sstream>
+#include <exception>
 
 using std::vector;
 using std::string;
@@ -19,6 +20,36 @@ public:
         ReleaseA,
         PressB,
         ReleaseB,
+        PressC,
+        ReleaseC,
+        PressX,
+        ReleaseX,
+        PressY,
+        ReleaseY,
+        PressZ,
+        ReleaseZ,
+        PressForward,
+        ReleaseForward,
+        PressBack,
+        ReleaseBack,
+        PressUp,
+        ReleaseUp,
+        PressDown,
+        ReleaseDown,
+
+        /* Its simpler to model UF, DB, etc as logical presses but it may be harder for
+         * the user to press them because the individual keys (U and F) have to be pressed
+         * at the same tick.
+         */
+        PressForwardUp,
+        ReleaseForwardUp,
+        PressBackUp,
+        ReleaseBackUp,
+        PressForwardDown,
+        ReleaseForwardDown,
+        PressBackDown,
+        ReleaseBackDown,
+
         Combine
     };
 
@@ -84,6 +115,55 @@ public:
             case PressB:
             case ReleaseB: return him.getType() == PressB ||
                                   him.getType() == ReleaseB;
+
+            case PressC:
+            case ReleaseC: return him.getType() == PressC ||
+                                  him.getType() == ReleaseC;
+
+            case PressX:
+            case ReleaseX: return him.getType() == PressX ||
+                                  him.getType() == ReleaseX;
+
+            case PressY:
+            case ReleaseY: return him.getType() == PressY ||
+                                  him.getType() == PressY;
+
+            case PressZ:
+            case ReleaseZ: return him.getType() == PressZ ||
+                                  him.getType() == ReleaseZ;
+
+            case PressForward:
+            case ReleaseForward: return him.getType() == PressForward ||
+                                        him.getType() == ReleaseForward;
+
+            case PressBack:
+            case ReleaseBack: return him.getType() == PressBack ||
+                                     him.getType() == ReleaseBack;
+
+            case PressUp:
+            case ReleaseUp: return him.getType() == PressUp ||
+                                   him.getType() == ReleaseUp;
+
+            case PressDown:
+            case ReleaseDown: return him.getType() == PressDown ||
+                                     him.getType() == ReleaseDown;
+
+            case PressForwardUp:
+            case ReleaseForwardUp: return him.getType() == PressForwardUp ||
+                                          him.getType() == ReleaseForwardUp;
+
+            case PressBackUp:
+            case ReleaseBackUp: return him.getType() == PressBackUp ||
+                                       him.getType() == ReleaseBackUp;
+
+            case PressForwardDown:
+            case ReleaseForwardDown: return him.getType() == PressForwardDown ||
+                                            him.getType() == ReleaseForwardDown;
+
+            case PressBackDown:
+            case ReleaseBackDown: return him.getType() == PressBackDown ||
+                                         him.getType() == ReleaseBackDown;
+
             case Combine: return false;
         }
 
@@ -98,10 +178,32 @@ public:
             case ReleaseA: out << "~a"; break;
             case PressB: out << "b"; break;
             case ReleaseB: out << "~b"; break;
+            case PressC: out << "c"; break;
+            case ReleaseC: out << "~c"; break;
+            case PressX: out << "x"; break;
+            case ReleaseX: out << "~x"; break;
+            case PressY: out << "y"; break;
+            case ReleaseY: out << "~y"; break;
+            case PressZ: out << "z"; break;
+            case ReleaseZ: out << "~z"; break;
+            case PressForward: out << "F"; break;
+            case ReleaseForward: out << "~F"; break;
+            case PressBack: out << "B"; break;
+            case ReleaseBack: out << "~B"; break;
+            case PressUp: out << "U"; break;
+            case ReleaseUp: out << "~U"; break;
+            case PressDown: out << "D"; break;
+            case ReleaseDown: out << "~D"; break;
+            case PressForwardUp: out << "UF"; break;
+            case ReleaseForwardUp: out << "~UF"; break;
+            case PressForwardDown: out << "DF"; break;
+            case ReleaseForwardDown: out << "~DF"; break;
+            case PressBackUp: out << "UB"; break;
+            case ReleaseBackUp: out << "~UB"; break;
+            case PressBackDown: out << "DB"; break;
+            case ReleaseBackDown: out << "~DB"; break;
             case Combine: break;
         }
-
-        out << ":" << time;
 
         return out.str();
     }
@@ -112,6 +214,49 @@ public:
             case ReleaseA: return input.released.a; break;
             case PressB: return input.pressed.b; break;
             case ReleaseB: return input.released.b; break;
+            case PressC: return input.pressed.c; break;
+            case ReleaseC: return input.released.c; break;
+            case PressX: return input.pressed.x; break;
+            case ReleaseX: return input.released.x; break;
+            case PressY: return input.pressed.y; break;
+            case ReleaseY: return input.released.y; break;
+            case PressZ: return input.pressed.z; break;
+            case ReleaseZ: return input.released.z; break;
+
+            case PressForward: return input.pressed.forward; break;
+            case ReleaseForward: return input.released.forward; break;
+            case PressBack: return input.pressed.back; break;
+            case ReleaseBack: return input.released.back; break;
+            case PressDown: return input.pressed.down; break;
+            case ReleaseDown: return input.released.down; break;
+            case PressUp: return input.pressed.up; break;
+            case ReleaseUp: return input.released.up; break;
+
+            case PressForwardUp: return input.pressed.forward &&
+                                        input.pressed.up; break;
+
+            /* For releases its ok just to release one of the keys */
+            case ReleaseForwardUp: return input.released.forward ||
+                                          input.released.up; break;
+
+            case PressBackUp: return input.pressed.up &&
+                                     input.pressed.back; break;
+
+            case ReleaseBackUp: return input.released.up ||
+                                       input.released.back; break;
+
+            case PressForwardDown: return input.pressed.forward &&
+                                          input.pressed.down; break;
+
+            case ReleaseForwardDown: return input.released.forward ||
+                                            input.released.down; break;
+
+            case PressBackDown: return input.pressed.back &&
+                                       input.pressed.down; break;
+
+            case ReleaseBackDown: return input.released.back ||
+                                         input.released.down; break;
+
             case Combine: break;
         }
 
@@ -208,6 +353,17 @@ public:
         return satisfied;
     }
 
+    virtual string toString() const {
+        std::ostringstream out;
+
+        out << "~";
+        if (delayTime > 0){
+            out << delayTime;
+        }
+        out << Constraint::toString();
+        return out.str();
+    }
+
     int delayTime;
     int held;
 };
@@ -236,9 +392,113 @@ public:
         return false;
     }
 
+    virtual string toString() const {
+        return key1->toString() + "+" + key2->toString();
+    }
+
     Util::ReferenceCount<Constraint> key1;
     Util::ReferenceCount<Constraint> key2;
 };
+
+static Constraint::Type getPress(const Ast::KeySingle & key){
+    string name = key.toString();
+    if (name == "a"){
+        return Constraint::PressA;
+    }
+    if (name == "b"){
+        return Constraint::PressB;
+    }
+    if (name == "c"){
+        return Constraint::PressC;
+    }
+    if (name == "x"){
+        return Constraint::PressX;
+    }
+    if (name == "y"){
+        return Constraint::PressY;
+    }
+    if (name == "z"){
+        return Constraint::PressZ;
+    }
+    if (name == "F"){
+        return Constraint::PressForward;
+    }
+    if (name == "B"){
+        return Constraint::PressBack;
+    }
+    if (name == "U"){
+        return Constraint::PressUp;
+    }
+    if (name == "D"){
+        return Constraint::PressDown;
+    }
+    if (name == "UF"){
+        return Constraint::PressForwardUp;
+    }
+    if (name == "UB"){
+        return Constraint::PressBackUp;
+    }
+    if (name == "DF"){
+        return Constraint::PressForwardDown;
+    }
+    if (name == "DB"){
+        return Constraint::PressBackDown;
+    }
+
+    /* utter failure */
+    throw std::exception();
+    return Constraint::PressA;
+}
+
+static Constraint::Type getRelease(const Ast::KeySingle & key){
+    string name = key.toString();
+    if (name == "a"){
+        return Constraint::ReleaseA;
+    }
+    if (name == "b"){
+        return Constraint::ReleaseB;
+    }
+    if (name == "c"){
+        return Constraint::ReleaseC;
+    }
+    if (name == "x"){
+        return Constraint::ReleaseX;
+    }
+    if (name == "y"){
+        return Constraint::ReleaseY;
+    }
+    if (name == "z"){
+        return Constraint::ReleaseZ;
+    }
+    if (name == "F"){
+        return Constraint::ReleaseForward;
+    }
+    if (name == "B"){
+        return Constraint::ReleaseBack;
+    }
+    if (name == "U"){
+        return Constraint::ReleaseUp;
+    }
+    if (name == "D"){
+        return Constraint::ReleaseDown;
+    }
+    if (name == "UF"){
+        return Constraint::ReleaseForwardUp;
+    }
+    if (name == "UB"){
+        return Constraint::ReleaseBackUp;
+    }
+    if (name == "DF"){
+        return Constraint::ReleaseForwardDown;
+    }
+    if (name == "DB"){
+        return Constraint::ReleaseBackDown;
+    }
+
+    /* utter failure */
+    throw std::exception();
+    return Constraint::ReleaseA;
+}
 
 vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, double time, bool last){
     vector<Util::ReferenceCount<Constraint> > constraints;
@@ -267,14 +527,7 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
         }
 
         virtual void onKeySingle(const Ast::KeySingle & key){
-            string name = key.toString();
-            if (name == "a"){
-                addPressRelease(Constraint::PressA, Constraint::ReleaseA);
-            } else if (name == "b"){
-                addPressRelease(Constraint::PressB, Constraint::ReleaseB);
-            }
-
-            /* TODO: rest */
+            addPressRelease(getPress(key), getRelease(key));
         }
 
         virtual void onKeyModifier(const Ast::KeyModifier & key){
@@ -298,29 +551,21 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
 
                         virtual void onKeySingle(const Ast::KeySingle & key){
                             string name = key.toString();
-                            if (name == "a"){
-                                if (hold < 1){
-                                    hold = 1;
-                                }
-                                /*
-                                for (int i = 0; i < hold; i++){
-                                    Util::ReferenceCount<Constraint> press = Util::ReferenceCount<Constraint>(new DelayConstraint(1, Constraint::PressA, time, true));
-                                    outer.constraints.push_back(press);
-                                    time += 0.01;
-                                }
-                                */
-                                outer.constraints.push_back(ConstraintRef(new DelayConstraint(hold, Constraint::PressA, time, true)));
-                                Util::ReferenceCount<Constraint> release = Util::ReferenceCount<Constraint>(new Constraint(Constraint::ReleaseA, time + 0.1, true));
-                                if (outer.last){
-                                    release->setEmit();
-                                }
-                                outer.constraints.push_back(release);
-                                
-                                // outer.addPressRelease(Constraint::ReleaseA, Constraint::PressA);
-                            } else if (name == "b"){
-                                outer.addPressRelease(Constraint::ReleaseB, Constraint::PressB);
+
+                            Constraint::Type pressKey = getPress(key);
+                            Constraint::Type releaseKey = getRelease(key);
+
+                            if (hold < 1){
+                                hold = 1;
                             }
-                            /* TODO: rest */
+
+                            outer.constraints.push_back(ConstraintRef(new DelayConstraint(hold, pressKey, time, true)));
+                            Util::ReferenceCount<Constraint> release = Util::ReferenceCount<Constraint>(new Constraint(releaseKey, time + 0.1, true));
+                            if (outer.last){
+                                release->setEmit();
+                            }
+                            outer.constraints.push_back(release);
+
                         }
         
                         virtual void onKeyCombined(const Ast::KeyCombined & key){
@@ -448,8 +693,60 @@ string debugInput(const Mugen::Input & input){
     if (input.released.a){
         out << "~a, ";
     }
-
-    /* TODO: rest.. */
+    if (input.pressed.b){
+        out << "b, ";
+    }
+    if (input.released.b){
+        out << "~b, ";
+    }
+    if (input.pressed.c){
+        out << "c, ";
+    }
+    if (input.released.c){
+        out << "~c, ";
+    }
+    if (input.pressed.x){
+        out << "x, ";
+    }
+    if (input.released.x){
+        out << "~x, ";
+    }
+    if (input.pressed.y){
+        out << "y, ";
+    }
+    if (input.released.y){
+        out << "~y, ";
+    }
+    if (input.pressed.z){
+        out << "z, ";
+    }
+    if (input.released.z){
+        out << "~z, ";
+    }
+    if (input.pressed.forward){
+        out << "F, ";
+    }
+    if (input.released.forward){
+        out << "~F, ";
+    }
+    if (input.pressed.back){
+        out << "B, ";
+    }
+    if (input.released.back){
+        out << "~B, ";
+    }
+    if (input.pressed.down){
+        out << "D, ";
+    }
+    if (input.released.down){
+        out << "~D, ";
+    }
+    if (input.pressed.up){
+        out << "U, ";
+    }
+    if (input.released.up){
+        out << "~U, ";
+    }
     
     return out.str();
 }
@@ -488,39 +785,17 @@ public:
             }
         }
 
+        /* Uncomment to debug the commands */
         /*
         Global::debug(0) << "Tick: " << ticks << " Input " << debugInput(input) << std::endl;
         for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
             ConstraintRef constraint = *it;
-            Global::debug(0) << " Constraint " << constraint->getTime() << " satisfied " << constraint->isSatisfied() << std::endl;
+            Global::debug(0) << " Constraint " << constraint->getTime() << " " << constraint->toString() << " satisfied " << constraint->isSatisfied() << std::endl;
         }
         Global::debug(0) << std::endl;
         */
 
         return emit;
-
-        /*
-        bool more = true;
-        bool emit = false;
-        while (more){
-            more = false;
-
-            for (vector<Util::ReferenceCount<Constraint> >::iterator it = constraints.begin(); it != constraints.end(); it++){
-                Util::ReferenceCount<Constraint> constraint = *it;
-                if (!constraint->isSatisfied()){
-                    constraint->satisfy(input, ticks);
-                    if (constraint->isSatisfied()){
-                        more = true;
-                        if (constraint->isEmit()){
-                            emit = true;
-                        }
-                    }
-                }
-            }
-        }
-
-        return emit;
-        */
     }
 
     vector<Util::ReferenceCount<Constraint> > constraints;
@@ -641,6 +916,17 @@ int test1(){
     script << "a;";
 
     return testKeys(list, loadScript(script.str()));
+}
+
+int test1_1(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+    
+    std::ostringstream script;
+    script << "b;";
+
+    return !testKeys(list, loadScript(script.str()));
 }
 
 int test2(){
@@ -816,6 +1102,66 @@ int test15(){
     return !testKeys(list, loadScript(script.str()));
 }
 
+int test16(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "b"), 5));
+    keys.push_back(new Ast::KeyCombined(0, 0, new Ast::KeySingle(0, 0, "a"),
+                                              new Ast::KeySingle(0, 0, "b")));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;";
+    script << "a,b;~a,b;b;b;b;";
+    script << "b;~b;";
+    script << "a,b;";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test17(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Release, new Ast::KeySingle(0, 0, "b"), 5));
+    keys.push_back(new Ast::KeyCombined(0, 0, new Ast::KeySingle(0, 0, "a"),
+                                              new Ast::KeySingle(0, 0, "b")));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;";
+    script << "a,b;~a,b;b;b;b;";
+    script << "b;~b;";
+    script << "a,b;";
+    return testKeys(list, loadScript(script.str()));
+}
+
+/* simple test for all keys */
+int test18(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "c"));
+    keys.push_back(new Ast::KeySingle(0, 0, "x"));
+    keys.push_back(new Ast::KeySingle(0, 0, "y"));
+    keys.push_back(new Ast::KeySingle(0, 0, "z"));
+    keys.push_back(new Ast::KeySingle(0, 0, "F"));
+    keys.push_back(new Ast::KeySingle(0, 0, "B"));
+    keys.push_back(new Ast::KeySingle(0, 0, "U"));
+    keys.push_back(new Ast::KeySingle(0, 0, "D"));
+    keys.push_back(new Ast::KeySingle(0, 0, "UF"));
+    keys.push_back(new Ast::KeySingle(0, 0, "UB"));
+    keys.push_back(new Ast::KeySingle(0, 0, "DF"));
+    keys.push_back(new Ast::KeySingle(0, 0, "DB"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;b;c;x;y;z;F;~F;B;~B;U;~U;D;~D;";
+    script << "U,F;~U,~F;";
+    script << "U,B;~U,~B;";
+    script << "D,F;~D,~F;";
+    script << "D,B;";
+    return testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -827,6 +1173,7 @@ int runTest(int (*test)(), const std::string & name){
 int main(int argc, char ** argv){
     if (
         runTest(test1, "Test1") ||
+        runTest(test1_1, "Test1_1") ||
         runTest(test2, "Test2") ||
         runTest(test3, "Test3") ||
         runTest(test4, "Test4") ||
@@ -841,6 +1188,9 @@ int main(int argc, char ** argv){
         runTest(test13, "Test13") ||
         runTest(test14, "Test14") ||
         runTest(test15, "Test15") ||
+        runTest(test16, "Test16") ||
+        runTest(test17, "Test17") ||
+        runTest(test18, "Test18") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
