@@ -2,8 +2,8 @@
 # vi: set ft=ruby :
 
 Vagrant::Config.run do |config|
-  config.vm.box = "centos63"
-  config.vm.box_url = "https://dl.dropbox.com/u/7225008/Vagrant/CentOS-6.3-x86_64-minimal.box"
+  config.vm.box = "centos6"
+  config.vm.box_url = "http://dl.dropbox.com/u/9227672/CentOS-6.0-x86_64-netboot-4.1.6.box"
   config.vm.network :hostonly, "192.168.33.10"
   # config.vm.network :bridged
   config.vm.forward_port 80, 8080
@@ -30,13 +30,16 @@ Vagrant::Config.run do |config|
     
 =begin
         # If you want to make commit edits add this to the named file below
-        "paintown" => {
-            "username" => '',
-            "password" => ''
+        Paintown = {
+            "paintown" => {
+                "username" => '',
+                "password" => ''
+            }
         }
 =end
-    if File.exist?('./svn-info')
-        chef.json.add IO.read('./svn-info')
+    if File.exist?('./svn-info.rb')
+        require('./svn-info.rb')
+        chef.json = chef.json.merge Paintown
     end
     
     chef.cookbooks_path = "../chef-cookbooks"

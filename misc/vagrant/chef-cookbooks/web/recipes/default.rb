@@ -67,7 +67,7 @@ bash "reload-iptables" do
     iptables-restore /root/default.iptables
     /etc/init.d/iptables save
     service iptables restart
-    setenforce 0
+    #setenforce 0
   EOH
 end
 
