@@ -667,6 +667,15 @@ switch (key.getModifierType()){
                     break;
                 }
                 case Ast::KeyModifier::Only: {
+                    /* F, >a */
+
+                    /* FIXME: for now just treat this as a regular key press. Its probably
+                     * not ultra important that we prevent certain commands from executing
+                     * if the user pressed an extra button or two.
+                     */
+
+                    key.getKey()->walk(*this);
+
                     break;
                 }
             }
