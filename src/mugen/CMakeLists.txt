@@ -20,6 +20,7 @@ compiler.cpp
 helper.cpp
 game.cpp
 command.cpp
+constraint.cpp
 storyboard.cpp
 state.cpp
 projectile.cpp
