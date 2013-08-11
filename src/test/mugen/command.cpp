@@ -126,7 +126,7 @@ public:
 
             case PressY:
             case ReleaseY: return him.getType() == PressY ||
-                                  him.getType() == PressY;
+                                  him.getType() == ReleaseY;
 
             case PressZ:
             case ReleaseZ: return him.getType() == PressZ ||
@@ -265,9 +265,12 @@ public:
 
     virtual bool satisfy(const Mugen::Input & input, int tick){
         if (!satisfied){
+            /*
             if (dependenciesSatisfied()){
                 satisfied = doSatisfy(input, tick);
             }
+            */
+            satisfied = doSatisfy(input, tick);
 
             if (satisfied){
                 satisfiedTick = tick;
@@ -281,6 +284,7 @@ public:
         return satisfiedTick;
     }
 
+    /*
     virtual bool dependenciesSatisfied() const {
         for (std::set<Util::ReferenceCount<Constraint> >::const_iterator it = dependsOn.begin(); it != dependsOn.end(); it++){
             const Util::ReferenceCount<Constraint> & constraint = *it;
@@ -291,6 +295,7 @@ public:
 
         return true;
     }
+    */
 
     virtual void depends(const Util::ReferenceCount<Constraint> & him){
         dependsOn.insert(him);
@@ -308,9 +313,11 @@ public:
         return time;
     }
     
+    /*
     virtual bool isSatisfied() const {
         return satisfied;
     }
+    */
     
     const std::set<Util::ReferenceCount<Constraint> > & getDepends(){
         return dependsOn;
@@ -368,6 +375,29 @@ public:
     int held;
 };
 
+class HoldConstraint: public Constraint {
+public:
+    HoldConstraint(Constraint::Type type, double time, bool dominate):
+    Constraint(type, time, dominate){
+    }
+
+    virtual string toString() const {
+        std::ostringstream out;
+
+        out << "/";
+        out << Constraint::toString();
+
+        return out.str();
+    }
+ 
+    /* The constraint is only satisfied when a key is held down and
+     * must be held down forever until the end.
+     */
+    virtual bool satisfy(const Mugen::Input & input, int tick){
+        return Constraint::doSatisfy(input, tick);
+    }
+};
+
 class CombinedConstraint: public Constraint {
 public:
     CombinedConstraint(const Util::ReferenceCount<Constraint> & key1,
@@ -381,10 +411,8 @@ public:
     virtual bool doSatisfy(const Mugen::Input & input, int tick){
         const int threshold = 4;
 
-        key1->satisfy(input, tick);
-        key2->satisfy(input, tick);
-
-        if (key1->isSatisfied() && key2->isSatisfied() &&
+        if (key1->satisfy(input, tick) &&
+            key2->satisfy(input, tick) &&
             fabs(key1->getSatisfiedTick() - key2->getSatisfiedTick()) < threshold){
             return true;
         }
@@ -533,6 +561,43 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
         virtual void onKeyModifier(const Ast::KeyModifier & key){
             switch (key.getModifierType()){
                 case Ast::KeyModifier::MustBeHeldDown: {
+
+                    class HoldWalker: public Ast::Walker {
+                    public:
+                        HoldWalker(ConstraintWalker & outer, double time):
+                        outer(outer),
+                        time(time){
+                        }
+                        
+                        ConstraintWalker & outer;
+                        const double time;
+                        
+                        virtual void onKeySingle(const Ast::KeySingle & key){
+                            Constraint::Type pressKey = getPress(key);
+                            outer.constraints.push_back(ConstraintRef(new HoldConstraint(pressKey, time, true)));
+                        }
+
+                        virtual void onKeyCombined(const Ast::KeyCombined & key){
+                            throw std::exception();
+                        }
+        
+                        virtual void onKeyModifier(const Ast::KeyModifier & key){
+                            switch (key.getModifierType()){
+                                case Ast::KeyModifier::Direction: {
+                                    key.getKey()->walk(*this);
+                                    break;
+                                }
+                                default: {
+                                    throw std::exception();
+                                }
+                            }
+                        }
+                    };
+                    
+                    const Ast::Key * sub = key.getKey();
+                    HoldWalker walker(*this, time);
+                    sub->walk(walker);
+
                     break;
                 }
                 case Ast::KeyModifier::Release: {
@@ -574,6 +639,15 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
         
                         virtual void onKeyModifier(const Ast::KeyModifier & key){
                             throw std::exception();
+switch (key.getModifierType()){
+                                case Ast::KeyModifier::Direction: {
+                                    key.getKey()->walk(*this);
+                                    break;
+                                }
+                                default: {
+                                    throw std::exception();
+                                }
+                            }
                         }
                     };
 
@@ -584,6 +658,12 @@ vector<Util::ReferenceCount<Constraint> > makeConstraints(const Ast::Key * key, 
                     break;
                 }
                 case Ast::KeyModifier::Direction: {
+                    /* Direction keys can be handled just like regular keys.
+                     * Technically they should only allow direction keys like U, D, F, B
+                     * whereas the following code allows other butons like /a, which
+                     * is meaningless.
+                     */
+                    key.getKey()->walk(*this);
                     break;
                 }
                 case Ast::KeyModifier::Only: {
@@ -790,7 +870,7 @@ public:
         Global::debug(0) << "Tick: " << ticks << " Input " << debugInput(input) << std::endl;
         for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
             ConstraintRef constraint = *it;
-            Global::debug(0) << " Constraint " << constraint->getTime() << " " << constraint->toString() << " satisfied " << constraint->isSatisfied() << std::endl;
+            Global::debug(0) << " Constraint " << constraint->getTime() << " " << constraint->toString() << " satisfied " << (satisfied.find(constraint) != satisfied.end()) << std::endl;
         }
         Global::debug(0) << std::endl;
         */
@@ -1162,6 +1242,52 @@ int test18(){
     return testKeys(list, loadScript(script.str()));
 }
 
+int test19(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Direction, new Ast::KeySingle(0, 0, "D"), 0));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "D;";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test20(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::Direction, new Ast::KeySingle(0, 0, "D"), 0));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "D;";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test21(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::MustBeHeldDown, new Ast::KeySingle(0, 0, "a"), 0));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "c"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;a,b;a,~b;a,b;a,c;";
+    return testKeys(list, loadScript(script.str()));
+}
+
+int test22(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeyModifier(0, 0, Ast::KeyModifier::MustBeHeldDown, new Ast::KeySingle(0, 0, "a"), 0));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    keys.push_back(new Ast::KeySingle(0, 0, "c"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    std::ostringstream script;
+    script << "a;a,b;~b;b;c;";
+    return !testKeys(list, loadScript(script.str()));
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -1191,6 +1317,10 @@ int main(int argc, char ** argv){
         runTest(test16, "Test16") ||
         runTest(test17, "Test17") ||
         runTest(test18, "Test18") ||
+        runTest(test19, "Test19") ||
+        runTest(test20, "Test20") ||
+        runTest(test21, "Test21") ||
+        runTest(test22, "Test22") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
