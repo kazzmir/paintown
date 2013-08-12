@@ -772,6 +772,7 @@ void Constraint::depends(const ConstraintRef & him){
 
 void Constraint::reset(){
     satisfied = false;
+    satisfiedTick = 0;
 }
 
 bool Constraint::isDominate() const {
@@ -790,15 +791,44 @@ Command2::Command2(const std::string & name, Ast::KeyList * keys, int maxTime, i
 constraints(makeConstraints(keys)),
 name(name),
 maxTime(maxTime),
-bufferTime(bufferTime){
+bufferTime(bufferTime),
+useBufferTime(0){
 }
     
 const std::string & Command2::getName() const {
     return name;
 }
+
+void Command2::resetConstraints(){
+    for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
+        ConstraintRef ref = *it;
+        ref->reset();
+    }
+}
+
+int Command2::activeTicks(int ticks){
+    if (constraints.size() > 0){
+        ConstraintRef ref = constraints[0];
+        int constraintTick = ref->getSatisfiedTick();
+        if (constraintTick > 0 && constraintTick < ticks){
+            return ticks - constraintTick;
+        }
+    }
+
+    return 0;
+}
             
 bool Command2::handle(const Mugen::Input & input, int ticks){
     /* keep checking constraints until we reach a fix point. */
+
+    if (useBufferTime > 0){
+        useBufferTime -= 1;
+        return true;
+    }
+
+    if (activeTicks(ticks) > maxTime){
+        resetConstraints();
+    }
 
     bool emit = false;
     std::set<ConstraintRef> satisfied;
@@ -823,6 +853,15 @@ bool Command2::handle(const Mugen::Input & input, int ticks){
                 }
             }
         }
+    }
+
+    /* Reset the constraints if they were all satisfied. */
+    if (satisfied.size() == constraints.size()){
+        resetConstraints();
+    }
+
+    if (emit){
+        useBufferTime = bufferTime;
     }
 
     /* Uncomment to debug the commands */

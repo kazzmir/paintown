@@ -90,10 +90,10 @@ public:
     const std::set<PaintownUtil::ReferenceCount<Constraint> > & getDepends();
 
 protected:
-    Type type;
+    const Type type;
     bool satisfied;
-    bool dominate;
-    double time;
+    const bool dominate;
+    const double time;
     bool emit;
     int satisfiedTick;
     std::set<PaintownUtil::ReferenceCount<Constraint> > dependsOn;
@@ -108,10 +108,14 @@ public:
     bool handle(const Mugen::Input & input, int ticks);
 
 protected:
+    void resetConstraints();
+    int activeTicks(int ticks);
+
     std::vector<PaintownUtil::ReferenceCount<Constraint> > constraints;
     std::string name;
     int maxTime;
     int bufferTime;
+    int useBufferTime;
 };
 
 }
