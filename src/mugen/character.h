@@ -300,7 +300,7 @@ protected:
     bool changeSpritePriority;
 };
 
-class Command;
+class Command2;
 
 class Character: public Object {
 public:
@@ -1178,7 +1178,7 @@ protected:
     virtual void loadCnsFile(const Filesystem::RelativePath & path);
     virtual void loadStateFile(const Filesystem::AbsolutePath & base, const std::string & path);
 
-    virtual void addCommand(Command * command);
+    virtual void addCommand(Command2 * command);
 
     virtual void setConstant(std::string name, const std::vector<double> & values);
     virtual void setConstant(std::string name, double value);
@@ -1426,7 +1426,7 @@ protected:
         /* Commands, Triggers or whatever else we come up with */
         std::map<std::string, Constant> constants;
 
-        std::vector<Command *> commands;
+        std::vector<Command2 *> commands;
 
         // Debug state
         bool debug;

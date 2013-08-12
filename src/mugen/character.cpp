@@ -37,7 +37,8 @@
 #include "globals.h"
 #include "state.h"
 #include "compiler.h"
-#include "command.h"
+// #include "command.h"
+#include "constraint.h"
 #include "behavior.h"
 #include "state-controller.h"
 #include "helper.h"
@@ -578,7 +579,7 @@ stateData(copy.stateData){
 
 Character::~Character(){
     stopRecording();
-    for (vector<Command*>::iterator it = getLocalData().commands.begin(); it != getLocalData().commands.end(); it++){
+    for (vector<Command2*>::iterator it = getLocalData().commands.begin(); it != getLocalData().commands.end(); it++){
         delete (*it);
     }
 }
@@ -687,7 +688,7 @@ void Character::loadSelectData(){
     }
 }
     
-void Character::addCommand(Command * command){
+void Character::addCommand(Command2 * command){
     getLocalData().commands.push_back(command);
 }
 
@@ -777,8 +778,12 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                             throw MugenException(out.str(), __FILE__, __LINE__);
                         }
 
-                        /* parser guarantees the key will be a KeyList */
-                        self.addCommand(new Command(name, (Ast::KeyList*) key, time, bufferTime));
+                        try{
+                            /* parser guarantees the key will be a KeyList */
+                            self.addCommand(new Command2(name, (Ast::KeyList*) key, time, bufferTime));
+                        } catch (const MugenException & fail){
+                            Global::debug(0) << "Could not add command for '" << name << "': " << fail.getTrace() << std::endl;
+                        }
                     }
                 };
 
@@ -2354,7 +2359,7 @@ void Character::fixAssumptions(){
             vector<Ast::Key*> keys;
             keys.push_back(new Ast::KeyModifier(-1, -1, Ast::KeyModifier::Release, new Ast::KeySingle(-1, -1, "U")));
             keys.push_back(new Ast::KeySingle(-1, -1, "U"));
-            Command * doubleJumpCommand = new Command(jumpCommand, new Ast::KeyList(-1, -1, keys), 5, 0);
+            Command2 * doubleJumpCommand = new Command2(jumpCommand, new Ast::KeyList(-1, -1, keys), 5, 0);
             addCommand(doubleJumpCommand);
 
             setSystemVariable(JumpIndex, RuntimeValue(0));

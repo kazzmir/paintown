@@ -79,13 +79,13 @@ void NetworkLocalBehavior::begin(){
     }
 }
 
-void NetworkLocalBehavior::start(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+void NetworkLocalBehavior::start(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
     vector<string> current = local->currentCommands(stage, owner, commands, reversed);
     this->commands.push_back(current);
     sendCommands(current, socket);
 }
 
-std::vector<std::string> NetworkLocalBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+std::vector<std::string> NetworkLocalBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
     vector<string> out = this->commands.front();
     this->commands.pop_front();
     return out;
@@ -188,7 +188,7 @@ vector<string> NetworkRemoteBehavior::nextCommand(){
     return out;
 }
 
-std::vector<std::string> NetworkRemoteBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+std::vector<std::string> NetworkRemoteBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
     return nextCommand();
 }
 

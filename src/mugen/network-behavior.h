@@ -20,8 +20,8 @@ public:
     /* Start some stuff */
     virtual void begin();
 
-    virtual void start(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual void start(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     virtual void flip();
     
     virtual void hit(Object * enemy);
@@ -41,7 +41,7 @@ public:
     
     virtual void begin();
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     virtual void flip();
     
     virtual void hit(Object * enemy);

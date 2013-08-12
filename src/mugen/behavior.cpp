@@ -4,7 +4,8 @@
 #include <math.h>
 #include "util/input/input-map.h"
 #include "util/input/input-source.h"
-#include "command.h"
+// #include "command.h"
+#include "constraint.h"
 #include "random.h"
 #include "util/debug.h"
 #include "character.h"
@@ -32,7 +33,7 @@ DummyBehavior::DummyBehavior(){
 void DummyBehavior::flip(){
 }
 
-vector<string> DummyBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+vector<string> DummyBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
     vector<string> out;
     return out;
 }
@@ -125,15 +126,15 @@ Mugen::Input HumanBehavior::updateInput(InputMap<Keys> & keys, Mugen::Input old)
     return old;
 }
 
-vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
+vector<string> HumanBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command2*> & commands, bool reversed){
     vector<string> out;
     
     // InputMap<Mugen::Keys>::Output output = InputManager::getMap(getInput(reversed));
     input = updateInput(getInput(reversed), input);
 
-    for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
-        Command * command = *it;
-        if (command->handle(input)){
+    for (vector<Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+        Command2 * command = *it;
+        if (command->handle(input, stage.getTicks())){
             Global::debug(1) << "command: " << command->getName() << endl;
             out.push_back(command->getName());
         }
@@ -160,7 +161,7 @@ RandomAIBehavior::RandomAIBehavior(){
 void RandomAIBehavior::flip(){
 }
 
-static string randomCommand(const vector<Command*> & commands){
+static string randomCommand(const vector<Command2*> & commands){
     if (commands.size() == 0){
         return "";
     }
@@ -169,7 +170,7 @@ static string randomCommand(const vector<Command*> & commands){
     return commands[choice]->getName();
 }
 
-vector<string> RandomAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
+vector<string> RandomAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command2*> & commands, bool reversed){
     vector<string> out;
     if (Mugen::random(100) > 90){
         out.push_back(randomCommand(commands));
@@ -212,12 +213,12 @@ dontMove(0){
  *  - subtract points based on the number of times the move has been tried
  *  - subtract points if the move has been done recently
  */
-string LearningAIBehavior::selectBestCommand(int distance, const vector<Command*> & commands){
+string LearningAIBehavior::selectBestCommand(int distance, const vector<Command2*> & commands){
     Move * currentMove = NULL;
     string what = "";
     double points = 0;
 
-    for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+    for (vector<Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
         string name = (*it)->getName();
 
         /* Skip movement keys */
@@ -281,7 +282,7 @@ static LearningAIBehavior::Direction randomDirection(){
     }
 }
 
-vector<string> LearningAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command*> & commands, bool reversed){
+vector<string> LearningAIBehavior::currentCommands(const Mugen::Stage & stage, Character * owner, const vector<Command2*> & commands, bool reversed){
 
     vector<string> out;
 
@@ -392,7 +393,7 @@ ScriptedBehavior::ScriptedBehavior(const Filesystem::AbsolutePath & path){
     currentAction = actions.begin();
 }
 
-std::vector<std::string> ScriptedBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+std::vector<std::string> ScriptedBehavior::currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
     vector<string> out;
 
     if (currentAction != actions.end()){

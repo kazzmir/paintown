@@ -34,6 +34,8 @@ public:
         ReleaseUp,
         PressDown,
         ReleaseDown,
+        PressStart,
+        ReleaseStart,
 
         /* Its simpler to model UF, DB, etc as logical presses but it may be harder for
          * the user to press them because the individual keys (U and F) have to be pressed
@@ -99,11 +101,17 @@ protected:
 
 class Command2{
 public:
-    Command2(Ast::KeyList * keys);
+    Command2(const std::string & name, Ast::KeyList * keys, int maxTime, int bufferTime);
+
+    const std::string & getName() const;
             
     bool handle(const Mugen::Input & input, int ticks);
 
+protected:
     std::vector<PaintownUtil::ReferenceCount<Constraint> > constraints;
+    std::string name;
+    int maxTime;
+    int bufferTime;
 };
 
 }

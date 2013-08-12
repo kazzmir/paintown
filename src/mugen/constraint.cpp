@@ -154,9 +154,12 @@ static Constraint::Type getPress(const Ast::KeySingle & key){
     if (name == "DB"){
         return Constraint::PressBackDown;
     }
+    if (name == "s"){
+        return Constraint::PressStart;
+    }
 
     /* utter failure */
-    throw std::exception();
+    throw MugenException("Unknown key press", __FILE__, __LINE__);
     return Constraint::PressA;
 }
 
@@ -204,9 +207,12 @@ static Constraint::Type getRelease(const Ast::KeySingle & key){
     if (name == "DB"){
         return Constraint::ReleaseBackDown;
     }
+    if (name == "s"){
+        return Constraint::ReleaseStart;
+    }
 
     /* utter failure */
-    throw std::exception();
+    throw MugenException("Unknown key press", __FILE__, __LINE__);
     return Constraint::ReleaseA;
 }
 
@@ -260,7 +266,7 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                         }
 
                         virtual void onKeyCombined(const Ast::KeyCombined & key){
-                            throw std::exception();
+                            throw MugenException("Cannot handle key combined", __FILE__, __LINE__);
                         }
         
                         virtual void onKeyModifier(const Ast::KeyModifier & key){
@@ -270,7 +276,7 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                                     break;
                                 }
                                 default: {
-                                    throw std::exception();
+                                    throw MugenException("Cannot handle modifier type", __FILE__, __LINE__);
                                 }
                             }
                         }
@@ -316,18 +322,17 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                         }
         
                         virtual void onKeyCombined(const Ast::KeyCombined & key){
-                            throw std::exception();
+                            throw MugenException("Cannot handle key combined", __FILE__, __LINE__);
                         }
         
                         virtual void onKeyModifier(const Ast::KeyModifier & key){
-                            throw std::exception();
-switch (key.getModifierType()){
+                            switch (key.getModifierType()){
                                 case Ast::KeyModifier::Direction: {
                                     key.getKey()->walk(*this);
                                     break;
                                 }
                                 default: {
-                                    throw std::exception();
+                                    throw MugenException("Cannot handle modifier type", __FILE__, __LINE__);
                                 }
                             }
                         }
@@ -601,6 +606,10 @@ bool Constraint::sameKey(const Constraint & him){
         case ReleaseZ: return him.getType() == PressZ ||
                        him.getType() == ReleaseZ;
 
+        case PressStart:
+        case ReleaseStart: return him.getType() == PressStart ||
+                                  him.getType() == ReleaseStart;
+
         case PressForward:
         case ReleaseForward: return him.getType() == PressForward ||
                              him.getType() == ReleaseForward;
@@ -655,6 +664,8 @@ std::string Constraint::toString() const {
         case ReleaseY: out << "~y"; break;
         case PressZ: out << "z"; break;
         case ReleaseZ: out << "~z"; break;
+        case PressStart: out << "s"; break;
+        case ReleaseStart: out << "~s"; break;
         case PressForward: out << "F"; break;
         case ReleaseForward: out << "~F"; break;
         case PressBack: out << "B"; break;
@@ -691,6 +702,8 @@ bool Constraint::doSatisfy(const Mugen::Input & input, int tick){
         case ReleaseY: return input.released.y; break;
         case PressZ: return input.pressed.z; break;
         case ReleaseZ: return input.released.z; break;
+        case PressStart: return input.pressed.start; break;
+        case ReleaseStart: return input.released.start; break;
 
         case PressForward: return input.pressed.forward; break;
         case ReleaseForward: return input.released.forward; break;
@@ -773,8 +786,15 @@ const std::set<ConstraintRef> & Constraint::getDepends(){
     return dependsOn;
 }
 
-Command2::Command2(Ast::KeyList * keys):
-constraints(makeConstraints(keys)){
+Command2::Command2(const std::string & name, Ast::KeyList * keys, int maxTime, int bufferTime):
+constraints(makeConstraints(keys)),
+name(name),
+maxTime(maxTime),
+bufferTime(bufferTime){
+}
+    
+const std::string & Command2::getName() const {
+    return name;
 }
             
 bool Command2::handle(const Mugen::Input & input, int ticks){

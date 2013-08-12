@@ -19,7 +19,8 @@
 #include "character.h"
 #include "game.h"
 #include "config.h"
-#include "command.h"
+// #include "command.h"
+#include "constraint.h"
 
 #include "util/network/network.h"
 #include "util/thread.h"
@@ -465,14 +466,14 @@ public:
         return getInput(stage.getTicks());
     }
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
         vector<string> out;
 
         Input input = getInput(stage);
 
-        for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
-            Command * command = *it;
-            if (command->handle(input)){
+        for (vector<Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+            Command2 * command = *it;
+            if (command->handle(input, stage.getTicks())){
                 Global::debug(1) << "command: " << command->getName() << std::endl;
                 out.push_back(command->getName());
             }
@@ -514,15 +515,15 @@ public:
         return input;
     }
     
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed){
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed){
         vector<string> out;
 
         Input use = getInput(stage, reversed);
         history[stage.getTicks()] = use;
 
-        for (vector<Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
-            Command * command = *it;
-            if (command->handle(use)){
+        for (vector<Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+            Command2 * command = *it;
+            if (command->handle(use, stage.getTicks())){
                 Global::debug(1) << "command: " << command->getName() << std::endl;
                 out.push_back(command->getName());
             }

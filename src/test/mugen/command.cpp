@@ -966,7 +966,7 @@ vector<Mugen::Input> loadScript(const string & input){
 int testKeys(Ast::KeyList * keys, const vector<Mugen::Input> & inputs){
     // Mugen::Command command("test", keys, 100, 1);
     // NewCommand command(keys);
-    Mugen::Command2 command(keys);
+    Mugen::Command2 command("", keys, 1000, 0);
 
     /* Make sure we emit something */
     bool emitted = false;

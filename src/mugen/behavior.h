@@ -11,7 +11,7 @@ namespace Mugen{
 
 class Object;
 class Character;
-class Command;
+class Command2;
 class Stage;
 
 /* handles input and tells the character what commands to invoke */
@@ -19,7 +19,7 @@ class Behavior{
 public:
     Behavior();
    
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed) = 0;
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed) = 0;
 
     /* called when the player changes direction. useful for updating
      * the input mapping.
@@ -36,7 +36,7 @@ class HumanBehavior: public Behavior {
 public:
     HumanBehavior(const InputMap<Keys> &, const InputMap<Keys> &);
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     
     virtual void flip();
 
@@ -61,7 +61,7 @@ class DummyBehavior: public Behavior {
 public:
     DummyBehavior();
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     virtual void flip();
 
     virtual ~DummyBehavior();
@@ -72,7 +72,7 @@ class RandomAIBehavior: public Behavior {
 public:
     RandomAIBehavior();
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     virtual void flip();
 
     virtual ~RandomAIBehavior();
@@ -92,7 +92,7 @@ public:
         std::vector<std::string> commands;
     };
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     virtual void flip();
 
     virtual ~ScriptedBehavior();
@@ -110,7 +110,7 @@ public:
     /* 1 is easy, 10 is hard */
     LearningAIBehavior(int difficult);
 
-    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command*> & commands, bool reversed);
+    virtual std::vector<std::string> currentCommands(const Stage & stage, Character * owner, const std::vector<Command2*> & commands, bool reversed);
     virtual void flip();
     
     virtual void hit(Object * enemy);
@@ -148,7 +148,7 @@ public:
     };
 
 protected:
-    std::string selectBestCommand(int distance, const std::vector<Command*> & commands);
+    std::string selectBestCommand(int distance, const std::vector<Command2*> & commands);
 
     std::map<std::string, Move> moves;
 
