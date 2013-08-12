@@ -1,4 +1,5 @@
 #include "mugen/command.h"
+#include "mugen/constraint.h"
 #include "mugen/ast/key.h"
 #include "util/debug.h"
 #include <math.h>
@@ -964,7 +965,8 @@ vector<Mugen::Input> loadScript(const string & input){
 
 int testKeys(Ast::KeyList * keys, const vector<Mugen::Input> & inputs){
     // Mugen::Command command("test", keys, 100, 1);
-    NewCommand command(keys);
+    // NewCommand command(keys);
+    Mugen::Command2 command(keys);
 
     /* Make sure we emit something */
     bool emitted = false;
