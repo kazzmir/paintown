@@ -116,6 +116,7 @@ protected:
     int maxTime;
     int bufferTime;
     int useBufferTime;
+    bool emitted;
 };
 
 }

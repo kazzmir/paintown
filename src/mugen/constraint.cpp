@@ -252,17 +252,23 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
 
                     class HoldWalker: public Ast::Walker {
                     public:
-                        HoldWalker(ConstraintWalker & outer, double time):
+                        HoldWalker(ConstraintWalker & outer, double time, bool last):
                         outer(outer),
-                        time(time){
+                        time(time),
+                        last(last){
                         }
                         
                         ConstraintWalker & outer;
                         const double time;
+                        const bool last;
                         
                         virtual void onKeySingle(const Ast::KeySingle & key){
                             Constraint::Type pressKey = getPress(key);
-                            outer.constraints.push_back(ConstraintRef(new HoldConstraint(pressKey, time, true)));
+                            ConstraintRef constraint = ConstraintRef(new HoldConstraint(pressKey, time, true));
+                            outer.constraints.push_back(constraint);
+                            if (last){
+                                constraint->setEmit();
+                            }
                         }
 
                         virtual void onKeyCombined(const Ast::KeyCombined & key){
@@ -283,7 +289,7 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                     };
                     
                     const Ast::Key * sub = key.getKey();
-                    HoldWalker walker(*this, time);
+                    HoldWalker walker(*this, time, last);
                     sub->walk(walker);
 
                     break;
@@ -792,7 +798,8 @@ constraints(makeConstraints(keys)),
 name(name),
 maxTime(maxTime),
 bufferTime(bufferTime),
-useBufferTime(0){
+useBufferTime(0),
+emitted(false){
 }
     
 const std::string & Command2::getName() const {
@@ -804,6 +811,8 @@ void Command2::resetConstraints(){
         ConstraintRef ref = *it;
         ref->reset();
     }
+
+    emitted = false;
 }
 
 int Command2::activeTicks(int ticks){
@@ -817,16 +826,40 @@ int Command2::activeTicks(int ticks){
 
     return 0;
 }
-            
-bool Command2::handle(const Mugen::Input & input, int ticks){
-    /* keep checking constraints until we reach a fix point. */
 
+static bool emptyInput(const Mugen::Input & input){
+    return !input.pressed.a &&
+           !input.pressed.b &&
+           !input.pressed.c &&
+           !input.pressed.x &&
+           !input.pressed.y &&
+           !input.pressed.z &&
+           !input.pressed.start &&
+           !input.pressed.up &&
+           !input.pressed.down &&
+           !input.pressed.forward &&
+           !input.pressed.back &&
+
+           !input.released.a &&
+           !input.released.b &&
+           !input.released.c &&
+           !input.released.x &&
+           !input.released.y &&
+           !input.released.z &&
+           !input.released.start &&
+           !input.released.up &&
+           !input.released.down &&
+           !input.released.forward &&
+           !input.released.back;
+}
+
+bool Command2::handle(const Mugen::Input & input, int ticks){
     if (useBufferTime > 0){
         useBufferTime -= 1;
         return true;
     }
 
-    if (activeTicks(ticks) > maxTime){
+    if (activeTicks(ticks) > maxTime && emptyInput(input)){
         resetConstraints();
     }
 
@@ -855,13 +888,19 @@ bool Command2::handle(const Mugen::Input & input, int ticks){
         }
     }
 
-    /* Reset the constraints if they were all satisfied. */
-    if (satisfied.size() == constraints.size()){
-        resetConstraints();
+    /* Can only emit once until a reset */
+    if (emitted){
+        emit = false;
     }
 
     if (emit){
-        useBufferTime = bufferTime;
+        useBufferTime = bufferTime - 1;
+        emitted = true;
+    }
+
+    /* Reset the constraints if they were all satisfied. */
+    if (satisfied.size() == constraints.size()){
+        resetConstraints();
     }
 
     /* Uncomment to debug the commands */
