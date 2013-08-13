@@ -32,6 +32,8 @@ bash "setup-profile" do
   EOH
 end
 
+# No longer needed
+=begin
 bash "co-paintown" do
   user "vagrant"
   cwd home
@@ -39,6 +41,7 @@ bash "co-paintown" do
     svn co --ignore-externals http://svn.code.sf.net/p/paintown/code/trunk paintown
   EOH
 end
+=end
 
 bash "grab-android-sdk" do
   user "root"

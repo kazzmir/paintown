@@ -10,15 +10,13 @@ Vagrant::Config.run do |config|
   # config.vm.forward_port 80, 8080
   
   # Other directories
-  # config.vm.share_folder "paintown", "/vagrant_data", "../data"
+  config.vm.share_folder("paintown", "/home/vagrant/paintown", "../../../", :nfs => (RUBY_PLATFORM =~ /linux/ or RUBY_PLATFORM =~ /darwin/)) 
+  
+  # Update chef
+  config.vm.provision :shell, :inline => "sudo true && apt-get update && curl -L https://www.opscode.com/chef/install.sh | sudo bash"
 
   config.vm.provision :chef_solo do |chef|
     chef.cookbooks_path = "../chef-cookbooks"
     chef.add_recipe "android"
-    #chef.roles_path = "../my-recipes/roles"
-    #chef.data_bags_path = "../my-recipes/data_bags"
-    #chef.add_role "web"
-  #   # You may also specify custom JSON attributes:
-  #   chef.json = { :mysql_password => "foo" }
   end
 end
