@@ -9,6 +9,7 @@
 #include "mugen/config.h"
 #include "mugen/behavior.h"
 #include "mugen/stage.h"
+#include "mugen/constraint.h"
 #include "mugen/world.h"
 #include "mugen/parse-cache.h"
 #include "mugen/util.h"
@@ -184,37 +185,70 @@ public:
         for (vector<string>::iterator it = keys.begin(); it != keys.end(); it++){
             string key = *it;
             if (key == "F"){
-                out.forward = true;
+                out.pressed.forward = true;
             }
             if (key == "B"){
-                out.back = true;
+                out.pressed.back = true;
             }
             if (key == "U"){
-                out.up = true;
+                out.pressed.up = true;
             }
             if (key == "D"){
-                out.down = true;
+                out.pressed.down = true;
             }
             if (key == "a"){
-                out.a = true;
+                out.pressed.a = true;
             }
             if (key == "b"){
-                out.b = true;
+                out.pressed.b = true;
             }
             if (key == "c"){
-                out.c = true;
+                out.pressed.c = true;
             }
             if (key == "x"){
-                out.x = true;
+                out.pressed.x = true;
             }
             if (key == "y"){
-                out.y = true;
+                out.pressed.y = true;
             }
             if (key == "z"){
-                out.z = true;
+                out.pressed.z = true;
             }
             if (key == "s"){
-                out.start = true;
+                out.pressed.start = true;
+            }
+            if (key == "~F"){
+                out.released.forward = true;
+            }
+            if (key == "~B"){
+                out.released.back = true;
+            }
+            if (key == "~U"){
+                out.released.up = true;
+            }
+            if (key == "~D"){
+                out.released.down = true;
+            }
+            if (key == "~a"){
+                out.released.a = true;
+            }
+            if (key == "~b"){
+                out.released.b = true;
+            }
+            if (key == "~c"){
+                out.released.c = true;
+            }
+            if (key == "~x"){
+                out.released.x = true;
+            }
+            if (key == "~y"){
+                out.released.y = true;
+            }
+            if (key == "~z"){
+                out.released.z = true;
+            }
+            if (key == "~s"){
+                out.released.start = true;
             }
         }
 
@@ -226,14 +260,14 @@ public:
 
     vector<Mugen::Input> inputs;
 
-    vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command*> & commands, bool reversed){
+    vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command2*> & commands, bool reversed){
         vector<string> out;
 
         Mugen::Input input = inputs[stage.getTicks()];
 
-        for (vector<Mugen::Command*>::const_iterator it = commands.begin(); it != commands.end(); it++){
-            Mugen::Command * command = *it;
-            if (command->handle(input)){
+        for (vector<Mugen::Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+            Mugen::Command2 * command = *it;
+            if (command->handle(input, stage.getTicks())){
                 Global::debug(1) << "command: " << command->getName() << endl;
                 out.push_back(command->getName());
             }
@@ -258,38 +292,71 @@ public:
 
     void writeInput(const Mugen::Input & input){
         vector<string> inputs;
-        if (input.forward){
+        if (input.pressed.forward){
             inputs.push_back("F");
         }
-        if (input.back){
+        if (input.pressed.back){
             inputs.push_back("B");
         }
-        if (input.up){
+        if (input.pressed.up){
             inputs.push_back("U");
         }
-        if (input.down){
+        if (input.pressed.down){
             inputs.push_back("D");
         }
-        if (input.a){
+        if (input.pressed.a){
             inputs.push_back("a");
         }
-        if (input.b){
+        if (input.pressed.b){
             inputs.push_back("b");
         }
-        if (input.c){
+        if (input.pressed.c){
             inputs.push_back("c");
         }
-        if (input.x){
+        if (input.pressed.x){
             inputs.push_back("x");
         }
-        if (input.y){
+        if (input.pressed.y){
             inputs.push_back("y");
         }
-        if (input.z){
+        if (input.pressed.z){
             inputs.push_back("z");
         }
-        if (input.start){
+        if (input.pressed.start){
             inputs.push_back("s");
+        }
+        if (input.released.forward){
+            inputs.push_back("~F");
+        }
+        if (input.released.back){
+            inputs.push_back("~B");
+        }
+        if (input.released.up){
+            inputs.push_back("~U");
+        }
+        if (input.released.down){
+            inputs.push_back("~D");
+        }
+        if (input.released.a){
+            inputs.push_back("~a");
+        }
+        if (input.released.b){
+            inputs.push_back("~b");
+        }
+        if (input.released.c){
+            inputs.push_back("~c");
+        }
+        if (input.released.x){
+            inputs.push_back("~x");
+        }
+        if (input.released.y){
+            inputs.push_back("~y");
+        }
+        if (input.released.z){
+            inputs.push_back("~z");
+        }
+        if (input.released.start){
+            inputs.push_back("~s");
         }
         bool first = true;
         for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
@@ -302,7 +369,7 @@ public:
         out << "\n";
     }
 
-    vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command*> & commands, bool reversed){
+    vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command2*> & commands, bool reversed){
         vector<string> out = Mugen::HumanBehavior::currentCommands(stage, owner, commands, reversed);
         writeInput(getInput());
         return out;
