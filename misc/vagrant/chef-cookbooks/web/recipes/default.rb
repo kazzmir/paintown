@@ -1,14 +1,6 @@
 packages = %w{wget python-devel git subversion}
 
 home = "/home/vagrant"
-nocredentials = <<-EOH
-svn co --ignore-externals http://svn.code.sf.net/p/paintown/code/www paintown
-chmod -R 755 #{home}
-EOH
-withcredentials = <<-EOH
-svn co --username #{node.include?('paintown') ? node["paintown"]["username"] : ""} --password #{node.include?('paintown') ? node["paintown"]["password"]: ""} --ignore-externals svn+ssh://#{node.include?('paintown') ? node["paintown"]["username"] : ""}@svn.code.sf.net/p/paintown/code/www paintown
-chmod -R 755 #{home}
-EOH
 
 packages.each do |pkg|
   package pkg do
@@ -71,8 +63,9 @@ bash "reload-iptables" do
   EOH
 end
 
-bash "co-paintown" do
-  user "vagrant"
-  cwd home
-  code node.include?('paintown') ? withcredentials : nocredentials
+bash "symlink" do
+  cwd '/home/vagrant'
+  code <<-EOH
+    ln -s /home/vagrant/paintown /var/www/paintown
+  EOH
 end

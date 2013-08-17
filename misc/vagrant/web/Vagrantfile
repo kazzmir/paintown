@@ -9,7 +9,7 @@ Vagrant::Config.run do |config|
   config.vm.forward_port 80, 8080
   
   # Other directories
-  config.vm.share_folder "paintown-www", "/home/vagrant/paintown", "./www", :create => true
+  config.vm.share_folder "paintown-www", "/home/vagrant/paintown", "./www", :create => true, :nfs => (RUBY_PLATFORM =~ /linux/ or RUBY_PLATFORM =~ /darwin/)
   
   # Update chef (To support latest cookbooks)
   config.vm.provision :shell, :inline => "sudo true && curl -L https://www.opscode.com/chef/install.sh | sudo bash"
@@ -27,20 +27,6 @@ Vagrant::Config.run do |config|
             "default_site_enabled" => true
         }
     }
-    
-=begin
-        # If you want to make commit edits add this to the named file below
-        Paintown = {
-            "paintown" => {
-                "username" => '',
-                "password" => ''
-            }
-        }
-=end
-    if File.exist?('./svn-info.rb')
-        require('./svn-info.rb')
-        chef.json = chef.json.merge Paintown
-    end
     
     chef.cookbooks_path = "../chef-cookbooks"
     chef.add_recipe "yum"
