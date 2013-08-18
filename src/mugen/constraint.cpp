@@ -2,6 +2,7 @@
 #include "constraint.h"
 #include "ast/key.h"
 #include "util/debug.h"
+#include "util/token.h"
 #include <math.h>
 #include <vector>
 #include <string>
@@ -23,6 +24,12 @@ public:
     Constraint(type, time, dominate),
     delayTime(delayTime),
     held(0){
+    }
+ 
+    Token * serialize() const {
+        Token * out = Constraint::serialize();
+        *out << held;
+        return out;
     }
     
     virtual bool satisfy(const Mugen::Input & input, int tick){
@@ -70,6 +77,13 @@ public:
         out << Constraint::toString();
 
         return out.str();
+    }
+ 
+    /* Nothing to serialize because there is no state */
+    Token * serialize() const {
+        Token * out = new Token();
+        *out << "h";
+        return out;
     }
  
     /* The constraint is only satisfied when a key is held down and
@@ -548,6 +562,15 @@ Constraint::~Constraint(){
 Constraint::Type Constraint::getType() const {
     return type;
 }
+    
+Token * Constraint::serialize() const {
+    Token * top = new Token();
+    *top << "c";
+    *top << satisfied;
+    *top << satisfiedTick;
+
+    return top;
+}
 
 void Constraint::setEmit(){
     this->emit = true;
@@ -914,6 +937,16 @@ bool Command2::handle(const Mugen::Input & input, int ticks){
        */
 
     return emit;
+}
+    
+Token * Command2::serialize() const {
+    Token * out = new Token();
+    *out << getName();
+    for (vector<ConstraintRef>::const_iterator it = constraints.begin(); it != constraints.end(); it++){
+        const ConstraintRef & constraint = *it;
+        *out << constraint->serialize();
+    }
+    return out;
 }
 
 }

@@ -7,6 +7,7 @@
 #include "command.h"
 #include "util/pointer.h"
 
+class Token;
 namespace PaintownUtil = ::Util;
 
 namespace Mugen{
@@ -80,6 +81,8 @@ public:
     bool isDominate() const;
 
     double getTime() const;
+
+    virtual Token * serialize() const;
     
     /*
     virtual bool isSatisfied() const {
@@ -106,6 +109,8 @@ public:
     const std::string & getName() const;
             
     bool handle(const Mugen::Input & input, int ticks);
+
+    Token * serialize() const;
 
 protected:
     void resetConstraints();
