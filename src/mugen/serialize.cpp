@@ -76,6 +76,30 @@ Token * serialize(const RuntimeValue & value){
 
     return token;
 }
+    
+void deserialize_RuntimeValue(RuntimeValue & out, const Token * token){
+    /* TODO */
+}
+
+void deserialize_stdstring(std::string & out, const Token * token){
+    /* TODO */
+}
+
+void deserialize_CharacterId(CharacterId & out, const Token * token){
+    /* TODO */
+}
+
+void deserialize_ScreenBound(ScreenBound & out, const Token * token){
+    /* TODO */
+}
+    
+void deserialize_stdvectorCharacterId(std::vector<CharacterId> & out, const Token * token){
+    /* TODO */
+}
+    
+void deserialize_HitOverride(HitOverride & out, const Token * token){
+    /* TODO */
+}
 
 /* FIXME: probably output a full token like (AttackTypeAttribute ..data..) */
 Token * serialize(const AttackType::Attribute data){
@@ -171,6 +195,11 @@ static int integer(const string & what){
     std::istringstream data(what);
     data >> out;
     return out;
+}
+    
+void deserialize_int(int & out, const Token * token){
+    std::istringstream data(token->getName());
+    data >> out;
 }
 
 AttackType::Attribute deserializeAttackTypeAttribute(const Token * token){

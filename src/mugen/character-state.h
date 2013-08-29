@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_b5253b51e62be90e1706161d76d3c674
-#define _serialize_Mugen_b5253b51e62be90e1706161d76d3c674
+#ifndef _serialize_Mugen_8e7a8c00328eda8aa26b2694d8ed6d5b
+#define _serialize_Mugen_8e7a8c00328eda8aa26b2694d8ed6d5b
 
 #include "common.h"
 #include "compiler.h"
@@ -684,6 +684,7 @@ struct StateData{
     double virtualz;
     Facing facing;
     double power;
+    std::map<std::string, std::string > commandState;
 };
 Token * serialize(const StateData & data);
 StateData deserializeStateData(const Token * data);

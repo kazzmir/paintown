@@ -364,6 +364,9 @@ struct StateData{
     Facing facing;
 
     double power;
+
+    /* maps a name to the serialized version of the command state (which is a token) */
+    std::map<std::string, std::string> commandState;
 }
 
 struct AnimationState{

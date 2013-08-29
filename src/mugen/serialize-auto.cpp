@@ -1805,6 +1805,12 @@ Token * serialize(const StateData & data){
         *out->newToken() << "power" << data.power;
     }
 
+    Token * t7 = out->newToken();
+    *t7 << "commandState";
+    for (std::map<std::string, std::string >::const_iterator it = data.commandState.begin(); it != data.commandState.end(); it++){
+        *t7->newToken() << serialize(it->first) << serialize(it->second);
+    }
+    
     return out;
 }
 
@@ -1849,15 +1855,39 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/variables");
     if (use != NULL){
-        
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            int valueKey;
+            deserialize_int(valueKey, entry->getToken(0));
+            RuntimeValue valueValue;
+            deserialize_RuntimeValue(valueValue, entry->getToken(1));
+            out.variables[valueKey] = valueValue;
+        }
+
     }
     use = data->findToken("_/floatVariables");
     if (use != NULL){
-        
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            int valueKey;
+            deserialize_int(valueKey, entry->getToken(0));
+            RuntimeValue valueValue;
+            deserialize_RuntimeValue(valueValue, entry->getToken(1));
+            out.floatVariables[valueKey] = valueValue;
+        }
+
     }
     use = data->findToken("_/systemVariables");
     if (use != NULL){
-        
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            int valueKey;
+            deserialize_int(valueKey, entry->getToken(0));
+            RuntimeValue valueValue;
+            deserialize_RuntimeValue(valueValue, entry->getToken(1));
+            out.systemVariables[valueKey] = valueValue;
+        }
+
     }
     use = data->findToken("_/currentPhysics/PhysicsType");
     if (use != NULL){
@@ -1953,7 +1983,15 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/targets");
     if (use != NULL){
-        
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            int valueKey;
+            deserialize_int(valueKey, entry->getToken(0));
+            std::vector<CharacterId> valueValue;
+            deserialize_stdvectorCharacterId(valueValue, entry->getToken(1));
+            out.targets[valueKey] = valueValue;
+        }
+
     }
     use = data->findToken("_/spritePriority");
     if (use != NULL){
@@ -1991,7 +2029,15 @@ StateData deserializeStateData(const Token * data){
     }
     use = data->findToken("_/hitOverrides");
     if (use != NULL){
-        
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            int valueKey;
+            deserialize_int(valueKey, entry->getToken(0));
+            HitOverride valueValue;
+            deserialize_HitOverride(valueValue, entry->getToken(1));
+            out.hitOverrides[valueKey] = valueValue;
+        }
+
     }
     use = data->findToken("_/virtualx");
     if (use != NULL){
@@ -2012,6 +2058,18 @@ StateData deserializeStateData(const Token * data){
     use = data->findToken("_/power");
     if (use != NULL){
         use->view() >> out.power;
+    }
+    use = data->findToken("_/commandState");
+    if (use != NULL){
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            std::string valueKey;
+            deserialize_stdstring(valueKey, entry->getToken(0));
+            std::string valueValue;
+            deserialize_stdstring(valueValue, entry->getToken(1));
+            out.commandState[valueKey] = valueValue;
+        }
+
     }
 
     return out;
@@ -2473,7 +2531,15 @@ StageStateData deserializeStageStateData(const Token * data){
     }
     use = data->findToken("_/screenBound");
     if (use != NULL){
-        
+        for (TokenView view = use->view(); view.hasMore(); /**/){
+            const Token * entry = view.next();
+            CharacterId valueKey;
+            deserialize_CharacterId(valueKey, entry->getToken(0));
+            ScreenBound valueValue;
+            deserialize_ScreenBound(valueValue, entry->getToken(1));
+            out.screenBound[valueKey] = valueValue;
+        }
+
     }
     use = data->findToken("_/zoom");
     if (use != NULL){

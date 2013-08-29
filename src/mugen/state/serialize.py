@@ -265,7 +265,40 @@ def generate_cpp(object, structs):
             elif str(field.type_).startswith('std::map'):
                 # TODO
                 # get = "map %(name)s" % {'name': field.name}
-                get = ""
+                import re
+                each = ""
+                # print field.type_.element()
+                typeKey = re.sub(' ', '', field.type_.element().split(',')[0].strip())
+                typeValue = re.sub(' ', '', field.type_.element().split(',')[1])
+                # print "map: key: '%s' value '%s'" % (typeKey, typeValue)
+                if field.type_.isPOD() or field.type_.element() == 'std::string':
+                    type_ = str(field.type_)
+                    if not field.type_.isPOD():
+                        type_ = field.type_.element()
+                    each = """%(type)s element;
+            view >> element;
+            out.%(name)s.push_back(element);
+                    """ % {'name': field.name, 'type': type_}
+                else:
+                    def removeTypeChars(name):
+                        return re.sub('<', '',
+                                re.sub('>', '',
+                                  re.sub(':', '', name)))
+                    each = """const Token * entry = view.next();
+            %(typeKeyOriginal)s valueKey;
+            deserialize_%(typeKey)s(valueKey, entry->getToken(0));
+            %(typeValueOriginal)s valueValue;
+            deserialize_%(typeValue)s(valueValue, entry->getToken(1));
+            out.%(name)s[valueKey] = valueValue;""" % {'typeKey': removeTypeChars(typeKey),
+                                     'typeKeyOriginal': str(typeKey),
+                                     'typeValue': removeTypeChars(typeValue),
+                                     'typeValueOriginal': str(typeValue),
+                                     'name': field.name}
+                get = """for (TokenView view = use->view(); view.hasMore(); /**/){
+            %(each)s
+        }
+""" % {'each': each}
+
             else:
                 import re
                 if field.isArray():
