@@ -2,6 +2,7 @@
 #include "util/token.h"
 #include "compiler.h"
 #include <sstream>
+#include "character-state.h"
 
 using std::vector;
 using std::string;
@@ -79,26 +80,107 @@ Token * serialize(const RuntimeValue & value){
     
 void deserialize_RuntimeValue(RuntimeValue & out, const Token * token){
     /* TODO */
+    int type = 0;
+    TokenView view = token->view();
+    view >> type;
+
+    switch (type){
+        case RuntimeValue::Invalid: {
+            break;
+        }
+        case RuntimeValue::Bool: {
+            bool value = false;
+            view >> value;
+            out = RuntimeValue(out);
+            break;
+        }
+        case RuntimeValue::String: {
+            std::string value;
+            view >> value;
+            out = RuntimeValue(value);
+            break;
+        }
+        case RuntimeValue::Double: {
+            double value = 0;
+            try{
+                view >> value;
+            } catch (const TokenException & fail){
+                /* there might be no value because its 0 */
+            }
+            break;
+        }
+        case RuntimeValue::ListOfString: {
+            std::vector<std::string> values;
+            while (view.hasMore()){
+                std::string value;
+                view >> value;
+                values.push_back(value);
+            }
+
+            out = RuntimeValue(values);
+            break;
+        }
+        case RuntimeValue::RangeType: {
+            int low = 0;
+            int high = 0;
+            view >> low >> high;
+            out = RuntimeValue(low, high);
+            break;
+        }
+        case RuntimeValue::StateType: {
+            RuntimeValue::StateTypes value;
+            view >> value.standing >> value.crouching >> value.lying >> value.aerial;
+            out = RuntimeValue(value);
+            break;
+        }
+        case RuntimeValue::AttackAttribute: {
+            vector<AttackType::Attribute> values;
+            while (view.hasMore()){
+                int value = 0;
+                view >> value;
+                values.push_back(AttackType::Attribute(value));
+            }
+
+            out = RuntimeValue(values);
+            break;
+        }
+        case RuntimeValue::ListOfInt: {
+            vector<int> values;
+            while (view.hasMore()){
+                int value = 0;
+                view >> value;
+                values.push_back(value);
+            }
+
+            out = RuntimeValue(values);
+            break;
+        }
+    }
 }
 
 void deserialize_stdstring(std::string & out, const Token * token){
-    /* TODO */
+    out = token->getName();
 }
 
 void deserialize_CharacterId(CharacterId & out, const Token * token){
-    /* TODO */
+    out = deserializeCharacterId(token);
 }
 
 void deserialize_ScreenBound(ScreenBound & out, const Token * token){
-    /* TODO */
+    out = deserializeScreenBound(token);
 }
     
 void deserialize_stdvectorCharacterId(std::vector<CharacterId> & out, const Token * token){
-    /* TODO */
+    TokenView view = token->view();
+    const Token * use = view.next();
+    while (use != NULL){
+        out.push_back(deserializeCharacterId(use));
+        use = view.next();
+    }
 }
     
 void deserialize_HitOverride(HitOverride & out, const Token * token){
-    /* TODO */
+    out = deserializeHitOverride(token);
 }
 
 /* FIXME: probably output a full token like (AttackTypeAttribute ..data..) */
