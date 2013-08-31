@@ -84,18 +84,25 @@ static void testCharacterId(){
     }
 }
 
+static void testRuntimeValue(const Mugen::RuntimeValue & gold){
+    Token * token = Mugen::serialize(gold);
+
+    Mugen::RuntimeValue t2;
+    Mugen::deserialize_RuntimeValue(t2, token);
+
+    delete token;
+    if (gold != t2){
+        ostringstream out;
+        out << "testRuntimeValue: " << token->toString();
+        throw Fail(out.str());
+    }
+}
+
 static void testRuntimeValue(){
     try{
-        Mugen::RuntimeValue t1(true);
-        Token * t1_token = Mugen::serialize(t1);
-
-        Mugen::RuntimeValue t2;
-        Mugen::deserialize_RuntimeValue(t2, t1_token);
-
-        delete t1_token;
-        if (t1 != t2){
-            throw Fail("testRuntimeValue");
-        }
+        testRuntimeValue(Mugen::RuntimeValue(true));
+        testRuntimeValue(Mugen::RuntimeValue(12));
+        testRuntimeValue(Mugen::RuntimeValue(string("foobar")));
     } catch (const TokenException & fail){
         ostringstream out;
         out << "testRuntimeValue: " << fail.getTrace();

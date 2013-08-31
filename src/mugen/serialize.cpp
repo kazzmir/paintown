@@ -133,6 +133,7 @@ void deserialize_RuntimeValue(RuntimeValue & out, const Token * token){
             } catch (const TokenException & fail){
                 /* there might be no value because its 0 */
             }
+            out = RuntimeValue(value);
             break;
         }
         case RuntimeValue::ListOfString: {
