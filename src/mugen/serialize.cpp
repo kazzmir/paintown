@@ -9,14 +9,42 @@ using std::string;
 
 namespace Mugen{
 
-const char * BOOL_VALUE = "b";
-const char * STRING_VALUE = "s";
-const char * DOUBLE_VALUE = "d";
-const char * LIST_STRING_VALUE = "l";
-const char * RANGE_VALUE = "r";
-const char * STATE_VALUE = "v";
-const char * ATTACK_VALUE = "a";
-const char * INTS_VALUE = "i";
+static const char * BOOL_VALUE = "b";
+static const char * STRING_VALUE = "s";
+static const char * DOUBLE_VALUE = "d";
+static const char * LIST_STRING_VALUE = "l";
+static const char * RANGE_VALUE = "r";
+static const char * STATE_VALUE = "v";
+static const char * ATTACK_VALUE = "a";
+static const char * INTS_VALUE = "i";
+
+static RuntimeValue::Type getRuntimeValueType(const string & type){
+    if (type == BOOL_VALUE){
+        return RuntimeValue::Bool;
+    }
+    if (type == STRING_VALUE){
+        return RuntimeValue::String;
+    }
+    if (type == DOUBLE_VALUE){
+        return RuntimeValue::Double;
+    }
+    if (type == LIST_STRING_VALUE){
+        return RuntimeValue::ListOfString;
+    }
+    if (type == RANGE_VALUE){
+        return RuntimeValue::RangeType;
+    }
+    if (type == STATE_VALUE){
+        return RuntimeValue::StateType;
+    }
+    if (type == ATTACK_VALUE){
+        return RuntimeValue::AttackAttribute;
+    }
+    if (type == INTS_VALUE){
+        return RuntimeValue::ListOfInt;
+    }
+    return RuntimeValue::Invalid;
+}
 
 Token * serialize(const RuntimeValue & value){
     Token * token = new Token();
@@ -79,10 +107,8 @@ Token * serialize(const RuntimeValue & value){
 }
     
 void deserialize_RuntimeValue(RuntimeValue & out, const Token * token){
-    /* TODO */
-    int type = 0;
+    int type = getRuntimeValueType(token->getName());
     TokenView view = token->view();
-    view >> type;
 
     switch (type){
         case RuntimeValue::Invalid: {
@@ -91,7 +117,7 @@ void deserialize_RuntimeValue(RuntimeValue & out, const Token * token){
         case RuntimeValue::Bool: {
             bool value = false;
             view >> value;
-            out = RuntimeValue(out);
+            out = RuntimeValue(value);
             break;
         }
         case RuntimeValue::String: {

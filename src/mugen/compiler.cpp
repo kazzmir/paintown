@@ -341,6 +341,7 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
         case RuntimeValue::Bool:
         case RuntimeValue::Double : {
             switch (value2.type){
+                case RuntimeValue::Bool:
                 case RuntimeValue::Double : {
                     double epsilon = 0.0000001;
                     return fabs(value1.toNumber() - value2.toNumber()) < epsilon;
@@ -393,6 +394,10 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
 
     return false;
 }
+
+bool RuntimeValue::operator!=(const RuntimeValue & other) const {
+    return !(*this == other);
+} 
 
 static bool lessThanDouble(double a, double b){
     return a < b;
