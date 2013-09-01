@@ -90,12 +90,13 @@ static void testRuntimeValue(const Mugen::RuntimeValue & gold){
     Mugen::RuntimeValue t2;
     Mugen::deserialize_RuntimeValue(t2, token);
 
-    delete token;
     if (gold != t2){
         ostringstream out;
         out << "testRuntimeValue: " << token->toString();
+        delete token;
         throw Fail(out.str());
     }
+    delete token;
 }
 
 static void testRuntimeValue(){
@@ -103,6 +104,23 @@ static void testRuntimeValue(){
         testRuntimeValue(Mugen::RuntimeValue(true));
         testRuntimeValue(Mugen::RuntimeValue(12));
         testRuntimeValue(Mugen::RuntimeValue(string("foobar")));
+        vector<string> strings;
+        strings.push_back("string1");
+        strings.push_back("hello");
+        strings.push_back("earth");
+        testRuntimeValue(Mugen::RuntimeValue(strings));
+        testRuntimeValue(Mugen::RuntimeValue(23, 809));
+        Mugen::RuntimeValue::StateTypes state;
+        state.crouching = true;
+        state.aerial = true;
+        testRuntimeValue(Mugen::RuntimeValue(state));
+
+        vector<int> ints;
+        ints.push_back(8493);
+        ints.push_back(29);
+        ints.push_back(-84);
+        ints.push_back(442);
+        testRuntimeValue(Mugen::RuntimeValue(ints));
     } catch (const TokenException & fail){
         ostringstream out;
         out << "testRuntimeValue: " << fail.getTrace();

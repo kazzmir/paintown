@@ -306,6 +306,20 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
     switch (value1.type){
         case RuntimeValue::ListOfString : {
             switch (value2.type){
+                case RuntimeValue::ListOfString: {
+                    const vector<string> & strings1 = value1.strings_value;
+                    const vector<string> & strings2 = value2.strings_value;
+                    if (strings1.size() != strings2.size()){
+                        return false;
+                    }
+                    for (int i = 0; i < strings1.size(); i++){
+                        if (strings1[i] != strings2[i]){
+                            return false;
+                        }
+                    }
+                    return true;
+                    break;
+                }
                 case RuntimeValue::String : {
                     const vector<string> & strings = value1.strings_value;
                     for (vector<string>::const_iterator it = strings.begin(); it != strings.end(); it++){
@@ -334,6 +348,11 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
         }
         case RuntimeValue::RangeType : {
             switch (value2.type){
+                case RuntimeValue::RangeType: {
+                    return value1.getRangeLow() == value2.getRangeLow() &&
+                           value2.getRangeHigh() == value2.getRangeHigh();
+                    break;
+                }
                 case RuntimeValue::Double : return value2 == value1;
                 default: return false;
             }
@@ -386,6 +405,26 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
                     return true;
                 }
                 default : return false;
+            }
+            break;
+        }
+        case RuntimeValue::ListOfInt: {
+            switch (value2.type){
+                case RuntimeValue::ListOfInt: {
+                    const vector<int> & ints1 = value1.ints_value;
+                    const vector<int> & ints2 = value2.ints_value;
+                    if (ints1.size() != ints2.size()){
+                        return false;
+                    }
+                    for (int i = 0; i < ints1.size(); i++){
+                        if (ints1[i] != ints2[i]){
+                            return false;
+                        }
+                    }
+                    return true;
+
+                }
+                default: return false;
             }
             break;
         }
