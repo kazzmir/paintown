@@ -1700,19 +1700,19 @@ Token * serialize(const StateData & data){
     Token * t1 = out->newToken();
     *t1 << "variables";
     for (std::map<int, RuntimeValue >::const_iterator it = data.variables.begin(); it != data.variables.end(); it++){
-        *t1->newToken() << serialize(it->first) << serialize(it->second);
+        *t1->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
     
     Token * t2 = out->newToken();
     *t2 << "floatVariables";
     for (std::map<int, RuntimeValue >::const_iterator it = data.floatVariables.begin(); it != data.floatVariables.end(); it++){
-        *t2->newToken() << serialize(it->first) << serialize(it->second);
+        *t2->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
     
     Token * t3 = out->newToken();
     *t3 << "systemVariables";
     for (std::map<int, RuntimeValue >::const_iterator it = data.systemVariables.begin(); it != data.systemVariables.end(); it++){
-        *t3->newToken() << serialize(it->first) << serialize(it->second);
+        *t3->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
         *out->newToken() << "currentPhysics" << serialize(data.currentPhysics);
     if (data.stateType != ""){
@@ -1766,7 +1766,7 @@ Token * serialize(const StateData & data){
     Token * t4 = out->newToken();
     *t4 << "targets";
     for (std::map<int, std::vector<CharacterId > >::const_iterator it = data.targets.begin(); it != data.targets.end(); it++){
-        *t4->newToken() << serialize(it->first) << serialize(it->second);
+        *t4->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
         if (data.spritePriority != 0){
         *out->newToken() << "spritePriority" << data.spritePriority;
@@ -1789,7 +1789,7 @@ Token * serialize(const StateData & data){
     Token * t6 = out->newToken();
     *t6 << "hitOverrides";
     for (std::map<int, HitOverride >::const_iterator it = data.hitOverrides.begin(); it != data.hitOverrides.end(); it++){
-        *t6->newToken() << serialize(it->first) << serialize(it->second);
+        *t6->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
         if (data.virtualx != 0){
         *out->newToken() << "virtualx" << data.virtualx;
@@ -1808,7 +1808,7 @@ Token * serialize(const StateData & data){
     Token * t7 = out->newToken();
     *t7 << "commandState";
     for (std::map<std::string, std::string >::const_iterator it = data.commandState.begin(); it != data.commandState.end(); it++){
-        *t7->newToken() << serialize(it->first) << serialize(it->second);
+        *t7->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
     
     return out;
@@ -1858,9 +1858,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(0));
+            deserialize_int(valueKey, entry->getToken(1));
             RuntimeValue valueValue;
-            deserialize_RuntimeValue(valueValue, entry->getToken(1));
+            deserialize_RuntimeValue(valueValue, entry->getToken(2));
             out.variables[valueKey] = valueValue;
         }
 
@@ -1870,9 +1870,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(0));
+            deserialize_int(valueKey, entry->getToken(1));
             RuntimeValue valueValue;
-            deserialize_RuntimeValue(valueValue, entry->getToken(1));
+            deserialize_RuntimeValue(valueValue, entry->getToken(2));
             out.floatVariables[valueKey] = valueValue;
         }
 
@@ -1882,9 +1882,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(0));
+            deserialize_int(valueKey, entry->getToken(1));
             RuntimeValue valueValue;
-            deserialize_RuntimeValue(valueValue, entry->getToken(1));
+            deserialize_RuntimeValue(valueValue, entry->getToken(2));
             out.systemVariables[valueKey] = valueValue;
         }
 
@@ -1986,9 +1986,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(0));
+            deserialize_int(valueKey, entry->getToken(1));
             std::vector<CharacterId> valueValue;
-            deserialize_stdvectorCharacterId(valueValue, entry->getToken(1));
+            deserialize_stdvectorCharacterId(valueValue, entry->getToken(2));
             out.targets[valueKey] = valueValue;
         }
 
@@ -2032,9 +2032,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(0));
+            deserialize_int(valueKey, entry->getToken(1));
             HitOverride valueValue;
-            deserialize_HitOverride(valueValue, entry->getToken(1));
+            deserialize_HitOverride(valueValue, entry->getToken(2));
             out.hitOverrides[valueKey] = valueValue;
         }
 
@@ -2064,9 +2064,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             std::string valueKey;
-            deserialize_stdstring(valueKey, entry->getToken(0));
+            deserialize_stdstring(valueKey, entry->getToken(1));
             std::string valueValue;
-            deserialize_stdstring(valueValue, entry->getToken(1));
+            deserialize_stdstring(valueValue, entry->getToken(2));
             out.commandState[valueKey] = valueValue;
         }
 
@@ -2481,7 +2481,7 @@ Token * serialize(const StageStateData & data){
     Token * t1 = out->newToken();
     *t1 << "screenBound";
     for (std::map<CharacterId, ScreenBound >::const_iterator it = data.screenBound.begin(); it != data.screenBound.end(); it++){
-        *t1->newToken() << serialize(it->first) << serialize(it->second);
+        *t1->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
         *out->newToken() << "zoom" << serialize(data.zoom);
     *out->newToken() << "environmentColor" << serialize(data.environmentColor);
@@ -2534,9 +2534,9 @@ StageStateData deserializeStageStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             CharacterId valueKey;
-            deserialize_CharacterId(valueKey, entry->getToken(0));
+            deserialize_CharacterId(valueKey, entry->getToken(1));
             ScreenBound valueValue;
-            deserialize_ScreenBound(valueValue, entry->getToken(1));
+            deserialize_ScreenBound(valueValue, entry->getToken(2));
             out.screenBound[valueKey] = valueValue;
         }
 

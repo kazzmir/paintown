@@ -213,7 +213,7 @@ def generate_cpp(object, structs):
     Token * %(token)s = out->newToken();
     *%(token)s << "%(var)s";
     for (%(type)s::const_iterator it = data.%(var)s.begin(); it != data.%(var)s.end(); it++){
-        *%(token)s->newToken() << serialize(it->first) << serialize(it->second);
+        *%(token)s->newToken() << "e" << serialize(it->first) << serialize(it->second);
     }
     """ % {'token': 't%d' % name,
            'type': str(field.type_),
@@ -286,9 +286,9 @@ def generate_cpp(object, structs):
                                   re.sub(':', '', name)))
                     each = """const Token * entry = view.next();
             %(typeKeyOriginal)s valueKey;
-            deserialize_%(typeKey)s(valueKey, entry->getToken(0));
+            deserialize_%(typeKey)s(valueKey, entry->getToken(1));
             %(typeValueOriginal)s valueValue;
-            deserialize_%(typeValue)s(valueValue, entry->getToken(1));
+            deserialize_%(typeValue)s(valueValue, entry->getToken(2));
             out.%(name)s[valueKey] = valueValue;""" % {'typeKey': removeTypeChars(typeKey),
                                      'typeKeyOriginal': str(typeKey),
                                      'typeValue': removeTypeChars(typeValue),
