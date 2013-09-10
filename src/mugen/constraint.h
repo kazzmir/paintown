@@ -83,6 +83,9 @@ public:
     double getTime() const;
 
     virtual Token * serialize() const;
+    /* Updates the state of the object */
+    virtual void deserialize(TokenView & view);
+    virtual void deserialize(const Token * token);
     
     /*
     virtual bool isSatisfied() const {
@@ -111,6 +114,7 @@ public:
     bool handle(const Mugen::Input & input, int ticks);
 
     Token * serialize() const;
+    void deserialize(const Token * token);
 
 protected:
     void resetConstraints();

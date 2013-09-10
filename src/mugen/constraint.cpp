@@ -31,7 +31,13 @@ public:
         *out << held;
         return out;
     }
-    
+
+    void deserialize(const Token * token){
+        TokenView view = token->view();
+        Constraint::deserialize(view);
+        view >> held;
+    }
+
     virtual bool satisfy(const Mugen::Input & input, int tick){
         if (satisfied){
             return satisfied;
@@ -85,6 +91,9 @@ public:
         *out << "h";
         return out;
     }
+
+    virtual void deserialize(const Token * token){
+    }
  
     /* The constraint is only satisfied when a key is held down and
      * must be held down forever until the end.
@@ -102,6 +111,20 @@ public:
     Constraint(Combine, time, dominate),
     key1(key1),
     key2(key2){
+    }
+
+    virtual Token * serialize() const {
+        Token * token = new Token();
+        *token << "z" << key1->serialize() << key2->serialize();
+        return token;
+    }
+
+    virtual void deserialize(const Token * token){
+        const Token * token1 = NULL;
+        const Token * token2 = NULL;
+        token->view() >> token1 >> token2;
+        key1->deserialize(token1);
+        key2->deserialize(token2);
     }
 
     virtual bool doSatisfy(const Mugen::Input & input, int tick){
@@ -562,7 +585,16 @@ Constraint::~Constraint(){
 Constraint::Type Constraint::getType() const {
     return type;
 }
-    
+
+void Constraint::deserialize(TokenView & view){
+    view >> satisfied >> satisfiedTick;
+}
+
+void Constraint::deserialize(const Token * token){
+    TokenView view = token->view();
+    deserialize(view);
+}
+
 Token * Constraint::serialize() const {
     Token * top = new Token();
     *top << "c";
@@ -947,6 +979,16 @@ Token * Command2::serialize() const {
         *out << constraint->serialize();
     }
     return out;
+}
+
+void Command2::deserialize(const Token * token){
+    TokenView view = token->view();
+    for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
+        ConstraintRef & ref = *it;
+        const Token * token = NULL;
+        view >> token;
+        ref->deserialize(token);
+    }
 }
 
 }
