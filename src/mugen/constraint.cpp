@@ -985,9 +985,9 @@ void Command2::deserialize(const Token * token){
     TokenView view = token->view();
     for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
         ConstraintRef & ref = *it;
-        const Token * token = NULL;
-        view >> token;
-        ref->deserialize(token);
+        const Token * next = NULL;
+        view >> next;
+        ref->deserialize(next);
     }
 }
 

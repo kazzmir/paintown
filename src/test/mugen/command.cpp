@@ -1299,6 +1299,55 @@ int test22(){
     return !testKeys(list, loadScript(script.str()));
 }
 
+int test23(){
+    std::vector<Ast::Key*> keys;
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeySingle(0, 0, "a"));
+    keys.push_back(new Ast::KeySingle(0, 0, "b"));
+    Ast::KeyList * list = new Ast::KeyList(0, 0, keys);
+
+    bool fail = true;
+    bool success = false;
+    
+    std::ostringstream script;
+    script << "a;~a;a;~a;b";
+
+    vector<Mugen::Input> input = loadScript(script.str());
+    
+    Mugen::Command2 command1("", list, 1000, 0);
+
+    // a
+    if (command1.handle(input[0], 0)){
+        return fail;
+    }
+    
+    // ~a
+    if (command1.handle(input[1], 1)){
+        return fail;
+    }
+    
+    // a
+    if (command1.handle(input[2], 2)){
+        return fail;
+    }
+
+    Token * serialize = command1.serialize();
+    Mugen::Command2 command2("", list, 1000, 0);
+    command2.deserialize(serialize);
+
+    // ~a
+    if (command2.handle(input[3], 3)){
+        return fail;
+    }
+    
+    // b
+    if (!command2.handle(input[4], 4)){
+        return fail;
+    }
+    
+    return success;
+}
+
 int runTest(int (*test)(), const std::string & name){
     if (test()){
         Global::debug(0) << name << " failed" << std::endl;
@@ -1332,6 +1381,7 @@ int main(int argc, char ** argv){
         runTest(test20, "Test20") ||
         runTest(test21, "Test21") ||
         runTest(test22, "Test22") ||
+        runTest(test23, "Test23") ||
         /* having false here lets us copy/paste a runTest line easily */
         false
         ){
