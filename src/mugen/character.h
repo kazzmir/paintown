@@ -1163,6 +1163,8 @@ public:
         const CharacterId & getId() const;
         void setId(const CharacterId & id);
 
+        virtual const std::vector<Command2 *> & getCommands() const;
+
 protected:
     void initialize();
 

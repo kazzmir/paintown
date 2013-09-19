@@ -395,6 +395,40 @@ void record(){
     Mugen::Game::runMatch(stage.raw(), "", Mugen::RunMatchOptions());
 }
 
+static void showDifferences(const string & s1, const string & s2){
+    int line = 1;
+    int context = 10;
+    for (int i = 0; i < s1.size() && i < s2.size(); i++){
+        if (s1[i] != s2[i]){
+            int start = i - context;
+            if (start < 0){
+                start = 0;
+            }
+            int end = i + context;
+            if (end >= s1.size()){
+                end = s1.size() - 1;
+            }
+            if (end >= s2.size()){
+                end = s2.size() - 1;
+            }
+            Global::debug(0) << "At line " << line << std::endl;
+            Global::debug(0) << "Old: " << s1.substr(start, end - start) << std::endl;
+            Global::debug(0) << "New: " << s2.substr(start, end - start) << std::endl;
+            break;
+        }
+
+        if (s1[i] == '\n'){
+            line += 1;
+        }
+    }
+}
+
+static void writeToFile(string filename, string data){
+    ofstream out(filename.c_str());
+    out << data;
+    out.close();
+}
+
 int play(){
     /*
     Global::init(Global::WINDOWED);
@@ -438,9 +472,16 @@ int play(){
             PaintownUtil::ReferenceCount<Mugen::World> newWorld = stage->snapshotState();
             PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[stage->getTicks()];
             if (*newWorld != *oldWorld){
+                string world1 = newWorld->serialize()->toStringCompact();
+                string world2 = oldWorld->serialize()->toStringCompact();
                 Global::debug(0) << "Worlds are not the same at tick " << stage->getTicks() << std::endl;
                 Global::debug(0) << "Old World: " << oldWorld->serialize()->toString() << std::endl;
                 Global::debug(0) << "New World: " << newWorld->serialize()->toString() << std::endl;
+
+                writeToFile("f1", world1);
+                writeToFile("f2", world2);
+
+                showDifferences(world1, world2);
                 return 1;
             }
             stage->logic();

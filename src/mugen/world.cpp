@@ -1,6 +1,7 @@
 #include "world.h"
 #include "character.h"
 #include "util/token.h"
+#include "constraint.h"
 #include <vector>
 #include <string>
 #include <sstream>
@@ -29,6 +30,15 @@ AllCharacterData::AllCharacterData(){
 
 void World::addCharacter(const Character & who){
     characterData[who.getId()] = AllCharacterData(who.getStateData(), who.getCurrentAnimationState(), who.getStatePersistent());
+    AllCharacterData & data = characterData[who.getId()];
+    const std::vector<Command2 *> & commands = who.getCommands();
+    std::map<std::string, std::string > & commandState = data.character.commandState;
+    for (vector<Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+        Command2 * command = *it;
+        Token * serialized = command->serialize();
+        commandState[command->getName()] = serialized->toStringCompact();
+        delete serialized;
+    }
 }
     
 void World::setGameTime(int gameTime){

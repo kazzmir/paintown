@@ -12,6 +12,18 @@ namespace PaintownUtil = ::Util;
 
 namespace Mugen{
 
+/* Implements operator< so the std::set is properly ordered */
+class Constraint;
+class ConstraintCompare{
+public:
+    ConstraintCompare(PaintownUtil::ReferenceCount<Constraint> constraint);
+
+    bool operator<(const ConstraintCompare & him) const;
+    bool operator==(const ConstraintCompare & him) const;
+
+    PaintownUtil::ReferenceCount<Constraint> constraint;
+};
+
 class Constraint{
 public:
     enum Type{
@@ -54,7 +66,7 @@ public:
         Combine
     };
 
-    Constraint(Type type, double time, bool dominate);
+    Constraint(Type type, uint32_t id, double time, bool dominate);
 
     virtual ~Constraint();
 
@@ -78,6 +90,8 @@ public:
 
     virtual void reset();
 
+    uint32_t getId() const;
+
     bool isDominate() const;
 
     double getTime() const;
@@ -93,7 +107,7 @@ public:
     }
     */
     
-    const std::set<PaintownUtil::ReferenceCount<Constraint> > & getDepends();
+    const std::set<ConstraintCompare> & getDepends();
 
 protected:
     const Type type;
@@ -102,7 +116,10 @@ protected:
     const double time;
     bool emit;
     int satisfiedTick;
-    std::set<PaintownUtil::ReferenceCount<Constraint> > dependsOn;
+    std::set<ConstraintCompare> dependsOn;
+
+    /* serves to enforce total ordering */
+    const uint32_t id;
 };
 
 class Command2{

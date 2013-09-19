@@ -2561,6 +2561,10 @@ void Character::renderSprite(const int x, const int y, const unsigned int group,
     }
 }
         
+const std::vector<Command2 *> & Character::getCommands() const {
+    return getLocalData().commands;
+}
+        
 bool Character::canRecover() const {
     /* TODO */
     return false;

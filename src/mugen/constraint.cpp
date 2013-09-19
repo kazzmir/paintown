@@ -18,10 +18,22 @@ namespace Mugen{
 
 typedef PaintownUtil::ReferenceCount<Constraint> ConstraintRef;
 
+ConstraintCompare::ConstraintCompare(ConstraintRef constraint):
+constraint(constraint){
+}
+
+bool ConstraintCompare::operator==(const ConstraintCompare & him) const {
+    return constraint->getId() == him.constraint->getId();
+}
+
+bool ConstraintCompare::operator<(const ConstraintCompare & him) const {
+    return constraint->getId() < him.constraint->getId();
+}
+
 class DelayConstraint: public Constraint {
 public:
-    DelayConstraint(int delayTime, Constraint::Type type, double time, bool dominate):
-    Constraint(type, time, dominate),
+    DelayConstraint(uint32_t id, int delayTime, Constraint::Type type, double time, bool dominate):
+    Constraint(type, id, time, dominate),
     delayTime(delayTime),
     held(0){
     }
@@ -72,8 +84,8 @@ public:
 
 class HoldConstraint: public Constraint {
 public:
-    HoldConstraint(Constraint::Type type, double time, bool dominate):
-    Constraint(type, time, dominate){
+    HoldConstraint(Constraint::Type type, uint32_t id, double time, bool dominate):
+    Constraint(type, id, time, dominate){
     }
 
     virtual string toString() const {
@@ -105,10 +117,11 @@ public:
 
 class CombinedConstraint: public Constraint {
 public:
-    CombinedConstraint(const ConstraintRef & key1,
+    CombinedConstraint(uint32_t id,
+                       const ConstraintRef & key1,
                        const ConstraintRef & key2,
                        double time, bool dominate):
-    Constraint(Combine, time, dominate),
+    Constraint(Combine, id, time, dominate),
     key1(key1),
     key2(key2){
     }
@@ -253,24 +266,41 @@ static Constraint::Type getRelease(const Ast::KeySingle & key){
     return Constraint::ReleaseA;
 }
 
-vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool last){
+class IdMaker{
+public:
+    IdMaker():
+        id(0){
+        }
+
+    uint32_t next(){
+        uint32_t value = id;
+        id += 1;
+        return value;
+    }
+
+    uint32_t id;
+};
+
+vector<ConstraintRef > makeConstraints(IdMaker & id, const Ast::Key * key, double time, bool last){
     vector<ConstraintRef> constraints;
 
     class ConstraintWalker: public Ast::Walker {
     public:
-        ConstraintWalker(vector<ConstraintRef> & constraints, double time, bool last):
+        ConstraintWalker(vector<ConstraintRef> & constraints, double time, bool last, IdMaker & id):
         constraints(constraints),
         time(time),
-        last(last){
+        last(last),
+        id(id){
         }
         
         vector<ConstraintRef> & constraints;
         double time;
         bool last;
+        IdMaker & id;
 
         virtual void addPressRelease(Constraint::Type pressKey, Constraint::Type releaseKey){
-            ConstraintRef press = ConstraintRef(new Constraint(pressKey, time, true));
-            ConstraintRef release = ConstraintRef(new Constraint(releaseKey, time + 0.5, false));
+            ConstraintRef press = ConstraintRef(new Constraint(pressKey, id.next(), time, true));
+            ConstraintRef release = ConstraintRef(new Constraint(releaseKey, id.next(), time + 0.5, false));
             constraints.push_back(press);
             constraints.push_back(release);
 
@@ -289,19 +319,21 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
 
                     class HoldWalker: public Ast::Walker {
                     public:
-                        HoldWalker(ConstraintWalker & outer, double time, bool last):
+                        HoldWalker(ConstraintWalker & outer, double time, bool last, IdMaker & id):
                         outer(outer),
                         time(time),
-                        last(last){
+                        last(last),
+                        id(id){
                         }
                         
                         ConstraintWalker & outer;
                         const double time;
                         const bool last;
+                        IdMaker & id;
                         
                         virtual void onKeySingle(const Ast::KeySingle & key){
                             Constraint::Type pressKey = getPress(key);
-                            ConstraintRef constraint = ConstraintRef(new HoldConstraint(pressKey, time, true));
+                            ConstraintRef constraint = ConstraintRef(new HoldConstraint(pressKey, id.next(), time, true));
                             outer.constraints.push_back(constraint);
                             if (last){
                                 constraint->setEmit();
@@ -326,7 +358,7 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                     };
                     
                     const Ast::Key * sub = key.getKey();
-                    HoldWalker walker(*this, time, last);
+                    HoldWalker walker(*this, time, last, id);
                     sub->walk(walker);
 
                     break;
@@ -335,15 +367,17 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
 
                     class ReleaseWalker: public Ast::Walker {
                     public:
-                        ReleaseWalker(ConstraintWalker & outer, int hold, double time):
+                        ReleaseWalker(ConstraintWalker & outer, int hold, double time, IdMaker & id):
                         outer(outer),
                         hold(hold),
-                        time(time){
+                        time(time),
+                        id(id){
                         }
 
                         ConstraintWalker & outer;
                         int hold;
                         double time;
+                        IdMaker & id;
 
                         virtual void onKeySingle(const Ast::KeySingle & key){
                             string name = key.toString();
@@ -355,8 +389,8 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                                 hold = 1;
                             }
 
-                            outer.constraints.push_back(ConstraintRef(new DelayConstraint(hold, pressKey, time, true)));
-                            ConstraintRef release = ConstraintRef(new Constraint(releaseKey, time + 0.1, true));
+                            outer.constraints.push_back(ConstraintRef(new DelayConstraint(id.next(), hold, pressKey, time, true)));
+                            ConstraintRef release = ConstraintRef(new Constraint(releaseKey, id.next(), time + 0.1, true));
                             if (outer.last){
                                 release->setEmit();
                             }
@@ -382,7 +416,7 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
                     };
 
                     const Ast::Key * sub = key.getKey();
-                    ReleaseWalker walker(*this, key.getExtra(), time);
+                    ReleaseWalker walker(*this, key.getExtra(), time, id);
                     sub->walk(walker);
 
                     break;
@@ -428,14 +462,14 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
          * then the combined constraint should satisfy.
          */
         virtual void onKeyCombined(const Ast::KeyCombined & key){
-            vector<ConstraintRef> key1 = makeConstraints(key.getKey1(), time, false);
-            vector<ConstraintRef> key2 = makeConstraints(key.getKey2(), time, false);
+            vector<ConstraintRef> key1 = makeConstraints(id, key.getKey1(), time, false);
+            vector<ConstraintRef> key2 = makeConstraints(id, key.getKey2(), time, false);
             
             constraints.insert(constraints.end(), key1.begin(), key1.end()); 
             constraints.insert(constraints.end(), key2.begin(), key2.end()); 
             ConstraintRef dominateKey1 = findDominate(key1);
             ConstraintRef dominateKey2 = findDominate(key2);
-            ConstraintRef combined = ConstraintRef(new CombinedConstraint(dominateKey1, dominateKey2, time + 0.9, true));
+            ConstraintRef combined = ConstraintRef(new CombinedConstraint(id.next(), dominateKey1, dominateKey2, time + 0.9, true));
             constraints.push_back(combined);
             if (last){
                 combined->setEmit();
@@ -443,7 +477,7 @@ vector<ConstraintRef > makeConstraints(const Ast::Key * key, double time, bool l
         }
     };
 
-    ConstraintWalker walker(constraints, time, last);
+    ConstraintWalker walker(constraints, time, last, id);
     key->walk(walker);
 
     return constraints;
@@ -456,27 +490,27 @@ void constructDependencies(const vector<ConstraintRef> & constraints){
     }
 }
 
-static void topologicalVisit(ConstraintRef constraint, vector<ConstraintRef> & sorted, set<ConstraintRef> & unsorted){
-    const set<ConstraintRef> & depends = constraint->getDepends();
+static void topologicalVisit(ConstraintCompare constraint, vector<ConstraintRef> & sorted, set<ConstraintCompare> & unsorted){
+    const set<ConstraintCompare> & depends = constraint.constraint->getDepends();
     unsorted.erase(constraint);
-    for (set<ConstraintRef>::const_iterator it = depends.begin(); it != depends.end(); it++){
-        ConstraintRef depend = *it;
+    for (set<ConstraintCompare>::const_iterator it = depends.begin(); it != depends.end(); it++){
+        ConstraintCompare depend = *it;
         if (unsorted.find(depend) != unsorted.end()){
             topologicalVisit(depend, sorted, unsorted);
         }
     }
-    sorted.push_back(constraint);
+    sorted.push_back(constraint.constraint);
 }
 
 vector<ConstraintRef> topologicalSort(const vector<ConstraintRef> & constraints){
     vector<ConstraintRef> out;
-    set<ConstraintRef> unsorted;
+    set<ConstraintCompare> unsorted;
     for (vector<ConstraintRef>::const_iterator it = constraints.begin(); it != constraints.end(); it++){
         unsorted.insert(*it);
     }
 
     while (unsorted.size() > 0){
-        ConstraintRef first = *unsorted.begin();
+        ConstraintCompare first = *unsorted.begin();
         topologicalVisit(first, out, unsorted);
     }
 
@@ -486,6 +520,7 @@ vector<ConstraintRef> topologicalSort(const vector<ConstraintRef> & constraints)
 vector<ConstraintRef> makeConstraints(Ast::KeyList * keys){
     vector<ConstraintRef> constraints;
     double time = 1;
+    IdMaker id;
     for (vector<Ast::Key*>::const_iterator it = keys->getKeys().begin(); it != keys->getKeys().end(); it++){
         bool last = false;
         Ast::Key * key = *it;
@@ -493,7 +528,7 @@ vector<ConstraintRef> makeConstraints(Ast::KeyList * keys){
             last = true;
         }
 
-        vector<ConstraintRef> more = makeConstraints(*it, time, last);
+        vector<ConstraintRef> more = makeConstraints(id, *it, time, last);
         time += 1;
         constraints.insert(constraints.end(), more.begin(), more.end());
     }   
@@ -570,13 +605,14 @@ string debugInput(const Mugen::Input & input){
     return out.str();
 }
 
-Constraint::Constraint(Type type, double time, bool dominate):
+Constraint::Constraint(Type type, uint32_t id, double time, bool dominate):
 type(type),
     satisfied(false),
     dominate(dominate),
     time(time),
     emit(false),
-    satisfiedTick(0){
+    satisfiedTick(0),
+    id(id){
     }
 
 Constraint::~Constraint(){
@@ -836,6 +872,10 @@ void Constraint::reset(){
     satisfiedTick = 0;
 }
 
+uint32_t Constraint::getId() const {
+    return id;
+}
+
 bool Constraint::isDominate() const {
     return dominate;
 }
@@ -844,7 +884,7 @@ double Constraint::getTime() const {
     return time;
 }
     
-const std::set<ConstraintRef> & Constraint::getDepends(){
+const std::set<ConstraintCompare> & Constraint::getDepends(){
     return dependsOn;
 }
 
@@ -923,10 +963,10 @@ bool Command2::handle(const Mugen::Input & input, int ticks){
     for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
         bool all = true;
         ConstraintRef constraint = *it;
-        const std::set<ConstraintRef> & depends = constraint->getDepends();
-        for (std::set<ConstraintRef>::const_iterator it2 = depends.begin(); it2 != depends.end(); it2++){
+        const std::set<ConstraintCompare> & depends = constraint->getDepends();
+        for (std::set<ConstraintCompare>::const_iterator it2 = depends.begin(); it2 != depends.end(); it2++){
             /* If its not in the satisified set then not all dependencies can be satisifed */
-            if (satisfied.find(*it2) == satisfied.end()){
+            if (satisfied.find(it2->constraint) == satisfied.end()){
                 all = false;
                 break;
             }
@@ -960,13 +1000,13 @@ bool Command2::handle(const Mugen::Input & input, int ticks){
 
     /* Uncomment to debug the commands */
     /*
-       Global::debug(0) << "Tick: " << ticks << " Input " << debugInput(input) << std::endl;
-       for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
-       ConstraintRef constraint = *it;
-       Global::debug(0) << " Constraint " << constraint->getTime() << " " << constraint->toString() << " satisfied " << (satisfied.find(constraint) != satisfied.end()) << std::endl;
-       }
-       Global::debug(0) << std::endl;
-       */
+    Global::debug(0) << "Tick: " << ticks << " Input " << debugInput(input) << std::endl;
+    for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
+        ConstraintRef constraint = *it;
+        Global::debug(0) << " Constraint " << constraint->getTime() << " " << constraint->toString() << " satisfied " << (satisfied.find(constraint) != satisfied.end()) << std::endl;
+    }
+    Global::debug(0) << std::endl;
+    */
 
     return emit;
 }
