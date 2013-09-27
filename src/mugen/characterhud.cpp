@@ -57,6 +57,47 @@ soundTicker(0){
 FightElement::~FightElement(){
 }
 
+Token * FightElement::serialize(){
+    Token * token = new Token();
+    *token << "fight";
+
+    *token << type;
+    // Mugen::Point spriteData;
+    // Mugen::Point offset;
+    *token << displaytime;
+    *token << soundtime;
+    // std::string text;
+    *token << bank;
+    *token << position;
+    *token << displayState;
+    *token << soundState;
+    *token << ticker;
+    *token << soundTicker;
+
+    return token;
+}
+
+void FightElement::deserialize(const Token * token){
+    TokenView view = token->view();
+
+    int i = 0;
+    view >> i;
+    type = ElementType(i);
+    // Mugen::Point spriteData;
+    // Mugen::Point offset;
+    view >> displaytime;
+    view >> soundtime;
+    // std::string text;
+    view >> bank;
+    view >> position;
+    view >> i;
+    displayState = DisplayState(i);
+    view >> i;
+    soundState = SoundState(i);
+    view >> ticker;
+    view >> soundTicker;
+}
+
 void FightElement::act(){
     if (isDone()){
         return;
@@ -811,6 +852,8 @@ Token * Round::serialize(){
     *token << "round";
     *token << state;
     *token << ticker;
+    *token << currentRound;
+    *token << getRoundElement().serialize();
     return token;
 }
 
@@ -820,6 +863,10 @@ void Round::deserialize(const Token * token){
     view >> i;
     state = State(i);
     view >> ticker;
+    view >> currentRound;
+    const Token * roundToken = NULL;
+    view >> roundToken;
+    getRoundElement().deserialize(roundToken);
 }
 
 bool Round::isWinner(const Mugen::Character & who) const {

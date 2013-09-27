@@ -123,6 +123,9 @@ class FightElement: public Element {
 	virtual inline void setText(const std::string &t){ 
             text = t; 
         }
+
+        virtual Token * serialize();
+        virtual void deserialize(const Token * token);
 	
     private:
 	ElementType type;
