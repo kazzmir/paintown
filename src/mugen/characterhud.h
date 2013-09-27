@@ -18,6 +18,8 @@ namespace Ast{
     class AstParse;
 }
 
+class Token;
+
 namespace Mugen{
 
 class Font;
@@ -325,6 +327,7 @@ class GameTime{
 	virtual inline int getElapsedTicks(){
 	    return this->ticker;
 	}
+        virtual void setElapsedTicks(int i);
         virtual inline int getTime() const {
             return time;
         }
@@ -605,6 +608,9 @@ class Round{
         bool isLoserTime(const Mugen::Character & who) const;
         bool isLoserPerfect(const Mugen::Character & who) const;
 
+        virtual Token * serialize();
+        virtual void deserialize(const Token * token);
+
     protected:
         void doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Character & loser);
 
@@ -804,6 +810,9 @@ class GameInfo{
             this->roundControl.setMatchWins(maxWins);
             this->roundControl.setMatchMaxDrawGames(maxDraws);
         }
+
+        virtual Token * serialize();
+        virtual void deserialize(const Token * token);
 	
 	virtual inline int getGameTime(){
 	    return this->timer.getTime();

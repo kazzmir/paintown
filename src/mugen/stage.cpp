@@ -1545,7 +1545,7 @@ PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
 
     world->setStageData(getStateData());
     world->setRandom(*Random::getState());
-    world->setGameTime(gameHUD->getGameTime());
+    world->setGameInfo(gameHUD->serialize());
 
     return world;
 }
@@ -1553,7 +1553,7 @@ PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
 void Mugen::Stage::updateState(const Mugen::World & world){
     setStateData(world.getStageData());
     Random::setState(world.getRandom());
-    gameHUD->setGameTime(world.getGameTime());
+    gameHUD->deserialize(world.getGameInfo());
 
     const map<CharacterId, AllCharacterData> & data = world.getCharacterData();
     for (map<CharacterId, AllCharacterData>::const_iterator it = data.begin(); it != data.end(); it++){

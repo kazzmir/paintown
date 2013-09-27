@@ -13,12 +13,24 @@ using std::map;
 
 namespace Mugen{
 
-World::World(){
+World::World():
+gameInfo(NULL){
+}
+    
+World::World(const World & copy):
+characterData(copy.characterData),
+stageData(copy.stageData),
+random(copy.random),
+gameInfo(NULL){
+    if (copy.gameInfo != NULL){
+        gameInfo = copy.gameInfo->copy();
+    }
 }
 
 World::~World(){
+    delete gameInfo;
 }
-        
+
 AllCharacterData::AllCharacterData(const StateData & character, const AnimationState & animation, const std::map<int, std::map<uint32_t, int> > & statePersistent):
 character(character),
 animation(animation),
@@ -41,14 +53,15 @@ void World::addCharacter(const Character & who){
     }
 }
     
-void World::setGameTime(int gameTime){
-    this->gameTime = gameTime;
+void World::setGameInfo(Token * token){
+    delete gameInfo;
+    gameInfo = token;
 }
 
-int World::getGameTime() const {
-    return gameTime;
+const Token * World::getGameInfo() const {
+    return gameInfo;
 }
-    
+
 void World::setStageData(const StageStateData & data){
     this->stageData = data;
 }
@@ -146,15 +159,11 @@ Token * World::serialize() const {
     *head << Mugen::serialize(stageData);
     *head << Mugen::serialize(random);
 
-    *head->newToken() << "game-time" << gameTime;
+    if (gameInfo != NULL){
+        *head << gameInfo->copy();
+    }
 
     return head;
-}
-
-static int deserializeGameTime(const Token * data){
-    int out;
-    data->view() >> out;
-    return out;
 }
 
 static int integer(const string & what){
@@ -198,9 +207,9 @@ World * World::deserialize(Token * token){
         out->random = Random::deserialize(random);
     }
 
-    const Token * gameTime = token->findToken("mugen-state/game-time");
-    if (gameTime != NULL){
-        out->gameTime = deserializeGameTime(gameTime);
+    const Token * gameInfo = token->findToken("mugen-state/game-info");
+    if (gameInfo != NULL){
+        out->gameInfo = gameInfo->copy();
     }
 
     return out;

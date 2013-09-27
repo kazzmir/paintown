@@ -1524,9 +1524,7 @@ public:
         return localData;
     }
 
-    void setStateData(const StateData & data){
-        this->stateData = data;
-    }
+    void setStateData(const StateData & data);
 };
 
 }

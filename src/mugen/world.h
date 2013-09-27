@@ -26,16 +26,17 @@ struct AllCharacterData{
 class World{
 public:
     World();
+    World(const World & copy);
     virtual ~World();
 
     void addCharacter(const Character & who);
     void setStageData(const StageStateData & data);
     void setRandom(const Random & random);
-    void setGameTime(int gameTime);
+    void setGameInfo(Token * token);
 
     const StageStateData & getStageData() const;
     const Random & getRandom() const;
-    int getGameTime() const;
+    const Token * getGameInfo() const;
 
     const std::map<CharacterId, AllCharacterData> & getCharacterData() const;
 
@@ -49,8 +50,7 @@ protected:
     std::map<CharacterId, AllCharacterData> characterData;
     StageStateData stageData;
     Random random;
-
-    int gameTime;
+    Token * gameInfo;
 };
 
 }

@@ -4658,6 +4658,29 @@ int Character::getAirFront() const {
     return getLocalData().airfront;
 }
 
+void Character::setStateData(const StateData & data){
+    this->stateData = data;
+    const std::map<std::string, std::string > & serializedCommands = data.commandState;;
+
+    std::map<std::string, Command2*> commandMap;
+    const vector<Command2*> & commands = getCommands();
+    for (vector<Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
+        Command2 * command = *it;
+        commandMap[command->getName()] = command;
+    }
+
+    for (map<string, string>::const_iterator it = serializedCommands.begin(); it != serializedCommands.end(); it++){
+        string name = it->first;
+        string value = it->second;
+
+        Command2 * command = commandMap[name];
+        if (command != NULL){
+            TokenReader reader;
+            command->deserialize(reader.readTokenFromString(value));
+        }
+    }
+}
+
 Character::LocalData::LocalData(){
 #define Z(x) x = 0
     /* TODO: add all the variables here */

@@ -160,6 +160,89 @@ int run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kf
     return 0;
 }
 
+static string describeInput(const Mugen::Input & input){
+    ostringstream out;
+
+    vector<string> keys;
+    if (input.pressed.forward){
+        keys.push_back("F");
+    }
+    if (input.pressed.back){
+        keys.push_back("B");
+    }
+    if (input.pressed.up){
+        keys.push_back("U");
+    }
+    if (input.pressed.down){
+        keys.push_back("D");
+    }
+    if (input.pressed.a){
+        keys.push_back("a");
+    }
+    if (input.pressed.b){
+        keys.push_back("b");
+    }
+    if (input.pressed.c){
+        keys.push_back("c");
+    }
+    if (input.pressed.x){
+        keys.push_back("x");
+    }
+    if (input.pressed.y){
+        keys.push_back("y");
+    }
+    if (input.pressed.z){
+        keys.push_back("z");
+    }
+    if (input.pressed.start){
+        keys.push_back("s");
+    }
+    if (input.released.forward){
+        keys.push_back("~F");
+    }
+    if (input.released.back){
+        keys.push_back("~B");
+    }
+    if (input.released.up){
+        keys.push_back("~U");
+    }
+    if (input.released.down){
+        keys.push_back("~D");
+    }
+    if (input.released.a){
+        keys.push_back("~a");
+    }
+    if (input.released.b){
+        keys.push_back("~b");
+    }
+    if (input.released.c){
+        keys.push_back("~c");
+    }
+    if (input.released.x){
+        keys.push_back("~x");
+    }
+    if (input.released.y){
+        keys.push_back("~y");
+    }
+    if (input.released.z){
+        keys.push_back("~z");
+    }
+    if (input.released.start){
+        keys.push_back("~s");
+    }
+
+    bool first = true;
+    for (vector<string>::iterator it = keys.begin(); it != keys.end(); it++){
+        if (!first){
+            out << ", ";
+        }
+        first = false;
+        out << *it;
+    }
+
+    return out.str();
+}
+
 class PlayBehavior: public Mugen::Behavior {
 public:
     PlayBehavior(const std::string & path){
@@ -264,6 +347,8 @@ public:
         vector<string> out;
 
         Mugen::Input input = inputs[stage.getTicks()];
+
+        Global::debug(0) << "Tick " << stage.getTicks() << " input: " << describeInput(input) << std::endl;
 
         for (vector<Mugen::Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
             Mugen::Command2 * command = *it;
@@ -453,6 +538,7 @@ int play(){
         PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
         stage->reset();
         stage->setMatchWins(1);
+        Global::debug(0) << "Running simulation" << std::endl;
         while (!stage->isMatchOver()){
             worlds.push_back(stage->snapshotState());
             stage->logic();
@@ -468,6 +554,8 @@ int play(){
         PaintownUtil::ReferenceCount<Mugen::Stage> stage = game.stage;
         stage->reset();
         stage->setMatchWins(1);
+        Global::debug(0) << "Running duplicate simulation" << std::endl;
+
         while (!stage->isMatchOver()){
             PaintownUtil::ReferenceCount<Mugen::World> newWorld = stage->snapshotState();
             PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[stage->getTicks()];
@@ -505,7 +593,7 @@ int main(int argc, char ** argv){
     InputManager manager;
     if (argc >= 2 && string("record") == argv[1]){
         Global::init(Global::WINDOWED);
-        Global::setDebug(0);
+        Global::setDebug(1);
         srand(0);
 
         try{
@@ -513,6 +601,7 @@ int main(int argc, char ** argv){
         } catch (QuitGameException & quit){
         }
     } else {
+        Global::setDebug(1);
         return play();
     }
 

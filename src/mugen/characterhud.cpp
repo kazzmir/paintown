@@ -15,6 +15,7 @@
 
 #include "util/debug.h"
 #include "util/timedifference.h"
+#include "util/token.h"
 #include "ast/all.h"
 #include "parser/all.h"
 
@@ -578,6 +579,10 @@ GameTime::~GameTime(){
 void GameTime::setTime(int time){
     this->time = time;
 }
+        
+void GameTime::setElapsedTicks(int i){
+    this->ticker = i;
+}
 
 void GameTime::act(){
     if (started){
@@ -799,6 +804,22 @@ Round::~Round(){
     for (std::map< unsigned int, FightElement * >::iterator i = rounds.begin(); i != rounds.end(); ++i){
 	delete i->second;
     }
+}
+
+Token * Round::serialize(){
+    Token * token = new Token();
+    *token << "round";
+    *token << state;
+    *token << ticker;
+    return token;
+}
+
+void Round::deserialize(const Token * token){
+    TokenView view = token->view();
+    int i = 0;
+    view >> i;
+    state = State(i);
+    view >> ticker;
 }
 
 bool Round::isWinner(const Mugen::Character & who) const {
@@ -2081,4 +2102,25 @@ void GameInfo::parseAnimations(const AstRef & parsed){
             animations[h] = Mugen::Util::getAnimation(section, sprites, true);
         } 
     }
+}
+
+Token * GameInfo::serialize(){
+    Token * token = new Token();
+    *token << "game-info";
+    *token << timer.getTime();
+    *token << timer.getElapsedTicks();
+    *token << roundControl.serialize();
+    return token;
+}
+
+void GameInfo::deserialize(const Token * token){
+    TokenView view = token->view();
+    int time = 0;
+    view >> time;
+    timer.setTime(time);
+    view >> time;
+    timer.setElapsedTicks(time);
+    const Token * roundToken = NULL;
+    view >> roundToken;
+    roundControl.deserialize(roundToken);
 }
