@@ -179,12 +179,16 @@ def generate_cpp(object, structs):
 
         for field in object.fields:
             if field.type_.isPOD():
-                fields += """    if (data.%(name)s != %(zero)s){
+                fields += """   *out->newToken() << "%(name)s" << data.%(name)s;\n""" % {'name': field.name}
+                if False:
+                    fields += """    if (data.%(name)s != %(zero)s){
         *out->newToken() << "%(name)s" << data.%(name)s;
     }\n""" % {'name': field.name,
                   'zero': field.zero()}
             elif str(field.type_) == 'std::string':
-                fields += """    if (data.%(name)s != ""){
+                fields += """   *out->newToken() << "%(name)s" << data.%(name)s;""" % {'name': field.name}
+                if False:
+                    fields += """    if (data.%(name)s != ""){
         *out->newToken() << "%(name)s" << data.%(name)s;
     }\n""" % {'name': field.name}
             elif str(field.type_).startswith('std::vector'):

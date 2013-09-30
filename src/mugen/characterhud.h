@@ -357,6 +357,10 @@ class GameTime{
 	    }
 	    return false;
 	}
+
+        Token * serialize();
+        void deserialize(const Token * token);
+
     private:
 	Mugen::Point position;
 	FightElement background;
@@ -614,6 +618,8 @@ class Round{
         virtual Token * serialize();
         virtual void deserialize(const Token * token);
 
+        virtual void updatePlayerBehavior(Mugen::Character & player1, Mugen::Character & player2);
+
     protected:
         void doWin(Mugen::Stage & stage, Mugen::Character & winner, Mugen::Character & loser);
 
@@ -824,6 +830,10 @@ class GameInfo{
         virtual void setGameTime(int time);
 
         virtual inline const Round & getRound() const {
+            return roundControl;
+        }
+
+        virtual inline Round & getRound(){
             return roundControl;
         }
 	

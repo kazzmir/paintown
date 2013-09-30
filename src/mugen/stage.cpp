@@ -1564,6 +1564,8 @@ void Mugen::Stage::updateState(const Mugen::World & world){
             who->setStatePersistent(it->second.statePersistent);
         }
     }
+
+    gameHUD->getRound().updatePlayerBehavior(*players[0], *players[1]);
 }
 
 /* Returns a sorted listed of sprite priorties */

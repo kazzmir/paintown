@@ -670,6 +670,27 @@ void GameTime::stop(){
     started = false;
 }
 
+Token * GameTime::serialize(){
+    Token * token = new Token();
+
+    *token << "time";
+    *token << time;
+    *token << ticker;
+    *token << started;
+    *token << disabled;
+
+    // Mugen::Point position;
+    // FightElement background;
+    // FightElement timer;
+
+    return token;
+}
+
+void GameTime::deserialize(const Token * token){
+    TokenView view = token->view();
+    view >> time >> ticker >> started >> disabled;
+}
+
 Combo::Combo():
 startOffset(0),
 displayTime(0),
@@ -1215,6 +1236,31 @@ void Round::reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Chara
     draw.reset();
     fader.setState(Gui::FadeTool::FadeIn);
     overByKO = false;
+}
+
+void Round::updatePlayerBehavior(Mugen::Character & player1, Mugen::Character & player2){
+    switch (this->state){
+	case WaitForIntro:
+	case DisplayIntro:
+	case WaitForRound:
+	case DisplayRound:
+	case WaitForFight:
+	case DisplayFight: {
+            player1.setBehavior(&dummyBehavior);
+            player2.setBehavior(&dummyBehavior);
+            break;
+        }
+	case PlayingGame:
+	    // Give control back
+            player1.setBehavior(player1Behavior);
+            player2.setBehavior(player2Behavior);
+	    break;
+        /* FIXME: not sure what to set for these */
+	case RoundOver:
+        case DoTimeOver:
+	default:
+	    break;
+    }
 }
 
 void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
@@ -2154,19 +2200,16 @@ void GameInfo::parseAnimations(const AstRef & parsed){
 Token * GameInfo::serialize(){
     Token * token = new Token();
     *token << "game-info";
-    *token << timer.getTime();
-    *token << timer.getElapsedTicks();
+    *token << timer.serialize();
     *token << roundControl.serialize();
     return token;
 }
 
 void GameInfo::deserialize(const Token * token){
     TokenView view = token->view();
-    int time = 0;
-    view >> time;
-    timer.setTime(time);
-    view >> time;
-    timer.setElapsedTicks(time);
+    const Token * timerToken = NULL;
+    view >> timerToken;
+    timer.deserialize(timerToken);
     const Token * roundToken = NULL;
     view >> roundToken;
     roundControl.deserialize(roundToken);

@@ -43,7 +43,8 @@ public:
         Global::debug(0) << "Loading player 2 " << playerPath2 << endl;
         player2 = PaintownUtil::ReferenceCount<Mugen::Character>(new Mugen::Character(Storage::instance().find(Filesystem::RelativePath(playerPath2)), Mugen::Stage::Player2Side));
         player2->load();
-        player2Behavior = PaintownUtil::ReferenceCount<Mugen::Behavior>(new Mugen::LearningAIBehavior(Mugen::Data::getInstance().getDifficulty()));
+        // player2Behavior = PaintownUtil::ReferenceCount<Mugen::Behavior>(new Mugen::LearningAIBehavior(Mugen::Data::getInstance().getDifficulty()));
+        player2Behavior = PaintownUtil::ReferenceCount<Mugen::Behavior>(new Mugen::DummyBehavior());
         player2->setBehavior(player2Behavior.raw());
 
         Global::debug(0) << "Loading stage" << std::endl;
@@ -563,8 +564,10 @@ int play(){
                 string world1 = newWorld->serialize()->toStringCompact();
                 string world2 = oldWorld->serialize()->toStringCompact();
                 Global::debug(0) << "Worlds are not the same at tick " << stage->getTicks() << std::endl;
+                /*
                 Global::debug(0) << "Old World: " << oldWorld->serialize()->toString() << std::endl;
                 Global::debug(0) << "New World: " << newWorld->serialize()->toString() << std::endl;
+                */
 
                 writeToFile("f1", world1);
                 writeToFile("f2", world2);
