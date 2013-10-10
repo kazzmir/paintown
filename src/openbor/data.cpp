@@ -5,6 +5,7 @@
 #include <iostream>
 
 
+#include <stdint.h>
 #include <list>
 #include <string>
 #include <vector>
@@ -501,15 +502,19 @@ public:
         }
         out << "^" << std::endl;
         out << "Last successful rule trace" << std::endl;
-        out << makeBacktrace() << std::endl;
+        out << makeBacktrace(last_trace) << std::endl;
         throw ParseException(out.str(), line, column);
     }
 
     std::string makeBacktrace(){
+        return makeBacktrace(rule_backtrace);
+    }
+
+    std::string makeBacktrace(const std::vector<std::string> & trace){
         std::ostringstream out;
 
         bool first = true;
-        for (std::vector<std::string>::iterator it = last_trace.begin(); it != last_trace.end(); it++){
+        for (std::vector<std::string>::const_iterator it = trace.begin(); it != trace.end(); it++){
             if (!first){
                 out << " -> ";
             } else {
@@ -743,6 +748,7 @@ Result rule_start(Stream & stream, const int position){
         out_peg_8:
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -806,6 +812,7 @@ Result rule_line(Stream & stream, const int position, Value current){
         out_peg_8:
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -850,6 +857,7 @@ Result rule_comment(Stream & stream, const int position){
         return result_peg_2;
         out_peg_4:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -897,7 +905,7 @@ Result rule_comment_stuff(Stream & stream, const int position){
                         
                         char temp_peg_10 = stream.get(result_peg_6.getPosition());
                             if (temp_peg_10 != '\0'){
-                                result_peg_6.setValue(Value((void*) (long) temp_peg_10));
+                                result_peg_6.setValue(Value((void*) (intptr_t) temp_peg_10));
                                 result_peg_6.nextPosition();
                             } else {
                                 goto loop_peg_5;
@@ -918,6 +926,7 @@ Result rule_comment_stuff(Stream & stream, const int position){
         return result_peg_2;
         out_peg_4:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -956,6 +965,7 @@ Result rule_empty__space(Stream & stream, const int position){
         return result_peg_2;
         out_peg_4:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -1052,6 +1062,7 @@ Result rule_data(Stream & stream, const int position){
         out_peg_4:
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -1118,6 +1129,7 @@ Result rule_line_end(Stream & stream, const int position){
         out_peg_10:
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -1165,6 +1177,7 @@ Result rule_item(Stream & stream, const int position){
         return result_peg_2;
         out_peg_6:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -1275,7 +1288,7 @@ Result rule_valid_letter(Stream & stream, const int position){
             
             char temp_peg_18 = stream.get(result_peg_2.getPosition());
                 if (temp_peg_18 != '\0'){
-                    result_peg_2.setValue(Value((void*) (long) temp_peg_18));
+                    result_peg_2.setValue(Value((void*) (intptr_t) temp_peg_18));
                     result_peg_2.nextPosition();
                 } else {
                     goto out_peg_17;
@@ -1289,6 +1302,7 @@ Result rule_valid_letter(Stream & stream, const int position){
         return result_peg_2;
         out_peg_17:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -1352,6 +1366,7 @@ Result rule_sw(Stream & stream, const int position){
         
         return result_peg_2;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
