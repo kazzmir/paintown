@@ -488,7 +488,7 @@ public:
         }
     }
 
-    void push_rule(const char * name){
+    void push_rule(const std::string & name){
         rule_backtrace.push_back(name);
     }
 
@@ -535,6 +535,11 @@ class RuleTrace{
 public:
     RuleTrace(Stream & stream, const char * name):
     stream(stream){
+        stream.push_rule(name);
+    }
+
+    void setName(const std::string & name){
+        stream.pop_rule();
         stream.push_rule(name);
     }
 

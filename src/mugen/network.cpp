@@ -216,6 +216,9 @@ public:
     }
 
     Type type;
+
+    virtual ~Packet(){
+    }
 };
 
 class InputPacket: public Packet {

@@ -1146,6 +1146,7 @@ Result rule_%s(Stream & stream, int position, Value ** arguments){
         stream = "stream"
         position = "position"
         stateVariable = ""
+        trace = gensym("trace")
         # Don't waste a gensym
         if peg.transactions:
             stateVariable = gensym('state')
@@ -1214,7 +1215,7 @@ goto %s;
                 debugging = ""
                 debug_result = ""
                 if debug:
-                    debugging = """std::cout << "Trying rule '" << %s.makeBacktrace() << "' at position: " << %s << " input: '" << %s.get(%s.getPosition()) << "' alternative: '%s'" << std::endl;""" % (stream, position, stream, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                    debugging = """%s.setName("%s(%s)"); std::cout << "Trying rule '" << %s.makeBacktrace() << "' at position: " << %s << " input: '" << %s.get(%s.getPosition()) << "'" << std::endl;""" % (trace, self.name, special_escape(pattern.generate_bnf()).replace("\n", "\\n"), stream, position, stream, result)
                 if 'debug2' in peg.options:
                     debug_result = """std::cout << "Succeeded rule %s at position: " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 do_memo = peg.memo and self.rules == None and self.parameters == None
@@ -1311,7 +1312,7 @@ Result rule_%s(Stream & %s, const int %s%s%s){
     %s
     return errorResult;
 }
-        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), declare_state, gensym("trace"), stream, self.name, my_position, position, indent(body), debug_fail)
+        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), declare_state, trace, stream, self.name, my_position, position, indent(body), debug_fail)
 
         return data
     

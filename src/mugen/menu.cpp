@@ -150,6 +150,7 @@ public:
 };
 
 Menu::Menu(const Filesystem::AbsolutePath & path, Searcher & searcher):
+x(0), y(0),
 list(PaintownUtil::ReferenceCount<ScrollAction>(new ScrollAction())),
 fadeEnabled(true),
 state(Intros),

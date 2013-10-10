@@ -1,4 +1,5 @@
 start-symbol: start
+options: debug9
 include: {{
 #include "ast.h"
 }}
