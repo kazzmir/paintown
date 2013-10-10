@@ -7,6 +7,7 @@
 typedef std::list<Ast::Section*> SectionList;
 
 
+#include <stdint.h>
 #include <list>
 #include <string>
 #include <vector>
@@ -635,15 +636,19 @@ public:
         }
         out << "^" << std::endl;
         out << "Last successful rule trace" << std::endl;
-        out << makeBacktrace() << std::endl;
+        out << makeBacktrace(last_trace) << std::endl;
         throw ParseException(out.str(), line, column);
     }
 
     std::string makeBacktrace(){
+        return makeBacktrace(rule_backtrace);
+    }
+
+    std::string makeBacktrace(const std::vector<std::string> & trace){
         std::ostringstream out;
 
         bool first = true;
-        for (std::vector<std::string>::iterator it = last_trace.begin(); it != last_trace.end(); it++){
+        for (std::vector<std::string>::const_iterator it = trace.begin(); it != trace.end(); it++){
             if (!first){
                 out << " -> ";
             } else {
@@ -1863,6 +1868,7 @@ Result rule_start(Stream & stream, const int position){
         throw;
     }
     
+    
     return errorResult;
 }
         
@@ -2008,7 +2014,7 @@ Result rule_line(Stream & stream, const int position, Value current){
                         
                         char temp_peg_27 = stream.get(result_peg_18.getPosition());
                             if (temp_peg_27 != '\0'){
-                                result_peg_18.setValue(Value((void*) (long) temp_peg_27));
+                                result_peg_18.setValue(Value((void*) (intptr_t) temp_peg_27));
                                 result_peg_18.nextPosition();
                             } else {
                                 goto loop_peg_17;
@@ -2067,6 +2073,7 @@ Result rule_line(Stream & stream, const int position, Value current){
         return result_peg_15;
         out_peg_33:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -2181,6 +2188,7 @@ Result rule_line_end(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -2229,6 +2237,7 @@ Result rule_whitespace(Stream & stream, const int position){
         column_peg_1.chunk0->chunk_whitespace = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -2322,6 +2331,7 @@ Result rule_sw(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -2404,7 +2414,7 @@ Result rule_comment(Stream & stream, const int position){
                         
                         char temp_peg_15 = stream.get(result_peg_6.getPosition());
                             if (temp_peg_15 != '\0'){
-                                result_peg_6.setValue(Value((void*) (long) temp_peg_15));
+                                result_peg_6.setValue(Value((void*) (intptr_t) temp_peg_15));
                                 result_peg_6.nextPosition();
                             } else {
                                 goto loop_peg_5;
@@ -2495,7 +2505,7 @@ Result rule_comment(Stream & stream, const int position){
                         
                         char temp_peg_29 = stream.get(result_peg_20.getPosition());
                             if (temp_peg_29 != '\0'){
-                                result_peg_20.setValue(Value((void*) (long) temp_peg_29));
+                                result_peg_20.setValue(Value((void*) (intptr_t) temp_peg_29));
                                 result_peg_20.nextPosition();
                             } else {
                                 goto loop_peg_19;
@@ -2597,7 +2607,7 @@ Result rule_comment(Stream & stream, const int position){
                         
                         char temp_peg_44 = stream.get(result_peg_35.getPosition());
                             if (temp_peg_44 != '\0'){
-                                result_peg_35.setValue(Value((void*) (long) temp_peg_44));
+                                result_peg_35.setValue(Value((void*) (intptr_t) temp_peg_44));
                                 result_peg_35.nextPosition();
                             } else {
                                 goto loop_peg_34;
@@ -2699,7 +2709,7 @@ Result rule_comment(Stream & stream, const int position){
                         
                         char temp_peg_59 = stream.get(result_peg_50.getPosition());
                             if (temp_peg_59 != '\0'){
-                                result_peg_50.setValue(Value((void*) (long) temp_peg_59));
+                                result_peg_50.setValue(Value((void*) (intptr_t) temp_peg_59));
                                 result_peg_50.nextPosition();
                             } else {
                                 goto loop_peg_49;
@@ -2732,6 +2742,7 @@ Result rule_comment(Stream & stream, const int position){
         column_peg_1.chunk1->chunk_comment = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -2939,6 +2950,7 @@ Result rule_section(Stream & stream, const int position){
         column_peg_1.chunk1->chunk_section = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -3181,7 +3193,7 @@ Result rule_section_item(Stream & stream, const int position, Value ast){
                         
                         char temp_peg_44 = stream.get(result_peg_35.getPosition());
                             if (temp_peg_44 != '\0'){
-                                result_peg_35.setValue(Value((void*) (long) temp_peg_44));
+                                result_peg_35.setValue(Value((void*) (intptr_t) temp_peg_44));
                                 result_peg_35.nextPosition();
                             } else {
                                 goto loop_peg_34;
@@ -3341,7 +3353,7 @@ Result rule_section_item(Stream & stream, const int position, Value ast){
                         
                         char temp_peg_72 = stream.get(result_peg_63.getPosition());
                             if (temp_peg_72 != '\0'){
-                                result_peg_63.setValue(Value((void*) (long) temp_peg_72));
+                                result_peg_63.setValue(Value((void*) (intptr_t) temp_peg_72));
                                 result_peg_63.nextPosition();
                             } else {
                                 goto loop_peg_62;
@@ -3371,6 +3383,7 @@ Result rule_section_item(Stream & stream, const int position, Value ast){
         return result_peg_46;
         out_peg_60:
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -3481,7 +3494,7 @@ Result rule_section_title(Stream & stream, const int position){
                         
                         char temp_peg_21 = stream.get(result_peg_17.getPosition());
                             if (temp_peg_21 != '\0'){
-                                result_peg_17.setValue(Value((void*) (long) temp_peg_21));
+                                result_peg_17.setValue(Value((void*) (intptr_t) temp_peg_21));
                                 result_peg_17.nextPosition();
                             } else {
                                 goto loop_peg_16;
@@ -3536,6 +3549,7 @@ Result rule_section_title(Stream & stream, const int position){
         column_peg_1.chunk1->chunk_section_title = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -4549,6 +4563,7 @@ Result rule_assignment(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -4644,6 +4659,7 @@ Result rule_identifier(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -4726,7 +4742,7 @@ Result rule_integer(Stream & stream, const int position){
                         char letter_peg_17 = stream.get(result_peg_14.getPosition());
                         if (letter_peg_17 != '\0' && strchr("0123456789", letter_peg_17) != NULL){
                             result_peg_14.nextPosition();
-                            result_peg_14.setValue(Value((void*) (long) letter_peg_17));
+                            result_peg_14.setValue(Value((void*) (intptr_t) letter_peg_17));
                         } else {
                             result_peg_14.setPosition(position_peg_16);
                             goto out_peg_18;
@@ -4774,6 +4790,7 @@ Result rule_integer(Stream & stream, const int position){
         column_peg_1.chunk2->chunk_integer = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -4850,7 +4867,7 @@ Result rule_float(Stream & stream, const int position){
                         char letter_peg_15 = stream.get(result_peg_12.getPosition());
                         if (letter_peg_15 != '\0' && strchr("0123456789", letter_peg_15) != NULL){
                             result_peg_12.nextPosition();
-                            result_peg_12.setValue(Value((void*) (long) letter_peg_15));
+                            result_peg_12.setValue(Value((void*) (intptr_t) letter_peg_15));
                         } else {
                             result_peg_12.setPosition(position_peg_14);
                             goto out_peg_16;
@@ -4890,7 +4907,7 @@ Result rule_float(Stream & stream, const int position){
                         char letter_peg_24 = stream.get(result_peg_21.getPosition());
                         if (letter_peg_24 != '\0' && strchr("0123456789", letter_peg_24) != NULL){
                             result_peg_21.nextPosition();
-                            result_peg_21.setValue(Value((void*) (long) letter_peg_24));
+                            result_peg_21.setValue(Value((void*) (intptr_t) letter_peg_24));
                         } else {
                             result_peg_21.setPosition(position_peg_23);
                             goto out_peg_25;
@@ -4988,7 +5005,7 @@ Result rule_float(Stream & stream, const int position){
                         char letter_peg_39 = stream.get(result_peg_36.getPosition());
                         if (letter_peg_39 != '\0' && strchr("0123456789", letter_peg_39) != NULL){
                             result_peg_36.nextPosition();
-                            result_peg_36.setValue(Value((void*) (long) letter_peg_39));
+                            result_peg_36.setValue(Value((void*) (intptr_t) letter_peg_39));
                         } else {
                             result_peg_36.setPosition(position_peg_38);
                             goto out_peg_40;
@@ -5047,6 +5064,7 @@ Result rule_float(Stream & stream, const int position){
         column_peg_1.chunk2->chunk_float = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -6230,6 +6248,7 @@ Result rule_range(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -6258,7 +6277,7 @@ Result rule_name(Stream & stream, const int position){
                     char letter_peg_6 = stream.get(result_peg_2.getPosition());
                     if (letter_peg_6 != '\0' && strchr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", letter_peg_6) != NULL){
                         result_peg_2.nextPosition();
-                        result_peg_2.setValue(Value((void*) (long) letter_peg_6));
+                        result_peg_2.setValue(Value((void*) (intptr_t) letter_peg_6));
                     } else {
                         result_peg_2.setPosition(position_peg_5);
                         goto out_peg_7;
@@ -6285,7 +6304,7 @@ Result rule_name(Stream & stream, const int position){
                             char letter_peg_16 = stream.get(result_peg_11.getPosition());
                             if (letter_peg_16 != '\0' && strchr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", letter_peg_16) != NULL){
                                 result_peg_11.nextPosition();
-                                result_peg_11.setValue(Value((void*) (long) letter_peg_16));
+                                result_peg_11.setValue(Value((void*) (intptr_t) letter_peg_16));
                             } else {
                                 result_peg_11.setPosition(position_peg_15);
                                 goto out_peg_17;
@@ -6311,7 +6330,7 @@ Result rule_name(Stream & stream, const int position){
                             char letter_peg_22 = stream.get(result_peg_11.getPosition());
                             if (letter_peg_22 != '\0' && strchr("0123456789", letter_peg_22) != NULL){
                                 result_peg_11.nextPosition();
-                                result_peg_11.setValue(Value((void*) (long) letter_peg_22));
+                                result_peg_11.setValue(Value((void*) (intptr_t) letter_peg_22));
                             } else {
                                 result_peg_11.setPosition(position_peg_21);
                                 goto out_peg_23;
@@ -6364,6 +6383,7 @@ Result rule_name(Stream & stream, const int position){
         column_peg_1.chunk2->chunk_name = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -6854,6 +6874,7 @@ Result rule_valuelist(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7014,6 +7035,7 @@ Result rule_expr(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7069,6 +7091,7 @@ Result rule_expr_c(Stream & stream, const int position){
         column_peg_1.chunk3->chunk_expr_c = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -7126,6 +7149,7 @@ Result rule_expr2(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7181,6 +7205,7 @@ Result rule_expr3(Stream & stream, const int position){
         column_peg_1.chunk3->chunk_expr3 = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -7238,6 +7263,7 @@ Result rule_expr4(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7293,6 +7319,7 @@ Result rule_expr5(Stream & stream, const int position){
         column_peg_1.chunk4->chunk_expr5 = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -7350,6 +7377,7 @@ Result rule_expr6(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7405,6 +7433,7 @@ Result rule_expr7(Stream & stream, const int position){
         column_peg_1.chunk4->chunk_expr7 = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -7462,6 +7491,7 @@ Result rule_expr8(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7517,6 +7547,7 @@ Result rule_expr9(Stream & stream, const int position){
         column_peg_1.chunk5->chunk_expr9 = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -7574,6 +7605,7 @@ Result rule_expr10(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7630,6 +7662,7 @@ Result rule_expr11(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -7685,6 +7718,7 @@ Result rule_expr12(Stream & stream, const int position){
         column_peg_1.chunk5->chunk_expr12 = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -7761,7 +7795,7 @@ Result rule_expr13(Stream & stream, const int position){
                                     char letter_peg_18 = stream.get(result_peg_15.getPosition());
                                     if (letter_peg_18 != '\0' && strchr("0123456789", letter_peg_18) != NULL){
                                         result_peg_15.nextPosition();
-                                        result_peg_15.setValue(Value((void*) (long) letter_peg_18));
+                                        result_peg_15.setValue(Value((void*) (intptr_t) letter_peg_18));
                                     } else {
                                         result_peg_15.setPosition(position_peg_17);
                                         goto out_peg_19;
@@ -7916,6 +7950,7 @@ Result rule_expr13(Stream & stream, const int position){
         column_peg_1.chunk5->chunk_expr13 = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -8099,6 +8134,7 @@ Result rule_expr_rest(Stream & stream, const int position, Value left){
         return result_peg_28;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -8280,6 +8316,7 @@ Result rule_expr2_rest(Stream & stream, const int position, Value left){
         
         return result_peg_28;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -8463,6 +8500,7 @@ Result rule_expr3_rest(Stream & stream, const int position, Value left){
         return result_peg_28;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -8644,6 +8682,7 @@ Result rule_expr4_rest(Stream & stream, const int position, Value left){
         
         return result_peg_28;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -8827,6 +8866,7 @@ Result rule_expr5_rest(Stream & stream, const int position, Value left){
         return result_peg_28;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -9009,6 +9049,7 @@ Result rule_expr6_rest(Stream & stream, const int position, Value left){
         return result_peg_28;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -9190,6 +9231,7 @@ Result rule_expr7_rest(Stream & stream, const int position, Value left){
         
         return result_peg_28;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -9519,6 +9561,7 @@ Result rule_expr8_rest(Stream & stream, const int position, Value left){
         return result_peg_53;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -9809,6 +9852,7 @@ Result rule_expr9_rest(Stream & stream, const int position, Value left){
         return result_peg_41;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -10029,6 +10073,7 @@ Result rule_all_compare(Stream & stream, const int position){
         column_peg_1.chunk7->chunk_all_compare = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -10357,6 +10402,7 @@ Result rule_expr10_rest(Stream & stream, const int position, Value left){
         
         return result_peg_53;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -10832,6 +10878,7 @@ Result rule_expr11_rest(Stream & stream, const int position, Value left){
         return result_peg_78;
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -11013,6 +11060,7 @@ Result rule_expr12_rest(Stream & stream, const int position, Value left){
         
         return result_peg_28;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -11254,6 +11302,7 @@ Result rule_expr13_real(Stream & stream, const int position){
         column_peg_1.chunk8->chunk_expr13_real = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -14118,6 +14167,7 @@ Result rule_function(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -14323,6 +14373,7 @@ Result rule_paren_integer(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -14526,6 +14577,7 @@ Result rule_hitdef__attack__attribute(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -14684,6 +14736,7 @@ Result rule_hitdef__attack__attribute__item(Stream & stream, const int position,
         out_peg_13:
     stream.update(errorResult.getPosition());
     
+    
     return errorResult;
 }
         
@@ -14795,6 +14848,7 @@ Result rule_hitdef__attribute(Stream & stream, const int position){
         column_peg_1.chunk9->chunk_hitdef__attribute = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -14992,6 +15046,7 @@ Result rule_args(Stream & stream, const int position){
         column_peg_1.chunk9->chunk_args = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -15240,6 +15295,7 @@ Result rule_function_rest(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -15282,6 +15338,7 @@ Result rule_keys(Stream & stream, const int position){
         column_peg_1.chunk10->chunk_keys = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -15584,6 +15641,7 @@ Result rule_key_value_list(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -15658,6 +15716,7 @@ Result rule_key(Stream & stream, const int position){
         column_peg_1.chunk10->chunk_key = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -15840,6 +15899,7 @@ Result rule_key_rest(Stream & stream, const int position, Value left){
         
         return result_peg_28;
     stream.update(errorResult.getPosition());
+    
     
     return errorResult;
 }
@@ -16153,6 +16213,7 @@ Result rule_key_real(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -16195,7 +16256,7 @@ Result rule_key_modifier(Stream & stream, const int position){
                         char letter_peg_10 = stream.get(result_peg_7.getPosition());
                         if (letter_peg_10 != '\0' && strchr("0123456789", letter_peg_10) != NULL){
                             result_peg_7.nextPosition();
-                            result_peg_7.setValue(Value((void*) (long) letter_peg_10));
+                            result_peg_7.setValue(Value((void*) (intptr_t) letter_peg_10));
                         } else {
                             result_peg_7.setPosition(position_peg_9);
                             goto out_peg_11;
@@ -16346,6 +16407,7 @@ Result rule_key_modifier(Stream & stream, const int position){
         column_peg_1.chunk11->chunk_key_modifier = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -16544,7 +16606,7 @@ Result rule_value(Stream & stream, const int position){
                             
                             char temp_peg_31 = stream.get(result_peg_24.getPosition());
                                 if (temp_peg_31 != '\0'){
-                                    result_peg_24.setValue(Value((void*) (long) temp_peg_31));
+                                    result_peg_24.setValue(Value((void*) (intptr_t) temp_peg_31));
                                     result_peg_24.nextPosition();
                                 } else {
                                     goto loop_peg_23;
@@ -16622,6 +16684,7 @@ Result rule_value(Stream & stream, const int position){
         column_peg_1.chunk11->chunk_value = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -16859,6 +16922,7 @@ Result rule_resource(Stream & stream, const int position){
         column_peg_1.chunk11->chunk_resource = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -18112,6 +18176,7 @@ Result rule_resource__s(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -19056,6 +19121,7 @@ Result rule_resource__f(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -19436,6 +19502,7 @@ Result rule_helper(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -19623,6 +19690,7 @@ Result rule_helper__expression(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -19718,6 +19786,7 @@ Result rule_helper__identifier(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -19750,7 +19819,7 @@ Result rule_hitflag(Stream & stream, const int position){
                         char letter_peg_8 = stream.get(result_peg_5.getPosition());
                         if (letter_peg_8 != '\0' && strchr("HAMFDL", letter_peg_8) != NULL){
                             result_peg_5.nextPosition();
-                            result_peg_5.setValue(Value((void*) (long) letter_peg_8));
+                            result_peg_5.setValue(Value((void*) (intptr_t) letter_peg_8));
                         } else {
                             result_peg_5.setPosition(position_peg_7);
                             goto out_peg_9;
@@ -19780,7 +19849,7 @@ Result rule_hitflag(Stream & stream, const int position){
                     char letter_peg_15 = stream.get(result_peg_2.getPosition());
                     if (letter_peg_15 != '\0' && strchr("+-", letter_peg_15) != NULL){
                         result_peg_2.nextPosition();
-                        result_peg_2.setValue(Value((void*) (long) letter_peg_15));
+                        result_peg_2.setValue(Value((void*) (intptr_t) letter_peg_15));
                     } else {
                         result_peg_2.setPosition(position_peg_14);
                         goto out_peg_16;
@@ -19841,6 +19910,7 @@ Result rule_hitflag(Stream & stream, const int position){
         stream.update(errorResult.getPosition());
         
     
+    
     return errorResult;
 }
         
@@ -19880,7 +19950,7 @@ Result rule_keyword(Stream & stream, const int position){
                         char letter_peg_12 = stream.get(result_peg_7.getPosition());
                         if (letter_peg_12 != '\0' && strchr("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_", letter_peg_12) != NULL){
                             result_peg_7.nextPosition();
-                            result_peg_7.setValue(Value((void*) (long) letter_peg_12));
+                            result_peg_7.setValue(Value((void*) (intptr_t) letter_peg_12));
                         } else {
                             result_peg_7.setPosition(position_peg_11);
                             goto out_peg_13;
@@ -19906,7 +19976,7 @@ Result rule_keyword(Stream & stream, const int position){
                         char letter_peg_18 = stream.get(result_peg_7.getPosition());
                         if (letter_peg_18 != '\0' && strchr("0123456789", letter_peg_18) != NULL){
                             result_peg_7.nextPosition();
-                            result_peg_7.setValue(Value((void*) (long) letter_peg_18));
+                            result_peg_7.setValue(Value((void*) (intptr_t) letter_peg_18));
                         } else {
                             result_peg_7.setPosition(position_peg_17);
                             goto out_peg_19;
@@ -19958,6 +20028,7 @@ Result rule_keyword(Stream & stream, const int position){
         column_peg_1.chunk13->chunk_keyword = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }
@@ -21977,6 +22048,7 @@ Result rule_keyword_real(Stream & stream, const int position){
         column_peg_1.chunk13->chunk_keyword_real = errorResult;
         stream.update(errorResult.getPosition());
         
+    
     
     return errorResult;
 }

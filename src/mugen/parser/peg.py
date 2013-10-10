@@ -1214,9 +1214,9 @@ goto %s;
                 debugging = ""
                 debug_result = ""
                 if debug:
-                    debugging = """std::cout << "Trying rule %s at " << %s << " '" << %s.get(%s.getPosition()) << "' alternative: %s" << std::endl;""" % (self.name, position, stream, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                    debugging = """std::cout << "Trying rule '" << %s.makeBacktrace() << "' at position: " << %s << " input: '" << %s.get(%s.getPosition()) << "' alternative: '%s'" << std::endl;""" % (stream, position, stream, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 if 'debug2' in peg.options:
-                    debug_result = """std::cout << "Succeeded rule %s at position " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                    debug_result = """std::cout << "Succeeded rule %s at position: " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
                 do_memo = peg.memo and self.rules == None and self.parameters == None
                 start_transaction = ""
                 if peg.transactions:
@@ -1297,6 +1297,10 @@ try{
         if peg.transactions:
             declare_state = "State * %s = NULL;" % stateVariable;
 
+        debug_fail = ""
+        if 'debug2' in peg.options:
+            debug_fail = """std::cout << "Failed rule %s at position: " << %s << std::endl;""" % (self.name, my_position)
+
         data = """
 Result rule_%s(Stream & %s, const int %s%s%s){
     %s
@@ -1304,9 +1308,10 @@ Result rule_%s(Stream & %s, const int %s%s%s){
     RuleTrace %s(%s, "%s");
     int %s = %s;
     %s
+    %s
     return errorResult;
 }
-        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), declare_state, gensym("trace"), stream, self.name, my_position, position, indent(body))
+        """ % (self.name, stream, position, rule_parameters, parameters, indent(hasChunk(do_memo)), declare_state, gensym("trace"), stream, self.name, my_position, position, indent(body), debug_fail)
 
         return data
     

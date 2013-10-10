@@ -446,15 +446,19 @@ public:
         }
         out << "^" << std::endl;
         out << "Last successful rule trace" << std::endl;
-        out << makeBacktrace() << std::endl;
+        out << makeBacktrace(last_trace) << std::endl;
         throw ParseException(out.str(), line, column);
     }
 
     std::string makeBacktrace(){
+        return makeBacktrace(rule_backtrace);
+    }
+
+    std::string makeBacktrace(const std::vector<std::string> & trace){
         std::ostringstream out;
 
         bool first = true;
-        for (std::vector<std::string>::iterator it = last_trace.begin(); it != last_trace.end(); it++){
+        for (std::vector<std::string>::const_iterator it = trace.begin(); it != trace.end(); it++){
             if (!first){
                 out << " -> ";
             } else {
@@ -882,7 +886,7 @@ do{
         data = """
 char %(temp)s = %(stream)s.get(%(result)s.getPosition());
 if (%(temp)s != '\\0'){
-    %(result)s.setValue(Value((void*) (long) %(temp)s));
+    %(result)s.setValue(Value((void*) (intptr_t) %(temp)s));
     %(result)s.nextPosition();
 } else {
     %(fail)s
@@ -960,7 +964,7 @@ Stream::LineInfo %(name)s = %(stream)s.getLineInfo(%(result)s.getPosition());
 char %(letter)s = %(stream)s.get(%(result)s.getPosition());
 if (%(letter)s != '\\0' && strchr("%(range)s", %(letter)s) != NULL){
     %(result)s.nextPosition();
-    %(result)s.setValue(Value((void*) (long) %(letter)s));
+    %(result)s.setValue(Value((void*) (intptr_t) %(letter)s));
 } else {
     %(failure)s
 }
@@ -1211,6 +1215,7 @@ unsigned int newId(){
         data = """
 %(top-code)s
 
+#include <stdint.h>
 #include <list>
 #include <string>
 #include <vector>
