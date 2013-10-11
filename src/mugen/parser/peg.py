@@ -25,9 +25,7 @@
 from core import CodeGenerator, newResult, gensym, resetGensym, indent, newOut
 from cpp_generator import CppGenerator
 from python_generator import PythonGenerator
-from ruby_generator import RubyGenerator
-from cpp_interpreter_generator import CppInterpreterGenerator
-import cpp_generator, python_generator, ruby_generator, cpp_header_generator, lua_generator
+import cpp_generator, python_generator
 
 # substitute variables in a string named by $foo
 # "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
@@ -956,6 +954,7 @@ class Rule:
 
     def generate_ruby(self):
         def newPattern(pattern, stream, position):
+            import ruby_generator
             result = newResult()
             rule_id = "RULE_%s" % self.name
 
@@ -969,7 +968,7 @@ begin
     return %s
 rescue PegError
 end
-            """ % (result, position, indent(pattern.generate_v1(RubyGenerator(), result, None, stream, fail).strip()), stream, rule_id, position, result, result)
+            """ % (result, position, indent(pattern.generate_v1(ruby_generator.RubyGenerator(), result, None, stream, fail).strip()), stream, rule_id, position, result, result)
             return data
 
 
@@ -1010,6 +1009,7 @@ end
 
     def generate_lua(self, peg):
         def newPattern(pattern):
+            import lua_generator
             return pattern.generate_v3(lua_generator.LuaGenerator(), self, peg)
 
         data = """
@@ -1088,7 +1088,8 @@ if (%s != 0 && %s.calculated()){
             else:
                 return ""
 
-        generator = CppInterpreterGenerator()
+        import cpp_interpreter_generator
+        generator = cpp_interpreter_generator.CppInterpreterGenerator()
         patterns = "\n".join(["expressions->push_back(%s);" % pattern.generate_v3(generator, self, peg) for pattern in self.patterns])
         extra = '\n'.join(generator.extra_codes)
         data = """
@@ -2211,14 +2212,17 @@ if __name__ == '__main__':
         if arg == '--bnf':
             doit.append(lambda p: p.generate_bnf())
         elif arg == "--lua":
+            import lua_generator
             doit.append(lambda p: lua_generator.generate(p))
         elif arg == '--cpp' or arg == '--c++':
             doit.append(lambda p: cpp_generator.generate(p, parallel[0], separate[0]))
         elif arg == '--h':
+            import cpp_header_generator
             doit.append(lambda p: cpp_header_generator.generate(p))
         #elif arg == '--c++-interpreter':
         #    doit.append(lambda p: p.generate_cpp_interpreter())
         elif arg == '--ruby':
+            import ruby_generator
             doit.append(lambda p: ruby_generator.generate(p))
         elif arg == '--python':
             doit.append(lambda p: python_generator.generate(p))
