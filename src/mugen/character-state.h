@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_8e7a8c00328eda8aa26b2694d8ed6d5b
-#define _serialize_Mugen_8e7a8c00328eda8aa26b2694d8ed6d5b
+#ifndef _serialize_Mugen_59be93394ce0b8b2c28736dfc606e853
+#define _serialize_Mugen_59be93394ce0b8b2c28736dfc606e853
 
 #include "common.h"
 #include "compiler.h"
@@ -866,6 +866,31 @@ struct StageStateData{
 };
 Token * serialize(const StageStateData & data);
 StageStateData deserializeStageStateData(const Token * data);
+
+
+struct PlayerData{
+    PlayerData(){
+        oldx = 0;
+        oldy = 0;
+        leftTension = false;
+        rightTension = false;
+        leftSide = false;
+        rightSide = false;
+        above = false;
+        jumped = false;
+    }
+
+    double oldx;
+    double oldy;
+    bool leftTension;
+    bool rightTension;
+    bool leftSide;
+    bool rightSide;
+    bool above;
+    bool jumped;
+};
+Token * serialize(const PlayerData & data);
+PlayerData deserializePlayerData(const Token * data);
 
 }
 

@@ -62,6 +62,10 @@ const Token * World::getGameInfo() const {
     return gameInfo;
 }
 
+void World::addStagePlayerData(const CharacterId & id, const PlayerData & data){
+    stagePlayerData[id] = data;
+}
+
 void World::setStageData(const StageStateData & data){
     this->stageData = data;
 }
@@ -80,6 +84,10 @@ const Random & World::getRandom() const {
     
 const std::map<CharacterId, AllCharacterData> & World::getCharacterData() const {
     return this->characterData;
+}
+    
+const std::map<CharacterId, PlayerData> & World::getStagePlayerData() const {
+    return this->stagePlayerData;
 }
 
 static Token * serialize(const map<int, map<uint32_t, int> > & statePersistent){
@@ -151,6 +159,18 @@ static Token * serialize(const Random & random){
     return random.serialize();
 }
 
+static Token * serialize(const std::map<CharacterId, PlayerData> & stagePlayerData){
+    Token * token = new Token();
+    *token << "_/stage-player-info";
+    for (std::map<CharacterId, PlayerData>::const_iterator it = stagePlayerData.begin(); it != stagePlayerData.end(); it++){
+        Token * info = new Token();
+        *info << it->first.intValue();
+        *info << serialize(it->second);
+        *token << info;
+    }
+    return token;
+}
+
 Token * World::serialize() const {
     Token * head = new Token();
 
@@ -158,6 +178,7 @@ Token * World::serialize() const {
     *head << Mugen::serialize(characterData);
     *head << Mugen::serialize(stageData);
     *head << Mugen::serialize(random);
+    *head << Mugen::serialize(stagePlayerData);
 
     if (gameInfo != NULL){
         *head << gameInfo->copy();
@@ -188,28 +209,49 @@ static map<CharacterId, AllCharacterData> deserializeCharacters(const Token * da
     }
     return out;
 }
+    
+std::map<CharacterId, PlayerData> deserializeStagePlayerInfo(const Token * data){
+    map<CharacterId, PlayerData> out;
+    TokenView look = data->view();
+    while (look.hasMore()){
+        const Token * use = NULL;
+        look >> use;
+        int id = integer(use->getName());
+
+        const Token * tokenData = NULL;
+        use->view() >> tokenData;
+
+        out[CharacterId(id)] = deserializePlayerData(tokenData);
+    }
+    return out;
+}
 
 World * World::deserialize(Token * token){
     World * out = new World();
 
-    const Token * characters = token->findToken("mugen-state/characters");
+    const Token * characters = token->findToken("_/characters");
     if (characters != NULL){
         out->characterData = deserializeCharacters(characters);
     }
 
-    const Token * stage = token->findToken("mugen-state/StageStateData");
+    const Token * stage = token->findToken("_/StageStateData");
     if (stage != NULL){
         out->stageData = deserializeStageStateData(stage);
     }
 
-    const Token * random = token->findToken("mugen-state/random");
+    const Token * random = token->findToken("_/random");
     if (random != NULL){
         out->random = Random::deserialize(random);
     }
 
-    const Token * gameInfo = token->findToken("mugen-state/game-info");
+    const Token * gameInfo = token->findToken("_/game-info");
     if (gameInfo != NULL){
         out->gameInfo = gameInfo->copy();
+    }
+
+    const Token * playerInfoToken = token->findToken("_/stage-player-info");
+    if (playerInfoToken != NULL){
+        out->stagePlayerData = deserializeStagePlayerInfo(playerInfoToken);
     }
 
     return out;

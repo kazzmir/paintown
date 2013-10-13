@@ -2169,5 +2169,60 @@ StageStateData deserializeStageStateData(const Token * data){
     return out;
 }
 
+
+Token * serialize(const PlayerData & data){
+    Token * out = new Token();
+    *out << "PlayerData";
+   *out->newToken() << "oldx" << data.oldx;
+   *out->newToken() << "oldy" << data.oldy;
+   *out->newToken() << "leftTension" << data.leftTension;
+   *out->newToken() << "rightTension" << data.rightTension;
+   *out->newToken() << "leftSide" << data.leftSide;
+   *out->newToken() << "rightSide" << data.rightSide;
+   *out->newToken() << "above" << data.above;
+   *out->newToken() << "jumped" << data.jumped;
+
+    return out;
+}
+
+PlayerData deserializePlayerData(const Token * data){
+    PlayerData out;
+    const Token * use = NULL;
+    use = data->findToken("_/oldx");
+    if (use != NULL){
+        use->view() >> out.oldx;
+    }
+    use = data->findToken("_/oldy");
+    if (use != NULL){
+        use->view() >> out.oldy;
+    }
+    use = data->findToken("_/leftTension");
+    if (use != NULL){
+        use->view() >> out.leftTension;
+    }
+    use = data->findToken("_/rightTension");
+    if (use != NULL){
+        use->view() >> out.rightTension;
+    }
+    use = data->findToken("_/leftSide");
+    if (use != NULL){
+        use->view() >> out.leftSide;
+    }
+    use = data->findToken("_/rightSide");
+    if (use != NULL){
+        use->view() >> out.rightSide;
+    }
+    use = data->findToken("_/above");
+    if (use != NULL){
+        use->view() >> out.above;
+    }
+    use = data->findToken("_/jumped");
+    if (use != NULL){
+        use->view() >> out.jumped;
+    }
+
+    return out;
+}
+
 }
 

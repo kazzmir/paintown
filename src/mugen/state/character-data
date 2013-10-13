@@ -474,3 +474,16 @@ struct ScreenBound{
         // Our ticker/frames during duration of the entire stage lifetime
         uint32_t ticker;
     }
+
+
+/* For the stage */
+struct PlayerData {
+    double oldx;
+    double oldy;
+    bool leftTension;
+    bool rightTension;
+    bool leftSide;
+    bool rightSide;
+    bool above;
+    bool jumped;
+}

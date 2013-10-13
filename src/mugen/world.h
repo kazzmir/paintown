@@ -30,6 +30,7 @@ public:
     virtual ~World();
 
     void addCharacter(const Character & who);
+    void addStagePlayerData(const CharacterId & id, const PlayerData & data);
     void setStageData(const StageStateData & data);
     void setRandom(const Random & random);
     void setGameInfo(Token * token);
@@ -39,6 +40,7 @@ public:
     const Token * getGameInfo() const;
 
     const std::map<CharacterId, AllCharacterData> & getCharacterData() const;
+    const std::map<CharacterId, PlayerData> & getStagePlayerData() const;
 
     bool operator==(const World & him) const;
     bool operator!=(const World & him) const;
@@ -48,6 +50,7 @@ public:
 
 protected:
     std::map<CharacterId, AllCharacterData> characterData;
+    std::map<CharacterId, PlayerData> stagePlayerData;
     StageStateData stageData;
     Random random;
     Token * gameInfo;

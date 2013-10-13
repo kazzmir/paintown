@@ -1543,6 +1543,14 @@ PaintownUtil::ReferenceCount<Mugen::World> Mugen::Stage::snapshotState(){
         world->addCharacter(*character);
     }
 
+    for (vector<Mugen::Character*>::iterator it = players.begin(); it != players.end(); it++){
+        Mugen::Character * character = *it;
+        if (playerInfo.find(character) != playerInfo.end()){
+            PlayerData data = playerInfo[character];
+            world->addStagePlayerData(character->getId(), data);
+        }
+    }
+
     world->setStageData(getStateData());
     world->setRandom(*Random::getState());
     world->setGameInfo(gameHUD->serialize());
@@ -1562,6 +1570,16 @@ void Mugen::Stage::updateState(const Mugen::World & world){
             who->setStateData(it->second.character);
             who->setCurrentAnimationState(it->second.animation);
             who->setStatePersistent(it->second.statePersistent);
+        }
+    }
+
+    const map<CharacterId, PlayerData> & infoData = world.getStagePlayerData();
+    for (map<CharacterId, PlayerData>::const_iterator it = infoData.begin(); it != infoData.end(); it++){
+        Mugen::Character * who = getCharacter(it->first);
+        if (who != NULL){
+            if (playerInfo.find(who) != playerInfo.end()){
+                playerInfo[who] = it->second;
+            }
         }
     }
 

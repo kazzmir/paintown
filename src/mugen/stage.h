@@ -40,6 +40,7 @@ namespace Ast{
 class MugenItemContent;
 // class MugenBackgroundManager;
 
+/*
 struct PlayerData {
     double oldx;
     double oldy;
@@ -50,6 +51,7 @@ struct PlayerData {
     bool above;
     bool jumped;
 };
+*/
 
 namespace Mugen {
 
