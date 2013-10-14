@@ -1014,6 +1014,8 @@ bool Command2::handle(const Mugen::Input & input, int ticks){
 Token * Command2::serialize() const {
     Token * out = new Token();
     *out << getName();
+    *out << useBufferTime;
+    *out << emitted;
     for (vector<ConstraintRef>::const_iterator it = constraints.begin(); it != constraints.end(); it++){
         const ConstraintRef & constraint = *it;
         *out << constraint->serialize();
@@ -1023,6 +1025,7 @@ Token * Command2::serialize() const {
 
 void Command2::deserialize(const Token * token){
     TokenView view = token->view();
+    view >> useBufferTime >> emitted;
     for (vector<ConstraintRef>::iterator it = constraints.begin(); it != constraints.end(); it++){
         ConstraintRef & ref = *it;
         const Token * next = NULL;

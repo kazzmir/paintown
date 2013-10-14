@@ -561,8 +561,8 @@ int play(){
             PaintownUtil::ReferenceCount<Mugen::World> newWorld = stage->snapshotState();
             PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[stage->getTicks()];
             if (*newWorld != *oldWorld){
-                string world1 = newWorld->serialize()->toStringCompact();
-                string world2 = oldWorld->serialize()->toStringCompact();
+                string world1 = newWorld->serialize()->toString();
+                string world2 = oldWorld->serialize()->toString();
                 Global::debug(0) << "Worlds are not the same at tick " << stage->getTicks() << std::endl;
                 /*
                 Global::debug(0) << "Old World: " << oldWorld->serialize()->toString() << std::endl;
