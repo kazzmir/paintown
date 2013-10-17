@@ -217,8 +217,8 @@ class PatternEnsure(Pattern):
     def isFixed(self):
         return self.next.isFixed()
 
-    def generate_bnf(self):
-        return "&" + self.next.generate_bnf()
+    def generate_bnf(self, code = True):
+        return "&" + self.next.generate_bnf(code)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_ensure(self, result, previous_result, stream, failure)
@@ -258,8 +258,8 @@ class PatternNot(Pattern):
     def canBeEmpty(self, peg):
         return True
 
-    def generate_bnf(self):
-        return "!" + self.next.generate_bnf()
+    def generate_bnf(self, code = True):
+        return "!" + self.next.generate_bnf(code)
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_not(self, result, previous_result, stream, failure)
@@ -311,7 +311,7 @@ class PatternRule(Pattern):
         if not find(self.rule):
             print "*warning* could not find rule " + self.rule
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         rules = ""
         values = ""
         if self.rules != None:
@@ -347,7 +347,7 @@ class PatternVoid(Pattern):
     def isFixed(self):
         return True
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return "<void>"
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
@@ -380,7 +380,7 @@ class PatternEof(Pattern):
     def canBeEmpty(self, peg):
         return True
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return "<eof>"
 
     def isFixed(self):
@@ -432,8 +432,8 @@ class PatternSequence(Pattern):
         for pattern in self.patterns:
             pattern.ensureRules(find)
 
-    def generate_bnf(self):
-        return "%s" % " ".join([p.generate_bnf() for p in self.patterns])
+    def generate_bnf(self, code = True):
+        return "%s" % " ".join([p.generate_bnf(code) for p in self.patterns])
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_sequence(self, result, previous_result, stream, failure)
@@ -468,7 +468,7 @@ class PatternCallRule(Pattern):
     def isFixed(self):
         return False
     
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         rules = ""
         values = ""
         if self.rules != None:
@@ -507,8 +507,8 @@ class PatternRepeatOnce(Pattern):
     def canBeEmpty(self, peg):
         return False
 
-    def generate_bnf(self):
-        return self.parens(self.next, self.next.generate_bnf()) + "+"
+    def generate_bnf(self, code = True):
+        return self.parens(self.next, self.next.generate_bnf(code)) + "+"
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
         return generator.generate_repeat_once(self, result, previous_result, stream, failure)
@@ -556,8 +556,11 @@ class PatternCode(Pattern):
     def generate_v3(self, generator, rule, peg):
         return generator.generate_code(self, rule, peg)
 
-    def generate_bnf(self):
-        return """{{%s}}""" % (self.code)
+    def generate_bnf(self, code = True):
+        if code:
+            return """{{%s}}""" % (self.code)
+        else:
+            return ""
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_code(self, result, previous_result, stream, failure)
@@ -595,8 +598,8 @@ class PatternRepeatMany(Pattern):
     def generate_v3(self, generator, rule, peg):
         return generator.generate_repeat_many(self, rule, peg)
 
-    def generate_bnf(self):
-        return self.parens(self.next, self.next.generate_bnf()) + "*"
+    def generate_bnf(self, code = True):
+        return self.parens(self.next, self.next.generate_bnf(code)) + "*"
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_repeat_many(self, result, previous_result, stream, failure)
@@ -613,7 +616,7 @@ class PatternAny(Pattern):
             return [self]
         return []
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return "."
 
     def ensureRules(self, find):
@@ -667,8 +670,8 @@ class PatternMaybe(Pattern):
     def generate_v3(self, generator, rule, peg):
         return generator.generate_maybe(self, rule, peg)
 
-    def generate_bnf(self):
-        return self.parens(self.pattern, self.pattern.generate_bnf()) + "?"
+    def generate_bnf(self, code = True):
+        return self.parens(self.pattern, self.pattern.generate_bnf(code)) + "?"
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_maybe(self, result, previous_result, stream, failure)
@@ -691,7 +694,7 @@ class PatternOr(Pattern):
     def isFixed(self):
         return reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return "or"
 
     def generate_python(self, result, previous_result, stream, failure):
@@ -739,8 +742,8 @@ class PatternBind(Pattern):
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_bind(self, peg, result, stream, failure, tail, peg_args)
         
-    def generate_bnf(self):
-        return "%s:%s" % (self.variable, self.pattern.generate_bnf())
+    def generate_bnf(self, code = True):
+        return "%s:%s" % (self.variable, self.pattern.generate_bnf(code))
 
     def generate_python(self, result, previous_result, stream, failure):
         return PythonGenerator().generate_bind(self, result, previous_result, stream, failure)
@@ -770,7 +773,7 @@ class PatternRange(Pattern):
     def canBeEmpty(self, peg):
         return False
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return "[%s]" % self.range
 
     def generate_v2(self, generator, peg):
@@ -812,7 +815,7 @@ class PatternLine(Pattern):
     def canBeEmpty(self, peg):
         return True
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return '<item>'
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
@@ -853,7 +856,7 @@ class PatternPredicate(Pattern):
     def contains(self):
         return 1
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         return '<predicate %s> {{%s}}"' % (self.variable, self.code)
 
     def generate_v1(self, generator, result, previous_result, stream, failure):
@@ -895,7 +898,7 @@ class PatternVerbatim(Pattern):
     def contains(self):
         return 1
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         if type(self.letters) == type('x'):
             return '"%s"' % self.letters
         elif type(self.letters) == type(0):
@@ -937,13 +940,13 @@ class Rule:
                 # print "%s is now inlined" % self.name
                 self.inline = True
 
-    def generate_bnf(self):
+    def generate_bnf(self, code = True):
         total_length = len(self.name)
         if self.inline:
             total_length += len('inline ')
         data = """
 %s = %s
-""" % (self.name, (('\n%s | ') % (' ' * total_length)).join([p.generate_bnf() for p in self.patterns]))
+""" % (self.name, (('\n%s | ') % (' ' * total_length)).join([p.generate_bnf(code) for p in self.patterns]))
         if self.inline:
             return "inline " + data.strip() + "\n"
         return data.strip() + "\n"
@@ -1216,9 +1219,9 @@ goto %s;
                 debugging = ""
                 debug_result = ""
                 if debug:
-                    debugging = """%s.setName("%s(%s)"); std::cout << "Trying rule '" << %s.makeBacktrace() << "' at position: " << %s << " input: '" << %s.get(%s.getPosition()) << "'" << std::endl;""" % (trace, self.name, special_escape(pattern.generate_bnf()).replace("\n", "\\n"), stream, position, stream, result)
+                    debugging = """%s.setName("%s(%s)"); std::cout << "Trying rule '" << %s.makeBacktrace() << "' at position: " << %s << " input: '" << %s.get(%s.getPosition()) << "'" << std::endl;""" % (trace, self.name, special_escape(pattern.generate_bnf(code = False)).replace("\n", "\\n"), stream, position, stream, result)
                 if 'debug2' in peg.options:
-                    debug_result = """std::cout << "Succeeded rule %s at position: " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf()).replace("\n", "\\n"))
+                    debug_result = """std::cout << "Succeeded rule %s at position: " << %s.getPosition() << " alternative: %s" << std::endl;""" % (self.name, result, special_escape(pattern.generate_bnf(code = False)).replace("\n", "\\n"))
                 do_memo = peg.memo and self.rules == None and self.parameters == None
                 start_transaction = ""
                 if peg.transactions:
