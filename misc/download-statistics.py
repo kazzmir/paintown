@@ -27,13 +27,18 @@ def readJson(start, end, version = None):
     else:
         raise Exception("error %s %s" % (response.status, response.reason))
 
-def lastMonth():
+def lastN(days):
     import datetime
-    return (datetime.date.today() + datetime.timedelta(-30)).isoformat()
+    return (datetime.date.today() + datetime.timedelta(-days)).isoformat()
+
+def lastYear():
+    return lastN(365)
+
+def lastMonth():
+    return lastN(30)
 
 def lastWeek():
-    import datetime
-    return (datetime.date.today() + datetime.timedelta(-7)).isoformat()
+    return lastN(7)
 
 def today():
     import datetime
@@ -62,6 +67,7 @@ print
 try:
     print "Downloads for the last week %s" % downloads(readJson(lastWeek(), today()))
     print "Downloads for the last month %s" % downloads(readJson(lastMonth(), today()))
+    print "Downloads for the last year %s" % downloads(readJson(lastYear(), today()))
 except Exception, e:
     print "Couldn't get downloads!"
     print e
