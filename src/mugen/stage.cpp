@@ -173,9 +173,9 @@ debugMode(false),
 loaded(false),
 gameHUD(NULL),
 gameOver(false),
-gameRate(1),
 objectId(0),
 replay(false){
+    getStateData().gameRate = 1;
 }
 
 #if 0
@@ -1325,7 +1325,7 @@ void Mugen::Stage::logic(){
 
     /* cycles slow the stage down, like after ko */
     getStateData().cycles += 1;
-    if (getStateData().cycles >= 1 / gameRate){
+    if (getStateData().cycles >= 1 / getStateData().gameRate){
         getStateData().cycles = 0;
         runCycle();
     }
@@ -1336,7 +1336,7 @@ void Mugen::Stage::logic(){
 	moveCamera(0, verticalfollow * 3.2);
     }
     
-    // Player HUD Need to make this more ellegant than casting and passing from array
+    // Player HUD Need to make this more elegant than casting and passing from array
     gameHUD->act(*this, *((Mugen::Character *)players[0]),*((Mugen::Character *)players[1]));
 
     /* This must be the last thing done in this function! */
@@ -2289,9 +2289,9 @@ void Mugen::Stage::initializeName(){
 }
         
 void Mugen::Stage::setGameRate(double rate){
-    gameRate = rate;
+    getStateData().gameRate = rate;
     if (rate <= 0){
-        gameRate = 0.1;
+        getStateData().gameRate = 0.1;
     }
 }
 

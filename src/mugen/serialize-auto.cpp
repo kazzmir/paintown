@@ -2082,6 +2082,7 @@ Token * serialize(const StageStateData & data){
    *out->newToken() << "camerax" << data.camerax;
    *out->newToken() << "cameray" << data.cameray;
    *out->newToken() << "ticker" << data.ticker;
+   *out->newToken() << "gameRate" << data.gameRate;
 
     return out;
 }
@@ -2164,6 +2165,10 @@ StageStateData deserializeStageStateData(const Token * data){
     use = data->findToken("_/ticker");
     if (use != NULL){
         use->view() >> out.ticker;
+    }
+    use = data->findToken("_/gameRate");
+    if (use != NULL){
+        use->view() >> out.gameRate;
     }
 
     return out;

@@ -473,6 +473,9 @@ struct ScreenBound{
 
         // Our ticker/frames during duration of the entire stage lifetime
         uint32_t ticker;
+    
+        /* frequency of logic updates. 1 is normal, lower is slower */
+        double gameRate;
     }
 
 

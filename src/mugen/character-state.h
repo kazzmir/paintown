@@ -1,6 +1,6 @@
 
-#ifndef _serialize_Mugen_59be93394ce0b8b2c28736dfc606e853
-#define _serialize_Mugen_59be93394ce0b8b2c28736dfc606e853
+#ifndef _serialize_Mugen_cb7dd6790d2fd9ec77e1f7defc9715c3
+#define _serialize_Mugen_cb7dd6790d2fd9ec77e1f7defc9715c3
 
 #include "common.h"
 #include "compiler.h"
@@ -846,6 +846,7 @@ struct StageStateData{
         camerax = 0;
         cameray = 0;
         ticker = 0;
+        gameRate = 0;
     }
 
     Pause pause;
@@ -863,6 +864,7 @@ struct StageStateData{
     double camerax;
     double cameray;
     uint32_t ticker;
+    double gameRate;
 };
 Token * serialize(const StageStateData & data);
 StageStateData deserializeStageStateData(const Token * data);

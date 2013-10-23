@@ -656,9 +656,6 @@ private:
 
     bool gameOver;
 
-    /* frequency of logic updates. 1 is normal, lower is slower */
-    double gameRate;
-
     int objectId;
 
     StageStateData stateData;

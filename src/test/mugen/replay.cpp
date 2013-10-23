@@ -256,16 +256,24 @@ public:
             char line[256];
             file.getline(line, sizeof(line) - 1);
             line[255] = 0;
-            inputs.push_back(parse(line));
+            parse(inputs, line);
         }
         file.close();
     }
     
     /* a,b,c */
-    Mugen::Input parse(const std::string & line){
+    void parse(map<unsigned int, Mugen::Input> & inputs, const std::string & line){
         Mugen::Input out;
-        
-        vector<string> keys = Util::splitString(line, ',');
+
+        int colon = line.find(':');
+        string tick_string = line.substr(0, colon);
+        string rest = line.substr(colon + 1);
+
+        istringstream get(tick_string);
+        unsigned int tick = 0;
+        get >> tick;
+
+        vector<string> keys = Util::splitString(rest, ',');
         for (vector<string>::iterator it = keys.begin(); it != keys.end(); it++){
             string key = *it;
             if (key == "F"){
@@ -336,16 +344,21 @@ public:
             }
         }
 
-        return out;
+        inputs[tick] = out;
     }
 
     void flip(){
     }
 
-    vector<Mugen::Input> inputs;
+    map<unsigned int, Mugen::Input> inputs;
 
     vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command2*> & commands, bool reversed){
         vector<string> out;
+
+        if (inputs.find(stage.getTicks()) == inputs.end()){
+            Global::debug(0) << "Error: no commands for stage tick " << stage.getTicks() << std::endl;
+            throw std::exception();
+        }
 
         Mugen::Input input = inputs[stage.getTicks()];
 
@@ -376,7 +389,7 @@ public:
         out.close();
     }
 
-    void writeInput(const Mugen::Input & input){
+    void writeInput(unsigned int tick, const Mugen::Input & input){
         vector<string> inputs;
         if (input.pressed.forward){
             inputs.push_back("F");
@@ -444,6 +457,7 @@ public:
         if (input.released.start){
             inputs.push_back("~s");
         }
+        out << tick << ":";
         bool first = true;
         for (vector<string>::iterator it = inputs.begin(); it != inputs.end(); it++){
             if (!first){
@@ -457,7 +471,7 @@ public:
 
     vector<string> currentCommands(const Mugen::Stage & stage, Mugen::Character * owner, const vector<Mugen::Command2*> & commands, bool reversed){
         vector<string> out = Mugen::HumanBehavior::currentCommands(stage, owner, commands, reversed);
-        writeInput(getInput());
+        writeInput(stage.getTicks(), getInput());
         return out;
     }
 };
@@ -605,7 +619,11 @@ int main(int argc, char ** argv){
         }
     } else {
         Global::setDebug(1);
-        return play();
+        try{
+            return play();
+        } catch (...){
+            return 1;
+        }
     }
 
     return 0;

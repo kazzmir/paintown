@@ -440,17 +440,17 @@ class Round{
         virtual void reset(Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2);
 	
 	enum State{
-	    WaitForIntro,
-	    DisplayIntro,
-	    WaitForRound,
-	    DisplayRound,
-	    WaitForFight,
-	    DisplayFight,
-	    PlayingGame,
-	    RoundOver,
-	    DoTimeOver,
-            DoWin,
-            MatchOver,
+	    WaitForIntro, /* 0 */
+	    DisplayIntro, /* 1 */
+	    WaitForRound, /* 2 */
+	    DisplayRound, /* 3 */
+	    WaitForFight, /* 4 */
+	    DisplayFight, /* 5 */
+	    PlayingGame, /* 6 */
+	    RoundOver, /* 7 */
+	    DoTimeOver, /* 8 */
+            DoWin, /* 9 */
+            MatchOver, /* 10 */
 	};
 	
 	virtual void setRound(int round){

@@ -874,6 +874,7 @@ Token * Round::serialize(){
     *token << state;
     *token << ticker;
     *token << currentRound;
+    *token << roundEnd;
     *token << getRoundElement().serialize();
     return token;
 }
@@ -885,6 +886,7 @@ void Round::deserialize(const Token * token){
     state = State(i);
     view >> ticker;
     view >> currentRound;
+    view >> roundEnd;
     const Token * roundToken = NULL;
     view >> roundToken;
     getRoundElement().deserialize(roundToken);

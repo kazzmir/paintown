@@ -161,7 +161,7 @@ static Token * serialize(const Random & random){
 
 static Token * serialize(const std::map<CharacterId, PlayerData> & stagePlayerData){
     Token * token = new Token();
-    *token << "_/stage-player-info";
+    *token << "stage-player-info";
     for (std::map<CharacterId, PlayerData>::const_iterator it = stagePlayerData.begin(); it != stagePlayerData.end(); it++){
         Token * info = new Token();
         *info << it->first.intValue();
