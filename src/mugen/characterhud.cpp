@@ -885,6 +885,7 @@ Token * Round::serialize(){
     *token << ticker;
     *token << currentRound;
     *token << roundEnd;
+    *token << winStateSet;
     *token << getRoundElement().serialize();
 
     *token << KO.serialize();
@@ -901,6 +902,7 @@ void Round::deserialize(const Token * token){
     view >> ticker;
     view >> currentRound;
     view >> roundEnd;
+    view >> winStateSet;
     const Token * roundToken = NULL;
     view >> roundToken;
     getRoundElement().deserialize(roundToken);
@@ -1292,7 +1294,23 @@ void Round::updatePlayerBehavior(Mugen::Character & player1, Mugen::Character & 
 
             break;
         }
-        case DoTimeOver:
+        case DoTimeOver: {
+            if (ticker >= overWaitTime){
+                // Remove player control
+	        player1.setBehavior(&dummyBehavior);
+                player2.setBehavior(&dummyBehavior);
+            } else {
+                player1.setBehavior(player1Behavior);
+                player2.setBehavior(player2Behavior);
+            }
+
+            break;
+        }
+        case DoWin: {
+            player1.setBehavior(&dummyBehavior);
+            player2.setBehavior(&dummyBehavior);
+            break;
+        }
 	default:
 	    break;
     }
