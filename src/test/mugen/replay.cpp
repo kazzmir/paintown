@@ -362,7 +362,7 @@ public:
 
         Mugen::Input input = inputs[stage.getTicks()];
 
-        Global::debug(0) << "Tick " << stage.getTicks() << " input: " << describeInput(input) << std::endl;
+        Global::debug(1) << "Tick " << stage.getTicks() << " input: " << describeInput(input) << std::endl;
 
         for (vector<Mugen::Command2*>::const_iterator it = commands.begin(); it != commands.end(); it++){
             Mugen::Command2 * command = *it;
@@ -559,6 +559,8 @@ int play(){
             stage->logic();
         }
     }
+
+    Global::debug(0) << worlds.size() << " world states" << std::endl;
     
     Mugen::Random::setState(randomState);
     {
@@ -571,13 +573,17 @@ int play(){
         stage->setMatchWins(1);
         Global::debug(0) << "Running duplicate simulation" << std::endl;
 
+        /* We have to keep track of the logic cycles ourselves because the stage ticks
+         * can be unstable depending on the game rate
+         */
+        int logicCycle = 0;
         while (!stage->isMatchOver()){
             PaintownUtil::ReferenceCount<Mugen::World> newWorld = stage->snapshotState();
-            PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[stage->getTicks()];
+            PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[logicCycle];
             if (*newWorld != *oldWorld){
                 string world1 = newWorld->serialize()->toString();
                 string world2 = oldWorld->serialize()->toString();
-                Global::debug(0) << "Worlds are not the same at tick " << stage->getTicks() << std::endl;
+                Global::debug(0) << "Worlds are not the same logic state " << logicCycle << " stage tick " << stage->getTicks() << std::endl;
                 /*
                 Global::debug(0) << "Old World: " << oldWorld->serialize()->toString() << std::endl;
                 Global::debug(0) << "New World: " << newWorld->serialize()->toString() << std::endl;
@@ -590,13 +596,15 @@ int play(){
                 return 1;
             }
             stage->logic();
+            logicCycle += 1;
 
             /* Go back 100 ticks and rerun the simulation */
-            if (stage->getTicks() == count){
+            if (logicCycle == count){
                 int before = count - 100;
                 Global::debug(0) << "Rewinding by 100 ticks to " << before << std::endl;
                 stage->updateState(*worlds[before]);
                 count += 100;
+                logicCycle -= 100;
             }
         }
     }
@@ -618,7 +626,7 @@ int main(int argc, char ** argv){
         } catch (QuitGameException & quit){
         }
     } else {
-        Global::setDebug(1);
+        Global::setDebug(0);
         try{
             return play();
         } catch (...){

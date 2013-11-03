@@ -1258,7 +1258,15 @@ void Round::updatePlayerBehavior(Mugen::Character & player1, Mugen::Character & 
             player2.setBehavior(player2Behavior);
 	    break;
         /* FIXME: not sure what to set for these */
-	case RoundOver:
+	case RoundOver: {
+            if (ticker >= overWaitTime){
+                // Remove player control
+                player1.setBehavior(&dummyBehavior);
+                player2.setBehavior(&dummyBehavior);
+            }
+
+            break;
+        }
         case DoTimeOver:
 	default:
 	    break;
@@ -1268,63 +1276,63 @@ void Round::updatePlayerBehavior(Mugen::Character & player1, Mugen::Character & 
 void Round::setState(const State & state, Mugen::Stage & stage, Mugen::Character & player1, Mugen::Character & player2){
     this->state = state;
     switch (this->state){
-	case WaitForIntro:
+        case WaitForIntro:
             player1.changeState(stage, Mugen::Initialize);
-	    player2.changeState(stage, Mugen::Initialize);
-	    break;
-	case DisplayIntro:
+            player2.changeState(stage, Mugen::Initialize);
+            break;
+        case DisplayIntro:
             /* The initialize state (5900) will call a change state controller
              * to change to Intro (190) so there doesn't seem to be a need
              * to force the characters to change to their intro's.
              * Look in common1.cns
              */
             /*
-            player1.changeState(stage, Mugen::Intro, vec);
-            player2.changeState(stage, Mugen::Intro, vec);
-            */
-	    break;
-	case WaitForRound:
+               player1.changeState(stage, Mugen::Intro, vec);
+               player2.changeState(stage, Mugen::Intro, vec);
+               */
+            break;
+        case WaitForRound:
             player1.changeState(stage, Mugen::Standing);
             player2.changeState(stage, Mugen::Standing);
-	    break;
-	case DisplayRound: {
-                FightElement & element = getRoundElement();
-                FightElement & soundElement = getRoundSoundElement();
-                if (element.notStarted()){
-	    	    ostringstream str;
-		    str << currentRound;
-		    std::string temp = replaceString("%i",str.str(),defaultText);
-		    Global::debug(1) << "Displaying Round info: " << temp << endl;
-		    element.setText(temp);
-		    element.play();
-		    soundElement.play();
-	        } 
-            }
-	    break;
-	case WaitForFight:
             break;
-	case DisplayFight:
+        case DisplayRound: {
+            FightElement & element = getRoundElement();
+            FightElement & soundElement = getRoundSoundElement();
+            if (element.notStarted()){
+                ostringstream str;
+                str << currentRound;
+                std::string temp = replaceString("%i",str.str(),defaultText);
+                Global::debug(1) << "Displaying Round info: " << temp << endl;
+                element.setText(temp);
+                element.play();
+                soundElement.play();
+            } 
+        }
+            break;
+        case WaitForFight:
+            break;
+        case DisplayFight:
             if (fight.notStarted()){
-		fight.play();
-		fightSound.play();
-	    }
-	    break;
-	case PlayingGame:
-	    // Give control back
+                fight.play();
+                fightSound.play();
+            }
+            break;
+        case PlayingGame:
+            // Give control back
             player1.setBehavior(player1Behavior);
             player2.setBehavior(player2Behavior);
-	    break;
-	case RoundOver:
-	    roundEnd = true;
+            break;
+        case RoundOver:
+            roundEnd = true;
             overByKO = true;
-	    // Start slow time
-	    stage.setGameRate(0.4);
-	    break;
+            // Start slow time
+            stage.setGameRate(0.4);
+            break;
         case DoTimeOver:
             overByKO = false;
             break;
-	default:
-	    break;
+        default:
+            break;
     }
     ticker = 0;
 }
