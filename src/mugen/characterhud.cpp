@@ -1263,6 +1263,9 @@ void Round::updatePlayerBehavior(Mugen::Character & player1, Mugen::Character & 
                 // Remove player control
                 player1.setBehavior(&dummyBehavior);
                 player2.setBehavior(&dummyBehavior);
+            } else {
+                player1.setBehavior(player1Behavior);
+                player2.setBehavior(player2Behavior);
             }
 
             break;

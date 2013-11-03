@@ -525,7 +525,7 @@ static void showDifferences(const string & s1, const string & s2){
 
 static void writeToFile(string filename, string data){
     ofstream out(filename.c_str());
-    out << data;
+    out << data << std::endl;
     out.close();
 }
 
@@ -600,11 +600,10 @@ int play(){
 
             /* Go back 100 ticks and rerun the simulation */
             if (logicCycle == count){
-                int before = count - 100;
-                Global::debug(0) << "Rewinding by 100 ticks to " << before << std::endl;
-                stage->updateState(*worlds[before]);
-                count += 100;
                 logicCycle -= 100;
+                Global::debug(0) << "Rewinding by 100 ticks to " << logicCycle << std::endl;
+                stage->updateState(*worlds[logicCycle]);
+                count += 100;
             }
         }
     }
