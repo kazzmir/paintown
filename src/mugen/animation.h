@@ -209,6 +209,9 @@ class Animation{
         AnimationState & getState();
         void setState(const AnimationState & state);
 
+        Token * serialize() const;
+        void deserialize(const Token * token);
+
     protected:
 
         void renderFrame(Frame * frame, int xaxis, int yaxis, const Graphics::Bitmap & work, const Mugen::Effects & effects);

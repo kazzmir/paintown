@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "character-state.h"
 #include "sprite.h"
 #include "util.h"
 #include "exception.h"
@@ -491,6 +492,14 @@ AnimationState & Animation::getState() {
         
 void Animation::setState(const AnimationState & state){
     this->state = state;
+}
+        
+Token * Animation::serialize() const {
+    return ::Mugen::serialize(state);
+}
+
+void Animation::deserialize(const Token * token){
+    setState(deserializeAnimationState(token));
 }
 
 /* who uses this function? */

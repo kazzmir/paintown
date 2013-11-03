@@ -74,6 +74,10 @@ Token * FightElement::serialize(){
     *token << ticker;
     *token << soundTicker;
 
+    if (type == IS_ACTION && action != NULL){
+        *token << action->serialize();
+    }
+
     return token;
 }
 
@@ -96,6 +100,12 @@ void FightElement::deserialize(const Token * token){
     soundState = SoundState(i);
     view >> ticker;
     view >> soundTicker;
+    
+    if (type == IS_ACTION && action != NULL){
+        const Token * actionToken = NULL;
+        view >> actionToken;
+        action->deserialize(actionToken);
+    }
 }
 
 void FightElement::act(){
@@ -876,6 +886,10 @@ Token * Round::serialize(){
     *token << currentRound;
     *token << roundEnd;
     *token << getRoundElement().serialize();
+
+    *token << KO.serialize();
+    *token << DKO.serialize();
+
     return token;
 }
 
@@ -890,6 +904,14 @@ void Round::deserialize(const Token * token){
     const Token * roundToken = NULL;
     view >> roundToken;
     getRoundElement().deserialize(roundToken);
+
+    const Token * koToken = NULL;
+    view >> koToken;
+    KO.deserialize(koToken);
+    
+    const Token * dkoToken = NULL;
+    view >> dkoToken;
+    DKO.deserialize(dkoToken);
 }
 
 bool Round::isWinner(const Mugen::Character & who) const {
