@@ -107,9 +107,32 @@ static Token * serialize(const map<int, map<uint32_t, int> > & statePersistent){
     return token;
 }
 
+template <class Int>
+static Int toInt(const string & str){
+    std::istringstream in(str);
+    int value = 0;
+    in >> value;
+    return value;
+}
+
 static map<int, map<uint32_t, int> > deserializeStates(const Token * data){
     map<int, map<uint32_t, int> > out;
-    /* TODO */
+
+    for (TokenView view = data->view(); view.hasMore(); /**/){
+        const Token * next = NULL;
+        view >> next;
+        
+        int state = toInt<int>(next->getName());
+        for (TokenView view2 = next->view(); view2.hasMore(); /**/){
+            const Token * more = NULL;
+            view2 >> more;
+            uint32_t controller = toInt<uint32_t>(more->getName());
+            int value = 0;
+            more->view() >> value;
+
+            out[state][controller] = value;
+        }
+    }
 
     return out;
 }
@@ -226,7 +249,7 @@ std::map<CharacterId, PlayerData> deserializeStagePlayerInfo(const Token * data)
     return out;
 }
 
-World * World::deserialize(Token * token){
+World * World::deserialize(const Token * token){
     World * out = new World();
 
     const Token * characters = token->findToken("_/characters");

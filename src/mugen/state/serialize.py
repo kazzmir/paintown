@@ -290,9 +290,9 @@ def generate_cpp(object, structs):
                                   re.sub(':', '', name)))
                     each = """const Token * entry = view.next();
             %(typeKeyOriginal)s valueKey;
-            deserialize_%(typeKey)s(valueKey, entry->getToken(1));
+            deserialize_%(typeKey)s(valueKey, entry->getToken(0));
             %(typeValueOriginal)s valueValue;
-            deserialize_%(typeValue)s(valueValue, entry->getToken(2));
+            deserialize_%(typeValue)s(valueValue, entry->getToken(1));
             out.%(name)s[valueKey] = valueValue;""" % {'typeKey': removeTypeChars(typeKey),
                                      'typeKeyOriginal': str(typeKey),
                                      'typeValue': removeTypeChars(typeValue),

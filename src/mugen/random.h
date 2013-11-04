@@ -34,7 +34,7 @@ protected:
     void init();
 
     uint64_t state[16];
-    uint8_t index;
+    uint32_t index;
 
     static PaintownUtil::ReferenceCount<Random> current;
 };

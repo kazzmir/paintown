@@ -581,8 +581,15 @@ int play(){
             PaintownUtil::ReferenceCount<Mugen::World> newWorld = stage->snapshotState();
             PaintownUtil::ReferenceCount<Mugen::World> oldWorld = worlds[logicCycle];
             if (*newWorld != *oldWorld){
-                string world1 = newWorld->serialize()->toString();
-                string world2 = oldWorld->serialize()->toString();
+                const Token * newToken = newWorld->serialize();
+                const Token * oldToken = oldWorld->serialize();
+
+                string world1 = newToken->toString();
+                string world2 = oldToken->toString();
+
+                delete newToken;
+                delete oldToken;
+
                 Global::debug(0) << "Worlds are not the same logic state " << logicCycle << " stage tick " << stage->getTicks() << std::endl;
                 /*
                 Global::debug(0) << "Old World: " << oldWorld->serialize()->toString() << std::endl;
@@ -602,7 +609,11 @@ int play(){
             if (logicCycle == count){
                 logicCycle -= 100;
                 Global::debug(0) << "Rewinding by 100 ticks to " << logicCycle << std::endl;
-                stage->updateState(*worlds[logicCycle]);
+                const Token * data = worlds[logicCycle]->serialize();
+                Mugen::World * newWorld = Mugen::World::deserialize(data);
+                stage->updateState(*newWorld);
+                delete newWorld;
+                delete data;
                 count += 100;
             }
         }

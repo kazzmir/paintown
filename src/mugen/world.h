@@ -46,7 +46,7 @@ public:
     bool operator!=(const World & him) const;
 
     Token * serialize() const;
-    static World * deserialize(Token * token);
+    static World * deserialize(const Token * token);
 
 protected:
     std::map<CharacterId, AllCharacterData> characterData;

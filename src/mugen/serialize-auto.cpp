@@ -1526,9 +1526,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(1));
+            deserialize_int(valueKey, entry->getToken(0));
             RuntimeValue valueValue;
-            deserialize_RuntimeValue(valueValue, entry->getToken(2));
+            deserialize_RuntimeValue(valueValue, entry->getToken(1));
             out.variables[valueKey] = valueValue;
         }
 
@@ -1538,9 +1538,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(1));
+            deserialize_int(valueKey, entry->getToken(0));
             RuntimeValue valueValue;
-            deserialize_RuntimeValue(valueValue, entry->getToken(2));
+            deserialize_RuntimeValue(valueValue, entry->getToken(1));
             out.floatVariables[valueKey] = valueValue;
         }
 
@@ -1550,9 +1550,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(1));
+            deserialize_int(valueKey, entry->getToken(0));
             RuntimeValue valueValue;
-            deserialize_RuntimeValue(valueValue, entry->getToken(2));
+            deserialize_RuntimeValue(valueValue, entry->getToken(1));
             out.systemVariables[valueKey] = valueValue;
         }
 
@@ -1654,9 +1654,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(1));
+            deserialize_int(valueKey, entry->getToken(0));
             std::vector<CharacterId> valueValue;
-            deserialize_stdvectorCharacterId(valueValue, entry->getToken(2));
+            deserialize_stdvectorCharacterId(valueValue, entry->getToken(1));
             out.targets[valueKey] = valueValue;
         }
 
@@ -1700,9 +1700,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             int valueKey;
-            deserialize_int(valueKey, entry->getToken(1));
+            deserialize_int(valueKey, entry->getToken(0));
             HitOverride valueValue;
-            deserialize_HitOverride(valueValue, entry->getToken(2));
+            deserialize_HitOverride(valueValue, entry->getToken(1));
             out.hitOverrides[valueKey] = valueValue;
         }
 
@@ -1732,9 +1732,9 @@ StateData deserializeStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             std::string valueKey;
-            deserialize_stdstring(valueKey, entry->getToken(1));
+            deserialize_stdstring(valueKey, entry->getToken(0));
             std::string valueValue;
-            deserialize_stdstring(valueValue, entry->getToken(2));
+            deserialize_stdstring(valueValue, entry->getToken(1));
             out.commandState[valueKey] = valueValue;
         }
 
@@ -2101,9 +2101,9 @@ StageStateData deserializeStageStateData(const Token * data){
         for (TokenView view = use->view(); view.hasMore(); /**/){
             const Token * entry = view.next();
             CharacterId valueKey;
-            deserialize_CharacterId(valueKey, entry->getToken(1));
+            deserialize_CharacterId(valueKey, entry->getToken(0));
             ScreenBound valueValue;
-            deserialize_ScreenBound(valueValue, entry->getToken(2));
+            deserialize_ScreenBound(valueValue, entry->getToken(1));
             out.screenBound[valueKey] = valueValue;
         }
 
