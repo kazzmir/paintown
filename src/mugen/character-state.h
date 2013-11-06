@@ -98,7 +98,7 @@ Distance deserializeDistance(const Token * data);
 
 
 struct Attribute{
-    Attribute(){
+    Attribute():state("X"), attackType("X"), physics("X"){
         
     }
 
@@ -113,6 +113,7 @@ Attribute deserializeAttribute(const Token * data);
 struct Priority{
     Priority(){
         hit = 0;
+        type = "X";
     }
 
     int hit;

@@ -383,10 +383,11 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
 
             PaintownUtil::ReferenceCount<WorldPacket> world = packet.convert<WorldPacket>();
             Token * test = world->getWorld()->serialize();
-            Token * filtered = filterTokens(test);
+            // Token * filtered = filterTokens(test);
 
-            buffer << filtered->toStringCompact();
-            Global::debug(1) << "World: " << filtered->toString() << std::endl;
+            // buffer << filtered->toStringCompact();
+            buffer << test->toStringCompact();
+            Global::debug(1) << "World: " << test->toString() << std::endl;
             buffer.send(socket);
 
             /*
@@ -406,7 +407,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             */
 
             delete test;
-            delete filtered;
+            // delete filtered;
 
             break;
         }
@@ -761,20 +762,36 @@ public:
 
         std::map<uint32_t, Input> useInputs = getInputs();
         if (useInputs.size() > 0){
+            uint32_t largestInput = 0;
             for (std::map<uint32_t, Input>::iterator it = useInputs.begin(); it != useInputs.end(); it++){
                 uint32_t tick = it->first;
                 const Input & input = it->second;
                 // player2->setInputs(tick, input.inputs);
                 player2Behavior.setInput(tick, input);
+
+                if (tick > largestInput){
+                    largestInput = tick;
+                }
             }
 
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
+                stage.setReplay(true);
                 Mugen::Sound::disableSounds();
-                for (uint32_t i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
+                uint32_t replay = currentTicks - lastState->getStageData().ticker;
+                for (uint32_t i = 0; i < replay; i++){
+                    if (stage.getTicks() == largestInput){
+                        lastState = stage.snapshotState();
+                    }
+
                     stage.logic();
                 }
                 Mugen::Sound::enableSounds();
+                stage.setReplay(false);
+
+                if (stage.getTicks() < largestInput){
+                    lastState = stage.snapshotState();
+                }
             }
         }
 
@@ -788,7 +805,7 @@ public:
 
     virtual void afterLogic(Stage & stage){
         Input latest = player1Behavior.getInput();
-        if (latest != lastInput){
+        // if (latest != lastInput){
             lastInput = latest;
             /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
@@ -797,11 +814,11 @@ public:
             }
             */
             handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new InputPacket(latest, stage.getTicks())));
-        }
+        // }
 
-        if (count % 30 == 0){
-            lastState = stage.snapshotState();
-            handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(lastState)));
+        if (count % 100 == 0){
+            PaintownUtil::ReferenceCount<World> state = stage.snapshotState();
+            handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new WorldPacket(state)));
         }
     }
 };
@@ -809,11 +826,11 @@ public:
 static void debugWorld(const std::string & what, Stage & stage){
     PaintownUtil::ReferenceCount<World> world = stage.snapshotState();
     Token * test = world->serialize();
-    Token * filtered = filterTokens(test);
+    // Token * filtered = filterTokens(test);
 
-    Global::debug(0) << stage.getTicks() << " " << what << ": " << filtered->toString() << std::endl;
+    Global::debug(0) << stage.getTicks() << " " << what << ": " << test->toString() << std::endl;
     delete test;
-    delete filtered;
+    // delete filtered;
 }
 
 class NetworkClientObserver: public NetworkObserver, public HostHandler {
@@ -905,12 +922,17 @@ public:
         }
 
         std::map<uint32_t, Input> useInputs = getInputs();
+        uint32_t largestInput = 0;
         if (useInputs.size() > 0){
             replay = true;
             for (std::map<uint32_t, Input>::iterator it = useInputs.begin(); it != useInputs.end(); it++){
                 uint32_t tick = it->first;
                 const Input & input = it->second;
                 player2Behavior.setInput(tick, input);
+
+                if (tick > largestInput){
+                    largestInput = tick;
+                }
                 /*
                 player2->setInputs(tick, input.inputs);
                 */
@@ -920,19 +942,30 @@ public:
         if (replay){
             if (lastState != NULL && currentTicks > lastState->getStageData().ticker){
                 stage.updateState(*lastState);
+                uint32_t replayTicks = currentTicks - lastState->getStageData().ticker;
+                Global::debug(1) << "At " << currentTicks << " Client replaying " << replayTicks << std::endl;
+
+                stage.setReplay(true);
                 Mugen::Sound::disableSounds();
-                Global::debug(1) << "At " << currentTicks << " Client replaying " << (currentTicks - lastState->getStageData().ticker) << std::endl;
-                for (uint32_t i = 0; i < currentTicks - lastState->getStageData().ticker; i++){
+                for (uint32_t i = 0; i < replayTicks; i++){
+                    if (stage.getTicks() == largestInput){
+                        lastState = stage.snapshotState();
+                    }
                     stage.logic();
                 }
                 Mugen::Sound::enableSounds();
+                stage.setReplay(false);
+
+                if (stage.getTicks() < largestInput){
+                    lastState = stage.snapshotState();
+                }
             }
         }
     }
 
     virtual void afterLogic(Stage & stage){
         Input latest = player1Behavior.getInput();
-        if (latest != lastInput){
+        // if (latest != lastInput){
             lastInput = latest;
             /*
             Global::debug(0) << "Tick " << stage.getTicks() << std::endl;
@@ -941,7 +974,7 @@ public:
             }
             */
             handler.sendPacket(PaintownUtil::ReferenceCount<Packet>(new InputPacket(latest, stage.getTicks())));
-        }
+        // }
     }
 };
 
