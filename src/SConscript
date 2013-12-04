@@ -172,7 +172,7 @@ test(use)
 
 buildStuff(paintownEnv)
 # FIXME: adding psp_prx here is ugly, find a better way
-paintownBinary = paintownEnv.Program('paintown', psp_prx(use) + obj_files + main() + icon() + androidSDLMain())
+paintownBinary = paintownEnv.Program('paintown', psp_prx(use) + obj_files + main() + icon())
 paintownEnv.Depends(paintownBinary, paintownEnv['ARCHIVES'])
 
 x = []
