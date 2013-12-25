@@ -2,6 +2,8 @@ import os
 import scons.utils
 import scons.checks
 
+SetOption('num_jobs', scons.utils.detectCPUs())
+
 def isQuiet():
     import sys
     return '-s' in sys.argv
