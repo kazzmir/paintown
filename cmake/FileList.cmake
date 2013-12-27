@@ -28,6 +28,7 @@ src/platformer/argument.cpp
 src/platformer/game/animation.cpp
 src/platformer/game/background.cpp
 src/platformer/game/camera.cpp
+src/platformer/game/collision-map.cpp
 src/platformer/game/game.cpp
 src/platformer/game/options.cpp
 src/platformer/game/tile.cpp
