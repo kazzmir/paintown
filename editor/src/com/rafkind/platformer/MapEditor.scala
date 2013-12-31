@@ -100,21 +100,17 @@ class Editor extends JFrame("Platformer Map Editor"){
             override def actionPerformed(event:ActionEvent){
               /* just a container for an object */
               class ObjectBox {
-                var internal:Object = null
+                var _internal:Object = null
 
-                def set(o:Object){
-                  internal = o
-                }
+                def internal = _internal 
 
-                def get(){
-                  internal
-                }
+                def internal_= (obj:Object):Unit = _internal = obj
               }
 
               val engine = new SwingEngine("data-path.xml")
               val path = engine.find("path").asInstanceOf[JTextField]
               val box = new ObjectBox()
-              box.set(Data.getDataPath())
+              box.internal = Data.getDataPath()
               path.setText(Data.getDataPath().getPath())
               val change = engine.find("change").asInstanceOf[JButton]
               change.addActionListener(new AbstractAction(){
@@ -125,7 +121,7 @@ class Editor extends JFrame("Platformer Map Editor"){
                     if (returnVal == JFileChooser.APPROVE_OPTION){
                       val newPath = chooser.getSelectedFile()
                       path.setText(newPath.getPath())
-                      box.set(newPath)
+                      box.internal = newPath
                     }
                   }
                 })
@@ -134,7 +130,7 @@ class Editor extends JFrame("Platformer Map Editor"){
               val dialog = new JDialog(Editor.this, "Paintown data path")
               save.addActionListener(new AbstractAction(){
                   override def actionPerformed(event:ActionEvent){
-                    Data.setDataPath(box.get().asInstanceOf[File])
+                    Data.setDataPath(box.internal.asInstanceOf[File])
                     dialog.setVisible(false)
                   }
                 })
