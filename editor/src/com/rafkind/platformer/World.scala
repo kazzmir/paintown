@@ -34,20 +34,24 @@ class World(loadfile:File){
     var gravityY:Double = 0
     var acceleration:Double = 0
     
-    object Panel{
-        def Panel(n:String, i:Image) = {
-            val name = n
-            val image = i
-            
-        }
-    }
-
+    //! Animations
+    var animations = scala.collection.mutable.HashMap.empty[String, Animation]
+    
+    //! Tilesets
+    var tilesets = scala.collection.mutable.ArrayBuffer.empty[TileSet]
+    tilesets += new TileSet()
+    
     def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
         g.scale(scale, scale)
         
         // Entire map
         g.setColor( new Color( 230, 230, 250 ) )
         g.fillRect(5, 5, this.width, this.height)
+        
+        // Tilesets
+        tilesets.foreach{
+            case (tileset) => tileset.render(g,5,5)
+        }
         
         // Viewport resolution
         g.setColor( new Color( 0, 0, 255 ) )

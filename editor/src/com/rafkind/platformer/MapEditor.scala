@@ -150,7 +150,7 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
         })
 
-        val worlds = new HashMap[Component, World]()
+        val worlds = scala.collection.mutable.HashMap.empty[Component, World]
 
         def doSave(world:World, file:File){
             val out = new FileOutputStream(file)
