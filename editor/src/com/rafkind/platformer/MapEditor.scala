@@ -306,7 +306,7 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
         }
 
-        viewScroll.setPreferredSize(new Dimension(200, 200))
+        //viewScroll.setPreferredSize(new Dimension(320, 240))
         viewScroll.setViewportView(view)
 
         /* this allows smooth scrolling of the level */
@@ -402,8 +402,8 @@ class Editor extends JFrame("Platformer Map Editor"){
         val scale = engine.find( "scale" ).asInstanceOf[JLabel]
         scroll.addChangeListener( new ChangeListener(){
             override def stateChanged(event:ChangeEvent){
-                world.setScale(scroll.getValue().toDouble * 2.0 / scroll.getMaximum())
-                scale.setText("Scale: " + world.getScale())
+                world.scale = scroll.getValue().toDouble * 2.0 / scroll.getMaximum()
+                scale.setText("Scale: " + world.scale)
                 view.revalidate()
                 viewScroll.repaint()
             }

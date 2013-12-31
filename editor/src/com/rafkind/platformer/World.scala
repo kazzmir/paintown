@@ -21,8 +21,8 @@ class World(loadfile:File){
         load(loadfile)
     }
     var name:String = "No name assigned."
-    var width:Int = 320
-    var height:Int = 240
+    var width:Int = 640
+    var height:Int = 480
     var scale:Double = 2
     var _path = loadfile
     
@@ -48,19 +48,25 @@ class World(loadfile:File){
     }
 
     def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
-        g.scale( getScale(), getScale() )
+        g.scale(scale, scale)
+        
+        // Entire map
         g.setColor( new Color( 230, 230, 250 ) )
-        g.fillRect(5, 5, getWidth(), getHeight())
+        g.fillRect(5, 5, this.width, this.height)
+        
+        // Viewport resolution
+        g.setColor( new Color( 0, 0, 255 ) )
+        g.drawRect(5, 5, this.resolutionX, this.resolutionY)
     }
 
     def load(f:File) = {
-        val reader = new TokenReader( f );
-        val head = reader.nextToken();
+        val reader = new TokenReader( f )
+        val head = reader.nextToken()
         if ( ! head.getName().equals( "world" ) ){
-            throw new LoadException( "Starting token is not 'world'" );
+            throw new LoadException( "Starting token is not 'world'" )
         }
 
-        System.out.println( "Loaded " + f );
+        System.out.println( "Loaded " + f )
     }
 
     def loadImage(s:String):Image = {
@@ -81,21 +87,5 @@ class World(loadfile:File){
         
 
         world
-    }
-    
-    def getWidth():Int = {
-        width
-    }
-    
-    def getHeight():Int = {
-        height
-    }
-    
-    def getScale():Double = {
-        scale
-    }
-
-    def setScale(s:Double) = {
-        scale = s
     }
 }
