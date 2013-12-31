@@ -5,11 +5,6 @@ import java.awt.image._
 import java.io._
 import javax.imageio._
 
-import java.util.Iterator
-import java.util.List
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.Map
 import com.rafkind.paintown.exception.LoadException
 import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
