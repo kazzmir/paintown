@@ -150,26 +150,22 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
         });
 
-        //val maps = new HashMap[Component, World]();
+        val worlds = new HashMap[Component, World]();
 
-        /*def doSave(level:Level, file:File){
+        def doSave(world:World, file:File){
             val out = new FileOutputStream(file);
-            new PrintStream(out).print(level.toToken().toString() + "\n");
+            new PrintStream(out).print(world.toToken().toString() + "\n");
             out.close();
-            System.out.println(level.toToken().toString());
-        }*/
+            System.out.println(world.toToken().toString());
+        }
 
         newMap.addActionListener(new AbstractAction(){
             override def actionPerformed(event:ActionEvent){
                 SwingUtilities.invokeLater(new Runnable(){
                     def run(){
-                        /*val level = new Level();
-                        for (i <- 1 to 3){
-                            level.getBlocks().asInstanceOf[java.util.List[Block]].add(new Block());
-                        }
+                        val world = new World()
 
-                        levels.put(tabbed.add(createEditPanel(level)), level);*/
-                        tabbed.add("New Map", createTab());
+                        worlds.put(tabbed.add("New World", createTab(world)), world)
                     }
                 });
             }
@@ -227,9 +223,8 @@ class Editor extends JFrame("Platformer Map Editor"){
         closeMap.addActionListener( new AbstractAction(){
           override def actionPerformed(event:ActionEvent){
             if ( tabbed.getSelectedComponent() != null ){
-              /*levels.remove( tabbed.getSelectedComponent() );*/
-              
-              tabbed.remove( tabbed.getSelectedComponent() );
+              worlds.remove(tabbed.getSelectedComponent())
+              tabbed.remove(tabbed.getSelectedComponent())
             }
           }
         });
@@ -249,11 +244,10 @@ class Editor extends JFrame("Platformer Map Editor"){
 
                 val returnVal = chooser.showOpenDialog(Editor.this);
                 if ( returnVal == JFileChooser.APPROVE_OPTION ){
-                    val f = chooser.getSelectedFile();
+                    val f = chooser.getSelectedFile()
                     try{
-                        /*val level = new Level(f);
-                        levels.put(tabbed.add(f.getName(), createEditPanel(level)), level);*/
-                        tabbed.add(f.getName(), createTab());
+                        val world = new World(f)
+                        worlds.put(tabbed.add(f.getName(), createTab(world)), world)
                     } catch {
                         case fail:LoadException => {
                           showError( "Could not load " + f.getName() );
@@ -274,7 +268,7 @@ class Editor extends JFrame("Platformer Map Editor"){
         });
     }
     
-    def createTab():JComponent = {
+    def createTab(world:World):JComponent = {
         val engine = new SwingEngine("main.xml");
 
         val viewContainer = engine.find( "view" ).asInstanceOf[JPanel];
@@ -282,34 +276,110 @@ class Editor extends JFrame("Platformer Map Editor"){
 
         val view = new JPanel(){
             override def getPreferredSize():Dimension = {
-                //level.getSize()
-                new Dimension(32,32);
+                world.getSize()
             }
 
             override def paintComponent(g:Graphics){
-                val h = viewScroll.getHorizontalScrollBar();
-                val v = viewScroll.getVerticalScrollBar();
-                g.setColor(new Color(64, 64, 64));
-                //g.fillRect(0, 0, level.getWidth().toInt, v.getVisibleAmount());
-                //g.clearRect(0, v.getVisibleAmount().toInt + 1, level.getWidth().toInt, level.getHeight().toInt);
-                //level.render(g.asInstanceOf[Graphics2D], h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount());
+                val h = viewScroll.getHorizontalScrollBar()
+                val v = viewScroll.getVerticalScrollBar()
+                g.setColor(new Color(64, 64, 64))
+                g.fillRect(0, 0, world.getWidth().toInt, v.getVisibleAmount());
+                g.clearRect(0, v.getVisibleAmount().toInt + 1, world.getWidth().toInt, world.getHeight().toInt);
+                world.render(g.asInstanceOf[Graphics2D], h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount())
+                System.out.println("Painting..");
             }
         };
 
-        //viewScroll.setPreferredSize(new Dimension(200, 200));
-        //viewScroll.setViewportView(view);
+        viewScroll.setPreferredSize(new Dimension(200, 200))
+        viewScroll.setViewportView(view)
 
         /* this allows smooth scrolling of the level */
-        //viewScroll.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+        viewScroll.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE)
 
-        /*
-           System.out.println( "JViewport.BLIT_SCROLL_MODE = " + JViewport.BLIT_SCROLL_MODE );
-           System.out.println( "JViewport.BACKINGSTORE_SCROLL_MODE = " + JViewport.BACKINGSTORE_SCROLL_MODE );
-           System.out.println( "JViewport.SIMPLE_SCROLL_MODE = " + JViewport.SIMPLE_SCROLL_MODE );
-           System.out.println( "View scroll mode: " + viewScroll.getViewport().getScrollMode() );
-           */
-        //viewScroll.getHorizontalScrollBar().setBackground(new Color(128, 255, 0));
+        viewScroll.getHorizontalScrollBar().setBackground(new Color(128, 255, 0));
         
+        class Mouser extends MouseMotionAdapter with MouseInputListener {
+            var dx:Double = 0
+            var dy:Double = 0
+            var sx:Double = 0
+            var sy:Double = 0
+            var currentPopup:JDialog = null
+
+            override def mouseDragged(event:MouseEvent){
+                viewScroll.repaint();
+            }
+
+            def leftClick(event:MouseEvent):Boolean = {
+                event.getButton() == MouseEvent.BUTTON1;
+            }
+
+            def rightClick(event:MouseEvent):Boolean = {
+                event.getButton() == MouseEvent.BUTTON3;
+            }
+
+            def findFiles(dir:File, ending:String):List[File] = {
+                val all = dir.listFiles(new java.io.FileFilter(){
+                    override def accept(path:File):Boolean = {
+                        path.isDirectory() || path.getName().endsWith(ending);
+                    }
+                });
+                var files = List[File]()
+                for (file <- all){
+                    if (file.isDirectory() ){
+                        files = files ++ findFiles(file, ending);
+                    } else {
+                        files = files :+ file
+                    }
+                }
+                return files;
+            }
+
+            def mousePressed(event:MouseEvent){
+                if (leftClick(event)){
+                    
+                } else if (rightClick(event)){
+                    
+                }
+            }
+
+            def mouseExited(event:MouseEvent){
+                viewScroll.repaint();
+            }
+
+            def mouseClicked(event:MouseEvent){
+            }
+
+            def mouseEntered(event:MouseEvent){
+            }
+
+            def mouseReleased(event:MouseEvent){
+                viewScroll.repaint();
+            }
+        }
+
+        val mousey = new Mouser();
+
+        view.addMouseMotionListener(mousey );
+        view.addMouseListener(mousey );
+        view.addMouseListener(new MouseAdapter(){
+            override def mousePressed(event:MouseEvent){
+                /* force focus to move to the view */
+                view.requestFocusInWindow(); 
+            }
+        });
+        
+        
+        val scroll = engine.find( "level-scale" ).asInstanceOf[JSlider];
+        val scale = engine.find( "scale" ).asInstanceOf[JLabel];
+        scroll.addChangeListener( new ChangeListener(){
+            override def stateChanged(event:ChangeEvent){
+                world.setScale(scroll.getValue().toDouble * 2.0 / scroll.getMaximum());
+                scale.setText("Scale: " + world.getScale());
+                view.revalidate();
+                viewScroll.repaint();
+            }
+        });
+
         val split = engine.getRootComponent().asInstanceOf[JSplitPane]
         split.setContinuousLayout(true)
         split

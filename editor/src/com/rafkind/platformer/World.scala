@@ -15,12 +15,18 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-object World{
+class World(path:File){
     
+    if (path != null){
+        load(path)
+    }
     var name:String = "No name assigned."
-    var width:Int = 0
-    var scale:Double = 0
-    var path:File = null
+    var width:Int = 320
+    var height:Int = 240
+    var scale:Double = 2
+    var this.path = path
+    
+    def this() = this(null)
     
     object Panel{
         def Panel(n:String, i:Image) = {
@@ -29,22 +35,13 @@ object World{
             
         }
     }
-    
-    def World(path:File) = {
-        this.path = path
-        load( path )
-    }
 
     def getPath():File = {
         path
     }
 
-    def setPath(path:File) = {
-        this.path = path
-    }
-
     def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
-        // g.clearRect( 0, 0, (int) getWidth(), (int) getHeight() );
+        //g.clearRect( 0, 0, (int) getWidth(), (int) getHeight() );
         g.scale( getScale(), getScale() );
         g.setColor( new Color( 255, 0, 0 ) );
     }
@@ -68,7 +65,7 @@ object World{
     }
 
     def getSize():Dimension = {
-        new Dimension( 32, 32 )
+        new Dimension( width, height )
     }
 
     def toToken():Token = {
@@ -77,6 +74,14 @@ object World{
         
 
         world
+    }
+    
+    def getWidth():Int = {
+        width
+    }
+    
+    def getHeight():Int = {
+        height
     }
     
     def getScale():Double = {
