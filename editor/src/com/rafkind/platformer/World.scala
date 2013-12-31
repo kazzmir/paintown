@@ -15,18 +15,29 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class World(path:File){
+class World(loadfile:File){
     
-    if (path != null){
-        load(path)
+    if (loadfile != null){
+        load(loadfile)
     }
     var name:String = "No name assigned."
     var width:Int = 320
     var height:Int = 240
     var scale:Double = 2
-    var this.path = path
+    var _path = loadfile
     
     def this() = this(null)
+    def path = _path
+    def path_= (value:File):Unit = _path = value
+    
+    //! Resolution of map (upscaled/downscaled according to paintowns screensize)
+    var resolutionX:Int = 320
+    var resolutionY:Int = 240
+    
+    //! mechanics
+    var gravityX:Double = 0
+    var gravityY:Double = 0
+    var acceleration:Double = 0
     
     object Panel{
         def Panel(n:String, i:Image) = {
@@ -36,14 +47,10 @@ class World(path:File){
         }
     }
 
-    def getPath():File = {
-        path
-    }
-
     def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
-        //g.clearRect( 0, 0, (int) getWidth(), (int) getHeight() );
-        g.scale( getScale(), getScale() );
-        g.setColor( new Color( 255, 0, 0 ) );
+        g.scale( getScale(), getScale() )
+        g.setColor( new Color( 230, 230, 250 ) )
+        g.fillRect(5, 5, getWidth(), getHeight())
     }
 
     def load(f:File) = {
