@@ -282,7 +282,7 @@ class Editor extends JFrame("Platformer Map Editor"){
     }
     
     def createTab(world:World):JComponent = {
-        val engine = new SwingEngine("main.xml")
+        val engine = new SwingEngine("platformer/main.xml")
 
         val viewContainer = engine.find( "view" ).asInstanceOf[JPanel]
         val viewScroll = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS)
@@ -390,9 +390,14 @@ class Editor extends JFrame("Platformer Map Editor"){
         constraints.weightx = 1
         constraints.weighty = 1
         layout.setConstraints(viewScroll, constraints)
-        view.setBorder(BorderFactory.createLineBorder(new Color(255, 0, 0)))
+        
         viewContainer.add(viewScroll)
         
+        val values = engine.find("values").asInstanceOf[JPanel]
+        val worldEngine = new SwingEngine( "platformer/world.xml" )
+        val worldPane = worldEngine.getRootComponent().asInstanceOf[JPanel]
+        
+        values.add(worldPane);
         
         val scroll = engine.find( "level-scale" ).asInstanceOf[JSlider]
         val scale = engine.find( "scale" ).asInstanceOf[JLabel]

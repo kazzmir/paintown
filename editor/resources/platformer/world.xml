@@ -1,0 +1,52 @@
+<panel layout="GridBagLayout">
+    <vbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+        />
+        <hbox>
+            <label text="World Name" />
+            <textfield id="name" />
+        </hbox>
+        <hbox>
+            <label text="Resolution X" />
+            <spinner id="resolution-x" />
+            <glue />
+        </hbox>
+        <hbox>
+            <label text="Resolution Y" />
+            <spinner id="resolution-y" />
+            <glue />
+        </hbox>
+        <hbox>
+            <label text="Dimensions X" />
+            <spinner id="dimensions-x" />
+            <glue />
+        </hbox>
+        <hbox>
+            <label text="Dimensions Y" />
+            <spinner id="dimensions-y" />
+            <glue />
+        </hbox>
+        <vbox>
+            <label text="Mechanics" />
+            <hbox>
+                <label text="Gravity X" />
+                <textfield id="gravity-x" />
+            </hbox>
+            <hbox>
+                <label text="Gravity Y" />
+                <textfield id="gravity-y" />
+            </hbox>
+            <hbox>
+                <label text="Acceleration" />
+                <textfield id="acceleration" />
+            </hbox>
+        </vbox>
+    </vbox>
+</panel>
