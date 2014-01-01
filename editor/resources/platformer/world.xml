@@ -37,15 +37,15 @@
             <label text="Mechanics" />
             <hbox>
                 <label text="Gravity X" />
-                <textfield id="gravity-x" />
+                <spinner id="gravity-x" />
             </hbox>
             <hbox>
                 <label text="Gravity Y" />
-                <textfield id="gravity-y" />
+                <spinner id="gravity-y" />
             </hbox>
             <hbox>
                 <label text="Acceleration" />
-                <textfield id="acceleration" />
+                <spinner id="acceleration" />
             </hbox>
         </vbox>
     </vbox>
