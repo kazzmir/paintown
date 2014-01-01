@@ -15,6 +15,10 @@ class World(loadfile:File){
     if (loadfile != null){
         load(loadfile)
     }
+    
+    var offsetX:Int = 15
+    var offsetY:Int = 15
+    
     var name:String = "No name assigned."
     var width:Int = 640
     var height:Int = 480
@@ -46,16 +50,16 @@ class World(loadfile:File){
         
         // Entire map
         g.setColor( new Color( 230, 230, 250 ) )
-        g.fillRect(5, 5, this.width, this.height)
+        g.fillRect(offsetX, offsetY, this.width, this.height)
         
         // Tilesets
         tilesets.foreach{
-            case (tileset) => tileset.render(g,5,5)
+            case (tileset) => tileset.render(g, offsetX, offsetY)
         }
         
         // Viewport resolution
         g.setColor( new Color( 0, 0, 255 ) )
-        g.drawRect(5, 5, this.resolutionX, this.resolutionY)
+        g.drawRect(offsetX, offsetY, this.resolutionX, this.resolutionY)
     }
 
     def load(f:File) = {
@@ -77,7 +81,9 @@ class World(loadfile:File){
     }
 
     def getSize():Dimension = {
-        new Dimension( width, height )
+        val dimension = new Dimension()
+        dimension.setSize((width * scale) + (offsetX*2), (height * scale) + (offsetY*2))
+        dimension
     }
 
     def toToken():Token = {

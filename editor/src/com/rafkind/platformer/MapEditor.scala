@@ -304,11 +304,11 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
         }
 
-        //viewScroll.setPreferredSize(new Dimension(320, 240))
         viewScroll.setViewportView(view)
+        view.revalidate()
 
         /* this allows smooth scrolling of the level */
-        viewScroll.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE)
+        //viewScroll.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE)
 
         viewScroll.getHorizontalScrollBar().setBackground(new Color(128, 255, 0))
         
@@ -416,7 +416,6 @@ class Editor extends JFrame("Platformer Map Editor"){
                 def update() = {
                     world.name = name.getText()
                     tabbed.setTitleAt(tabbed.getSelectedIndex(), name.getText())
-                    //viewScroll.repaint()
                 }
             })
         }
@@ -464,6 +463,7 @@ class Editor extends JFrame("Platformer Map Editor"){
                     val spinner = event.getSource().asInstanceOf[JSpinner]
                     val i = spinner.getValue().asInstanceOf[java.lang.Integer]
                     world.width = i.intValue()
+                    view.revalidate()
                     viewScroll.repaint()
                 }
             })
@@ -480,6 +480,7 @@ class Editor extends JFrame("Platformer Map Editor"){
                     val spinner = event.getSource().asInstanceOf[JSpinner]
                     val i = spinner.getValue().asInstanceOf[java.lang.Integer]
                     world.height = i.intValue()
+                    view.revalidate()
                     viewScroll.repaint()
                 }
             })
@@ -493,7 +494,6 @@ class Editor extends JFrame("Platformer Map Editor"){
                     val spinner = event.getSource().asInstanceOf[JSpinner]
                     val i = spinner.getValue().asInstanceOf[java.lang.Double]
                     world.gravityX = i.doubleValue()
-                    viewScroll.repaint()
                 }
             })
         }
@@ -506,7 +506,6 @@ class Editor extends JFrame("Platformer Map Editor"){
                     val spinner = event.getSource().asInstanceOf[JSpinner]
                     val i = spinner.getValue().asInstanceOf[java.lang.Double]
                     world.gravityY = i.doubleValue()
-                    viewScroll.repaint()
                 }
             })
         }
@@ -519,7 +518,6 @@ class Editor extends JFrame("Platformer Map Editor"){
                     val spinner = event.getSource().asInstanceOf[JSpinner]
                     val i = spinner.getValue().asInstanceOf[java.lang.Double]
                     world.acceleration = i.doubleValue()
-                    viewScroll.repaint()
                 }
             })
         }
