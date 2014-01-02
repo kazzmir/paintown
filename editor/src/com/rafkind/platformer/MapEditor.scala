@@ -148,7 +148,7 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
         })
 
-        val worlds = scala.collection.mutable.HashMap.empty[Component, World]
+        val worlds = new HashMap[Component, World]()
 
         def doSave(world:World, file:File){
             val out = new FileOutputStream(file)
@@ -169,9 +169,13 @@ class Editor extends JFrame("Platformer Map Editor"){
                         
                         var i = 0
                         for (i <- 0 until tabbed.getTabCount()){
-                            var w = worlds.get(tabbed.getComponentAt(i)).asInstanceOf[World]
-                            if (w.name contains "New World"){
-                                counter+=1
+                            try {
+                                var w = worlds.get(tabbed.getComponentAt(i)).asInstanceOf[World]
+                                if (w.name contains "New World"){
+                                    counter+=1
+                                }
+                            } catch {
+                                case fail:ClassCastException => {}
                             }
                         }
                         
@@ -395,134 +399,9 @@ class Editor extends JFrame("Platformer Map Editor"){
         
         viewContainer.add(viewScroll)
         
+        // Create panel to handle world values
         val values = engine.find("values").asInstanceOf[JPanel]
-        val worldEngine = new SwingEngine( "platformer/world.xml" )
-        val worldPane = worldEngine.getRootComponent().asInstanceOf[JPanel]
-        
-        {
-            val name = worldEngine.find("name").asInstanceOf[JTextField]
-            name.setText(world.name)
-            name.getDocument().addDocumentListener(new DocumentListener() {
-                def changedUpdate(e:DocumentEvent) = {
-                    update()
-                }
-                def removeUpdate(e:DocumentEvent) = {
-                    update()
-                }
-                def insertUpdate(e:DocumentEvent) = {
-                    update()
-                }
-                
-                def update() = {
-                    world.name = name.getText()
-                    tabbed.setTitleAt(tabbed.getSelectedIndex(), name.getText())
-                }
-            })
-        }
-        
-        {
-            val resolution = worldEngine.find("resolution-x").asInstanceOf[JSpinner]
-            val model = new SpinnerNumberModel()
-            resolution.setModel(model)
-            model.setValue(world.resolutionX)
-            model.setStepSize(16)
-            resolution.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                    world.resolutionX = i.intValue()
-                    viewScroll.repaint()
-                }
-            })
-        }
-        
-        {
-            val resolution = worldEngine.find("resolution-y").asInstanceOf[JSpinner]
-            val model = new SpinnerNumberModel()
-            resolution.setModel(model)
-            model.setValue(world.resolutionY)
-            model.setStepSize(16)
-            resolution.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                    world.resolutionY = i.intValue()
-                    viewScroll.repaint()
-                }
-            })
-        }
-        
-        {
-            val dimensions = worldEngine.find("dimensions-x").asInstanceOf[JSpinner]
-            val model = new SpinnerNumberModel()
-            dimensions.setModel(model)
-            model.setValue(world.width)
-            model.setStepSize(16)
-            dimensions.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                    world.width = i.intValue()
-                    view.revalidate()
-                    viewScroll.repaint()
-                }
-            })
-        }
-        
-        {
-            val dimensions = worldEngine.find("dimensions-y").asInstanceOf[JSpinner]
-            val model = new SpinnerNumberModel()
-            dimensions.setModel(model)
-            model.setValue(world.height)
-            model.setStepSize(16)
-            dimensions.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                    world.height = i.intValue()
-                    view.revalidate()
-                    viewScroll.repaint()
-                }
-            })
-        }
-        
-        {
-            val gravity = worldEngine.find("gravity-x").asInstanceOf[JSpinner]
-            gravity.setModel(new SpinnerNumberModel(world.gravityX, -2000.0, 2000.0, 0.001))
-            gravity.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Double]
-                    world.gravityX = i.doubleValue()
-                }
-            })
-        }
-        
-        {
-            val gravity = worldEngine.find("gravity-y").asInstanceOf[JSpinner]
-            gravity.setModel(new SpinnerNumberModel(world.gravityY, -2000.0, 2000.0, 0.001))
-            gravity.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Double]
-                    world.gravityY = i.doubleValue()
-                }
-            })
-        }
-        
-        {
-            val acceleration = worldEngine.find("acceleration").asInstanceOf[JSpinner]
-            acceleration.setModel(new SpinnerNumberModel(world.acceleration, -2000.0, 2000.0, 0.001))
-            acceleration.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Double]
-                    world.acceleration = i.doubleValue()
-                }
-            })
-        }
-        
-        values.add(worldPane);
+        values.add(world.createPanel(view, viewScroll, tabbed))
         
         val scroll = engine.find( "level-scale" ).asInstanceOf[JSlider]
         val scale = engine.find( "scale" ).asInstanceOf[JLabel]
