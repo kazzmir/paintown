@@ -48,5 +48,8 @@
                 <spinner id="acceleration" />
             </hbox>
         </vbox>
+        <hbox>
+            <button text="Test Animation" id="anim"/>
+        </hbox>
     </vbox>
 </panel>

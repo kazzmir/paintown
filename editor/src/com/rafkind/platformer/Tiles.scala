@@ -47,9 +47,9 @@ class TileSet{
     def render(g:Graphics2D, x:Int, y:Int) = {
         if (renderGrid){
             var currentY = y
-            while (currentY < height){
+            while (currentY < (height + y)){
                 var currentX = x
-                while (currentX < width){
+                while (currentX < (width + x)){
                     g.setColor( new Color( 255, 255, 255 ) )
                     g.drawRect(currentX, currentY, tileWidth, tileHeight)
                     currentX += tileWidth

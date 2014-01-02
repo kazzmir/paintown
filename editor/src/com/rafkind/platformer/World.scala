@@ -225,6 +225,16 @@ class World(loadfile:File){
             })
         }
         
+        // Test animation dialog
+        {
+            val animation = engine.find("anim").asInstanceOf[JButton]
+            animation.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = { 
+                    editAnimation(null)
+                } 
+            })
+        }
+        
         pane
     }
     
@@ -267,5 +277,20 @@ class World(loadfile:File){
                 viewScroll.repaint()
             }
         })
+    }
+    
+    def editAnimation(animation:Animation) = {
+        try {
+            val engine = new SwingEngine("platformer/animation.xml")
+            val pane = engine.find("dialog").asInstanceOf[JDialog]
+            
+            // Show Dialog
+            pane.repaint()
+            pane.setVisible(true)
+                
+        } catch {
+            case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
+        }
+        
     }
 }
