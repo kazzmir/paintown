@@ -9,6 +9,8 @@ import java.awt.event._
 import javax.swing.event._
 import org.swixml.SwingEngine
 
+import scala.collection.immutable.List
+
 import com.rafkind.paintown.exception.LoadException
 import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
@@ -43,11 +45,14 @@ class World(loadfile:File){
     var acceleration:Double = 0
     
     //! Animations
-    var animations = scala.collection.mutable.HashMap.empty[String, Animation]
+    var animations = new AnimationListModel()
     
-    //! Tilesets
-    var tilesets = scala.collection.mutable.ArrayBuffer.empty[TileSet]
-    tilesets += new TileSet()
+    //! Background Tilesets
+    var backgrounds = new TileSetListModel()
+    backgrounds.add(new TileSet("Test tileset"))
+    
+    //! Foreground Tilesets
+    var foregrounds = new TileSetListModel()
     
     def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
         g.scale(scale, scale)
@@ -56,8 +61,15 @@ class World(loadfile:File){
         g.setColor( new Color( 230, 230, 250 ) )
         g.fillRect(offsetX, offsetY, this.width, this.height)
         
-        // Tilesets
-        tilesets.foreach{
+        // backgrounds
+        backgrounds.getAll().foreach{
+            case (tileset) => tileset.render(g, offsetX, offsetY)
+        }
+        
+        // Objects
+        
+        // foregrounds
+        foregrounds.getAll().foreach{
             case (tileset) => tileset.render(g, offsetX, offsetY)
         }
         
@@ -225,12 +237,107 @@ class World(loadfile:File){
             })
         }
         
-        // Test animation dialog
+        // Animations
         {
-            val animation = engine.find("add-anim-button").asInstanceOf[JButton]
-            animation.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = { 
-                    editAnimation(null)
+            val anims = engine.find("anims").asInstanceOf[JList[Animation]]
+            anims.setModel(animations)
+            
+            val add = engine.find("add-anim-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val animation = new Animation("New Animation")
+                    animations.add(animation)
+                    animation.editDialog(view, viewScroll, anims)
+                } 
+            })
+            
+            val edit = engine.find("edit-anim-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        animations.getElementAt(anims.getSelectedIndex()).editDialog(view, viewScroll, anims)
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-anim-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        animations.remove(anims.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
+                } 
+            })
+        }
+        
+        // Backgrounds
+        {
+            val bgs = engine.find("backgrounds").asInstanceOf[JList[TileSet]]
+            bgs.setModel(backgrounds)
+            
+            val add = engine.find("add-bg-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val tileset = new TileSet("New Background TileSet")
+                    backgrounds.add(tileset)
+                    tileset.editDialog(view, viewScroll, bgs)
+                } 
+            })
+            
+            val edit = engine.find("edit-bg-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
+                        backgrounds.getElementAt(bgs.getSelectedIndex()).editDialog(view, viewScroll, bgs)
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-bg-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
+                        backgrounds.remove(bgs.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
+                } 
+            })
+        }
+        
+        // Foregrounds
+        {
+            val fgs = engine.find("foregrounds").asInstanceOf[JList[TileSet]]
+            fgs.setModel(foregrounds)
+            
+            val add = engine.find("add-fg-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val tileset = new TileSet("New Foreground TileSet")
+                    foregrounds.add(tileset)
+                    tileset.editDialog(view, viewScroll, fgs)
+                } 
+            })
+            
+            val edit = engine.find("edit-fg-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
+                        foregrounds.getElementAt(fgs.getSelectedIndex()).editDialog(view, viewScroll, fgs)
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-fg-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
+                        foregrounds.remove(fgs.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
                 } 
             })
         }
@@ -277,22 +384,5 @@ class World(loadfile:File){
                 viewScroll.repaint()
             }
         })
-    }
-    
-    def editAnimation(animation:Animation) = {
-        try {
-            val engine = new SwingEngine("platformer/animation.xml")
-            val pane = engine.find("dialog").asInstanceOf[JDialog]
-            
-            // Show Dialog
-            pane.repaint()
-            pane.setVisible(true)
-            /*val engine = new SwingEngine(this)
-            engine.render("platformer/animation.xml").setVisible(true);*/
-                
-        } catch {
-            case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
-        }
-        
     }
 }

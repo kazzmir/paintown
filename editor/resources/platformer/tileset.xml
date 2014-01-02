@@ -1,0 +1,69 @@
+<?xml version="1.0" ?>
+
+<dialog Size="500,500" resizable="false" title="TileSet Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+
+<vbox>
+    <panel layout="GridBagLayout">
+        <vbox>
+            <hbox>
+                <label text="Name" />
+                <textfield bindWith="Name" id="name" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Scroll X" />
+                <spinner id="scroll-x" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Scroll Y" />
+                <spinner id="scroll-y" />
+                <glue />
+            </hbox>
+            
+            <hbox>
+                <label text="Tile Width" />
+                <spinner id="tile-width" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Tile Height" />
+                <spinner id="tile-height" />
+                <glue />
+            </hbox>
+            
+            <hbox>
+                <label text="Dimensions X" />
+                <spinner id="dimensions-x" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Dimensions Y" />
+                <spinner id="dimensions-y" />
+                <glue />
+            </hbox>
+            
+            <vbox>
+                <label text="Tiles" />
+                <hbox>
+                    <scrollpane>
+                        <list id="tiles" />
+                    </scrollpane>
+                </hbox>
+                <hbox>
+                    <label text="Tile Options" />
+                    <button text="Add" id="add-tile-button" />
+                    <button text="Edit" id="edit-tile-button" />
+                    <button text="Remove" id="remove-tile-button" />
+                </hbox>
+            </vbox>
+        </vbox>
+    </panel>
+
+    <hbox>
+        <button text="Close" id="close"/>
+    </hbox>
+    
+</vbox>
+
+</dialog>

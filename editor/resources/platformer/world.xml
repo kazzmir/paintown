@@ -24,12 +24,12 @@
             <glue />
         </hbox>
         <hbox>
-            <label text="Dimensions X" />
+            <label text="World Width" />
             <spinner id="dimensions-x" />
             <glue />
         </hbox>
         <hbox>
-            <label text="Dimensions Y" />
+            <label text="World Height" />
             <spinner id="dimensions-y" />
             <glue />
         </hbox>
@@ -56,10 +56,38 @@
                 </scrollpane>
             </hbox>
             <hbox>
-                <label text="Add/Remove Animation" />
+                <label text="Animation Options" />
                 <button text="Add" id="add-anim-button" />
                 <button text="Edit" id="edit-anim-button" />
                 <button text="Remove" id="remove-anim-button" />
+            </hbox>
+        </vbox>
+        <vbox>
+            <label text="Background Tilesets" />
+            <hbox>
+                <scrollpane>
+                    <list id="backgrounds" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <label text="Background Options" />
+                <button text="Add" id="add-bg-button" />
+                <button text="Edit" id="edit-bg-button" />
+                <button text="Remove" id="remove-bg-button" />
+            </hbox>
+        </vbox>
+        <vbox>
+            <label text="Foreground Tilesets" />
+            <hbox>
+                <scrollpane>
+                    <list id="foregrounds" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <label text="Foreground Options" />
+                <button text="Add" id="add-fg-button" />
+                <button text="Edit" id="edit-fg-button" />
+                <button text="Remove" id="remove-fg-button" />
             </hbox>
         </vbox>
     </vbox>
