@@ -36,9 +36,19 @@
                 anchor="GridBagConstraints.WEST"
                 />
             <glue size="1" />
-            <label text="Scale: 2" id="scale" />
-            <slider id="level-scale" minimum="1" maximum="20" />
+            <label text="Scale: 2" id="scale-label" />
+            <slider id="scale" minimum="1" maximum="20" />
             <glue />
         </hbox>
+        <vbox>
+            <hbox>
+                <label text="Offset X" />
+                <spinner id="offset-x" />
+            </hbox>
+            <hbox>
+                <label text="Offset Y" />
+                <spinner id="offset-y" />
+            </hbox>
+        </vbox>
     </vbox>
 </splitpane>

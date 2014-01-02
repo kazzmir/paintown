@@ -98,7 +98,7 @@ class World(loadfile:File){
         world
     }
     
-    def createPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
+    def createDetailsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
         val engine = new SwingEngine( "platformer/world.xml" )
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
@@ -226,5 +226,46 @@ class World(loadfile:File){
         }
         
         pane
+    }
+    
+    def connectScaleOffset(engine:SwingEngine, view:JPanel, viewScroll:JScrollPane){
+        val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
+        val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
+        scroll.addChangeListener( new ChangeListener(){
+            override def stateChanged(event:ChangeEvent){
+                scale = scroll.getValue().toDouble * 2.0 / scroll.getMaximum()
+                scaleLabel.setText("Scale: " + scale)
+                view.revalidate()
+                viewScroll.repaint()
+            }
+        })
+        
+        var offset = engine.find("offset-x").asInstanceOf[JSpinner]
+        var model = new SpinnerNumberModel()
+        model.setValue(offsetX)
+        offset.setModel(model)
+        offset.addChangeListener(new ChangeListener(){
+            override def stateChanged(event:ChangeEvent){
+                val spinner = event.getSource().asInstanceOf[JSpinner]
+                val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                offsetX = i.intValue()
+                view.revalidate()
+                viewScroll.repaint()
+            }
+        })
+        
+        offset = engine.find("offset-y").asInstanceOf[JSpinner]
+        model = new SpinnerNumberModel()
+        model.setValue(offsetY)
+        offset.setModel(model)
+        offset.addChangeListener(new ChangeListener(){
+            override def stateChanged(event:ChangeEvent){
+                val spinner = event.getSource().asInstanceOf[JSpinner]
+                val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                offsetY = i.intValue()
+                view.revalidate()
+                viewScroll.repaint()
+            }
+        })
     }
 }

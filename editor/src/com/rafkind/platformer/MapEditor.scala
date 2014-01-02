@@ -401,18 +401,10 @@ class Editor extends JFrame("Platformer Map Editor"){
         
         // Create panel to handle world values
         val values = engine.find("values").asInstanceOf[JPanel]
-        values.add(world.createPanel(view, viewScroll, tabbed))
+        values.add(world.createDetailsPanel(view, viewScroll, tabbed))
         
-        val scroll = engine.find( "level-scale" ).asInstanceOf[JSlider]
-        val scale = engine.find( "scale" ).asInstanceOf[JLabel]
-        scroll.addChangeListener( new ChangeListener(){
-            override def stateChanged(event:ChangeEvent){
-                world.scale = scroll.getValue().toDouble * 2.0 / scroll.getMaximum()
-                scale.setText("Scale: " + world.scale)
-                view.revalidate()
-                viewScroll.repaint()
-            }
-        })
+        world.connectScaleOffset(engine, view, viewScroll)
+        
         val split = engine.getRootComponent().asInstanceOf[JSplitPane]
         split.setContinuousLayout(true)
         split
