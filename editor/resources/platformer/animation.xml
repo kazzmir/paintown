@@ -3,23 +3,56 @@
 <dialog Size="500,500" resizable="false" title="Animation Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
 
 <vbox>
-
-    <panel layout="GridLayout(5,3)" border="CompoundBorder(EmptyBorder(10,1,10,10), TitledBorder(Edit Animation))">
-        <label text="Name" />
-        <textfield bindWith="Name" id="name" />
-        <label text="Base Directory" />
-        <passwordField bindWith="Base Directory" id="basedir" />
-        <label text="Images" />
-        <combobox bindwith="Images" id="images" />
-        <label text="Frames" />
-        <combobox bindwith="Frames" id="frames" />
-        <label text="Loop" />
-        <spinner bindWith="Loop" id="loop" />
+    <panel layout="GridBagLayout">
+        <vbox>
+            <hbox>
+                <label text="Name" />
+                <textfield bindWith="Name" id="name" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Base Directory" />
+                <textfield bindWith="Base Directory" id="basedir" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Images" />
+                <scrollpane>
+                    <list bindWith="Images" id="images" />
+                </scrollpane>
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Add/Remove Image" />
+                <!--<textfield bindWith="Add Image" id="add-image" />-->
+                <button bindWith="Add/Remove Image" text="Add" id="add-image-button" />
+                <button bindWith="Add/Remove Image" text="Remove" id="remove-image-button" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Frames" />
+                <scrollpane>
+                    <list bindWith="Frames" id="frames" />
+                </scrollpane>
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Add/Remove Frame" />
+                <button bindWith="Add/Remove Frame" text="Add" id="add-frame-button" />
+                <button bindWith="Add/Remove Frame" text="Remove" id="remove-frame-button" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Loop" />
+                <spinner bindWith="Loop" id="loop" />
+                <glue />
+            </hbox>
+        </vbox>
     </panel>
 
     <hbox>
-        <button text="Save" action="save"/>
-        <button text="Cancel" action="cancel"/>
+        <button text="Save" id="save"/>
+        <button text="Cancel" id="cancel"/>
     </hbox>
     
 </vbox>

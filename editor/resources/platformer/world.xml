@@ -48,8 +48,19 @@
                 <spinner id="acceleration" />
             </hbox>
         </vbox>
-        <hbox>
-            <button text="Test Animation" id="anim"/>
-        </hbox>
+        <vbox>
+            <label text="Animations" />
+            <hbox>
+                <scrollpane>
+                    <list id="anims" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <label text="Add/Remove Animation" />
+                <button text="Add" id="add-anim-button" />
+                <button text="Edit" id="edit-anim-button" />
+                <button text="Remove" id="remove-anim-button" />
+            </hbox>
+        </vbox>
     </vbox>
 </panel>

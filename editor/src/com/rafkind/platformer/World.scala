@@ -227,7 +227,7 @@ class World(loadfile:File){
         
         // Test animation dialog
         {
-            val animation = engine.find("anim").asInstanceOf[JButton]
+            val animation = engine.find("add-anim-button").asInstanceOf[JButton]
             animation.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = { 
                     editAnimation(null)
@@ -287,6 +287,8 @@ class World(loadfile:File){
             // Show Dialog
             pane.repaint()
             pane.setVisible(true)
+            /*val engine = new SwingEngine(this)
+            engine.render("platformer/animation.xml").setVisible(true);*/
                 
         } catch {
             case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
