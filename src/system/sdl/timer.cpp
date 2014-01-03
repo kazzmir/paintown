@@ -1,29 +1,13 @@
-#ifdef USE_SDL
-#include <SDL.h>
-#endif
-#include "util/thread.h"
+#include "../timer.h"
 #include "util/init.h"
 
-/* game counter, controls FPS */
-static void inc_speed_counter(){
-    /* probably put input polling here, InputManager::poll(). no, don't do that.
-     * polling is done in the standardLoop now.
-     */
-    Global::speed_counter4 += 1;
-}
-#ifdef USE_ALLEGRO
-END_OF_FUNCTION(inc_speed_counter)
-#endif
-
-/* if you need to count seconds for some reason.. */
-static void inc_second_counter() {
-    Global::second_counter += 1;
-}
-#ifdef USE_ALLEGRO
-END_OF_FUNCTION(inc_second_counter)
-#endif
-
 #ifdef USE_SDL
+#include <SDL.h>
+    
+// static pthread_t events;
+
+namespace System{
+
 struct TimerInfo{
     TimerInfo(void (*x)(), int y):
         tick(x), frequency(y){}
@@ -60,9 +44,7 @@ static void * do_timer(void * arg){
      */
     uint32_t ticks = SDL_GetTicks();
 
-    /* TODO: pass in some variable that tells this loop to quit */
-    // while (run_timer_guard.get()){
-    while (true){
+    while (run_timer_guard.get()){
         uint32_t now = SDL_GetTicks();
         while (now - ticks >= delay){
             // Global::debug(0) << "Tick!" << endl;
@@ -88,12 +70,36 @@ static Util::Thread::Id start_timer(void (*func)(), int frequency){
     return thread;
 }
 
-namespace Common{
+/*
+static void doSDLQuit(){
+    SDL_Event quit;
+    quit.type = SDL_QUIT;
+    SDL_PushEvent(&quit);
+    Global::debug(0) << "Waiting for SDL event handler to finish" << endl;
+    pthread_join(events, NULL);
+    SDL_Quit();
+}
+*/
+
+/* game counter, controls FPS */
+static void inc_speed_counter(){
+    /* probably put input polling here, InputManager::poll(). no, don't do that.
+     * polling is done in the standardLoop now.
+     */
+    Global::speed_counter4 += 1;
+}
+
+/* if you need to count seconds for some reason.. */
+static void inc_second_counter() {
+    Global::second_counter += 1;
+}
 
 void startTimers(){
-    start_timer(inc_speed_counter, Global::TICS_PER_SECOND);
-    start_timer(inc_second_counter, 1);
+    run_timer_guard.set(true);
+    running_timers.push_back(start_timer(inc_speed_counter, Global::TICS_PER_SECOND));
+    running_timers.push_back(start_timer(inc_second_counter, 1));
 }
 
 }
+
 #endif

@@ -1,9 +1,18 @@
 Import('use')
 
+testEnv = use.Clone()
+
+testEnv.VariantDir('test', '../../', duplicate = False)
+testEnv.VariantDir('common', '../common/', duplicate = False)
+
 source = Split("""file-system.cpp""")
 
 x = []
-test = use.Program('test', source)
-use.AddPostAction(test, use['PAINTOWN_TEST'])
-x.extend(test)
+def makeTest(name, files):
+    test = testEnv.Program(name, files)
+    x.extend(test)
+    testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
+
+makeTest('file-system', source)
+makeTest('loading', ['loading.cpp', 'common/init.cpp', 'common/timer.cpp'])
 Return('x')

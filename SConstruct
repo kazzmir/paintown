@@ -555,10 +555,10 @@ rsx
         
         platform = 'android-9'
         arch = 'x86'
-        path = '/opt/android/android-toolchain-x86'
+        path = '/opt/android/android-x86-toolchain'
         # bin_path = setup(path, '/arm-linux-androideabi-4.4.3/bin')
         bin_path = setup(path, '/bin')
-        prefix = 'i686-android-linux-'
+        prefix = 'i686-linux-android-'
         def set_prefix(x):
             return '%s%s' % (prefix, x)
         env['CC'] = set_prefix('gcc')

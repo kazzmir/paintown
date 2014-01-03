@@ -6,7 +6,7 @@ scons:=scons
 gnome_notify:=python misc/gnome-notify "Finished compiling" 2>/dev/null || echo "Done"
 
 all:
-	@$(scons) || echo "Get scons at www.scons.org or read the README for compilation instructions"
+	@$(scons) || (echo "Get scons at www.scons.org or read the README for compilation instructions" && exit 1)
 	@$(gnome_notify)
 
 # Convenient target for building 32-bit and 64-bit nacl
