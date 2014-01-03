@@ -16,6 +16,22 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
+class AnimationUpdater(v:JPanel, vs:JScrollPane, a:AnimationListModel) extends ActionListener {
+    val view:JPanel = v
+    val viewScroll:JScrollPane = vs
+    val animations:AnimationListModel = a
+    var timer = new Timer(25, this)
+    timer.start()
+    
+    def actionPerformed(e:ActionEvent) = {
+        animations.getAll().foreach{
+            case (animation) => animation.update()
+        }
+        view.revalidate()
+        viewScroll.repaint()
+    }
+}
+
 class World(loadfile:File){
     
     var offsetX:Int = 15
@@ -49,6 +65,9 @@ class World(loadfile:File){
     //! Foreground Tilesets
     var foregrounds = new TileSetListModel()
     
+    //! actions (updating animations)
+    var actions:AnimationUpdater = null
+    
     if (loadfile != null){
         load(loadfile)
     } else {
@@ -79,6 +98,18 @@ class World(loadfile:File){
         // Viewport resolution
         g.setColor( new Color( 0, 0, 255 ) )
         g.drawRect(offsetX, offsetY, this.resolutionX, this.resolutionY)
+    }
+    
+    def addAnimation(animation:Animation) = {
+        if (actions != null){
+            actions.timer.stop()
+        }
+        
+        animations.add(animation)
+        
+        if (actions != null){
+            actions.timer.start()
+        }
     }
 
     def load(f:File) = {
@@ -120,14 +151,14 @@ class World(loadfile:File){
         while(animationIterator.hasNext()){
             val animation = new Animation("Not assigned")
             animation.readToken(animationIterator.next())
-            animations.add(animation)
+            addAnimation(animation)
         }
         
         val backgroundIterator = head.findTokens("background").iterator()
         while(backgroundIterator.hasNext()){
             try {
                 val tileset = new TileSet("Not assigned")
-                tileset.readToken(backgroundIterator.next())
+                tileset.readToken(backgroundIterator.next(), animations)
                 backgrounds.add(tileset)
             } catch {
                 case ex:LoadException => { println(ex.getMessage()) }
@@ -138,7 +169,7 @@ class World(loadfile:File){
         while(foregroundIterator.hasNext()){
             try {
                 val tileset = new TileSet("Not assigned")
-                tileset.readToken(foregroundIterator.next())
+                tileset.readToken(foregroundIterator.next(), animations)
                 foregrounds.add(tileset)
             } catch {
                 case ex:LoadException => { println(ex.getMessage()) }
@@ -198,7 +229,7 @@ class World(loadfile:File){
             val row = y / tileset.tileHeight
             //System.out.println("Adding tile to location (" + column + "," + row + ")")
             val tile = new Tile()
-            tile.animationName = animation.name
+            tile.animation = animation
             tile.column = column
             tile.row = row
             tileset.tiles.add(tile)
@@ -383,7 +414,7 @@ class World(loadfile:File){
             add.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     val animation = new Animation("New Animation")
-                    animations.add(animation)
+                    addAnimation(animation)
                     animation.editDialog(view, viewScroll, anims)
                 } 
             })
@@ -559,5 +590,9 @@ class World(loadfile:File){
                 viewScroll.repaint()
             }
         })
+    }
+    
+    def createUpdateTimer(view:JPanel, viewScroll:JScrollPane) = {
+        actions = new AnimationUpdater(view, viewScroll, animations)
     }
 }

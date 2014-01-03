@@ -421,6 +421,8 @@ class Editor extends JFrame("Platformer Map Editor"){
         
         world.connectScaleOffset(engine, view, viewScroll)
         
+        world.createUpdateTimer(view, viewScroll)
+        
         val split = engine.getRootComponent().asInstanceOf[JSplitPane]
         split.setContinuousLayout(true)
         split.setDividerLocation(0.8)

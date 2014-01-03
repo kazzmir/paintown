@@ -17,18 +17,18 @@ import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
 class Tile{
-    var animationName:String = _
+    var animation:Animation = null
     
     var row:Int = 0
     var column:Int = 0
     
-    def readToken(token:Token) = {
+    def readToken(token:Token, animations:AnimationListModel) = {
         if (!token.getName().equals("tile")){
             throw new LoadException( "Starting token is not 'tile'" )
         }
         val name = token.findToken("animation")
         if (name != null){
-            animationName = name.readString(0)
+            animation = animations.get(name.readString(0))
         }
         val position = token.findToken("position")
         if (position != null){
@@ -39,9 +39,11 @@ class Tile{
     
     def toToken():Token = {
         val tile = new Token()
-        tile.addToken(new Token(tile, "tile"))
-        tile.addToken(Array("animation", String.valueOf(animationName)))
-        tile.addToken(Array("position", String.valueOf(row), String.valueOf(column)))
+        if (animation != null){
+            tile.addToken(new Token(tile, "tile"))
+            tile.addToken(Array("animation", String.valueOf(animation.name)))
+            tile.addToken(Array("position", String.valueOf(row), String.valueOf(column)))
+        }
         tile
     }
     
@@ -78,7 +80,7 @@ class Tile{
                 
                 animationField.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        animationName = animations(animationField.getSelectedIndex()).name
+                        animation = animations(animationField.getSelectedIndex())
                         list.revalidate()
                         list.repaint()
                         animationView.revalidate()
@@ -241,7 +243,7 @@ class TileSet(n:String){
         
         tiles.getAll().foreach {
             case (tile) => {
-                val animation = animations.get(tile.animationName)
+                val animation = tile.animation
                 if (animation != null){
                     animation.render(g, x + tile.column * tileWidth, y + tile.row * tileHeight)
                 }
@@ -249,7 +251,7 @@ class TileSet(n:String){
         }
     }
     
-    def readToken(token:Token) = {
+    def readToken(token:Token, animations:AnimationListModel) = {
         if (!token.getName().equals("background") && !token.getName().equals("foreground")){
             throw new LoadException( "Starting token is not 'background' or 'foreground'" )
         }
@@ -288,14 +290,14 @@ class TileSet(n:String){
             while(tileIterator.hasNext()){
                 val t = tileIterator.next()
                 val tile = new Tile()
-                tile.readToken(t)
+                tile.readToken(t, animations)
                 tiles.add(tile)
                 val up = t.findToken("repeat-up")
                 if (up != null){
                     var pos = tile.row
                     for (pos <- tile.row to (tile.row - up.readInt(0))){
                         val rep = new Tile()
-                        rep.animationName = tile.animationName
+                        rep.animation = tile.animation
                         rep.column = tile.column
                         rep.row = pos
                         tiles.add(rep)
@@ -306,7 +308,7 @@ class TileSet(n:String){
                     var pos = tile.row
                     for (pos <- tile.row to (tile.row + down.readInt(0))){
                         val rep = new Tile()
-                        rep.animationName = tile.animationName
+                        rep.animation = tile.animation
                         rep.column = tile.column
                         rep.row = pos
                         tiles.add(rep)
@@ -317,7 +319,7 @@ class TileSet(n:String){
                     var pos = tile.column
                     for (pos <- tile.column to (tile.column - left.readInt(0))){
                         val rep = new Tile()
-                        rep.animationName = tile.animationName
+                        rep.animation = tile.animation
                         rep.column = pos
                         rep.row = tile.row
                         tiles.add(rep)
@@ -328,7 +330,7 @@ class TileSet(n:String){
                     var pos = tile.column
                     for (pos <- tile.column to (tile.column + right.readInt(0))){
                         val rep = new Tile()
-                        rep.animationName = tile.animationName
+                        rep.animation = tile.animation
                         rep.column = pos
                         rep.row = tile.row
                         tiles.add(rep)
@@ -341,6 +343,7 @@ class TileSet(n:String){
     def toToken(position:String):Token = {
         val background = new Token()
         background.addToken(new Token(background, position))
+        background.addToken(Array("id", name))
         background.addToken(Array("type", "tileset"))
         background.addToken(Array("scroll-x", String.valueOf(scrollX)))
         background.addToken(Array("scroll-y", String.valueOf(scrollY)))

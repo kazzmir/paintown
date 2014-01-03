@@ -4,6 +4,7 @@ import java.awt._
 import java.awt.image._
 import javax.swing._
 import java.io._
+import java.net.URI
 import javax.imageio._
 import java.awt.event._
 import javax.swing.event._
@@ -312,16 +313,35 @@ class Animation(n:String){
     var images:ImageHolderListModel = new ImageHolderListModel()
     var frames:FrameListModel = new FrameListModel()
     var loop:Int = 0
-    var isCurrent = false
+    var isCurrent:Boolean = false
+    var index:Int = 0
+    var currentTime:Int = 0
     
     def render(g:Graphics2D, x:Int, y:Int) = {
         // Render
         if (frames.getSize() > 0){
-            // Get first
-            var frame = frames.getElementAt(0)
+            var frame = frames.getElementAt(index)
             if (frame.image != -1){
                 images.getElementAt(frame.image).render(g, x, y)
             }
+        }
+    }
+    
+    def update() = {
+        if (frames.getSize() > 0){
+            currentTime = currentTime + 1
+            if (currentTime >= frames.getElementAt(index).time){
+                currentTime = 0
+                next()
+            }
+        }
+    }
+    
+    def next() = {
+        if (index < frames.getSize()-1){
+            index = index + 1
+        } else {
+            index = loop
         }
     }
     
@@ -380,7 +400,7 @@ class Animation(n:String){
     }
     
     def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Animation]) = {
-        try {
+        //try {
             val engine = new SwingEngine("platformer/animation.xml")
             val pane = engine.find("dialog").asInstanceOf[JDialog]
             
@@ -408,16 +428,26 @@ class Animation(n:String){
             
             {
                 var dirField = engine.find("basedir").asInstanceOf[JTextField]
+                if (basedir != null){
+                    dirField.setText(basedir.getPath())
+                }
                 val dir = engine.find("basedir-button").asInstanceOf[JButton]
                 dir.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        val chooser = new JFileChooser(MapEditor.getDataPath("."))
+                        val chooser = new JFileChooser(MapEditor.getDataPath("/"))
                         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
                         val returnVal = chooser.showOpenDialog(pane)
                         if (returnVal == JFileChooser.APPROVE_OPTION){
-                          val newPath = chooser.getSelectedFile()
-                          dirField.setText(newPath.getPath())
-                          basedir = newPath
+                          val choosen:File = chooser.getSelectedFile()
+                          // Doesn't work scala complains
+                          /*val base:URI = URI.create(MapEditor.getDataPath(".").getPath())
+                          val abs:URI = URI.create(choosen.getPath())
+                          basedir = base.relativize(abs)*/
+                          val base = MapEditor.getDataPath("/").getPath()
+                          val absolute = choosen.getPath()
+                          val relative = absolute.replace(base,"")
+                          basedir = new File(relative)
+                          dirField.setText(basedir.getPath())
                         }
                     } 
                 })
@@ -444,7 +474,7 @@ class Animation(n:String){
                             })
                             val returnVal = chooser.showOpenDialog(pane)
                             if (returnVal == JFileChooser.APPROVE_OPTION){
-                              images.add(new ImageHolder(basedir, chooser.getSelectedFile()))
+                              images.add(new ImageHolder(basedir, new File(chooser.getSelectedFile().getName())))
                             }
                         } else {
                             JOptionPane.showMessageDialog(pane, "Please select a base directory.")
@@ -529,9 +559,9 @@ class Animation(n:String){
             pane.repaint()
             pane.setModal(true)
             pane.setVisible(true)
-        } catch {
+        /*} catch {
             case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
-        }
+        }*/
     }
 }
 
