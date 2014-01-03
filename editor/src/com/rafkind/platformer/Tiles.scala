@@ -30,8 +30,69 @@ class Tile{
     def toToken():Token = {
         val tile = new Token()
         tile.addToken(new Token(tile, "tile"))
+        tile.addToken(Array("animation", String.valueOf(animation)))
+        tile.addToken(Array("position", String.valueOf(row), String.valueOf(column)))
         
         tile
+    }
+    
+    override def toString:String = {
+        toToken().toString()
+    }
+    
+    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Tile]) = {
+        try {
+            // Show Dialog
+            /*pane.repaint()
+            pane.setModal(true)
+            pane.setVisible(true)*/
+        } catch {
+            case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
+        }
+    }
+}
+
+class TileListModel extends ListModel[Tile] {
+    var data:List[Tile] = List[Tile]()
+    var listeners = List[ListDataListener]()
+
+    def add(tile:Tile){
+        data = data :+ tile
+        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
+        for (listener <- listeners){
+            listener.intervalAdded(event)
+        }
+    }
+    
+    def remove(index:Int){
+        data = data.remove(data.indexOf(_) == index)
+        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
+        for (listener <- listeners){
+            listener.intervalAdded(event)
+        }
+    }
+
+    def getAll():List[Tile] = {
+        data
+    }
+
+    override def addListDataListener(listener:ListDataListener){
+        listeners = listeners :+ listener
+    }
+
+    override def getElementAt(index:Int) = {
+        this.data.find(data.indexOf(_) == index) match {
+            case Some(obj) => obj
+            case None => throw new Exception("failed to find " + index)
+        }
+    }
+
+    override def getSize():Int = {
+        this.data.size
+    }
+
+    override def removeListDataListener(listener:ListDataListener){
+        listeners = this.listeners - listener
     }
 }
 
@@ -47,9 +108,11 @@ class TileSet(n:String){
     var tileWidth:Int = 16
     var tileHeight:Int = 16
     
-    var tiles = scala.collection.mutable.ArrayBuffer.empty[Tile]
+    var tiles = new TileListModel()
     
     var renderGrid:Boolean = true
+    
+    var isCurrent:Boolean = false
     
     def render(g:Graphics2D, x:Int, y:Int) = {
         if (renderGrid){
@@ -71,7 +134,7 @@ class TileSet(n:String){
         tileset.addToken(new Token(tileset, "tileset"))
         tileset.addToken(Array("tile-size", String.valueOf(tileWidth), String.valueOf(tileHeight)))
         
-        tiles.foreach {
+        tiles.getAll().foreach {
             case (tile) => tileset.addToken(tile.toToken())
         }
         
@@ -79,7 +142,12 @@ class TileSet(n:String){
     }
     
     override def toString():String = {
-        name
+        var n = name
+        if(isCurrent){
+            n = n + " (currently selected)"
+        }
+        
+        n
     }
     
     def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[TileSet]) = {
@@ -196,6 +264,41 @@ class TileSet(n:String){
                         view.revalidate()
                         viewScroll.repaint()
                     }
+                })
+            }
+            
+            // Tiles
+            {
+                val tileList = engine.find("tiles").asInstanceOf[JList[Tile]]
+                tileList.setModel(tiles)
+                
+                val add = engine.find("add-tile-button").asInstanceOf[JButton]
+                add.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        val tile = new Tile()
+                        tiles.add(tile)
+                        tile.editDialog(view, viewScroll, tileList)
+                    } 
+                })
+                
+                val edit = engine.find("edit-tile-button").asInstanceOf[JButton]
+                edit.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        if (tiles.getSize() > 0 && tileList.getSelectedIndex() != -1){
+                            tiles.getElementAt(tileList.getSelectedIndex()).editDialog(view, viewScroll, tileList)
+                        }
+                    } 
+                })
+                
+                val remove = engine.find("remove-tile-button").asInstanceOf[JButton]
+                remove.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        if (tiles.getSize() > 0 && tileList.getSelectedIndex() != -1){
+                            tiles.remove(tileList.getSelectedIndex())
+                            view.revalidate()
+                            viewScroll.repaint()
+                        }
+                    } 
                 })
             }
             

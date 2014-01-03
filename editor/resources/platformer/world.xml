@@ -73,6 +73,7 @@
                 <label text="Background Options" />
                 <button text="Add" id="add-bg-button" />
                 <button text="Edit" id="edit-bg-button" />
+                <button text="Current" id="current-bg-button" />
                 <button text="Remove" id="remove-bg-button" />
             </hbox>
         </vbox>
@@ -87,6 +88,7 @@
                 <label text="Foreground Options" />
                 <button text="Add" id="add-fg-button" />
                 <button text="Edit" id="edit-fg-button" />
+                <button text="Current" id="current-fg-button" />
                 <button text="Remove" id="remove-fg-button" />
             </hbox>
         </vbox>

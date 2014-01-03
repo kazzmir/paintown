@@ -272,13 +272,13 @@ class World(loadfile:File){
             })
         }
         
-        // Backgrounds
+        // Backgrounds and foregrounds
         {
             val bgs = engine.find("backgrounds").asInstanceOf[JList[TileSet]]
             bgs.setModel(backgrounds)
             
-            val add = engine.find("add-bg-button").asInstanceOf[JButton]
-            add.addActionListener(new ActionListener() { 
+            val addBg = engine.find("add-bg-button").asInstanceOf[JButton]
+            addBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     val tileset = new TileSet("New Background TileSet")
                     backgrounds.add(tileset)
@@ -286,8 +286,8 @@ class World(loadfile:File){
                 } 
             })
             
-            val edit = engine.find("edit-bg-button").asInstanceOf[JButton]
-            edit.addActionListener(new ActionListener() { 
+            val editBg = engine.find("edit-bg-button").asInstanceOf[JButton]
+            editBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
                         backgrounds.getElementAt(bgs.getSelectedIndex()).editDialog(view, viewScroll, bgs)
@@ -295,8 +295,8 @@ class World(loadfile:File){
                 } 
             })
             
-            val remove = engine.find("remove-bg-button").asInstanceOf[JButton]
-            remove.addActionListener(new ActionListener() { 
+            val removeBg = engine.find("remove-bg-button").asInstanceOf[JButton]
+            removeBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
                         backgrounds.remove(bgs.getSelectedIndex())
@@ -305,15 +305,12 @@ class World(loadfile:File){
                     }
                 } 
             })
-        }
-        
-        // Foregrounds
-        {
+            
             val fgs = engine.find("foregrounds").asInstanceOf[JList[TileSet]]
             fgs.setModel(foregrounds)
             
-            val add = engine.find("add-fg-button").asInstanceOf[JButton]
-            add.addActionListener(new ActionListener() { 
+            val addFg = engine.find("add-fg-button").asInstanceOf[JButton]
+            addFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     val tileset = new TileSet("New Foreground TileSet")
                     foregrounds.add(tileset)
@@ -321,8 +318,8 @@ class World(loadfile:File){
                 } 
             })
             
-            val edit = engine.find("edit-fg-button").asInstanceOf[JButton]
-            edit.addActionListener(new ActionListener() { 
+            val editFg = engine.find("edit-fg-button").asInstanceOf[JButton]
+            editFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
                         foregrounds.getElementAt(fgs.getSelectedIndex()).editDialog(view, viewScroll, fgs)
@@ -330,13 +327,51 @@ class World(loadfile:File){
                 } 
             })
             
-            val remove = engine.find("remove-fg-button").asInstanceOf[JButton]
-            remove.addActionListener(new ActionListener() { 
+            val removeFg = engine.find("remove-fg-button").asInstanceOf[JButton]
+            removeFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
                         foregrounds.remove(fgs.getSelectedIndex())
                         view.revalidate()
                         viewScroll.repaint()
+                    }
+                } 
+            })
+            
+            val currentBg = engine.find("current-bg-button").asInstanceOf[JButton]
+            currentBg.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
+                        backgrounds.getAll().foreach{
+                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
+                        }
+                        foregrounds.getAll().foreach{
+                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
+                        }
+                        backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = true
+                        view.revalidate()
+                        viewScroll.repaint()
+                        fgs.repaint()
+                        bgs.repaint()
+                    }
+                } 
+            })
+            
+            val currentFg = engine.find("current-fg-button").asInstanceOf[JButton]
+            currentFg.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
+                        backgrounds.getAll().foreach{
+                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
+                        }
+                        foregrounds.getAll().foreach{
+                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
+                        }
+                        foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = true
+                        view.revalidate()
+                        viewScroll.repaint()
+                        fgs.repaint()
+                        bgs.repaint()
                     }
                 } 
             })
