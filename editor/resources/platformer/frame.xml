@@ -1,0 +1,47 @@
+<?xml version="1.0" ?>
+
+<dialog Size="500,500" resizable="false" title="Frame Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+
+<vbox>
+    <panel layout="GridBagLayout">
+        <vbox>
+            <vbox>
+                <label text="Image" />
+                <hbox>
+                    <scrollpane minimumSize="250,250" maximumSize="250,250" id="image-view" />
+                </hbox>
+                <hbox>
+                    <combobox id="image" />
+                    <glue />
+                </hbox>
+            </vbox>
+            <hbox>
+                <label text="Alpha" />
+                <spinner id="alpha" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Vertical Flip" />
+                <checkbox id="vflip" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Horizontal Flip" />
+                <checkbox id="hflip" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Time" />
+                <spinner id="time" />
+                <glue />
+            </hbox>
+        </vbox>
+    </panel>
+
+    <hbox>
+        <button text="Close" id="close"/>
+    </hbox>
+    
+</vbox>
+
+</dialog>

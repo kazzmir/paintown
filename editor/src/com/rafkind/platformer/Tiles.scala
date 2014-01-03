@@ -215,6 +215,7 @@ class TileSet(n:String){
             
             // Show Dialog
             pane.repaint()
+            pane.setModal(true)
             pane.setVisible(true)
         } catch {
             case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)

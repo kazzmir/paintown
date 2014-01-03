@@ -12,36 +12,37 @@
             </hbox>
             <hbox>
                 <label text="Base Directory" />
-                <textfield bindWith="Base Directory" id="basedir" />
+                <textfield id="basedir" />
+                <button text="Choose" id="basedir-button" />
                 <glue />
             </hbox>
-            <hbox>
+            <vbox>
                 <label text="Images" />
-                <scrollpane>
-                    <list bindWith="Images" id="images" />
-                </scrollpane>
-                <glue />
-            </hbox>
-            <hbox>
-                <label text="Add/Remove Image" />
-                <!--<textfield bindWith="Add Image" id="add-image" />-->
-                <button bindWith="Add/Remove Image" text="Add" id="add-image-button" />
-                <button bindWith="Add/Remove Image" text="Remove" id="remove-image-button" />
-                <glue />
-            </hbox>
-            <hbox>
+                <hbox>
+                    <scrollpane minimumSize="150,150">
+                        <list id="images" />
+                    </scrollpane>
+                </hbox>
+                <hbox>
+                    <label text="Image Options" />
+                    <button text="Add" id="add-image-button" />
+                    <button text="Remove" id="remove-image-button" />
+                </hbox>
+            </vbox>
+            <vbox>
                 <label text="Frames" />
-                <scrollpane>
-                    <list bindWith="Frames" id="frames" />
-                </scrollpane>
-                <glue />
-            </hbox>
-            <hbox>
-                <label text="Add/Remove Frame" />
-                <button bindWith="Add/Remove Frame" text="Add" id="add-frame-button" />
-                <button bindWith="Add/Remove Frame" text="Remove" id="remove-frame-button" />
-                <glue />
-            </hbox>
+                <hbox>
+                    <scrollpane minimumSize="150,150">
+                        <list id="frames" />
+                    </scrollpane>
+                </hbox>
+                <hbox>
+                    <label text="Frame Options" />
+                    <button text="Add" id="add-frame-button" />
+                    <button text="Edit" id="edit-frame-button" />
+                    <button text="Remove" id="remove-frame-button" />
+                </hbox>
+            </vbox>
             <hbox>
                 <label text="Loop" />
                 <spinner bindWith="Loop" id="loop" />
