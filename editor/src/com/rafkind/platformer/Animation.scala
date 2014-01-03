@@ -18,9 +18,9 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class ImageHolder(b:File, f:File){
-    val basedir:File = b
-    val file:File = f
+class ImageHolder(base:File, relativeFile:File){
+    val basedir:File = base
+    val file:File = relativeFile
     val image:Image = loadImage()
     
     def render(g:Graphics2D, x:Int, y:Int) = {
@@ -307,8 +307,8 @@ class FrameListModel extends ListModel[Frame] {
     }
 }
 
-class Animation(n:String){
-    var name:String = n
+class Animation(animationName:String){
+    var name:String = animationName
     var basedir:File = null
     var images:ImageHolderListModel = new ImageHolderListModel()
     var frames:FrameListModel = new FrameListModel()
@@ -400,7 +400,7 @@ class Animation(n:String){
     }
     
     def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Animation]) = {
-        //try {
+        try {
             val engine = new SwingEngine("platformer/animation.xml")
             val pane = engine.find("dialog").asInstanceOf[JDialog]
             
@@ -559,9 +559,9 @@ class Animation(n:String){
             pane.repaint()
             pane.setModal(true)
             pane.setVisible(true)
-        /*} catch {
+        } catch {
             case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
-        }*/
+        }
     }
 }
 

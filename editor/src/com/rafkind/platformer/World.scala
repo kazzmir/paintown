@@ -16,10 +16,10 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class AnimationUpdater(v:JPanel, vs:JScrollPane, a:AnimationListModel) extends ActionListener {
-    val view:JPanel = v
-    val viewScroll:JScrollPane = vs
-    val animations:AnimationListModel = a
+class AnimationUpdater(viewPanel:JPanel, scrollPane:JScrollPane, animationModel:AnimationListModel) extends ActionListener {
+    val view:JPanel = viewPanel
+    val viewScroll:JScrollPane = scrollPane
+    val animations:AnimationListModel = animationModel
     var timer = new Timer(25, this)
     timer.start()
     

@@ -209,9 +209,9 @@ class TileListModel extends ListModel[Tile] {
     }
 }
 
-class TileSet(n:String){
+class TileSet(tilesetName:String){
     
-    var name:String = n
+    var name:String = tilesetName
     var scrollX:Double = 0
     var scrollY:Double = 0
     
