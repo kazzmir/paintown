@@ -402,11 +402,13 @@ class Editor extends JFrame("Platformer Map Editor"){
         // Create panel to handle world values
         val values = engine.find("values").asInstanceOf[JPanel]
         values.add(world.createDetailsPanel(view, viewScroll, tabbed))
+        values.setPreferredSize(new Dimension(200, 700))
         
         world.connectScaleOffset(engine, view, viewScroll)
         
         val split = engine.getRootComponent().asInstanceOf[JSplitPane]
         split.setContinuousLayout(true)
+        split.setDividerLocation(0.8)
         split
     }
 

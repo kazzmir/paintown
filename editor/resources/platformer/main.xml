@@ -3,51 +3,46 @@
         <gridbagconstraints
             gridx="0"
             gridy="0"
-            weightx="0.9"
+            weightx="1"
             weighty="1"
             gridheight="3"
-            fill="GridBagConstraints.BOTH"
-            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.HORIZONTAL"
+            anchor="GridBagConstraints.WEST"
             />
     </panel>
     
     <vbox>
-        <panel id="values" border="MatteBorder(2,2,2,2,667A63)">
-            <gridbagconstraints
-                gridx="1"
-                gridy="0"
-                insets="1,1,1,1"
-                weightx="0.1"
-                weighty="0.9"
-                gridwidth="1"
-                fill="GridBagConstraints.BOTH"
-                anchor="GridBagConstraints.NORTH" 
-            />
-        </panel>
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="0.5"
+            weighty="1"
+            gridwidth=".1"
+            fill="GridBagConstraints.NONE"
+            anchor="GridBagConstraints.EAST" 
+        />
+        <panel id="values" border="MatteBorder(2,2,2,2,667A63)" />
 
-        <hbox>
-            <gridbagconstraints
-                gridx="1"
-                gridy="2"
-                weightx="0.1"
-                weighty="0.1"
-                gridheight="1"
-                fill="GridBagConstraints.HORIZONTAL"
-                anchor="GridBagConstraints.WEST"
-                />
-            <glue size="1" />
-            <label text="Scale: 2" id="scale-label" />
-            <slider id="scale" minimum="1" maximum="20" />
-            <glue />
-        </hbox>
-        <vbox>
+        <vbox border="MatteBorder(2,2,2,2,667A63)">
             <hbox>
+                <glue size="1" />
+                <label text="Scale: 2" id="scale-label" />
+                <slider id="scale" minimum="1" maximum="20" />
+                <glue />
+            </hbox>
+        </vbox>
+        <vbox border="MatteBorder(2,2,2,2,667A63)">
+            <hbox>
+                <glue size="1" />
                 <label text="Offset X" />
                 <spinner id="offset-x" />
+                <glue />
             </hbox>
             <hbox>
+                <glue size="1" />
                 <label text="Offset Y" />
                 <spinner id="offset-y" />
+                <glue />
             </hbox>
         </vbox>
     </vbox>
