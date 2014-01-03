@@ -17,22 +17,31 @@ import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
 class Tile{
-    var animation:Animation = _
+    var animationName:String = _
     
     var row:Int = 0
     var column:Int = 0
     
-    var x:Int = 0
-    var y:Int = 0
-    var width:Int = 0
-    var height:Int = 0
+    def readToken(token:Token) = {
+        if (!token.getName().equals("tile")){
+            throw new LoadException( "Starting token is not 'tile'" )
+        }
+        val name = token.findToken("animation")
+        if (name != null){
+            animationName = name.readString(0)
+        }
+        val position = token.findToken("position")
+        if (position != null){
+            row = position.readInt(0)
+            column = position.readInt(1)
+        }
+    }
     
     def toToken():Token = {
         val tile = new Token()
         tile.addToken(new Token(tile, "tile"))
-        tile.addToken(Array("animation", String.valueOf(animation)))
+        tile.addToken(Array("animation", String.valueOf(animationName)))
         tile.addToken(Array("position", String.valueOf(row), String.valueOf(column)))
-        
         tile
     }
     
@@ -40,12 +49,97 @@ class Tile{
         toToken().toString()
     }
     
-    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Tile]) = {
+    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Tile], animations:List[Animation]) = {
         try {
+            val engine = new SwingEngine("platformer/tile.xml")
+            val pane = engine.find("dialog").asInstanceOf[JDialog]
+            
+            {
+                val animationField = engine.find("animation").asInstanceOf[JComboBox[Animation]]
+                animationField.setModel(new DefaultComboBoxModel(animations.toArray))
+                
+                val animationScroll = engine.find("animation-view").asInstanceOf[JScrollPane]
+                val animationView = new JPanel(){
+                    override def getPreferredSize():Dimension = {
+                        new Dimension(250, 250)
+                    }
+
+                    override def paintComponent(g:Graphics){
+                        val h = viewScroll.getHorizontalScrollBar()
+                        val v = viewScroll.getVerticalScrollBar()
+                        g.setColor(new Color(64, 64, 64))
+                        g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                        if (animationField.getSelectedIndex() != -1){
+                            var animation = animations(animationField.getSelectedIndex())
+                            animation.render(g.asInstanceOf[Graphics2D], 0, 0)
+                        }
+                    }
+                }
+                
+                animationField.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        animationName = animations(animationField.getSelectedIndex()).name
+                        list.revalidate()
+                        list.repaint()
+                        animationView.revalidate()
+                        animationView.repaint()
+                    } 
+                })
+                
+                animationScroll.setViewportView(animationView)
+                animationView.revalidate()
+            }
+            
+            {
+                val rowField = engine.find("row").asInstanceOf[JSpinner]
+                val model = new SpinnerNumberModel()
+                rowField.setModel(model)
+                model.setValue(row)
+                rowField.addChangeListener(new ChangeListener(){
+                    override def stateChanged(event:ChangeEvent){
+                        val spinner = event.getSource().asInstanceOf[JSpinner]
+                        val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                        row = i.intValue()
+                        list.revalidate()
+                        list.repaint()
+                    }
+                })
+            }
+            
+            {
+                val columnField = engine.find("column").asInstanceOf[JSpinner]
+                val model = new SpinnerNumberModel()
+                columnField.setModel(model)
+                model.setValue(column)
+                columnField.addChangeListener(new ChangeListener(){
+                    override def stateChanged(event:ChangeEvent){
+                        val spinner = event.getSource().asInstanceOf[JSpinner]
+                        val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                        column = i.intValue()
+                        list.revalidate()
+                        list.repaint()
+                    }
+                })
+            }
+            
+            // Close
+            {
+                val close = engine.find("close").asInstanceOf[JButton]
+                close.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        pane.setVisible(false)
+                        view.revalidate()
+                        viewScroll.repaint()
+                        list.revalidate()
+                        list.repaint()
+                    } 
+                })
+            }
+            
             // Show Dialog
-            /*pane.repaint()
+            pane.repaint()
             pane.setModal(true)
-            pane.setVisible(true)*/
+            pane.setVisible(true)
         } catch {
             case e:Exception => JOptionPane.showMessageDialog(null, "error on opening, reason: " + e.getMessage(), "ERROR", JOptionPane.ERROR_MESSAGE)
         }
@@ -57,7 +151,16 @@ class TileListModel extends ListModel[Tile] {
     var listeners = List[ListDataListener]()
 
     def add(tile:Tile){
-        data = data :+ tile
+        var updated = false
+        for((t,index) <- data.view.zipWithIndex){
+            if (t.row == tile.row && t.column == tile.column){
+                updated = true
+                data = data.updated(index, tile)
+            }
+        }
+        if (!updated){
+            data = data :+ tile
+        }
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -69,6 +172,14 @@ class TileListModel extends ListModel[Tile] {
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
+        }
+    }
+    
+    def remove(column:Int, row:Int){
+        for((t,index) <- data.view.zipWithIndex){
+            if (t.row == row && t.column == column){
+                remove(index)
+            }
         }
     }
 
@@ -114,7 +225,7 @@ class TileSet(n:String){
     
     var isCurrent:Boolean = false
     
-    def render(g:Graphics2D, x:Int, y:Int) = {
+    def render(g:Graphics2D, x:Int, y:Int, animations:AnimationListModel) = {
         if (renderGrid){
             var currentY = y
             while (currentY < (height + y)){
@@ -127,18 +238,125 @@ class TileSet(n:String){
                 currentY += tileHeight
             }
         }
+        
+        tiles.getAll().foreach {
+            case (tile) => {
+                val animation = animations.get(tile.animationName)
+                if (animation != null){
+                    animation.render(g, x + tile.column * tileWidth, y + tile.row * tileHeight)
+                }
+            }
+        }
+    }
+    
+    def readToken(token:Token) = {
+        if (!token.getName().equals("background") && !token.getName().equals("foreground")){
+            throw new LoadException( "Starting token is not 'background' or 'foreground'" )
+        }
+        val nameToken = token.findToken("id")
+        if (nameToken != null){
+            name = nameToken.readString(0)
+        }
+        val typeToken = token.findToken("type")
+        if (typeToken != null){
+            if (typeToken.readString(0) != "tileset"){
+                throw new LoadException("Not a tileset")
+            }
+        }
+        val scrollxToken = token.findToken("scroll-x")
+        if (scrollxToken != null){
+            scrollX = scrollxToken.readDouble(0)
+        }
+        val scrollyToken = token.findToken("scroll-y")
+        if (scrollyToken != null){
+            scrollY = scrollyToken.readDouble(0)
+        }
+        val tilesetToken = token.findToken("tileset")
+        if (tilesetToken != null){
+            val sizeToken = tilesetToken.findToken("tile-size")
+            if (sizeToken != null){
+                tileWidth = sizeToken.readInt(0)
+                tileHeight = sizeToken.readInt(1)
+            }
+            val dimensionToken = tilesetToken.findToken("dimensions")
+            if (dimensionToken != null){
+                width = dimensionToken.readInt(0) * tileWidth
+                height = dimensionToken.readInt(1) * tileHeight
+            }
+            
+            val tileIterator = tilesetToken.findTokens("tile").iterator()
+            while(tileIterator.hasNext()){
+                val t = tileIterator.next()
+                val tile = new Tile()
+                tile.readToken(t)
+                tiles.add(tile)
+                val up = t.findToken("repeat-up")
+                if (up != null){
+                    var pos = tile.row
+                    for (pos <- tile.row to (tile.row - up.readInt(0))){
+                        val rep = new Tile()
+                        rep.animationName = tile.animationName
+                        rep.column = tile.column
+                        rep.row = pos
+                        tiles.add(rep)
+                    }
+                }
+                val down = t.findToken("repeat-down")
+                if (down != null){
+                    var pos = tile.row
+                    for (pos <- tile.row to (tile.row + down.readInt(0))){
+                        val rep = new Tile()
+                        rep.animationName = tile.animationName
+                        rep.column = tile.column
+                        rep.row = pos
+                        tiles.add(rep)
+                    }
+                }
+                val left = t.findToken("repeat-left")
+                if (left != null){
+                    var pos = tile.column
+                    for (pos <- tile.column to (tile.column - left.readInt(0))){
+                        val rep = new Tile()
+                        rep.animationName = tile.animationName
+                        rep.column = pos
+                        rep.row = tile.row
+                        tiles.add(rep)
+                    }
+                }
+                val right = t.findToken("repeat-right")
+                if (right != null){
+                    var pos = tile.column
+                    for (pos <- tile.column to (tile.column + right.readInt(0))){
+                        val rep = new Tile()
+                        rep.animationName = tile.animationName
+                        rep.column = pos
+                        rep.row = tile.row
+                        tiles.add(rep)
+                    }
+                }
+            }
+        }
     }
 
-    def toToken():Token = {
+    def toToken(position:String):Token = {
+        val background = new Token()
+        background.addToken(new Token(background, position))
+        background.addToken(Array("type", "tileset"))
+        background.addToken(Array("scroll-x", String.valueOf(scrollX)))
+        background.addToken(Array("scroll-y", String.valueOf(scrollY)))
+        
         val tileset = new Token()
         tileset.addToken(new Token(tileset, "tileset"))
         tileset.addToken(Array("tile-size", String.valueOf(tileWidth), String.valueOf(tileHeight)))
+        tileset.addToken(Array("dimensions", String.valueOf(width/tileWidth), String.valueOf(height/tileHeight)))
         
         tiles.getAll().foreach {
             case (tile) => tileset.addToken(tile.toToken())
         }
         
-        tileset
+        background.addToken(tileset)
+        
+        background
     }
     
     override def toString():String = {
@@ -150,7 +368,7 @@ class TileSet(n:String){
         n
     }
     
-    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[TileSet]) = {
+    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[TileSet], animations:List[Animation]) = {
         try {
             val engine = new SwingEngine("platformer/tileset.xml")
             val pane = engine.find("dialog").asInstanceOf[JDialog]
@@ -277,7 +495,7 @@ class TileSet(n:String){
                     def actionPerformed(e:ActionEvent) = {
                         val tile = new Tile()
                         tiles.add(tile)
-                        tile.editDialog(view, viewScroll, tileList)
+                        tile.editDialog(view, viewScroll, tileList, animations)
                     } 
                 })
                 
@@ -285,7 +503,7 @@ class TileSet(n:String){
                 edit.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
                         if (tiles.getSize() > 0 && tileList.getSelectedIndex() != -1){
-                            tiles.getElementAt(tileList.getSelectedIndex()).editDialog(view, viewScroll, tileList)
+                            tiles.getElementAt(tileList.getSelectedIndex()).editDialog(view, viewScroll, tileList, animations)
                         }
                     } 
                 })

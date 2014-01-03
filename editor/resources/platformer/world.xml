@@ -59,6 +59,7 @@
                 <label text="Animation Options" />
                 <button text="Add" id="add-anim-button" />
                 <button text="Edit" id="edit-anim-button" />
+                <button text="Current" id="current-anim-button" />
                 <button text="Remove" id="remove-anim-button" />
             </hbox>
         </vbox>

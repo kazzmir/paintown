@@ -18,10 +18,6 @@ import com.rafkind.paintown.MaskedImage
 
 class World(loadfile:File){
     
-    if (loadfile != null){
-        load(loadfile)
-    }
-    
     var offsetX:Int = 15
     var offsetY:Int = 15
     
@@ -45,14 +41,21 @@ class World(loadfile:File){
     var acceleration:Double = 0
     
     //! Animations
-    var animations = new AnimationListModel()
+    val animations = new AnimationListModel()
     
     //! Background Tilesets
-    var backgrounds = new TileSetListModel()
-    backgrounds.add(new TileSet("Test tileset"))
+    val backgrounds = new TileSetListModel()
     
     //! Foreground Tilesets
     var foregrounds = new TileSetListModel()
+    
+    if (loadfile != null){
+        load(loadfile)
+    } else {
+        val tileset = new TileSet("Empty tileset")
+        tileset.isCurrent = true
+        backgrounds.add(tileset)
+    }
     
     def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
         g.scale(scale, scale)
@@ -63,14 +66,14 @@ class World(loadfile:File){
         
         // backgrounds
         backgrounds.getAll().foreach{
-            case (tileset) => tileset.render(g, offsetX, offsetY)
+            case (tileset) => tileset.render(g, offsetX, offsetY, animations)
         }
         
         // Objects
         
         // foregrounds
         foregrounds.getAll().foreach{
-            case (tileset) => tileset.render(g, offsetX, offsetY)
+            case (tileset) => tileset.render(g, offsetX, offsetY, animations)
         }
         
         // Viewport resolution
@@ -83,6 +86,63 @@ class World(loadfile:File){
         val head = reader.nextToken()
         if ( ! head.getName().equals( "world" ) ){
             throw new LoadException( "Starting token is not 'world'" )
+        }
+        
+        val nameToken = head.findToken("name")
+        if (nameToken != null){
+            name = nameToken.readString(0)
+        }
+        val resolutionToken = head.findToken("resolution")
+        if (resolutionToken != null){
+            resolutionX = resolutionToken.readInt(0)
+            resolutionY = resolutionToken.readInt(1)
+        }
+        val dimensionToken = head.findToken("dimensions")
+        if (dimensionToken != null){
+            width = dimensionToken.readInt(0)
+            height = dimensionToken.readInt(1)
+        }
+        
+        val mechanicsToken = head.findToken("mechanics")
+        if (mechanicsToken != null){
+            val gravity = mechanicsToken.findToken("gravity")
+            if (gravity != null){
+                gravityX = gravity.readDouble(0)
+                gravityY = gravity.readDouble(1)
+            }
+            val accel = mechanicsToken.findToken("acceleration")
+            if (accel != null){
+                acceleration = accel.readDouble(0);
+            }
+        }
+        
+        val animationIterator = head.findTokens("animation").iterator()
+        while(animationIterator.hasNext()){
+            val animation = new Animation("Not assigned")
+            animation.readToken(animationIterator.next())
+            animations.add(animation)
+        }
+        
+        val backgroundIterator = head.findTokens("background").iterator()
+        while(backgroundIterator.hasNext()){
+            try {
+                val tileset = new TileSet("Not assigned")
+                tileset.readToken(backgroundIterator.next())
+                backgrounds.add(tileset)
+            } catch {
+                case ex:LoadException => { println(ex.getMessage()) }
+            }
+        }
+        
+        val foregroundIterator = head.findTokens("foreground").iterator()
+        while(foregroundIterator.hasNext()){
+            try {
+                val tileset = new TileSet("Not assigned")
+                tileset.readToken(foregroundIterator.next())
+                foregrounds.add(tileset)
+            } catch {
+                case ex:LoadException => { println(ex.getMessage()) }
+            }
         }
 
         System.out.println( "Loaded " + f )
@@ -105,9 +165,86 @@ class World(loadfile:File){
     def toToken():Token = {
         val world = new Token()
         world.addToken( new Token( world, "world" ) )
+        world.addToken(Array("name", name))
+        world.addToken(Array("resolution", String.valueOf(resolutionX), String.valueOf(resolutionY)))
+        world.addToken(Array("dimensions", String.valueOf(width), String.valueOf(height)))
+        val mechanics = new Token()
+        mechanics.addToken(new Token(mechanics, "mechanics"))
+        mechanics.addToken(Array("gravity", String.valueOf(gravityX), String.valueOf(gravityY)))
+        world.addToken(mechanics)
         
+        animations.getAll().foreach{
+            case (animation) => world.addToken(animation.toToken())
+        }
+        
+        backgrounds.getAll().foreach{
+            case (tileset) => world.addToken(tileset.toToken("background"))
+        }
+        
+        foregrounds.getAll().foreach{
+            case (tileset) => world.addToken(tileset.toToken("foreground"))
+        }
+        
+        // Collision maps
 
         world
+    }
+    
+    def addTile(x:Int, y:Int) = {
+        val tileset = getCurrentTileSet()
+        val animation = getCurrentAnimation()
+        if (tileset != null && animation != null){
+            val column = x / tileset.tileWidth
+            val row = y / tileset.tileHeight
+            //System.out.println("Adding tile to location (" + column + "," + row + ")")
+            val tile = new Tile()
+            tile.animationName = animation.name
+            tile.column = column
+            tile.row = row
+            tileset.tiles.add(tile)
+        }
+    }
+    
+    def removeTile(x:Int, y:Int) = {
+        val tileset = getCurrentTileSet()
+        if (tileset != null){
+            val column = x / tileset.tileWidth
+            val row = y / tileset.tileHeight
+            tileset.tiles.remove(column, row)
+        }
+    }
+    
+    def getCurrentAnimation():Animation = {
+        animations.getAll().foreach{
+            case (anim) => if (anim.isCurrent) return anim
+        }
+        null
+    }
+    
+    def clearCurrentAnimation() = {
+        animations.getAll().foreach{
+            case (anim) => if (anim.isCurrent) anim.isCurrent = false
+        }
+    }
+    
+    def getCurrentTileSet():TileSet = {
+        backgrounds.getAll().foreach{
+            case (tileset) => if (tileset.isCurrent) return tileset
+        }
+        
+        foregrounds.getAll().foreach{
+            case (tileset) => if (tileset.isCurrent) return tileset
+        }
+        null
+    }
+    
+    def clearCurrentTileSet() = {
+        backgrounds.getAll().foreach{
+            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
+        }
+        foregrounds.getAll().foreach{
+            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
+        }
     }
     
     def createDetailsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
@@ -260,6 +397,19 @@ class World(loadfile:File){
                 } 
             })
             
+            val current = engine.find("current-anim-button").asInstanceOf[JButton]
+            current.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        clearCurrentAnimation()
+                        animations.getElementAt(anims.getSelectedIndex()).isCurrent = true
+                        view.revalidate()
+                        viewScroll.repaint()
+                        anims.repaint()
+                    }
+                } 
+            })
+            
             val remove = engine.find("remove-anim-button").asInstanceOf[JButton]
             remove.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
@@ -282,7 +432,7 @@ class World(loadfile:File){
                 def actionPerformed(e:ActionEvent) = {
                     val tileset = new TileSet("New Background TileSet")
                     backgrounds.add(tileset)
-                    tileset.editDialog(view, viewScroll, bgs)
+                    tileset.editDialog(view, viewScroll, bgs, animations.getAll())
                 } 
             })
             
@@ -290,7 +440,7 @@ class World(loadfile:File){
             editBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
-                        backgrounds.getElementAt(bgs.getSelectedIndex()).editDialog(view, viewScroll, bgs)
+                        backgrounds.getElementAt(bgs.getSelectedIndex()).editDialog(view, viewScroll, bgs, animations.getAll())
                     }
                 } 
             })
@@ -314,7 +464,7 @@ class World(loadfile:File){
                 def actionPerformed(e:ActionEvent) = {
                     val tileset = new TileSet("New Foreground TileSet")
                     foregrounds.add(tileset)
-                    tileset.editDialog(view, viewScroll, fgs)
+                    tileset.editDialog(view, viewScroll, fgs, animations.getAll())
                 } 
             })
             
@@ -322,7 +472,7 @@ class World(loadfile:File){
             editFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
-                        foregrounds.getElementAt(fgs.getSelectedIndex()).editDialog(view, viewScroll, fgs)
+                        foregrounds.getElementAt(fgs.getSelectedIndex()).editDialog(view, viewScroll, fgs, animations.getAll())
                     }
                 } 
             })
@@ -342,12 +492,7 @@ class World(loadfile:File){
             currentBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
-                        backgrounds.getAll().foreach{
-                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
-                        }
-                        foregrounds.getAll().foreach{
-                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
-                        }
+                        clearCurrentTileSet()
                         backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = true
                         view.revalidate()
                         viewScroll.repaint()
@@ -361,12 +506,7 @@ class World(loadfile:File){
             currentFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
-                        backgrounds.getAll().foreach{
-                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
-                        }
-                        foregrounds.getAll().foreach{
-                            case (tileset) => if (tileset.isCurrent) tileset.isCurrent = false
-                        }
+                        clearCurrentTileSet()
                         foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = true
                         view.revalidate()
                         viewScroll.repaint()

@@ -322,9 +322,21 @@ class Editor extends JFrame("Platformer Map Editor"){
             var sx:Double = 0
             var sy:Double = 0
             var currentPopup:JDialog = null
+            val leftMask = InputEvent.BUTTON1_DOWN_MASK
+            val rightMask = InputEvent.BUTTON3_DOWN_MASK
 
             override def mouseDragged(event:MouseEvent){
                 viewScroll.repaint()
+                val x = (event.getX() / world.scale) - world.offsetX
+                val y = (event.getY() / world.scale) - world.offsetY
+                //System.out.println("Dragging mouse through (" + x + "," + y + ")")
+                if ((event.getModifiersEx() & (leftMask | rightMask)) == leftMask){
+                    // Left button
+                    world.addTile(x.intValue(), y.intValue())
+                } else if ((event.getModifiersEx() & (leftMask | rightMask)) == rightMask){
+                    // Right button
+                    world.removeTile(x.intValue(), y.intValue())
+                }
             }
 
             def leftClick(event:MouseEvent):Boolean = {
@@ -353,11 +365,14 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
 
             def mousePressed(event:MouseEvent){
+                val x = (event.getX() / world.scale) - world.offsetX
+                val y = (event.getY() / world.scale) - world.offsetY
                 if (leftClick(event)){
-                    System.out.println("Had left click")
+                    //System.out.println("Had left click at (" + x + "," + y + ")")
+                    world.addTile(x.intValue(), y.intValue())
                 } else if (rightClick(event)){
-                    System.out.println("Had right click")
-                    
+                    //System.out.println("Had right click at (" + x + "," + y + ")")
+                    world.removeTile(x.intValue(), y.intValue())
                 }
             }
 

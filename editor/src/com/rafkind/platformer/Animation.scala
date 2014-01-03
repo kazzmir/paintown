@@ -17,9 +17,10 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class ImageHolder(f:File){
-    val image:Image = loadImage(f)
+class ImageHolder(b:File, f:File){
+    val basedir:File = b
     val file:File = f
+    val image:Image = loadImage()
     
     def render(g:Graphics2D, x:Int, y:Int) = {
         g.drawImage(image, x, y, null)
@@ -30,11 +31,12 @@ class ImageHolder(f:File){
         render(g,x,y)
     }
     
-    def loadImage(f:File):Image = { //s:String):Image = {
+    def loadImage():Image = {
+        val path = MapEditor.getDataPath(basedir.getPath() + "/" + file.getPath())
         try{
-            MaskedImage.load( f.getPath() )//MapEditor.getDataPath( s ).getPath() )
+            MaskedImage.load(path.getPath())
         } catch {
-            case ex:IOException => throw new LoadException( "Could not load " + f.getPath() )
+            case ex:IOException => throw new LoadException( "Could not load " + path.getPath() )
         }
     }
     
@@ -89,18 +91,42 @@ class ImageHolderListModel extends ListModel[ImageHolder] {
 
 class Frame{
     var image:Int = -1
-    var alpha:Int = -1
+    var alpha:Int = 255
     var hflip:Boolean = false
     var vflip:Boolean = false 
     var time:Int = 0
+    
+    def readToken(token:Token) = {
+        if (!token.getName().equals("frame")){
+            throw new LoadException( "Starting token is not 'frame'" )
+        }
+        val imageToken = token.findToken("image")
+        if (imageToken != null){
+            image = imageToken.readInt(0)
+        }
+        val alphaToken = token.findToken("alpha")
+        if (alphaToken != null){
+            alpha = alphaToken.readInt(0)
+        }
+        val hflipToken = token.findToken("hflip")
+        if (hflipToken != null){
+            hflip = hflipToken.readBoolean(0)
+        }
+        val vflipToken = token.findToken("vflip")
+        if (vflipToken != null){
+            vflip = vflipToken.readBoolean(0)
+        }
+        val timeToken = token.findToken("time")
+        if (timeToken != null){
+            time = timeToken.readInt(0)
+        }
+    }
 
     def toToken():Token = {
         val frame = new Token()
         frame.addToken(new Token(frame, "frame"))
         frame.addToken(Array("image", String.valueOf(image)))
-        if (alpha != -1){
-            frame.addToken(Array("alpha", String.valueOf(alpha)))
-        }
+        frame.addToken(Array("alpha", String.valueOf(alpha)))
         frame.addToken(Array("hflip", String.valueOf(if(hflip) 1 else 0)))
         frame.addToken(Array("vflip", String.valueOf(if(vflip) 1 else 0)))
         frame.addToken(Array("time", String.valueOf(time)))
@@ -282,10 +308,11 @@ class FrameListModel extends ListModel[Frame] {
 
 class Animation(n:String){
     var name:String = n
-    var basedir:File = _
+    var basedir:File = null
     var images:ImageHolderListModel = new ImageHolderListModel()
     var frames:FrameListModel = new FrameListModel()
     var loop:Int = 0
+    var isCurrent = false
     
     def render(g:Graphics2D, x:Int, y:Int) = {
         // Render
@@ -295,6 +322,31 @@ class Animation(n:String){
             if (frame.image != -1){
                 images.getElementAt(frame.image).render(g, x, y)
             }
+        }
+    }
+    
+    def readToken(token:Token) = {
+        if (!token.getName().equals("animation")){
+            throw new LoadException( "Starting token is not 'animation'" )
+        }
+        val nameToken = token.findToken("id")
+        if (nameToken != null){
+            name = nameToken.readString(0)
+        }
+        val basedirToken = token.findToken("basedir")
+        if (basedirToken != null){
+            basedir = new File(basedirToken.readString(0))
+        }
+        val imageIterator = token.findTokens("image").iterator()
+        while(imageIterator.hasNext()){
+            val t = imageIterator.next()
+            images.add(new ImageHolder(basedir, new File(t.readString(1))))
+        }
+        val frameIterator = token.findTokens("frame").iterator()
+        while(frameIterator.hasNext()){
+            val frame = new Frame()
+            frame.readToken(frameIterator.next())
+            frames.add(frame)
         }
     }
 
@@ -319,7 +371,12 @@ class Animation(n:String){
     }
     
     override def toString():String = {
-        name
+        var n = name
+        if(isCurrent){
+            n = n + " (currently selected)"
+        }
+        
+        n
     }
     
     def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Animation]) = {
@@ -354,7 +411,7 @@ class Animation(n:String){
                 val dir = engine.find("basedir-button").asInstanceOf[JButton]
                 dir.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        val chooser = new JFileChooser(new File("."))	
+                        val chooser = new JFileChooser(MapEditor.getDataPath("."))
                         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
                         val returnVal = chooser.showOpenDialog(pane)
                         if (returnVal == JFileChooser.APPROVE_OPTION){
@@ -374,19 +431,23 @@ class Animation(n:String){
                 val add = engine.find("add-image-button").asInstanceOf[JButton]
                 add.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        val chooser = new JFileChooser(new File("."))	
-                        chooser.setFileFilter(new FileFilter(){
-                            def accept(f:File):Boolean = {
-                                f.isDirectory() || f.getName().endsWith( ".png" )
-                            }
+                        if (basedir != null){
+                            val chooser = new JFileChooser(MapEditor.getDataPath(basedir.getPath()))
+                            chooser.setFileFilter(new FileFilter(){
+                                def accept(f:File):Boolean = {
+                                    f.isDirectory() || f.getName().endsWith( ".png" )
+                                }
 
-                            def getDescription():String = {
-                                "Png files"
+                                def getDescription():String = {
+                                    "Png files"
+                                }
+                            })
+                            val returnVal = chooser.showOpenDialog(pane)
+                            if (returnVal == JFileChooser.APPROVE_OPTION){
+                              images.add(new ImageHolder(basedir, chooser.getSelectedFile()))
                             }
-                        })
-                        val returnVal = chooser.showOpenDialog(pane)
-                        if (returnVal == JFileChooser.APPROVE_OPTION){
-                          images.add(new ImageHolder(chooser.getSelectedFile()))
+                        } else {
+                            JOptionPane.showMessageDialog(pane, "Please select a base directory.")
                         }
                     } 
                 })
@@ -499,7 +560,14 @@ class AnimationListModel extends ListModel[Animation] {
     }
     
     def get(name:String):Animation = {
-        data.foreach(anim => if (anim.name == name) anim)
+        data.foreach {
+            case(anim) => {
+                if (anim.name == name){
+                    // weird that I have to use a return keyword
+                    return anim
+                }
+            }
+        }
         null
     }
 
