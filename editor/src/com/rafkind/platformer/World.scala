@@ -406,6 +406,8 @@ class World(var _path:File){
             val anims = engine.find("anims").asInstanceOf[JList[Animation]]
             anims.setModel(animations)
             
+            anims.setVisibleRowCount(4)
+            
             val add = engine.find("add-anim-button").asInstanceOf[JButton]
             add.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
@@ -454,6 +456,8 @@ class World(var _path:File){
             val bgs = engine.find("backgrounds").asInstanceOf[JList[TileSet]]
             bgs.setModel(backgrounds)
             
+            bgs.setVisibleRowCount(4)
+            
             val addBg = engine.find("add-bg-button").asInstanceOf[JButton]
             addBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
@@ -485,6 +489,8 @@ class World(var _path:File){
             
             val fgs = engine.find("foregrounds").asInstanceOf[JList[TileSet]]
             fgs.setModel(foregrounds)
+            
+            fgs.setVisibleRowCount(4)
             
             val addFg = engine.find("add-fg-button").asInstanceOf[JButton]
             addFg.addActionListener(new ActionListener() { 
@@ -540,6 +546,33 @@ class World(var _path:File){
                         fgs.repaint()
                         bgs.repaint()
                     }
+                } 
+            })
+        }
+        
+        
+        // Collisions
+        {
+            val collisions = engine.find("collision-maps").asInstanceOf[JList[Animation]]
+            //collisions.setModel(coll?)
+            
+            collisions.setVisibleRowCount(4)
+            
+            val add = engine.find("add-collision-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                } 
+            })
+            
+            val edit = engine.find("edit-collision-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                } 
+            })
+            
+            val remove = engine.find("remove-collision-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
                 } 
             })
         }
