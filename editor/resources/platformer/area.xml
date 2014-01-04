@@ -1,0 +1,49 @@
+<?xml version="1.0" ?>
+
+<dialog Size="500,500" resizable="false" title="Area Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+
+<vbox>
+    <panel layout="GridBagLayout">
+        <vbox>
+            <hbox>
+                <label text="Name" />
+                <textfield bindWith="Name" id="name" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="X" />
+                <spinner id="x" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Y" />
+                <spinner id="y" />
+                <glue />
+            </hbox>
+            
+            <hbox>
+                <label text="Width" />
+                <spinner id="width" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Height" />
+                <spinner id="height" />
+                <glue />
+            </hbox>
+            
+            <hbox>
+                <label text="Color" />
+                <spinner id="color" />
+                <glue />
+            </hbox>
+        </vbox>
+    </panel>
+
+    <hbox>
+        <button text="Close" id="close"/>
+    </hbox>
+    
+</vbox>
+
+</dialog>

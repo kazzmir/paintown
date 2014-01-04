@@ -61,6 +61,9 @@ class World(var _path:File){
     //! Foreground Tilesets
     var foregrounds = new TileSetListModel()
     
+    //! Collision maps
+    var collisionMaps = new CollisionMap()
+    
     //! actions (updating animations)
     var actions:AnimationUpdater = null
     
@@ -83,6 +86,9 @@ class World(var _path:File){
         backgrounds.getAll().foreach{
             case (tileset) => tileset.render(g, offsetX, offsetY, animations)
         }
+        
+        // Collision maps
+        collisionMaps.render(g, offsetX, offsetY)
         
         // Objects
         
@@ -171,6 +177,11 @@ class World(var _path:File){
                 case ex:LoadException => { println(ex.getMessage()) }
             }
         }
+        
+        val collisionToken = head.findToken("collision-map")
+        if (collisionToken != null){
+            collisionMaps.readToken(collisionToken)
+        }
 
         System.out.println( "Loaded " + f )
     }
@@ -213,6 +224,7 @@ class World(var _path:File){
         }
         
         // Collision maps
+        world.addToken(collisionMaps.toToken())
 
         world
     }
@@ -221,8 +233,8 @@ class World(var _path:File){
         val tileset = getCurrentTileSet()
         val animation = getCurrentAnimation()
         if (tileset != null && animation != null){
-            val column = x / tileset.tileWidth
-            val row = y / tileset.tileHeight
+            val column = if (x < 0) (x / tileset.tileWidth)-1 else x / tileset.tileWidth
+            val row = if (y < 0) (y / tileset.tileHeight)-1 else y / tileset.tileHeight
             //System.out.println("Adding tile to location (" + column + "," + row + ")")
             val tile = new Tile()
             tile.animation = animation
@@ -235,8 +247,8 @@ class World(var _path:File){
     def removeTile(x:Int, y:Int) = {
         val tileset = getCurrentTileSet()
         if (tileset != null){
-            val column = x / tileset.tileWidth
-            val row = y / tileset.tileHeight
+            val column = if (x < 0) (x / tileset.tileWidth)-1 else x / tileset.tileWidth
+            val row = if (y < 0) (y / tileset.tileHeight)-1 else y / tileset.tileHeight
             tileset.tiles.remove(column, row)
         }
     }
@@ -553,26 +565,37 @@ class World(var _path:File){
         
         // Collisions
         {
-            val collisions = engine.find("collision-maps").asInstanceOf[JList[Animation]]
-            //collisions.setModel(coll?)
+            val collisions = engine.find("collision-maps").asInstanceOf[JList[Area]]
+            collisions.setModel(collisionMaps)
             
             collisions.setVisibleRowCount(4)
             
             val add = engine.find("add-collision-button").asInstanceOf[JButton]
             add.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
+                    val area = new Area("New Area")
+                    collisionMaps.add(area)
+                    area.editDialog(view, viewScroll, collisions)
                 } 
             })
             
             val edit = engine.find("edit-collision-button").asInstanceOf[JButton]
             edit.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
+                    if (collisionMaps.getSize() > 0 && collisions.getSelectedIndex() != -1){
+                        collisionMaps.getElementAt(collisions.getSelectedIndex()).editDialog(view, viewScroll, collisions)
+                    }
                 } 
             })
             
             val remove = engine.find("remove-collision-button").asInstanceOf[JButton]
             remove.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
+                    if (collisionMaps.getSize() > 0 && collisions.getSelectedIndex() != -1){
+                        collisionMaps.remove(collisions.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
                 } 
             })
         }
