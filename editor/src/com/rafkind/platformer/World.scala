@@ -87,15 +87,15 @@ class World(var _path:File){
             case (tileset) => tileset.render(g, offsetX, offsetY, animations)
         }
         
-        // Collision maps
-        collisionMaps.render(g, offsetX, offsetY)
-        
         // Objects
         
         // foregrounds
         foregrounds.getAll().foreach{
             case (tileset) => tileset.render(g, offsetX, offsetY, animations)
         }
+        
+        // Collision maps
+        collisionMaps.render(g, offsetX, offsetY)
         
         // Viewport resolution
         g.setColor( new Color( 0, 0, 255 ) )
@@ -209,6 +209,7 @@ class World(var _path:File){
         val mechanics = new Token()
         mechanics.addToken(new Token(mechanics, "mechanics"))
         mechanics.addToken(Array("gravity", String.valueOf(gravityX), String.valueOf(gravityY)))
+        mechanics.addToken(Array("acceleration", String.valueOf(acceleration)))
         world.addToken(mechanics)
         
         animations.getAll().foreach{

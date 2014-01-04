@@ -371,7 +371,7 @@ class Animation(var name:String){
         val animation = new Token()
         animation.addToken(new Token(animation, "animation"))
         animation.addToken(Array("id", name))
-        animation.addToken(Array("basedir", basedir.getPath()))
+        animation.addToken(Array("basedir", basedir.getPath() + "/"))
         var index = 0
         images.getAll().foreach {
             case (image) => {

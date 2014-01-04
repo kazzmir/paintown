@@ -40,13 +40,13 @@ class Area(var name:String){
     
     def toToken():Token = {
         val area = new Token()
-        area.addToken(Array("area", String.valueOf(x),String.valueOf(y),String.valueOf(width),String.valueOf(height)))
+        area.addToken(new Token(area, "area " + String.valueOf(x) + " " + String.valueOf(y) + " " + String.valueOf(width) + " " + String.valueOf(height)))
         
         area
     }
     
     override def toString():String = {
-        name
+        toToken().toString()
     }
     
     def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Area]) = {
