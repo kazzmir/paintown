@@ -18,9 +18,7 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class ImageHolder(base:File, relativeFile:File){
-    val basedir:File = base
-    val file:File = relativeFile
+class ImageHolder(val basedir:File, val file:File){
     val image:Image = loadImage()
     
     def render(g:Graphics2D, x:Int, y:Int) = {
@@ -307,8 +305,7 @@ class FrameListModel extends ListModel[Frame] {
     }
 }
 
-class Animation(animationName:String){
-    var name:String = animationName
+class Animation(var name:String){
     var basedir:File = null
     var images:ImageHolderListModel = new ImageHolderListModel()
     var frames:FrameListModel = new FrameListModel()
@@ -472,9 +469,12 @@ class Animation(animationName:String){
                                     "Png files"
                                 }
                             })
+                            chooser.setMultiSelectionEnabled(true)
                             val returnVal = chooser.showOpenDialog(pane)
                             if (returnVal == JFileChooser.APPROVE_OPTION){
-                              images.add(new ImageHolder(basedir, new File(chooser.getSelectedFile().getName())))
+                                chooser.getSelectedFiles().foreach{
+                                    case (file) => images.add(new ImageHolder(basedir, new File(file.getName())))
+                                }
                             }
                         } else {
                             JOptionPane.showMessageDialog(pane, "Please select a base directory.")

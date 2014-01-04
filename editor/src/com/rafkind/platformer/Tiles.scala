@@ -209,9 +209,7 @@ class TileListModel extends ListModel[Tile] {
     }
 }
 
-class TileSet(tilesetName:String){
-    
-    var name:String = tilesetName
+class TileSet(var name:String){
     var scrollX:Double = 0
     var scrollY:Double = 0
     

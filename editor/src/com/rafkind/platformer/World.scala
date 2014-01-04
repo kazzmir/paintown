@@ -16,10 +16,7 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class AnimationUpdater(viewPanel:JPanel, scrollPane:JScrollPane, animationModel:AnimationListModel) extends ActionListener {
-    val view:JPanel = viewPanel
-    val viewScroll:JScrollPane = scrollPane
-    val animations:AnimationListModel = animationModel
+class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animations:AnimationListModel) extends ActionListener {
     var timer = new Timer(25, this)
     timer.start()
     
@@ -32,7 +29,7 @@ class AnimationUpdater(viewPanel:JPanel, scrollPane:JScrollPane, animationModel:
     }
 }
 
-class World(loadfile:File){
+class World(var _path:File){
     
     var offsetX:Int = 15
     var offsetY:Int = 15
@@ -41,7 +38,6 @@ class World(loadfile:File){
     var width:Int = 640
     var height:Int = 480
     var scale:Double = 2
-    var _path = loadfile
     
     def this() = this(null)
     def path = _path
@@ -68,8 +64,8 @@ class World(loadfile:File){
     //! actions (updating animations)
     var actions:AnimationUpdater = null
     
-    if (loadfile != null){
-        load(loadfile)
+    if (_path != null){
+        load(_path)
     } else {
         val tileset = new TileSet("Empty tileset")
         tileset.isCurrent = true

@@ -417,7 +417,8 @@ class Editor extends JFrame("Platformer Map Editor"){
         // Create panel to handle world values
         val values = engine.find("values").asInstanceOf[JPanel]
         values.add(world.createDetailsPanel(view, viewScroll, tabbed))
-        values.setPreferredSize(new Dimension(200, 700))
+        val screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight()
+        values.setPreferredSize(new Dimension(200, (screenHeight - (screenHeight * .2)).intValue()))
         
         world.connectScaleOffset(engine, view, viewScroll)
         

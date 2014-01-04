@@ -93,5 +93,19 @@
                 <button text="Remove" id="remove-fg-button" />
             </hbox>
         </vbox>
+        <vbox>
+            <label text="Collision Maps" />
+            <hbox>
+                <scrollpane>
+                    <list id="collision-maps" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <label text="Collision Map Options" />
+                <button text="Add" id="add-collision-button" />
+                <button text="Edit" id="edit-collision-button" />
+                <button text="Remove" id="remove-collision-button" />
+            </hbox>
+        </vbox>
     </vbox>
 </panel>
