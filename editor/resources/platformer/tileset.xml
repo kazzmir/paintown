@@ -51,7 +51,6 @@
                     </scrollpane>
                 </hbox>
                 <hbox>
-                    <label text="Tile Options" />
                     <button text="Add" id="add-tile-button" />
                     <button text="Edit" id="edit-tile-button" />
                     <button text="Remove" id="remove-tile-button" />

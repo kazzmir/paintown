@@ -158,14 +158,18 @@ class TileListModel extends ListModel[Tile] {
             if (t.row == tile.row && t.column == tile.column){
                 updated = true
                 data = data.updated(index, tile)
+                val event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, index, index)
+                for (listener <- listeners){
+                    listener.intervalAdded(event)
+                }
             }
         }
         if (!updated){
             data = data :+ tile
-        }
-        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
-        for (listener <- listeners){
-            listener.intervalAdded(event)
+            val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
+            for (listener <- listeners){
+                listener.intervalAdded(event)
+            }
         }
     }
     
@@ -567,6 +571,16 @@ class TileSetListModel extends ListModel[TileSet] {
 
     def getAll():List[TileSet] = {
         data
+    }
+    
+    def swap(pos1:Int, pos2:Int) = {
+        if (pos1 >= 0 && pos2 >= 0 && pos1 < data.size && pos2 < data.size){
+            data = data.updated(pos1, data(pos2)).updated(pos2, data(pos1))
+            val event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, pos1, pos2)
+            for (listener <- listeners){
+                listener.intervalAdded(event)
+            }
+        }
     }
 
     override def addListDataListener(listener:ListDataListener){

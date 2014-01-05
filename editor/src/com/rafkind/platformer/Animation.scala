@@ -284,6 +284,16 @@ class FrameListModel extends ListModel[Frame] {
     def getAll():List[Frame] = {
         data
     }
+    
+    def swap(pos1:Int, pos2:Int) = {
+        if (pos1 >= 0 && pos2 >= 0 && pos1 < data.size && pos2 < data.size){
+            data = data.updated(pos1, data(pos2)).updated(pos2, data(pos1))
+            val event = new ListDataEvent(this, ListDataEvent.CONTENTS_CHANGED, pos1, pos2)
+            for (listener <- listeners){
+                listener.intervalAdded(event)
+            }
+        }
+    }
 
     override def addListDataListener(listener:ListDataListener){
         listeners = listeners :+ listener
@@ -511,6 +521,32 @@ class Animation(var name:String){
                     def actionPerformed(e:ActionEvent) = {
                         if (frames.getSize() > 0 && frameList.getSelectedIndex() != -1){
                             frames.getElementAt(frameList.getSelectedIndex()).editDialog(view, viewScroll, frameList, images.getAll())
+                        }
+                    } 
+                })
+                
+                val up = engine.find("up-frame-button").asInstanceOf[JButton]
+                up.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        if (frames.getSize() > 0 && frameList.getSelectedIndex() != -1){
+                            var index = frameList.getSelectedIndex()
+                            frames.swap(index, index-1)
+                            index = index-1
+                            frameList.setSelectedIndex(index)
+                            frameList.updateUI()
+                        }
+                    } 
+                })
+                
+                val down = engine.find("down-frame-button").asInstanceOf[JButton]
+                down.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        if (frames.getSize() > 0 && frameList.getSelectedIndex() != -1){
+                            var index = frameList.getSelectedIndex()
+                            frames.swap(index, index+1)
+                            index = index+1
+                            frameList.setSelectedIndex(index)
+                            frameList.updateUI()
                         }
                     } 
                 })

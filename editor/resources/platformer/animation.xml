@@ -24,7 +24,6 @@
                     </scrollpane>
                 </hbox>
                 <hbox>
-                    <label text="Image Options" />
                     <button text="Add" id="add-image-button" />
                     <button text="Remove" id="remove-image-button" />
                 </hbox>
@@ -37,9 +36,10 @@
                     </scrollpane>
                 </hbox>
                 <hbox>
-                    <label text="Frame Options" />
                     <button text="Add" id="add-frame-button" />
                     <button text="Edit" id="edit-frame-button" />
+                    <button text="Up" id="up-frame-button" />
+                    <button text="Down" id="down-frame-button" />
                     <button text="Remove" id="remove-frame-button" />
                 </hbox>
             </vbox>

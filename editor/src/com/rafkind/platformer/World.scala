@@ -489,6 +489,32 @@ class World(var _path:File){
                 } 
             })
             
+            val upBg = engine.find("up-bg-button").asInstanceOf[JButton]
+            upBg.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
+                        var index = bgs.getSelectedIndex()
+                        backgrounds.swap(index, index-1)
+                        index = index-1
+                        bgs.setSelectedIndex(index)
+                        bgs.updateUI()
+                    }
+                } 
+            })
+            
+            val downBg = engine.find("down-bg-button").asInstanceOf[JButton]
+            downBg.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
+                        var index = bgs.getSelectedIndex()
+                        backgrounds.swap(index, index+1)
+                        index = index+1
+                        bgs.setSelectedIndex(index)
+                        bgs.updateUI()
+                    }
+                } 
+            })
+            
             val removeBg = engine.find("remove-bg-button").asInstanceOf[JButton]
             removeBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
@@ -519,6 +545,32 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
                         foregrounds.getElementAt(fgs.getSelectedIndex()).editDialog(view, viewScroll, fgs, animations.getAll())
+                    }
+                } 
+            })
+            
+            val upFg = engine.find("up-fg-button").asInstanceOf[JButton]
+            upFg.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
+                        var index = fgs.getSelectedIndex()
+                        foregrounds.swap(index, index-1)
+                        index = index-1
+                        fgs.setSelectedIndex(index)
+                        fgs.updateUI()
+                    }
+                } 
+            })
+            
+            val downFg = engine.find("down-fg-button").asInstanceOf[JButton]
+            downFg.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
+                        var index = fgs.getSelectedIndex()
+                        foregrounds.swap(index, index+1)
+                        index = index+1
+                        fgs.setSelectedIndex(index)
+                        fgs.updateUI()
                     }
                 } 
             })
