@@ -21,11 +21,14 @@ class Area(var name:String){
     var y:Int = 0
     var width:Int = 0
     var height:Int = 0
-    var color:Color = new Color(0,255,0)
+    var color:Color = new Color(204,0,51)
+    var font = new Font("Verdana", Font.BOLD, 4)
     
     def render(g:Graphics2D, x1:Int, y1:Int) = {
         g.setColor(color)
         g.drawRect(x1 + x, y1 + y, width, height)
+        g.setFont(font);
+        g.drawString( "Collision map [" + name + "]", x1 + x -1, y1 + y -1)
     }
     
     def readToken(token:Token) = {
@@ -149,6 +152,36 @@ class Area(var name:String){
                         height = i.intValue()
                         view.revalidate()
                         viewScroll.repaint()
+                    }
+                })
+            }
+            
+            // Color
+            {
+                val viewColor = new JPanel(){
+                    override def getPreferredSize():Dimension = {
+                        new Dimension(25,25)
+                    }
+
+                    override def paintComponent(g:Graphics){
+                        g.setColor(color)
+                        g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                    }
+                }
+                val colorPanel = engine.find("color-display").asInstanceOf[JPanel]
+                colorPanel.add(viewColor)
+                
+                val button = engine.find("color").asInstanceOf[JButton]
+                button.addActionListener(new ActionListener() {
+                    def actionPerformed(e:ActionEvent) = {
+                        val chosen = JColorChooser.showDialog(button, "Select a Fill Color", color);
+                        if (chosen != null){
+                            color = chosen
+                            view.revalidate()
+                            viewScroll.repaint()
+                            viewColor.revalidate()
+                            colorPanel.repaint()
+                        }
                     }
                 })
             }

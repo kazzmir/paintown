@@ -33,8 +33,8 @@
             </hbox>
             
             <hbox>
-                <label text="Color" />
-                <spinner id="color" />
+                <button text="Color" id="color" />
+                <panel id="color-display" />
                 <glue />
             </hbox>
         </vbox>

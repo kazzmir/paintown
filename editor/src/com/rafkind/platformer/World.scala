@@ -52,6 +52,9 @@ class World(var _path:File){
     var gravityY:Double = 0
     var acceleration:Double = 0
     
+    //! Fill color
+    var fillColor:Color = new Color(204,204,204)
+    
     //! Animations
     val animations = new AnimationListModel()
     
@@ -64,13 +67,21 @@ class World(var _path:File){
     //! Collision maps
     var collisionMaps = new CollisionMap()
     
+    //! Collect collision info
+    var inputCollision:Boolean = false
+    
+    var collisionX:Int = 0
+    var collisionY:Int = 0
+    var collisionWidth:Int = 0
+    var collisionHeight:Int = 0
+    
     //! actions (updating animations)
     var actions:AnimationUpdater = null
     
     if (_path != null){
         load(_path)
     } else {
-        val tileset = new TileSet("Empty tileset")
+        val tileset = new TileSet("Empty tileset", width, height)
         tileset.isCurrent = true
         backgrounds.add(tileset)
     }
@@ -79,7 +90,7 @@ class World(var _path:File){
         g.scale(scale, scale)
         
         // Entire map
-        g.setColor( new Color( 230, 230, 250 ) )
+        g.setColor( fillColor )
         g.fillRect(offsetX, offsetY, this.width, this.height)
         
         // backgrounds
@@ -97,8 +108,13 @@ class World(var _path:File){
         // Collision maps
         collisionMaps.render(g, offsetX, offsetY)
         
+        if (inputCollision){
+            g.setColor(new Color(0, 255, 0))
+            g.drawRect(offsetX + collisionX, offsetY + collisionY, collisionWidth, collisionHeight)
+        }
+        
         // Viewport resolution
-        g.setColor( new Color( 0, 0, 255 ) )
+        g.setColor(new Color(0, 0, 255,40))
         g.drawRect(offsetX, offsetY, this.resolutionX, this.resolutionY)
     }
     
@@ -149,6 +165,11 @@ class World(var _path:File){
             }
         }
         
+        val colorToken = head.findToken("fill-color")
+        if (colorToken != null){
+            fillColor = new Color(colorToken.readInt(0), colorToken.readInt(1), colorToken.readInt(2))
+        }
+        
         val animationIterator = head.findTokens("animation").iterator()
         while(animationIterator.hasNext()){
             val animation = new Animation("Not assigned")
@@ -159,7 +180,7 @@ class World(var _path:File){
         val backgroundIterator = head.findTokens("background").iterator()
         while(backgroundIterator.hasNext()){
             try {
-                val tileset = new TileSet("Not assigned")
+                val tileset = new TileSet("Not assigned", width, height)
                 tileset.readToken(backgroundIterator.next(), animations)
                 backgrounds.add(tileset)
             } catch {
@@ -170,7 +191,7 @@ class World(var _path:File){
         val foregroundIterator = head.findTokens("foreground").iterator()
         while(foregroundIterator.hasNext()){
             try {
-                val tileset = new TileSet("Not assigned")
+                val tileset = new TileSet("Not assigned", width, height)
                 tileset.readToken(foregroundIterator.next(), animations)
                 foregrounds.add(tileset)
             } catch {
@@ -196,7 +217,7 @@ class World(var _path:File){
 
     def getSize():Dimension = {
         val dimension = new Dimension()
-        dimension.setSize((width * scale) + (offsetX*2), (height * scale) + (offsetY*2))
+        dimension.setSize((width * scale) + (offsetX * 2 * scale), (height * scale) + (offsetY * 2 * scale))
         dimension
     }
 
@@ -211,6 +232,24 @@ class World(var _path:File){
         mechanics.addToken(Array("gravity", String.valueOf(gravityX), String.valueOf(gravityY)))
         mechanics.addToken(Array("acceleration", String.valueOf(acceleration)))
         world.addToken(mechanics)
+        world.addToken(Array("fill-color", String.valueOf(fillColor.getRed()),String.valueOf(fillColor.getGreen()),String.valueOf(fillColor.getBlue())))
+        /*
+            FIXME 
+            Temporarily add a camera
+            need to create a camera construction tool
+        */
+        val camera = new Token()
+        camera.addToken(new Token(camera, "camera"))
+        camera.addToken(Array("id", "0"))
+        camera.addToken(Array("dimensions", String.valueOf(width), String.valueOf(height)))
+        camera.addToken(Array("start", "0", "0"))
+        camera.addToken(Array("viewport", "0", "0", String.valueOf(resolutionX), String.valueOf(resolutionY)))
+        camera.addToken(Array("speed", "1.5"))
+        camera.addToken(Array("velocity", ".5"))
+        camera.addToken(Array("follow-variance", "2"))
+        camera.addToken(Array("smooth-scrolling", "1"))
+        camera.addToken(Array("smooth-scroll-modifier", "0"))
+        world.addToken(camera)
         
         animations.getAll().foreach{
             case (animation) => world.addToken(animation.toToken())
@@ -228,6 +267,56 @@ class World(var _path:File){
         world.addToken(collisionMaps.toToken())
 
         world
+    }
+    
+    def leftClick(x:Int, y:Int) = {
+        if (inputCollision){
+            collisionX = x
+            collisionY = y
+        } else {
+            addTile(x,y)
+        }
+    }
+    
+    def leftRelease(x:Int, y:Int) = {
+        if (inputCollision){
+            val w= x - collisionX
+            val h = y - collisionY
+            if (w >= 0 && h >= 0){
+                addArea(collisionX, collisionY, w, h)
+            }
+            inputCollision = false
+            collisionX = 0
+            collisionY = 0
+            collisionWidth = 0
+            collisionHeight = 0
+        }
+    }
+    
+    def rightClick(x:Int, y:Int) = {
+        if (!inputCollision){
+            removeTile(x,y)
+        }
+    }
+    
+    def rightRelease(x:Int, y:Int) = {
+        if (inputCollision){
+        }
+    }
+    
+    def leftDrag(x:Int, y:Int) = {
+        if (!inputCollision){
+            addTile(x,y)
+        } else {
+            collisionWidth = x - collisionX
+            collisionHeight = y - collisionY
+        }
+    }
+    
+    def rightDrag(x:Int, y:Int) = {
+        if (!inputCollision){
+            removeTile(x,y)
+        }
     }
     
     def addTile(x:Int, y:Int) = {
@@ -251,6 +340,19 @@ class World(var _path:File){
             val column = if (x < 0) (x / tileset.tileWidth)-1 else x / tileset.tileWidth
             val row = if (y < 0) (y / tileset.tileHeight)-1 else y / tileset.tileHeight
             tileset.tiles.remove(column, row)
+        }
+    }
+    
+    def addArea(x:Int, y:Int, w:Int, h:Int){
+        val area = new Area("New collision map")
+        area.x = x
+        area.y = y
+        area.width = w
+        area.height = h
+        val areaName = JOptionPane.showInputDialog(null, "Set name of collision map", "New Collision Map", 1)
+        if (areaName != null){
+            area.name = areaName
+            collisionMaps.add(area)
         }
     }
     
@@ -414,6 +516,38 @@ class World(var _path:File){
             })
         }
         
+        // Fill color
+        {
+            val viewColor = new JPanel(){
+                override def getPreferredSize():Dimension = {
+                    new Dimension(25,25)
+                }
+
+                override def paintComponent(g:Graphics){
+                    g.setColor(fillColor)
+                    g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                }
+            }
+            val colorPanel = engine.find("fill-color-display").asInstanceOf[JPanel]
+            colorPanel.add(viewColor)
+            viewColor.revalidate()
+            colorPanel.repaint()
+            
+            val button = engine.find("fill-color").asInstanceOf[JButton]
+            button.addActionListener(new ActionListener() {
+                def actionPerformed(e:ActionEvent) = {
+                    val color = JColorChooser.showDialog(button, "Select a Fill Color", fillColor);
+                    if (color != null){
+                        fillColor = color
+                        view.revalidate()
+                        viewScroll.repaint()
+                        viewColor.revalidate()
+                        colorPanel.repaint()
+                    }
+                }
+            })
+        }
+        
         // Animations
         {
             val anims = engine.find("anims").asInstanceOf[JList[Animation]]
@@ -474,7 +608,7 @@ class World(var _path:File){
             val addBg = engine.find("add-bg-button").asInstanceOf[JButton]
             addBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
-                    val tileset = new TileSet("New Background TileSet")
+                    val tileset = new TileSet("New Background TileSet", width, height)
                     backgrounds.add(tileset)
                     tileset.editDialog(view, viewScroll, bgs, animations.getAll())
                 } 
@@ -534,7 +668,7 @@ class World(var _path:File){
             val addFg = engine.find("add-fg-button").asInstanceOf[JButton]
             addFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
-                    val tileset = new TileSet("New Foreground TileSet")
+                    val tileset = new TileSet("New Foreground TileSet", width, height)
                     foregrounds.add(tileset)
                     tileset.editDialog(view, viewScroll, fgs, animations.getAll())
                 } 
@@ -623,10 +757,17 @@ class World(var _path:File){
             
             collisions.setVisibleRowCount(4)
             
+            val grab = engine.find("grab-collision-button").asInstanceOf[JButton]
+            grab.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    inputCollision = true
+                } 
+            })
+            
             val add = engine.find("add-collision-button").asInstanceOf[JButton]
             add.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
-                    val area = new Area("New Area")
+                    val area = new Area("New collision map")
                     collisionMaps.add(area)
                     area.editDialog(view, viewScroll, collisions)
                 } 
@@ -659,9 +800,10 @@ class World(var _path:File){
     def connectScaleOffset(engine:SwingEngine, view:JPanel, viewScroll:JScrollPane){
         val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
         val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
+        scroll.setValue((scroll.getMaximum() * (scale/4.0)).toInt)
         scroll.addChangeListener( new ChangeListener(){
             override def stateChanged(event:ChangeEvent){
-                scale = scroll.getValue().toDouble * 2.0 / scroll.getMaximum()
+                scale = scroll.getValue().toDouble * 4.0 / scroll.getMaximum()
                 scaleLabel.setText("Scale: " + scale)
                 view.revalidate()
                 viewScroll.repaint()

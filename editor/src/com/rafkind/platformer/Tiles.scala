@@ -81,6 +81,7 @@ class Tile{
                 animationField.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
                         animation = animations(animationField.getSelectedIndex())
+                        list.updateUI()
                         list.revalidate()
                         list.repaint()
                         animationView.revalidate()
@@ -102,6 +103,7 @@ class Tile{
                         val spinner = event.getSource().asInstanceOf[JSpinner]
                         val i = spinner.getValue().asInstanceOf[java.lang.Integer]
                         row = i.intValue()
+                        list.updateUI()
                         list.revalidate()
                         list.repaint()
                     }
@@ -118,6 +120,7 @@ class Tile{
                         val spinner = event.getSource().asInstanceOf[JSpinner]
                         val i = spinner.getValue().asInstanceOf[java.lang.Integer]
                         column = i.intValue()
+                        list.updateUI()
                         list.revalidate()
                         list.repaint()
                     }
@@ -132,6 +135,7 @@ class Tile{
                         pane.setVisible(false)
                         view.revalidate()
                         viewScroll.repaint()
+                        list.updateUI()
                         list.revalidate()
                         list.repaint()
                     } 
@@ -213,12 +217,9 @@ class TileListModel extends ListModel[Tile] {
     }
 }
 
-class TileSet(var name:String){
+class TileSet(var name:String, var width:Int, var height:Int){
     var scrollX:Double = 0
     var scrollY:Double = 0
-    
-    var width:Int = 640
-    var height:Int = 480
     
     var tileWidth:Int = 16
     var tileHeight:Int = 16
@@ -226,6 +227,7 @@ class TileSet(var name:String){
     var tiles = new TileListModel()
     
     var renderGrid:Boolean = true
+    var gridColor:Color = new Color(255,255,255,30)
     
     var isCurrent:Boolean = false
     
@@ -235,7 +237,7 @@ class TileSet(var name:String){
             while (currentY < (height + y)){
                 var currentX = x
                 while (currentX < (width + x)){
-                    g.setColor( new Color( 255, 255, 255 ) )
+                    g.setColor(gridColor)
                     g.drawRect(currentX, currentY, tileWidth, tileHeight)
                     currentX += tileWidth
                 }
@@ -524,8 +526,52 @@ class TileSet(var name:String){
                             tiles.remove(tileList.getSelectedIndex())
                             view.revalidate()
                             viewScroll.repaint()
+                            list.updateUI()
+                            list.revalidate()
+                            list.repaint()
                         }
                     } 
+                })
+            }
+            
+            // Display grid?
+            {
+                val checkbox = engine.find("draw-grid").asInstanceOf[JCheckBox]
+                checkbox.setSelected(renderGrid)
+                checkbox.addActionListener(new ActionListener() {
+                    def actionPerformed(e:ActionEvent) = {
+                        renderGrid = checkbox.isSelected()
+                    }
+                })
+            }
+            
+            // Fill color
+            {
+                val viewColor = new JPanel(){
+                    override def getPreferredSize():Dimension = {
+                        new Dimension(25,25)
+                    }
+
+                    override def paintComponent(g:Graphics){
+                        g.setColor(gridColor)
+                        g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                    }
+                }
+                val colorPanel = engine.find("grid-color-display").asInstanceOf[JPanel]
+                colorPanel.add(viewColor)
+                
+                val button = engine.find("grid-color").asInstanceOf[JButton]
+                button.addActionListener(new ActionListener() {
+                    def actionPerformed(e:ActionEvent) = {
+                        val color = JColorChooser.showDialog(button, "Select a Fill Color", gridColor);
+                        if (color != null){
+                            gridColor = color
+                            view.revalidate()
+                            viewScroll.repaint()
+                            viewColor.revalidate()
+                            colorPanel.repaint()
+                        }
+                    }
                 })
             }
             
@@ -537,6 +583,7 @@ class TileSet(var name:String){
                         pane.setVisible(false)
                         view.revalidate()
                         viewScroll.repaint()
+                        list.updateUI()
                         list.revalidate()
                         list.repaint()
                     } 

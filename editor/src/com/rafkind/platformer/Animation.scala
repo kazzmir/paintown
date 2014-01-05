@@ -435,6 +435,7 @@ class Animation(var name:String){
             
             {
                 var dirField = engine.find("basedir").asInstanceOf[JTextField]
+                dirField.setEditable(false)
                 if (basedir != null){
                     dirField.setText(basedir.getPath())
                 }
@@ -559,6 +560,17 @@ class Animation(var name:String){
                     } 
                 })
                 
+                val loopButton = engine.find("loop-frame-button").asInstanceOf[JButton]
+                loopButton.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        if (frames.getSize() > 0 && frameList.getSelectedIndex() != -1){
+                            loop = frameList.getSelectedIndex()
+                            val loopField = engine.find("loop").asInstanceOf[JTextField]
+                            loopField.setText("Loop at frame (" + String.valueOf(loop) + ")")
+                        }
+                    } 
+                })
+                
                 val remove = engine.find("remove-frame-button").asInstanceOf[JButton]
                 remove.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
@@ -572,17 +584,9 @@ class Animation(var name:String){
             }
             
             {
-                val loopField = engine.find("loop").asInstanceOf[JSpinner]
-                val model = new SpinnerNumberModel()
-                loopField.setModel(model)
-                model.setValue(loop)
-                loopField.addChangeListener(new ChangeListener(){
-                    override def stateChanged(event:ChangeEvent){
-                        val spinner = event.getSource().asInstanceOf[JSpinner]
-                        val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                        loop = i.intValue()
-                    }
-                })
+                val loopField = engine.find("loop").asInstanceOf[JTextField]
+                loopField.setText("Loop at frame (" + String.valueOf(loop) + ")")
+                loopField.setEditable(false)
             }
             
             // Close

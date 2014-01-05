@@ -40,12 +40,13 @@
                     <button text="Edit" id="edit-frame-button" />
                     <button text="Up" id="up-frame-button" />
                     <button text="Down" id="down-frame-button" />
+                    <button text="Set Loop" id="loop-frame-button" />
                     <button text="Remove" id="remove-frame-button" />
                 </hbox>
             </vbox>
             <hbox>
                 <label text="Loop" />
-                <spinner bindWith="Loop" id="loop" />
+                <textfield bindWith="Loop" id="loop" />
                 <glue />
             </hbox>
         </vbox>

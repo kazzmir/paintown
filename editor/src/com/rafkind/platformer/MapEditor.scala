@@ -332,10 +332,10 @@ class Editor extends JFrame("Platformer Map Editor"){
                 //System.out.println("Dragging mouse through (" + x + "," + y + ")")
                 if ((event.getModifiersEx() & (leftMask | rightMask)) == leftMask){
                     // Left button
-                    world.addTile(x.intValue(), y.intValue())
+                    world.leftDrag(x.intValue(), y.intValue())
                 } else if ((event.getModifiersEx() & (leftMask | rightMask)) == rightMask){
                     // Right button
-                    world.removeTile(x.intValue(), y.intValue())
+                    world.rightDrag(x.intValue(), y.intValue())
                 }
             }
 
@@ -347,32 +347,15 @@ class Editor extends JFrame("Platformer Map Editor"){
                 event.getButton() == MouseEvent.BUTTON3
             }
 
-            def findFiles(dir:File, ending:String):List[File] = {
-                val all = dir.listFiles(new java.io.FileFilter(){
-                    override def accept(path:File):Boolean = {
-                        path.isDirectory() || path.getName().endsWith(ending)
-                    }
-                })
-                var files = List[File]()
-                for (file <- all){
-                    if (file.isDirectory() ){
-                        files = files ++ findFiles(file, ending)
-                    } else {
-                        files = files :+ file
-                    }
-                }
-                return files
-            }
-
             def mousePressed(event:MouseEvent){
                 val x = (event.getX() / world.scale) - world.offsetX
                 val y = (event.getY() / world.scale) - world.offsetY
                 if (leftClick(event)){
                     //System.out.println("Had left click at (" + x + "," + y + ")")
-                    world.addTile(x.intValue(), y.intValue())
+                    world.leftClick(x.intValue(), y.intValue())
                 } else if (rightClick(event)){
                     //System.out.println("Had right click at (" + x + "," + y + ")")
-                    world.removeTile(x.intValue(), y.intValue())
+                    world.rightClick(x.intValue(), y.intValue())
                 }
             }
 
@@ -387,6 +370,13 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
 
             def mouseReleased(event:MouseEvent){
+                val x = (event.getX() / world.scale) - world.offsetX
+                val y = (event.getY() / world.scale) - world.offsetY
+                if (leftClick(event)){
+                    world.leftRelease(x.intValue(), y.intValue())
+                } else if (rightClick(event)){
+                    world.rightRelease(x.intValue(), y.intValue())
+                }
                 viewScroll.repaint()
             }
         }

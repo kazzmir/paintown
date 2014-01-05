@@ -46,7 +46,7 @@
             <vbox>
                 <label text="Tiles" />
                 <hbox>
-                    <scrollpane>
+                    <scrollpane Size="450,450" minimumSize="150,150">
                         <list id="tiles" />
                     </scrollpane>
                 </hbox>
@@ -56,6 +56,18 @@
                     <button text="Remove" id="remove-tile-button" />
                 </hbox>
             </vbox>
+            
+            <hbox>
+                <label text="Draw Grid" />
+                <checkbox id="draw-grid" />
+                <glue />
+            </hbox>
+            
+            <hbox>
+                <button text="Grid Color" id="grid-color" />
+                <panel id="grid-color-display" />
+                <glue />
+            </hbox>
         </vbox>
     </panel>
 

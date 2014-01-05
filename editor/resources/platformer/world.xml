@@ -49,6 +49,13 @@
             </hbox>
         </vbox>
         <vbox>
+            <hbox>
+                <button text="Choose Fill Color" id="fill-color" />
+                <panel id="fill-color-display" />
+                <glue />
+            </hbox>
+        </vbox>
+        <vbox>
             <label text="Animations" />
             <hbox>
                 <scrollpane>
@@ -102,7 +109,7 @@
                 </scrollpane>
             </hbox>
             <hbox>
-                <label text="Collision Map Options" />
+                <button text="Grab Area" id="grab-collision-button" />
                 <button text="Add" id="add-collision-button" />
                 <button text="Edit" id="edit-collision-button" />
                 <button text="Remove" id="remove-collision-button" />
