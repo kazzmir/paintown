@@ -32,15 +32,25 @@ class Area(var name:String){
         if (!token.getName().equals("area")){
             throw new LoadException( "Starting token is not 'area'" )
         }
-        x = token.readInt(0)
-        y = token.readInt(1)
-        width = token.readInt(2)
-        height = token.readInt(3)
+        val nameToken = token.findToken("id")
+        if (nameToken != null){
+            name = nameToken.readString(0)
+        }
+        
+        val positionToken = token.findToken("position")
+        if (positionToken != null){
+            x = positionToken.readInt(0)
+            y = positionToken.readInt(1)
+            width = positionToken.readInt(2)
+            height = positionToken.readInt(3)
+        }
     }
     
     def toToken():Token = {
         val area = new Token()
-        area.addToken(new Token(area, "area " + String.valueOf(x) + " " + String.valueOf(y) + " " + String.valueOf(width) + " " + String.valueOf(height)))
+        area.addToken(new Token(area, "area "))
+        area.addToken(Array("id", name))
+        area.addToken(Array("position", String.valueOf(x), String.valueOf(y), String.valueOf(width), String.valueOf(height)))
         
         area
     }
