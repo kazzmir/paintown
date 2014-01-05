@@ -498,9 +498,13 @@ class TileSet(var name:String){
                 val add = engine.find("add-tile-button").asInstanceOf[JButton]
                 add.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        val tile = new Tile()
-                        tiles.add(tile)
-                        tile.editDialog(view, viewScroll, tileList, animations)
+                        if (animations.size != 0){
+                            val tile = new Tile()
+                            tiles.add(tile)
+                            tile.editDialog(view, viewScroll, tileList, animations)
+                        } else {
+                            JOptionPane.showMessageDialog(pane, "Please add some animations first.")
+                        }
                     } 
                 })
                 

@@ -441,20 +441,24 @@ class Animation(var name:String){
                 val dir = engine.find("basedir-button").asInstanceOf[JButton]
                 dir.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        val chooser = new JFileChooser(MapEditor.getDataPath("/"))
-                        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
-                        val returnVal = chooser.showOpenDialog(pane)
-                        if (returnVal == JFileChooser.APPROVE_OPTION){
-                          val choosen:File = chooser.getSelectedFile()
-                          // Doesn't work scala complains
-                          /*val base:URI = URI.create(MapEditor.getDataPath(".").getPath())
-                          val abs:URI = URI.create(choosen.getPath())
-                          basedir = base.relativize(abs)*/
-                          val base = MapEditor.getDataPath("/").getPath()
-                          val absolute = choosen.getPath()
-                          val relative = absolute.replace(base,"")
-                          basedir = new File(relative)
-                          dirField.setText(basedir.getPath())
+                        if (MapEditor.getDataPath("/").isDirectory()){
+                            val chooser = new JFileChooser(MapEditor.getDataPath("/"))
+                            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
+                            val returnVal = chooser.showOpenDialog(pane)
+                            if (returnVal == JFileChooser.APPROVE_OPTION){
+                            val choosen:File = chooser.getSelectedFile()
+                            // Doesn't work scala complains
+                            /*val base:URI = URI.create(MapEditor.getDataPath(".").getPath())
+                            val abs:URI = URI.create(choosen.getPath())
+                            basedir = base.relativize(abs)*/
+                            val base = MapEditor.getDataPath("/").getPath()
+                            val absolute = choosen.getPath()
+                            val relative = absolute.replace(base,"")
+                            basedir = new File(relative)
+                            dirField.setText(basedir.getPath())
+                            }
+                        } else {
+                            JOptionPane.showMessageDialog(pane, "Please set the data directory in the menu.")
                         }
                     } 
                 })
@@ -468,7 +472,7 @@ class Animation(var name:String){
                 val add = engine.find("add-image-button").asInstanceOf[JButton]
                 add.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        if (basedir != null){
+                        if (basedir != null && MapEditor.getDataPath(basedir.getPath()).isDirectory()){
                             val chooser = new JFileChooser(MapEditor.getDataPath(basedir.getPath()))
                             chooser.setFileFilter(new FileFilter(){
                                 def accept(f:File):Boolean = {
@@ -510,9 +514,13 @@ class Animation(var name:String){
                 val add = engine.find("add-frame-button").asInstanceOf[JButton]
                 add.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        val frame = new Frame()
-                        frames.add(frame)
-                        frame.editDialog(view, viewScroll, frameList, images.getAll())
+                        if (images.getSize() != 0){
+                            val frame = new Frame()
+                            frames.add(frame)
+                            frame.editDialog(view, viewScroll, frameList, images.getAll())
+                        } else {
+                            JOptionPane.showMessageDialog(pane, "Please add some images first.")
+                        }
                     } 
                 })
                 
