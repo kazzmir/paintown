@@ -34,6 +34,7 @@
                 -->
                 <pathelement path="${scala-library.jar}" />
 		       	<pathelement path="lib/jdom.jar" />
+                <pathelement path="lib/jgoodies-forms-1.7.1.jar" />
 		       </classpath>
 	       </javac>
     </target>
@@ -44,6 +45,7 @@
 
 	<target name="jar" depends="compile">
 		<unjar src="lib/jdom.jar" dest="classes" />
+		<unjar src="lib/jgoodies-forms-1.7.1.jar" dest="classes" />
         <unjar src="${scala-library.jar}" dest="classes" />
         <!--
 		<unjar src="lib/substance.jar" dest="classes" />

@@ -11,7 +11,7 @@
             anchor="GridBagConstraints.NORTHWEST"
             />
         <panel layout="GridBagLayout" id="properties-pane">
-            <scrollpane layout="GridBagLayout">
+            <scrollpane>
                 <gridbagconstraints
                     gridx="0"
                     gridy="0"
