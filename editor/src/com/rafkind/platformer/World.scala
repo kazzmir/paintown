@@ -16,16 +16,73 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animations:AnimationListModel) extends ActionListener {
-    var timer = new Timer(25, this)
-    timer.start()
+class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animations:AnimationListModel) extends Thread {
+    var fps = 60
+    var frameCount = 0
     
-    def actionPerformed(e:ActionEvent) = {
+    override def run() = {
+        val GAME_HERTZ:Double = 30.0
+        val TIME_BETWEEN_UPDATES:Double = 1000000000 / GAME_HERTZ
+        val MAX_UPDATES_BEFORE_RENDER = 5
+        val TARGET_FPS:Double = 60
+        val TARGET_TIME_BETWEEN_RENDERS:Double = 1000000000 / TARGET_FPS
+        
+        var lastUpdateTime:Double = System.nanoTime()
+        var lastRenderTime:Double = System.nanoTime()
+    
+        //Simple way of finding FPS.
+        var lastSecondTime = (lastUpdateTime / 1000000000).intValue
+    
+        while (true){
+            var now:Double = System.nanoTime()
+            var updateCount = 0
+            
+            while( now - lastUpdateTime > TIME_BETWEEN_UPDATES && updateCount < MAX_UPDATES_BEFORE_RENDER ){
+                update()
+                lastUpdateTime = lastUpdateTime + TIME_BETWEEN_UPDATES
+                updateCount = updateCount + 1
+            }
+
+            if ( now - lastUpdateTime > TIME_BETWEEN_UPDATES){
+                lastUpdateTime = now - TIME_BETWEEN_UPDATES
+            }
+            
+            //Render. 
+            draw()
+            lastRenderTime = now
+            
+            //Update the frames we got.
+            var thisSecond = (lastUpdateTime / 1000000000).intValue
+            if (thisSecond > lastSecondTime){
+                System.out.println("NEW SECOND " + thisSecond + " " + frameCount)
+                fps = frameCount
+                frameCount = 0
+                lastSecondTime = thisSecond
+            }
+    
+            //Yield until it has been at least the target time between renders. This saves the CPU from hogging.
+            while ( now - lastRenderTime < TARGET_TIME_BETWEEN_RENDERS && now - lastUpdateTime < TIME_BETWEEN_UPDATES){
+                Thread.`yield`
+                try {
+                    Thread.sleep(1)
+                } catch {
+                    case ex:Exception => {} 
+                }
+                now = System.nanoTime()
+            }
+        }
+    }
+    
+    def update() = {
         animations.getAll().foreach{
             case (animation) => animation.update()
         }
+    }
+    
+    def draw() = {
         view.revalidate()
         viewScroll.repaint()
+        frameCount = frameCount + 1
     }
 }
 
@@ -119,15 +176,15 @@ class World(var _path:File){
     }
     
     def addAnimation(animation:Animation) = {
-        if (actions != null){
+        /*if (actions != null){
             actions.timer.stop()
-        }
+        }*/
         
         animations.add(animation)
         
-        if (actions != null){
+        /*if (actions != null){
             actions.timer.start()
-        }
+        }*/
     }
 
     def load(f:File) = {
@@ -839,7 +896,12 @@ class World(var _path:File){
         })
     }
     
-    def createUpdateTimer(view:JPanel, viewScroll:JScrollPane) = {
+    def start(view:JPanel, viewScroll:JScrollPane) = {
         actions = new AnimationUpdater(view, viewScroll, animations)
+        actions.start()
+    }
+    
+    def stop() = {
+        actions.stop()
     }
 }

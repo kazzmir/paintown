@@ -242,8 +242,10 @@ class Editor extends JFrame("Platformer Map Editor"){
         closeWorld.addActionListener( new AbstractAction(){
           override def actionPerformed(event:ActionEvent){
             if ( tabbed.getSelectedComponent() != null ){
-              worlds.remove(tabbed.getSelectedComponent())
-              tabbed.remove(tabbed.getSelectedComponent())
+                var world = worlds.get(tabbed.getSelectedComponent)
+                world.stop()
+                worlds.remove(tabbed.getSelectedComponent())
+                tabbed.remove(tabbed.getSelectedComponent())
             }
           }
         })
@@ -412,7 +414,7 @@ class Editor extends JFrame("Platformer Map Editor"){
         
         world.connectScaleOffset(engine, view, viewScroll)
         
-        world.createUpdateTimer(view, viewScroll)
+        world.start(view, viewScroll)
         
         val split = engine.getRootComponent().asInstanceOf[JSplitPane]
         split.setContinuousLayout(true)
