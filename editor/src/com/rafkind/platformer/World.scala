@@ -19,6 +19,7 @@ import com.rafkind.paintown.MaskedImage
 class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animations:AnimationListModel) extends Thread {
     var fps = 60
     var frameCount = 0
+    var done = false
     
     override def run() = {
         val GAME_HERTZ:Double = 30.0
@@ -33,7 +34,7 @@ class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animatio
         //Simple way of finding FPS.
         var lastSecondTime = (lastUpdateTime / 1000000000).intValue
     
-        while (true){
+        while (!done){
             var now:Double = System.nanoTime()
             var updateCount = 0
             
@@ -54,7 +55,7 @@ class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animatio
             //Update the frames we got.
             var thisSecond = (lastUpdateTime / 1000000000).intValue
             if (thisSecond > lastSecondTime){
-                System.out.println("NEW SECOND " + thisSecond + " " + frameCount)
+                //System.out.println("NEW SECOND " + thisSecond + " " + frameCount)
                 fps = frameCount
                 frameCount = 0
                 lastSecondTime = thisSecond
@@ -83,6 +84,12 @@ class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animatio
         view.revalidate()
         viewScroll.repaint()
         frameCount = frameCount + 1
+    }
+    
+    def terminate() = {
+        this.synchronized{
+            done = true
+        }
     }
 }
 
@@ -135,6 +142,12 @@ class World(var _path:File){
     //! actions (updating animations)
     var actions:AnimationUpdater = null
     
+    //! Enable animations
+    var enableAnimations:Boolean = true
+    
+    //! show fps
+    var displayFps:Boolean = false
+    
     if (_path != null){
         load(_path)
     } else {
@@ -143,7 +156,7 @@ class World(var _path:File){
         backgrounds.add(tileset)
     }
     
-    def render(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
+    def render(g:Graphics2D, x:Int, y:Int) = {
         g.scale(scale, scale)
         
         // Entire map
@@ -173,18 +186,17 @@ class World(var _path:File){
         // Viewport resolution
         g.setColor(new Color(0, 0, 255,40))
         g.drawRect(offsetX, offsetY, this.resolutionX, this.resolutionY)
+        
+        // FPS
+        if (displayFps){
+            g.setColor(new Color(0,128, 0))
+            g.setFont(new Font("Arial", 10,10))
+            g.drawString("FPS: " + actions.fps, (x/scale).intValue + 10, (y/scale).intValue + 10)
+        }
     }
     
     def addAnimation(animation:Animation) = {
-        /*if (actions != null){
-            actions.timer.stop()
-        }*/
-        
         animations.add(animation)
-        
-        /*if (actions != null){
-            actions.timer.start()
-        }*/
     }
 
     def load(f:File) = {
@@ -854,7 +866,7 @@ class World(var _path:File){
         pane
     }
     
-    def connectScaleOffset(engine:SwingEngine, view:JPanel, viewScroll:JScrollPane){
+    def connectOtherValues(engine:SwingEngine, view:JPanel, viewScroll:JScrollPane){
         val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
         val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
         scroll.setValue((scroll.getMaximum() * (scale/4.0)).toInt)
@@ -894,6 +906,35 @@ class World(var _path:File){
                 viewScroll.repaint()
             }
         })
+        
+        val fps = engine.find("display-fps").asInstanceOf[JCheckBox]
+        fps.setSelected(displayFps)
+        fps.addActionListener(new ActionListener() { 
+            def actionPerformed(e:ActionEvent) = {
+                displayFps = fps.isSelected()
+            } 
+        })
+        
+        val anims = engine.find("enable-animations").asInstanceOf[JCheckBox]
+        anims.setSelected(enableAnimations)
+        anims.addActionListener(new ActionListener() { 
+            def actionPerformed(e:ActionEvent) = {
+                enableAnimations = anims.isSelected()
+                if (enableAnimations){
+                    if (!fps.isEnabled()){
+                        fps.setEnabled(true)
+                    }
+                    if (actions == null){
+                        start(view, viewScroll)
+                    }
+                } else {
+                    displayFps = false
+                    fps.setEnabled(false)
+                    fps.setSelected(false)
+                    stop()
+                }
+            } 
+        })
     }
     
     def start(view:JPanel, viewScroll:JScrollPane) = {
@@ -902,6 +943,7 @@ class World(var _path:File){
     }
     
     def stop() = {
-        actions.stop()
+        actions.terminate()
+        actions = null
     }
 }

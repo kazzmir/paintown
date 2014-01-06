@@ -301,12 +301,13 @@ class Editor extends JFrame("Platformer Map Editor"){
             }
 
             override def paintComponent(g:Graphics){
-                val h = viewScroll.getHorizontalScrollBar()
-                val v = viewScroll.getVerticalScrollBar()
+                /*val h = viewScroll.getHorizontalScrollBar()
+                val v = viewScroll.getVerticalScrollBar()*/
+                val x = viewScroll.getViewport().getViewPosition().x
+                val y = viewScroll.getViewport().getViewPosition().y
                 g.setColor(new Color(64, 64, 64))
                 g.fillRect(0, 0, this.getWidth(), this.getHeight())
-                //g.clearRect(0, v.getVisibleAmount().toInt + 1, world.getWidth().toInt, world.getHeight().toInt)
-                world.render(g.asInstanceOf[Graphics2D], h.getValue(), 0, h.getVisibleAmount(), v.getVisibleAmount())
+                world.render(g.asInstanceOf[Graphics2D], x, y)
             }
         }
 
@@ -412,7 +413,7 @@ class Editor extends JFrame("Platformer Map Editor"){
         val screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight()
         values.setPreferredSize(new Dimension(200, (screenHeight - (screenHeight * .2)).intValue()))
         
-        world.connectScaleOffset(engine, view, viewScroll)
+        world.connectOtherValues(engine, view, viewScroll)
         
         world.start(view, viewScroll)
         

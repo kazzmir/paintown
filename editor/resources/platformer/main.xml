@@ -30,8 +30,6 @@
                 <slider id="scale" minimum="1" maximum="20" />
                 <glue />
             </hbox>
-        </vbox>
-        <vbox border="MatteBorder(2,2,2,2,667A63)">
             <hbox>
                 <glue size="1" />
                 <label text="Offset X" />
@@ -42,6 +40,18 @@
                 <glue size="1" />
                 <label text="Offset Y" />
                 <spinner id="offset-y" />
+                <glue />
+            </hbox>
+            <hbox>
+                <glue size="1" />
+                <label text="Enable Animations" />
+                <checkbox id="enable-animations" />
+                <glue />
+            </hbox>
+            <hbox>
+                <glue size="1" />
+                <label text="Display FPS" />
+                <checkbox id="display-fps" />
                 <glue />
             </hbox>
         </vbox>
