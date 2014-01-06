@@ -190,8 +190,9 @@ class World(var _path:File){
         // FPS
         if (displayFps){
             g.setColor(new Color(0,128, 0))
-            g.setFont(new Font("Arial", 10,10))
-            g.drawString("FPS: " + actions.fps, (x/scale).intValue + 10, (y/scale).intValue + 10)
+            val placement = 5 * (5/scale).intValue
+            g.setFont(new Font("Arial", placement, placement))
+            g.drawString("FPS: " + actions.fps, (x/scale).intValue + placement, (y/scale).intValue + placement)
         }
     }
     
@@ -943,7 +944,9 @@ class World(var _path:File){
     }
     
     def stop() = {
-        actions.terminate()
-        actions = null
+        if (actions != null){
+            actions.terminate()
+            actions = null
+        }
     }
 }
