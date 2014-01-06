@@ -19,15 +19,24 @@ import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
 class ImageHolder(val basedir:File, val file:File){
-    val image:Image = loadImage()
+
+    def this() = this(null,null)
     
-    def render(g:Graphics2D, x:Int, y:Int) = {
-        g.drawImage(image, x, y, null)
+    var image:Image = null
+    if (basedir != null && file != null){
+        image = loadImage()
     }
     
-    def renderScaled(g:Graphics2D, x:Int, y:Int) = {
-        g.scale(2,2)
-        render(g,x,y)
+    def render(g:Graphics2D, x:Int, y:Int) = {
+        if (image != null){
+            g.drawImage(image, x, y, null)
+        }
+    }
+    
+    def renderScaled(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
+        if (image != null){
+            g.drawImage(image.getScaledInstance(width,height,Image.SCALE_SMOOTH), x, y, null)
+        }
     }
     
     def loadImage():Image = {
@@ -40,7 +49,10 @@ class ImageHolder(val basedir:File, val file:File){
     }
     
     override def toString():String = {
-        file.getPath()
+        if (file != null){
+            return file.getPath()
+        }
+        "None"
     }
 }
 
@@ -143,12 +155,15 @@ class Frame{
             
             {
                 val imageField = engine.find("image").asInstanceOf[JComboBox[ImageHolder]]
-                imageField.setModel(new DefaultComboBoxModel(images.toArray))
+                val imageArray = images.toArray :+ new ImageHolder()
+                imageField.setModel(new DefaultComboBoxModel(imageArray))
                 
-                val imageScroll = engine.find("image-view").asInstanceOf[JScrollPane]
+                imageField.setSelectedIndex(image)
+                
+                val imagePanel = engine.find("image-view").asInstanceOf[JPanel]
                 val imageView = new JPanel(){
                     override def getPreferredSize():Dimension = {
-                        new Dimension(250, 250)
+                        new Dimension(150, 150)
                     }
 
                     override def paintComponent(g:Graphics){
@@ -156,16 +171,21 @@ class Frame{
                         val v = viewScroll.getVerticalScrollBar()
                         g.setColor(new Color(64, 64, 64))
                         g.fillRect(0, 0, this.getWidth(), this.getHeight())
-                        if (imageField.getSelectedIndex() != -1){
-                            var image = images(imageField.getSelectedIndex())
-                            image.renderScaled(g.asInstanceOf[Graphics2D], 0, 0)
+                        if (image != -1){
+                            var img = images(image)
+                            img.renderScaled(g.asInstanceOf[Graphics2D], 50, 50, 49, 49)
                         }
                     }
                 }
                 
                 imageField.addActionListener(new ActionListener() { 
                     def actionPerformed(e:ActionEvent) = {
-                        image = imageField.getSelectedIndex()
+                        val index = imageField.getSelectedIndex()
+                        if (imageArray(index).toString() == "None"){
+                            image = -1
+                        } else {
+                            image = index
+                        }
                         list.revalidate()
                         list.repaint()
                         imageView.revalidate()
@@ -173,7 +193,7 @@ class Frame{
                     } 
                 })
                 
-                imageScroll.setViewportView(imageView)
+                imagePanel.add(imageView)
                 imageView.revalidate()
             }
             
@@ -330,6 +350,15 @@ class Animation(var name:String){
             var frame = frames.getElementAt(index)
             if (frame.image != -1){
                 images.getElementAt(frame.image).render(g, x, y)
+            }
+        }
+    }
+    
+    def renderScaled(g:Graphics2D, x:Int, y:Int, width:Int, height:Int) = {
+        if (frames.getSize() > 0){
+            var frame = frames.getElementAt(index)
+            if (frame.image != -1){
+                images.getElementAt(frame.image).renderScaled(g, x, y, width, height)
             }
         }
     }

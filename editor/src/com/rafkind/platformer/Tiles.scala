@@ -60,10 +60,17 @@ class Tile{
                 val animationField = engine.find("animation").asInstanceOf[JComboBox[Animation]]
                 animationField.setModel(new DefaultComboBoxModel(animations.toArray))
                 
-                val animationScroll = engine.find("animation-view").asInstanceOf[JScrollPane]
+                if (animation != null){
+                    animationField.setSelectedIndex(animations.indexOf(animation))
+                } else {
+                    animationField.setSelectedIndex(0)
+                    animation = animations(0)
+                }
+                
+                val animationScroll = engine.find("animation-view").asInstanceOf[JPanel]
                 val animationView = new JPanel(){
                     override def getPreferredSize():Dimension = {
-                        new Dimension(250, 250)
+                        new Dimension(150, 150)
                     }
 
                     override def paintComponent(g:Graphics){
@@ -73,7 +80,7 @@ class Tile{
                         g.fillRect(0, 0, this.getWidth(), this.getHeight())
                         if (animationField.getSelectedIndex() != -1){
                             var animation = animations(animationField.getSelectedIndex())
-                            animation.render(g.asInstanceOf[Graphics2D], 0, 0)
+                            animation.renderScaled(g.asInstanceOf[Graphics2D], 50, 50, 49, 49)
                         }
                     }
                 }
@@ -89,7 +96,7 @@ class Tile{
                     } 
                 })
                 
-                animationScroll.setViewportView(animationView)
+                animationScroll.add(animationView)
                 animationView.revalidate()
             }
             
@@ -106,6 +113,8 @@ class Tile{
                         list.updateUI()
                         list.revalidate()
                         list.repaint()
+                        view.revalidate()
+                        viewScroll.repaint()
                     }
                 })
             }
@@ -123,6 +132,8 @@ class Tile{
                         list.updateUI()
                         list.revalidate()
                         list.repaint()
+                        view.revalidate()
+                        viewScroll.repaint()
                     }
                 })
             }
@@ -541,6 +552,8 @@ class TileSet(var name:String, var width:Int, var height:Int){
                 checkbox.addActionListener(new ActionListener() {
                     def actionPerformed(e:ActionEvent) = {
                         renderGrid = checkbox.isSelected()
+                        view.revalidate()
+                        viewScroll.repaint()
                     }
                 })
             }
@@ -555,6 +568,8 @@ class TileSet(var name:String, var width:Int, var height:Int){
                     override def paintComponent(g:Graphics){
                         g.setColor(gridColor)
                         g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                        g.setColor(Color.BLACK)
+                        g.drawRect(0,0,this.getWidth()-1,this.getHeight()-1)
                     }
                 }
                 val colorPanel = engine.find("grid-color-display").asInstanceOf[JPanel]

@@ -413,10 +413,6 @@ class Editor extends JFrame("Platformer Map Editor"){
         val screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight()
         values.setPreferredSize(new Dimension(200, (screenHeight - (screenHeight * .2)).intValue()))
         
-        world.connectOtherValues(engine, view, viewScroll)
-        
-        world.start(view, viewScroll)
-        
         val split = engine.getRootComponent().asInstanceOf[JSplitPane]
         split.setContinuousLayout(true)
         split.setDividerLocation(0.8)

@@ -63,7 +63,7 @@ class AnimationUpdater(val view:JPanel, val viewScroll:JScrollPane, val animatio
     
             //Yield until it has been at least the target time between renders. This saves the CPU from hogging.
             while ( now - lastRenderTime < TARGET_TIME_BETWEEN_RENDERS && now - lastUpdateTime < TIME_BETWEEN_UPDATES){
-                Thread.`yield`
+                Thread.`yield`()
                 try {
                     Thread.sleep(1)
                 } catch {
@@ -143,7 +143,7 @@ class World(var _path:File){
     var actions:AnimationUpdater = null
     
     //! Enable animations
-    var enableAnimations:Boolean = true
+    var enableAnimations:Boolean = false
     
     //! show fps
     var displayFps:Boolean = false
@@ -596,6 +596,8 @@ class World(var _path:File){
                 override def paintComponent(g:Graphics){
                     g.setColor(fillColor)
                     g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                    g.setColor(Color.BLACK)
+                    g.drawRect(0,0,this.getWidth()-1,this.getHeight()-1)
                 }
             }
             val colorPanel = engine.find("fill-color-display").asInstanceOf[JPanel]
@@ -864,78 +866,86 @@ class World(var _path:File){
             })
         }
         
-        pane
-    }
-    
-    def connectOtherValues(engine:SwingEngine, view:JPanel, viewScroll:JScrollPane){
-        val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
-        val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
-        scroll.setValue((scroll.getMaximum() * (scale/4.0)).toInt)
-        scroll.addChangeListener( new ChangeListener(){
-            override def stateChanged(event:ChangeEvent){
-                scale = scroll.getValue().toDouble * 4.0 / scroll.getMaximum()
-                scaleLabel.setText("Scale: " + scale)
-                view.revalidate()
-                viewScroll.repaint()
-            }
-        })
-        
-        var offset = engine.find("offset-x").asInstanceOf[JSpinner]
-        var model = new SpinnerNumberModel()
-        model.setValue(offsetX)
-        offset.setModel(model)
-        offset.addChangeListener(new ChangeListener(){
-            override def stateChanged(event:ChangeEvent){
-                val spinner = event.getSource().asInstanceOf[JSpinner]
-                val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                offsetX = i.intValue()
-                view.revalidate()
-                viewScroll.repaint()
-            }
-        })
-        
-        offset = engine.find("offset-y").asInstanceOf[JSpinner]
-        model = new SpinnerNumberModel()
-        model.setValue(offsetY)
-        offset.setModel(model)
-        offset.addChangeListener(new ChangeListener(){
-            override def stateChanged(event:ChangeEvent){
-                val spinner = event.getSource().asInstanceOf[JSpinner]
-                val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                offsetY = i.intValue()
-                view.revalidate()
-                viewScroll.repaint()
-            }
-        })
-        
-        val fps = engine.find("display-fps").asInstanceOf[JCheckBox]
-        fps.setSelected(displayFps)
-        fps.addActionListener(new ActionListener() { 
-            def actionPerformed(e:ActionEvent) = {
-                displayFps = fps.isSelected()
-            } 
-        })
-        
-        val anims = engine.find("enable-animations").asInstanceOf[JCheckBox]
-        anims.setSelected(enableAnimations)
-        anims.addActionListener(new ActionListener() { 
-            def actionPerformed(e:ActionEvent) = {
-                enableAnimations = anims.isSelected()
-                if (enableAnimations){
-                    if (!fps.isEnabled()){
-                        fps.setEnabled(true)
-                    }
-                    if (actions == null){
-                        start(view, viewScroll)
-                    }
-                } else {
-                    displayFps = false
-                    fps.setEnabled(false)
-                    fps.setSelected(false)
-                    stop()
+        // Scroll
+        {
+            val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
+            val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
+            scroll.setValue((scroll.getMaximum() * (scale/4.0)).toInt)
+            scroll.addChangeListener( new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    scale = scroll.getValue().toDouble * 4.0 / scroll.getMaximum()
+                    scaleLabel.setText("Scale: " + scale)
+                    view.revalidate()
+                    viewScroll.repaint()
                 }
-            } 
-        })
+            })
+        }
+        
+        // offsets
+        {
+            var offset = engine.find("offset-x").asInstanceOf[JSpinner]
+            var model = new SpinnerNumberModel()
+            model.setValue(offsetX)
+            offset.setModel(model)
+            offset.addChangeListener(new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    val spinner = event.getSource().asInstanceOf[JSpinner]
+                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                    offsetX = i.intValue()
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+            
+            offset = engine.find("offset-y").asInstanceOf[JSpinner]
+            model = new SpinnerNumberModel()
+            model.setValue(offsetY)
+            offset.setModel(model)
+            offset.addChangeListener(new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    val spinner = event.getSource().asInstanceOf[JSpinner]
+                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                    offsetY = i.intValue()
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+        }
+        
+        // fps
+        {
+            val fps = engine.find("display-fps").asInstanceOf[JCheckBox]
+            fps.setSelected(displayFps)
+            fps.setEnabled(false)
+            fps.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    displayFps = fps.isSelected()
+                } 
+            })
+            
+            val anims = engine.find("enable-animations").asInstanceOf[JCheckBox]
+            anims.setSelected(enableAnimations)
+            anims.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    enableAnimations = anims.isSelected()
+                    if (enableAnimations){
+                        if (!fps.isEnabled()){
+                            fps.setEnabled(true)
+                        }
+                        if (actions == null){
+                            start(view, viewScroll)
+                        }
+                    } else {
+                        displayFps = false
+                        fps.setEnabled(false)
+                        fps.setSelected(false)
+                        stop()
+                    }
+                } 
+            })
+        }
+        
+        pane
     }
     
     def start(view:JPanel, viewScroll:JScrollPane) = {

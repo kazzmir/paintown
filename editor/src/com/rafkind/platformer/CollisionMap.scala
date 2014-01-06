@@ -166,6 +166,8 @@ class Area(var name:String){
                     override def paintComponent(g:Graphics){
                         g.setColor(color)
                         g.fillRect(0, 0, this.getWidth(), this.getHeight())
+                        g.setColor(Color.BLACK)
+                        g.drawRect(0,0,this.getWidth()-1,this.getHeight()-1)
                     }
                 }
                 val colorPanel = engine.find("color-display").asInstanceOf[JPanel]

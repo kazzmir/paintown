@@ -5,25 +5,21 @@
 <vbox>
     <panel layout="GridBagLayout">
         <vbox>
-            <vbox>
-                <label text="Animation" />
+            <vbox border="TitledBorder(LineBorder(black,2),Selected Animation,TitledBorder.CENTER, TitledBorder.TOP)">
                 <hbox>
-                    <scrollpane minimumSize="250,250" maximumSize="250,250" id="animation-view" />
+                    <panel id="animation-view" />
                 </hbox>
                 <hbox>
                     <combobox id="animation" />
-                    <glue />
                 </hbox>
             </vbox>
-            <hbox>
-                <label text="Row" />
-                <spinner id="row" />
-                <glue />
-            </hbox>
-            <hbox>
-                <label text="Column" />
-                <spinner id="column" />
-                <glue />
+            <hbox border="TitledBorder(LineBorder(black,2),Placement,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox border="TitledBorder(LineBorder(gray,1),Row,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="row" />
+                </vbox>
+                <vbox border="TitledBorder(LineBorder(gray,1),Column,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="column" />
+                </vbox>
             </hbox>
         </vbox>
     </panel>

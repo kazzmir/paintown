@@ -1,23 +1,25 @@
 <?xml version="1.0" ?>
 
-<dialog Size="500,500" resizable="false" title="Animation Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+<dialog Size="500,600" resizable="false" title="Animation Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
 
 <vbox>
     <panel layout="GridBagLayout">
         <vbox>
-            <hbox>
-                <label text="Name" />
-                <textfield bindWith="Name" id="name" />
-                <glue />
+            <hbox border="TitledBorder(LineBorder(black,2),Name,TitledBorder.CENTER, TitledBorder.TOP)">
+                <textfield id="name" />
             </hbox>
-            <hbox>
-                <label text="Base Directory" />
-                <textfield id="basedir" />
-                <button text="Choose" id="basedir-button" />
-                <glue />
+            <hbox border="TitledBorder(LineBorder(black,2),Base Directory,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox>
+                    <hbox>
+                        <button text="Choose" id="basedir-button" />
+                        <label text="    Directory that is selected:              " />
+                    </hbox>
+                    <hbox>
+                        <textfield id="basedir" />
+                    </hbox>
+                </vbox>
             </hbox>
-            <vbox>
-                <label text="Images" />
+            <vbox border="TitledBorder(LineBorder(black,2),Images,TitledBorder.CENTER, TitledBorder.TOP)">
                 <hbox>
                     <scrollpane minimumSize="150,150">
                         <list id="images" />
@@ -28,8 +30,7 @@
                     <button text="Remove" id="remove-image-button" />
                 </hbox>
             </vbox>
-            <vbox>
-                <label text="Frames" />
+            <vbox border="TitledBorder(LineBorder(black,2),Frames,TitledBorder.CENTER, TitledBorder.TOP)">
                 <hbox>
                     <scrollpane minimumSize="150,150">
                         <list id="frames" />
@@ -44,10 +45,8 @@
                     <button text="Remove" id="remove-frame-button" />
                 </hbox>
             </vbox>
-            <hbox>
-                <label text="Loop" />
-                <textfield bindWith="Loop" id="loop" />
-                <glue />
+            <hbox border="TitledBorder(LineBorder(black,2),Loop Point,TitledBorder.CENTER, TitledBorder.TOP)">
+                <textfield id="loop" />
             </hbox>
         </vbox>
     </panel>

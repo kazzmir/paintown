@@ -9,54 +9,67 @@
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"
         />
-        <hbox>
-            <label text="World Name" />
-            <textfield id="name" />
-        </hbox>
-        <hbox>
-            <label text="Resolution X" />
-            <spinner id="resolution-x" />
-            <glue />
-        </hbox>
-        <hbox>
-            <label text="Resolution Y" />
-            <spinner id="resolution-y" />
-            <glue />
-        </hbox>
-        <hbox>
-            <label text="World Width" />
-            <spinner id="dimensions-x" />
-            <glue />
-        </hbox>
-        <hbox>
-            <label text="World Height" />
-            <spinner id="dimensions-y" />
-            <glue />
-        </hbox>
-        <vbox>
-            <label text="Mechanics" />
+        <vbox border="TitledBorder(LineBorder(black,2),World,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
-                <label text="Gravity X" />
-                <spinner id="gravity-x" />
+                <label text="Name: " />
+                <textfield id="name" />
+                <glue />
             </hbox>
             <hbox>
-                <label text="Gravity Y" />
-                <spinner id="gravity-y" />
+                <label text="Dimensions X: " />
+                <spinner id="dimensions-x" />
+                <label text="   Y: " />
+                <spinner id="dimensions-y" />
+                <glue />
             </hbox>
             <hbox>
-                <label text="Acceleration" />
-                <spinner id="acceleration" />
-            </hbox>
-        </vbox>
-        <vbox>
-            <hbox>
-                <button text="Choose Fill Color" id="fill-color" />
+                <label text="Background fill color: " />
+                <button text="Choose" id="fill-color" />
                 <panel id="fill-color-display" />
                 <glue />
             </hbox>
+            <hbox>
+                <label text="Scale: 2.0" id="scale-label" />
+                <slider id="scale" minimum="1" maximum="20" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Offset X: " />
+                <spinner id="offset-x" />
+                <label text="   Y: " />
+                <spinner id="offset-y" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Enable Animations: " />
+                <checkbox id="enable-animations" />
+                <label text="Display FPS: " />
+                <checkbox id="display-fps" />
+                <glue />
+            </hbox>
         </vbox>
-        <vbox>
-            <label text="Animations" />
+        <hbox border="TitledBorder(LineBorder(black,2),Resolution,TitledBorder.CENTER, TitledBorder.TOP)">
+            <label text="X: " />
+            <spinner id="resolution-x" />
+            <label text="   Y: " />
+            <spinner id="resolution-y" />
+            <glue />
+        </hbox>
+        <vbox border="TitledBorder(LineBorder(black,2),Mechanics,TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <label text="Gravity X: " />
+                <spinner id="gravity-x" />
+                <label text="   Y: " />
+                <spinner id="gravity-y" />
+                <glue />
+            </hbox>
+            <hbox>
+                <label text="Acceleration: " />
+                <spinner id="acceleration" />
+                <glue />
+            </hbox>
+        </vbox>
+        <vbox border="TitledBorder(LineBorder(black,2),Animations,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
                     <list id="anims" />
@@ -67,10 +80,10 @@
                 <button text="Edit" id="edit-anim-button" />
                 <button text="Current" id="current-anim-button" />
                 <button text="Remove" id="remove-anim-button" />
+                <glue />
             </hbox>
         </vbox>
-        <vbox>
-            <label text="Background Tilesets" />
+        <vbox border="TitledBorder(LineBorder(black,2),Background Tilesets,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
                     <list id="backgrounds" />
@@ -83,10 +96,10 @@
                 <button text="Down" id="down-bg-button" />
                 <button text="Current" id="current-bg-button" />
                 <button text="Remove" id="remove-bg-button" />
+                <glue />
             </hbox>
         </vbox>
-        <vbox>
-            <label text="Foreground Tilesets" />
+        <vbox border="TitledBorder(LineBorder(black,2),Foreground Tilesets,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
                     <list id="foregrounds" />
@@ -99,10 +112,10 @@
                 <button text="Down" id="down-fg-button" />
                 <button text="Current" id="current-fg-button" />
                 <button text="Remove" id="remove-fg-button" />
+                <glue />
             </hbox>
         </vbox>
-        <vbox>
-            <label text="Collision Maps" />
+        <vbox border="TitledBorder(LineBorder(black,2),Collision Maps,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
                     <list id="collision-maps" />
@@ -113,6 +126,7 @@
                 <button text="Add" id="add-collision-button" />
                 <button text="Edit" id="edit-collision-button" />
                 <button text="Remove" id="remove-collision-button" />
+                <glue />
             </hbox>
         </vbox>
     </vbox>
