@@ -154,6 +154,7 @@ def addObjects(objects):
 def buildStuff(use):
     SConscript('mugen/SConscript', exports = ['use'])
     SConscript('paintown-engine/SConscript', exports = ['use'])
+    SConscript('platformer/SConscript', exports = ['use'])
 
 paintownEnv = use.Clone()
 # stuff(paintownEnv)
