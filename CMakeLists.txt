@@ -258,6 +258,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/src/util)
 
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/mugen)
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/platformer)
 
 #Hawknl
 add_subdirectory(${CMAKE_SOURCE_DIR}/src/util/network/hawknl)
@@ -284,7 +285,6 @@ add_library(gme_module src/util/sound/gme/Ay_Apu.cpp src/util/sound/gme/Ay_Cpu.c
 # add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine/script)
 
 # add_library(mugen_module ${MUGEN_SRC})
-add_library(platformer_module ${PLATFORMER_SRC})
 add_library(pcre_module src/util/pcre/pcre_chartables.c src/util/pcre/pcre_compile.c src/util/pcre/pcre_config.c src/util/pcre/pcre_dfa_exec.c src/util/pcre/pcre_exec.c src/util/pcre/pcre_fullinfo.c src/util/pcre/pcre_get.c src/util/pcre/pcre_globals.c src/util/pcre/pcre_info.c src/util/pcre/pcre_maketables.c src/util/pcre/pcre_newline.c src/util/pcre/pcre_ord2utf8.c src/util/pcre/pcreposix.c src/util/pcre/pcre_refcount.c src/util/pcre/pcre_study.c src/util/pcre/pcre_tables.c src/util/pcre/pcre_try_flipped.c src/util/pcre/pcre_ucd.c src/util/pcre/pcre_valid_utf8.c src/util/pcre/pcre_version.c src/util/pcre/pcre_xclass.c)
 
 if (USE_SDL)
@@ -309,7 +309,7 @@ add_executable (paintown src/util/xmain.cpp)
 
 # set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
 
-target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module factory_module asteroids_module loadpng_module mugen_module missle_defend_module platformer_module util_module pcre_module x7z_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
+target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module factory_module asteroids_module loadpng_module mugen_module missle_defend_module platformer_module platformer_script_module util_module pcre_module x7z_module dumb_module minizip_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
 
 #add_executable (test src/test.cpp)
 #target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
