@@ -7,4 +7,3 @@
 
 * make sure virtualbox or some other VM is not running. on my computer
 virtualbox steals USB input so that /dev/input/js0 does not appear
-
