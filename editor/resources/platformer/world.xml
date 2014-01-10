@@ -94,6 +94,7 @@
             <hbox  MaximumSize="450,450">
                 <button text="Add" id="add-anim-button" />
                 <button text="Edit" id="edit-anim-button" />
+                <button text="Copy" id="copy-anim-button" />
                 <button text="Current" id="current-anim-button" />
                 <button text="Remove" id="remove-anim-button" />
                 <glue />
@@ -153,9 +154,9 @@
             </hbox>
             <hbox  MaximumSize="450,450">
                 <button text="Add" id="add-script-object-button" />
-                <button text="Move" id="script-object-move-button" />
                 <button text="Edit" id="edit-script-object-button" />
-                <button text="Copy" id="script-object-copy-button" />
+                <button text="Copy" id="copy-script-object-button" />
+                <button text="Copy To" id="copy-script-object-to-button" />
                 <button text="Remove" id="remove-script-object-button" />
                 <glue />
             </hbox>

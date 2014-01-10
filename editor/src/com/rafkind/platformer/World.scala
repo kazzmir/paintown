@@ -148,6 +148,14 @@ class World(var _path:File){
     var collisionWidth:Int = 0
     var collisionHeight:Int = 0
     
+    //! Copy object to
+    var scriptObjectCopy:Boolean = false
+    
+    //! Grab object
+    var scriptObjectGrabbed:Boolean = false
+    var scriptObjectOffsetX:Int = 0
+    var scriptObjectOffsetY:Int = 0
+    
     //! actions (updating animations)
     var actions:AnimationUpdater = null
     
@@ -156,6 +164,9 @@ class World(var _path:File){
     
     //! show fps
     var displayFps:Boolean = false
+    
+    //! Panel access
+    var swingPanelEngine:SwingEngine = null
     
     if (_path != null){
         load(_path)
@@ -370,8 +381,12 @@ class World(var _path:File){
         if (inputCollision){
             collisionX = x
             collisionY = y
-        } else {
+        } else if (scriptObjectCopy){
+            // Do nothing
+        } else if (getCurrentTileSet() != null && getCurrentAnimation() != null){
             addTile(x,y)
+        } else {
+            selectItem(x,y)
         }
     }
     
@@ -387,11 +402,19 @@ class World(var _path:File){
             collisionY = 0
             collisionWidth = 0
             collisionHeight = 0
+        } else if (scriptObjectCopy){
+            copyObject(x,y)
+            scriptObjectCopy = false;
+        } else {
+            scriptObjectGrabbed = false;
+            scriptObjectOffsetX = 0
+            scriptObjectOffsetY = 0
         }
     }
     
     def rightClick(x:Int, y:Int) = {
-        if (!inputCollision){
+        if (inputCollision){
+        } else if (getCurrentTileSet() != null){
             removeTile(x,y)
         }
     }
@@ -402,16 +425,21 @@ class World(var _path:File){
     }
     
     def leftDrag(x:Int, y:Int) = {
-        if (!inputCollision){
-            addTile(x,y)
-        } else {
+        if (scriptObjectGrabbed){
+            moveObject(x,y)
+        } else if (!inputCollision){
+            if (getCurrentTileSet() != null && getCurrentAnimation() != null){
+                addTile(x,y)
+            }
+        } else if (inputCollision){
             collisionWidth = x - collisionX
             collisionHeight = y - collisionY
         }
     }
     
     def rightDrag(x:Int, y:Int) = {
-        if (!inputCollision){
+        if (inputCollision){
+        } else if (getCurrentTileSet() != null){
             removeTile(x,y)
         }
     }
@@ -440,7 +468,7 @@ class World(var _path:File){
         }
     }
     
-    def addArea(x:Int, y:Int, w:Int, h:Int){
+    def addArea(x:Int, y:Int, w:Int, h:Int) = {
         val area = new Area("New collision map")
         area.x = x
         area.y = y
@@ -450,6 +478,56 @@ class World(var _path:File){
         if (areaName != null){
             area.name = areaName
             collisionMaps.add(area)
+        }
+    }
+    
+    def copyObject(x:Int, y:Int) = {
+        val objects = swingPanelEngine.find("script-objects").asInstanceOf[JList[Area]]
+        if (objects.getSelectedIndex() != -1){
+            val script = new ScriptObject("New script object")
+            script.readToken(scriptObjects.getElementAt(objects.getSelectedIndex()).toToken())
+            script.x = x
+            script.y = y
+            scriptObjects.add(script)
+            //objects.ensureIndexIsVisible(objects.getModel().indexOf(script))
+        }
+    }
+    
+    def moveObject(x:Int, y:Int) = {
+        val objects = swingPanelEngine.find("script-objects").asInstanceOf[JList[Area]]
+        if (objects.getSelectedIndex() != -1){
+            val script = scriptObjects.getElementAt(objects.getSelectedIndex())
+            script.x = x + scriptObjectOffsetX
+            script.y = y + scriptObjectOffsetY
+        }
+    }
+    
+    def collides(checkX:Int, checkY:Int, x:Int, y:Int, width:Int, height:Int) = {
+        !((checkX > (x + width)) || (checkY > (y+height)) || (x > checkX) || (y > checkY))
+    }
+    
+    def selectItem(x:Int, y:Int) = {
+        // Select collision map or object will select both if it's in the same region
+        val collisions = swingPanelEngine.find("collision-maps").asInstanceOf[JList[Area]]
+        collisionMaps.getAll().zipWithIndex.foreach{
+            case (area, index) => {
+                if (collides(x, y, area.x, area.y, area.width, area.height)){
+                    collisions.setSelectedIndex(index)
+                    collisions.ensureIndexIsVisible(index)
+                }
+            }
+        }
+        val objects = swingPanelEngine.find("script-objects").asInstanceOf[JList[Area]]
+        scriptObjects.getAll().zipWithIndex.foreach{
+            case (script, index) => {
+                if (collides(x, y, script.x, script.y, script.width, script.height)){
+                    objects.setSelectedIndex(index)
+                    objects.ensureIndexIsVisible(index)
+                    scriptObjectGrabbed = true;
+                    scriptObjectOffsetX = x - (script.x + script.width)
+                    scriptObjectOffsetY = y - (script.y + script.height)
+                }
+            }
         }
     }
     
@@ -488,6 +566,7 @@ class World(var _path:File){
     
     def createDetailsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
         val engine = new SwingEngine( "platformer/world.xml" )
+        swingPanelEngine = engine
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
         {
@@ -727,15 +806,35 @@ class World(var _path:File){
                 } 
             })
             
+            val copy = engine.find("copy-anim-button").asInstanceOf[JButton]
+            copy.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        val animation = new Animation("new")
+                        animation.readToken(animations.getElementAt(anims.getSelectedIndex()).toToken())
+                        animation.name = animation.name + " (Copy)"
+                        addAnimation(animation)
+                        animation.editDialog(view, viewScroll, anims)
+                    }
+                } 
+            })
+            
             val current = engine.find("current-anim-button").asInstanceOf[JButton]
             current.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
-                        clearCurrentAnimation()
-                        animations.getElementAt(anims.getSelectedIndex()).isCurrent = true
-                        view.revalidate()
-                        viewScroll.repaint()
-                        anims.repaint()
+                        if (animations.getElementAt(anims.getSelectedIndex()).isCurrent){
+                            animations.getElementAt(anims.getSelectedIndex()).isCurrent = false
+                            view.revalidate()
+                            viewScroll.repaint()
+                            anims.repaint()
+                        } else {
+                            clearCurrentAnimation()
+                            animations.getElementAt(anims.getSelectedIndex()).isCurrent = true
+                            view.revalidate()
+                            viewScroll.repaint()
+                            anims.repaint()
+                        }
                     }
                 } 
             })
@@ -878,12 +977,20 @@ class World(var _path:File){
             currentBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
-                        clearCurrentTileSet()
-                        backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = true
-                        view.revalidate()
-                        viewScroll.repaint()
-                        fgs.repaint()
-                        bgs.repaint()
+                        if (backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent){
+                            backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = false
+                            view.revalidate()
+                            viewScroll.repaint()
+                            fgs.repaint()
+                            bgs.repaint()
+                        } else {
+                            clearCurrentTileSet()
+                            backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = true
+                            view.revalidate()
+                            viewScroll.repaint()
+                            fgs.repaint()
+                            bgs.repaint()
+                        }
                     }
                 } 
             })
@@ -892,12 +999,20 @@ class World(var _path:File){
             currentFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
-                        clearCurrentTileSet()
-                        foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = true
-                        view.revalidate()
-                        viewScroll.repaint()
-                        fgs.repaint()
-                        bgs.repaint()
+                        if (foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent){
+                            foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = false
+                            view.revalidate()
+                            viewScroll.repaint()
+                            fgs.repaint()
+                            bgs.repaint()
+                        } else {
+                            clearCurrentTileSet()
+                            foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = true
+                            view.revalidate()
+                            viewScroll.repaint()
+                            fgs.repaint()
+                            bgs.repaint()
+                        }
                     }
                 } 
             })
@@ -914,6 +1029,7 @@ class World(var _path:File){
             val grab = engine.find("grab-collision-button").asInstanceOf[JButton]
             grab.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
+                    scriptObjectCopy = false
                     inputCollision = true
                 } 
             })
@@ -955,13 +1071,6 @@ class World(var _path:File){
             
             scripts.setVisibleRowCount(4)
             
-            /*val grab = engine.find("grab-collision-button").asInstanceOf[JButton]
-            grab.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    inputCollision = true
-                } 
-            })*/
-            
             val add = engine.find("add-script-object-button").asInstanceOf[JButton]
             add.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
@@ -976,6 +1085,28 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
                         scriptObjects.getElementAt(scripts.getSelectedIndex()).editDialog(view, viewScroll, scripts)
+                    }
+                } 
+            })
+            
+            val copy = engine.find("copy-script-object-button").asInstanceOf[JButton]
+            copy.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        val script = new ScriptObject("new")
+                        script.readToken(scriptObjects.getElementAt(scripts.getSelectedIndex()).toToken())
+                        scriptObjects.add(script)
+                        script.editDialog(view, viewScroll, scripts)
+                    }
+                } 
+            })
+            
+            val copyTo = engine.find("copy-script-object-to-button").asInstanceOf[JButton]
+            copyTo.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        inputCollision = false
+                        scriptObjectCopy = true
                     }
                 } 
             })

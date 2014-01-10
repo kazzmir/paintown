@@ -491,14 +491,7 @@ class Animation(var name:String){
                             val returnVal = chooser.showOpenDialog(pane)
                             if (returnVal == JFileChooser.APPROVE_OPTION){
                             val choosen:File = chooser.getSelectedFile()
-                            // Doesn't work scala complains
-                            /*val base:URI = URI.create(MapEditor.getDataPath(".").getPath())
-                            val abs:URI = URI.create(choosen.getPath())
-                            basedir = base.relativize(abs)*/
-                            val base = MapEditor.getDataPath("/").getPath()
-                            val absolute = choosen.getPath()
-                            val relative = absolute.replace(base,"")
-                            basedir = new File(relative)
+                            basedir = MapEditor.absoluteToRelative(choosen)
                             dirField.setText(basedir.getPath())
                             }
                         } else {

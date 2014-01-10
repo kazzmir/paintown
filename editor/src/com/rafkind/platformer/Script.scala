@@ -87,7 +87,7 @@ class ScriptObject(var name:String){
     
     def toToken():Token = {
         val script = new Token()
-        script.addToken(new Token(script, "object-script "))
+        script.addToken(new Token(script, "object-script"))
         script.addToken(Array("id", name))
         script.addToken(Array("position", x.toString, y.toString, width.toString, height.toString))
         script.addToken(Array("module", module))
@@ -299,10 +299,7 @@ class ScriptObject(var name:String){
                         val returnVal = chooser.showOpenDialog(pane)
                         if (returnVal == JFileChooser.APPROVE_OPTION){
                             val choosen:File = chooser.getSelectedFile()
-                            val base = MapEditor.getDataPath("/").getPath()
-                            val absolute = choosen.getPath()
-                            val relative = absolute.replace(base,"")
-                            image = new ImageHolder(new File("."), new File(relative))
+                            image = new ImageHolder(new File("."), MapEditor.absoluteToRelative(choosen))
                             scriptField.setText(image.toString())
                             view.revalidate()
                             viewScroll.repaint()

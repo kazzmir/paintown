@@ -459,4 +459,15 @@ object MapEditor {
   def getDataPath(file:String):File = {
       editor.dataPath(new File(file))
   }
+  
+  def absoluteToRelative(file:File):File = {
+      // Doesn't work scala complains
+      /*val base:URI = URI.create(MapEditor.getDataPath(".").getPath())
+      val abs:URI = URI.create(choosen.getPath())
+      basedir = base.relativize(abs)*/
+      val base = getDataPath("/").getPath()
+      val absolute = file.getPath()
+      val relative = absolute.replace(base + "/" ,"")
+      new File(relative)
+  }
 }
