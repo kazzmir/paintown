@@ -131,6 +131,9 @@ class World(var _path:File){
     //! Collision maps
     var collisionMaps = new CollisionMap()
     
+    //! Script objects
+    var scriptObjects = new ScriptObjectData()
+    
     //! Collect collision info
     var inputCollision:Boolean = false
     
@@ -169,6 +172,7 @@ class World(var _path:File){
         }
         
         // Objects
+        scriptObjects.render(g, offsetX, offsetY)
         
         // foregrounds
         foregrounds.getAll().foreach{
@@ -273,6 +277,8 @@ class World(var _path:File){
         if (collisionToken != null){
             collisionMaps.readToken(collisionToken)
         }
+        
+        scriptObjects.readToken(head)
 
         System.out.println( "Loaded " + f )
     }
@@ -335,6 +341,11 @@ class World(var _path:File){
         
         // Collision maps
         world.addToken(collisionMaps.toToken())
+        
+        // Script objects
+        scriptObjects.getAll().foreach{
+            case (script) => world.addToken(script.toToken())
+        }
 
         world
     }
@@ -859,6 +870,50 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     if (collisionMaps.getSize() > 0 && collisions.getSelectedIndex() != -1){
                         collisionMaps.remove(collisions.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
+                } 
+            })
+        }
+        
+        // Script objects
+        {
+            val scripts = engine.find("script-objects").asInstanceOf[JList[ScriptObject]]
+            scripts.setModel(scriptObjects)
+            
+            scripts.setVisibleRowCount(4)
+            
+            /*val grab = engine.find("grab-collision-button").asInstanceOf[JButton]
+            grab.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    inputCollision = true
+                } 
+            })*/
+            
+            val add = engine.find("add-script-object-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val script = new ScriptObject("New script object")
+                    scriptObjects.add(script)
+                    script.editDialog(view, viewScroll, scripts)
+                } 
+            })
+            
+            val edit = engine.find("edit-script-object-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        scriptObjects.getElementAt(scripts.getSelectedIndex()).editDialog(view, viewScroll, scripts)
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-script-object-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        scriptObjects.remove(scripts.getSelectedIndex())
                         view.revalidate()
                         viewScroll.repaint()
                     }

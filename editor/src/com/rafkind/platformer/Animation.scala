@@ -48,6 +48,20 @@ class ImageHolder(val basedir:File, val file:File){
         }
     }
     
+    def getWidth():Int = {
+        if (image != null){
+            return image.getWidth(null)
+        }
+        0
+    }
+    
+    def getHeight():Int = {
+        if (image != null){
+            return image.getHeight(null)
+        }
+        0
+    }
+    
     override def toString():String = {
         if (file != null){
             return file.getPath()

@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+
+<dialog Size="500,500" resizable="false" title="Script Object Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+
+<vbox>
+    <panel layout="GridBagLayout">
+        <vbox>
+            <hbox border="TitledBorder(LineBorder(black,2),Name,TitledBorder.CENTER, TitledBorder.TOP)">
+                <textfield id="name" />
+            </hbox>
+            <hbox border="TitledBorder(LineBorder(black,2),Script,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox border="TitledBorder(LineBorder(gray,1),Module,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <textfield id="module" />
+                </vbox>
+                <vbox border="TitledBorder(LineBorder(gray,1),Function,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <textfield id="function" />
+                </vbox>
+            </hbox>
+            <hbox border="TitledBorder(LineBorder(black,2),Position,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox border="TitledBorder(LineBorder(gray,1),X,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="x" />
+                </vbox>
+                <vbox border="TitledBorder(LineBorder(gray,1),Y,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="y" />
+                </vbox>
+            </hbox>
+            
+            <hbox border="TitledBorder(LineBorder(black,2),Dimensions,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox border="TitledBorder(LineBorder(gray,1),Width,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="width" />
+                </vbox>
+                <vbox border="TitledBorder(LineBorder(gray,1),Height,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="height" />
+                </vbox>
+            </hbox>
+            
+            <hbox border="TitledBorder(LineBorder(black,2),Object Text/Background Color,TitledBorder.CENTER, TitledBorder.TOP)">
+                <button text="Choose" id="color" />
+                <label text="    Color that will be Displayed: " />
+                <panel id="color-display" />
+            </hbox>
+            
+            <hbox border="TitledBorder(LineBorder(black,2),Image File,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox>
+                    <hbox>
+                        <button text="Choose" id="set-image-button" />
+                        <label text="    Image that is selected:              " />
+                    </hbox>
+                    <hbox>
+                        <textfield id="image-location" />
+                    </hbox>
+                </vbox>
+            </hbox>
+        </vbox>
+    </panel>
+
+    <hbox>
+        <button text="Close" id="close"/>
+    </hbox>
+    
+</vbox>
+
+</dialog>

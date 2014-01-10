@@ -8,6 +8,7 @@ import javax.imageio._
 import java.awt.event._
 import javax.swing.event._
 import org.swixml.SwingEngine
+import javax.swing.filechooser.FileFilter
 
 import scala.collection.immutable.List
 
@@ -16,24 +17,31 @@ import com.rafkind.paintown.TokenReader
 import com.rafkind.paintown.Token
 import com.rafkind.paintown.MaskedImage
 
-class Area(var name:String){
+class ScriptObject(var name:String){
     var x:Int = 0
     var y:Int = 0
-    var width:Int = 0
-    var height:Int = 0
-    var color:Color = new Color(204,0,51)
+    var image:ImageHolder = null
+    var width:Int = 16
+    var height:Int = 16
+    var module:String = ""
+    var function:String = ""
+    var color:Color = new Color(0,0,128)
     var font = new Font("Verdana", Font.BOLD, 4)
     
     def render(g:Graphics2D, x1:Int, y1:Int) = {
         g.setColor(color)
-        g.drawRect(x1 + x, y1 + y, width, height)
+        if (image != null){
+            image.render(g,x1 + x, y1 + y)
+        } else {
+            g.fillRect(x1 + x, y1 + y, width, height)
+        }
         g.setFont(font);
-        g.drawString( "Collision map [" + name + "]", x1 + x -1, y1 + y -1)
+        g.drawString( "Object [" + name + "]", x1 + x -1, y1 + y -1)
     }
     
     def readToken(token:Token) = {
-        if (!token.getName().equals("area")){
-            throw new LoadException( "Starting token is not 'area'" )
+        if (!token.getName().equals("object-script")){
+            throw new LoadException( "Starting token is not a 'script object'" )
         }
         val nameToken = token.findToken("id")
         if (nameToken != null){
@@ -44,9 +52,30 @@ class Area(var name:String){
         if (positionToken != null){
             x = positionToken.readInt(0)
             y = positionToken.readInt(1)
-            width = positionToken.readInt(2)
-            height = positionToken.readInt(3)
+            if (positionToken.hasIndex(2) && positionToken.hasIndex(3)){
+                width = positionToken.readInt(2)
+                height = positionToken.readInt(3)
+            }
         }
+        
+        val moduleToken = token.findToken("module")
+        if (moduleToken != null){
+            module = moduleToken.readString(0)
+        }
+        
+        val functionToken = token.findToken("function")
+        if (functionToken != null){
+            function = functionToken.readString(0)
+        }
+        
+        val imageToken = token.findToken("image")
+        if (imageToken != null){
+            val imageName = imageToken.readString(0)
+            image = new ImageHolder(new File("."), new File(imageName))
+            width = image.getWidth()
+            height = image.getHeight()
+        }
+        
         val colorToken = token.findToken("color")
         if (colorToken != null){
             val r = colorToken.readInt(0)
@@ -57,22 +86,27 @@ class Area(var name:String){
     }
     
     def toToken():Token = {
-        val area = new Token()
-        area.addToken(new Token(area, "area "))
-        area.addToken(Array("id", name))
-        area.addToken(Array("position", String.valueOf(x), String.valueOf(y), String.valueOf(width), String.valueOf(height)))
-        area.addToken(Array("color", color.getRed().toString, color.getGreen().toString, color.getBlue().toString))
+        val script = new Token()
+        script.addToken(new Token(script, "object-script "))
+        script.addToken(Array("id", name))
+        script.addToken(Array("position", x.toString, y.toString, width.toString, height.toString))
+        script.addToken(Array("module", module))
+        script.addToken(Array("function", function))
+        if (image != null){
+            script.addToken(Array("image", image.toString()))
+        }
+        script.addToken(Array("color", color.getRed().toString, color.getGreen().toString, color.getBlue().toString))
         
-        area
+        script
     }
     
     override def toString():String = {
         toToken().toString()
     }
     
-    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[Area]) = {
+    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[ScriptObject]) = {
         try {
-            val engine = new SwingEngine("platformer/area.xml")
+            val engine = new SwingEngine("platformer/script-object.xml")
             val pane = engine.find("dialog").asInstanceOf[JDialog]
             
             {
@@ -93,9 +127,55 @@ class Area(var name:String){
                         name = nameField.getText()
                         list.revalidate()
                         list.repaint()
+                        view.revalidate()
+                        viewScroll.repaint()
                     }
                 })
             }
+            
+            // script
+            {
+                val moduleField = engine.find("module").asInstanceOf[JTextField]
+                moduleField.setText(module)
+                moduleField.getDocument().addDocumentListener(new DocumentListener() {
+                    def changedUpdate(e:DocumentEvent) = {
+                        update()
+                    }
+                    def removeUpdate(e:DocumentEvent) = {
+                        update()
+                    }
+                    def insertUpdate(e:DocumentEvent) = {
+                        update()
+                    }
+                    
+                    def update() = {
+                        module = moduleField.getText()
+                        list.revalidate()
+                        list.repaint()
+                    }
+                })
+                
+                val functionField = engine.find("function").asInstanceOf[JTextField]
+                functionField.setText(function)
+                functionField.getDocument().addDocumentListener(new DocumentListener() {
+                    def changedUpdate(e:DocumentEvent) = {
+                        update()
+                    }
+                    def removeUpdate(e:DocumentEvent) = {
+                        update()
+                    }
+                    def insertUpdate(e:DocumentEvent) = {
+                        update()
+                    }
+                    
+                    def update() = {
+                        function = functionField.getText()
+                        list.revalidate()
+                        list.repaint()
+                    }
+                })
+            }
+            
             // x
             {
                 val xspin = engine.find("x").asInstanceOf[JSpinner]
@@ -196,6 +276,43 @@ class Area(var name:String){
                 })
             }
             
+            // Image
+            {
+                var scriptField = engine.find("image-location").asInstanceOf[JTextField]
+                scriptField.setEditable(false)
+                if (image != null){
+                    scriptField.setText(image.toString())
+                }
+                val set = engine.find("set-image-button").asInstanceOf[JButton]
+                set.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        val chooser = new JFileChooser(MapEditor.getDataPath("/"))
+                        chooser.setFileFilter(new FileFilter(){
+                            def accept(f:File):Boolean = {
+                                f.isDirectory() || f.getName().endsWith( ".png" )
+                            }
+
+                            def getDescription():String = {
+                                "Png files"
+                            }
+                        })
+                        val returnVal = chooser.showOpenDialog(pane)
+                        if (returnVal == JFileChooser.APPROVE_OPTION){
+                            val choosen:File = chooser.getSelectedFile()
+                            val base = MapEditor.getDataPath("/").getPath()
+                            val absolute = choosen.getPath()
+                            val relative = absolute.replace(base,"")
+                            image = new ImageHolder(new File("."), new File(relative))
+                            scriptField.setText(image.toString())
+                            view.revalidate()
+                            viewScroll.repaint()
+                            list.revalidate()
+                            list.repaint()
+                        }
+                    } 
+                })
+            }
+            
             // Close
             {
                 val close = engine.find("close").asInstanceOf[JButton]
@@ -220,12 +337,12 @@ class Area(var name:String){
     }
 }
 
-class CollisionMap extends ListModel[Area] {
-    var data:List[Area] = List[Area]()
+class ScriptObjectData extends ListModel[ScriptObject] {
+    var data:List[ScriptObject] = List[ScriptObject]()
     var listeners = List[ListDataListener]()
 
-    def add(area:Area){
-        data = data :+ area
+    def add(obj:ScriptObject){
+        data = data :+ obj
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -240,7 +357,7 @@ class CollisionMap extends ListModel[Area] {
         }
     }
 
-    def getAll():List[Area] = {
+    def getAll():List[ScriptObject] = {
         data
     }
 
@@ -265,31 +382,16 @@ class CollisionMap extends ListModel[Area] {
     
     def render(g:Graphics2D, x:Int, y:Int) = {
         data.foreach {
-            case (area) => area.render(g,x,y)
+            case (script) => script.render(g,x,y)
         }
     }
     
     def readToken(token:Token) = {
-        if (!token.getName().equals("collision-map")){
-            throw new LoadException( "Starting token is not 'collision-map'" )
+        val scriptIterator = token.findTokens("object-script").iterator()
+        while(scriptIterator.hasNext()){
+            val script = new ScriptObject("Script")
+            script.readToken(scriptIterator.next())
+            add(script)
         }
-        
-        val areaIterator = token.findTokens("area").iterator()
-        while(areaIterator.hasNext()){
-            val area = new Area("Area")
-            area.readToken(areaIterator.next())
-            add(area)
-        }
-    }
-
-    def toToken():Token = {
-        val collisionMap = new Token()
-        collisionMap.addToken(new Token(collisionMap, "collision-map"))
-        
-        data.foreach {
-            case (area) => collisionMap.addToken(area.toToken())
-        }
-        
-        collisionMap
     }
 }
