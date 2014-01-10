@@ -97,7 +97,9 @@ class Editor extends JFrame("Platformer Map Editor"){
               Closer.close()
             }
           })
-
+        
+        Data.setDataPath(new File(System.getProperty("user.dir") + "/data"))
+        
         data.addActionListener(new ActionListener(){
             override def actionPerformed(event:ActionEvent){
               /* just a container for an object */
@@ -117,7 +119,7 @@ class Editor extends JFrame("Platformer Map Editor"){
               val change = engine.find("change").asInstanceOf[JButton]
               change.addActionListener(new AbstractAction(){
                   override def actionPerformed(event:ActionEvent){
-                    val chooser = new JFileChooser(new File("."))	
+                    val chooser = new JFileChooser(dataPath(new File(".")).getPath())	
                     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
                     val returnVal = chooser.showOpenDialog(Editor.this)
                     if (returnVal == JFileChooser.APPROVE_OPTION){
@@ -129,7 +131,7 @@ class Editor extends JFrame("Platformer Map Editor"){
                 })
               val save = engine.find("save").asInstanceOf[JButton]
               val cancel = engine.find("cancel").asInstanceOf[JButton]
-              val dialog = new JDialog(Editor.this, "Paintown data path")
+              val dialog = new JDialog(Editor.this, "Platformer data path")
               save.addActionListener(new AbstractAction(){
                   override def actionPerformed(event:ActionEvent){
                     Data.setDataPath(box.internal.asInstanceOf[File])
@@ -252,7 +254,7 @@ class Editor extends JFrame("Platformer Map Editor"){
 
         loadWorld.addActionListener( new AbstractAction(){
             override def actionPerformed(event:ActionEvent){
-                val chooser = new JFileChooser( new File( "." ) )	
+                val chooser = new JFileChooser( dataPath(new File(".")).getPath() )	
                 chooser.setFileFilter(new FileFilter(){
                     def accept(f:File):Boolean = {
                         f.isDirectory() || f.getName().endsWith( ".txt" )
@@ -424,7 +426,7 @@ class Editor extends JFrame("Platformer Map Editor"){
     }
 
     def userSelectFile(title:String):File = {
-        val chooser = new JFileChooser(new File("."))
+        val chooser = new JFileChooser(dataPath(new File(".")).getPath())
         chooser.setDialogTitle(title)
         chooser.showOpenDialog(Editor.this) match {
             case JFileChooser.APPROVE_OPTION => chooser.getSelectedFile()

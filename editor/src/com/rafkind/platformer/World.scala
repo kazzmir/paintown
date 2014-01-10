@@ -8,6 +8,7 @@ import javax.imageio._
 import java.awt.event._
 import javax.swing.event._
 import org.swixml.SwingEngine
+import javax.swing.filechooser.FileFilter
 
 import scala.collection.immutable.List
 
@@ -118,6 +119,11 @@ class World(var _path:File){
     
     //! Fill color
     var fillColor:Color = new Color(204,204,204)
+    var fillColorEnabled = true
+    
+    //! Overlay
+    var overlay:ImageHolder = null
+    var overlayAlpha:Float = 0.5f
     
     //! Animations
     val animations = new AnimationListModel()
@@ -163,8 +169,10 @@ class World(var _path:File){
         g.scale(scale, scale)
         
         // Entire map
-        g.setColor( fillColor )
-        g.fillRect(offsetX, offsetY, this.width, this.height)
+        if (fillColorEnabled){
+            g.setColor( fillColor )
+            g.fillRect(offsetX, offsetY, this.width, this.height)
+        }
         
         // backgrounds
         backgrounds.getAll().foreach{
@@ -185,6 +193,14 @@ class World(var _path:File){
         if (inputCollision){
             g.setColor(new Color(0, 255, 0))
             g.drawRect(offsetX + collisionX, offsetY + collisionY, collisionWidth, collisionHeight)
+        }
+        
+        // Draw overlay
+        if (overlay != null){
+            val old:Composite = g.getComposite()
+            g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, overlayAlpha))
+            overlay.render(g, offsetX, offsetY)
+            g.setComposite(old)
         }
         
         // Viewport resolution
@@ -628,6 +644,61 @@ class World(var _path:File){
                         colorPanel.repaint()
                     }
                 }
+            })
+            
+            val checkbox = engine.find("enable-fill-color").asInstanceOf[JCheckBox]
+            checkbox.setSelected(fillColorEnabled)
+            checkbox.addActionListener(new ActionListener() {
+                def actionPerformed(e:ActionEvent) = {
+                    fillColorEnabled = checkbox.isSelected()
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+        }
+        
+        // Overlay
+        {
+            var slider = engine.find("overlay-slider").asInstanceOf[JSlider]
+            slider.setValue((50*overlayAlpha).toInt)
+            slider.addChangeListener( new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    overlayAlpha = (slider.getValue().toInt * .02).toFloat
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+            
+            var overlayField = engine.find("overlay").asInstanceOf[JTextField]
+            overlayField.setEditable(false)
+            if (overlay != null){
+                overlayField.setText(overlay.toString())
+            }
+            val set = engine.find("overlay-button").asInstanceOf[JButton]
+            set.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val chooser = new JFileChooser(MapEditor.getDataPath("/"))
+                    chooser.setFileFilter(new FileFilter(){
+                        def accept(f:File):Boolean = {
+                            f.isDirectory() || f.getName().endsWith( ".png" )
+                        }
+
+                        def getDescription():String = {
+                            "Png files"
+                        }
+                    })
+                    val returnVal = chooser.showOpenDialog(pane)
+                    if (returnVal == JFileChooser.APPROVE_OPTION){
+                        val choosen:File = chooser.getSelectedFile()
+                        val base = MapEditor.getDataPath("/").getPath()
+                        val absolute = choosen.getPath()
+                        val relative = absolute.replace(base,"")
+                        overlay = new ImageHolder(new File("."), new File(relative))
+                        overlayField.setText(overlay.toString())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
+                } 
             })
         }
         

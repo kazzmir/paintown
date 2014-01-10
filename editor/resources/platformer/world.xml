@@ -26,6 +26,8 @@
                 <label text="Background fill color: " />
                 <button text="Choose" id="fill-color" />
                 <panel id="fill-color-display" />
+                <label text="Enabled" />
+                <checkbox id="enable-fill-color" />
                 <glue />
             </hbox>
             <hbox  MaximumSize="450,450">
@@ -69,6 +71,20 @@
                 <glue />
             </hbox>
         </vbox>
+        <hbox MaximumSize="450,450" border="TitledBorder(LineBorder(black,2),Overlay,TitledBorder.CENTER, TitledBorder.TOP)">
+            <vbox>
+                <hbox>
+                    <button text="Choose" id="overlay-button" />
+                    <slider id="overlay-slider" minimum="0" maximum="50" />
+                </hbox>
+                <hbox>
+                    <label text="     Overlay image that is selected:      " />
+                </hbox>
+                <hbox>
+                    <textfield id="overlay" />
+                </hbox>
+            </vbox>
+        </hbox>
         <vbox border="TitledBorder(LineBorder(black,2),Animations,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox  MaximumSize="450,450">
                 <scrollpane MaximumSize="450,350">
