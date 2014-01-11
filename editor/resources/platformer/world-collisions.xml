@@ -1,0 +1,27 @@
+<panel layout="GridBagLayout">
+    <vbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+        />
+        <vbox border="TitledBorder(LineBorder(black,2),Collision Maps,TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <scrollpane>
+                    <list id="collision-maps" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <button text="Grab Area" id="grab-collision-button" />
+                <button text="Add" id="add-collision-button" />
+                <button text="Edit" id="edit-collision-button" />
+                <button text="Remove" id="remove-collision-button" />
+                <glue />
+            </hbox>
+        </vbox>
+    </vbox>
+</panel>

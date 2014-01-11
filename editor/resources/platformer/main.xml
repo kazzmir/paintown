@@ -1,5 +1,22 @@
 <splitpane>
     <panel id="view" border="MatteBorder(2,2,2,2,667A63)" />
-    
-    <panel id="values" border="TitledBorder(LineBorder(black,2),Toolbar, TitledBorder.CENTER, TitledBorder.TOP)" />
+    <vbox>
+        <tabbedpane id="values" border="TitledBorder(LineBorder(black,2),Toolbar, TitledBorder.CENTER, TitledBorder.TOP)" />
+        <vbox border="TitledBorder(LineBorder(black,2),Current Settings, TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <label text="Current Selected Animation: " />
+                <label text="None" id="current-animation" />
+            </hbox>
+            <hbox>
+                <label text="Current Selected Tileset: " />
+                <label text="None" id="current-tileset" />
+            </hbox>
+            <hbox>
+                <label Foreground="128,0,0" text="Note: You will not be able to manipulate" />
+            </hbox>
+            <hbox> 
+                <label Foreground="128,0,0" text="objects when animations and tilesets are selected." />
+            </hbox>
+        </vbox>
+    </vbox>
 </splitpane>

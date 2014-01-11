@@ -166,7 +166,10 @@ class World(var _path:File){
     var displayFps:Boolean = false
     
     //! Panel access
-    var swingPanelEngine:SwingEngine = null
+    var worldValuesEngine:SwingEngine = null
+    var tilesetsEngine:SwingEngine = null
+    var collisionsEngine:SwingEngine = null
+    var scriptsEngine:SwingEngine = null
     
     if (_path != null){
         load(_path)
@@ -482,7 +485,7 @@ class World(var _path:File){
     }
     
     def copyObject(x:Int, y:Int) = {
-        val objects = swingPanelEngine.find("script-objects").asInstanceOf[JList[Area]]
+        val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
         if (objects.getSelectedIndex() != -1){
             val script = new ScriptObject("New script object")
             script.readToken(scriptObjects.getElementAt(objects.getSelectedIndex()).toToken())
@@ -494,7 +497,7 @@ class World(var _path:File){
     }
     
     def moveObject(x:Int, y:Int) = {
-        val objects = swingPanelEngine.find("script-objects").asInstanceOf[JList[Area]]
+        val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
         if (objects.getSelectedIndex() != -1){
             val script = scriptObjects.getElementAt(objects.getSelectedIndex())
             script.x = x + scriptObjectOffsetX
@@ -508,7 +511,7 @@ class World(var _path:File){
     
     def selectItem(x:Int, y:Int) = {
         // Select collision map or object will select both if it's in the same region
-        val collisions = swingPanelEngine.find("collision-maps").asInstanceOf[JList[Area]]
+        val collisions = collisionsEngine.find("collision-maps").asInstanceOf[JList[Area]]
         collisionMaps.getAll().zipWithIndex.foreach{
             case (area, index) => {
                 if (collides(x, y, area.x, area.y, area.width, area.height)){
@@ -517,7 +520,7 @@ class World(var _path:File){
                 }
             }
         }
-        val objects = swingPanelEngine.find("script-objects").asInstanceOf[JList[Area]]
+        val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
         scriptObjects.getAll().zipWithIndex.foreach{
             case (script, index) => {
                 if (collides(x, y, script.x, script.y, script.width, script.height)){
@@ -566,7 +569,7 @@ class World(var _path:File){
     
     def createDetailsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
         val engine = new SwingEngine( "platformer/world.xml" )
-        swingPanelEngine = engine
+        worldValuesEngine = engine
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
         {
@@ -781,6 +784,94 @@ class World(var _path:File){
             })
         }
         
+        // Scroll
+        {
+            val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
+            val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
+            scroll.setValue((scroll.getMaximum() * (scale/4.0)).toInt)
+            scroll.addChangeListener( new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    scale = scroll.getValue().toDouble * 4.0 / scroll.getMaximum()
+                    scaleLabel.setText("Scale: " + scale)
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+        }
+        
+        // offsets
+        {
+            var offset = engine.find("offset-x").asInstanceOf[JSpinner]
+            var model = new SpinnerNumberModel()
+            model.setValue(offsetX)
+            offset.setModel(model)
+            offset.addChangeListener(new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    val spinner = event.getSource().asInstanceOf[JSpinner]
+                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                    offsetX = i.intValue()
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+            
+            offset = engine.find("offset-y").asInstanceOf[JSpinner]
+            model = new SpinnerNumberModel()
+            model.setValue(offsetY)
+            offset.setModel(model)
+            offset.addChangeListener(new ChangeListener(){
+                override def stateChanged(event:ChangeEvent){
+                    val spinner = event.getSource().asInstanceOf[JSpinner]
+                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
+                    offsetY = i.intValue()
+                    view.revalidate()
+                    viewScroll.repaint()
+                }
+            })
+        }
+        
+        // fps
+        {
+            val fps = engine.find("display-fps").asInstanceOf[JCheckBox]
+            fps.setSelected(displayFps)
+            fps.setEnabled(false)
+            fps.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    displayFps = fps.isSelected()
+                } 
+            })
+            
+            val anims = engine.find("enable-animations").asInstanceOf[JCheckBox]
+            anims.setSelected(enableAnimations)
+            anims.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    enableAnimations = anims.isSelected()
+                    if (enableAnimations){
+                        if (!fps.isEnabled()){
+                            fps.setEnabled(true)
+                        }
+                        if (actions == null){
+                            start(view, viewScroll)
+                        }
+                    } else {
+                        displayFps = false
+                        fps.setEnabled(false)
+                        fps.setSelected(false)
+                        stop()
+                    }
+                } 
+            })
+        }
+        
+        pane
+    }
+    
+    
+    def createTilesetsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane, mainEngine:SwingEngine):JPanel = {
+        val engine = new SwingEngine( "platformer/world-tilesets.xml" )
+        tilesetsEngine = engine
+        val pane = engine.getRootComponent().asInstanceOf[JPanel]
+        
         // Animations
         {
             val anims = engine.find("anims").asInstanceOf[JList[Animation]]
@@ -822,18 +913,22 @@ class World(var _path:File){
             val current = engine.find("current-anim-button").asInstanceOf[JButton]
             current.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
+                    val currentLabel = mainEngine.find("current-animation").asInstanceOf[JLabel]
                     if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
                         if (animations.getElementAt(anims.getSelectedIndex()).isCurrent){
                             animations.getElementAt(anims.getSelectedIndex()).isCurrent = false
                             view.revalidate()
                             viewScroll.repaint()
                             anims.repaint()
+                            currentLabel.setText("None")
                         } else {
                             clearCurrentAnimation()
-                            animations.getElementAt(anims.getSelectedIndex()).isCurrent = true
+                            val animation = animations.getElementAt(anims.getSelectedIndex())
+                            animation.isCurrent = true
                             view.revalidate()
                             viewScroll.repaint()
                             anims.repaint()
+                            currentLabel.setText(animation.name)
                         }
                     }
                 } 
@@ -977,19 +1072,23 @@ class World(var _path:File){
             currentBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
+                        val currentTileset = mainEngine.find("current-tileset").asInstanceOf[JLabel]
                         if (backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent){
                             backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = false
                             view.revalidate()
                             viewScroll.repaint()
                             fgs.repaint()
                             bgs.repaint()
+                            currentTileset.setText("None")
                         } else {
                             clearCurrentTileSet()
-                            backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = true
+                            val background = backgrounds.getElementAt(bgs.getSelectedIndex())
+                            background.isCurrent = true
                             view.revalidate()
                             viewScroll.repaint()
                             fgs.repaint()
                             bgs.repaint()
+                            currentTileset.setText(background.name)
                         }
                     }
                 } 
@@ -999,25 +1098,37 @@ class World(var _path:File){
             currentFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
+                        val currentTileset = mainEngine.find("current-tileset").asInstanceOf[JLabel]
                         if (foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent){
                             foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = false
                             view.revalidate()
                             viewScroll.repaint()
                             fgs.repaint()
                             bgs.repaint()
+                            currentTileset.setText("None")
                         } else {
                             clearCurrentTileSet()
-                            foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = true
+                            val foreground = foregrounds.getElementAt(fgs.getSelectedIndex())
+                            foreground.isCurrent = true
                             view.revalidate()
                             viewScroll.repaint()
                             fgs.repaint()
                             bgs.repaint()
+                            currentTileset.setText(foreground.name)
                         }
                     }
                 } 
             })
         }
         
+        pane
+    }
+    
+    
+    def createCollisionsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
+        val engine = new SwingEngine( "platformer/world-collisions.xml" )
+        collisionsEngine = engine
+        val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
         // Collisions
         {
@@ -1063,6 +1174,15 @@ class World(var _path:File){
                 } 
             })
         }
+        
+        pane
+    }
+    
+    
+    def createScriptsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane):JPanel = {
+        val engine = new SwingEngine( "platformer/world-scripts.xml" )
+        scriptsEngine = engine
+        val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
         // Script objects
         {
@@ -1118,85 +1238,6 @@ class World(var _path:File){
                         scriptObjects.remove(scripts.getSelectedIndex())
                         view.revalidate()
                         viewScroll.repaint()
-                    }
-                } 
-            })
-        }
-        
-        // Scroll
-        {
-            val scroll = engine.find( "scale" ).asInstanceOf[JSlider]
-            val scaleLabel = engine.find( "scale-label" ).asInstanceOf[JLabel]
-            scroll.setValue((scroll.getMaximum() * (scale/4.0)).toInt)
-            scroll.addChangeListener( new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    scale = scroll.getValue().toDouble * 4.0 / scroll.getMaximum()
-                    scaleLabel.setText("Scale: " + scale)
-                    view.revalidate()
-                    viewScroll.repaint()
-                }
-            })
-        }
-        
-        // offsets
-        {
-            var offset = engine.find("offset-x").asInstanceOf[JSpinner]
-            var model = new SpinnerNumberModel()
-            model.setValue(offsetX)
-            offset.setModel(model)
-            offset.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                    offsetX = i.intValue()
-                    view.revalidate()
-                    viewScroll.repaint()
-                }
-            })
-            
-            offset = engine.find("offset-y").asInstanceOf[JSpinner]
-            model = new SpinnerNumberModel()
-            model.setValue(offsetY)
-            offset.setModel(model)
-            offset.addChangeListener(new ChangeListener(){
-                override def stateChanged(event:ChangeEvent){
-                    val spinner = event.getSource().asInstanceOf[JSpinner]
-                    val i = spinner.getValue().asInstanceOf[java.lang.Integer]
-                    offsetY = i.intValue()
-                    view.revalidate()
-                    viewScroll.repaint()
-                }
-            })
-        }
-        
-        // fps
-        {
-            val fps = engine.find("display-fps").asInstanceOf[JCheckBox]
-            fps.setSelected(displayFps)
-            fps.setEnabled(false)
-            fps.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    displayFps = fps.isSelected()
-                } 
-            })
-            
-            val anims = engine.find("enable-animations").asInstanceOf[JCheckBox]
-            anims.setSelected(enableAnimations)
-            anims.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    enableAnimations = anims.isSelected()
-                    if (enableAnimations){
-                        if (!fps.isEnabled()){
-                            fps.setEnabled(true)
-                        }
-                        if (actions == null){
-                            start(view, viewScroll)
-                        }
-                    } else {
-                        displayFps = false
-                        fps.setEnabled(false)
-                        fps.setSelected(false)
-                        stop()
                     }
                 } 
             })

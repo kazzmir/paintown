@@ -1,0 +1,28 @@
+<panel layout="GridBagLayout">
+    <vbox>
+        <gridbagconstraints
+            gridx="0"
+            gridy="0"
+            weightx="1"
+            weighty="1"
+            gridheight="1"
+            anchor="GridBagConstraints.NORTHWEST"
+            fill="GridBagConstraints.BOTH"
+        />
+        <vbox border="TitledBorder(LineBorder(black,2),Script Objects,TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <scrollpane>
+                    <list id="script-objects" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <button text="Add" id="add-script-object-button" />
+                <button text="Edit" id="edit-script-object-button" />
+                <button text="Copy" id="copy-script-object-button" />
+                <button text="Copy To" id="copy-script-object-to-button" />
+                <button text="Remove" id="remove-script-object-button" />
+                <glue />
+            </hbox>
+        </vbox>
+    </vbox>
+</panel>

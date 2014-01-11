@@ -410,8 +410,11 @@ class Editor extends JFrame("Platformer Map Editor"){
         viewContainer.add(viewScroll)
         
         // Create panel to handle world values
-        val values = engine.find("values").asInstanceOf[JPanel]
-        values.add(world.createDetailsPanel(view, viewScroll, tabbed))
+        val values = engine.find("values").asInstanceOf[JTabbedPane]
+        values.add("Values", world.createDetailsPanel(view, viewScroll, tabbed))
+        values.add("Tilesets", world.createTilesetsPanel(view, viewScroll, tabbed, engine))
+        values.add("Collision Maps", world.createCollisionsPanel(view, viewScroll, tabbed))
+        values.add("Scripts", world.createScriptsPanel(view, viewScroll, tabbed))
         val screenHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight()
         values.setPreferredSize(new Dimension(200, (screenHeight - (screenHeight * .2)).intValue()))
         
