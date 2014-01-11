@@ -14,6 +14,7 @@ ENDIF (FREETYPE_INCLUDE_DIR)
 
 FIND_PATH(FREETYPE_INCLUDE_DIR ft2build.h
   /usr/local/include
+  /usr/include/freetype2
   /usr/include
    $ENV{MINGDIR}/include
 )
