@@ -140,6 +140,9 @@ class World(var _path:File){
     //! Script objects
     var scriptObjects = new ScriptObjectData()
     
+    //! Scripts
+    var worldScripts = new ScriptData()
+    
     //! Collect collision info
     var inputCollision:Boolean = false
     
@@ -308,6 +311,8 @@ class World(var _path:File){
             collisionMaps.readToken(collisionToken)
         }
         
+        worldScripts.readToken(head)
+        
         scriptObjects.readToken(head)
 
         System.out.println( "Loaded " + f )
@@ -371,6 +376,11 @@ class World(var _path:File){
         
         // Collision maps
         world.addToken(collisionMaps.toToken())
+        
+        // Scripts
+        worldScripts.getAll().foreach{
+            case (script) => world.addToken(script.toToken())
+        }
         
         // Script objects
         scriptObjects.getAll().foreach{
@@ -1183,6 +1193,41 @@ class World(var _path:File){
         val engine = new SwingEngine( "platformer/world-scripts.xml" )
         scriptsEngine = engine
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
+        
+        // Scripts
+        {
+            val scripts = engine.find("scripts").asInstanceOf[JList[Script]]
+            scripts.setModel(worldScripts)
+            
+            scripts.setVisibleRowCount(4)
+            
+            val add = engine.find("add-script-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val script = new Script("New script")
+                    worldScripts.add(script)
+                    script.editDialog(scripts)
+                } 
+            })
+            
+            val edit = engine.find("edit-script-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (worldScripts.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        worldScripts.getElementAt(scripts.getSelectedIndex()).editDialog(scripts)
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-script-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (worldScripts.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        worldScripts.remove(scripts.getSelectedIndex())
+                    }
+                } 
+            })
+        }
         
         // Script objects
         {

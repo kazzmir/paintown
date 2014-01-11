@@ -392,3 +392,123 @@ class ScriptObjectData extends ListModel[ScriptObject] {
         }
     }
 }
+
+
+class Script(var name:String){
+    var module:String = ""
+    var function:String = ""
+    
+    def readToken(token:Token) = {
+        if (!token.getName().equals("script")){
+            throw new LoadException( "Starting token is not a 'script'" )
+        }
+        val nameToken = token.findToken("id")
+        if (nameToken != null){
+            name = nameToken.readString(0)
+        }
+        
+        val moduleToken = token.findToken("module")
+        if (moduleToken != null){
+            module = moduleToken.readString(0)
+        }
+        
+        val functionToken = token.findToken("function")
+        if (functionToken != null){
+            function = functionToken.readString(0)
+        }
+    }
+    
+    def toToken():Token = {
+        val script = new Token()
+        script.addToken(new Token(script, "script"))
+        script.addToken(Array("id", name))
+        script.addToken(Array("module", module))
+        script.addToken(Array("function", function))
+        
+        script
+    }
+    
+    def editDialog(list:JList[Script]) = {
+        val nameField:JTextField = new JTextField()
+        val moduleField:JTextField = new JTextField()
+        val functionField:JTextField = new JTextField()
+        
+        nameField.setText(name)
+        moduleField.setText(module)
+        functionField.setText(function)
+        
+        val options = Array(
+            "Name: ",
+            nameField,
+            "Module: ",
+            moduleField,
+            "Function: ",
+            functionField)
+
+        val result:Int = JOptionPane.showConfirmDialog(null, options, "Edit Script", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            name = nameField.getText()
+            module = moduleField.getText()
+            function = functionField.getText()
+            list.revalidate()
+            list.repaint()
+        }
+    }
+    
+    override def toString():String = {
+        toToken().toString()
+    }
+}
+
+class ScriptData extends ListModel[Script] {
+    var data:List[Script] = List[Script]()
+    var listeners = List[ListDataListener]()
+
+    def add(script:Script){
+        data = data :+ script
+        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
+        for (listener <- listeners){
+            listener.intervalAdded(event)
+        }
+    }
+    
+    def remove(index:Int){
+        data = data.remove(data.indexOf(_) == index)
+        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
+        for (listener <- listeners){
+            listener.intervalAdded(event)
+        }
+    }
+
+    def getAll():List[Script] = {
+        data
+    }
+
+    override def addListDataListener(listener:ListDataListener){
+        listeners = listeners :+ listener
+    }
+
+    override def getElementAt(index:Int) = {
+        this.data.find(data.indexOf(_) == index) match {
+            case Some(obj) => obj
+            case None => throw new Exception("failed to find " + index)
+        }
+    }
+
+    override def getSize():Int = {
+        this.data.size
+    }
+
+    override def removeListDataListener(listener:ListDataListener){
+        listeners = this.listeners - listener
+    }
+    
+    def readToken(token:Token) = {
+        val scriptIterator = token.findTokens("script").iterator()
+        while(scriptIterator.hasNext()){
+            val script = new Script("Script")
+            script.readToken(scriptIterator.next())
+            add(script)
+        }
+    }
+}

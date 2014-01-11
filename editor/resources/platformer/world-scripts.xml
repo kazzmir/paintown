@@ -9,6 +9,19 @@
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"
         />
+        <vbox border="TitledBorder(LineBorder(black,2),World Scripts,TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <scrollpane>
+                    <list id="scripts" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <button text="Add" id="add-script-button" />
+                <button text="Edit" id="edit-script-button" />
+                <button text="Remove" id="remove-script-button" />
+                <glue />
+            </hbox>
+        </vbox>
         <vbox border="TitledBorder(LineBorder(black,2),Script Objects,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
