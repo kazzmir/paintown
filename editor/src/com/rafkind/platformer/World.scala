@@ -882,9 +882,14 @@ class World(var _path:File){
         tilesetsEngine = engine
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
+        val currentAnimation = mainEngine.find("current-animation").asInstanceOf[JLabel]
+        val currentTileset = mainEngine.find("current-tileset").asInstanceOf[JLabel]
+        val anims = engine.find("anims").asInstanceOf[JList[Animation]]
+        val bgs = engine.find("backgrounds").asInstanceOf[JList[TileSet]]
+        val fgs = engine.find("foregrounds").asInstanceOf[JList[TileSet]]
+        
         // Animations
         {
-            val anims = engine.find("anims").asInstanceOf[JList[Animation]]
             anims.setModel(animations)
             
             anims.setVisibleRowCount(4)
@@ -923,14 +928,13 @@ class World(var _path:File){
             val current = engine.find("current-anim-button").asInstanceOf[JButton]
             current.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
-                    val currentLabel = mainEngine.find("current-animation").asInstanceOf[JLabel]
                     if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
                         if (animations.getElementAt(anims.getSelectedIndex()).isCurrent){
                             animations.getElementAt(anims.getSelectedIndex()).isCurrent = false
                             view.revalidate()
                             viewScroll.repaint()
                             anims.repaint()
-                            currentLabel.setText("None")
+                            currentAnimation.setText("None")
                         } else {
                             clearCurrentAnimation()
                             val animation = animations.getElementAt(anims.getSelectedIndex())
@@ -938,7 +942,7 @@ class World(var _path:File){
                             view.revalidate()
                             viewScroll.repaint()
                             anims.repaint()
-                            currentLabel.setText(animation.name)
+                            currentAnimation.setText(animation.name)
                         }
                     }
                 } 
@@ -958,7 +962,6 @@ class World(var _path:File){
         
         // Backgrounds and foregrounds
         {
-            val bgs = engine.find("backgrounds").asInstanceOf[JList[TileSet]]
             bgs.setModel(backgrounds)
             
             bgs.setVisibleRowCount(4)
@@ -1018,7 +1021,6 @@ class World(var _path:File){
                 } 
             })
             
-            val fgs = engine.find("foregrounds").asInstanceOf[JList[TileSet]]
             fgs.setModel(foregrounds)
             
             fgs.setVisibleRowCount(4)
@@ -1082,7 +1084,6 @@ class World(var _path:File){
             currentBg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (backgrounds.getSize() > 0 && bgs.getSelectedIndex() != -1){
-                        val currentTileset = mainEngine.find("current-tileset").asInstanceOf[JLabel]
                         if (backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent){
                             backgrounds.getElementAt(bgs.getSelectedIndex()).isCurrent = false
                             view.revalidate()
@@ -1108,7 +1109,6 @@ class World(var _path:File){
             currentFg.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (foregrounds.getSize() > 0 && fgs.getSelectedIndex() != -1){
-                        val currentTileset = mainEngine.find("current-tileset").asInstanceOf[JLabel]
                         if (foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent){
                             foregrounds.getElementAt(fgs.getSelectedIndex()).isCurrent = false
                             view.revalidate()
@@ -1127,6 +1127,21 @@ class World(var _path:File){
                             currentTileset.setText(foreground.name)
                         }
                     }
+                } 
+            })
+            
+            val clear = mainEngine.find("clear-selections").asInstanceOf[JButton]
+            clear.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    clearCurrentAnimation()
+                    clearCurrentTileSet()
+                    currentAnimation.setText("None")
+                    currentTileset.setText("None")
+                    anims.repaint()
+                    fgs.repaint()
+                    bgs.repaint()
+                    view.revalidate()
+                    viewScroll.repaint()
                 } 
             })
         }

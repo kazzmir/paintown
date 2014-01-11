@@ -17,6 +17,9 @@
             <hbox> 
                 <label Foreground="128,0,0" text="objects when animations and tilesets are selected." />
             </hbox>
+            <hbox>
+                <button id="clear-selections" text="Clear Selected Animation / Tileset" />
+            </hbox>
         </vbox>
     </vbox>
 </splitpane>
