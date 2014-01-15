@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<dialog Size="500,500" resizable="false" title="Script Object Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+<dialog Size="500,600" resizable="false" title="Script Object Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
 
 <vbox>
     <panel layout="GridBagLayout">
@@ -51,6 +51,18 @@
                     </hbox>
                 </vbox>
             </hbox>
+            <vbox border="TitledBorder(LineBorder(black,2),Animations,TitledBorder.CENTER, TitledBorder.TOP)">
+                <hbox>
+                    <scrollpane>
+                        <list id="animations" />
+                    </scrollpane>
+                </hbox>
+                <hbox>
+                    <button text="Add" id="add-animation-button" />
+                    <button text="Remove" id="remove-animation-button" />
+                </hbox>
+            </vbox>
+            <glue />
         </vbox>
     </panel>
 

@@ -23,17 +23,20 @@ class Area(var name:String){
     var height:Int = 0
     var color:Color = new Color(204,0,51)
     var font = new Font("Verdana", Font.BOLD, 4)
+    var drawInfo = true
     
     def render(g:Graphics2D, x1:Int, y1:Int) = {
         g.setColor(color)
         g.drawRect(x1 + x, y1 + y, width, height)
-        g.setFont(font);
-        g.drawString( "Collision map [" + name + "]", x1 + x -1, y1 + y -1)
+        g.setFont(font)
+        if (drawInfo){
+            g.drawString( "Collision map [" + name + "]", x1 + x -1, y1 + y -1)
+        }
     }
     
-    def readToken(token:Token) = {
-        if (!token.getName().equals("area")){
-            throw new LoadException( "Starting token is not 'area'" )
+    def readToken(token:Token, collisionArea:String = "area") = {
+        if (!token.getName().equals(collisionArea)){
+            throw new LoadException( "Starting token is not '" + collisionArea + "'" )
         }
         val nameToken = token.findToken("id")
         if (nameToken != null){
@@ -56,9 +59,9 @@ class Area(var name:String){
         }
     }
     
-    def toToken():Token = {
+    def toToken(collisionArea:String = "area"):Token = {
         val area = new Token()
-        area.addToken(new Token(area, "area "))
+        area.addToken(new Token(area, collisionArea))
         area.addToken(Array("id", name))
         area.addToken(Array("position", String.valueOf(x), String.valueOf(y), String.valueOf(width), String.valueOf(height)))
         area.addToken(Array("color", color.getRed().toString, color.getGreen().toString, color.getBlue().toString))
@@ -91,8 +94,10 @@ class Area(var name:String){
                     
                     def update() = {
                         name = nameField.getText()
-                        list.revalidate()
-                        list.repaint()
+                        if (list != null){
+                            list.revalidate()
+                            list.repaint()
+                        }
                     }
                 })
             }
@@ -204,8 +209,10 @@ class Area(var name:String){
                         pane.setVisible(false)
                         view.revalidate()
                         viewScroll.repaint()
-                        list.revalidate()
-                        list.repaint()
+                        if (list != null){
+                            list.revalidate()
+                            list.repaint()
+                        }
                     } 
                 })
             }

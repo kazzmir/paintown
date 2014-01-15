@@ -13,14 +13,14 @@
             <hbox  MaximumSize="450,450">
                 <label text="Name: " />
                 <textfield id="name" />
-                <glue />
+                
             </hbox>
             <hbox  MaximumSize="450,450">
                 <label text="Dimensions X: " />
                 <spinner id="dimensions-x" />
                 <label text="   Y: " />
                 <spinner id="dimensions-y" />
-                <glue />
+                
             </hbox>
             <hbox  MaximumSize="450,450">
                 <label text="Background fill color: " />
@@ -28,47 +28,49 @@
                 <panel id="fill-color-display" />
                 <label text="Enabled" />
                 <checkbox id="enable-fill-color" />
-                <glue />
+                
             </hbox>
             <hbox  MaximumSize="450,450">
                 <label text="Scale: 2.0" id="scale-label" />
                 <slider id="scale" minimum="1" maximum="20" />
-                <glue />
+                
             </hbox>
             <hbox  MaximumSize="450,450">
                 <label text="Offset X: " />
                 <spinner id="offset-x" />
                 <label text="   Y: " />
                 <spinner id="offset-y" />
-                <glue />
+                
             </hbox>
             <hbox  MaximumSize="450,450">
                 <label text="Enable Animations: " />
                 <checkbox id="enable-animations" />
                 <label text="Display FPS: " />
                 <checkbox id="display-fps" />
-                <glue />
+                
             </hbox>
         </vbox>
-        <hbox  MaximumSize="450,450" border="TitledBorder(LineBorder(black,2),Resolution,TitledBorder.CENTER, TitledBorder.TOP)">
-            <label text="X: " />
-            <spinner id="resolution-x" />
-            <label text="   Y: " />
-            <spinner id="resolution-y" />
-            <glue />
-        </hbox>
+        <vbox>
+            <hbox  MaximumSize="450,450" border="TitledBorder(LineBorder(black,2),Resolution,TitledBorder.CENTER, TitledBorder.TOP)">
+                <label text="X: " />
+                <spinner id="resolution-x" />
+                <label text="   Y: " />
+                <spinner id="resolution-y" />
+                
+            </hbox>
+        </vbox>
         <vbox border="TitledBorder(LineBorder(black,2),Mechanics,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox  MaximumSize="450,450">
                 <label text="Gravity X: " />
                 <spinner id="gravity-x" />
                 <label text="   Y: " />
                 <spinner id="gravity-y" />
-                <glue />
+                
             </hbox>
             <hbox  MaximumSize="450,450">
                 <label text="Acceleration: " />
                 <spinner id="acceleration" />
-                <glue />
+                
             </hbox>
         </vbox>
         <hbox MaximumSize="450,450" border="TitledBorder(LineBorder(black,2),Overlay,TitledBorder.CENTER, TitledBorder.TOP)">
@@ -85,5 +87,6 @@
                 </hbox>
             </vbox>
         </hbox>
+        <glue/>
     </vbox>
 </panel>

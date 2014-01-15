@@ -9,17 +9,18 @@
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"
         />
-        <vbox border="TitledBorder(LineBorder(black,2),Collision Maps,TitledBorder.CENTER, TitledBorder.TOP)">
+        <vbox border="TitledBorder(LineBorder(black,2),Animations,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
-                    <list id="collision-maps" />
+                    <list id="anims" />
                 </scrollpane>
             </hbox>
             <hbox>
-                <button text="Grab Area" id="grab-collision-button" />
-                <button text="Add" id="add-collision-button" />
-                <button text="Edit" id="edit-collision-button" />
-                <button text="Remove" id="remove-collision-button" />
+                <button text="Add" id="add-anim-button" />
+                <button text="Edit" id="edit-anim-button" />
+                <button text="Copy" id="copy-anim-button" />
+                <button text="Current" id="current-anim-button" />
+                <button text="Remove" id="remove-anim-button" />
             </hbox>
         </vbox>
         <glue />

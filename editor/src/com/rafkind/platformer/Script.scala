@@ -27,6 +27,7 @@ class ScriptObject(var name:String){
     var function:String = ""
     var color:Color = new Color(0,0,128)
     var font = new Font("Verdana", Font.BOLD, 4)
+    val animations = new AnimationListModel()
     
     def render(g:Graphics2D, x1:Int, y1:Int) = {
         g.setColor(color)
@@ -39,7 +40,7 @@ class ScriptObject(var name:String){
         g.drawString( "Object [" + name + "]", x1 + x -1, y1 + y -1)
     }
     
-    def readToken(token:Token) = {
+    def readToken(token:Token, animationList:AnimationListModel) = {
         if (!token.getName().equals("object-script")){
             throw new LoadException( "Starting token is not a 'script object'" )
         }
@@ -76,6 +77,16 @@ class ScriptObject(var name:String){
             height = image.getHeight()
         }
         
+        val animationIterator = token.findTokens("animation").iterator()
+        while(animationIterator.hasNext()){
+            val temp = animationIterator.next().findToken("id")
+            if (temp != null){
+                val animationName = temp.readString(0)
+                System.out.println("Got name: " + animationName)
+                animations.add(animationList.get(animationName))
+            }
+        }
+        
         val colorToken = token.findToken("color")
         if (colorToken != null){
             val r = colorToken.readInt(0)
@@ -95,6 +106,10 @@ class ScriptObject(var name:String){
         if (image != null){
             script.addToken(Array("image", image.toString()))
         }
+        
+        animations.getAll().foreach{
+            case (animation) => script.addToken(animation.toToken())
+        }
         script.addToken(Array("color", color.getRed().toString, color.getGreen().toString, color.getBlue().toString))
         
         script
@@ -104,7 +119,7 @@ class ScriptObject(var name:String){
         toToken().toString()
     }
     
-    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[ScriptObject]) = {
+    def editDialog(view:JPanel, viewScroll:JScrollPane, list:JList[ScriptObject], animationList:List[Animation]) = {
         try {
             val engine = new SwingEngine("platformer/script-object.xml")
             val pane = engine.find("dialog").asInstanceOf[JDialog]
@@ -310,6 +325,48 @@ class ScriptObject(var name:String){
                 })
             }
             
+            // Animations
+            {
+                val anims = engine.find("animations").asInstanceOf[JList[Animation]]
+                anims.setModel(animations)
+                
+                anims.setVisibleRowCount(4)
+                
+                val add = engine.find("add-animation-button").asInstanceOf[JButton]
+                add.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        /*val animation = new Animation("New Animation")
+                        addAnimation(animation)
+                        animation.editDialog(view, viewScroll, anims)*/
+                        val animationCombo:JComboBox[Animation] = new JComboBox[Animation]()
+                        
+                        animationCombo.setModel(new DefaultComboBoxModel(animationList.toArray))
+                        
+                        val options = Array(
+                            "Select an animation: ",
+                            animationCombo)
+
+                        val result:Int = JOptionPane.showConfirmDialog(null, options, "Select Animation", JOptionPane.OK_CANCEL_OPTION);
+                        if (result == JOptionPane.OK_OPTION && animationCombo.getSelectedIndex() != -1) {
+                            animations.add(animationList(animationCombo.getSelectedIndex()))
+                            list.revalidate()
+                            list.repaint()
+                        }
+                    } 
+                })
+                
+                val remove = engine.find("remove-animation-button").asInstanceOf[JButton]
+                remove.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                            animations.remove(anims.getSelectedIndex())
+                            view.revalidate()
+                            viewScroll.repaint()
+                        }
+                    } 
+                })
+            }
+            
             // Close
             {
                 val close = engine.find("close").asInstanceOf[JButton]
@@ -383,11 +440,11 @@ class ScriptObjectData extends ListModel[ScriptObject] {
         }
     }
     
-    def readToken(token:Token) = {
+    def readToken(token:Token, animationList:AnimationListModel) = {
         val scriptIterator = token.findTokens("object-script").iterator()
         while(scriptIterator.hasNext()){
             val script = new ScriptObject("Script")
-            script.readToken(scriptIterator.next())
+            script.readToken(scriptIterator.next(), animationList)
             add(script)
         }
     }

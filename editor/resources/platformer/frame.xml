@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<dialog Size="500,500" resizable="false" title="Frame Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+<dialog Size="500,600" resizable="false" title="Frame Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
 
 <vbox>
     <panel layout="GridBagLayout">
@@ -25,11 +25,20 @@
                     <label text="Horizontal: " />
                     <checkbox id="hflip" />
                 </hbox>
+                <glue />
             </hbox>
             <vbox border="TitledBorder(LineBorder(black,2),Render Timer,TitledBorder.CENTER, TitledBorder.TOP)">
                 <spinner id="time" />
                 <label text="(Set to -1 for infinite time)" />
             </vbox>
+            
+            <hbox border="TitledBorder(LineBorder(black,2),Collision Info, TitledBorder.CENTER, TitledBorder.TOP)">
+                <label text="Enabled: " />
+                <checkbox id="collision-enabled" />
+                <glue />
+                <button text="Edit Collision Area" id="collision-edit" />
+            </hbox>
+            <glue />
         </vbox>
     </panel>
 

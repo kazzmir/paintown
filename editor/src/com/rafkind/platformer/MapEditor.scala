@@ -412,6 +412,7 @@ class Editor extends JFrame("Platformer Map Editor"){
         // Create panel to handle world values
         val values = engine.find("values").asInstanceOf[JTabbedPane]
         values.add("Values", world.createDetailsPanel(view, viewScroll, tabbed))
+        values.add("Animations", world.createAnimationsPanel(view, viewScroll, tabbed, engine))
         values.add("Tilesets", world.createTilesetsPanel(view, viewScroll, tabbed, engine))
         values.add("Collision Maps", world.createCollisionsPanel(view, viewScroll, tabbed))
         values.add("Scripts", world.createScriptsPanel(view, viewScroll, tabbed))

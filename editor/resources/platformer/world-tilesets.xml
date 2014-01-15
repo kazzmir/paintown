@@ -9,21 +9,6 @@
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"
         />
-        <vbox border="TitledBorder(LineBorder(black,2),Animations,TitledBorder.CENTER, TitledBorder.TOP)">
-            <hbox>
-                <scrollpane>
-                    <list id="anims" />
-                </scrollpane>
-            </hbox>
-            <hbox>
-                <button text="Add" id="add-anim-button" />
-                <button text="Edit" id="edit-anim-button" />
-                <button text="Copy" id="copy-anim-button" />
-                <button text="Current" id="current-anim-button" />
-                <button text="Remove" id="remove-anim-button" />
-                <glue />
-            </hbox>
-        </vbox>
         <vbox border="TitledBorder(LineBorder(black,2),Background Tilesets,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
@@ -37,7 +22,6 @@
                 <button text="Down" id="down-bg-button" />
                 <button text="Current" id="current-bg-button" />
                 <button text="Remove" id="remove-bg-button" />
-                <glue />
             </hbox>
         </vbox>
         <vbox border="TitledBorder(LineBorder(black,2),Foreground Tilesets,TitledBorder.CENTER, TitledBorder.TOP)">
@@ -53,8 +37,8 @@
                 <button text="Down" id="down-fg-button" />
                 <button text="Current" id="current-fg-button" />
                 <button text="Remove" id="remove-fg-button" />
-                <glue />
             </hbox>
         </vbox>
+        <glue />
     </vbox>
 </panel>

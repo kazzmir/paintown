@@ -120,6 +120,9 @@ class Frame{
     var hflip:Boolean = false
     var vflip:Boolean = false 
     var time:Int = 0
+    var collisions:Boolean = false
+    var area:Area = new Area("collision")
+    area.drawInfo = false
     
     def readToken(token:Token) = {
         if (!token.getName().equals("frame")){
@@ -145,6 +148,11 @@ class Frame{
         if (timeToken != null){
             time = timeToken.readInt(0)
         }
+        val collisionToken = token.findToken("collision")
+        if (collisionToken != null){
+            collisions = true
+            area.readToken(collisionToken, "collision")
+        }
     }
 
     def toToken():Token = {
@@ -155,6 +163,9 @@ class Frame{
         frame.addToken(Array("hflip", String.valueOf(if(hflip) 1 else 0)))
         frame.addToken(Array("vflip", String.valueOf(if(vflip) 1 else 0)))
         frame.addToken(Array("time", String.valueOf(time)))
+        if (collisions){
+            frame.addToken(area.toToken("collision"))
+        }
         frame
     }
     
@@ -271,6 +282,30 @@ class Frame{
                 })
             }
             
+            // Collisions
+            {
+                val collisionEnabled = engine.find("collision-enabled").asInstanceOf[JCheckBox]
+                val editCollision = engine.find("collision-edit").asInstanceOf[JButton]
+                collisionEnabled.setSelected(collisions)
+                collisionEnabled.addChangeListener(new ChangeListener(){
+                    override def stateChanged(event:ChangeEvent){
+                        val checkbox = event.getSource().asInstanceOf[JCheckBox]
+                        val i = checkbox.isSelected().asInstanceOf[java.lang.Boolean]
+                        collisions = i.booleanValue()
+                        editCollision.setEnabled(collisions)
+                        list.revalidate()
+                        list.repaint()
+                    }
+                })
+                
+                editCollision.setEnabled(collisions)
+                editCollision.addActionListener(new ActionListener() { 
+                    def actionPerformed(e:ActionEvent) = {
+                        area.editDialog(view, viewScroll, null)
+                    } 
+                })
+            }
+            
             // Close
             {
                 val close = engine.find("close").asInstanceOf[JButton]
@@ -364,6 +399,9 @@ class Animation(var name:String){
             var frame = frames.getElementAt(index)
             if (frame.image != -1){
                 images.getElementAt(frame.image).render(g, x, y)
+                if (frame.collisions){
+                    frame.area.render(g, x, y)
+                }
             }
         }
     }

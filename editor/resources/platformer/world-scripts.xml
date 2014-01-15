@@ -19,7 +19,6 @@
                 <button text="Add" id="add-script-button" />
                 <button text="Edit" id="edit-script-button" />
                 <button text="Remove" id="remove-script-button" />
-                <glue />
             </hbox>
         </vbox>
         <vbox border="TitledBorder(LineBorder(black,2),Script Objects,TitledBorder.CENTER, TitledBorder.TOP)">
@@ -34,8 +33,8 @@
                 <button text="Copy" id="copy-script-object-button" />
                 <button text="Copy To" id="copy-script-object-to-button" />
                 <button text="Remove" id="remove-script-object-button" />
-                <glue />
             </hbox>
         </vbox>
+        <glue />
     </vbox>
 </panel>

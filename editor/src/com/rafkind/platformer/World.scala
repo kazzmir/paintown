@@ -173,6 +173,7 @@ class World(var _path:File){
     var tilesetsEngine:SwingEngine = null
     var collisionsEngine:SwingEngine = null
     var scriptsEngine:SwingEngine = null
+    var animationsEngine:SwingEngine = null
     
     if (_path != null){
         load(_path)
@@ -313,7 +314,7 @@ class World(var _path:File){
         
         worldScripts.readToken(head)
         
-        scriptObjects.readToken(head)
+        scriptObjects.readToken(head, animations)
 
         System.out.println( "Loaded " + f )
     }
@@ -498,7 +499,7 @@ class World(var _path:File){
         val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
         if (objects.getSelectedIndex() != -1){
             val script = new ScriptObject("New script object")
-            script.readToken(scriptObjects.getElementAt(objects.getSelectedIndex()).toToken())
+            script.readToken(scriptObjects.getElementAt(objects.getSelectedIndex()).toToken(), animations)
             script.x = x
             script.y = y
             scriptObjects.add(script)
@@ -882,83 +883,9 @@ class World(var _path:File){
         tilesetsEngine = engine
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
         
-        val currentAnimation = mainEngine.find("current-animation").asInstanceOf[JLabel]
         val currentTileset = mainEngine.find("current-tileset").asInstanceOf[JLabel]
-        val anims = engine.find("anims").asInstanceOf[JList[Animation]]
         val bgs = engine.find("backgrounds").asInstanceOf[JList[TileSet]]
         val fgs = engine.find("foregrounds").asInstanceOf[JList[TileSet]]
-        
-        // Animations
-        {
-            anims.setModel(animations)
-            
-            anims.setVisibleRowCount(4)
-            
-            val add = engine.find("add-anim-button").asInstanceOf[JButton]
-            add.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    val animation = new Animation("New Animation")
-                    addAnimation(animation)
-                    animation.editDialog(view, viewScroll, anims)
-                } 
-            })
-            
-            val edit = engine.find("edit-anim-button").asInstanceOf[JButton]
-            edit.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
-                        animations.getElementAt(anims.getSelectedIndex()).editDialog(view, viewScroll, anims)
-                    }
-                } 
-            })
-            
-            val copy = engine.find("copy-anim-button").asInstanceOf[JButton]
-            copy.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
-                        val animation = new Animation("new")
-                        animation.readToken(animations.getElementAt(anims.getSelectedIndex()).toToken())
-                        animation.name = animation.name + " (Copy)"
-                        addAnimation(animation)
-                        animation.editDialog(view, viewScroll, anims)
-                    }
-                } 
-            })
-            
-            val current = engine.find("current-anim-button").asInstanceOf[JButton]
-            current.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
-                        if (animations.getElementAt(anims.getSelectedIndex()).isCurrent){
-                            animations.getElementAt(anims.getSelectedIndex()).isCurrent = false
-                            view.revalidate()
-                            viewScroll.repaint()
-                            anims.repaint()
-                            currentAnimation.setText("None")
-                        } else {
-                            clearCurrentAnimation()
-                            val animation = animations.getElementAt(anims.getSelectedIndex())
-                            animation.isCurrent = true
-                            view.revalidate()
-                            viewScroll.repaint()
-                            anims.repaint()
-                            currentAnimation.setText(animation.name)
-                        }
-                    }
-                } 
-            })
-            
-            val remove = engine.find("remove-anim-button").asInstanceOf[JButton]
-            remove.addActionListener(new ActionListener() { 
-                def actionPerformed(e:ActionEvent) = {
-                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
-                        animations.remove(anims.getSelectedIndex())
-                        view.revalidate()
-                        viewScroll.repaint()
-                    }
-                } 
-            })
-        }
         
         // Backgrounds and foregrounds
         {
@@ -1135,9 +1062,10 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     clearCurrentAnimation()
                     clearCurrentTileSet()
-                    currentAnimation.setText("None")
+                    mainEngine.find("current-animation").asInstanceOf[JLabel].setText("None")
                     currentTileset.setText("None")
-                    anims.repaint()
+                    //anims.repaint()
+                    animationsEngine.find("anims").asInstanceOf[JList[Animation]].repaint()
                     fgs.repaint()
                     bgs.repaint()
                     view.revalidate()
@@ -1256,7 +1184,7 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     val script = new ScriptObject("New script object")
                     scriptObjects.add(script)
-                    script.editDialog(view, viewScroll, scripts)
+                    script.editDialog(view, viewScroll, scripts, animations.getAll())
                 } 
             })
             
@@ -1264,7 +1192,7 @@ class World(var _path:File){
             edit.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
-                        scriptObjects.getElementAt(scripts.getSelectedIndex()).editDialog(view, viewScroll, scripts)
+                        scriptObjects.getElementAt(scripts.getSelectedIndex()).editDialog(view, viewScroll, scripts, animations.getAll())
                     }
                 } 
             })
@@ -1274,9 +1202,9 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
                         val script = new ScriptObject("new")
-                        script.readToken(scriptObjects.getElementAt(scripts.getSelectedIndex()).toToken())
+                        script.readToken(scriptObjects.getElementAt(scripts.getSelectedIndex()).toToken(), animations)
                         scriptObjects.add(script)
-                        script.editDialog(view, viewScroll, scripts)
+                        script.editDialog(view, viewScroll, scripts, animations.getAll())
                     }
                 } 
             })
@@ -1296,6 +1224,89 @@ class World(var _path:File){
                 def actionPerformed(e:ActionEvent) = {
                     if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
                         scriptObjects.remove(scripts.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
+                } 
+            })
+        }
+        
+        pane
+    }
+    
+    // Animations pane
+    def createAnimationsPanel(view:JPanel, viewScroll:JScrollPane, tabbed:JTabbedPane, mainEngine:SwingEngine):JPanel = {
+        val engine = new SwingEngine( "platformer/world-animations.xml" )
+        animationsEngine = engine
+        val pane = engine.getRootComponent().asInstanceOf[JPanel]
+        
+        // Animations
+        {
+            val currentAnimation = mainEngine.find("current-animation").asInstanceOf[JLabel]
+            val anims = engine.find("anims").asInstanceOf[JList[Animation]]
+            anims.setModel(animations)
+            
+            anims.setVisibleRowCount(4)
+            
+            val add = engine.find("add-anim-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val animation = new Animation("New Animation")
+                    addAnimation(animation)
+                    animation.editDialog(view, viewScroll, anims)
+                } 
+            })
+            
+            val edit = engine.find("edit-anim-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        animations.getElementAt(anims.getSelectedIndex()).editDialog(view, viewScroll, anims)
+                    }
+                } 
+            })
+            
+            val copy = engine.find("copy-anim-button").asInstanceOf[JButton]
+            copy.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        val animation = new Animation("new")
+                        animation.readToken(animations.getElementAt(anims.getSelectedIndex()).toToken())
+                        animation.name = animation.name + " (Copy)"
+                        addAnimation(animation)
+                        animation.editDialog(view, viewScroll, anims)
+                    }
+                } 
+            })
+            
+            val current = engine.find("current-anim-button").asInstanceOf[JButton]
+            current.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        if (animations.getElementAt(anims.getSelectedIndex()).isCurrent){
+                            animations.getElementAt(anims.getSelectedIndex()).isCurrent = false
+                            view.revalidate()
+                            viewScroll.repaint()
+                            anims.repaint()
+                            currentAnimation.setText("None")
+                        } else {
+                            clearCurrentAnimation()
+                            val animation = animations.getElementAt(anims.getSelectedIndex())
+                            animation.isCurrent = true
+                            view.revalidate()
+                            viewScroll.repaint()
+                            anims.repaint()
+                            currentAnimation.setText(animation.name)
+                        }
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-anim-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (animations.getSize() > 0 && anims.getSelectedIndex() != -1){
+                        animations.remove(anims.getSelectedIndex())
                         view.revalidate()
                         viewScroll.repaint()
                     }

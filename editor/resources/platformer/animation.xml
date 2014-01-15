@@ -48,6 +48,7 @@
             <hbox border="TitledBorder(LineBorder(black,2),Loop Point,TitledBorder.CENTER, TitledBorder.TOP)">
                 <textfield id="loop" />
             </hbox>
+            <glue />
         </vbox>
     </panel>
 
