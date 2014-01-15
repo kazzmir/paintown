@@ -102,6 +102,10 @@ test/mugen/command.cpp
 test/util/debug.cpp
 """)
 
+command2_source = Split("""
+command2.cpp
+""")
+
 serialize_data_source = Split("""
 serialize-data.cpp
 test/util/debug.cpp
@@ -126,6 +130,7 @@ makeTest('load-sff', ['load-sff.cpp', 'common/init.cpp'] + most_game_source)
 makeTest('world', ['world.cpp'] + most_game_source)
 makeTest('replay', ['replay.cpp'] + most_game_source)
 makeTest('command', command_source)
+makeTest('command2', command2_source)
 makeTest('serialize-data', serialize_data_source)
 x.extend(testEnv.Program('run-match', match_source))
 x.extend(testEnv.Program('states', states_source))
