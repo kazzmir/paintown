@@ -569,3 +569,94 @@ class ScriptData extends ListModel[Script] {
         }
     }
 }
+
+class ScriptPath(var name:String){
+    
+    def readToken(token:Token) = {
+        if (!token.getName().equals("script-import-path")){
+            throw new LoadException( "Starting token is not 'script-import-path'" )
+        }
+        name = token.readString(0)
+    }
+    
+    def toToken():Token = {
+        val token = new Token()
+        token.addToken(new Token(token, "script-import-path " + name))
+        
+        token
+    }
+    
+    def editDialog(pane:JPanel):Boolean = {
+        if (MapEditor.getDataPath("/").isDirectory()){
+            val chooser = new JFileChooser(MapEditor.getDataPath("/"))
+            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY)
+            val returnVal = chooser.showOpenDialog(pane)
+            if (returnVal == JFileChooser.APPROVE_OPTION){
+                val choosen:File = chooser.getSelectedFile()
+                name = MapEditor.absoluteToRelative(choosen).getPath()
+                return true
+            }
+        } else {
+            JOptionPane.showMessageDialog(pane, "Please set the data directory in the menu.")
+        }
+        
+        false
+    }
+    
+    override def toString():String = {
+        toToken().toString()
+    }
+}
+
+class ScriptPathData extends ListModel[ScriptPath] {
+    var data:List[ScriptPath] = List[ScriptPath]()
+    var listeners = List[ListDataListener]()
+
+    def add(path:ScriptPath){
+        data = data :+ path
+        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_ADDED, data.size, data.size)
+        for (listener <- listeners){
+            listener.intervalAdded(event)
+        }
+    }
+    
+    def remove(index:Int){
+        data = data.remove(data.indexOf(_) == index)
+        val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
+        for (listener <- listeners){
+            listener.intervalAdded(event)
+        }
+    }
+
+    def getAll():List[ScriptPath] = {
+        data
+    }
+
+    override def addListDataListener(listener:ListDataListener){
+        listeners = listeners :+ listener
+    }
+
+    override def getElementAt(index:Int) = {
+        this.data.find(data.indexOf(_) == index) match {
+            case Some(obj) => obj
+            case None => throw new Exception("failed to find " + index)
+        }
+    }
+
+    override def getSize():Int = {
+        this.data.size
+    }
+
+    override def removeListDataListener(listener:ListDataListener){
+        listeners = this.listeners - listener
+    }
+    
+    def readToken(token:Token) = {
+        val pathIterator = token.findTokens("script-import-path").iterator()
+        while(pathIterator.hasNext()){
+            val path = new ScriptPath("somedir")
+            path.readToken(pathIterator.next())
+            add(path)
+        }
+    }
+}

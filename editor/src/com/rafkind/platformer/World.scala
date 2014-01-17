@@ -137,6 +137,9 @@ class World(var _path:File){
     //! Collision maps
     var collisionMaps = new CollisionMap()
     
+    //! Script data paths
+    val scriptPaths = new ScriptPathData()
+    
     //! Script objects
     var scriptObjects = new ScriptObjectData()
     
@@ -312,6 +315,8 @@ class World(var _path:File){
             collisionMaps.readToken(collisionToken)
         }
         
+        scriptPaths.readToken(head)
+        
         worldScripts.readToken(head)
         
         scriptObjects.readToken(head, animations)
@@ -377,6 +382,11 @@ class World(var _path:File){
         
         // Collision maps
         world.addToken(collisionMaps.toToken())
+        
+        // Script paths
+        scriptPaths.getAll().foreach{
+            case (path) => world.addToken(path.toToken())
+        }
         
         // Scripts
         worldScripts.getAll().foreach{
@@ -1136,6 +1146,33 @@ class World(var _path:File){
         val engine = new SwingEngine( "platformer/world-scripts.xml" )
         scriptsEngine = engine
         val pane = engine.getRootComponent().asInstanceOf[JPanel]
+        
+        // Script paths
+        {
+            val paths = engine.find("script-data-paths").asInstanceOf[JList[ScriptPath]]
+            paths.setModel(scriptPaths)
+            
+            paths.setVisibleRowCount(4)
+            
+            val add = engine.find("add-path-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val path = new ScriptPath("newpath")
+                    if (path.editDialog(view)){
+                        scriptPaths.add(path)
+                    }
+                } 
+            })
+            
+            val remove = engine.find("remove-path-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (scriptPaths.getSize() > 0 && paths.getSelectedIndex() != -1){
+                        scriptPaths.remove(paths.getSelectedIndex())
+                    }
+                } 
+            })
+        }
         
         // Scripts
         {

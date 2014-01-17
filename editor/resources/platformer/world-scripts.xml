@@ -9,6 +9,17 @@
             anchor="GridBagConstraints.NORTHWEST"
             fill="GridBagConstraints.BOTH"
         />
+        <vbox border="TitledBorder(LineBorder(black,2),Script Data Search Paths,TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <scrollpane>
+                    <list id="script-data-paths" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <button text="Add" id="add-path-button" />
+                <button text="Remove" id="remove-path-button" />
+            </hbox>
+        </vbox>
         <vbox border="TitledBorder(LineBorder(black,2),World Scripts,TitledBorder.CENTER, TitledBorder.TOP)">
             <hbox>
                 <scrollpane>
