@@ -414,6 +414,8 @@ def checkPython(context):
     """, ".c");
 
     env.Append(LIBS = old_libs)
+    
+    ret = 1
 
     if not ret:
         context.sconf.env = tmp

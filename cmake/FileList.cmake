@@ -22,8 +22,3 @@ set(LOADPNG_SRC
 src/util/graphics/allegro/loadpng/loadpng.c
 src/util/graphics/allegro/loadpng/regpng.c
 src/util/graphics/allegro/loadpng/savepng.c)
-
-set(MISSILE_DEFEND_SRC
-src/missile-defend/argument.cpp
-src/missile-defend/game.cpp
-)
