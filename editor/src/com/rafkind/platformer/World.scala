@@ -143,6 +143,9 @@ class World(var _path:File){
     //! Script objects
     var scriptObjects = new ScriptObjectData()
     
+    //! Objects
+    var worldObjects = new WorldObjectData()
+    
     //! Scripts
     var worldScripts = new ScriptData()
     
@@ -201,7 +204,7 @@ class World(var _path:File){
         }
         
         // Objects
-        scriptObjects.render(g, offsetX, offsetY)
+        worldObjects.render(g, offsetX, offsetY)
         
         // foregrounds
         foregrounds.getAll().foreach{
@@ -320,6 +323,8 @@ class World(var _path:File){
         worldScripts.readToken(head)
         
         scriptObjects.readToken(head, animations)
+        
+        worldObjects.readToken(head, scriptObjects)
 
         System.out.println( "Loaded " + f )
     }
@@ -396,6 +401,11 @@ class World(var _path:File){
         // Script objects
         scriptObjects.getAll().foreach{
             case (script) => world.addToken(script.toToken())
+        }
+        
+        // Objects
+        worldObjects.getAll().foreach{
+            case (obj) => world.addToken(obj.toToken())
         }
 
         world
@@ -506,23 +516,22 @@ class World(var _path:File){
     }
     
     def copyObject(x:Int, y:Int) = {
-        val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
+        val objects = scriptsEngine.find("objects").asInstanceOf[JList[WorldObject]]
         if (objects.getSelectedIndex() != -1){
-            val script = new ScriptObject("New script object")
-            script.readToken(scriptObjects.getElementAt(objects.getSelectedIndex()).toToken(), animations)
-            script.x = x
-            script.y = y
-            scriptObjects.add(script)
-            //objects.ensureIndexIsVisible(objects.getModel().indexOf(script))
+            val obj = new WorldObject()
+            obj.readToken(scriptObjects.getElementAt(objects.getSelectedIndex()).toToken(), scriptObjects)
+            obj.x = x
+            obj.y = y
+            worldObjects.add(obj)
         }
     }
     
     def moveObject(x:Int, y:Int) = {
-        val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
+        val objects = scriptsEngine.find("objects").asInstanceOf[JList[WorldObject]]
         if (objects.getSelectedIndex() != -1){
-            val script = scriptObjects.getElementAt(objects.getSelectedIndex())
-            script.x = x + scriptObjectOffsetX
-            script.y = y + scriptObjectOffsetY
+            val obj = worldObjects.getElementAt(objects.getSelectedIndex())
+            obj.x = x + scriptObjectOffsetX
+            obj.y = y + scriptObjectOffsetY
         }
     }
     
@@ -541,15 +550,15 @@ class World(var _path:File){
                 }
             }
         }
-        val objects = scriptsEngine.find("script-objects").asInstanceOf[JList[Area]]
-        scriptObjects.getAll().zipWithIndex.foreach{
-            case (script, index) => {
-                if (collides(x, y, script.x, script.y, script.width, script.height)){
+        val objects = scriptsEngine.find("objects").asInstanceOf[JList[Area]]
+        worldObjects.getAll().zipWithIndex.foreach{
+            case (obj, index) => {
+                if (collides(x, y, obj.x, obj.y, obj.script.width, obj.script.height)){
                     objects.setSelectedIndex(index)
                     objects.ensureIndexIsVisible(index)
                     scriptObjectGrabbed = true;
-                    scriptObjectOffsetX = x - (script.x + script.width)
-                    scriptObjectOffsetY = y - (script.y + script.height)
+                    scriptObjectOffsetX = x - (obj.x + obj.script.width)
+                    scriptObjectOffsetY = y - (obj.y + obj.script.height)
                 }
             }
         }
@@ -1234,7 +1243,7 @@ class World(var _path:File){
                 } 
             })
             
-            val copy = engine.find("copy-script-object-button").asInstanceOf[JButton]
+            val copy = engine.find("make-script-object-copy-button").asInstanceOf[JButton]
             copy.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
@@ -1246,21 +1255,60 @@ class World(var _path:File){
                 } 
             })
             
-            val copyTo = engine.find("copy-script-object-to-button").asInstanceOf[JButton]
-            copyTo.addActionListener(new ActionListener() { 
+            val remove = engine.find("remove-script-object-button").asInstanceOf[JButton]
+            remove.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
                     if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
+                        scriptObjects.remove(scripts.getSelectedIndex())
+                        view.revalidate()
+                        viewScroll.repaint()
+                    }
+                } 
+            })
+        }
+        
+        
+        
+        // objects
+        {
+            val objects = engine.find("objects").asInstanceOf[JList[WorldObject]]
+            objects.setModel(worldObjects)
+            
+            objects.setVisibleRowCount(4)
+            
+            val add = engine.find("add-object-button").asInstanceOf[JButton]
+            add.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    val obj = new WorldObject()
+                    worldObjects.add(obj)
+                    obj.editDialog(view, viewScroll, objects, scriptObjects.getAll())
+                } 
+            })
+            
+            val edit = engine.find("edit-object-button").asInstanceOf[JButton]
+            edit.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (worldObjects.getSize() > 0 && objects.getSelectedIndex() != -1){
+                        worldObjects.getElementAt(objects.getSelectedIndex()).editDialog(view, viewScroll, objects, scriptObjects.getAll())
+                    }
+                } 
+            })
+            
+            val copyTo = engine.find("copy-object-to-button").asInstanceOf[JButton]
+            copyTo.addActionListener(new ActionListener() { 
+                def actionPerformed(e:ActionEvent) = {
+                    if (worldObjects.getSize() > 0 && objects.getSelectedIndex() != -1){
                         inputCollision = false
                         scriptObjectCopy = true
                     }
                 } 
             })
             
-            val remove = engine.find("remove-script-object-button").asInstanceOf[JButton]
+            val remove = engine.find("remove-object-button").asInstanceOf[JButton]
             remove.addActionListener(new ActionListener() { 
                 def actionPerformed(e:ActionEvent) = {
-                    if (scriptObjects.getSize() > 0 && scripts.getSelectedIndex() != -1){
-                        scriptObjects.remove(scripts.getSelectedIndex())
+                    if (worldObjects.getSize() > 0 && objects.getSelectedIndex() != -1){
+                        worldObjects.remove(objects.getSelectedIndex())
                         view.revalidate()
                         viewScroll.repaint()
                     }

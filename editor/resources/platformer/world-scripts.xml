@@ -41,9 +41,21 @@
             <hbox>
                 <button text="Add" id="add-script-object-button" />
                 <button text="Edit" id="edit-script-object-button" />
-                <button text="Copy" id="copy-script-object-button" />
-                <button text="Copy To" id="copy-script-object-to-button" />
+                <button text="Copy" id="make-script-object-copy-button" />
                 <button text="Remove" id="remove-script-object-button" />
+            </hbox>
+        </vbox>
+        <vbox border="TitledBorder(LineBorder(black,2),Objects,TitledBorder.CENTER, TitledBorder.TOP)">
+            <hbox>
+                <scrollpane>
+                    <list id="objects" />
+                </scrollpane>
+            </hbox>
+            <hbox>
+                <button text="Add" id="add-object-button" />
+                <button text="Edit" id="edit-object-button" />
+                <button text="Copy To" id="copy-object-to-button" />
+                <button text="Remove" id="remove-object-button" />
             </hbox>
         </vbox>
         <glue />

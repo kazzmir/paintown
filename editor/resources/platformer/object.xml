@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+
+<dialog Size="500,600" resizable="false" title="Script Object Dialog"  defaultCloseOperation="JFrame.HIDE_ON_CLOSE" id="dialog">
+
+<vbox>
+    <panel layout="GridBagLayout">
+        <vbox>
+            <hbox border="TitledBorder(LineBorder(black,2),Position,TitledBorder.CENTER, TitledBorder.TOP)">
+                <vbox border="TitledBorder(LineBorder(gray,1),X,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="x" />
+                </vbox>
+                <vbox border="TitledBorder(LineBorder(gray,1),Y,TitledBorder.CENTER, TitledBorder.TOP)">
+                    <spinner id="y" />
+                </vbox>
+            </hbox>
+            <vbox border="TitledBorder(LineBorder(black,2),Selected Script,TitledBorder.CENTER, TitledBorder.TOP)">
+                <hbox>
+                    <panel id="script-view" />
+                </hbox>
+                <hbox>
+                    <combobox id="script" />
+                </hbox>
+            </vbox>
+            <glue />
+        </vbox>
+    </panel>
+
+    <hbox>
+        <button text="Close" id="close"/>
+    </hbox>
+    
+</vbox>
+
+</dialog>

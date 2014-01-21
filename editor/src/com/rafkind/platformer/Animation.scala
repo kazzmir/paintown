@@ -715,7 +715,6 @@ class AnimationListModel extends ListModel[Animation] {
         data.foreach {
             case(anim) => {
                 if (anim.name == name){
-                    // weird that I have to use a return keyword
                     return anim
                 }
             }

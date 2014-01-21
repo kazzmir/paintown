@@ -16,15 +16,6 @@
                     <textfield id="function" />
                 </vbox>
             </hbox>
-            <hbox border="TitledBorder(LineBorder(black,2),Position,TitledBorder.CENTER, TitledBorder.TOP)">
-                <vbox border="TitledBorder(LineBorder(gray,1),X,TitledBorder.CENTER, TitledBorder.TOP)">
-                    <spinner id="x" />
-                </vbox>
-                <vbox border="TitledBorder(LineBorder(gray,1),Y,TitledBorder.CENTER, TitledBorder.TOP)">
-                    <spinner id="y" />
-                </vbox>
-            </hbox>
-            
             <hbox border="TitledBorder(LineBorder(black,2),Dimensions,TitledBorder.CENTER, TitledBorder.TOP)">
                 <vbox border="TitledBorder(LineBorder(gray,1),Width,TitledBorder.CENTER, TitledBorder.TOP)">
                     <spinner id="width" />
