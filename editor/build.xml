@@ -3,10 +3,12 @@
     <!-- initialize scala stuff -->
     <target name="init">
         <property name="scala-library.jar"
-                  value="lib/scala-library.jar" />
+                  value="lib/scala-library-2.10.3.jar" />
+
         <taskdef resource="scala/tools/ant/antlib.xml">
             <classpath>
-                <pathelement location="lib/scala-compiler.jar" />
+                <pathelement location="lib/scala-compiler-2.10.3.jar" />
+                <pathelement location="lib/scala-reflect-2.10.3.jar" />
                 <pathelement location="${scala-library.jar}" />
             </classpath>
         </taskdef>
@@ -15,7 +17,8 @@
 	<target name="compile" depends="init">
 		<mkdir dir="classes" />
         <scalac srcdir="src"
-                destdir="classes">
+            destdir="classes"
+            addparams="-Xmax-classfile-name 255">
                 <classpath>
                     <pathelement path="classes" />
                     <pathelement path="lib/jdom.jar" />

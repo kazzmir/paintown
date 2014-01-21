@@ -251,7 +251,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       }
 
       def refilter(pattern:Pattern):List[File] = {
-        data.filter((file) => pattern.matcher(file.getCanonicalPath()).matches).sort(modificationCompare)
+        data.filter((file) => pattern.matcher(file.getCanonicalPath()).matches).sortWith(modificationCompare)
       }
 
       def updateView(filter:Pattern){
@@ -276,7 +276,7 @@ class NewAnimator extends swing.JFrame("Paintown Animator"){
       }
 
       override def removeListDataListener(listener:swing.event.ListDataListener){
-        listeners = listeners - listener
+        listeners = listeners diff List(listener)
       }
 
       def setFilter(input:String){
@@ -747,7 +747,7 @@ object NewAnimator extends swing.JFrame("Paintown Animator"){
               }
           }
       }
-      files.sort((path1, path2) => (path1 compareTo path2) < 0)
+      files.sortWith((path1, path2) => (path1 compareTo path2) < 0)
   }
 
 }

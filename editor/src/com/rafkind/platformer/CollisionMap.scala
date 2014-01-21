@@ -240,7 +240,7 @@ class CollisionMap extends ListModel[Area] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -267,7 +267,7 @@ class CollisionMap extends ListModel[Area] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
     
     def render(g:Graphics2D, x:Int, y:Int) = {

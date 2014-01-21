@@ -83,7 +83,7 @@ class ImageHolderListModel extends ListModel[ImageHolder] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -110,7 +110,7 @@ class ImageHolderListModel extends ListModel[ImageHolder] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
 }
 
@@ -343,7 +343,7 @@ class FrameListModel extends ListModel[Frame] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -380,7 +380,7 @@ class FrameListModel extends ListModel[Frame] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
 }
 
@@ -700,7 +700,7 @@ class AnimationListModel extends ListModel[Animation] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -738,6 +738,6 @@ class AnimationListModel extends ListModel[Animation] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
 }

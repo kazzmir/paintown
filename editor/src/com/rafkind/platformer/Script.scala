@@ -364,7 +364,7 @@ class ScriptObjectData extends ListModel[ScriptObject] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -391,7 +391,7 @@ class ScriptObjectData extends ListModel[ScriptObject] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
     
     def render(g:Graphics2D, x:Int, y:Int) = {
@@ -585,7 +585,7 @@ class WorldObjectData extends ListModel[WorldObject] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -612,7 +612,7 @@ class WorldObjectData extends ListModel[WorldObject] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
     
     def render(g:Graphics2D, x:Int, y:Int) = {
@@ -710,7 +710,7 @@ class ScriptData extends ListModel[Script] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -737,7 +737,7 @@ class ScriptData extends ListModel[Script] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
     
     def readToken(token:Token) = {
@@ -801,7 +801,7 @@ class ScriptPathData extends ListModel[ScriptPath] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -828,7 +828,7 @@ class ScriptPathData extends ListModel[ScriptPath] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
     
     def readToken(token:Token) = {

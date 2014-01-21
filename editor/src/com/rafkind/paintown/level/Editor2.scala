@@ -339,7 +339,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             }
             
             def remove(index:Int){
-                data = data.remove(data.indexOf(_) == index)
+                data = data.filterNot(data.indexOf(_) == index)
                 val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index);
                 for (listener <- listeners){
                     listener.intervalAdded(event);
@@ -366,7 +366,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             }
 
             override def removeListDataListener(listener:ListDataListener){
-                listeners = this.listeners - listener;
+                listeners = this.listeners diff List(listener)
             }
         };
 
@@ -740,7 +740,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             }
 
             override def removeListDataListener(listener:ListDataListener){
-                listeners = listeners - listener
+                listeners = listeners diff List(listener)
             }
         }
 
@@ -1155,7 +1155,7 @@ class NewEditor extends JFrame("Paintown Editor"){
             }
 
             override def removeListDataListener(listener:ListDataListener){
-                this.listeners = this.listeners - listener
+                this.listeners = this.listeners diff List(listener)
             }
         }
 

@@ -189,7 +189,7 @@ class TileListModel extends ListModel[Tile] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -224,7 +224,7 @@ class TileListModel extends ListModel[Tile] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
 }
 
@@ -628,7 +628,7 @@ class TileSetListModel extends ListModel[TileSet] {
     }
     
     def remove(index:Int){
-        data = data.remove(data.indexOf(_) == index)
+        data = data.filterNot(data.indexOf(_) == index)
         val event = new ListDataEvent(this, ListDataEvent.INTERVAL_REMOVED, index, index)
         for (listener <- listeners){
             listener.intervalAdded(event)
@@ -665,6 +665,6 @@ class TileSetListModel extends ListModel[TileSet] {
     }
 
     override def removeListDataListener(listener:ListDataListener){
-        listeners = this.listeners - listener
+        listeners = this.listeners diff List(listener)
     }
 }
