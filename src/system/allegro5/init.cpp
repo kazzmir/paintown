@@ -8,7 +8,7 @@
 
 namespace System{
 
-void initSystem(Global::stream_type & out){
+void initSystem(const Global::InitConditions & conditions, Global::stream_type & out){
     out << "Allegro5 initialize " << (al_init() ? "Ok" : "Failed") << std::endl;
     uint32_t version = al_get_allegro_version();
     int major = version >> 24;

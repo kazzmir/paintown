@@ -80,11 +80,11 @@ static void showOptions(const vector<Util::ReferenceCount<Argument> > & argument
 
 class WindowedArgument: public Argument {
 public:
-    WindowedArgument(int * gfx):
-    gfx(gfx){
+    WindowedArgument(Global::InitConditions * conditions):
+    conditions(conditions){
     }
 
-    int * gfx;
+    Global::InitConditions * conditions;
 
     vector<string> keywords() const {
         vector<string> out;
@@ -100,7 +100,7 @@ public:
     }
     
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        *gfx = Global::FULLSCREEN;
+        conditions->graphics = Global::InitConditions::Fullscreen;
         return current;
     }
 };
@@ -686,7 +686,7 @@ static void sortArguments(vector<Util::ReferenceCount<Argument> > & arguments){
  */
 int paintown_main(int argc, char ** argv){
     /* -1 means use whatever is in the configuration */
-    int gfx = -1;
+    Global::InitConditions conditions;
 
     bool music_on = true;
     // bool joystick_on = true;
@@ -727,7 +727,7 @@ int paintown_main(int argc, char ** argv){
     }
 
     vector<Util::ReferenceCount<Argument> > arguments;
-    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument(&gfx)));
+    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument()));
     arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument(&music_on)));
     arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument()));
@@ -789,12 +789,17 @@ int paintown_main(int argc, char ** argv){
      *  configuration
      *  ...
      */
-    if (! Global::init(gfx)){
+    if (! Global::init(conditions)){
         Global::debug(0) << "Could not initialize system" << endl;
         return -1;
     } else {
         // Configuration::setFullscreen((gfx == Global::FULLSCREEN ? true : false));
     }
+
+    if (! Global::dataCheck()){
+        return -1;
+    }
+
     // diff.endTime();
     // Global::debug(0) << diff.printTime("Init took") << endl;
 

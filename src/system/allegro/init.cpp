@@ -10,6 +10,7 @@
 #include "util/sound/music.h"
 #include "util/events.h"
 #include "util/graphics/bitmap.h"
+#include "../init.h"
 
 namespace System{
 
@@ -36,7 +37,7 @@ static void close_window(){
 }
 END_OF_FUNCTION(close_window)
 
-void initSystem(Global::stream_type & out){
+void initSystem(const Global::InitConditions & conditions, Global::stream_type & out){
     out << "Allegro version: " << ALLEGRO_VERSION_STR << std::endl;
     out << "Allegro init: " <<allegro_init()<<std::endl;
     out << "Install timer: " <<install_timer()<<std::endl;
