@@ -14,5 +14,5 @@ def makeTest(name, files):
     testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 makeTest('file-system', source)
-makeTest('loading', ['loading.cpp', 'common/init.cpp', 'common/timer.cpp'])
+makeTest('loading', ['loading.cpp', 'common/init.cpp'])
 Return('x')

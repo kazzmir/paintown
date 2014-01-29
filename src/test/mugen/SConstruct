@@ -71,7 +71,6 @@ test/factory/font_render.cpp
 
 character_select_source = Split("""
 common/init.cpp
-common/timer.cpp
 select-main.cpp
 test/mugen/character-select.cpp
 """)
@@ -84,13 +83,11 @@ test/factory/font_render.cpp
 
 versus_source = Split("""
 common/init.cpp
-common/timer.cpp
 versus.cpp
 """)
 
 widgets_source = Split("""
 common/init.cpp
-common/timer.cpp
 test/mugen/option-options.cpp
 test/mugen/widgets.cpp
 test/util/exceptions/exception.cpp

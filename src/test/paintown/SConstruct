@@ -30,7 +30,6 @@ load_source.append(testEnv.Peg('test/openbor/data.peg'))
 
 source = Split("""
 common/init.cpp
-common/timer.cpp
 test/globals.cpp
 test/factory/font_render.cpp
 """)
