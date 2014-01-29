@@ -1,9 +1,9 @@
 #include "../common/init.h"
-#include "../common/timer.h"
 
 #include <iostream>
 #include <vector>
 
+#include "util/init.h"
 #include "util/graphics/bitmap.h"
 #include "util/font.h"
 #include "util/debug.h"
@@ -81,12 +81,8 @@ static void chatWidget(){
 }
 
 int main(int argc, char ** argv){
-    
-    Screen::realInit();
-    atexit(Screen::realFinish);
-    Common::startTimers();
-    
-    Sound::initialize();
+    Global::InitConditions conditions;
+    Global::init(conditions);
     
     Global::setDebug(2);
     

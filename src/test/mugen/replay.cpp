@@ -627,7 +627,8 @@ int play(){
 int main(int argc, char ** argv){
     InputManager manager;
     if (argc >= 2 && string("record") == argv[1]){
-        Global::init(Global::WINDOWED);
+        Global::InitConditions conditions;
+        Global::init(conditions);
         Global::setDebug(1);
         srand(0);
 

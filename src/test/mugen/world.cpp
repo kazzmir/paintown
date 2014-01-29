@@ -155,7 +155,9 @@ int run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/kf
 
 int main(int argc, char ** argv){
     InputManager manager;
-    Global::initNoGraphics();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
     Global::setDebug(0);
     /* Always use the same random number sequence */
     srand(0);

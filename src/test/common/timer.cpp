@@ -1,3 +1,5 @@
+#if 0
+
 #ifdef USE_SDL
 #include <SDL.h>
 #endif
@@ -96,4 +98,6 @@ void startTimers(){
 }
 
 }
+#endif
+
 #endif

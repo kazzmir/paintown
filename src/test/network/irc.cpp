@@ -1,5 +1,5 @@
 #include "../common/init.h"
-#include "../common/timer.h"
+#include "system/timer.h"
 
 #include <iostream>
 #include <vector>
@@ -353,7 +353,7 @@ int main(int argc, char ** argv){
         
         Screen::realInit(Configuration::getScreenWidth(), Configuration::getScreenHeight());
         atexit(Screen::realFinish);
-        Common::startTimers();
+        System::startTimers();
         
         Sound::initialize();
         

@@ -48,7 +48,9 @@ void run(string path1 = "mugen/chars/kfm/kfm.def", string path2 = "mugen/chars/k
 
 int main(int argc, char ** argv){
     InputManager manager;
-    Global::initNoGraphics();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
     if (argc == 1){
         run();
     } else if (argc == 2){

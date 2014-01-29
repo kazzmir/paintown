@@ -983,7 +983,8 @@ int main( int argc, char ** argv ){
 		}
 	}
 	
-        Global::init(Global::WINDOWED);
+        Global::InitConditions conditions;
+        Global::init(conditions);
 
         InputManager input;
     

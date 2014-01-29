@@ -1,5 +1,5 @@
 #include "../common/init.h"
-#include "../common/timer.h"
+#include "system/timer.h"
 
 #include "util/font.h"
 #include "util/pointer.h"
@@ -697,7 +697,7 @@ public:
 int main(int argc, char ** argv){
     Screen::realInit();
     atexit(Screen::realFinish);
-    Common::startTimers();
+    System::startTimers();
     
     InputManager manager;
     Graphics::Bitmap screen(*Graphics::getScreenBuffer());

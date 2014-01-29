@@ -804,7 +804,8 @@ int main(int argc, char ** argv){
     Global::debug(0) << "Sffv2 reader" << endl;
     if (argc > 1){
         try{
-            Global::init(Global::WINDOWED);
+            Global::InitConditions conditions;
+            Global::init(conditions);
             Keyboard::pushRepeatState(true);
             Filesystem::AbsolutePath path(argv[1]);
             SffV2Reader reader(path);

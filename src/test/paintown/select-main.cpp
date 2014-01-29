@@ -1,5 +1,5 @@
 #include "../common/init.h"
-#include "../common/timer.h"
+#include "system/timer.h"
 
 #include <iostream>
 #include <vector>
@@ -107,7 +107,7 @@ int main(int argc, char ** argv){
     if (argc > 1){
         Screen::realInit();
         atexit(Screen::realFinish);
-        Common::startTimers();
+        System::startTimers();
         
         Global::setDebug(0);
         std::string file = argv[1];

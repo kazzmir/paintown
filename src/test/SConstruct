@@ -38,6 +38,7 @@ if use['PAINTOWN_BUILD_TESTS']:
 
     SConscript('../mugen/SConscript', exports = ['use'], variant_dir = 'core/mugen')
     SConscript('../paintown-engine/SConscript', exports = ['use'], variant_dir = 'core/paintown')
+    SConscript('../platformer/SConscript', exports = ['use'], variant_dir = 'core/platformer')
 
     all = []
     all.extend(SConscript('token/SConstruct', exports = ['use']))
