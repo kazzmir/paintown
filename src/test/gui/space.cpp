@@ -25,8 +25,6 @@ double clamp(double value, double min, double max){
 }
 
 /*
-#include "../common/init.h"
-#include "../common/timer.h"
 #include "util/debug.h"
 
 #include <stdlib.h>
