@@ -2,7 +2,6 @@ Import('use')
 
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../')
-testEnv.VariantDir('common', '../common')
 
 more_source = []
 def addObjects(files):
@@ -16,7 +15,6 @@ use = testEnv
 # use.Append(LIBS = ['paintown-engine', 'mugen'])
 
 load_source = Split("""
-common/init.cpp
 load.cpp
 test/globals.cpp
 test/factory/font_render.cpp
@@ -29,7 +27,6 @@ test/openbor/util.cpp
 load_source.append(testEnv.Peg('test/openbor/data.peg'))
 
 source = Split("""
-common/init.cpp
 test/globals.cpp
 test/factory/font_render.cpp
 """)
@@ -42,7 +39,6 @@ test/openbor/util.cpp
 """)
 
 game_source = Split("""
-common/init.cpp
 game.cpp
 test/globals.cpp
 test/factory/font_render.cpp

@@ -36,6 +36,11 @@ void load(const char * path){
 
 int paintown_main(int argc, char ** argv){
     Collector collector;
+
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
+
+    Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultMenuFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(*defaultFont.current(), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
+
     try{
         load("menu/main.txt");
         cout << "Success" << endl;
@@ -51,7 +56,6 @@ int main(int argc, char ** argv){
     Global::InitConditions conditions;
     conditions.graphics = Global::InitConditions::Disabled;
     Global::init(conditions);
-    Configuration::loadConfigurations();
     return paintown_main(argc, argv);
 }
 #ifdef USE_ALLEGRO

@@ -2,7 +2,6 @@ Import('use')
 
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../', duplicate = False)
-testEnv.VariantDir('common', '../common/', duplicate = False)
 
 use = testEnv
 
@@ -16,19 +15,16 @@ test/factory/font_render.cpp
 
 load_source = Split("""
 load.cpp
-common/init.cpp
 """)
 
 stage_source = Split("""
 load-stage.cpp
-common/init.cpp
 test/globals.cpp
 test/factory/font_render.cpp
 """)
 
 select_source = most_game_source + Split("""
 load-select.cpp
-common/init.cpp
 """)
 
 ignore = """
@@ -36,12 +32,10 @@ ignore = """
 
 full_source = most_game_source + Split("""
 load-full.cpp
-common/init.cpp
 """)
 
 state_source = most_game_source + Split("""
 state.cpp
-common/init.cpp
 """)
 
 sffv2_source = Split("""
@@ -70,7 +64,6 @@ test/factory/font_render.cpp
 
 
 character_select_source = Split("""
-common/init.cpp
 select-main.cpp
 test/mugen/character-select.cpp
 """)
@@ -82,12 +75,10 @@ test/factory/font_render.cpp
 """)
 
 versus_source = Split("""
-common/init.cpp
 versus.cpp
 """)
 
 widgets_source = Split("""
-common/init.cpp
 test/mugen/option-options.cpp
 test/mugen/widgets.cpp
 test/util/exceptions/exception.cpp
@@ -123,7 +114,7 @@ makeTest('load', load_source + most_game_source)
 makeTest('serialize', ['serialize.cpp'])
 makeTest('load-stage', stage_source)
 makeTest('sffv2', sffv2_source)
-makeTest('load-sff', ['load-sff.cpp', 'common/init.cpp'] + most_game_source)
+makeTest('load-sff', ['load-sff.cpp'] + most_game_source)
 makeTest('world', ['world.cpp'] + most_game_source)
 makeTest('replay', ['replay.cpp'] + most_game_source)
 makeTest('command', command_source)

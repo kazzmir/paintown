@@ -3,7 +3,6 @@ Import('use')
 testEnv = use.Clone()
 # testEnv.VariantDir('test', '../../', duplicate = False)
 testEnv.VariantDir('test', '../../')
-testEnv.VariantDir('common', '../common')
 
 use = testEnv
 
@@ -13,7 +12,6 @@ use = testEnv
 
 source = Split("""
 test.cpp
-common/init.cpp
 test/globals.cpp
 test/mugen/ast/ast.cpp
 test/openbor/pack-reader.cpp

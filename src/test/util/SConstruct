@@ -3,7 +3,6 @@ Import('use')
 testEnv = use.Clone()
 
 testEnv.VariantDir('test', '../../', duplicate = False)
-testEnv.VariantDir('common', '../common/', duplicate = False)
 
 source = Split("""file-system.cpp""")
 
@@ -14,5 +13,5 @@ def makeTest(name, files):
     testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 makeTest('file-system', source)
-makeTest('loading', ['loading.cpp', 'common/init.cpp'])
+makeTest('loading', ['loading.cpp'])
 Return('x')

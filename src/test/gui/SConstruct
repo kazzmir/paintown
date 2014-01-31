@@ -2,10 +2,8 @@ Import('use')
 
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../')
-testEnv.VariantDir('common', '../common')
 
 source = Split("""
-common/init.cpp
 test/globals.cpp
 test/factory/font_render.cpp
 """)

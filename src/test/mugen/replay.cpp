@@ -625,10 +625,10 @@ int play(){
 }
 
 int main(int argc, char ** argv){
-    InputManager manager;
     if (argc >= 2 && string("record") == argv[1]){
         Global::InitConditions conditions;
         Global::init(conditions);
+        InputManager manager;
         Global::setDebug(1);
         srand(0);
 
@@ -637,6 +637,11 @@ int main(int argc, char ** argv){
         } catch (QuitGameException & quit){
         }
     } else {
+        Global::InitConditions conditions;
+        conditions.graphics = Global::InitConditions::Disabled;
+        Global::init(conditions);
+        InputManager manager;
+        Mugen::Sound::disableSounds();
         Global::setDebug(0);
         try{
             return play();

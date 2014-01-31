@@ -2,7 +2,6 @@ Import('use')
 
 testEnv = use.Clone()
 testEnv.VariantDir('test', '../../')
-testEnv.VariantDir('common', '../common')
 
 testEnv.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 
@@ -13,7 +12,7 @@ env = testEnv
 
 x = []
 test = testEnv.Program('network', source)
-irc = testEnv.Program('irc', Split("""test/globals.cpp common/init.cpp irc.cpp"""))
+irc = testEnv.Program('irc', Split("""test/globals.cpp irc.cpp"""))
 x.extend(test)
 x.extend(irc)
 use.AddPostAction(test, use['PAINTOWN_TEST'])
