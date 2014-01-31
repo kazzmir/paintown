@@ -1,5 +1,4 @@
-#include "../common/init.h"
-
+#include "util/init.h"
 #include "util/configuration.h"
 #include "util/message-queue.h"
 #include "util/thread.h"
@@ -16,7 +15,9 @@
 using namespace std;
 
 int paintown_main(int argc, char ** argv){
-    Screen::fakeInit();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
     InputManager input;
     Util::Thread::initializeLock(&MessageQueue::messageLock);
     Configuration::loadConfigurations();
@@ -37,7 +38,6 @@ int paintown_main(int argc, char ** argv){
             die = 1;
         }
     // }
-    Screen::fakeFinish();
     return die;
 }
 

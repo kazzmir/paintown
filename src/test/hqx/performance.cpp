@@ -1,5 +1,5 @@
-#include "../common/init.h"
 #include "util/debug.h"
+#include "util/init.h"
 #include "util/graphics/bitmap.h"
 #include "util/timedifference.h"
 #include <stdlib.h>
@@ -50,8 +50,8 @@ static void run(string path){
 }
 
 int main(int argc, char ** argv){
-    Screen::realInit();
-    atexit(Screen::realFinish);
+    Global::InitConditions conditions;
+    Global::init(conditions);
     Global::setDebug(0);
     if (argc > 1){
         run(argv[1]);

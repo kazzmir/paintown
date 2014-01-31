@@ -1,6 +1,5 @@
-#include "../common/init.h"
-
 #include <iostream>
+#include "util/init.h"
 #include "util/configuration.h"
 #include "util/message-queue.h"
 #include "util/file-system.h"
@@ -63,12 +62,13 @@ static int load(const char * path){
 }
 
 int main(int argc, char ** argv){
-    Screen::fakeInit();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
 
     Global::setDebug(1);
     Mugen::ParseCache cache;
     Util::Thread::initializeLock(&MessageQueue::messageLock);
-    Configuration::loadConfigurations();
 
     int die = 0;
     if (argc < 2){
@@ -77,12 +77,5 @@ int main(int argc, char ** argv){
         die = load(argv[1]);
     }
 
-    Screen::fakeFinish();
-
-    // for (int i = 0; i < 3; i++){
-      // }
     return die;
 }
-#ifdef USE_ALLEGRO
-END_OF_MAIN()
-#endif

@@ -1,7 +1,5 @@
-#include "../common/init.h"
-#include "system/timer.h"
-
 #include "util/font.h"
+#include "util/init.h"
 #include "util/pointer.h"
 #include "util/graphics/bitmap.h"
 #include "util/input/input.h"
@@ -695,9 +693,8 @@ public:
 };
 
 int main(int argc, char ** argv){
-    Screen::realInit();
-    atexit(Screen::realFinish);
-    System::startTimers();
+    Global::InitConditions conditions;
+    Global::init(conditions);
     
     InputManager manager;
     Graphics::Bitmap screen(*Graphics::getScreenBuffer());
@@ -721,6 +718,3 @@ int main(int argc, char ** argv){
     
     return 0;
 }
-#ifdef USE_ALLEGRO
-END_OF_MAIN()
-#endif

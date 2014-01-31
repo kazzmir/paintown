@@ -1,9 +1,7 @@
-#include "../common/init.h"
-#include "system/timer.h"
-
 #include <iostream>
 #include <vector>
 
+#include "util/init.h"
 #include "util/font.h"
 #include "util/debug.h"
 #include "util/exceptions/load_exception.h"
@@ -95,11 +93,8 @@ public:
 
 int main(int argc, char ** argv){
     if (argc > 2){
-        Screen::realInit();
-        atexit(Screen::realFinish);
-        System::startTimers();
-        
-        Sound::initialize();
+        Global::InitConditions conditions;
+        Global::init(conditions);
         
         Global::setDebug(2);
         std::string file = argv[1];
@@ -158,6 +153,3 @@ int main(int argc, char ** argv){
     }
     return 0;
 }
-#ifdef USE_ALLEGRO
-END_OF_MAIN()
-#endif

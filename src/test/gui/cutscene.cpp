@@ -1,9 +1,7 @@
-#include "../common/init.h"
-#include "system/timer.h"
-
 #include <iostream>
 #include <vector>
 
+#include "util/init.h"
 #include "util/font.h"
 #include "util/gui/cutscene.h"
 #include "util/debug.h"
@@ -290,9 +288,8 @@ public:
 
 int main(int argc, char ** argv){
     if (argc > 1){
-        Screen::realInit();
-        atexit(Screen::realFinish);
-        System::startTimers();
+        Global::InitConditions conditions;
+        Global::init(conditions);
         
         Global::setDebug(0);
         std::string file = argv[1];

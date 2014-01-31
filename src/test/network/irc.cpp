@@ -1,10 +1,8 @@
-#include "../common/init.h"
-#include "system/timer.h"
-
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 
+#include "util/init.h"
 #include "util/graphics/bitmap.h"
 #include "util/font.h"
 #include "util/debug.h"
@@ -351,11 +349,8 @@ int main(int argc, char ** argv){
             username = argv[3];
         }
         
-        Screen::realInit(Configuration::getScreenWidth(), Configuration::getScreenHeight());
-        atexit(Screen::realFinish);
-        System::startTimers();
-        
-        Sound::initialize();
+        Global::InitConditions conditions;
+        Global::init(conditions);
         
         Global::setDebug(2);
         
@@ -367,20 +362,14 @@ int main(int argc, char ** argv){
         Util::Parameter<Util::ReferenceCount<Path::RelativePath> > 
             defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
         
-        Network::init();
-            
         try {
             doIrc(hostname, port, username);
         } catch (const Exception::Return & ex){
         } catch (const Network::NetworkException & ex){
             Global::debug(0) << "Network Exception: " << ex.getMessage() << std::endl;
         }
-        Network::shutdown();
     } else {
         arguments(argv[0],0);
     }
     return 0;
 }
-#ifdef USE_ALLEGRO
-END_OF_MAIN()
-#endif

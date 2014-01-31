@@ -1,6 +1,5 @@
-#include "../common/init.h"
-
 #include <iostream>
+#include "util/init.h"
 #include "util/configuration.h"
 #include "util/font.h"
 #include "util/message-queue.h"
@@ -56,9 +55,10 @@ static int load(const char * path){
 }
 
 int paintown_main(int argc, char ** argv){
-    Screen::fakeInit();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
     Collector janitor;
-    Sound::initialize();
     Util::Thread::initializeLock(&MessageQueue::messageLock);
 
     Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
@@ -73,9 +73,6 @@ int paintown_main(int argc, char ** argv){
         die = load(argv[1]);
     }
 
-    Screen::fakeFinish();
-    Sound::uninitialize();
-
     // for (int i = 0; i < 3; i++){
       // }
     return die;
@@ -84,7 +81,3 @@ int paintown_main(int argc, char ** argv){
 int main(int argc, char ** argv){
     return paintown_main(argc, argv);
 }
-
-#ifdef USE_ALLEGRO
-END_OF_MAIN()
-#endif

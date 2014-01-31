@@ -1,7 +1,6 @@
-#include "../common/init.h"
-
 #include <iostream>
 #include "util/thread.h"
+#include "util/init.h"
 #include "util/message-queue.h"
 #include "util/file-system.h"
 #include "mugen/character.h"
@@ -38,9 +37,11 @@ static int load(const char * path){
 }
 
 int main(int argc, char ** argv){
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
     Global::setDebug(1);
     Global::debug(0) << "Initialize" << std::endl;
-    Screen::fakeInit();
+    Global::init(conditions);
 
 
     int die = 0;
@@ -49,8 +50,6 @@ int main(int argc, char ** argv){
     } else {
         die = load(argv[1]);
     }
-
-    Screen::fakeFinish();
 
     return die;
 }

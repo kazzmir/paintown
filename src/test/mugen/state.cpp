@@ -1,6 +1,5 @@
-#include "../common/init.h"
-
 #include "util/configuration.h"
+#include "util/init.h"
 #include "util/message-queue.h"
 #include <iostream>
 #include "util/file-system.h"
@@ -85,7 +84,9 @@ static int load(const char * path){
 }
 
 int paintown_main(int argc, char ** argv){
-    Screen::fakeInit();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
     InputManager input;
     Util::Thread::initializeLock(&MessageQueue::messageLock);
     Configuration::loadConfigurations();
@@ -101,17 +102,9 @@ int paintown_main(int argc, char ** argv){
         die = load(argv[1]);
     }
 
-    Screen::fakeFinish();
-
-    // for (int i = 0; i < 3; i++){
-      // }
     return die;
 }
 
 int main(int argc, char ** argv){
     paintown_main(argc, argv);
 }
-
-#ifdef USE_ALLEGRO
-END_OF_MAIN()
-#endif

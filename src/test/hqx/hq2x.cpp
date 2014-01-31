@@ -1,5 +1,5 @@
-#include "../common/init.h"
 #include "util/debug.h"
+#include "util/init.h"
 #include "util/graphics/bitmap.h"
 #include "util/input/keyboard.h"
 #include "util/input/input-source.h"
@@ -39,8 +39,8 @@ static void run(string path){
 }
 
 int main(int argc, char ** argv){
-    Screen::realInit(1024, 768);
-    atexit(Screen::realFinish);
+    Global::InitConditions conditions;
+    Global::init(conditions);
     Global::setDebug(0);
     InputManager input;
     if (argc > 1){

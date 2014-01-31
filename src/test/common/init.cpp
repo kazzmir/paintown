@@ -1,3 +1,5 @@
+#if 0
+
 #ifdef USE_ALLEGRO
 #include <allegro.h>
 #endif
@@ -88,3 +90,5 @@ void Screen::change(int x, int y){
         int ok = Graphics::setGraphicsMode(gfx, Configuration::getScreenWidth(), Configuration::getScreenHeight());
     }
 }
+
+#endif

@@ -1,10 +1,8 @@
-#include "../common/init.h"
-#include "system/timer.h"
-
 #include <iostream>
 #include <vector>
 #include <stdexcept>
 
+#include "util/init.h"
 #include "util/graphics/bitmap.h"
 #include "util/font.h"
 #include "util/debug.h"
@@ -435,11 +433,9 @@ int main(int argc, char ** argv){
         if ((client || irc) && argc == 4){
             hostname = argv[3];
         }
-        Screen::realInit();
-        atexit(Screen::realFinish);
-        System::startTimers();
-        
-        Sound::initialize();
+
+        Global::InitConditions conditions;
+        Global::init(conditions);
         
         Global::setDebug(2);
         
@@ -449,8 +445,6 @@ int main(int argc, char ** argv){
         
         InputManager manager;
         
-        Network::init();
-            
         try {
             if (server){
                 doServer(port);
@@ -463,7 +457,6 @@ int main(int argc, char ** argv){
         } catch (const Network::NetworkException & ex){
             Global::debug(0) << "Network Exception: " << ex.getMessage() << std::endl;
         }
-        Network::shutdown();
     } else {
         arguments(argv[0],0);
     }

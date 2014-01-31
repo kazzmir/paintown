@@ -1,5 +1,5 @@
-#include "../common/init.h"
 #include <iostream>
+#include "util/init.h"
 #include "util/token_exception.h"
 #include "util/file-system.h"
 #include "util/graphics/bitmap.h"
@@ -44,12 +44,13 @@ int paintown_main(int argc, char ** argv){
     } catch (const LoadException & e){
         cout << "Error: " << e.getTrace() << endl;
     }
-    Screen::fakeFinish();
     return 0;
 }
 
 int main(int argc, char ** argv){
-    Screen::fakeInit();
+    Global::InitConditions conditions;
+    conditions.graphics = Global::InitConditions::Disabled;
+    Global::init(conditions);
     Configuration::loadConfigurations();
     return paintown_main(argc, argv);
 }
