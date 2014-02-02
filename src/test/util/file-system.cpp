@@ -32,7 +32,7 @@ void testGetFiles(){
 
 void testZip(){
     try{
-        open("/", O_RDONLY, 0);
+        // open("/", O_RDONLY, 0);
         Storage::instance().addOverlay(Filesystem::AbsolutePath("src/test/util/test.zip"), Filesystem::AbsolutePath("test"));
         Util::ReferenceCount<Storage::File> file = Storage::instance().open(Filesystem::AbsolutePath("test/SConstruct"));
         char line[1024];
