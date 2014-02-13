@@ -13,5 +13,6 @@ def makeTest(name, files):
     testEnv.AddPostAction(test, testEnv['PAINTOWN_TEST'])
 
 makeTest('file-system', source)
-makeTest('loading', ['loading.cpp'])
+x.extend(testEnv.Program('loading', ['loading.cpp']))
+
 Return('x')
