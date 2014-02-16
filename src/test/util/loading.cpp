@@ -27,7 +27,7 @@ static void test(){
         }
     };
 
-    Loader::Info info("testing", Filesystem::AbsolutePath(""));
+    Loader::Info info("testing testing testing", Filesystem::AbsolutePath("data/menu/paintown.png"));
     TestLoader loader;
     Loader::loadScreen(loader, info, Loader::Default);
 }
