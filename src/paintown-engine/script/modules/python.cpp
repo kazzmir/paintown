@@ -2,18 +2,18 @@
 
 #include <Python.h>
 
-#include "paintown-engine/object/character.h"
-#include "paintown-engine/object/player-common.h"
+#include "../../object/character.h"
+#include "../../object/player-common.h"
 #include "../script.h"
 #include "python.h"
 #include <string>
 #include "util/debug.h"
 #include "util/funcs.h"
 #include "util/file-system.h"
-#include "paintown-engine/game/world.h"
-#include "paintown-engine/level/blockobject.h"
-#include "paintown-engine/factory/object_factory.h"
-#include "paintown-engine/object/enemy.h"
+#include "../../game/world.h"
+#include "../../level/blockobject.h"
+#include "../../factory/object_factory.h"
+#include "../../object/enemy.h"
 #include <sstream>
 
 /* the public api */

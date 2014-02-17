@@ -32,6 +32,30 @@ static void test(){
     Loader::loadScreen(loader, info, Loader::Default);
 }
 
+static void test2(){
+    class TestLoader: public Loader::LoadingContext {
+    public:
+        TestLoader():
+        LoadingContext(){
+        }
+
+        virtual ~TestLoader(){
+        }
+
+        virtual void load(){
+            for (int i = 0; i < 10; i++){
+                MessageQueue::info("test");
+                Global::debug(0) << i << std::endl;
+                Util::rest(1000);
+            }
+        }
+    };
+
+    Loader::Info info("testing testing testing", Filesystem::AbsolutePath("data/menu/paintown.png"));
+    TestLoader loader;
+    Loader::loadScreen(loader, info, Loader::SimpleCircle);
+}
+
 int main(int argc, char ** argv){
     Global::InitConditions conditions;
     Global::init(conditions);
@@ -43,7 +67,8 @@ int main(int argc, char ** argv){
     Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
 
     try{
-        test();
+        // test();
+        test2();
     } catch (const Exception::Base & fail){
         Global::debug(0) << fail.getTrace() << std::endl;
         return 1;

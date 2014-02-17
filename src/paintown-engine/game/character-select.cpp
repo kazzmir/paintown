@@ -13,9 +13,9 @@
 
 #include "util/gui/select-list.h"
 
-#include "paintown-engine/object/player.h"
+#include "../object/player.h"
 #include "globals.h"
-#include "paintown-engine/object/display_character.h"
+#include "../object/display_character.h"
 
 #include <sstream>
 
@@ -24,7 +24,7 @@ static const char * DEBUG_CONTEXT = __FILE__;
 
 struct Profile{
     Window window;
-    Util::ReferenceCount<Graphics::Bitmap> bitmap;
+    // Util::ReferenceCount<Graphics::Bitmap> bitmap;
     bool facingRight;
     double scale;
     Gui::Animation::Depth depth;
@@ -541,15 +541,17 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     } else {
         const int length = font.textLength(displayed->getName().c_str());
         const int middle = font.getHeight()/4;
-        Graphics::Bitmap temp = Graphics::Bitmap(length, font.getHeight());
-        temp.clearToMask();
+        Graphics::Bitmap area(bmp, x, y, width, height);
+        Graphics::StretchedBitmap temp(length, font.getHeight(), area, Graphics::StretchedBitmap::Mask);
+        temp.start();
+        // temp.clearToMask();
         font.printf(0, middle, Graphics::makeColor(255, 255, 255), temp, player->guy->getName(), 0);
+        temp.finish();
         // temp.draw(x, y, bmp);
         double widthRatio = (double) width / (double) temp.getWidth();
         double heightRatio = (double) temp.getHeight() / (double) height;
         double use = (double) height / (2.5 * temp.getHeight());
-        Graphics::Bitmap area(bmp, x, y, width, height);
-        temp.drawStretched(1, 0, temp.getWidth() * use, temp.getHeight() * use, area);
+        // temp.drawStretched(1, 0, temp.getWidth() * use, temp.getHeight() * use, area);
     }
     
     if (top != cells.end()){
@@ -580,7 +582,10 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
 }
 
 void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap & work, const Font & font) const {
-    profile.bitmap->clearToMask();
+
+    // work->clearToMask();
+    // window.clear();
+
     const int stand = 50;
     Util::ReferenceCount<Paintown::DisplayCharacter> character = player->guy;
     if (character->isLoaded()){
@@ -589,18 +594,26 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         } else {
             character->setFacing(Paintown::Object::FACING_LEFT);
         }
+        /* FIXME: handle profile.scale */
+        Graphics::Bitmap window1(work, profile.window.x, profile.window.y, profile.window.width, profile.window.height);
+        // window1.border(0, 2, Graphics::makeColor(255, 0, 0));
         Paintown::Character copy(*character);
-        Graphics::Bitmap temp(copy.getWidth(), copy.getHeight() * 2);
-        temp.clearToMask();
+        Graphics::Bitmap window2 = window1.aspectRatio(copy.getAverageWidth(), copy.getAverageHeight() * 2);
+        // window2.border(0, 2, Graphics::makeColor(255, 255, 255));
+        Graphics::StretchedBitmap temp(copy.getAverageWidth(), copy.getAverageHeight() * 2, window2, Graphics::StretchedBitmap::Mask);
+        temp.start();
+
         copy.setDrawShadow(false);
         copy.setX(temp.getWidth()/2);
         copy.setY(0);
-        copy.setZ(copy.getHeight());
+        copy.setZ(copy.getAverageHeight());
 
         /* FIXME: the y parameter actually isn't used in the outline and reflection. */
         copy.drawOutline(&temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
         copy.drawReflection(&temp, 0, temp.getHeight() - stand - stand, 128);
         copy.draw(&temp, 0, temp.getHeight()/2);
+
+        temp.finish();
 
         /*
            double widthRatio = (double) profile.bitmap->getWidth() / temp.getWidth();
@@ -612,12 +625,14 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
 
         // temp.draw(work.getWidth() / 2 - temp.getWidth() / 2, work.getHeight() / 2 - temp.getHeight() / 2, work);
 
+        /*
         temp.drawStretched(profile.bitmap->getWidth() / 2 - temp.getWidth() * profile.scale / 2,
                            profile.bitmap->getHeight() / 2 - temp.getHeight() * profile.scale / 2,
                            temp.getWidth() * profile.scale, temp.getHeight() * profile.scale,
                            *profile.bitmap);
 
         profile.bitmap->draw(profile.window.x, profile.window.y, work);
+        */
     }
 }
 
@@ -1036,7 +1051,7 @@ void CharacterSelect::load(const Token * token){
                     if (tok->match("_/depth", depth, level)){
                         profile->depth = parseDepth(depth, level);
                     }
-                    profile->bitmap = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(profile->window.width, profile->window.height));
+                    // profile->bitmap = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(profile->window.width, profile->window.height));
                     profiles.push_back(profile);
                 } else if (*tok == "messages"){
                     Util::ReferenceCount<MessageCollection> message(new MessageCollection(tok));

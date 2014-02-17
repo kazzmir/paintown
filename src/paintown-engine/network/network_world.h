@@ -3,8 +3,8 @@
 
 #include "util/network/network.h"
 #include "util/file-system.h"
-#include "paintown-engine/object/object.h"
-#include "paintown-engine/game/adventure_world.h"
+#include "../object/object.h"
+#include "../game/adventure_world.h"
 #include "util/input/text-input.h"
 #include "chat-widget.h"
 #include "util/thread.h"

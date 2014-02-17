@@ -1,11 +1,11 @@
 #include "util/graphics/bitmap.h"
-#include "paintown-engine/object/object.h"
+#include "../object/object.h"
 #include "util/funcs.h"
 #include "util/events.h"
 #include "util/parameter.h"
-#include "paintown-engine/object/player.h"
+#include "../object/player.h"
 #include "globals.h"
-#include "paintown-engine/object/display_character.h"
+#include "../object/display_character.h"
 #include "util/thread.h"
 #include "util/init.h"
 // #include "select_player.h"
@@ -16,7 +16,7 @@
 #include "util/input/input-map.h"
 #include "util/input/input-source.h"
 #include "util/font.h"
-#include "paintown-engine/level/utils.h"
+#include "../level/utils.h"
 #include "util/file-system.h"
 #include "world.h"
 #include "util/exceptions/exception.h"
@@ -131,7 +131,7 @@ class Selecter: public Util::Logic, public Util::Draw {
 
         void draw(const Graphics::Bitmap & buffer){
             buffer.clear();
-            Graphics::StretchedBitmap work(640, 480, buffer, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+            Graphics::StretchedBitmap work(640, 480, buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             work.start();
             select.draw(work);
             work.finish();

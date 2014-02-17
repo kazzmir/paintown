@@ -660,7 +660,7 @@ void Menu::act(){
 }
 
 void Menu::draw(const Graphics::Bitmap & work){
-    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
     workArea.start();
     
     // Backgrounds

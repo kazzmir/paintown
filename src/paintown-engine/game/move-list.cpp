@@ -598,7 +598,7 @@ class Runner: public Util::Logic, public Util::Draw {
         }
 
         void draw(const Graphics::Bitmap & buffer){
-            Graphics::StretchedBitmap work(640, 480, buffer, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+            Graphics::StretchedBitmap work(640, 480, buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             const Font & font = Menu::menuFontParameter.current()->get();
             work.start();
             background.Blit(work);

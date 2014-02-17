@@ -902,14 +902,40 @@ Graphics::Bitmap * Animation::getFrame( int x ){
     return frame->pic;
 }
 	
-int Animation::getWidth() const{
+int Animation::getWidth() const {
     if ( current_frame )
         return current_frame->getWidth();
 
     return 0;
 }
 
-int Animation::getHeight() const{
+int Animation::getAverageWidth() const {
+    if (frames.size() == 0){
+        return 0;
+    }
+
+    int width = 0;
+    for (map<string, Frame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
+        width += it->second->pic->getWidth();
+    }
+
+    return width / frames.size();
+}
+
+int Animation::getAverageHeight() const {
+    if (frames.size() == 0){
+        return 0;
+    }
+
+    int width = 0;
+    for (map<string, Frame*>::const_iterator it = frames.begin(); it != frames.end(); it++){
+        width += it->second->pic->getHeight();
+    }
+
+    return width / frames.size();
+}
+
+int Animation::getHeight() const {
     if ( current_frame )
         return current_frame->getHeight();
     return 0;

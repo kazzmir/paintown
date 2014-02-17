@@ -21,7 +21,7 @@
 #include "../object/player.h"
 #include "../object/animation.h"
 #include "../factory/object_factory.h"
-#include "paintown-engine/level/utils.h"
+#include "../level/utils.h"
 #include "factory/font_render.h"
 #include "util/token.h"
 #include "util/tokenreader.h"
@@ -712,7 +712,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         void run(const Graphics::Bitmap & screen_buffer, GameState & state){
             Graphics::RestoreState graphicsState;
             /* FIXME: replace these constants */
-            Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+            Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
             // updateFrames();
 

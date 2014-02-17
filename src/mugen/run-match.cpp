@@ -671,7 +671,7 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
                 // Global::debug(0) << "X1 " << stage->zoomX1() << " Y1 " << stage->zoomY1() << " X2 " << stage->zoomX2() << " Y2 " << stage->zoomY2() << std::endl;
                 work.Stretch(screen, stage->zoomX1(), stage->zoomY1(), stage->zoomX2() - stage->zoomX1(), stage->zoomY2() - stage->zoomY1(), 0, 0, screen.getWidth(), screen.getHeight());
             } else {
-                Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+                Graphics::StretchedBitmap work(DEFAULT_WIDTH, DEFAULT_HEIGHT, screen, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
                 work.start();
                 stage->render(&work);
                 options.draw(work);

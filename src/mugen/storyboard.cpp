@@ -512,7 +512,7 @@ void Storyboard::run(bool repeat){
 
         void draw(const Graphics::Bitmap & screen){
             if (scene != NULL){
-                Graphics::StretchedBitmap work(320, 240, screen, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+                Graphics::StretchedBitmap work(320, 240, screen, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
                 work.start();
                 scene->render(work);
                 work.finish();

@@ -113,6 +113,11 @@ public:
 	 * Gets the width of the current frame
 	 */
 	int getWidth() const;
+        
+	/* Gets the average width of the all the frames
+	 */
+        virtual int getAverageWidth() const;
+        virtual int getAverageHeight() const;
 
 	/* getHeight:
 	 * Gets the height of the current frame

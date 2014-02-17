@@ -2,7 +2,7 @@
 #include "fog_atmosphere.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "paintown-engine/level/scene.h"
+#include "../level/scene.h"
 #include <math.h>
 #include "night_atmosphere.h"
 #include "rain_atmosphere.h"
@@ -13,7 +13,7 @@
 #include "util/funcs.h"
 #include "util/sound/sound.h"
 #include "util/token.h"
-#include "paintown-engine/object/object.h"
+#include "../object/object.h"
 #include <vector>
 
 using namespace std;

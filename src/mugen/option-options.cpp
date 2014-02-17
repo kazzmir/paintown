@@ -890,7 +890,7 @@ void OptionMenu::act(){
 }
 
 void OptionMenu::draw(const Graphics::Bitmap & work){
-    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
     workArea.start();
     
     // Backgrounds
@@ -985,7 +985,7 @@ void OptionMenu::drawInfo(int x, int y, const std::string & text, const Graphics
 }
 
 void OptionMenu::drawInfoWithBackground(const std::string & title, int x, int y, const std::string & text, const Graphics::Bitmap & work){
-    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+    Graphics::StretchedBitmap workArea(320, 240, work, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
     workArea.start();
     
     // Backgrounds

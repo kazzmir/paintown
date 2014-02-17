@@ -3,7 +3,7 @@
 
 #include <deque>
 #include "util/input/text-input.h"
-#include "paintown-engine/object/object.h"
+#include "../object/object.h"
 
 class World;
 

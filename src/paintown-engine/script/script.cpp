@@ -8,7 +8,7 @@
 #include "script.h"
 #include "globals.h"
 #include "util/debug.h"
-#include "paintown-engine/object/character.h"
+#include "../object/character.h"
 #include <string>
 
 using namespace std;

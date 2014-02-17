@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "paintown-engine/level/utils.h"
+#include "../level/utils.h"
 #include "util/file-system.h"
 
 namespace Graphics{

@@ -352,6 +352,11 @@ public:
         return current_map;
     }
 
+    /* The average width of all the sprites in the current animation */
+    virtual int getAverageWidth() const;
+    virtual int getAverageHeight() const;
+
+    /* The width of the current sprite in the current animation */
     virtual int getWidth() const;
     virtual int getHeight() const;
     virtual const std::string getAttackName();

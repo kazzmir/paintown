@@ -3911,8 +3911,8 @@ public:
     Mugen::CharacterSelect & select;
 
     void draw(const Graphics::Bitmap & buffer){
-        buffer.clear();
-        Graphics::StretchedBitmap work(DEFAULT_SELECT_WIDTH, DEFAULT_SELECT_HEIGHT, buffer, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
+        // buffer.clear();
+        Graphics::StretchedBitmap work(DEFAULT_SELECT_WIDTH, DEFAULT_SELECT_HEIGHT, buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(::Configuration::getQualityFilter()));
         work.start();
         select.draw(work);
         work.finish();

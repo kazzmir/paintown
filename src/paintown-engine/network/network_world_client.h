@@ -3,9 +3,9 @@
 
 #ifdef HAVE_NETWORKING
 
-#include "paintown-engine/game/adventure_world.h"
+#include "../game/adventure_world.h"
 #include "util/network/network.h"
-#include "paintown-engine/object/object.h"
+#include "../object/object.h"
 #include "util/file-system.h"
 #include "util/input/input-map.h"
 #include "util/input/text-input.h"

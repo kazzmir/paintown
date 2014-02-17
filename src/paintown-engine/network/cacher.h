@@ -1,7 +1,7 @@
 #ifndef _paintown_network_cacher_h
 #define _paintown_network_cacher_h
 
-#include "paintown-engine/level/cacher.h"
+#include "../level/cacher.h"
 
 class NetworkCacher: public Level::Cacher {
 public:

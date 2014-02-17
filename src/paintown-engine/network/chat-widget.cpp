@@ -2,7 +2,7 @@
 #include <deque>
 #include "util/input/text-input.h"
 #include "chat-widget.h"
-#include "paintown-engine/game/world.h"
+#include "../game/world.h"
 #include "util/input/input-manager.h"
 #include "util/font.h"
 #include "factory/font_render.h"

@@ -4,8 +4,8 @@
 #include "util/regex.h"
 #include "util/configuration.h"
 #include "util/debug.h"
-#include "paintown-engine/level/utils.h"
-#include "paintown-engine/object/player.h"
+#include "../level/utils.h"
+#include "../object/player.h"
 #include "util/file-system.h"
 #include "util/input/input-source.h"
 #include <vector>

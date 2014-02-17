@@ -2019,17 +2019,33 @@ bool Character::collision( Object * obj ){
 */
 	
 int Character::getWidth() const{
-	if (animation_current != NULL){
-		return animation_current->getWidth();
-	}
-	return 0;
+    if (animation_current != NULL){
+        return animation_current->getWidth();
+    }
+    return 0;
+}
+
+int Character::getAverageWidth() const {
+    if (animation_current != NULL){
+        return animation_current->getAverageWidth();
+    }
+
+    return 0;
+}
+
+int Character::getAverageHeight() const {
+    if (animation_current != NULL){
+        return animation_current->getAverageHeight();
+    }
+
+    return 0;
 }
 
 int Character::getHeight() const{
-	if (animation_current != NULL){
-		return animation_current->getHeight();
-	}
-	return 0;
+    if (animation_current != NULL){
+        return animation_current->getHeight();
+    }
+    return 0;
 }
 
 vector<ECollide*> Character::getCollide() const {

@@ -2,7 +2,7 @@
 #define _paintown_game_menu_options
 
 #include "util/menu/optionfactory.h"
-#include "paintown-engine/level/utils.h"
+#include "../level/utils.h"
 
 class MenuOption;
 namespace Menu{
