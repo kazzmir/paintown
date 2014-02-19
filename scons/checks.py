@@ -75,22 +75,43 @@ def checkAllegro5(debug):
                              make('allegro_acodec')]
                 utils.safeParseConfig(env, 'pkg-config %s --cflags --libs' % ' '.join(libraries))
                 env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
-                context.Message('found version %s' % version)
+                context.Message('found version %s ' % version)
                 return True
             except Exception, e:
                 print e
                 return False
+
+        failure = None
         try:
             ok = 0
             # if find(5.1) or find(5.0):
             if find(5):
                 ok = 1
-            context.Result(utils.colorResult(ok))
-            return ok
+            else:
+                failure = "Install Allegro5. http://liballeg.org"
+                ok = 0
+                raise Exception()
+
+            ok = context.TryCompile("""
+#include <allegro5/allegro.h>
+#if defined(ALLEGRO_VERSION) && defined(ALLEGRO_SUB_VERSION) && ALLEGRO_VERSION == 5 && ALLEGRO_SUB_VERSION >= 1
+#else
+#error fail
+#endif
+int main(){
+}
+""", ".cpp")
+            if ok == 0:
+                failure = "Allegro5 version is too old. Install 5.1 or greater"
+                raise Exception()
+
+            ok = 1
         except:
             context.sconf.env = tmp
-        context.Result(utils.colorResult(0))
-        return 0
+        context.Result(utils.colorResult(ok))
+        if failure != None:
+            print failure
+        return ok
 
     return make
 
