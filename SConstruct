@@ -63,6 +63,7 @@ useXenon = makeUseEnvironment('xenon', False)
 usePandora = makeUseEnvironment('pandora', False)
 useWii = makeUseEnvironment('wii', False)
 useLLVM = makeUseEnvironment('llvm', False)
+useMingwCross = makeUseEnvironment('mingwx', False)
 useNacl = makeUseEnvironment('nacl', False)
 useMad = makeUseEnvironment('mad', False)
 useGCW = makeUseEnvironment('gcw', False)
@@ -316,6 +317,24 @@ def getEnvironment(debug):
         env.PrependENVPath('PATH', bin_path)
         env.PrependENVPath('PATH', '%s/bin' % dingoo_path)
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        return env
+
+    def mingwCross(env):
+        import os
+        print "Environment is Mingw Cross Compiler"
+        prefix = 'i686-w64-mingw32-'
+        def setup(pre, x):
+            return '%s%s' % (pre, x)
+        env['CC'] = setup(prefix, 'gcc')
+        env['LD'] = setup(prefix, 'ld')
+        env['CXX'] = setup(prefix, 'g++')
+        env['AS'] = setup(prefix, 'as')
+        env['AR'] = setup(prefix, 'ar')
+        env['OBJCOPY'] = setup(prefix, 'objcopy')
+        env.Append(LIBS = ['wsock32'])
+        env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
+        env.Append(CPPPATH = ['/opt/mingw/include'])
+        env.Append(LINKFLAGS = ['-static-libstdc++', '-static-libgcc'])
         return env
 
     def pandora(env):
@@ -902,6 +921,8 @@ rsx
                 return intel(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif usePandora():
                 return pandora(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
+            elif useMingwCross():
+                return mingwCross(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useNDS():
                 return nds(Environment(ENV = os.environ, CPPDEFINES = defines, CCFLAGS = cflags))
             elif useGCW():
@@ -1175,6 +1196,8 @@ def configEnvironment(env):
 
 def buildType(env):
     properties = []
+    if useMingwCross():
+        properties.append('mingw-x')
     # Problem with command line too long under windows
     if isWindows() and useMinpspw():
         properties.append('psp')
@@ -1240,6 +1263,8 @@ custom_tests = {"CheckPython" : scons.checks.checkPython,
 def display_build_properties(env):
     color = 'light-green'
     properties = []
+    if useMingwCross():
+        properties.append(scons.utils.colorize("Mingw-Cross-Compiler", color))
     if scons.utils.useAllegro():
         properties.append(scons.utils.colorize("Allegro", color))
     if scons.utils.useAllegro5():
@@ -1353,8 +1378,12 @@ else:
         staticEnv['CXX'] = 'misc/g++'
         staticEnv['CC'] = 'misc/gcc'
     elif scons.utils.isLinux() and not useWii() and not useMinpspw() and not usePs3() and not useNDS() and not useDingoo() and not useAndroid() and not useAndroidX86() and not useNacl() and not useXenon():
-        staticEnv.Append(CPPDEFINES = 'LINUX')
-        env.Append(CPPDEFINES = 'LINUX')
+        if useMingwCross():
+            staticEnv.Append(CPPDEFINES = ['WINDOWS', 'WIN32'])
+            env.Append(CPPDEFINES = ['WINDOWS', 'WIN32'])
+        else:
+            staticEnv.Append(CPPDEFINES = 'LINUX')
+            env.Append(CPPDEFINES = 'LINUX')
     
     # Always need libz
     env.Append(LIBS = ['z'])
