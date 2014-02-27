@@ -1,0 +1,18 @@
+get the mingw cross compiler:
+  g++-mingw-w64
+  gcc-mingw-w64
+
+check out build-environments/mingw
+
+symlink build-environments/mingw to /opt/mingw
+
+Build paintown
+
+$ export mingwx=1
+$ make
+
+To run it symlink all the allegro dlls from /opt/mingw/bin to the current directory.
+Probably you also need libgcc_s_sjlj-1.dll and libstdc++-6.dll
+
+  /usr/lib/gcc/i686-w64-mingw32/4.6/libgcc_s_sjlj-1.dll
+  /usr/lib/gcc/i686-w64-mingw32/4.6/libstdc++-6.dll
