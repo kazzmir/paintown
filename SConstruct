@@ -331,10 +331,12 @@ def getEnvironment(debug):
         env['AS'] = setup(prefix, 'as')
         env['AR'] = setup(prefix, 'ar')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
-        env.Append(LIBS = ['wsock32'])
+        # Probably don't want to hard code all these libraries here..
+        env.Append(LIBS = Split("wsock32 vorbis vorbisfile ogg glu32 winmm psapi shlwapi opengl32 gdi32 ole32 jpeg png15"))
         env['LINKCOM'] = '$CXX $LINKFLAGS $SOURCES -Wl,--start-group $ARCHIVES $_LIBDIRFLAGS $_LIBFLAGS -Wl,--end-group -o $TARGET'
         env.Append(CPPPATH = ['/opt/mingw/include'])
-        env.Append(LINKFLAGS = ['-static-libstdc++', '-static-libgcc'])
+        env.Append(LIBPATH = ['/opt/mingw/lib'])
+        env.Append(LINKFLAGS = ['-static-libstdc++', '-static-libgcc', '-mwindows', '-Wl,-subsystem,windows'])
         return env
 
     def pandora(env):
