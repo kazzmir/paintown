@@ -330,6 +330,7 @@ def getEnvironment(debug):
         env['CXX'] = setup(prefix, 'g++')
         env['AS'] = setup(prefix, 'as')
         env['AR'] = setup(prefix, 'ar')
+        env['RANLIB'] = setup(prefix, 'ranlib')
         env['OBJCOPY'] = setup(prefix, 'objcopy')
         # Probably don't want to hard code all these libraries here..
         env.Append(LIBS = Split("wsock32 vorbis vorbisfile ogg glu32 winmm psapi shlwapi opengl32 gdi32 ole32 jpeg png15"))
