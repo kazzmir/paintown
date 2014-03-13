@@ -5,7 +5,7 @@
 # Optimizations (like chunks) and other inspiration: Rats!
 #   http://cs.nyu.edu/rgrimm/xtc/rats.html
 # By Jon Rafkind
-# License: GPL 2
+# License: BSD
 
 # Python BNF parser:
 # 1. 171397b / 45.216s = 3790.62721160651 b/s
