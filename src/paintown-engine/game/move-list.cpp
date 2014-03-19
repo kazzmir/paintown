@@ -525,60 +525,74 @@ public:
            */
     }
 
+    void drawBackground(const Graphics::Bitmap & buffer, const Font & font){
+        context.renderBackground(buffer);
+    }
+
     void draw(const Graphics::Bitmap & buffer, const Font & font){
         // area.render(buffer);
-        Graphics::Bitmap space(buffer,
-                               area.getArea().getX() + area.getTransforms().getRadius(),
-                               area.getArea().getY(),
-                               area.getArea().getWidth() - area.getTransforms().getRadius(),
-                               area.getArea().getHeight() - area.getTransforms().getRadius());
-        // space.clear();
-        // const Font & font = Font::getDefaultFont(20, 20);
-        // listMovements(space, selected);
-        int margin = 180;
-        int playerX = space.getWidth() - margin - area.getTransforms().getRadius();
-        if (playerX < 1){
-            playerX = 1;
+
+        int areaX = area.getArea().getX() + area.getTransforms().getRadius();
+        int areaY = area.getArea().getY();
+        int areaWidth = area.getArea().getWidth() - area.getTransforms().getRadius();
+        int areaHeight = area.getArea().getHeight() - area.getTransforms().getRadius();
+
+        if (areaWidth >= 1 && areaHeight >= 1){
+            Graphics::Bitmap space(buffer, areaX, areaY, areaWidth, areaHeight);
+
+            // space.clear();
+            // const Font & font = Font::getDefaultFont(20, 20);
+            // listMovements(space, selected);
+            int margin = 180;
+            int playerX = space.getWidth() - margin - area.getTransforms().getRadius();
+            if (playerX < 1){
+                playerX = 1;
+            }
+            int playerY = (int)(playerX / 1.3333);
+            if (playerY < 1){
+                playerY = 1;
+            }
+            Graphics::Bitmap playerArea(space, margin, 30, playerX, playerY);
+            Graphics::StretchedBitmap show(playerArea.getWidth() / 1.7, playerArea.getHeight() / 1.7, playerArea);
+            show.start();
+            grid(show, counter);
+            playerCopy->setX(show.getWidth() / 2);
+            playerCopy->setY(0);
+            playerCopy->setZ(show.getHeight() - 10);
+            playerCopy->draw(&show, 0, 0);
+            show.finish();
+
+            list.render(Graphics::Bitmap(space, 2, 0, space.getWidth(), space.getHeight()), font);
+
+            // int x = playerCopy->getX();
+            int x = margin + 50;
+            int y = space.getHeight() - 50;
+            // drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
+            /* FIXME: show keys for the entire combo */
+            drawKeys(getCombo(playerCopy, nextAnimation), playerCopy->getCurrentMovement(), x, y, space);
+
         }
-        int playerY = (int)(playerX / 1.3333);
-        if (playerY < 1){
-            playerY = 1;
-        }
-        Graphics::Bitmap playerArea(space, margin, 30, playerX, playerY);
-        Graphics::StretchedBitmap show(playerArea.getWidth() / 1.7, playerArea.getHeight() / 1.7, playerArea);
-        show.start();
-        grid(show, counter);
-        playerCopy->setX(show.getWidth() / 2);
-        playerCopy->setY(0);
-        playerCopy->setZ(show.getHeight() - 10);
-        playerCopy->draw(&show, 0, 0);
-        show.finish();
-
-        list.render(Graphics::Bitmap(space, 2, 0, space.getWidth(), space.getHeight()), font);
-
-        // int x = playerCopy->getX();
-        int x = margin + 50;
-        int y = space.getHeight() - 50;
-        // drawKeys(playerCopy->getMovement(logic.nextAnimation), x, y, space);
-        /* FIXME: show keys for the entire combo */
-        drawKeys(getCombo(playerCopy, nextAnimation), playerCopy->getCurrentMovement(), x, y, space);
-
         // space.border(0, 2, Graphics::makeColor(128, 128, 128));
         // buffer.BlitToScreen();
     }
 };
 
+static const Graphics::Bitmap & getScreen(){
+    return *Graphics::screenParameter.current();
+}
+
 class Runner: public Util::Logic, public Util::Draw {
     public:
         Runner(MoveList & main, Gui::PopupBox & area):
             main(main),
-        area(area){
+            area(area){
+            // background(Graphics::Bitmap(getScreen(), true).scaleTo(640, 480)){
             // background.BlitFromScreen(0, 0);
         }
 
         MoveList & main;
         Gui::PopupBox & area;
-        Graphics::Bitmap background;
+        // Graphics::Bitmap background;
 
         virtual void run(){
             const Font & font = Menu::menuFontParameter.current()->get();
@@ -593,15 +607,16 @@ class Runner: public Util::Logic, public Util::Draw {
 
         /* FIXME: the background shifts by one or two pixels when its shown */
         void drawFirst(const Graphics::Bitmap & buffer){
-            background.resize(GFX_X, GFX_Y);
-            buffer.Stretch(background);
+            // background.resize(GFX_X, GFX_Y);
+            // buffer.Blit(background);
         }
 
         void draw(const Graphics::Bitmap & buffer){
             Graphics::StretchedBitmap work(640, 480, buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
             const Font & font = Menu::menuFontParameter.current()->get();
             work.start();
-            background.Blit(work);
+            // background.Blit(work);
+            main.drawBackground(work, font);
             area.render(work, font);
             main.draw(work, font);
             work.finish();
@@ -627,9 +642,9 @@ void showMoveList(Player * player, const Menu::Context & context){
     area.transforms.setRadius(20);
 
     area.colors.body = Graphics::makeColor(0,0,0);
-    area.colors.bodyAlpha = 220;
+    area.colors.bodyAlpha = 120;
     area.colors.border = Graphics::makeColor(200,200,200);
-    area.colors.borderAlpha = 200;
+    area.colors.borderAlpha = 255;
 
     area.open();
     MoveList all(player->getInput(), playerCopy, area, context);
