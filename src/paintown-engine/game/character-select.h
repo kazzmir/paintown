@@ -209,9 +209,6 @@ protected:
     /*! List window */
     Window listWindow;
     
-    /*! List window bitmap */
-    Util::ReferenceCount<Graphics::Bitmap> listBitmap;
-    
     /*! Profile Windows (dependant on cursor total) */
     std::vector<Util::ReferenceCount<Profile> > profiles;
     

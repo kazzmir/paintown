@@ -1108,9 +1108,6 @@ void CharacterSelect::load(const Token * token){
         throw LoadException(__FILE__, __LINE__, e, "Error loading Character Select file.");
     }
     
-    // Setup windows
-    listBitmap = new Graphics::Bitmap(listWindow.width, listWindow.height);
-    
     /* Add items
      * FIXME handle auto-populate prior to adding
      */
@@ -1173,9 +1170,8 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
     
     // Lists first
     if (list != NULL && listDepth == depth){
-        listBitmap->clearToMask();
-        list->render(*listBitmap, listFont);
-        listBitmap->draw(listWindow.x, listWindow.y, work);
+        Graphics::Bitmap listBitmap(work, listWindow.x, listWindow.y, listWindow.width, listWindow.height);
+        list->render(listBitmap, listFont);
     }
     
     // Directional arrows next
