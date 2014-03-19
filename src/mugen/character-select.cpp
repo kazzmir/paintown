@@ -2755,7 +2755,7 @@ void CharacterSelect::init(){
         for (unsigned int i = 0; i < (unsigned int)(gridX * gridY); ++i){
             PaintownUtil::ReferenceCount<Cell> cell = PaintownUtil::ReferenceCount<Cell>(new Cell(i, &grid, cellBackground, cellRandomIcon));
             cells.push_back(cell);
-            grid.addItem(cell.convert<Gui::SelectItem>());
+            grid.addItem(cell);
         }
         // Set up cursors
         grid.setCursors(2);
@@ -3921,11 +3921,9 @@ public:
 };
 
 PaintownUtil::ReferenceCount<PaintownUtil::Logic> CharacterSelect::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2, Searcher & search){
-    PaintownUtil::ReferenceCount<SelectLogic> logic = PaintownUtil::ReferenceCount<SelectLogic>(new SelectLogic(input1, input2, *this, search));
-    return logic.convert<PaintownUtil::Logic>();
+    return PaintownUtil::ReferenceCount<SelectLogic>(new SelectLogic(input1, input2, *this, search));
 }
 
 PaintownUtil::ReferenceCount<PaintownUtil::Draw> CharacterSelect::getDraw(){
-    PaintownUtil::ReferenceCount<SelectDraw> draw = PaintownUtil::ReferenceCount<SelectDraw>(new SelectDraw(*this));
-    return draw.convert<PaintownUtil::Draw>();
+    return PaintownUtil::ReferenceCount<SelectDraw>(new SelectDraw(*this));
 }

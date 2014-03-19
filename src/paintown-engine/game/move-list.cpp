@@ -261,7 +261,7 @@ public:
             vector<MoveNode> start = graph->rank0Nodes();
             for (vector<MoveNode>::iterator it = start.begin(); it != start.end(); it++){
                 string name = it->getName();
-                list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(name, gradient)).convert<Gui::ScrollItem>());
+                list.addItem(Util::ReferenceCount<MoveItem>(new MoveItem(name, gradient)));
             }
             /*
                for (map<std::string, Util::ReferenceCount<Animation> >::const_iterator find = movements.begin(); find != movements.end(); find++){
@@ -708,7 +708,7 @@ void OptionMoveList::logic(){
 void OptionMoveList::run(const Menu::Context & context){
     if (players.size() > 1){
         Util::ReferenceCount<Menu::TabRenderer> renderer = Util::ReferenceCount<Menu::TabRenderer>(new Menu::TabRenderer());
-        Menu::Menu menu(renderer.convert<Menu::Renderer>());
+        Menu::Menu menu(renderer);
         Gui::TabbedBox & box = renderer->getBox();
         box.location.setDimensions(GFX_X - 50, GFX_Y - 50);
         box.location.setCenterPosition(Gui::RelativePoint(0, 0));

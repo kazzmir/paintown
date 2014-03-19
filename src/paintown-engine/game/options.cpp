@@ -47,7 +47,7 @@ Level::LevelInfo doLevelMenu(const string dir, const Menu::Context & context){
 
     try{
         Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
-        Menu::Menu temp(renderer.convert<Menu::Renderer>());
+        Menu::Menu temp(renderer);
         
         int index = 0;
         Gui::ContextBox & box = renderer->getBox();
@@ -164,7 +164,7 @@ public:
         }
         int select = 0;
         Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
-        Menu::Menu menu(renderer.convert<Menu::Renderer>());
+        Menu::Menu menu(renderer);
         const Gui::ContextBox & box = renderer->getBox();
         for (int i = 2; i <= maxPlayers; i++){
             OptionLevel * option = new OptionLevel(box, 0, &select, i);
@@ -184,7 +184,7 @@ public:
     /* ask the user(s) to select modes of input (keyboard, joystick...) */
     int selectInput(const Menu::Context & context, const vector<string> & names, int player){
         Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
-        Menu::Menu menu(renderer.convert<Menu::Renderer>());
+        Menu::Menu menu(renderer);
         int select = 0;
         Gui::ContextBox & box = renderer->getBox();
         box.setListType(Gui::ContextBox::Normal);
@@ -562,7 +562,7 @@ public:
         try{
             int select = 0;
             Util::ReferenceCount<Menu::DefaultRenderer> renderer = Util::ReferenceCount<Menu::DefaultRenderer>(new Menu::DefaultRenderer());
-            Menu::Menu menu(renderer.convert<Menu::Renderer>());
+            Menu::Menu menu(renderer);
             vector<ModType> mods = findMods();
             map<int, ModType*> modMap;
             int index = 0;

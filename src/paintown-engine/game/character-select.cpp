@@ -167,7 +167,7 @@ static void parseSimpleList(Util::ReferenceCount<Gui::SimpleSelect> list, std::m
             int offset=0;
             std::string layout;
             int viewable = 0;
-            if (parseBaseList(list.convert<Gui::SelectListInterface>(), cursorLocations, tok)){
+            if (parseBaseList(list, cursorLocations, tok)){
             } else if (tok->match("viewable", viewable)){
                 list->setViewable(viewable);
             } else if (tok->match("layout", layout)){
@@ -198,7 +198,7 @@ static void parseGridList(Util::ReferenceCount<Gui::GridSelect> list, std::map<i
             view >> tok;
             int x=0,y=0;
             std::string layout;
-            if (parseBaseList(list.convert<Gui::SelectListInterface>(), cursorLocations, tok)){
+            if (parseBaseList(list, cursorLocations, tok)){
             } else if (tok->match("grid-size", x, y)){
                 list->setGridSize(x, y);
             } else if (tok->match("layout", layout)){
@@ -685,7 +685,7 @@ void MessageCollection::act(Util::ReferenceCount<Gui::SelectListInterface> & lis
             if (message->getCursorAssociation() != -1){
                 Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(message->getCursorAssociation());
                 if (item != NULL){
-                    message->setReplaceMessage(item.convert<CharacterItem>()->getName());
+                    message->setReplaceMessage(((Util::ReferenceCount<CharacterItem>) item)->getName());
                 }
             }
         }
@@ -873,7 +873,7 @@ void CharacterSelect::act(){
         for (int i = 0; i < list->totalCursors(); ++i){
             Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
             if (item != NULL){
-                Util::ReferenceCount<CharacterItem> ourItem = item.convert<CharacterItem>();
+                Util::ReferenceCount<CharacterItem> ourItem = item;
                 loader->update(ourItem->getPlayer()->guy.raw());
                 ourItem->act();
             }
@@ -975,14 +975,14 @@ void CharacterSelect::moveRight(int cursor){
 }
             
 int CharacterSelect::getRemap(int cursor){
-    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor).convert<CharacterItem>();
+    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor);
     Util::ReferenceCount<Paintown::DisplayCharacter> character = selected->getPlayer()->guy;
     return character->getCurrentMap();
 }
 
 void CharacterSelect::swap(int cursor){
     playSound(Swap);
-    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor).convert<CharacterItem>();
+    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor);
     Util::ReferenceCount<Paintown::DisplayCharacter> character = selected->getPlayer()->guy;
     if (character->isLoaded()){
         character->nextMap();
@@ -1020,11 +1020,11 @@ void CharacterSelect::load(const Token * token){
                 } else if (*tok == "simple-list"){
                     Util::ReferenceCount<Gui::SimpleSelect> simpleList(new Gui::SimpleSelect());
                     parseSimpleList(simpleList, cursorLocations, tok);
-                    list = simpleList.convert<Gui::SelectListInterface>();
+                    list = simpleList;
                 } else if (*tok == "grid-list"){
                     Util::ReferenceCount<Gui::GridSelect> gridList(new Gui::GridSelect());
                     parseGridList(gridList, cursorLocations, tok);
-                    list = gridList.convert<Gui::SelectListInterface>();
+                    list = gridList;
                 } else if (tok->match("auto-populate", autoPopulate)){
                 } else if (tok->match("auto-populate-directory", string_match)){
                     autoPopulate = true;
@@ -1160,7 +1160,7 @@ void CharacterSelect::load(const Token * token){
 }
     
 Filesystem::AbsolutePath CharacterSelect::getCurrentSelectedPath(int cursor){
-    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor).convert<CharacterItem>();
+    Util::ReferenceCount<CharacterItem> selected = getList()->getItemByCursor(cursor);
     return selected->getPlayer()->path;
 }
 
@@ -1189,7 +1189,7 @@ void CharacterSelect::render(const Gui::Animation::Depth & depth, const Graphics
         if (profile->depth == depth){
             Util::ReferenceCount<Gui::SelectItem> item = list->getItemByCursor(i);
             if (item != NULL){
-                item.convert<CharacterItem>()->drawProfile(*profile, work, listFont);
+                ((Util::ReferenceCount<CharacterItem>) item)->drawProfile(*profile, work, listFont);
             }
         }
     }

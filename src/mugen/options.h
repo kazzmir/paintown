@@ -22,7 +22,7 @@ class Font;
 
 class Character;
 
-class ListItem : public Gui::ScrollItem{
+class ListItem : public Gui::ScrollItem {
 public:
     ListItem();
     virtual ~ListItem();
@@ -93,7 +93,7 @@ public:
     
     //! Get current item
     virtual inline const PaintownUtil::ReferenceCount<ListItem> getCurrent() const{
-        return this->text[current].convert<ListItem>();
+        return this->text[current];
     }
 
     //! Next

@@ -365,10 +365,10 @@ public:
 
 PaintownUtil::ReferenceCount<PaintownUtil::Logic> VersusMenu::getLogic(InputMap<Mugen::Keys> & input1, InputMap<Mugen::Keys> & input2){
     PaintownUtil::ReferenceCount<VersusLogic> logic = PaintownUtil::ReferenceCount<VersusLogic>(new VersusLogic(input1, input2, *this));
-    return logic.convert<PaintownUtil::Logic>();
+    return logic;
 }
 
 PaintownUtil::ReferenceCount<PaintownUtil::Draw> VersusMenu::getDraw(){
     PaintownUtil::ReferenceCount<VersusDraw> draw = PaintownUtil::ReferenceCount<VersusDraw>(new VersusDraw(*this));
-    return draw.convert<PaintownUtil::Draw>();
+    return draw;
 }

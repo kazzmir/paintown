@@ -349,7 +349,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
     switch (packet->type){
         case Packet::InputType: {
             NetworkBuffer buffer;
-            PaintownUtil::ReferenceCount<InputPacket> input = packet.convert<InputPacket>();
+            PaintownUtil::ReferenceCount<InputPacket> input = packet;
             buffer << NetworkMagic;
             buffer << (int16_t) Packet::InputType;
             buffer << input->tick;
@@ -381,7 +381,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             buffer << (int16_t) NetworkMagic;
             buffer << (int16_t) Packet::WorldType;
 
-            PaintownUtil::ReferenceCount<WorldPacket> world = packet.convert<WorldPacket>();
+            PaintownUtil::ReferenceCount<WorldPacket> world = packet;
             Token * test = world->getWorld()->serialize();
             // Token * filtered = filterTokens(test);
 
@@ -412,7 +412,7 @@ static void sendPacket(const Network::Socket & socket, const PaintownUtil::Refer
             break;
         }
         case Packet::PingType: {
-            PaintownUtil::ReferenceCount<PingPacket> ping = packet.convert<PingPacket>();
+            PaintownUtil::ReferenceCount<PingPacket> ping = packet;
             NetworkBuffer buffer;
             buffer << (int16_t) NetworkMagic;
             buffer << (int16_t) Packet::PingType;
@@ -636,15 +636,15 @@ public:
         Global::debug(1) << "Received packet type " << packet->getType() << " at " << System::currentMilliseconds() << std::endl;
         switch (packet->getType()){
             case Packet::PingType: {
-                host.handlePing(packet.convert<PingPacket>());
+                host.handlePing(packet);
                 break;
             }
             case Packet::InputType: {
-                host.handleInput(packet.convert<InputPacket>());
+                host.handleInput(packet);
                 break;
             }
             case Packet::WorldType: {
-                host.handleWorld(packet.convert<WorldPacket>());
+                host.handleWorld(packet);
                 break;
             }
         }
@@ -882,7 +882,7 @@ public:
     }
 
     virtual void handlePing(const PaintownUtil::ReferenceCount<PingPacket> & packet){
-        handler.sendPacket(packet.convert<Packet>());
+        handler.sendPacket(packet);
     }
     
     virtual void handleInput(const PaintownUtil::ReferenceCount<InputPacket> & packet){
@@ -1028,12 +1028,12 @@ void Game::startNetworkVersus1(const PaintownUtil::ReferenceCount<Character> & p
             player1->setBehavior(&player1Behavior);
             player2->setBehavior(&player2Behavior);
             observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkServerObserver(socket, player1, player2, player1Behavior, player2Behavior));
-            stage.setObserver(observer.convert<StageObserver>());
+            stage.setObserver(observer);
         } else {
             player2->setBehavior(&player1Behavior);
             player1->setBehavior(&player2Behavior);
             observer = PaintownUtil::ReferenceCount<NetworkObserver>(new NetworkClientObserver(socket, player2, player1, player1Behavior, player2Behavior));
-            stage.setObserver(observer.convert<StageObserver>());
+            stage.setObserver(observer);
         }
 
         RunMatchOptions options;

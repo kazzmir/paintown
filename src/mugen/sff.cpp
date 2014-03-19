@@ -157,7 +157,7 @@ public:
             if (sprite->getGroupNumber() == group &&
                 sprite->getImageNumber() == item){
                 /* make a deep copy */
-                return PaintownUtil::ReferenceCount<Mugen::SpriteV1>(new Mugen::SpriteV1(*loadSprite(sprite, mask))).convert<Mugen::Sprite>();
+                return PaintownUtil::ReferenceCount<Mugen::SpriteV1>(new Mugen::SpriteV1(*loadSprite(sprite, mask)));
             }
         }
         return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
@@ -190,7 +190,7 @@ public:
         spriteIndex[currentSprite] = sprite;
         currentSprite += 1;
 
-        return sprite.convert<Mugen::Sprite>();
+        return sprite;
     }
 
     bool moreSprites(){
@@ -435,7 +435,7 @@ public:
 
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(const SpriteHeader & sprite, bool mask){
         /* FIXME: do something with mask */
-        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(sprite), sprite.group, sprite.item, sprite.axisx, sprite.axisy)).convert<Mugen::Sprite>();
+        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(sprite), sprite.group, sprite.item, sprite.axisx, sprite.axisy));
     }
 
     PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
@@ -942,7 +942,7 @@ public:
         const Image & image = *current;
         current++;
         /* FIXME: do something with mask */
-        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY)).convert<Mugen::Sprite>();
+        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY));
     }
 
     virtual PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask){
@@ -950,7 +950,7 @@ public:
             const Image & image = *it;
             if (image.group == group && image.item == item){
                 /* FIXME: do something with mask */
-                return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY)).convert<Mugen::Sprite>();
+                return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY));
             }
         }
         return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);
@@ -1010,7 +1010,7 @@ public:
         const Image & image = *current;
         current++;
         /* FIXME: do something with mask */
-        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY)).convert<Mugen::Sprite>();
+        return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY));
     }
 
     virtual PaintownUtil::ReferenceCount<Mugen::Sprite> findSprite(int group, int item, bool mask){
@@ -1018,7 +1018,7 @@ public:
             const Image & image = *it;
             if (image.group == group && image.item == item){
                 /* FIXME: do something with mask */
-                return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY)).convert<Mugen::Sprite>();
+                return PaintownUtil::ReferenceCount<Mugen::SpriteV2>(new Mugen::SpriteV2(readBitmap(image.file), image.group, image.item, image.axisX, image.axisY));
             }
         }
         return PaintownUtil::ReferenceCount<Mugen::Sprite>(NULL);

@@ -147,7 +147,7 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
     unsigned int index = 0;
     for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i, ++index){
         //if (index >= itemTop-1 && index <= itemBottom+1){
-            const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
+            const PaintownUtil::ReferenceCount<ListItem> item = *i;
             const FontSystem::Font & useFont = (index != current) ? font : activeFont;
             if (expandState == Disabled){
                 if (index == current && showCursor){
@@ -259,7 +259,7 @@ bool ScrollAction::valuePrevious(){
 int ScrollAction::getMaxWidth(){
     int width = 0;
     for (std::vector<PaintownUtil::ReferenceCount<ScrollItem> >::const_iterator i = text.begin(); i != text.end(); ++i){
-        const PaintownUtil::ReferenceCount<ListItem> item = (*i).convert<ListItem>();
+        const PaintownUtil::ReferenceCount<ListItem> item = *i;
         const int check = item->getWidth(font);
         if (check > width){
             width = check;
@@ -1321,16 +1321,16 @@ public:
                     PaintownUtil::ReferenceCount<Item> motif = PaintownUtil::ReferenceCount<Item>(new Item());
                     motif->name = Mugen::Util::probeDef(paths[i], "info", "name");
                     motif->path = paths[i];
-                    list.push_back(motif.convert<Gui::ScrollItem>());
+                    list.push_back(motif);
                 }
             }
             
             Filesystem::AbsolutePath get(unsigned int index){
-                return list[index].convert<Item>()->path;
+                return ((PaintownUtil::ReferenceCount<Item>) list[index])->path;
             }
             
             const std::string & getName(unsigned int index){
-                return list[index].convert<Item>()->name;
+                return ((PaintownUtil::ReferenceCount<Item>) list[index])->name;
             }
             
             std::string error(unsigned int index){
@@ -1702,7 +1702,7 @@ public:
                             InputManager::poll();
                             if (InputManager::anyInput()){
                                 setKey(player, keyMap[currentValue], InputManager::readKey());
-                                menu.updateItem(currentValue, getList(player)[currentValue].convert<Gui::ScrollItem>());
+                                menu.updateItem(currentValue, getList(player)[currentValue]);
                                 InputManager::waitForClear();
                                 if (currentValue < keyValues.size()-1){
                                     currentValue++;
@@ -1893,7 +1893,7 @@ PaintownUtil::ReferenceCount<Gui::ScrollItem> OptionMenu::getPlayerKeys(int play
     playerKeys->throwable = true;
     playerKeys->parent = menu;
     playerKeys->disableFade = true;
-    return playerKeys.convert<Gui::ScrollItem>();
+    return playerKeys;
 }
 
 bool OptionMenu::doConfirmDialog(const std::string & title, bool renderBackground, Graphics::Color clearColor, int clearAlpha, bool disableFade, OptionMenu * parent){
@@ -2101,11 +2101,11 @@ void OptionsMenu::run(const std::string & name){
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::TeamLoseOnKO()));
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::AutoSearch()));
     PaintownUtil::ReferenceCount<Mugen::Motif> motif = PaintownUtil::ReferenceCount<Mugen::Motif>(new Mugen::Motif());
-    list.push_back(motif.convert<Gui::ScrollItem>());
+    list.push_back(motif);
     PaintownUtil::ReferenceCount<Mugen::PlayerKeys> player1Keys = PaintownUtil::ReferenceCount<Mugen::PlayerKeys>(new Mugen::PlayerKeys(0, "Player1"));
     PaintownUtil::ReferenceCount<Mugen::PlayerKeys> player2Keys = PaintownUtil::ReferenceCount<Mugen::PlayerKeys>(new Mugen::PlayerKeys(1, "Player2"));
-    list.push_back(player1Keys.convert<Gui::ScrollItem>());
-    list.push_back(player2Keys.convert<Gui::ScrollItem>());
+    list.push_back(player1Keys);
+    list.push_back(player2Keys);
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Mugen::Escape()));
     /* Testing 
     list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new DummyItem("Dummy")));
