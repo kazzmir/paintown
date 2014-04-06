@@ -208,12 +208,14 @@ static const Graphics::Bitmap & getScreen(){
 }
 
 /* in-game menu */
-static bool doMenu(const Token * data, const vector<Paintown::Player *> & players){
+static bool doMenu(const Token * data, const vector<Paintown::Player *> & players, const Util::ReferenceCount<Util::Draw> & draw){
     const Graphics::Bitmap & screen_buffer = getScreen();
     // Menu::Menu menu(Filesystem::find(Filesystem::RelativePath("menu/in-game.txt")));
     GameOptionFactory optionFactory(players);
     Menu::Menu menu(data, optionFactory);
     Menu::Context context;
+
+    context.addBackground(Util::ReferenceCount<Gui::Animation>(new Gui::DrawableAnimation(draw)));
 
     for (vector<Paintown::Player*>::const_iterator it = players.begin(); it != players.end(); it++){
         Paintown::Player * player = *it;
@@ -230,7 +232,7 @@ static bool doMenu(const Token * data, const vector<Paintown::Player *> & player
      * thats what it was created with.
      */
     /* FIXME: scale it to the size of the menu */
-    context.addBackground(Graphics::Bitmap(screen_buffer, true).scaleTo(640, 480));
+    // context.addBackground(Graphics::Bitmap(screen_buffer, true).scaleTo(640, 480));
     try{
         menu.run(context);
         /* im pretty sure there is no way to get the menu to return normally,
@@ -269,29 +271,121 @@ public:
     }
 };
 
+struct GameState{
+    GameState():
+        menu_quit(false),
+        helpTime(0),
+        pressed(0),
+        done(false),
+        show_fps(false),
+        takeScreenshot(false){
+        }
+
+    bool menu_quit;
+    double helpTime;
+    int pressed;
+    bool done;
+    bool show_fps;
+    bool takeScreenshot;
+};
+
+/* Have to put this in the top-level scope.. boo */
+class Draw: public Util::Draw {
+public:
+    Draw(Console::Console & console, World & world, GameState & state):
+        console(console),
+        world(world),
+        state(state){
+        }
+
+    Console::Console & console;
+    World & world;
+    GameState & state;
+
+    void draw(const Graphics::Bitmap & screen_buffer){
+        run(screen_buffer, state);
+    }
+
+    void run(const Graphics::Bitmap & screen_buffer, GameState & state){
+        Graphics::RestoreState graphicsState;
+        /* FIXME: replace these constants */
+        Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+        Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
+        // updateFrames();
+
+        work.start();
+        work.clear();
+        world.draw(&work);
+
+        work.finish();
+        // work.Stretch(screen_buffer);
+        FontRender * render = FontRender::getInstance();
+        render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
+
+        const Font & font = Font::getDefaultFont((int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
+
+        if (state.helpTime > 0){
+            int x = (int)(100 * work.getScaleWidth() / 2);
+            int y = (screen_buffer.getHeight() / 5 * work.getScaleHeight() / 2);
+            Graphics::Color color = Graphics::makeColor(255, 255, 255);
+            Graphics::Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
+            drawHelp(font, x, y, color, screen_buffer.translucent());
+        }
+
+        if (state.show_fps){
+            font.printf((int)(screen_buffer.getWidth() - 120 * work.getScaleWidth() / 2), (int)(10 * work.getScaleHeight() / 2), Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
+        }
+        console.draw(screen_buffer);
+
+        /* getX/Y move when the world is quaking */
+        // screen_buffer.BlitToScreen(world.getX(), world.getY());
+        // screen.BlitToScreen();
+
+        if (state.takeScreenshot){
+            state.takeScreenshot = false;
+            doTakeScreenshot(work);
+        }
+    }
+
+    void showScreenshots(const Graphics::Bitmap & screen_buffer){
+        screen_buffer.clear();
+        Sound snapshot(Storage::instance().find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
+        Graphics::StretchedBitmap work(320, 240, screen_buffer);
+        for (deque<Graphics::Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
+            Graphics::Bitmap * shot = *it;
+            int angle = Util::rnd(-6, 6);
+
+            /*
+               int gap = 4;
+               int x = Util::rnd(work.getWidth() - 2 * work.getWidth() / gap) + work.getWidth() / gap;
+               int y = Util::rnd(work.getHeight() - 2 * work.getHeight() / gap) + work.getHeight() / gap;
+               double scale = 1.0 - log(world.getScreenshots().size()+1) / 9.0;
+               shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
+               */
+
+            int x = work.getWidth() / 2;
+            int y = work.getHeight() / 2;
+            double scale = 0.9;
+            work.start();
+            shot->border(0, 1, Graphics::makeColor(64,64,64));
+            shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
+            work.finish();
+            screen_buffer.BlitToScreen();
+            snapshot.play();
+            Util::restSeconds(1.5);
+        }
+        if (world.getScreenshots().size() > 0){
+            Util::restSeconds(2);
+        }
+
+    }
+};
+
 bool playLevel( World & world, const vector< Paintown::Object * > & players){
     /* user presses ESC in the game and brings up the menu. ESC in the menu
      * should go back to the game. selecting the 'exit' option should quit the game
      * to the main menu.
      */ 
-
-    struct GameState{
-        GameState():
-            menu_quit(false),
-            helpTime(0),
-            pressed(0),
-            done(false),
-            show_fps(false),
-            takeScreenshot(false){
-            }
-
-        bool menu_quit;
-        double helpTime;
-        int pressed;
-        bool done;
-        bool show_fps;
-        bool takeScreenshot;
-    };
     
     GameState state;
 
@@ -497,7 +591,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
     class Logic: public Util::Logic {
     public:
-        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console, GameState & state, Token * menuData):
+        Logic(const vector<Paintown::Object*> & players, World & world, Console::Console & console, GameState & state, Token * menuData, const Util::ReferenceCount<Util::Draw> & draw):
         runCounter(0),
         gameSpeed(startingGameSpeed()),
         players(players),
@@ -505,7 +599,8 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         world(world),
         console(console),
         state(state),
-        menuData(menuData){
+        menuData(menuData),
+        draw(draw){
             if (Global::getDebug() > 0){
                 input.set(Keyboard::Key_MINUS_PAD, 2, false, Game::Slowdown);
                 input.set(Keyboard::Key_PLUS_PAD, 2, false, Game::Speedup);
@@ -533,6 +628,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         Console::Console & console;
         GameState & state;
         Token * menuData;
+        Util::ReferenceCount<Util::Draw> draw;
 
         virtual bool done(){
             return state.done || state.menu_quit;
@@ -680,7 +776,7 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
                     state.menu_quit = state.menu_quit || doMenu(menuData, player);
                 }
                 */
-                state.menu_quit = state.menu_quit || doMenu(menuData, getPlayers());
+                state.menu_quit = state.menu_quit || doMenu(menuData, getPlayers(), draw);
             }
         }
 
@@ -693,103 +789,12 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
         }
     };
 
-    class Draw: public Util::Draw {
-    public:
-        Draw(Console::Console & console, World & world, GameState & state):
-        console(console),
-        world(world),
-        state(state){
-        }
-
-        Console::Console & console;
-        World & world;
-        GameState & state;
-
-        void draw(const Graphics::Bitmap & screen_buffer){
-            run(screen_buffer, state);
-        }
-
-        void run(const Graphics::Bitmap & screen_buffer, GameState & state){
-            Graphics::RestoreState graphicsState;
-            /* FIXME: replace these constants */
-            Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
-            Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
-            // updateFrames();
-
-            work.start();
-            work.clear();
-            world.draw(&work);
-
-            work.finish();
-            // work.Stretch(screen_buffer);
-            FontRender * render = FontRender::getInstance();
-            render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
-
-            const Font & font = Font::getDefaultFont((int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
-
-            if (state.helpTime > 0){
-                int x = (int)(100 * work.getScaleWidth() / 2);
-                int y = (screen_buffer.getHeight() / 5 * work.getScaleHeight() / 2);
-                Graphics::Color color = Graphics::makeColor(255, 255, 255);
-                Graphics::Bitmap::transBlender( 0, 0, 0, (int)(state.helpTime > 255 ? 255 : state.helpTime));
-                drawHelp(font, x, y, color, screen_buffer.translucent());
-            }
-
-            if (state.show_fps){
-                font.printf((int)(screen_buffer.getWidth() - 120 * work.getScaleWidth() / 2), (int)(10 * work.getScaleHeight() / 2), Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
-            }
-            console.draw(screen_buffer);
-
-            /* getX/Y move when the world is quaking */
-            // screen_buffer.BlitToScreen(world.getX(), world.getY());
-            // screen.BlitToScreen();
-
-            if (state.takeScreenshot){
-                state.takeScreenshot = false;
-                doTakeScreenshot(work);
-            }
-        }
-
-        void showScreenshots(const Graphics::Bitmap & screen_buffer){
-            screen_buffer.clear();
-            Sound snapshot(Storage::instance().find(Filesystem::RelativePath("sounds/snapshot.wav")).path());
-            Graphics::StretchedBitmap work(320, 240, screen_buffer);
-            for (deque<Graphics::Bitmap*>::const_iterator it = world.getScreenshots().begin(); it != world.getScreenshots().end(); it++){
-                Graphics::Bitmap * shot = *it;
-                int angle = Util::rnd(-6, 6);
-
-                /*
-                   int gap = 4;
-                   int x = Util::rnd(work.getWidth() - 2 * work.getWidth() / gap) + work.getWidth() / gap;
-                   int y = Util::rnd(work.getHeight() - 2 * work.getHeight() / gap) + work.getHeight() / gap;
-                   double scale = 1.0 - log(world.getScreenshots().size()+1) / 9.0;
-                   shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
-                   */
-
-                int x = work.getWidth() / 2;
-                int y = work.getHeight() / 2;
-                double scale = 0.9;
-                work.start();
-                shot->border(0, 1, Graphics::makeColor(64,64,64));
-                shot->greyScale().drawPivot(shot->getWidth() / 2, shot->getHeight() / 2, x, y, angle, scale, work);
-                work.finish();
-                screen_buffer.BlitToScreen();
-                snapshot.play();
-                Util::restSeconds(1.5);
-            }
-            if (world.getScreenshots().size() > 0){
-                Util::restSeconds(2);
-            }
-
-        }
-    };
-    
     TokenReader reader;
     Token * menuData = reader.readTokenFromFile(*Storage::instance().open(Paintown::Mod::getCurrentMod()->find(Filesystem::RelativePath("menu/in-game.txt"))));
 
     bool finish = true;
-    Logic logic(players, world, console, state, menuData);
-    Draw drawer(console, world, state);
+    Util::ReferenceCount<Draw> drawer(new Draw(console, world, state));
+    Logic logic(players, world, console, state, menuData, drawer);
     // state.helpTime = helpTime;
 
     /* FIXME: begin/destroy world in a constructor/destructor so we can handle
@@ -799,9 +804,9 @@ bool playLevel( World & world, const vector< Paintown::Object * > & players){
 
     try{
         /* run the game */
-        Util::standardLoop(logic, drawer);
+        Util::standardLoop(logic, *drawer);
         if (!state.menu_quit){
-            drawer.showScreenshots(getScreen());
+            drawer->showScreenshots(getScreen());
             world.end();
         }
     } catch (const LoseException & lose){
