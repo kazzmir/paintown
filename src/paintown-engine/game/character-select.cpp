@@ -530,14 +530,24 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
     // Player 
     Util::ReferenceCount<Paintown::DisplayCharacter> displayed = player->guy;
     if (displayed->isLoaded()){
-        Graphics::Bitmap temp(width, height);
-        temp.clearToMask();
         Paintown::Character smaller(*displayed);
-        smaller.setX( width / 2 );
-        smaller.setY( 0 );
-        smaller.setZ( smaller.getHeight() );
-        smaller.draw( &temp, 0, 0 );
-        temp.drawStretched(x, y, width, height, bmp);
+        int displayWidth = smaller.getWidth();
+        int displayHeight = smaller.getHeight();
+
+        Graphics::Bitmap area(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
+
+#ifdef USE_SDL
+        /* Shadows are messed up in sdl for some reason. They look like a purple blotch. Allegro5 looks ok though. */
+        smaller.setDrawShadow(false);
+#endif
+
+        Graphics::StretchedBitmap temp(displayWidth, displayHeight, area, Graphics::StretchedBitmap::Mask);
+        temp.start();
+        smaller.setX(displayWidth / 2);
+        smaller.setY(0);
+        smaller.setZ(displayHeight);
+        smaller.draw(&temp, 0, 0);
+        temp.finish();
     } else {
         const int length = font.textLength(displayed->getName().c_str());
         const int middle = font.getHeight()/4;

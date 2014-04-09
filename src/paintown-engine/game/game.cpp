@@ -222,17 +222,6 @@ static bool doMenu(const Token * data, const vector<Paintown::Player *> & player
         player->resetInput();
     }
 
-    /* use the current screen as the background */
-    /* in SDL/Allegro4 the screen buffer is always GFX_X, GFX_Y because it is
-     * an intermediate buffer before scaling to the screen.
-     * in Allegro5 the screen buffer is the actual screen so it may be larger
-     * than GFX_X, GFX_Y.
-     * Here we do a hack to rescale the screen buffer to the appropriate size.
-     * The width/height of screen_buffer in Allegro5 will be GFX_X, GFX_Y because
-     * thats what it was created with.
-     */
-    /* FIXME: scale it to the size of the menu */
-    // context.addBackground(Graphics::Bitmap(screen_buffer, true).scaleTo(640, 480));
     try{
         menu.run(context);
         /* im pretty sure there is no way to get the menu to return normally,
@@ -381,7 +370,7 @@ public:
     }
 };
 
-bool playLevel( World & world, const vector< Paintown::Object * > & players){
+bool playLevel(World & world, const vector<Paintown::Object *> & players){
     /* user presses ESC in the game and brings up the menu. ESC in the menu
      * should go back to the game. selecting the 'exit' option should quit the game
      * to the main menu.
