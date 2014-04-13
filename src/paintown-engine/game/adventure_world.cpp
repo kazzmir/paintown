@@ -789,12 +789,13 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     }
 
     // min_x = (int)min_x_virtual;
-    Graphics::Bitmap mini( screen_size / 5, (int)( screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()) ) );
-    int mini_position_x = work->getWidth() - mini.getWidth() - 1;
-    int mini_position_y = work->getHeight() - mini.getHeight() - 1;
-    for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
-        Graphics::Bitmap * on = mini_map;
+    int mini_width = screen_size / 5;
+    int mini_height = (int)(screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()));
 
+    int mini_position_x = work->getWidth() - mini_width - 1;
+    int mini_position_y = work->getHeight() - mini_height - 1;
+
+    for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
         /* this logic is a bit whacky. we assume the first element in the player tracker
          * list is a real player so we draw the world on the real buffer (on = work).
          * after that, the rest of the players might be AI controlled so they can
@@ -805,31 +806,26 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
          * to draw a minimap.
          */
         if (it == players.begin()){
-            on = work;
+            drawWorld(*it, work, object_z, camera.getX());
+            /* Don't need a minimap for the main player */
+            continue;
         } else if (!shouldDrawMiniMaps()){
             break;
         } else if (((Paintown::Character*) it->player)->isPlayer()){
             continue;
         }
 
-        /* either draw on the buffer or the mini-map */
-        if (it == players.begin()){
-            drawWorld(*it, on, object_z, camera.getX());
-        } else {
-            /* draw the minimaps where the camera is always centered on the guy */
-            drawWorld(*it, on, object_z, it->min_x);
-        }
-
-        if (on != work){
-            on->Stretch(mini);
-            Graphics::Bitmap::transBlender(0, 0, 0, 128);
-            mini.border(0, 1, Graphics::makeColor(255, 255, 255));
-            mini.translucent().draw(mini_position_x, mini_position_y, *work);
-            mini_position_x -= mini.getWidth() - 2;
-            if (mini_position_x <= 0){
-                mini_position_y -= mini.getHeight() - 2;
-                mini_position_x = work->getWidth() - mini.getWidth() - 1;
-            }
+        /* draw the minimaps where the camera is always centered on the guy */
+        drawWorld(*it, mini_map, object_z, it->min_x);
+        Graphics::Bitmap mini(mini_width, mini_height);
+        mini_map->Stretch(mini);
+        Graphics::Bitmap::transBlender(0, 0, 0, 160);
+        mini.border(0, 1, Graphics::makeColor(255, 255, 255));
+        mini.translucent().draw(mini_position_x, mini_position_y, *work);
+        mini_position_x -= mini.getWidth() - 2;
+        if (mini_position_x <= 0){
+            mini_position_y -= mini.getHeight() - 2;
+            mini_position_x = work->getWidth() - mini.getWidth() - 1;
         }
     }
 
