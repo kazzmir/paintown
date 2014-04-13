@@ -768,8 +768,28 @@ void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
     */
 }
 
+void AdventureWorld::drawMiniMap(Graphics::Bitmap * work, const PlayerTracker & player, const map<int, vector<Paintown::Object*> > & object_z, int x, int y, int width, int height){
+    drawWorld(player, mini_map, object_z, player.min_x);
+    Graphics::Bitmap mini(width, height);
+    mini_map->Stretch(mini);
+    Graphics::Bitmap::transBlender(0, 0, 0, 160);
+    mini.border(0, 1, Graphics::makeColor(255, 255, 255));
+    mini.translucent().draw(x, y, *work);
+}
+
+void AdventureWorld::showDescription(Graphics::Bitmap * work, int time, const string & description){
+    const Font & font = Font::getDefaultFont(30, 30);
+    FontRender * render = FontRender::getInstance();
+    int trans = (DESCRIPTION_TIME - time) / 2;
+    if (trans >= 255){
+        render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), description);
+    } else {
+        render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), trans, description);
+    }
+}
+
 void AdventureWorld::draw(Graphics::Bitmap * work){
-    map< int, vector<Paintown::Object*> > object_z;
+    map<int, vector<Paintown::Object*> > object_z;
 
     for (vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++){
         Paintown::Object * n = *it;
@@ -777,15 +797,7 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     }
 
     if (descriptionTime > 0 && scene->getDescription() != ""){
-        const Font & font = Font::getDefaultFont(30, 30);
-        FontRender * render = FontRender::getInstance();
-        string description = scene->getDescription();
-        int trans = (DESCRIPTION_TIME - descriptionTime) / 2;
-        if (trans >= 255){
-            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), description);
-        } else {
-            render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), trans, description);
-        }
+        showDescription(work, descriptionTime, scene->getDescription());
     }
 
     // min_x = (int)min_x_virtual;
@@ -816,16 +828,12 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
         }
 
         /* draw the minimaps where the camera is always centered on the guy */
-        drawWorld(*it, mini_map, object_z, it->min_x);
-        Graphics::Bitmap mini(mini_width, mini_height);
-        mini_map->Stretch(mini);
-        Graphics::Bitmap::transBlender(0, 0, 0, 160);
-        mini.border(0, 1, Graphics::makeColor(255, 255, 255));
-        mini.translucent().draw(mini_position_x, mini_position_y, *work);
-        mini_position_x -= mini.getWidth() - 2;
+        drawMiniMap(work, *it, object_z, mini_position_x, mini_position_y, mini_width, mini_height);
+
+        mini_position_x -= mini_width - 2;
         if (mini_position_x <= 0){
-            mini_position_y -= mini.getHeight() - 2;
-            mini_position_x = work->getWidth() - mini.getWidth() - 1;
+            mini_position_y -= mini_width - 2;
+            mini_position_x = work->getWidth() - mini_width - 1;
         }
     }
 
