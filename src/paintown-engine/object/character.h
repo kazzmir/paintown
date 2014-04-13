@@ -31,10 +31,10 @@ class DrawEffect;
 
 /* used for gibs */
 struct BodyPart{
-	BodyPart( int x, int y, Graphics::Bitmap * image ):x(x), y(y), image(image){}
-	/* relative to getX()/getY() */
-	int x, y;
-        Graphics::Bitmap * image;
+    BodyPart( int x, int y, const Graphics::Bitmap & image):x(x), y(y), image(image){}
+    /* relative to getX()/getY() */
+    int x, y;
+    Graphics::Bitmap image;
 };
 
 /* these should be self explanatory.. */

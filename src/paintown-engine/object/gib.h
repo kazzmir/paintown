@@ -2,6 +2,7 @@
 #define _paintown_gib_h
 
 #include "object_nonattack.h"
+#include "util/graphics/bitmap.h"
 #include "util/pointer.h"
 #include "util/network/network.h"
 #include <string>
@@ -20,10 +21,10 @@ public:
         int life;
     };
 public:
-    Gib( const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image, const Util::ReferenceCount<Graphics::Bitmap> & blood);
-    Gib( const Gib & g );
+    Gib(const int x, const int y, const int z, double dx, double dy, double dz, const Graphics::Bitmap & image, const Util::ReferenceCount<Graphics::Bitmap> & blood);
+    Gib(const Gib & g);
 
-    virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
+    virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y);
 
     virtual Object * copy();
     virtual bool isCollidable( Object * obj );
@@ -40,7 +41,7 @@ protected:
     double dx, dy, dz;
     int angle;
     int fade;
-    Graphics::Bitmap * image;
+    Graphics::Bitmap image;
     Util::ReferenceCount<Graphics::Bitmap> bloodImage;
     std::vector< Point > blood;
 };

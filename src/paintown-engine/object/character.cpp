@@ -620,11 +620,11 @@ void Character::addEffect(DrawEffect * effect){
     std::sort(effects.begin(), effects.end(), DrawEffect::compare);
 }
 
-static int nonMaskingPixels(Graphics::Bitmap * bitmap){
+static int nonMaskingPixels(const Graphics::Bitmap & bitmap){
     int total = 0;
-    for (int x = 0; x < bitmap->getWidth(); x++){
-        for (int y = 0; y < bitmap->getHeight(); y++){
-            if (bitmap->getPixel(x, y) != Graphics::MaskColor()){
+    for (int x = 0; x < bitmap.getWidth(); x++){
+        for (int y = 0; y < bitmap.getHeight(); y++){
+            if (bitmap.getPixel(x, y) != Graphics::MaskColor()){
                 total += 1;
             }
         }
@@ -632,19 +632,17 @@ static int nonMaskingPixels(Graphics::Bitmap * bitmap){
     return total;
 }
 
-static void replacePart( vector< BodyPart > & parts, Graphics::Bitmap * bitmap ){
+static void replacePart(vector<BodyPart> & parts, const Graphics::Bitmap & bitmap){
     if (parts.size() == 0){
-        delete bitmap;
     } else {
         int i = Util::rnd(parts.size());
-        delete parts[i].image;
         parts[i].image = bitmap;
     }
 }
 	
 vector<BodyPart> Character::getBodyParts(Util::ReferenceCount<Animation> animation){
     Graphics::RestoreState state;
-    vector< BodyPart > parts;
+    vector<BodyPart> parts;
 
     Graphics::Bitmap * bitmap = animation->getFrame(0);
     if (bitmap == NULL){
@@ -655,19 +653,19 @@ vector<BodyPart> Character::getBodyParts(Util::ReferenceCount<Animation> animati
     for (int x = 0; x < bitmap->getWidth() - gib_size; x += gib_size){
         for (int y = 0; y < bitmap->getHeight() - gib_size; y += gib_size){
             // Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
-            Graphics::Bitmap * sub = new Graphics::Bitmap(gib_size, gib_size);
-            sub->fill(Graphics::MaskColor());
-            bitmap->Blit(x, y, 0, 0, *sub);
+            Graphics::Bitmap sub = Graphics::Bitmap::createMemoryBitmap(gib_size, gib_size);
+            sub.fill(Graphics::MaskColor());
+            bitmap->Blit(x, y, 0, 0, sub);
 
             for (int num = 0; num < 2; num++){
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::MaskColor());
-                sub->circleFill(Util::rnd(sub->getWidth()), Util::rnd(sub->getHeight()), 1, Graphics::makeColor(255,0,0));
+                sub.circleFill(Util::rnd(sub.getWidth()), Util::rnd(sub.getHeight()), 1, Graphics::MaskColor());
+                sub.circleFill(Util::rnd(sub.getWidth()), Util::rnd(sub.getHeight()), 1, Graphics::makeColor(255,0,0));
             }
 
-            if (100.0 * (double) nonMaskingPixels(sub) / (double) (sub->getWidth() * sub->getHeight()) < 10.0){
-                delete sub;
+            if (100.0 * (double) nonMaskingPixels(sub) / (double) (sub.getWidth() * sub.getHeight()) < 10.0){
+                /* ignore it */
             } else {
-                parts.push_back(BodyPart( x - getWidth() / 2, getHeight() - y, sub));
+                parts.push_back(BodyPart(x - getWidth() / 2, getHeight() - y, sub));
             }
         }
     }
@@ -687,7 +685,7 @@ vector<BodyPart> Character::getBodyParts(Util::ReferenceCount<Animation> animati
 
     for (unsigned int i = 0; i < sizeof(more) / sizeof(char*); i += Util::rnd(3) + 1){
         try{
-            replacePart(parts, new Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(more[i])).path()));	
+            replacePart(parts, Graphics::Bitmap(Storage::instance().find(Filesystem::RelativePath(more[i])).path()));	
         } catch (const Filesystem::NotFound & ignore){
         } catch (const Graphics::BitmapException & ignore){
         }
@@ -2074,13 +2072,10 @@ void Character::print() const{
 }
 
 Character::~Character(){
+    /* FIXME: all of this stuff should use Util::ReferenceCount */
     if (own_stuff){
         if (icon != NULL){
             delete icon;
-        }
-        for ( vector< BodyPart >::iterator it = body_parts.begin(); it != body_parts.end(); it++ ){
-            BodyPart & b = *it;
-            delete b.image;
         }
     }
 

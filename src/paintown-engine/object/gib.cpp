@@ -11,7 +11,7 @@ namespace Paintown{
     
 std::string Gib::GibProperty = "paintown/gibs";
 
-Gib::Gib(const int x, const int y, const int z, double dx, double dy, double dz, Graphics::Bitmap * image, const Util::ReferenceCount<Graphics::Bitmap> & bloodImage):
+Gib::Gib(const int x, const int y, const int z, double dx, double dy, double dz, const Graphics::Bitmap & image, const Util::ReferenceCount<Graphics::Bitmap> & bloodImage):
 ObjectNonAttack(x, z),
 dx(dx),
 dy(dy),
@@ -36,7 +36,7 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
     if (fade > 0){
         // Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
         Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
-        image->translucent().draw(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work);
+        image.translucent().draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, *work);
     } else {
         // Graphics::Bitmap::transBlender(0, 0, 0, 200);
         /* hack to make sure bloodImage gets converted to a video bitmap */
@@ -56,7 +56,7 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
         }
         work->endDrawing();
         // image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
-        image->drawRotate(getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, angle, *work);
+        image.drawRotate(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, angle, *work);
     }
 }
 	
