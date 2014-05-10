@@ -20,7 +20,7 @@ class ArcadeArgument: public Argument {
 public:
     vector<string> keywords() const {
         vector<string> out;
-        out.push_back("paintown:arcade");
+        out.push_back("paintown:arcade player=<name>");
         return out;
     }
 

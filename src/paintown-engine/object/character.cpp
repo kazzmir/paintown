@@ -408,8 +408,10 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
     Token * head = NULL;
     try{
         head = tr.readTokenFromFile(*Storage::instance().open(filename));
-    } catch( const TokenException & ex ){
-        throw LoadException(__FILE__, __LINE__, ex, string("Could not open character file: ") + filename.path());
+    } catch (const TokenException & fail){
+        throw LoadException(__FILE__, __LINE__, fail, string("Could not open character file: ") + filename.path());
+    } catch (const Filesystem::NotFound & fail){
+        throw LoadException(__FILE__, __LINE__, fail, string("Could not open character file: ") + filename.path());
     }
     string xls = "Load time for ";
     xls += filename.path();
