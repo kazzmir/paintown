@@ -66,7 +66,6 @@ double Camera::getY() const {
 AdventureWorld::AdventureWorld():
 World(),
 draw_minimaps( true ),
-mini_map( NULL ),
 takeAScreenshot(false),
 is_paused(false),
 slowmotion(0),
@@ -85,7 +84,6 @@ AdventureWorld::AdventureWorld( const vector< Paintown::Object * > & players, co
 World(),
 path( path ),
 draw_minimaps( true ),
-mini_map( NULL ),
 takeAScreenshot(false),
 is_paused(false),
 slowmotion(0),
@@ -113,13 +111,6 @@ camera(_screen_size / 2, 0){
 
 	threadedLoadLevel(path);
 
-        /* 1.3333 is the aspect ratio of screen_width/screen_height when the res is any standard of
-         * 640,480 800,600, 1024,768
-         * but it should use the actual values instead of guessing since the screen size
-         * could theoretically change
-         */
-	mini_map = new Graphics::Bitmap(screen_size, (int)((double) screen_size / 1.3333));
-
         for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
             PlayerTracker & tracker = *it;
             void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
@@ -137,10 +128,6 @@ camera(_screen_size / 2, 0){
 AdventureWorld::~AdventureWorld(){
     if (bang){
         delete bang;
-    }
-
-    if (mini_map){
-        delete mini_map;
     }
 
     delete cacher;
@@ -769,7 +756,16 @@ void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
 }
 
 void AdventureWorld::drawMiniMap(Graphics::Bitmap * work, const PlayerTracker & player, const map<int, vector<Paintown::Object*> > & object_z, int x, int y, int width, int height){
-    drawWorld(player, mini_map, object_z, player.min_x);
+    if (mini_map == NULL){
+        /* 1.3333 is the aspect ratio of screen_width/screen_height when the res is any standard of
+         * 640,480 800,600, 1024,768
+         * but it should use the actual values instead of guessing since the screen size
+         * could theoretically change
+         */
+	mini_map = new Graphics::Bitmap(screen_size, (int)((double) screen_size / 1.3333));
+    }
+
+    drawWorld(player, mini_map.raw(), object_z, player.min_x);
     Graphics::Bitmap mini(width, height);
     mini_map->Stretch(mini);
     Graphics::Bitmap::transBlender(0, 0, 0, 160);

@@ -193,7 +193,7 @@ protected:
 
     bool draw_minimaps;
 
-    Graphics::Bitmap * mini_map;
+    Util::ReferenceCount<Graphics::Bitmap> mini_map;
 
     /* screenshots that are shown at the end of the level */
     std::deque<Graphics::Bitmap*> screenshots;
