@@ -338,6 +338,8 @@ def getEnvironment(debug):
         env.Append(CPPPATH = ['/opt/mingw/include'])
         env.Append(LIBPATH = ['/opt/mingw/lib'])
         env.Append(LINKFLAGS = ['-static-libstdc++', '-static-libgcc', '-mwindows', '-Wl,-subsystem,windows'])
+        env.PrependENVPath('PKG_CONFIG_PATH', '/opt/mingw/lib/pkgconfig')
+        os.environ['ALLEGRO5'] = '1'
         return env
 
     def pandora(env):
@@ -1422,13 +1424,17 @@ else:
         if useAndroid() or useAndroidX86():
             config.CheckAllegro5()
         
-        if not usePs3() and not useNacl() and not useAndroid() and not useAndroidX86():
+        if not usePs3() and not useNacl() and not useAndroid() and not useAndroidX86() and not useMingwCross():
             scons.utils.safeParseConfig(config.env, 'freetype-config --libs --cflags')
             scons.utils.safeParseConfig(config.env, 'libpng-config --libs --ldflags --cflags')
         
             # staticEnv.ParseConfig( 'allegro-config --static --libs --cflags' )
             scons.utils.safeParseConfig(staticEnv, 'freetype-config --cflags')
             scons.utils.safeParseConfig(staticEnv, 'libpng-config --cflags')
+
+        if useMingwCross():
+            scons.utils.safeParseConfig(config.env, 'pkg-config freetype2 --libs --cflags')
+            scons.utils.safeParseConfig(config.env, 'pkg-config libpng15 --libs --cflags')
     except OSError:
         pass
 
