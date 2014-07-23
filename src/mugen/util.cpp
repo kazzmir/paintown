@@ -289,11 +289,12 @@ typedef struct {
 
 bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigned char * out){
     const int PALETTE_SIZE = 768;
-    PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(filename);
-    if (file == NULL){
-        return false;
-    }
     try{
+        PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(filename);
+        if (file == NULL){
+            return false;
+        }
+
         int size = file->getSize();
         if (size == PALETTE_SIZE){
             int read = file->readLine((char*) out, PALETTE_SIZE);
@@ -331,7 +332,8 @@ bool Mugen::Util::readPalette(const Filesystem::AbsolutePath & filename, unsigne
                 }
             }
         }
-
+    } catch (const Filesystem::NotFound & fail){
+        return false;
     } catch (const MugenException & e){
         // file.close();
         return false;
