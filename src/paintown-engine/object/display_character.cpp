@@ -30,7 +30,7 @@ loaded(false){
 }
 
 void DisplayCharacter::load(){
-    Global::debug(1) << "Loading " << path.path() << endl;
+    Global::debug(1, PAINTOWN_DEBUG_CONTEXT) << "Loading " << path.path() << endl;
     TokenReader reader;
     try{
         Token * head = reader.readTokenFromFile(*Storage::instance().open(path));
@@ -127,21 +127,21 @@ forceQuit(false){
 }
 
 void DisplayCharacterLoader::load(){
-    Global::debug(1) << "Starting display character loader" << endl;
+    Global::debug(1, PAINTOWN_DEBUG_CONTEXT) << "Starting display character loader" << endl;
     while (!done()){
         DisplayCharacter * character = nextCharacter();
         try{
             character->load();
             character->loadDone();
         } catch (const LoadException & le){
-            Global::debug(0) << "Problem loading character: " << le.getTrace() << endl;
+            Global::debug(0, PAINTOWN_DEBUG_CONTEXT) << "Problem loading character: " << le.getTrace() << endl;
         } catch (const Graphics::BitmapException & fail){
-            Global::debug(0) << "Problem loading character: " << fail.getTrace() << endl;
+            Global::debug(0, PAINTOWN_DEBUG_CONTEXT) << "Problem loading character: " << fail.getTrace() << endl;
         }
         /* yield the timeslice for slow systems */
         Util::rest(0);
     }
-    Global::debug(1) << "Character display loader done" << endl;
+    Global::debug(1, PAINTOWN_DEBUG_CONTEXT) << "Character display loader done" << endl;
 }
 
 bool DisplayCharacterLoader::done(){

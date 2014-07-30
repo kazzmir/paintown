@@ -20,7 +20,8 @@
 #include <sstream>
 
 /* BORROWED from select_player.cpp */
-static const char * DEBUG_CONTEXT = __FILE__;
+// static const char * DEBUG_CONTEXT = __FILE__;
+// #define DEBUG_CONTEXT debug_context(__FILE__, __LINE__)
 
 struct Profile{
     Window window;
@@ -40,9 +41,9 @@ struct playerInfo{
 };
 
 static Util::ReferenceCount<playerInfo> getPlayer(const Filesystem::AbsolutePath & file){
-    Global::debug(1, DEBUG_CONTEXT) << "Checking " << file.path() << std::endl;
+    Global::debug(1, PAINTOWN_DEBUG_CONTEXT) << "Checking " << file.path() << std::endl;
     if (Storage::instance().exists(file)){
-        Global::debug(1, DEBUG_CONTEXT) << "Loading " << file.path() << std::endl;
+        Global::debug(1, PAINTOWN_DEBUG_CONTEXT) << "Adding " << file.path() << std::endl;
         return Util::ReferenceCount<playerInfo>(new playerInfo(Util::ReferenceCount<Paintown::DisplayCharacter>(new Paintown::DisplayCharacter(file)), file));
     }
     throw LoadException(__FILE__, __LINE__, "File '" + file.path() + "' not found.");
@@ -69,11 +70,11 @@ static PlayerVector loadPlayers(const std::string & path){
         try{
             // std::string ourPath = (*it).path();
             Filesystem::AbsolutePath ourPath = it->join(Filesystem::RelativePath(it->getLastComponent() + ".txt"));
-            // Global::debug(2, DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
+            // Global::debug(2, PAINTOWN_DEBUG_CONTEXT) << "Found file " << ourPath << std::endl;
             // std::string file = ourPath + "/" + ourPath.substr(ourPath.find_last_of('/') + 1) + ".txt";
             players.push_back(getPlayer(ourPath));
         } catch (const LoadException & le){
-            Global::debug(0, DEBUG_CONTEXT) << "Could not load because " << le.getTrace() << std::endl;
+            Global::debug(0, PAINTOWN_DEBUG_CONTEXT) << "Could not load because " << le.getTrace() << std::endl;
         }
     }
     return players;
