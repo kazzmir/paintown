@@ -64,8 +64,10 @@ bash "reload-iptables" do
 end
 
 bash "symlink" do
+  user "root"
   cwd '/home/vagrant'
   code <<-EOH
     ln -s /home/vagrant/paintown /var/www/paintown
+    chmod 777 /home/vagrant
   EOH
 end
