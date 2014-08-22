@@ -24,7 +24,7 @@ public final class DrawArea extends JComponent {
     private boolean canMove = true;
     private boolean snapToGrid = false;
     /* start background as black */
-    private DrawProperties drawProperties;
+    private DrawProperties.Properties drawProperties;
 
     private Animation currentAnimation;
 
@@ -264,10 +264,10 @@ public final class DrawArea extends JComponent {
     private java.util.List<Lambda0> scaleListeners = new ArrayList<Lambda0>();
 
     public DrawArea(final Lambda0 loader){
-        this(new DrawProperties(), loader);
+        this(new DrawProperties.Properties(), loader);
     }
 
-    public DrawArea(DrawProperties properties, final Lambda0 loader){
+    public DrawArea(DrawProperties.Properties properties, final Lambda0 loader){
         setFocusable(true);
         currentAnimation = null;
         this.drawProperties = properties;

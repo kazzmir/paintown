@@ -35,7 +35,7 @@ object Tools{
       }
     });
 
-    character.getDrawProperties().addListener(new DrawPropertiesListener(){
+    character.getDrawProperties().addListener(new DrawProperties.Listener(){
       override def updateBackgroundColor(newColor:Color){
         color.setColor(newColor);
         area.repaint();

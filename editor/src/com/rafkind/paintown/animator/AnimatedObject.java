@@ -21,13 +21,13 @@ public abstract class AnimatedObject extends BasicObject {
 	private List updates = new ArrayList();
 
     /* Shared properties for all animations, such as the background color */
-    private DrawProperties drawProperties = new DrawProperties();
+    private DrawProperties.Properties drawProperties = new DrawProperties.Properties();
 
 	public AnimatedObject(String name){
 		super(name);
 	}
 
-    public DrawProperties getDrawProperties(){
+    public DrawProperties.Properties getDrawProperties(){
         return drawProperties;
     }
 
