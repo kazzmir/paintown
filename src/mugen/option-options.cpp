@@ -709,6 +709,7 @@ clearColor(Graphics::makeColor(0,0,0)),
 clearAlpha(255),
 fadeEnabled(true),
 recalculateHeight(160){
+    ParseCache cache;
     // Set the fade state
     fader.setState(Gui::FadeTool::FadeIn);
     fader.setFadeInTime(10);

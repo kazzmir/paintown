@@ -978,6 +978,7 @@ public:
     defaultEndingEnabled(false),
     gameOverEnabled(false),
     creditsEnabled(false){
+        ParseCache cache;
         AstRef playerParsed(Mugen::Util::parseDef(playerDef));
         intro = findStoryBoard("intro", playerDef, playerParsed, "arcade", "intro.storyboard");
         ending = findStoryBoard("ending", playerDef, playerParsed, "arcade", "ending.storyboard");
@@ -1033,6 +1034,7 @@ public:
     }
 
     void playIntro(const InputMap<Keys> & keys){
+        ParseCache cache;
         // Run intro before we begin game
         if (!intro.isEmpty()){
             try{
@@ -1100,6 +1102,7 @@ protected:
 };
 
 static PaintownUtil::ReferenceCount<Mugen::CharacterSelect> doSelectScreen(const Filesystem::AbsolutePath & systemFile, const GameType & gameType, const CharacterSelect::PlayerType & playerType, Searcher & searcher, InputMap<Keys> & keys1, InputMap<Keys> & keys2){
+    ParseCache cache;
     PaintownUtil::ReferenceCount<Mugen::CharacterSelect> select = PaintownUtil::ReferenceCount<Mugen::CharacterSelect>(new Mugen::CharacterSelect(systemFile));
     select->init();
     select->setMode(gameType, playerType);

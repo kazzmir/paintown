@@ -86,7 +86,11 @@ Util::ReferenceCount<Ast::AstParse> Parser::loadFile(const Filesystem::AbsoluteP
     try{
         return loadCached(path);
     } catch (const TokenException & fail){
-    } catch (const MugenException & e){
+        Global::debug(1, "mugen-parse-cache") << "Cache load warning: " << fail.getTrace() << endl;
+    } catch (const MugenException & fail){
+        Global::debug(1, "mugen-parse-cache") << "Cache load warning: " << fail.getTrace() << endl;
+    } catch (const Filesystem::Exception & fail){
+        Global::debug(1, "mugen-parse-cache") << "Cache load warning: " << fail.getTrace() << endl;
     }
 
     Global::debug(1, "mugen-parse-cache") << "Parsing " << path.path() << endl;
@@ -170,31 +174,26 @@ static list<Ast::Section*> * reallyParseX(const Filesystem::AbsolutePath & path,
      */
     char * data = new char[file->getSize()];
     file->readLine(data, file->getSize());
-    list<Ast::Section*> * out = (list<Ast::Section*>*) parse(data, file->getSize(), false);
-    delete[] data;
+    list<Ast::Section*> * out = NULL;
+    try{
+        out = (list<Ast::Section*>*) parse(data, file->getSize(), false);
+    } catch (...){
+        delete[] data;
+        throw;
+    }
     return out;
 }
 
 static list<Ast::Section*> * reallyParseCmd(const Filesystem::AbsolutePath & path){
     return reallyParseX(path, Cmd::parse);
-    /*
-    Util::ReferenceCount<Storage::File> file = Storage::instance().open(path);
-    char * data = new char[file->getSize()];
-    file->readLine(data, file->getSize());
-    list<Ast::Section*> * out = (list<Ast::Section*>*) Cmd::parse(data, file->getSize());
-    delete[] data;
-    return out;
-    */
 }
 
 static list<Ast::Section*> * reallyParseAir(const Filesystem::AbsolutePath & path){
     return reallyParseX(path, Air::parse);
-    // return (list<Ast::Section*>*) Air::parse(path.path());
 }
 
 static list<Ast::Section*> * reallyParseDef(const Filesystem::AbsolutePath & path){
     return reallyParseX(path, Def::parse);
-    // return (list<Ast::Section*>*) Def::parse(path.path());
 }
 
 Util::ReferenceCount<Ast::AstParse> CmdCache::doParse(const Filesystem::AbsolutePath & path){
@@ -239,11 +238,14 @@ void ParseCache::destroy(){
 }
 
 ParseCache::ParseCache(){
-    if (cache != NULL){
-        Global::debug(0) << "Only one parse cache is allowed" << endl;
-        throw exception();
+    /* If there is already an existing cache then this object will not be the target of
+     * static calls. If there is not an existing cache then this becomes the 'global' one.
+     */
+    if (cache == NULL){
+        cache = this;
+    } else {
+        Global::debug(0) << "Minor bug: a parse cache already exists" << endl;
     }
-    cache = this;
 }
 
 void ParseCache::destroyCache(){
@@ -253,7 +255,9 @@ void ParseCache::destroyCache(){
 }
 
 ParseCache::~ParseCache(){
-    cache = NULL;
+    if (cache == this){
+        cache = NULL;
+    }
 }
 
 Util::ReferenceCount<Ast::AstParse> ParseCache::doParseCmd(const Filesystem::AbsolutePath & path){

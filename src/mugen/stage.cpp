@@ -482,6 +482,7 @@ void Mugen::Stage::load(){
     if (loaded){
         return;
     }
+    ParseCache cache;
 #if 0
     // Lets look for our def since some people think that all file systems are case insensitive
     baseDir = Filesystem::find("mugen/stages/");

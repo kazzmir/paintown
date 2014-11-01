@@ -161,6 +161,7 @@ demoCycles(0),
 nextIntroCycle(0),
 searcher(searcher),
 done(false){
+    ParseCache cache;
     Filesystem::AbsolutePath baseDir = path.getDirectory();
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, path.getFilename().path());
     
