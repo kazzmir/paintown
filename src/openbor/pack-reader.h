@@ -6,9 +6,9 @@
 #include <vector>
 #include <stdint.h>
 #include <fstream>
-#include "util/exceptions/exception.h"
-#include "util/file-system.h"
-#include "util/thread.h"
+#include <r-tech1/exceptions/exception.h>
+#include <r-tech1/util/file-system.h>
+#include <r-tech1/util/thread.h>
 
 namespace Bor{
 

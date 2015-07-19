@@ -191,7 +191,7 @@ def useAllegro5():
             return False
 
     # FIXME: hack to specify android here
-    return byEnv() or byArgument() or useAndroid() or useAndroidX86()
+    return True or byEnv() or byArgument() or useAndroid() or useAndroidX86()
 
 def useSDL():
     return not useAllegro() and not useAllegro5()

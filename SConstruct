@@ -1438,6 +1438,7 @@ else:
     except OSError:
         pass
 
+    scons.utils.safeParseConfig(config.env, 'pkg-config r-tech1 --cflags --libs')
     
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib

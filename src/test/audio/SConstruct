@@ -4,34 +4,6 @@ env = Environment(ENV = os.environ)
 #env['CC'] = 'clang'
 #env['CXX'] = 'clang++'
 
-def gmeLibrary(env):
-    use = env
-    return SConscript('../../util/sound/gme/SConscript', exports = ['use'], variant_dir = 'gme')
-
-def zipLibrary(env):
-    zipEnv = env.Clone()
-    env = zipEnv
-    return SConscript('../../util/zip/SConscript', exports = ['env'], variant_dir = 'zip')
-
-def xzLibrary(env):
-    xz = env.Clone()
-    use = xz
-    return SConscript('../../util/7z/SConscript', exports = ['use'], variant_dir = '7z')
-
-def sflLibrary(env):
-    sflEnv = env.Clone()
-    use = sflEnv
-    return SConscript('../../util/sfl/SConscript', exports = ['use'], variant_dir = 'sfl')
-
-def dumbLibrary(env):
-    dumbEnv = env.Clone()
-    env = dumbEnv
-    return SConscript('../../util/sound/dumb/SConscript', exports = ['env'], variant_dir = 'dumb')
-
-def sdlMixerLibrary(env):
-    use = env
-    return SConscript('../../util/sound/sdl/mixer/SConscript', exports = ['use'], variant_dir = 'mixer')
-
 def isLinux():
     import sys
     return 'linux' in sys.platform
@@ -56,7 +28,7 @@ if isLinux():
         env.ParseConfig('sdl-config --libs --cflags')
         env.ParseConfig('pkg-config vorbis vorbisfile --libs')
 
-        env.Append(LIBS = ['mpg123', gmeLibrary(env), dumbLibrary(env), sdlMixerLibrary(env), sflLibrary(env), xzLibrary(env), zipLibrary(env), 'z'])
+        env.Append(LIBS = ['mpg123', 'z'])
 
         musicEnv = env.Clone()
         musicEnv.VariantDir('build/music', '../../')

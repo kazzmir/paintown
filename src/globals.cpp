@@ -1,10 +1,10 @@
-#include "util/graphics/bitmap.h"
 #include "globals.h"
 #include <streambuf>
-#include "util/funcs.h"
-#include "util/file-system.h"
-#include "util/message-queue.h"
-#include "util/thread.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/message-queue.h>
+#include <r-tech1/thread.h>
 #include <iostream>
 #include <sstream>
 
