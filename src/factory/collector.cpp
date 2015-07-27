@@ -1,13 +1,13 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/resource.h>
+#include <r-tech1/font_factory.h>
+#include <r-tech1/sound/sound.h>
+#include <r-tech1/init.h>
 #include "collector.h"
 #include "paintown-engine/game/nameplacer.h"
-#include "util/font_factory.h"
 #include "font_render.h"
 #include "paintown-engine/factory/object_factory.h"
-#include "util/resource.h"
 #include "mugen/config.h"
-#include "util/sound/sound.h"
-#include "util/init.h"
 #include <iostream>
 
 using namespace std;

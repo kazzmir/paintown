@@ -5,9 +5,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include "util/debug.h"
-#include "util/regex.h"
-#include "util/file-system.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/regex.h>
+#include <r-tech1/file-system.h>
 
 using namespace std;
 

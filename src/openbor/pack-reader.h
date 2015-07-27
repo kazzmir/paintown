@@ -7,8 +7,8 @@
 #include <stdint.h>
 #include <fstream>
 #include <r-tech1/exceptions/exception.h>
-#include <r-tech1/util/file-system.h>
-#include <r-tech1/util/thread.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/thread.h>
 
 namespace Bor{
 

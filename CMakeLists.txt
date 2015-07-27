@@ -271,7 +271,7 @@ add_library(base_module ${BASE_SRC})
 add_library(factory_module ${FACTORY_SRC})
 add_library(openbor_module ${OPENBOR_SRC})
 # add_library(util_module ${UTIL_SRC})
-add_library(loadpng_module ${LOADPNG_SRC})
+# add_library(loadpng_module ${LOADPNG_SRC})
 # add_library(menu_module ${MENU_SRC})
 # add_library(gui_module ${GUI_SRC})
 # add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lzw.c)
@@ -303,7 +303,7 @@ elseif (USE_ALLEGRO5)
 endif (USE_SDL)
 
 #paintown executable
-add_executable (paintown src/util/xmain.cpp)
+# add_executable (paintown src/util/xmain.cpp)
 
 # set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
 

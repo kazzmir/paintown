@@ -107,7 +107,7 @@ def icon():
         return []
 
 def main():
-    return ['util/xmain.cpp']
+    return ['xmain.cpp']
     
 def androidSDLMain():
     if useAndroid():

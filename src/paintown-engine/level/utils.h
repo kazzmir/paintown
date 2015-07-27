@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "util/file-system.h"
-#include "util/loading.h"
+#include <r-tech1/file-system.h>
+#include <r-tech1/loading.h>
 
 class Token;
 namespace Graphics{

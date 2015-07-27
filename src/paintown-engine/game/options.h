@@ -1,7 +1,7 @@
 #ifndef _paintown_game_menu_options
 #define _paintown_game_menu_options
 
-#include "util/menu/optionfactory.h"
+#include <r-tech1/menu/optionfactory.h>
 #include "../level/utils.h"
 
 class MenuOption;

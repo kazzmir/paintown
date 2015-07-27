@@ -1,10 +1,10 @@
 #ifndef _paintown_game_object_h
 #define _paintown_game_object_h
 
-#include "util/sound/sound.h"
 #include "../network/network.h"
-#include "util/graphics/bitmap.h"
-#include "util/pointer.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/sound/sound.h>
+#include <r-tech1/pointer.h>
 #include "trigger.h"
 #include <string>
 #include <vector>
