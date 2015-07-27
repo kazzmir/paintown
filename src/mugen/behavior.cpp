@@ -2,15 +2,15 @@
 #include <vector>
 #include <string>
 #include <math.h>
-#include "util/input/input-map.h"
-#include "util/input/input-source.h"
+#include <r-tech1/input/input-map.h>
+#include <r-tech1/input/input-source.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/funcs.h>
 // #include "command.h"
 #include "constraint.h"
 #include "random.h"
-#include "util/debug.h"
 #include "character.h"
 #include "stage.h"
-#include "util/funcs.h"
 
 using namespace std;
 

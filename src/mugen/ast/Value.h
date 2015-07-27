@@ -7,7 +7,7 @@
 #include "walker.h"
 #include "exception.h"
 #include "ast.h"
-#include "util/pointer.h"
+#include <r-tech1/pointer.h>
 
 class Token;
 

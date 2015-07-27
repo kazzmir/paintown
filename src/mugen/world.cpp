@@ -1,6 +1,6 @@
 #include "world.h"
 #include "character.h"
-#include "util/token.h"
+#include <r-tech1/token.h>
 #include "constraint.h"
 #include <vector>
 #include <string>

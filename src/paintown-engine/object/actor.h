@@ -2,8 +2,8 @@
 #define _paintown_actor_h
 
 #include "object_nonattack.h"
-#include "util/network/network.h"
-#include "util/file-system.h"
+#include <r-tech1/network/network.h>
+#include <r-tech1/file-system.h>
 #include <vector>
 #include <string>
 

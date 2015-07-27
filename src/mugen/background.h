@@ -8,10 +8,10 @@
 #include "animation.h"
 #include "sprite.h"
 #include "util.h"
-#include "util/gui/rectarea.h"
 #include "ast/all.h"
-#include "util/graphics/bitmap.h"
-#include "util/pointer.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/gui/rectarea.h>
+#include <r-tech1/pointer.h>
 
 namespace PaintownUtil = ::Util;
 

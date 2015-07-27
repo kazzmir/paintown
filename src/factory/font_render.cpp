@@ -1,9 +1,9 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/font.h>
+#include <r-tech1/funcs.h>
 #include <string>
 #include <vector>
 #include <stdarg.h>
-#include "util/font.h"
-#include "util/funcs.h"
 #include "font_render.h"
 
 using namespace std;

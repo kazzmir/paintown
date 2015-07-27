@@ -7,10 +7,10 @@
 #include "parse-cache.h"
 
 #include "globals.h"
-#include "util/debug.h"
-#include "util/file-system.h"
-#include "util/funcs.h"
-#include "util/timedifference.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/timedifference.h>
 #include "ast/all.h"
 #include "parser/all.h"
 

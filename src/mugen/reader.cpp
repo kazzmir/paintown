@@ -7,7 +7,7 @@
 #include "item-content.h"
 #include "section.h"
 #include "reader.h"
-#include "util/debug.h"
+#include <r-tech1/debug.h>
 
 using namespace std;
 

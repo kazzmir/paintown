@@ -1,5 +1,5 @@
 #include "network-behavior.h"
-#include "util/timedifference.h"
+#include <r-tech1/timedifference.h>
 
 using std::vector;
 using std::string;

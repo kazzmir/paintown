@@ -3,15 +3,15 @@
 #include <iostream>
 #include <exception>
 
-#include "util/graphics/bitmap.h"
-#include "util/timedifference.h"
 #include "ast/all.h"
 #include "sound.h"
 #include "config.h"
 #include "util.h"
 
-#include "util/input/input.h"
-#include "util/input/input-manager.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/timedifference.h>
+#include <r-tech1/input/input.h>
+#include <r-tech1/input/input-manager.h>
 
 using namespace Mugen;
 

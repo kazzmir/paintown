@@ -1,8 +1,9 @@
-#include "util/graphics/bitmap.h"
-#include "util/message-queue.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/message-queue.h>
+#include <r-tech1/parameter.h>
+#include <r-tech1/debug.h>
 #include "ast/all.h"
 #include "state-controller.h"
-#include "util/parameter.h"
 #include "random.h"
 #include "effect.h"
 #include "character.h"
@@ -12,7 +13,6 @@
 #include "projectile.h"
 #include "common.h"
 #include "sound.h"
-#include "util/debug.h"
 #include <sstream>
 #include "exception.h"
 

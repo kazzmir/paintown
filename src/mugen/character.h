@@ -9,12 +9,12 @@
 #include "exception.h"
 
 // #include "util/network/network.h"
-#include "util/pointer.h"
-#include "util/input/input-map.h"
+#include <r-tech1/pointer.h>
+#include <r-tech1/input/input-map.h>
+#include <r-tech1/graphics/bitmap.h>
 #include "animation.h"
 #include "util.h"
 #include "compiler.h"
-#include "util/graphics/bitmap.h"
 #include "object.h"
 #include "common.h"
 #include "sprite.h"

@@ -1,7 +1,7 @@
 #ifndef _paintown_mugen_command
 #define _paintown_mugen_command
 
-#include "util/input/input-map.h"
+#include <r-tech1/input/input-map.h>
 #include "util.h"
 
 namespace Ast{

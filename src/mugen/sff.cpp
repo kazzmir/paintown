@@ -1,6 +1,6 @@
-#include "util/file-system.h"
-#include "util/graphics/bitmap.h"
-#include "util/pointer.h"
+#include <r-tech1/file-system.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/pointer.h>
 
 #include "util.h"
 #include "sprite.h"

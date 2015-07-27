@@ -1,7 +1,7 @@
 #ifndef _paintown_mugen_projectile_h
 #define _paintown_mugen_projectile_h
 
-#include "util/pointer.h"
+#include <r-tech1/pointer.h>
 #include "object.h"
 #include "animation.h"
 #include "common.h"

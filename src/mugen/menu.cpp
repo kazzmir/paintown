@@ -1,4 +1,4 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
 #include "menu.h"
 
 #include <fstream>
@@ -14,25 +14,25 @@
 
 #include "stage.h"
 
-#include "util/exceptions/exception.h"
-#include "util/exceptions/load_exception.h"
-#include "util/init.h"
-#include "util/resource.h"
-#include "util/funcs.h"
-#include "util/thread.h"
-#include "util/file-system.h"
-#include "util/timedifference.h"
-#include "util/sound/music.h"
-#include "util/events.h"
-#include "util/system.h"
-#include "util/parameter.h"
+#include <r-tech1/exceptions/exception.h>
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/init.h>
+#include <r-tech1/resource.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/thread.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/timedifference.h>
+#include <r-tech1/sound/music.h>
+#include <r-tech1/events.h>
+#include <r-tech1/system.h>
+#include <r-tech1/parameter.h>
 
 #include "globals.h"
 #include "factory/font_render.h"
 #include "parse-cache.h"
 
-#include "util/input/input-manager.h"
-#include "util/input/input-source.h"
+#include <r-tech1/input/input-manager.h>
+#include <r-tech1/input/input-source.h>
 
 #include "animation.h"
 #include "background.h"
@@ -53,7 +53,7 @@
 #include "game.h"
 #include "ast/all.h"
 #include "parser/all.h"
-#include "util/loading.h"
+#include <r-tech1/loading.h>
 
 #include "parse-cache.h"
 

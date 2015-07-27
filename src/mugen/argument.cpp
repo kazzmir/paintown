@@ -2,7 +2,7 @@
 #include "config.h"
 #include "util.h"
 #include "menu.h"
-#include "util/debug.h"
+#include <r-tech1/debug.h>
 #include "game.h"
 
 using std::vector;
@@ -47,7 +47,7 @@ static void setMugenMotif(){
 }
 */
 
-class MugenArgument: public Argument {
+class MugenArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -60,7 +60,7 @@ public:
         return " : Go directly to the mugen menu";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
         virtual void act(){
             Util::loadMotif();
@@ -68,8 +68,8 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run()));
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
+        actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run()));
         return current;
     }
 };
@@ -166,7 +166,7 @@ struct MugenInstant{
     Kind kind;
 }; 
 
-class MugenTrainingArgument: public Argument {
+class MugenTrainingArgument: public Argument::Parameter {
 public:
 
     MugenInstant data;
@@ -181,7 +181,7 @@ public:
         return " <player 1 name>,<player 2 name>,<stage> : Start training game with the specified players and stage";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
 
         Run(MugenInstant data):
@@ -197,12 +197,12 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
             data.kind = MugenInstant::Training;
-            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+            actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:training kfm,ken,falls" << endl;
         }
@@ -210,7 +210,7 @@ public:
     }
 };
 
-class MugenScriptArgument: public Argument {
+class MugenScriptArgument: public Argument::Parameter {
 public:
     MugenInstant data;
 
@@ -224,7 +224,7 @@ public:
         return " <player 1 name>:<player 1 script>,<player 2 name>:<player 2 script>,<stage> : Start a scripted mugen game where each player reads its input from the specified scripts";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
 
         Run(MugenInstant data):
@@ -240,7 +240,7 @@ public:
         }
     };
                 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
@@ -254,7 +254,7 @@ public:
             data.player2Script = script;
 
             data.kind = MugenInstant::Script;
-            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+            actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:script kfm:kfm-script.txt,ken:ken-script.txt,falls" << endl;
         }
@@ -263,7 +263,7 @@ public:
     }
 };
 
-class MugenWatchArgument: public Argument {
+class MugenWatchArgument: public Argument::Parameter {
 public:
     MugenInstant data;
 
@@ -277,7 +277,7 @@ public:
         return " <player 1 name>,<player 2 name>,<stage> : Start watch game with the specified players and stage";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
 
         Run(MugenInstant data):
@@ -293,12 +293,12 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
             data.kind = MugenInstant::Watch;
-            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+            actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:watch kfm,ken,falls" << endl;
         }
@@ -307,7 +307,7 @@ public:
     }
 };
 
-class MugenTeamArgument: public Argument {
+class MugenTeamArgument: public Argument::Parameter {
 public:
     MugenInstant data;
 
@@ -321,7 +321,7 @@ public:
         return " <player 1 name>,<player 2 name>,<player 3 name>,<player 4 name>,<stage> : Start watch game with the specified players and stage";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
 
         Run(MugenInstant data):
@@ -337,12 +337,12 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.player3, &data.player4, &data.stage);
             data.kind = MugenInstant::Team;
-            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+            actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:team kfm,ken,kfm,kfm,falls" << endl;
         }
@@ -351,7 +351,7 @@ public:
     }
 };
 
-class MugenArcadeArgument: public Argument {
+class MugenArcadeArgument: public Argument::Parameter {
 public:
     MugenInstant data;
 
@@ -365,7 +365,7 @@ public:
         return " <player 1 name>,<player 2 name>,<stage> : Start an arcade mugen game between two players";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
 
         Run(MugenInstant data):
@@ -381,13 +381,13 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             data.enabled = parseMugenInstant(*current, &data.player1, &data.player2, &data.stage);
             data.kind = MugenInstant::Arcade;
 
-            actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+            actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(data)));
         } else {
             Global::debug(0) << "Expected an argument. Example: mugen:arcade kfm,ken,falls" << endl;
         }
@@ -396,7 +396,7 @@ public:
     }
 };
 
-class MugenServerArgument: public Argument {
+class MugenServerArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -408,7 +408,7 @@ public:
         return " [port] : Start a server on port 8473";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
         Run(int port):
         port(port){
@@ -419,18 +419,18 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         int port = 8473;
         current++;
         if (current != end){
             port = atoi((*current).c_str());
         }
-        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(port)));
+        actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(port)));
         return current;
     }
 };
 
-class MugenClientArgument: public Argument {
+class MugenClientArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -442,7 +442,7 @@ public:
         return " [host] [port] : Join a server on port (defaults to 8473)";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
         Run(const string & host, int port):
         host(host),
@@ -457,7 +457,7 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         string host = "127.0.0.1";
         int port = 8473;
         current++;
@@ -468,22 +468,22 @@ public:
                 port = atoi((*current).c_str());
             }
         }
-        actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(host, port)));
+        actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(host, port)));
         return current;
     }
 };
 
-std::vector< ::Util::ReferenceCount<Argument> > arguments(){
-    vector< ::Util::ReferenceCount<Argument> > all;
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenArgument()));
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenTrainingArgument()));
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenScriptArgument()));
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenWatchArgument()));
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenTeamArgument()));
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenArcadeArgument()));
+std::vector< ::Util::ReferenceCount<Argument::Parameter> > arguments(){
+    vector< ::Util::ReferenceCount<Argument::Parameter> > all;
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenTrainingArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenScriptArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenWatchArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenTeamArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenArcadeArgument()));
 
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenServerArgument()));
-    all.push_back(::Util::ReferenceCount<Argument>(new MugenClientArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenServerArgument()));
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new MugenClientArgument()));
     return all;
 }
 

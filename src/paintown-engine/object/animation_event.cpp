@@ -1,11 +1,11 @@
 #include "animation.h"
 #include "animation_event.h"
 #include "projectile.h"
-#include "util/token.h"
-#include "util/token_exception.h"
-#include "util/tokenreader.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
+#include <r-tech1/token.h>
+#include <r-tech1/token_exception.h>
+#include <r-tech1/tokenreader.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/file-system.h>
 #include <string>
 
 using namespace std;

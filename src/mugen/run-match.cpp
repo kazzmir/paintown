@@ -1,24 +1,23 @@
 #include <string>
 #include <ostream>
 
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/sound/music.h>
+#include <r-tech1/exceptions/shutdown_exception.h>
+#include <r-tech1/system.h>
+#include <r-tech1/console.h>
+#include <r-tech1/message-queue.h>
+#include <r-tech1/lz4/lz4.h>
+#include <r-tech1/init.h>
 #include "game.h"
-#include "util/graphics/bitmap.h"
 #include "stage.h"
 #include "factory/font_render.h"
-#include "util/console.h"
 #include "options.h"
 #include "behavior.h"
 #include "exception.h"
-#include "util/message-queue.h"
-#include "util/init.h"
 #include "config.h"
-#include "util/sound/music.h"
-#include "util/exceptions/shutdown_exception.h"
-#include "util/system.h"
 #include "character.h"
 #include "world.h"
-
-#include "util/lz4/lz4.h"
 
 using std::string;
 using std::ostringstream;

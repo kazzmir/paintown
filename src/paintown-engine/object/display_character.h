@@ -2,10 +2,10 @@
 #define _paintown_display_character_h
 
 #include "character.h"
-#include "util/file-system.h"
+#include <r-tech1/file-system.h>
+#include <r-tech1/thread.h>
 #include <string>
 #include <vector>
-#include "util/thread.h"
 
 namespace Paintown{
 

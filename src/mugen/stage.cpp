@@ -12,15 +12,15 @@
 
 #include "stage.h"
 
-#include "util/init.h"
+#include <r-tech1/init.h>
 #include "state.h"
 #include "world.h"
 
-#include "util/system.h"
-#include "util/events.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
-#include "util/graphics/bitmap.h"
+#include <r-tech1/system.h>
+#include <r-tech1/events.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/graphics/bitmap.h>
 // #include "util/console.h"
 /*
 #include "object/animation.h"
@@ -30,10 +30,10 @@
 // #include "object/player.h"
 */
 #include "globals.h"
-#include "util/debug.h"
+#include <r-tech1/debug.h>
 #include "factory/font_render.h"
 #include "ast/all.h"
-#include "util/timedifference.h"
+#include <r-tech1/timedifference.h>
 #include "character.h"
 #include "helper.h"
 

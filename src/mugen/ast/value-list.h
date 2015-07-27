@@ -5,8 +5,8 @@
 #include <list>
 #include <string>
 #include <sstream>
-#include "util/token.h"
-#include "util/token_exception.h"
+#include <r-tech1/token.h>
+#include <r-tech1/token_exception.h>
 
 namespace Ast{
 

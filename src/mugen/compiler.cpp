@@ -183,8 +183,8 @@ Win
 #include "helper.h"
 #include "random.h"
 #include "stage.h"
-#include "util/funcs.h"
-#include "util/regex.h"
+#include <r-tech1/funcs.h>
+#include <r-tech1/regex.h>
 #include <math.h>
 #include <sstream>
 #include <string>
@@ -312,7 +312,7 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
                     if (strings1.size() != strings2.size()){
                         return false;
                     }
-                    for (int i = 0; i < strings1.size(); i++){
+                    for (unsigned int i = 0; i < strings1.size(); i++){
                         if (strings1[i] != strings2[i]){
                             return false;
                         }
@@ -416,7 +416,7 @@ bool RuntimeValue::operator==(const RuntimeValue & value2) const {
                     if (ints1.size() != ints2.size()){
                         return false;
                     }
-                    for (int i = 0; i < ints1.size(); i++){
+                    for (unsigned int i = 0; i < ints1.size(); i++){
                         if (ints1[i] != ints2[i]){
                             return false;
                         }

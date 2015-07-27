@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "globals.h"
-#include "util/debug.h"
+#include <r-tech1/debug.h>
 
 using namespace std;
 

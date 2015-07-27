@@ -7,8 +7,8 @@
 #include <string.h>
 #include "Section.h"
 #include "exception.h"
-#include "util/token.h"
-#include "util/tokenreader.h"
+#include <r-tech1/token.h>
+#include <r-tech1/tokenreader.h>
 
 namespace Ast{
 

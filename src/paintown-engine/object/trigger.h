@@ -2,7 +2,7 @@
 #define _paintown_object_trigger_h
 
 #include <vector>
-#include "util/pointer.h"
+#include <r-tech1/pointer.h>
 
 class Scene;
 

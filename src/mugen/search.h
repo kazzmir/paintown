@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "util/thread.h"
-#include "util/file-system.h"
+#include <r-tech1/thread.h>
+#include <r-tech1/file-system.h>
 
 namespace PaintownUtil = ::Util;
 

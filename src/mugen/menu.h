@@ -5,9 +5,9 @@
 #include <map>
 
 #include "exception.h"
-#include "util/gui/fadetool.h"
-#include "util/gui/scroll-list.h"
-#include "util/language-string.h"
+#include <r-tech1/gui/fadetool.h>
+#include <r-tech1/gui/scroll-list.h>
+#include <r-tech1/language-string.h>
 #include "search.h"
 
 /*

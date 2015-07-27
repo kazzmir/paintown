@@ -1,4 +1,4 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
 #include "characterhud.h"
 
 #include <ostream>
@@ -13,9 +13,9 @@
 #include "character.h"
 #include "state.h"
 
-#include "util/debug.h"
-#include "util/timedifference.h"
-#include "util/token.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/timedifference.h>
+#include <r-tech1/token.h>
 #include "ast/all.h"
 #include "parser/all.h"
 

@@ -1,10 +1,10 @@
-#include "util/graphics/bitmap.h"
-#include "util/file-system.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/file-system.h>
 #include <string.h>
 #include "sprite.h"
-#include "util/funcs.h"
-#include "util/pointer.h"
-#include "util/debug.h"
+#include <r-tech1/funcs.h>
+#include <r-tech1/pointer.h>
+#include <r-tech1/debug.h>
 #include <math.h>
 
 namespace PaintownUtil = ::Util;

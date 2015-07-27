@@ -8,7 +8,7 @@
 #include "Value.h"
 #include "walker.h"
 #include <sstream>
-#include "util/token.h"
+#include <r-tech1/token.h>
 
 namespace Ast{
 

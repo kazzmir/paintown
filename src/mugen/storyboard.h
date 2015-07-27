@@ -6,13 +6,13 @@
 #include <vector>
 #include <map>
 #include "exception.h"
-#include "util/gui/fadetool.h"
 #include "util.h"
 #include "ast/extra.h"
-#include "util/pointer.h"
+#include <r-tech1/pointer.h>
+#include <r-tech1/gui/fadetool.h>
+#include <r-tech1/input/input-map.h>
 #include "animation.h"
 
-#include "util/input/input-map.h"
 
 namespace PaintownUtil = ::Util;
 

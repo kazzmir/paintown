@@ -4,9 +4,9 @@
 
 #include "common.h"
 #include "compiler.h"
-#include "util/token.h"
 #include "serialize.h"
-#include "util/graphics/color.h"
+#include <r-tech1/graphics/color.h>
+#include <r-tech1/token.h>
 #include <map>
 
 class Token;

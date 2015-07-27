@@ -1,10 +1,10 @@
 #include "widgets.h"
 
-#include "util/funcs.h"
-#include "util/graphics/bitmap.h"
-#include "util/network/network.h"
-#include "util/input/keyboard.h"
-#include "util/exceptions/exception.h"
+#include <r-tech1/funcs.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/network/network.h>
+#include <r-tech1/input/keyboard.h>
+#include <r-tech1/exceptions/exception.h>
 
 #include <stdexcept>
 

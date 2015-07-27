@@ -1,4 +1,4 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
 
 #include <fstream>
 #include <iostream>
@@ -15,9 +15,9 @@
 #include "reader.h"
 #include "util.h"
 #include "globals.h"
-#include "util/debug.h"
-#include "util/funcs.h"
-#include "util/exceptions/load_exception.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/exceptions/load_exception.h>
 
 using namespace std;
 

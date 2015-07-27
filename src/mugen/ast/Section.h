@@ -13,7 +13,7 @@
 #include "Value.h"
 #include "exception.h"
 #include "ast.h"
-#include "util/token.h"
+#include <r-tech1/token.h>
 
 namespace Ast{
 

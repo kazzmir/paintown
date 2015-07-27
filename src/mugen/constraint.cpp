@@ -1,8 +1,8 @@
 #include "command.h"
 #include "constraint.h"
 #include "ast/key.h"
-#include "util/debug.h"
-#include "util/token.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/token.h>
 #include <math.h>
 #include <vector>
 #include <string>
