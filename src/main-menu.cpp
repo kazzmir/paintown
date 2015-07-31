@@ -62,6 +62,24 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+
 static void showOptions(const vector<Util::ReferenceCount<Argument::Parameter> > & arguments){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
     Global::debug(0) << "Command line options" << endl;
