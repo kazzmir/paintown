@@ -1,13 +1,13 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
 #include <map>
 #include "object_nonattack.h"
-#include "util/funcs.h"
 #include "globals.h"
 #include "animation.h"
 #include "../game/world.h"
-#include "util/tokenreader.h"
-#include "util/token.h"
-#include "util/file-system.h"
+#include <r-tech1/tokenreader.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/token.h>
+#include <r-tech1/file-system.h>
 #include <math.h>
 #include "cat.h"
 

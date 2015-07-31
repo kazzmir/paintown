@@ -4,8 +4,8 @@
 #include "globals.h"
 #include <math.h>
 #include "object.h"
-#include "util/graphics/bitmap.h"
-#include "util/funcs.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
 
 namespace Paintown{
 

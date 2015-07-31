@@ -1,7 +1,7 @@
 #include "shadow.h"
-#include "util/graphics/bitmap.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/file-system.h>
 #include <vector>
 
 using namespace std;

@@ -21,7 +21,7 @@ class Bitmap;
 
 #include "../network/network.h"
 #include "../level/block.h"
-#include "util/pointer.h"
+#include <r-tech1/pointer.h>
 
 namespace Script{
     class Engine;

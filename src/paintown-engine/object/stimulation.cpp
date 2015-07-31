@@ -1,8 +1,8 @@
 #include "stimulation.h"
 #include "object.h"
-#include "util/graphics/bitmap.h"
-#include "util/token.h"
-#include "util/token_exception.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/token.h>
+#include <r-tech1/token_exception.h>
 #include "character.h"
 #include "draw-effect.h"
 

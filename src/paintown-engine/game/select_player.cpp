@@ -1,38 +1,36 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/events.h>
+#include <r-tech1/parameter.h>
+#include <r-tech1/thread.h>
+#include <r-tech1/gui/animation.h>
+#include <r-tech1/configuration.h>
+#include <r-tech1/init.h>
+#include <r-tech1/input/keyboard.h>
+#include <r-tech1/input/input-manager.h>
+#include <r-tech1/input/input-map.h>
+#include <r-tech1/input/input-source.h>
+#include <r-tech1/font.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/exceptions/exception.h>
+#include <r-tech1/loading.h>
+#include <r-tech1/tokenreader.h>
+#include <r-tech1/token.h>
 #include "../object/object.h"
-#include "util/funcs.h"
-#include "util/events.h"
-#include "util/parameter.h"
 #include "../object/player.h"
 #include "globals.h"
 #include "../object/display_character.h"
-#include "util/thread.h"
-#include "util/init.h"
 // #include "select_player.h"
 #include "game.h"
 #include "mod.h"
-#include "util/input/keyboard.h"
-#include "util/input/input-manager.h"
-#include "util/input/input-map.h"
-#include "util/input/input-source.h"
-#include "util/font.h"
 #include "../level/utils.h"
-#include "util/file-system.h"
 #include "world.h"
-#include "util/exceptions/exception.h"
-#include "util/loading.h"
-#include "util/tokenreader.h"
-#include "util/token.h"
 #include "character-select.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <sstream>
 #include <map>
-
-#include "util/gui/animation.h"
-
-#include "util/configuration.h"
 
 using namespace std;
 

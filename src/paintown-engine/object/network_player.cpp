@@ -1,8 +1,11 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/font.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/funcs.h>
 #include "animation.h"
 #include "factory/font_render.h"
 #include "globals.h"
-#include "util/debug.h"
 #include <math.h>
 #include "../game/nameplacer.h"
 #include "network_character.h"
@@ -10,9 +13,6 @@
 #include "object.h"
 #include "object_messages.h"
 #include <sstream>
-#include "util/font.h"
-#include "util/file-system.h"
-#include "util/funcs.h"
 #include <vector>
 #include "../game/world.h"
 

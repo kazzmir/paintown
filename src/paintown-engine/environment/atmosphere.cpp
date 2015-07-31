@@ -1,18 +1,18 @@
 #include "atmosphere.h"
 #include "fog_atmosphere.h"
 #include "globals.h"
-#include "util/debug.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/resource.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/sound/sound.h>
+#include <r-tech1/token.h>
 #include "../level/scene.h"
 #include <math.h>
 #include "night_atmosphere.h"
 #include "rain_atmosphere.h"
-#include "util/resource.h"
 #include "snow_atmosphere.h"
-#include "util/graphics/bitmap.h"
-#include "util/file-system.h"
-#include "util/funcs.h"
-#include "util/sound/sound.h"
-#include "util/token.h"
 #include "../object/object.h"
 #include <vector>
 

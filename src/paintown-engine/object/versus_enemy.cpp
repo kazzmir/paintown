@@ -1,7 +1,7 @@
 #include "versus_enemy.h"
 #include "character.h"
-#include "util/exceptions/load_exception.h"
-#include "util/funcs.h"
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/funcs.h>
 #include "animation.h"
 #include "object.h"
 #include <math.h>

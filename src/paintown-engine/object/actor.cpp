@@ -2,8 +2,8 @@
 #include "object_nonattack.h"
 #include "globals.h"
 #include "animation.h"
-#include "util/tokenreader.h"
-#include "util/token.h"
+#include <r-tech1/tokenreader.h>
+#include <r-tech1/token.h>
 #include "actor.h"
 
 using namespace std;

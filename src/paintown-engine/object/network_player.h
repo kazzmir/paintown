@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
 #include "character.h"
 #include "network_character.h"
 

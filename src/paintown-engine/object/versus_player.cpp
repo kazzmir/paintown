@@ -1,12 +1,12 @@
 #include "player.h"
-#include "util/input/input-source.h"
+#include <r-tech1/input/input-source.h>
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/configuration.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/input/input.h>
 #include "versus_player.h"
-#include "util/exceptions/load_exception.h"
 #include "animation.h"
-#include "util/configuration.h"
-#include "util/funcs.h"
 #include "globals.h"
-#include "util/input/input.h"
 #include <string>
 #include <iostream>
 

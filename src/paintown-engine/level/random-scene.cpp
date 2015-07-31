@@ -1,7 +1,7 @@
 #include "random-scene.h"
 #include "block.h"
 #include "blockobject.h"
-#include "util/funcs.h"
+#include <r-tech1/funcs.h>
 
 using namespace std;
     

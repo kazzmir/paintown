@@ -2,15 +2,15 @@
 #include <vector>
 #include "mod.h"
 #include "../level/utils.h"
-#include "util/gui/cutscene.h"
-#include "util/file-system.h"
-#include "util/tokenreader.h"
-#include "util/token.h"
-#include "util/exceptions/load_exception.h"
-#include "util/graphics/bitmap.h"
+#include <r-tech1/gui/cutscene.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/tokenreader.h>
+#include <r-tech1/token.h>
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/configuration.h>
 #include "openbor/mod.h"
 #include "globals.h"
-#include "util/configuration.h"
 
 using namespace std;
 

@@ -1,13 +1,13 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/input/text-input.h>
+#include <r-tech1/input/input-manager.h>
+#include <r-tech1/font.h>
+#include <r-tech1/resource.h>
+#include <r-tech1/file-system.h>
 #include <deque>
-#include "util/input/text-input.h"
 #include "chat-widget.h"
 #include "../game/world.h"
-#include "util/input/input-manager.h"
-#include "util/font.h"
 #include "factory/font_render.h"
-#include "util/resource.h"
-#include "util/file-system.h"
 #include <string>
 
 using namespace std;

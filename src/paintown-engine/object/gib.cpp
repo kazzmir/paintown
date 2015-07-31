@@ -1,9 +1,9 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/configuration.h>
 #include <iostream>
 #include "object_nonattack.h"
 #include "gib.h"
-#include "util/funcs.h"
-#include "util/configuration.h"
 #include "globals.h"
 #include <math.h>
 

@@ -1,13 +1,13 @@
 #include "argument.h"
 #include "game.h"
 #include "mod.h"
-#include "util/regex.h"
-#include "util/configuration.h"
-#include "util/debug.h"
+#include <r-tech1/regex.h>
+#include <r-tech1/configuration.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/input/input-source.h>
 #include "../level/utils.h"
 #include "../object/player.h"
-#include "util/file-system.h"
-#include "util/input/input-source.h"
 #include <vector>
 #include <string>
 
@@ -16,7 +16,7 @@ using std::string;
 
 namespace Paintown{
 
-class ArcadeArgument: public Argument {
+class ArcadeArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -32,7 +32,7 @@ public:
         Filesystem::AbsolutePath player;
     };
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
         Run(const Data & data):
         data(data){
@@ -89,12 +89,12 @@ public:
         return out;
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             try{
                 Data data(parse(*current));
-                actions.push_back(::Util::ReferenceCount<ArgumentAction>(new Run(data)));
+                actions.push_back(::Util::ReferenceCount<Argument::Action>(new Run(data)));
             } catch (const Filesystem::NotFound & fail){
                 Global::debug(0) << fail.getTrace() << std::endl;
             }
@@ -103,9 +103,9 @@ public:
     }
 };
 
-std::vector< ::Util::ReferenceCount<Argument> > arguments(){
-    vector< ::Util::ReferenceCount<Argument> > all;
-    all.push_back(::Util::ReferenceCount<Argument>(new ArcadeArgument()));
+std::vector< ::Util::ReferenceCount<Argument::Parameter> > arguments(){
+    vector< ::Util::ReferenceCount<Argument::Parameter> > all;
+    all.push_back(::Util::ReferenceCount<Argument::Parameter>(new ArcadeArgument()));
     return all;
 }
 

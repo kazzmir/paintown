@@ -12,10 +12,10 @@
 #include "../object/object.h"
 #include "object_factory.h"
 #include "../script/script.h"
-#include "util/exceptions/load_exception.h"
-#include "util/file-system.h"
-#include "util/debug.h"
-#include "util/message-queue.h"
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/message-queue.h>
 
 using namespace std;
 

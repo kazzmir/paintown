@@ -4,13 +4,13 @@
 #include "character.h" 
 #include "player-common.h"
 #include <deque>
-#include "util/network/network.h"
-#include "util/input/input.h"
-#include "util/file-system.h"
-#include "util/pointer.h"
+#include <r-tech1/network/network.h>
+#include <r-tech1/input/input.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/pointer.h>
+#include <r-tech1/thread.h>
+#include <r-tech1/graphics/bitmap.h>
 #include "../game/adventure_world.h"
-#include "util/thread.h"
-#include "util/graphics/bitmap.h"
 
 class World;
 class InputSource;

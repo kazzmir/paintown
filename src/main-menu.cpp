@@ -62,19 +62,19 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
-static void showOptions(const vector<Util::ReferenceCount<Argument> > & arguments){
+static void showOptions(const vector<Util::ReferenceCount<Argument::Parameter> > & arguments){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
     Global::debug(0) << "Command line options" << endl;
 
-    for (vector<Util::ReferenceCount<Argument> >::const_iterator it = arguments.begin(); it != arguments.end(); it++){
-        Util::ReferenceCount<Argument> argument = *it;
+    for (vector<Util::ReferenceCount<Argument::Parameter> >::const_iterator it = arguments.begin(); it != arguments.end(); it++){
+        Util::ReferenceCount<Argument::Parameter> argument = *it;
         Global::debug(0) << " " << Util::join(argument->keywords(), ", ") << argument->description() << endl;
     }
 
     Global::debug(0) << endl;
 }
 
-class WindowedArgument: public Argument {
+class WindowedArgument: public Argument::Parameter {
 public:
     WindowedArgument(Global::InitConditions * conditions):
     conditions(conditions){
@@ -95,19 +95,19 @@ public:
         return " : Start in fullscreen mode";
     }
     
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         conditions->graphics = Global::InitConditions::Fullscreen;
         return current;
     }
 };
 
-class HelpArgument: public Argument {
+class HelpArgument: public Argument::Parameter {
 public:
-    HelpArgument(const vector<Util::ReferenceCount<Argument> > & arguments):
+    HelpArgument(const vector<Util::ReferenceCount<Argument::Parameter> > & arguments):
         arguments(arguments){
         }
 
-    const vector<Util::ReferenceCount<Argument> > & arguments;
+    const vector<Util::ReferenceCount<Argument::Parameter> > & arguments;
 
     vector<string> keywords() const {
         vector<string> out;
@@ -120,13 +120,13 @@ public:
         return " : Print the command line options and exit.";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         showOptions(arguments);
         exit(0);
     }
 };
 
-class VersionArgument: public Argument {
+class VersionArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -140,13 +140,13 @@ public:
         return " : Print the version of Paintown and exit.";
     }
     
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         Global::debug(0) << "Version " << Version::getVersionString() << endl;
         exit(0);
     }
 };
 
-class DataPathArgument: public Argument {
+class DataPathArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -165,7 +165,7 @@ public:
         return out.str();
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             Util::setDataPath(*current);
@@ -174,7 +174,7 @@ public:
     }
 };
 
-class DisableQuitArgument: public Argument {
+class DisableQuitArgument: public Argument::Parameter {
 public:
     DisableQuitArgument(bool * quit):
     quit(quit){
@@ -192,13 +192,13 @@ public:
         return " : Don't allow the game to exit using the normal methods";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         *quit = false;
         return current;
     }
 };
 
-class MusicArgument: public Argument {
+class MusicArgument: public Argument::Parameter {
 public:
     MusicArgument(bool * enabled):
         enabled(enabled){
@@ -219,13 +219,13 @@ public:
         return " : Turn off music";
     }
     
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         *enabled = false;
         return current;
     }
 };
 
-class DebugArgument: public Argument {
+class DebugArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -235,7 +235,7 @@ public:
         return out;
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
             istringstream i(*current);
@@ -251,7 +251,7 @@ public:
     }
 };
 
-class DebugFileArgument: public Argument {
+class DebugFileArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -259,7 +259,7 @@ public:
         return out;
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         Global::logToFile();
         return current;
@@ -270,7 +270,7 @@ public:
     }
 };
 
-class RateLimitArgument: public Argument {
+class RateLimitArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -279,7 +279,7 @@ public:
         return out;
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         Global::rateLimit = false;
         return current;
     }
@@ -289,7 +289,7 @@ public:
     }
 };
 
-class JoystickArgument: public Argument {
+class JoystickArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -303,7 +303,7 @@ public:
         return " : Disable joystick input";
     }
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & refs){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & refs){
         Configuration::setJoystickEnabled(false);
         return current;
     }
@@ -315,7 +315,7 @@ static Filesystem::AbsolutePath mainMenuPath(){
 }
 
 /* FIXME: move the network arguments to the paintown-engine directory */
-class NetworkServerArgument: public Argument {
+class NetworkServerArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
@@ -328,7 +328,7 @@ public:
         return " : Go straight to the network server";
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
         void act(){
 #ifdef HAVE_NETWORKING
@@ -337,8 +337,8 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
-        actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run()));
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
+        actions.push_back(Util::ReferenceCount<Argument::Action>(new Run()));
         return current;
     }
 
@@ -355,7 +355,7 @@ struct NetworkJoin{
     string port;
 }; 
 
-class NetworkJoinArgument: public Argument {
+class NetworkJoinArgument: public Argument::Parameter {
 public:
     NetworkJoin data;
 
@@ -394,7 +394,7 @@ public:
         }
     }
 
-    class Run: public ArgumentAction {
+    class Run: public Argument::Action {
     public:
         Run(NetworkJoin join):
             join(join){
@@ -427,7 +427,7 @@ public:
         }
     };
 
-    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, ActionRefs & actions){
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         data.enabled = true;
         string port;
         string host;
@@ -440,7 +440,7 @@ public:
             data.name = name;
         }
 
-        actions.push_back(Util::ReferenceCount<ArgumentAction>(new Run(data)));
+        actions.push_back(Util::ReferenceCount<Argument::Action>(new Run(data)));
         return current;
     }
 };
@@ -498,16 +498,10 @@ public:
     }
 
     Paintown::OptionFactory paintownFactory;
-    Platformer::OptionFactory platformerFactory;
     Mugen::OptionFactory mugenFactory;
 
     virtual MenuOption * getOption(const Gui::ContextBox & parent, const Token *token) const {
         MenuOption * get = paintownFactory.getOption(parent, token);
-        if (get != NULL){
-            return get;
-        }
-
-        get = platformerFactory.getOption(parent, token);
         if (get != NULL){
             return get;
         }
@@ -535,12 +529,12 @@ static Filesystem::AbsolutePath systemMod(){
     throw LoadException(__FILE__, __LINE__, "Could not get system mod");
 }
 
-static int startMain(const vector<Util::ReferenceCount<ArgumentAction> > & actions, bool allow_quit){
+static int startMain(const vector<Util::ReferenceCount<Argument::Action> > & actions, bool allow_quit){
     while (true){
         bool normal_quit = false;
         try{
-            for (vector<Util::ReferenceCount<ArgumentAction> >::const_iterator it = actions.begin(); it != actions.end(); it++){
-                Util::ReferenceCount<ArgumentAction> action = *it;
+            for (vector<Util::ReferenceCount<Argument::Action> >::const_iterator it = actions.begin(); it != actions.end(); it++){
+                Util::ReferenceCount<Argument::Action> action = *it;
                 action->act();
             }
             normal_quit = true;
@@ -584,7 +578,7 @@ static int startMain(const vector<Util::ReferenceCount<ArgumentAction> > & actio
     return 0;
 }
 
-class DefaultGame: public ArgumentAction {
+class DefaultGame: public Argument::Action {
 public:
     void act(){
         Paintown::Mod::getCurrentMod()->playIntro();
@@ -660,7 +654,7 @@ static void setupPaintownMod(){
 }
 
 /* Sort arguments based on the first letter of the keywords */
-static bool argumentSorter(const Util::ReferenceCount<Argument> & arg1, const Util::ReferenceCount<Argument> & arg2){
+static bool argumentSorter(const Util::ReferenceCount<Argument::Parameter> & arg1, const Util::ReferenceCount<Argument::Parameter> & arg2){
     vector<string> keywords1 = arg1->keywords();
     vector<string> keywords2 = arg2->keywords();
 
@@ -671,7 +665,7 @@ static bool argumentSorter(const Util::ReferenceCount<Argument> & arg1, const Ut
     return false;
 }
 
-static void sortArguments(vector<Util::ReferenceCount<Argument> > & arguments){
+static void sortArguments(vector<Util::ReferenceCount<Argument::Parameter> > & arguments){
     sort(arguments.begin(), arguments.end(), argumentSorter);
 }
 
@@ -680,7 +674,7 @@ static void sortArguments(vector<Util::ReferenceCount<Argument> > & arguments){
  * 3. run main dispatcher
  * 4. quit
  */
-int paintown_main(int argc, char ** argv){
+int rtech_main(int argc, char ** argv){
     /* -1 means use whatever is in the configuration */
     Global::InitConditions conditions;
 
@@ -722,38 +716,40 @@ int paintown_main(int argc, char ** argv){
         stringArgs.push_back(argv[q]);
     }
 
-    vector<Util::ReferenceCount<Argument> > arguments;
-    arguments.push_back(Util::ReferenceCount<Argument>(new WindowedArgument(&conditions)));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DataPathArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new MusicArgument(&music_on)));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DebugArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DebugFileArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new RateLimitArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new JoystickArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new VersionArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new DisableQuitArgument(&allow_quit)));
-    arguments.push_back(Util::ReferenceCount<Argument>(new HelpArgument(arguments)));
+    vector<Util::ReferenceCount<Argument::Parameter> > arguments;
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new WindowedArgument(&conditions)));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DataPathArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new MusicArgument(&music_on)));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DebugArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DebugFileArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new RateLimitArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new JoystickArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new VersionArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DisableQuitArgument(&allow_quit)));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new HelpArgument(arguments)));
 
     appendVector(arguments, Paintown::arguments());
     appendVector(arguments, Mugen::arguments());
+    /*
     appendVector(arguments, Platformer::arguments());
     appendVector(arguments, Asteroids::arguments());
+    */
 
 #ifdef HAVE_NETWORKING
-    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkServerArgument()));
-    arguments.push_back(Util::ReferenceCount<Argument>(new NetworkJoinArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new NetworkServerArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new NetworkJoinArgument()));
 #endif
 
     sortArguments(arguments);
     
-    vector<Util::ReferenceCount<ArgumentAction> > actions;
+    vector<Util::ReferenceCount<Argument::Action> > actions;
 
     /* Sort of a hack but if we are already at the end of the argument list (because some
      * argument already reached the end) then we don't increase the argument iterator
      */
     for (vector<string>::iterator it = stringArgs.begin(); it != stringArgs.end(); (it != stringArgs.end()) ? it++ : it){
-        for (vector<Util::ReferenceCount<Argument> >::iterator arg = arguments.begin(); arg != arguments.end(); arg++){
-            Util::ReferenceCount<Argument> argument = *arg;
+        for (vector<Util::ReferenceCount<Argument::Parameter> >::iterator arg = arguments.begin(); arg != arguments.end(); arg++){
+            Util::ReferenceCount<Argument::Parameter> argument = *arg;
             if (argument->isArg(*it)){
                 it = argument->parse(it, stringArgs.end(), actions);
 
@@ -814,7 +810,7 @@ int paintown_main(int argc, char ** argv){
 
     /* If there are no actions then start the Paintown menu */
     if (actions.size() == 0){
-        actions.push_back(Util::ReferenceCount<ArgumentAction>(new DefaultGame()));
+        actions.push_back(Util::ReferenceCount<Argument::Action>(new DefaultGame()));
     }
 
     Util::Parameter<Util::ReferenceCount<Graphics::ShaderManager> > defaultShaderManager(Graphics::shaderManager, Util::ReferenceCount<Graphics::ShaderManager>(new Graphics::ShaderManager()));

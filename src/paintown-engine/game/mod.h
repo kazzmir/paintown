@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "util/file-system.h"
-#include "util/pointer.h"
+#include <r-tech1/file-system.h>
+#include <r-tech1/pointer.h>
 
 namespace Level{
     class LevelInfo;

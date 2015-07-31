@@ -4,11 +4,11 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "util/file-system.h"
-#include "util/graphics/gradient.h"
-#include "util/pointer.h"
-#include "util/gui/animation.h"
-#include "util/gui/select-list.h"
+#include <r-tech1/file-system.h>
+#include <r-tech1/graphics/gradient.h>
+#include <r-tech1/pointer.h>
+#include <r-tech1/gui/animation.h>
+#include <r-tech1/gui/select-list.h>
 
 class Font;
 class Token;

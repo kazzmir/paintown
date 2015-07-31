@@ -1,4 +1,15 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/configuration.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/ebox.h>
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/sound/sound.h>
+#include <r-tech1/timedifference.h>
+#include <r-tech1/token.h>
+#include <r-tech1/token_exception.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/tokenreader.h>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -8,12 +19,10 @@
 #include <vector>
 #include <algorithm>
 
-#include "util/configuration.h"
 #include "animation.h"
 #include "animation_trail.h"
 #include "character.h"
 #include "globals.h"
-#include "util/debug.h"
 #include "object.h"
 #include "object_messages.h"
 #include "object_attack.h"
@@ -22,15 +31,6 @@
 #include "gib.h"
 
 #include "../factory/shadow.h"
-#include "util/funcs.h"
-#include "util/ebox.h"
-#include "util/exceptions/load_exception.h"
-#include "util/sound/sound.h"
-#include "util/timedifference.h"
-#include "util/token.h"
-#include "util/token_exception.h"
-#include "util/file-system.h"
-#include "util/tokenreader.h"
 #include "../script/script.h"
 #include "../game/world.h"
 #include "../game/mod.h"

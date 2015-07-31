@@ -2,7 +2,7 @@
 #define _paintown_block_h
 
 #include <vector>
-#include "util/pointer.h"
+#include <r-tech1/pointer.h>
 
 class BlockObject;
 class Token;

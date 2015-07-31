@@ -1,15 +1,18 @@
-#include "util/funcs.h"
-#include "util/graphics/bitmap.h"
+#include <r-tech1/funcs.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/font.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/graphics/gradient.h>
+#include <r-tech1/message-queue.h>
+#include <r-tech1/network/network.h>
+#include <r-tech1/thread.h>
+#include <r-tech1/events.h>
 #include "../script/script.h"
 #include "../object/object.h"
 #include "../object/object_attack.h"
 #include "../object/character.h"
 #include "../object/player-common.h"
-#include "util/font.h"
-#include "util/file-system.h"
-#include "util/graphics/gradient.h"
 #include "factory/font_render.h"
-#include "util/message-queue.h"
 #include "../object/effect.h"
 #include "../object/enemy.h"
 #include "../object/player.h"
@@ -17,10 +20,7 @@
 #include "../level/random-scene.h"
 #include "world.h"
 #include "adventure_world.h"
-#include "util/network/network.h"
 #include "../level/cacher.h"
-#include "util/thread.h"
-#include "util/events.h"
 
 #include <iostream>
 #include <string>

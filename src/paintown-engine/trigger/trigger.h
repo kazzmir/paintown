@@ -1,7 +1,7 @@
 #ifndef _paintown_trigger_h
 #define _paintown_trigger_h
 
-#include "util/token_exception.h"
+#include <r-tech1/token_exception.h>
 
 class Token;
 class Scene;

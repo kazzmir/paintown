@@ -1,18 +1,18 @@
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/tokenreader.h>
+#include <r-tech1/token.h>
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/exceptions/exception.h>
+#include <r-tech1/init.h>
+#include <r-tech1/input/input-manager.h>
+#include <r-tech1/input/input-map.h>
 #include "mod.h"
 #include "paintown-engine/level/utils.h"
-#include "util/funcs.h"
 #include "util.h"
-#include "util/debug.h"
 #include "pack-reader.h"
-#include "util/tokenreader.h"
-#include "util/token.h"
-#include "util/exceptions/load_exception.h"
-#include "util/exceptions/exception.h"
 #include <vector>
-#include "util/init.h"
-#include "util/input/input-manager.h"
-#include "util/input/input-map.h"
 
 using namespace std;
 

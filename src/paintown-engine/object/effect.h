@@ -4,7 +4,7 @@
 #include "object_nonattack.h"
 
 #include <string>
-#include "util/network/network.h"
+#include <r-tech1/network/network.h>
 
 namespace Graphics{
 class Bitmap;

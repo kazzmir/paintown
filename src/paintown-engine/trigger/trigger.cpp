@@ -1,8 +1,8 @@
 #include "trigger.h"
-#include "util/token.h"
+#include <r-tech1/token.h>
+#include <r-tech1/exceptions/load_exception.h>
 #include "../level/scene.h"
 #include "../environment/atmosphere.h"
-#include "util/exceptions/load_exception.h"
 #include <vector>
 
 using namespace std;

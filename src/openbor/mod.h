@@ -2,7 +2,7 @@
 #define _paintown_openbor_mod_h
 
 #include "paintown-engine/game/mod.h"
-#include "util/file-system.h"
+#include <r-tech1/file-system.h>
 #include "pack-reader.h"
 
 namespace Paintown{

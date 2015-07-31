@@ -2,9 +2,9 @@
 #define _paintown_gib_h
 
 #include "object_nonattack.h"
-#include "util/graphics/bitmap.h"
-#include "util/pointer.h"
-#include "util/network/network.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/pointer.h>
+#include <r-tech1/network/network.h>
 #include <string>
 #include <vector>
 

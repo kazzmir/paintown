@@ -1,16 +1,16 @@
 #include "character.h"
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/font.h>
+#include <r-tech1/message-queue.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/input/input-source.h>
+#include <r-tech1/file-system.h>
 #include "../game/nameplacer.h"
 #include "animation.h"
-#include "util/font.h"
-#include "util/message-queue.h"
 #include "../game/world.h"
 #include "globals.h"
-#include "util/funcs.h"
 #include "buddy_player.h"
 #include "player.h"
-#include "util/input/input-source.h"
-#include "util/file-system.h"
 #include "factory/font_render.h"
 #include <math.h>
 

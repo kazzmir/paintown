@@ -7,9 +7,9 @@
 #include "../script.h"
 #include "python.h"
 #include <string>
-#include "util/debug.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
+#include <r-tech1/debug.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/file-system.h>
 #include "../../game/world.h"
 #include "../../level/blockobject.h"
 #include "../../factory/object_factory.h"

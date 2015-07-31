@@ -1,13 +1,13 @@
-#include "util/ebox.h"
-#include "util/graphics/bitmap.h"
+#include <r-tech1/ebox.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/token.h>
+#include <r-tech1/token_exception.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/debug.h>
 #include "projectile.h"
 #include "object_attack.h"
-#include "util/token.h"
-#include "util/token_exception.h"
-#include "util/funcs.h"
 #include "../game/world.h"
 #include "alliance.h"
-#include "util/debug.h"
 #include "animation.h"
 #include <iostream>
 

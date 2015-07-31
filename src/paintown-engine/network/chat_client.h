@@ -1,10 +1,10 @@
 #ifndef _paintown_chat_client_h
 #define _paintown_chat_client_h
 
-#include "util/network/network.h"
-#include "util/messages.h"
+#include <r-tech1/network/network.h>
+#include <r-tech1/messages.h>
+#include <r-tech1/thread.h>
 #include <string>
-#include "util/thread.h"
 #include <queue>
 
 class Keyboard;

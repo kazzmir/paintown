@@ -4,12 +4,12 @@
 #include "scene.h"
 #include "../object/stimulation.h"
 #include "../factory/object_factory.h"
-#include "util/exceptions/load_exception.h"
-#include "util/token_exception.h"
-#include "util/token.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
-#include "util/debug.h"
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/token_exception.h>
+#include <r-tech1/token.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/debug.h>
 
 using namespace std;
 

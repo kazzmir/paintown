@@ -2,24 +2,25 @@
 #include <sstream>
 #include <string>
 
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/ebox.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/exceptions/load_exception.h>
+#include <r-tech1/file-system.h>
+#include <r-tech1/sound/sound.h>
+#include <r-tech1/timedifference.h>
+#include <r-tech1/token.h>
+#include <r-tech1/token_exception.h>
+
 #include "animation.h"
 #include "animation_event.h"
 #include "animation_trail.h"
 #include "attack.h"
-#include "util/graphics/bitmap.h"
 #include "character.h"
-#include "util/funcs.h"
-#include "util/ebox.h"
 #include "globals.h"
-#include "util/debug.h"
 #include "projectile.h"
-#include "util/exceptions/load_exception.h"
 #include "object.h"
-#include "util/file-system.h"
-#include "util/sound/sound.h"
-#include "util/timedifference.h"
-#include "util/token.h"
-#include "util/token_exception.h"
 #include "../game/mod.h"
 #include "../game/game.h"
 

@@ -2,7 +2,7 @@
 #include "object_messages.h"
 #include "object_attack.h"
 #include "stimulation.h"
-#include "util/ebox.h"
+#include <r-tech1/ebox.h>
 #include "../script/script.h"
 #include <math.h>
 #include <exception>

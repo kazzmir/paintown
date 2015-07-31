@@ -3,17 +3,17 @@
 
 #include "globals.h"
 #include "animation.h"
-#include "util/graphics/bitmap.h"
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/funcs.h>
+#include <r-tech1/font.h>
+#include <r-tech1/debug.h>
+#include <r-tech1/file-system.h>
 #include "character.h"
 #include "enemy.h"
-#include "util/funcs.h"
-#include "util/font.h"
 #include "factory/font_render.h"
 #include "../level/scene.h"
 #include "../game/nameplacer.h"
 #include "alliance.h"
-#include "util/debug.h"
-#include "util/file-system.h"
 #include "object.h"
 #include "../game/world.h"
 #include <math.h>

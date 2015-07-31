@@ -2,17 +2,17 @@
 #include <string>
 
 #include "move-list.h"
-#include "util/token.h"
+#include <r-tech1/token.h>
 #include "../object/animation.h"
 #include "../object/animation_event.h"
 #include "../object/player.h"
-#include "util/gui/scroll-list.h"
-#include "util/input/input-map.h"
-#include "util/input/input-manager.h"
-#include "util/menu/menu.h"
-#include "util/configuration.h"
-#include "util/graphics/bitmap.h"
-#include "util/init.h"
+#include <r-tech1/gui/scroll-list.h>
+#include <r-tech1/input/input-map.h>
+#include <r-tech1/input/input-manager.h>
+#include <r-tech1/menu/menu.h>
+#include <r-tech1/configuration.h>
+#include <r-tech1/graphics/bitmap.h>
+#include <r-tech1/init.h>
 
 using std::endl;
 using std::map;
