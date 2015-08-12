@@ -1,0 +1,278 @@
+; This defines the Paintown menu
+; Encoded with UTF-8 
+
+(menu
+  ; You can initiate an override to jump straight into an option
+  ; Add the tag (override) to a declared option and it will run
+  ; i.e. (option (mugen ... (override)))
+  ; Keep in mind that there can only be one override, the first to be parsed will be the one used
+
+  (version 3 3 1)
+  ; Using the space api
+  (space (absolute 0 0 640 480) (relative -1 -1 1 1))
+
+  ; **Required** to name each menu, the top level menu is always named "main"
+  (name main)
+  ; **Required** Positioning of menu
+  ; This is absolute placement of the menu list x | y | width | height
+  ;(position 100 200 450 250)
+  ; This is using the relative coordinate system ranging from -1 through 1:  x1 | y1 | x2 | y2  
+  ;(relative-position -.6 -.3 .6 .8)
+  ; Two methods of using the coordinate option
+  ; Currently z is unused
+  ;(coordinate (absolute 100 200 450 250) (z 0))
+  (coordinate (relative -.6 -.2 .6 .7) (z 0))
+  ;(coordinate (relative -.6 -.3 .6 .8) (z 0))
+  ; **Optional** transforms effecting the roundness of corners with radius
+  (transforms (radius 15))
+  ; **Optional** Display List settings
+  (display-list
+    ; **Optional** Scroll type defaults to scroll
+    ; scroll = scroll type
+    ; normal = normal
+    (type scroll)
+    ; **Optional** Scroll wrap defauts to true
+    ; 0 - false
+    ; 1 - true
+    (wrap 1)
+    ; **Optional** Set values for menu scroll items
+    ; interpolate-selected will interpolate the current option between color-low and color-high: 0 | 1 (defaults to 1)
+    ; color-low for the lower spectrum of the interpolated colors: red green blue (defaults to 19 167 168)
+    ; color-high for the high spectrum of the interpolate colors: red green blue (defaults to 27 237 239)
+    ; interpolate-distance for the interpolation distance: NUM (defaults to 50)
+    ; selected-color is the color of the current option if interpolation is disabled: red green blue (defaults to 19 167 168)
+    ; selected-color-alpha is the alpha of the selected-color: NUM (defaults to 255)
+    ; other-color is the color of other options: red green blue (defaults to 255 255 255)
+    ; other-color-alpha is the alpha of the other options: NUM (defaults to 255)
+    ; distance-fade-multiplier multiplies the fade amount for the distance of non selected items: NUM (defaults to 35)
+    ; distance-fade will make the options fade as the distance becomes greater from the selected option : 0 | 1 (defaults to 1)
+    (items
+        (interpolate-selected 1) 
+        (color-low 19 167 168) 
+        (color-high 27 237 239)
+        (interpolate-distance 50)
+        (selected-color 19 167 168)
+        (selected-color-alpha 255)
+        (other-color 255 255 255)
+        (other-color-alpha 180)
+        (distance-fade-multiplier 40)
+        (distance-fade 1)))
+  ; **Optional** This is body color of above menu red | blue | green | alpha
+  (position-body 0 0 0 128)
+  ; **Optional** This is border color of above menu red | blue | green | alpha
+  (position-border 200 200 200 255)
+  ; **Optional** This is the fade speed of the appearing menus, default at 12
+  (fade-speed 12)
+  ; **Optional** for the toplevel menu "main"
+  ; If there is no bitmap specified then the clear-color will be used instead
+  ; Note that if the top level menu has a bitmap then subsequent menus will utilize that if there is none declared in the menu.
+  ;(background menu/paintown.png)
+  ; **Optional** Clear color for the background in case there is no background defined defaults to black (0,0,0)
+  (clear-color 0 0 0)
+  ; **Optional** The option info text placement defaults to 0 -0.5
+  ; location centered on the x and y coordinate
+  (info-position 0, -.5)
+  ; ** Optional** menu info text
+  (menuinfo "Main Menu")
+  ; **optional** The menu info text placement if menu info text is set defaults to 0 .95
+  ; location centered on the x and y coordinate
+  (menuinfo-position 0, .95)
+  ; **Optional** to use music
+  (music music/aqua.s3m)
+  ; **Optional** to use a sound for menu item selection
+  (select-sound menu/sounds/menu-select.wav)
+  (back-sound menu/sounds/menu-back.wav)
+  (ok-sound menu/sounds/menu-ok.wav)
+  ; **Optional** Set default gamespeed
+  (action (fixedspeed 1.0))
+  ; **Optional** Font name and size (default /fonts/arial.ttf 24 24) 
+  ; (font "fonts/arial.ttf" 24 24)
+  (font "fonts/Neuropol.ttf" 24 24)
+
+  ;; list of languages this menu can use. add as many more as you want
+  (languages "English" "Deutsch" "Русский" "Português" "Français" "Español")
+
+  ; Main options which are basically optional
+  (option (menu menu/arcade.txt) (info (language "English" "Arcade")))
+  (option
+    (change-mod
+      (name
+        (language "English" "Change mod")
+        (language "Deutsch" "Mod wechseln")
+        (language "Русский" "Внешний вид")
+        (language "Portuguese" "Mudar Mod")
+        (language "Français" "Changer de Mod")
+        (language "Español" "Cambia mod")
+        (language "日本語" "アドオンチェンジ")
+    )
+      (info
+        (language "English" "Switch to a different game mod")
+        (language "Русский" "Изменить внешний вид игры")
+        (language "Deutsch" "Zu einem anderen Mod umschalten")
+        (language "Portuguese" "Escolha entre diferentes Mods")
+        (language "Français" "Switcher entre différents Mods")
+        (language "Español" "Cambia a differente mod")
+        (language "日本語" "アドオンチェンジ"))))
+  (option
+    (network-host
+      (name
+        (language "English" "Network - Host")
+        (language "Portuguese" "Hospedar na internet")
+        (language "Français" "Réseaux - Hôte"))
+      (info
+        (language "English" "Host a game that can be\nplayed over the internet")
+        (language "Portuguese" "Hospede um jogo para \nser jogado na internet")
+        (language "Français" "Etre l' hôte pour une partie réseaux"))))
+  (option
+    (network-join
+      (name
+        (language "English" "Network - Join")
+        (language "Русский" "Сеть - присоединится")
+        (language "Français" "Connexion")
+        (language "Portuguese" "Jogar on-line")
+        (language "Deutsch" "Netzwerkspiel beitreten")
+        (language "Español" "Network - Join"))
+      (info
+        (language "English" "Join a game over the internet")
+        (language "Русский" "Присоединится к игре через интернет")
+        (language "Deutsch" "Einem Netzwerkspiel übers Internet beitreten")
+        (language "Portuguese" "Jogue na internet com outras pessoas")
+        (language "Français" "Rejoindre une partie sur internet")
+        (language "Español" "Join a game over the internet"))))
+  
+  ; And submenu can also be created via another file
+  (option (menu menu/options.txt))
+  (option
+    (credits
+      (name
+        (language "English" Credits)
+        (language "Русский" "Разработчики")
+        (language "Deutsch" "Credits")
+        (language "Portuguese" "Créditos")
+        (language "Français" "Crédits")
+        (language "Español" Creditos))
+      (info
+        (language "English" "See who did what on Paintown")
+        (language "Русский" "Посмотреть список разработчиков Paintown")
+        (language "Deutsch" "Anzeigen, wer wie zu Paintown beigetragen hat")
+        (language "Portuguese" "Veja quem fez \no Paintown!")
+        (language "Français" "Développeurs de Paintown")
+        (language "Español" "Ve quien lo hacieron que en Paintown"))
+      ; Starfield
+      (anim
+        (depth foreground top)
+        (image 0 "menu/bgs/stars/top.png")
+        (velocity -.0009 0)
+        (frame
+          (image 0)
+          (time -1)))
+      (anim
+        (depth background top)
+        (image 0 "menu/bgs/stars/middle.png")
+        (velocity -.0007 0)
+        (frame
+          (image 0)
+          (time -1)
+          (alpha 168)))
+      (anim
+        (depth background bottom)
+        (image 0 "menu/bgs/stars/bottom.png")
+        (velocity -.0004 0)
+        (frame
+          (image 0)
+          (time -1)
+          (alpha 90)))
+      ; set music
+      (music music/kilimanz.mod)
+      ; Optional else you'll have a black background
+      ;(background menu/paintown.png)
+      ; Optional to set colors of fonts
+      ; This is the first word
+      (titlecolor 0 255 255)
+      ; This is the rest of the text
+      (color 255 255 255)
+      ; Clear color for background
+      (clear-color 0 0 0)
+      ; This adds additional credits to the static ones included with the game
+      (sequence
+        ; roll | primary
+        (type roll)
+        (speed -0.7)
+        (start-y 480)
+        (end-y 0)
+        (start-x 100)
+        ; Alpha
+        (alpha-modifier 20)
+        ; left : center : right
+        (justification left)
+        ; Music
+        (block
+          ; Extra Spacing to put in between this block and the next
+          (spacing 200)
+          (title "Music")
+          (credit "aqua.s3m - Purple Motion")
+          (credit "c_heaven.xm - One Man Project")
+          (credit "elw-sick.xm - elwood")
+          (credit "experience.xm - elwood")
+          (credit "fall.xm - elwood")
+          (credit "kajahtaa.xm - cube")
+          (credit "kilimanz.mod - ???")
+          (credit "SM_TechTown.it - SaMPLeMaSTeR"))
+        ; Additional thanks
+        (block
+          (title "Additional thanks")
+          (credit "Aurora.ogg by Lavontae Lewis")
+          (credit "Techtopia.ogg by Lavontae Lewis")
+          (credit "Paintown logo by Mark Oates")
+          (credit "Elecbyte")
+          (credit "Senile Team")))))
+      
+  ; Added a test menu, that gets ommited
+  ; (option (menu (name Test)(info Test)(position 120 200 400 130)(position-body 0 0 0 192)(position-border 200 200 200 255)))
+  
+  ; This is a M.U.G.E.N. Menu currently in testing
+  (option 
+    (mugen 
+     (name "M.U.G.E.N. mode")
+     (info "M.U.G.E.N. Menu")))
+
+  (option
+    (quit
+      (name
+        (language "English" "Quit")
+        (language "Русский" "Выход")
+        (language "Portuguese" "Sair")
+        (language "Deutsch" "Beenden")
+        (language "Français" "Quitter")
+        (language "Español" "Salir"))
+      (info
+        (language "English" "Exit the game")
+        (language "Русский" "Закрыть игру")
+        (language "Français" "Quitter le jeu")
+        (language "Portuguese" "Sair do Paintown")
+        (language "Deutsch" "Beendet das Spiel")
+        (language "Español" "Terminar el juego"))))
+  
+  ; Platformer Testing
+  ;@
+  (option 
+    (platformer 
+     (name "Platformer Mode")
+     (info "Platformer Game")
+     (game "data/platformer/test.txt")))
+  
+  ; Two Example animations for use in menus
+  ; Animations can be used in options as well but they require to be name "option-anim" instead of "anim", they will be updated and ran only when the option is selected
+  ; to get a better understanding of the useage of the animation, look at menu_animation.cpp about info
+  ;
+  ; scroll main menu background in foreground with alpha
+  (anim
+    (depth background bottom)
+    (image 0 "menu/paintown.png")
+    (velocity -.001 0)
+    (frame
+      (image 0)
+      (time -1)))
+  ;@
+  (anim (location 1) (image 0 "menu/paintown.png") (window 0 0 0 -300) (velocity -.5 0) (frame (image 0) (alpha 25) (time -1)))
+  )

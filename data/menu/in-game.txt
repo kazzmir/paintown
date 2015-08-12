@@ -1,0 +1,69 @@
+; encoded with UTF-8
+(menu
+  (version 3 3 1)
+  ; Using the space api
+  (space absolute-space 0 0 640 480)
+  (space relative-space -1 -1 1 1)
+  (name "in-game")
+  ;(coordinate (absolute 100 200 450 150) (z 0))
+  (coordinate (relative -.5 -.20 .5 .22))
+  (transforms (radius 15))
+  (position-body 0 0 0 128)
+  (position-border 200 200 200 255)
+  (fade-speed 12)
+  (clear-color 0 0 0)
+  (info-position 0, -.4)
+  (menuinfo "Game Menu")
+  (menuinfo-position 0 .75)
+  ; (music music/aqua.s3m)
+  (select-sound menu/sounds/menu-select.wav)
+  (back-sound menu/sounds/menu-back.wav)
+  (ok-sound menu/sounds/menu-ok.wav)
+  (action (fixedspeed 1.0))
+  ; (font "fonts/arial.ttf" 24 24)
+  (font "fonts/Neuropol.ttf" 24 24)
+  ; Menu settings
+  (display-list
+    (type normal)
+    (wrap 1)
+    (items
+      (interpolate-selected 1) 
+      (color-low 19 167 168) 
+      (color-high 27 237 239)
+      (interpolate-distance 50)
+      (selected-color 19 167 168)
+      (selected-color-alpha 255)
+      (other-color 255 255 255)
+      (other-color-alpha 180)
+      (distance-fade-multiplier 40)
+      (distance-fade 0)))
+  ; And submenu can also be created via another file
+  (option
+    (continue
+      (name
+        (language "Portuguese" "Continuar")
+        (language "English" "Continue"))
+      (info
+        (language "Portuguese" "Continuar Jogando")
+        (language "English" "Continue game"))))
+  (option
+    (move-list
+      (name
+       (language "Portuguese" "Lista de movimentos")
+        (language "English" "Move List"))
+      (info
+       (language "Portuguese" "Mostrar lista de golpes")
+        (language "English" "Show moves"))))
+  (option 
+    (menu menu/options.txt)
+    (info (language "English" "Options Menu"))
+  )
+  (option
+    (return
+      (name
+        (language "Portuguese" "Sair")
+        (language "English" "Exit"))
+      (info
+        (language "Portuguese" "Retorna ao menu principal")
+        (language "English" "Return to the main menu"))))
+  )

@@ -1,0 +1,67 @@
+(menu
+  (version 3 3 1)
+  (name "Arcade")
+  ;@
+  (name 
+   (language "English" "Arcade")
+   (language "日本語" "アーケード"))
+  (info 
+   (language "English" "Play through an adventure"))
+  (select-sound menu/sounds/menu-select.wav)
+  (back-sound menu/sounds/menu-back.wav)
+  (ok-sound menu/sounds/menu-ok.wav)
+  (display-list (type normal))
+  ;(coordinate (absolute 100 200 450 250) (z 0))
+  (coordinate (relative -.6 -.05 .6 .30) (z 0))
+  (transforms (radius 15))
+  (position-body 0 0 0 128)
+  (position-border 200 200 200 255)
+  (option
+    (adventure
+      ; ** Each option is required to have a name!
+      (name
+        (language "English" "Single Player")
+        (language "Русский" "Режим Приключение")
+        (language "Español" "Modo Aventura")
+        (language "Portuguese" "Modo Aventura")
+        (language "Français" "Mode Aventure") 
+        (language "Deutsch" "Abenteuer-Modus")
+        (language "日本語" "アドベンチャー"))
+      ; ** Optional** This is a popup with information regarding the selected item
+      ; Place text
+      ; location is optional which is centered on the x and y coordinate and overwrites info-position in the main menu
+      (info
+        (language "English" "Play through an adventure yourself")
+        (language "Русский" "Играть в режиме Приключение в одиночку")
+        (language "Español" "Juega a través de una aventura solo")
+        (language "Portuguese" "Aventura solo")
+        (language "Français" "Jeu Solo")
+        (language "Deutsch" "Ein Abenteuer alleine spielen")
+        (language "日本語" "一人でプレーをします")
+        )))
+  (option
+    (adventure-local
+      (name
+        (language "English" "Multiplayer")
+        (language "日本語" "マルチプレイ"))
+      (info
+        (language "English" "Play with friends")
+        (language "日本語" "友だちとプレーをします"))))
+  (option
+    (adventure-cpu
+      (name
+        (language "English" "Single and AI")
+        (language "Русский" "Играть в Режиме Приключение с компьютером")
+        (language "Deutsch" "Abenteuer-Modus mit dem Computer")
+        (language "Portuguese" "Modo aventura com computador")
+        (language "Español" "El modo Aventura con la computadora")
+        (language "Français" "Aventure avec le CPU"))
+      (info
+        (language "English" "Play through an adventure with\nthe computers help")
+        (language "Русский" "Играть в режиме Приключение в команде с компьютером")
+        (language "Deutsch" "Ein Abenteuer mit Hilfe\ndes Computers spielen")
+        (language "Français" "Jouer à l' aventure avec le CPU/aide")
+        (language "Portuguese" "Joga o modo aventura com \no computador ajudando")
+        (language "Español" "Juega a través de una aventura\ncon la ayuda de la computadora")
+        )))
+        )

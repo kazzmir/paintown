@@ -1,0 +1,322 @@
+(menu
+  (version 3 3 1)
+  (name "Options")
+  (info "Change various game options")
+  (select-sound menu/sounds/menu-select.wav)
+  (back-sound menu/sounds/menu-back.wav)
+  (ok-sound menu/sounds/menu-ok.wav)
+  (coordinate (absolute 100 200 450 250) (z 0))
+  (transforms (radius 15))
+  (position-body 0 0 0 128)
+  (position-border 200 200 200 255)
+  (display-list
+    ; **Optional** Scroll type defaults to scroll
+    ; scroll = scroll type
+    ; normal = normal
+    (type scroll)
+    ; **Optional** Scroll wrap defauts to true
+    ; 0 - false
+    ; 1 - true
+    (wrap 1)
+    ; **Optional** Set values for menu scroll items
+    ; interpolate-selected will interpolate the current option between color-low and color-high: 0 | 1 (defaults to 1)
+    ; color-low for the lower spectrum of the interpolated colors: red green blue (defaults to 19 167 168)
+    ; color-high for the high spectrum of the interpolate colors: red green blue (defaults to 27 237 239)
+    ; interpolate-distance for the interpolation distance: NUM (defaults to 50)
+    ; selected-color is the color of the current option if interpolation is disabled: red green blue (defaults to 19 167 168)
+    ; selected-color-alpha is the alpha of the selected-color: NUM (defaults to 255)
+    ; other-color is the color of other options: red green blue (defaults to 255 255 255)
+    ; other-color-alpha is the alpha of the other options: NUM (defaults to 255)
+    ; distance-fade-multiplier multiplies the fade amount for the distance of non selected items: NUM (defaults to 35)
+    ; distance-fade will make the options fade as the distance becomes greater from the selected option : 0 | 1 (defaults to 1)
+    (items
+        (interpolate-selected 1) 
+        (color-low 19 167 168) 
+        (color-high 27 237 239)
+        (interpolate-distance 50)
+        (selected-color 19 167 168)
+        (selected-color-alpha 255)
+        (other-color 255 255 255)
+        (other-color-alpha 180)
+        (distance-fade-multiplier 40)
+        (distance-fade 1)))
+  ;(anim (location 0) (image 0 "menu/paintown.png") (velocity -.001 0) (frame (image 0) (time -1)))
+  ; User settable invincibility
+  (option
+    (invincible
+      (name
+        (language "English" "Invincibility")
+        (language "Русский" "Бессмертие")
+        (language "Portuguese" "Ivencibilidade")
+        (language "Deutsch" "Unverwundbarkeit")
+        (language "Español" "Invisibilidad"))
+      (info
+        (language "English" "Players will be invincible for the entire game")
+        (language "Русский" "Игроки бессмертны в во время игры")
+        (language "Portuguese" "Jogadores terão invecibilidade\ndurante o jogo inteiro.")
+        (language "Deutsch" "Spieler werden das ganze Spiel über nicht verwundet")
+        (language "Español" "Jugadoras tienen invisibilidad durante el juego entero"))))
+  ; User settable speed
+  (option
+    (speed
+      (name
+        (language "English" "Default speed")
+        (language "Русский" "Скорость по умолчанию")
+        (language "Portuguese" "Velocidade Padrão")
+        (language "Deutsch" "Standardgeschwindigkeit")
+        (language "Español" "Default speed"))
+      (info
+        (language "English" "Set the relative speed of the game")
+        (language "Русский" "Установить относительную скорость игры")
+        (language "Portuguese" "Ajuste a velocidade do jogo")
+        (language "Deutsch" "Steuert die relative Geschwindigkeit des Spiels")
+        (language "Español" "Set the relative speed of the game"))))
+  (option
+    (play-mode
+      (name
+        (language "English" "Play mode")
+        (language "Русский" "Настроить режим игры")
+        (language "Portuguese" "Tipo de jogo")
+        (language "Deutsch" "Spielmodus")
+        (language "Español" "Moda de juega"))
+      (info
+        (language "English" "Free for all mode lets you attack other players.\nIn cooperative you cannot")
+        (language "Русский" "Свободный режим игры разрешает вам атаковать других игроков. В командной игре это запрещено.")
+        (language "Portuguese" "No modo livre permite atacar os aliados.\nNo modo cooperativo não")
+        (language "Deutsch" "Im unbeschränkten Modus können andere\nMitspieler angegriffen werden.\nIm Kooperationsmodus ist dies nicht möglich")
+        (language "Español" "Free for all mode lets you attack other players.\nIn cooperative you cannot"))))
+
+  (option
+    (choose-language
+      (name
+        (language "Portuguese" "Mudar de idioma")
+        (language "English" "Change language"))
+      (info
+        (language "Portuguese" "Mude a linguagem do menu")
+        (language "English" "Choose the language for the menu"))))
+
+  (option
+    (screen-size
+      (name
+        (language "English" "Screen size")
+        (language "Portuguese" "Resolução da tela")
+        (language "Deutsch" "Darstellungsgröße")
+        (language "Русский" "Размер экрана")
+        (language "Español" "Resolucion de pantalla"))
+      (info
+        (language "English" "Set the size of the screen")
+        (language "Русский" "Установить размер экрана")
+        (language "Portuguese" "Escolha o tamanho da tela")
+        (language "Deutsch" "Bestimmt die Bildschirmauflösung")
+        (language "Español" "Cambia el resolucion de la pantalla"))))
+  (option
+    (quality-filter
+      (name
+        (language "English" "Quality Filter"))
+      (info
+        (language "English" "Use a high quality filter"))))
+  (option
+    (fps
+      (name
+        (language "English" "Frames per second"))
+      (info
+        (language "English" "Adjust the frames per second"))))
+  ; User settable fullscreen
+  (option
+    (fullscreen
+      (name
+        (language "English" "Fullscreen")
+        (language "Deutsch" "Vollbild")
+        (language "Portuguese" "Tela cheia")
+        (language "Русский" "Полноэкранный режим")
+        (language "Español" "Pantalla completa"))
+      (info
+        (language "English" "Make the game windowed or fullscreen")
+        (langauge "Русский" "Переключится между оконным или полноэкранным режимом")
+        (language "Portuguese" "Deixa o jogo em modo Janela \nou em tela cheia")
+        (language "Deutsch" "Schaltet zwischen Fenster- und Vollbildmodus um")
+        (language "Español" "Cambia juego a usar la pantalla completa"))))
+  (option
+    (sound
+      (name
+        (language "English" "Sound")
+        (language "Русский" "Звук")
+        (language "Portuguese" "Som")
+        (language "Deutsch" "Geräusche"))
+      (info
+        (language "English" "Adjust sound volume")
+        (language "Portuguese" "Ajusta o volume das vozes\ne dos efeitos sonoros")
+        (language "Русский" "Изменить громкость")
+        (language "Deutsch" "Die Lautstärke von Geräusch-Effekten anpassen"))))
+  (option
+    (music
+      (name
+        (language "English" "Music")
+        (language "Русский" "Музыка")
+        (language "Portuguese" "Música")
+        (language "Deutsch" "Musik"))
+      (info
+        (language "English" "Adjust music volume")
+        (language "Portuguese" "Ajusta o volume da trilha sonora")
+        (language "Русский" "Изменить громкость музыки")
+        (language "Deutsch" "Die Lautstärke der Musik anpassen"))))
+  ; User settable lives
+  (option
+    (lives
+      (name
+        (language "English" "Lives")
+        (language "Deutsch" "Leben")
+        (language "Portuguese" "Vidas")
+        (language "Русский" "Жизни")
+        (language "Español" "Vidas"))
+      (info
+        (language "English" "Set the starting number of\nlives in adventure mode")
+        (language "Portuguese" "Escolher o número de vidas\nque deseja iniciar no modo aventura")
+        (language "Русский" "Установить количество жизней в режиме Приключение")
+        (language "Deutsch" "Bestimmt die bei Spielbeginn vorhandene Anzahl an Leben im Abenteuer-Modus")
+        (language "Español" "Set the starting number of\nlives in adventure mode"))))
+  (option
+    (gibs
+      (name
+        (language "English" "Gib amount"))
+      (info
+        (language "English" "Amount of blood when an enemy explodes"))))
+  (option
+    (npc
+      (name
+        (language "English" "NPC Buddies")
+        (language "Русский" "Компьютерные игроки")
+        (language "Portuguese" "Aliados")
+        (language "Deutsch" "KI-Mitspieler")
+        (language "Español" "NPC Buddies"))
+      (info
+        (language "English" "Set the number of computer\nplayers in adventure mode")
+        (language "Русский" "Установить количество компьютерных игроков в команде для режима Приключение")
+        (language "Portuguese" "Número de aliados controlados pelo\ncomputador no modo aventura")
+        (language "Deutsch" "Steuert die Anzahl der KI-Spieler im Abenteuer-Modus")
+        (language "Español" "Set the number of computer\nplayers in adventure mode"))))
+  (option
+    (joystick
+      (name (language "English" "Joystick Configuration"))
+      (info (language "English" "Configure any joysticks"))))
+  ; Adds a tabbed menu
+  (option
+    (menu
+      (version 3 3 1)
+      (name "Keyboard Configuration")
+      (type "tabbed")
+      (info "Configure keyboard input")
+      (position 100 200 450 250)
+      (position-body 0 0 0 128)
+      (position-border 200 200 200 255)
+      (transforms (radius 15))
+      ; tab data
+      (tab-body 15 15 15 120)
+      (tab-border 120 120 120 120)
+      (selectedtab-body 100 100 100 200)
+      (selectedtab-border 200 200 200 200)
+      (runningtab-body 155 155 155 255)
+      (runningtab-border 255 255 255 255)
+      (font-color 150 150 150)
+      (selectedfont-color 0 255 255)
+      (runningfont-color 255 255 0)
+      (menuinfo "Left / Right to change tabs. Enter to select.")
+      (runninginfo "Press ESC to return to tabs")
+      (menuinfo-position 0 0.95)
+      (menu
+        (version 3 3 1)
+        (name "Player1 Keys")
+        (select-sound menu/sounds/menu-select.wav)
+        (back-sound menu/sounds/menu-back.wav)
+        (ok-sound menu/sounds/menu-ok.wav)
+        (info "Change the keys for player 1")
+        (position 120 200 400 250)
+        (position-body 0 0 0 192)
+        (position-border 200 200 200 255)
+        (menuinfo "Press ESC to return to Tab Menu")
+        (menuinfo-position 0 0.95)
+        ;(anim (location 0) (image 0 "menu/paintown.png") (velocity -.001 0) (frame (image 0) (time -1)))
+        ; Keys are for reconfiguring, not for setting menu keys :P
+        ; params: 1st = key, 2nd = Menu text
+        (option (key (name "UP Button") (player 0) (type up)))
+        (option (key (name "Down Button") (player 0) (type down)))
+        (option (key (name "Left Button") (player 0) (type left)))
+        (option (key (name "Right Button") (player 0) (type right)))
+        (option (key (name "Jump Button") (player 0) (type jump)))
+        (option (key (name "Attack1 Button") (player 0) (type attack1)))
+        (option (key (name "Attack2 Button") (player 0) (type attack2)))
+        (option (key (name "Attack3 Button") (player 0) (type attack3)))
+        (option (key (name "Attack4 Button") (player 0) (type attack4)))
+        (option (key (name "Attack5 Button") (player 0) (type attack5)))
+        (option (key (name "Attack6 Button") (player 0) (type attack6))))
+      (menu
+        (name "Player2 Keys")
+        (version 3 3 1)
+        (select-sound menu/sounds/menu-select.wav)
+        (back-sound menu/sounds/menu-back.wav)
+        (ok-sound menu/sounds/menu-ok.wav)
+        (info "Change the keys for player 2")
+        (position 120 200 400 250)
+        (position-body 0 0 0 192)
+        (position-border 200 200 200 255)
+        (menuinfo "Press ESC to return to Tab Menu")
+        (menuinfo-position 0 0.95)
+        ;(anim (location 0) (image 0 "menu/paintown.png") (velocity -.001 0) (frame (image 0) (time -1)))
+        ; Keys are for reconfiguring, not for setting menu keys :P
+        ; params: 1st = key, 2nd = Menu text
+        (option (key (name "UP Button") (player 1) (type up)))
+        (option (key (name "Down Button") (player 1) (type down)))
+        (option (key (name "Left Button") (player 1) (type left)))
+        (option (key (name "Right Button") (player 1) (type right)))
+        (option (key (name "Jump Button") (player 1) (type jump)))
+        (option (key (name "Attack1 Button") (player 1) (type attack1)))
+        (option (key (name "Attack2 Button") (player 1) (type attack2)))
+        (option (key (name "Attack3 Button") (player 1) (type attack3)))
+        (option (key (name "Attack4 Button") (player 1) (type attack4)))
+        (option (key (name "Attack5 Button") (player 1) (type attack5)))
+        (option (key (name "Attack6 Button") (player 1) (type attack6))))
+      ;@
+      (menu
+        (name "Player1 Joystick")
+        (version 3 3 1)
+        (select-sound menu/sounds/menu-select.wav)
+        (back-sound menu/sounds/menu-back.wav)
+        (ok-sound menu/sounds/menu-ok.wav)
+        (info "Change the joystick for player 1")
+        (position 120 200 400 250)
+        (position-body 0 0 0 192)
+        (position-border 200 200 200 255)
+        (menuinfo "Press ESC to return to Tab Menu")
+        (menuinfo-position 0 0.95)
+        ;(anim (location 0) (image 0 "menu/paintown.png") (velocity -.001 0) (frame (image 0) (time -1)))
+
+        ; Keys are for reconfiguring, not for setting menu keys :P
+        ; params: 1st = key, 2nd = Menu text
+        (option (joystick (name "UP Button") (player 0) (type up)))
+        (option (joystick (name "Down Button") (player 0) (type down)))
+        (option (joystick (name "Left Button") (player 0) (type left)))
+        (option (joystick (name "Right Button") (player 0) (type right)))
+        (option (joystick (name "Jump Button") (player 0) (type jump)))
+        (option (joystick (name "Attack1 Button") (player 0) (type attack1)))
+        (option (joystick (name "Attack2 Button") (player 0) (type attack2)))
+        (option (joystick (name "Attack3 Button") (player 0) (type attack3)))
+        (option (joystick (name "Attack4 Button") (player 0) (type attack4)))
+        (option (joystick (name "Attack5 Button") (player 0) (type attack5)))
+        (option (joystick (name "Attack6 Button") (player 0) (type attack6))))))
+  (option 
+    (menu 
+      (name "Adjust Font") 
+      (version 3 3 1)
+      ;; TODO: shouldn't these things come from the parent context?
+      (select-sound menu/sounds/menu-select.wav)
+      (back-sound menu/sounds/menu-back.wav)
+      (ok-sound menu/sounds/menu-ok.wav)
+      (info "Change the menu fonts")
+      (position 20 200 600 80)
+      (position-body 0 0 0 192) 
+      (position-border 200 200 200 255)
+      ;(anim (location 0) (image 0 "menu/paintown.png") (velocity -.001 0) (frame (image 0) (time -1)))
+      ; To adjust the font options
+      (option (font-select (adjust "name")))
+      (option (font-select (adjust "width")))
+      (option (font-select (adjust "height"))))))
