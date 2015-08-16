@@ -98,7 +98,7 @@ def checkAllegro5(debug):
 #else
 #error fail
 #endif
-int main(){
+int main(int argc, char ** argv){
 }
 """, ".cpp")
             if ok == 0:
