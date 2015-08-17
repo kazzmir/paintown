@@ -1,6 +1,5 @@
 package org.paintown;
 
-/*
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,6 +42,21 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileOutputStream;
+
+import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.ProgressBar;
+
+import android.content.res.AssetFileDescriptor;
+import java.util.zip.*;
+import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.InputStream;
 
 /*
 import java.nio.ByteBuffer;
@@ -91,5 +105,150 @@ public class PaintownActivity extends AllegroActivity {
 
    public PaintownActivity(){
        super("libpaintown.so");
+   }
+
+   public static String getDataDirectory(){
+	   return Environment.getExternalStorageDirectory().getAbsolutePath() + "/paintown";
+   }
+
+   /* copy the data bundled in assets to the external data directory */
+   private void setupData(final Context context){
+	   Log.v("Paintown", "Set up data");
+	   final File root = new File(getDataDirectory());
+	   File data = new File(root, "data");
+	   Log.v("Paintown", "Data " + data.getPath() + " exists?" + data.exists());
+	   if (data.exists()){
+		   return;
+	   }
+
+	   /* horizontal progress bar */
+	   final ProgressBar progress = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
+
+	   /* we are in a background thread so to get the bar to show up we
+		* need to run it on the main UI thread
+		*/
+	   runOnUiThread(new Runnable(){
+		   public void run(){
+			   setContentView(loadingView(context, progress));
+		   }
+	   });
+
+	   Log.v("Paintown", "Data directory doesn't exist, creating it: " + getDataDirectory());
+	   if (!root.mkdirs()){
+		   Log.v("Paintown", "Unable to make data directory");
+		   return;
+	   }
+
+	   /* Whats the point of creating the user directory? */
+	   File user = new File(root, "user");
+	   if (!user.exists()){
+		   user.mkdirs();
+	   }
+
+	   unzip(root, "data.zip", context, progress);
+   }
+
+   @Override
+   public void onCreate(final Bundle savedInstanceState) {
+	   super.onCreate(savedInstanceState);
+
+	   setContentView(welcomeView(getApplication()));
+
+	   new Thread(){
+		   public void run(){
+			   setupData(getApplication());
+		   }
+	   }.start();
+   }
+
+   private View welcomeView(Context context){
+	   RelativeLayout layout = new RelativeLayout(context);
+	   RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(
+			   RelativeLayout.LayoutParams.WRAP_CONTENT,
+			   RelativeLayout.LayoutParams.WRAP_CONTENT);
+	   textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+	   TextView text = new TextView(context);
+	   text.setId(800);
+	   text.setText("Starting Paintown..");
+	   layout.addView(text, textParams);
+	   return layout;
+   }
+
+   private View loadingView(Context context, ProgressBar progress){
+	   RelativeLayout layout = new RelativeLayout(context);
+	   RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(
+			   RelativeLayout.LayoutParams.WRAP_CONTENT,
+			   RelativeLayout.LayoutParams.WRAP_CONTENT);
+	   textParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+	   TextView text = new TextView(context);
+	   text.setId(800);
+	   text.setText("Installing Paintown data to " + getDataDirectory() + "/data");
+	   layout.addView(text, textParams);
+
+	   RelativeLayout.LayoutParams progressParams = new RelativeLayout.LayoutParams(
+			   RelativeLayout.LayoutParams.WRAP_CONTENT,
+			   RelativeLayout.LayoutParams.WRAP_CONTENT);
+	   progressParams.addRule(RelativeLayout.BELOW, text.getId());
+	   progressParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+	   layout.addView(progress, progressParams);
+	   return layout;
+   }
+
+   /* get the size of the entire zip file */
+   private long zipSize(AssetManager assets, String file) throws IOException {
+	   AssetFileDescriptor descriptor = assets.openFd(file);
+	   long size = descriptor.getLength();
+	   descriptor.close();
+	   return size;
+   }
+
+   /* unzips a file from assets into the given root directory */
+   private void unzip(File root, String file, Context context, final ProgressBar progress){
+	   Log.v("Paintown", "Writing data to " + root.getAbsolutePath());
+	   try{
+		   AssetManager assets = context.getResources().getAssets();
+		   progress.setMax((int) zipSize(assets, file));
+		   ZipInputStream zip = new ZipInputStream(assets.open(file));
+
+		   ZipEntry entry = zip.getNextEntry();
+		   long count = 0;
+		   while (entry != null){
+			   String filename = entry.getName();
+			   if (entry.isDirectory()){
+				   File directory = new File(root, filename);
+				   directory.mkdirs();
+			   } else {
+				   writeFile(new File(root, filename), entry.getSize(), zip);
+			   }
+
+			   count += entry.getSize();
+
+			   entry = zip.getNextEntry();
+			   final long xcount = count;
+
+			   /* update the progress bar */
+			   runOnUiThread(new Runnable(){
+				   public void run(){
+					   progress.setProgress((int) xcount);
+				   }
+			   });
+		   }
+		   zip.close();
+	   } catch (IOException fail){
+		   Log.v("Paintown", fail.toString());
+	   }
+	   Log.v("Paintown", "Wrote data");
+   }
+
+   private void writeFile(File what, long size, ZipInputStream stream) throws IOException {
+	   byte[] buffer = new byte[1024];
+	   int count;
+	   BufferedOutputStream output = new BufferedOutputStream(new FileOutputStream(what));
+	   while ((count = stream.read(buffer, 0, buffer.length)) != -1){
+		   output.write(buffer, 0, count);
+	   }
+	   output.close();
    }
 }
