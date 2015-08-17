@@ -213,6 +213,11 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Joystick::Left, delay, false, Mugen::Left);
     input.set(Joystick::Right, delay, false, Mugen::Right);
     input.set(Joystick::Down, delay, false, Mugen::Down);
+    
+    input.set(DeviceInput::Touch::Up, delay, false, Mugen::Up);
+    input.set(DeviceInput::Touch::Left, delay, false, Mugen::Left);
+    input.set(DeviceInput::Touch::Right, delay, false, Mugen::Right);
+    input.set(DeviceInput::Touch::Down, delay, false, Mugen::Down);
 
     input.set(Joystick::Button1, delay, false, Mugen::A);
     input.set(Joystick::Button2, delay, false, Mugen::B);
@@ -220,6 +225,13 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
     input.set(Joystick::Button4, delay, false, Mugen::X);
     input.set(Joystick::Button5, delay, false, Mugen::Y);
     input.set(Joystick::Button6, delay, false, Mugen::Z);
+
+    input.set(DeviceInput::Touch::Button1, delay, false, Mugen::A);
+    input.set(DeviceInput::Touch::Button2, delay, false, Mugen::B);
+    input.set(DeviceInput::Touch::Button3, delay, false, Mugen::C);
+    input.set(DeviceInput::Touch::Button4, delay, false, Mugen::X);
+    input.set(DeviceInput::Touch::Button5, delay, false, Mugen::Y);
+    input.set(DeviceInput::Touch::Button6, delay, false, Mugen::Z);
 
     input.set(Configuration::getAttack1(0), Mugen::A);
     input.set(Configuration::getAttack2(0), Mugen::B);
@@ -234,6 +246,9 @@ inline static InputMap<Mugen::Keys> getPlayer1Keys(int delay = 0){
 
     input.set(Joystick::Quit, 0, true, Mugen::Esc);
     input.set(Joystick::Start, 0, true, Mugen::Start);
+    
+    input.set(DeviceInput::Touch::Quit, 0, true, Mugen::Esc);
+    input.set(DeviceInput::Touch::Start, 0, true, Mugen::Start);
     
     return input;
 }
@@ -253,6 +268,12 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Joystick::Left, delay, false, Mugen::Right);
     input.set(Joystick::Down, delay, false, Mugen::Down);
 
+    input.set(DeviceInput::Touch::Up, delay, false, Mugen::Up);
+    /* Right and left are swapped when the player is facing left */
+    input.set(DeviceInput::Touch::Right, delay, false, Mugen::Left);
+    input.set(DeviceInput::Touch::Left, delay, false, Mugen::Right);
+    input.set(DeviceInput::Touch::Down, delay, false, Mugen::Down);
+
     input.set(Configuration::getAttack1(0), delay, false, Mugen::A);
     input.set(Configuration::getAttack2(0), delay, false, Mugen::B);
     input.set(Configuration::getAttack3(0), delay, false, Mugen::C);
@@ -271,6 +292,15 @@ static InputMap<Mugen::Keys> getPlayer1InputLeft(){
     input.set(Joystick::Button4, delay, false, Mugen::X);
     input.set(Joystick::Button5, delay, false, Mugen::Y);
     input.set(Joystick::Button6, delay, false, Mugen::Z);
+
+    input.set(DeviceInput::Touch::Quit, 0, true, Mugen::Esc);
+    input.set(DeviceInput::Touch::Start, 0, true, Mugen::Start);
+    input.set(DeviceInput::Touch::Button1, delay, false, Mugen::A);
+    input.set(DeviceInput::Touch::Button2, delay, false, Mugen::B);
+    input.set(DeviceInput::Touch::Button3, delay, false, Mugen::C);
+    input.set(DeviceInput::Touch::Button4, delay, false, Mugen::X);
+    input.set(DeviceInput::Touch::Button5, delay, false, Mugen::Y);
+    input.set(DeviceInput::Touch::Button6, delay, false, Mugen::Z);
 
     return input;
 }
