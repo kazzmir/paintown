@@ -687,6 +687,75 @@ static void sortArguments(vector<Util::ReferenceCount<Argument::Parameter> > & a
     sort(arguments.begin(), arguments.end(), argumentSorter);
 }
 
+static void setUpTouch(const Util::ReferenceCount<DeviceInput::Touch> & touch){
+    int screenWidth = Graphics::Bitmap::getScreenWidth();
+    int screenHeight = Graphics::Bitmap::getScreenHeight();
+    int buttonSize = (int) (0.06 * sqrt(screenWidth * screenWidth + screenHeight * screenHeight));
+
+    /* dpad
+     *
+     *  X
+     * X X
+     *  X
+     */
+    int center_x = buttonSize + buttonSize / 2;
+    int center_y = screenHeight - buttonSize - buttonSize / 2;
+
+    int x, y;
+
+    x = center_x;
+    y = center_y - buttonSize;
+
+    touch->setZone(DeviceInput::Touch::Up, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+
+    x = center_x;
+    y = center_y + buttonSize;
+    touch->setZone(DeviceInput::Touch::Down, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+
+    x = center_x - buttonSize;
+    y = center_y;
+    touch->setZone(DeviceInput::Touch::Left, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+    
+    x = center_x + buttonSize;
+    y = center_y;
+    touch->setZone(DeviceInput::Touch::Right, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+
+    /* X X X
+     * X X X
+     */
+    int spacing = (int) (buttonSize * 0.1);
+    center_x = screenWidth - buttonSize * 2 - spacing;
+    center_y = screenHeight - buttonSize - buttonSize / 2;
+
+    x = center_x - buttonSize - buttonSize / 2;
+    y = center_y - buttonSize / 2 - spacing;
+    touch->setZone(DeviceInput::Touch::Button1, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+    
+    x = center_x;
+    y = center_y - buttonSize / 2 - spacing;
+    touch->setZone(DeviceInput::Touch::Button2, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+    
+    x = center_x + buttonSize + buttonSize / 2;
+    y = center_y - buttonSize / 2 - spacing;
+    touch->setZone(DeviceInput::Touch::Button3, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+
+    x = center_x - buttonSize - buttonSize / 2;
+    y = center_y + buttonSize / 2 + spacing;
+    touch->setZone(DeviceInput::Touch::Button4, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+    
+    x = center_x;
+    y = center_y + buttonSize / 2 + spacing;
+    touch->setZone(DeviceInput::Touch::Button5, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+    
+    x = center_x + buttonSize + buttonSize / 2;
+    y = center_y + buttonSize / 2 + spacing;
+    touch->setZone(DeviceInput::Touch::Button6, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+
+    x = screenWidth - buttonSize / 2 - spacing;
+    y = buttonSize;
+    touch->setZone(DeviceInput::Touch::Quit, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
+}
+
 /* 1. parse arguments
  * 2. initialize environment
  * 3. run main dispatcher
@@ -827,6 +896,8 @@ int rtech_main(int argc, char ** argv){
     
     InputManager input;
     Music music(music_on);
+
+    setUpTouch(input.getTouch());
 
     /* If there are no actions then start the Paintown menu */
     if (actions.size() == 0){
