@@ -1,0 +1,7 @@
+build
+paintown
+.scon*
+peg_*.py
+*.a
+*.pyc
+*.log
