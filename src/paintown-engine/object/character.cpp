@@ -66,11 +66,9 @@ string str_color(const Graphics::Color & color){
 static Util::ReferenceCount<Graphics::Shader> remapShader(){
 #ifdef USE_ALLEGRO5
     std::ostringstream vertex;
-    vertex << "#version 130\n";
+    // vertex << "#version 130\n";
     vertex << Graphics::defaultVertexShader();
-    ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
-                                                        Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/remap.fragment.glsl"))));
-    return Util::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+    return Graphics::create_shader("130", vertex.str(), Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/remap.fragment.glsl"))));
 #else
     return Util::ReferenceCount<Graphics::Shader>(NULL);
 #endif

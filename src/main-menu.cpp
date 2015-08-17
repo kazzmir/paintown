@@ -713,6 +713,8 @@ int rtech_main(int argc, char ** argv){
     Global::setDefaultDebugContext("paintown");
     vector<const char *> all_args;
 
+    Util::setDataPath(DATA_PATH);
+
 #ifdef PS3
     /* find the directory that contains the binary and set the data path
      * to that directory + our data path

@@ -3615,11 +3615,9 @@ void Character::drawAfterImage(const AfterImage & afterImage, const AfterImage::
 
 #ifdef USE_ALLEGRO5
             std::ostringstream vertex;
-            vertex << "#version 110\n";
+            // vertex << "#version 110\n";
             vertex << Graphics::defaultVertexShader();
-            ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
-                                                                Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/mugen-after-effect.fragment.glsl"))));
-            out = PaintownUtil::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+            out = Graphics::create_shader("110", vertex.str(), Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/mugen-after-effect.fragment.glsl"))));
 #endif
 
             return out;
@@ -3780,11 +3778,9 @@ class PaletteFilter: public Graphics::Bitmap::Filter {
 
 #ifdef USE_ALLEGRO5
             std::ostringstream vertex;
-            vertex << "#version 110\n";
+            // vertex << "#version 110\n";
             vertex << Graphics::defaultVertexShader();
-            ALLEGRO_SHADER * a5shader = Graphics::create_shader(vertex.str(),
-                                                                Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/mugen-palette-effect.fragment.glsl"))));
-            out = PaintownUtil::ReferenceCount<Graphics::Shader>(new Graphics::Shader(a5shader));
+            out = Graphics::create_shader("110", vertex.str(), Storage::readFile(Storage::instance().find(Filesystem::RelativePath("shaders/mugen-palette-effect.fragment.glsl"))));
 #endif
 
             return out;
