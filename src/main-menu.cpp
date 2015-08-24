@@ -756,14 +756,38 @@ static void setUpTouch(const Util::ReferenceCount<DeviceInput::Touch> & touch){
     touch->setZone(DeviceInput::Touch::Quit, x - buttonSize / 2, y - buttonSize / 2, x + buttonSize / 2, y + buttonSize / 2);
 }
 
+static bool hasData(){
+    try{
+        Global::debug(0) << "Checking for installed data" << std::endl;
+        Filesystem::AbsolutePath path = Storage::instance().find(Filesystem::RelativePath("installed"));
+        Global::debug(0) << "Found installed data" << std::endl;
+        return true;
+    } catch (Filesystem::NotFound & fail){
+        Global::debug(0) << "data not installed yet" << std::endl;
+    }
+    return false;
+    /*
+    Filesystem::AbsolutePath installed = Filesystem::AbsolutePath("/sdcard/paintown/data/installed");
+    return Storage::instance().systemExists(installed);
+    */
+}
+
 /* 1. parse arguments
  * 2. initialize environment
  * 3. run main dispatcher
  * 4. quit
  */
 int rtech_main(int argc, char ** argv){
+    Util::setDataPath(DATA_PATH);
+
     /* -1 means use whatever is in the configuration */
     Global::InitConditions conditions;
+
+#ifdef ANDROID
+    while (!hasData()){
+        sleep(1);
+    }
+#endif
 
     bool music_on = true;
     // bool joystick_on = true;
@@ -782,7 +806,6 @@ int rtech_main(int argc, char ** argv){
     Global::setDefaultDebugContext("paintown");
     vector<const char *> all_args;
 
-    Util::setDataPath(DATA_PATH);
 
 #ifdef PS3
     /* find the directory that contains the binary and set the data path
@@ -878,6 +901,7 @@ int rtech_main(int argc, char ** argv){
     }
 
     if (! Global::dataCheck()){
+        Global::debug(0) << "Could not find data" << std::endl;
         return -1;
     }
 

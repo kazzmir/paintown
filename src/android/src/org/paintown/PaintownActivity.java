@@ -92,7 +92,15 @@ public class PaintownActivity extends AllegroActivity {
         try{
             loadAllegroNormal();
         } catch (UnsatisfiedLinkError fail){
-            loadAllegroDebug();
+			Log.v("Paintown", "Could not load normal allegro libraries: " + fail.getMessage());
+			fail.printStackTrace();
+			try{
+				loadAllegroDebug();
+			} catch (UnsatisfiedLinkError fail2){
+				Log.v("Paintown", "Could not load allegro debug libraries: " + fail2.getMessage());
+				fail2.printStackTrace();
+				throw new RuntimeException("Failure to load any libraries");
+			}
         }
     }
 
@@ -100,7 +108,6 @@ public class PaintownActivity extends AllegroActivity {
     static {
       System.loadLibrary("OpenSLES");
       loadAllegro();
-      // System.loadLibrary("paintown");
    }
 
    public PaintownActivity(){
@@ -116,8 +123,9 @@ public class PaintownActivity extends AllegroActivity {
 	   Log.v("Paintown", "Set up data");
 	   final File root = new File(getDataDirectory());
 	   File data = new File(root, "data");
+	   File installed = new File(data, "installed");
 	   Log.v("Paintown", "Data " + data.getPath() + " exists?" + data.exists());
-	   if (data.exists()){
+	   if (installed.exists()){
 		   return;
 	   }
 
@@ -146,6 +154,14 @@ public class PaintownActivity extends AllegroActivity {
 	   }
 
 	   unzip(root, "data.zip", context, progress);
+
+	   try{
+		   FileOutputStream stream = new FileOutputStream(installed);
+		   stream.write(0);
+		   stream.close();
+	   } catch (IOException fail){
+		   Log.v("Paintown", fail.toString());
+	   }
    }
 
    @Override
@@ -204,18 +220,31 @@ public class PaintownActivity extends AllegroActivity {
 	   return size;
    }
 
+   private int zipEntries(AssetManager assets, String file) throws IOException {
+	   ZipInputStream zip = new ZipInputStream(assets.open(file));
+	   ZipEntry entry = zip.getNextEntry();
+	   int count = 0;
+	   while (entry != null){
+		   count += 1;
+		   entry = zip.getNextEntry();
+	   }
+	   zip.close();
+	   return count;
+   }
+
    /* unzips a file from assets into the given root directory */
    private void unzip(File root, String file, Context context, final ProgressBar progress){
 	   Log.v("Paintown", "Writing data to " + root.getAbsolutePath());
 	   try{
 		   AssetManager assets = context.getResources().getAssets();
-		   progress.setMax((int) zipSize(assets, file));
+		   progress.setMax((int) zipEntries(assets, file));
 		   ZipInputStream zip = new ZipInputStream(assets.open(file));
 
 		   ZipEntry entry = zip.getNextEntry();
 		   long count = 0;
 		   while (entry != null){
 			   String filename = entry.getName();
+			   Log.v("Paintown", "Writing entry " + filename);
 			   if (entry.isDirectory()){
 				   File directory = new File(root, filename);
 				   directory.mkdirs();
@@ -223,7 +252,8 @@ public class PaintownActivity extends AllegroActivity {
 				   writeFile(new File(root, filename), entry.getSize(), zip);
 			   }
 
-			   count += entry.getSize();
+			   // count += entry.getSize();
+			   count += 1;
 
 			   entry = zip.getNextEntry();
 			   final long xcount = count;
@@ -238,6 +268,9 @@ public class PaintownActivity extends AllegroActivity {
 		   zip.close();
 	   } catch (IOException fail){
 		   Log.v("Paintown", fail.toString());
+	   } catch (RuntimeException fail){
+		   Log.v("Paintown", fail.toString());
+		   throw fail;
 	   }
 	   Log.v("Paintown", "Wrote data");
    }
