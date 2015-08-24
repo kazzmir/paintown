@@ -828,6 +828,10 @@ int rtech_main(int argc, char ** argv){
         stringArgs.push_back(argv[q]);
     }
 
+#ifdef ANDROID
+    stringArgs.push_back("mugen");
+#endif
+
     vector<Util::ReferenceCount<Argument::Parameter> > arguments;
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new WindowedArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DataPathArgument()));

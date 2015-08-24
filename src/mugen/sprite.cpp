@@ -410,8 +410,9 @@ void SpriteV1::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile
 
 void SpriteV1::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
     PaintownUtil::ReferenceCount<Graphics::Bitmap> final = getFinalBitmap(effects);
-    Graphics::Bitmap single(*final, sourceX1, sourceY, sourceWidth, sourceHeight);
-    single.drawStretched(destX, destY, destWidth, destHeight, work);
+    // Graphics::Bitmap single(*final, sourceX1, sourceY, sourceWidth, sourceHeight);
+    // single.drawStretched(destX, destY, destWidth, destHeight, work);
+    final->Stretch(work, sourceX1, sourceY, sourceWidth, sourceHeight, destX, destY, destWidth, destHeight);
 }
 
 static void drawReal(Graphics::Bitmap * bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects){

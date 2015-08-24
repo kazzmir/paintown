@@ -187,7 +187,7 @@ void Font::printf(int x, int y, int bank, const Graphics::Bitmap & work, const s
     va_end(ap);
 
     const std::string newstr(buf);
-            
+
     const PaintownUtil::ReferenceCount<Graphics::Bitmap> & font = changeBank(bank);
     if (font == NULL){
         return;
@@ -202,7 +202,8 @@ void Font::printf(int x, int y, int bank, const Graphics::Bitmap & work, const s
             character.clearToMask();
             bmp->Blit(loc->second.startx, 0, loc->second.width + spacingx, height + spacingy,0,0, character);
             */
-            Graphics::Bitmap character(*font, loc->second.startx, 0, loc->second.width, height);
+
+            Graphics::Bitmap character = font->subBitmap(loc->second.startx, 0, loc->second.width, height);
             character.draw(x + workoffsetx + offsetx, y + offsety, work);
             workoffsetx += loc->second.width + spacingx;
         } else{
