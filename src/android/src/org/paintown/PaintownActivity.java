@@ -69,6 +69,8 @@ import android.media.AudioManager;
 import org.liballeg.android.AllegroActivity;
 
 public class PaintownActivity extends AllegroActivity {
+	private static final String GameName = "Engine";
+
     static void loadAllegroLibraries(String suffix){
         System.loadLibrary("allegro" + suffix);
         System.loadLibrary("allegro_primitives" + suffix);
@@ -131,13 +133,14 @@ public class PaintownActivity extends AllegroActivity {
 
 	   /* horizontal progress bar */
 	   final ProgressBar progress = new ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal);
+	   final TextView count = new TextView(context);
 
 	   /* we are in a background thread so to get the bar to show up we
 		* need to run it on the main UI thread
 		*/
 	   runOnUiThread(new Runnable(){
 		   public void run(){
-			   setContentView(loadingView(context, progress));
+			   setContentView(loadingView(context, count, progress));
 		   }
 	   });
 
@@ -153,7 +156,7 @@ public class PaintownActivity extends AllegroActivity {
 		   user.mkdirs();
 	   }
 
-	   unzip(root, "data.zip", context, progress);
+	   unzip(root, "data.zip", context, count, progress);
 
 	   try{
 		   FileOutputStream stream = new FileOutputStream(installed);
@@ -186,12 +189,12 @@ public class PaintownActivity extends AllegroActivity {
 
 	   TextView text = new TextView(context);
 	   text.setId(800);
-	   text.setText("Starting Paintown..");
+	   text.setText(String.format("Starting %s..", GameName));
 	   layout.addView(text, textParams);
 	   return layout;
    }
 
-   private View loadingView(Context context, ProgressBar progress){
+   private View loadingView(Context context, TextView count, ProgressBar progress){
 	   RelativeLayout layout = new RelativeLayout(context);
 	   RelativeLayout.LayoutParams textParams = new RelativeLayout.LayoutParams(
 			   RelativeLayout.LayoutParams.WRAP_CONTENT,
@@ -200,13 +203,24 @@ public class PaintownActivity extends AllegroActivity {
 
 	   TextView text = new TextView(context);
 	   text.setId(800);
-	   text.setText("Installing Paintown data to " + getDataDirectory() + "/data");
+	   text.setText(String.format("Installing %s data to %s/data", GameName, getDataDirectory()));
 	   layout.addView(text, textParams);
+
+	   count.setId(text.getId() + 1);
+	   count.setText("-/-");
+
+	   RelativeLayout.LayoutParams countParams = new RelativeLayout.LayoutParams(
+			   RelativeLayout.LayoutParams.WRAP_CONTENT,
+			   RelativeLayout.LayoutParams.WRAP_CONTENT);
+	   countParams.addRule(RelativeLayout.BELOW, text.getId());
+	   countParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+	   layout.addView(count, countParams);
 
 	   RelativeLayout.LayoutParams progressParams = new RelativeLayout.LayoutParams(
 			   RelativeLayout.LayoutParams.WRAP_CONTENT,
 			   RelativeLayout.LayoutParams.WRAP_CONTENT);
-	   progressParams.addRule(RelativeLayout.BELOW, text.getId());
+	   progressParams.addRule(RelativeLayout.BELOW, count.getId());
 	   progressParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
 	   layout.addView(progress, progressParams);
 	   return layout;
@@ -220,28 +234,38 @@ public class PaintownActivity extends AllegroActivity {
 	   return size;
    }
 
-   private int zipEntries(AssetManager assets, String file) throws IOException {
+   private int zipEntries(AssetManager assets, String file, final TextView countText) throws IOException {
 	   ZipInputStream zip = new ZipInputStream(assets.open(file));
 	   ZipEntry entry = zip.getNextEntry();
-	   int count = 0;
+	   final int[] count = new int[1];
+	   count[0] = 0;
 	   while (entry != null){
-		   count += 1;
+		   count[0] += 1;
 		   entry = zip.getNextEntry();
+
+		   runOnUiThread(new Runnable(){
+			   public void run(){
+				   countText.setText(String.format("-/%d", count[0]));
+			   }
+		   });
 	   }
 	   zip.close();
-	   return count;
+	   countText.setText(String.format("-/%d", count[0]));
+	   return count[0];
    }
 
    /* unzips a file from assets into the given root directory */
-   private void unzip(File root, String file, Context context, final ProgressBar progress){
+   private void unzip(File root, String file, Context context, final TextView countText, final ProgressBar progress){
 	   Log.v("Paintown", "Writing data to " + root.getAbsolutePath());
 	   try{
 		   AssetManager assets = context.getResources().getAssets();
-		   progress.setMax((int) zipEntries(assets, file));
+		   final int max = zipEntries(assets, file, countText);
+		   progress.setMax(max);
 		   ZipInputStream zip = new ZipInputStream(assets.open(file));
 
 		   ZipEntry entry = zip.getNextEntry();
-		   long count = 0;
+		   final long[] count = new long[1];
+		   count[0] = 0;
 		   while (entry != null){
 			   String filename = entry.getName();
 			   Log.v("Paintown", "Writing entry " + filename);
@@ -253,15 +277,15 @@ public class PaintownActivity extends AllegroActivity {
 			   }
 
 			   // count += entry.getSize();
-			   count += 1;
+			   count[0] += 1;
 
 			   entry = zip.getNextEntry();
-			   final long xcount = count;
 
 			   /* update the progress bar */
 			   runOnUiThread(new Runnable(){
 				   public void run(){
-					   progress.setProgress((int) xcount);
+					   progress.setProgress((int) count[0]);
+					   countText.setText(String.format("%d/%d", (int) count[0], max));
 				   }
 			   });
 		   }
