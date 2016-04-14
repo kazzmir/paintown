@@ -1461,6 +1461,18 @@ else:
     
     # Always need libz
     env.Append(LIBS = ['z'])
+
+    def buildRtech(env):
+        root = 'r-tech1'
+        return SConscript('r-tech1/SConscript', variant_dir = buildDir + '/r-tech1', exports = ['env', 'root'])
+
+    if os.path.exists('r-tech1'):
+        env.Prepend(CPPPATH = '#/r-tech1/include')
+        env.Append(ARCHIVES = [buildRtech(env.Clone())])
+        # env.Append(LIBS = [buildRtech(env.Clone())])
+    else:
+        scons.utils.safeParseConfig(env, 'pkg-config r-tech1 --cflags --libs')
+
     config = env.Configure(custom_tests = custom_tests)
     try:
         # config.env.ParseConfig( 'allegro-config --libs --cflags' )
@@ -1507,8 +1519,6 @@ else:
     except OSError:
         pass
 
-    scons.utils.safeParseConfig(config.env, 'pkg-config r-tech1 --cflags --libs')
-    
     ## This is a hack. Copy the static libraries to misc and then link
     ## those in, otherwise gcc will try to pick the .so's from /usr/lib
     if True or not isOSX():
