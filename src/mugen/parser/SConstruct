@@ -12,5 +12,5 @@ all.append(air_peg)
 all.append(cmd_peg)
 
 for x in all:
-    use.Depends(x, 'peg.py')
-    use.Depends(x, 'cpp_generator.py')
+    use.Depends(x, 'vembyr/peg.py')
+    use.Depends(x, 'vembyr/cpp_generator.py')

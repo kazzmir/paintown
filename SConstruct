@@ -674,7 +674,7 @@ rsx
         # gnustdlib = env.InstallAs('misc/libgnustdc++.a', '/opt/android/sources/cxx-stl/gnu-libstdc++/libs/armeabi/libstdc++.a')
         # libs = Split("""freetype2-static png SDL m log c jnigraphics supc++ EGL GLESv2 GLESv1_CM z gnustdc++""")
         # libs = Split("""freetype2-static allegro m log c jnigraphics EGL GLESv2 GLESv1_CM z gnustl_static""")
-        libs = Split("""freetype2-static allegro log z r-tech1""")
+        libs = Split("""freetype2-static allegro log r-tech1 z""")
         env.Append(CCFLAGS = flags)
         env.Append(CXXFLAGS = flags)
         env.Append(LINKFLAGS = linkflags)
@@ -1145,7 +1145,7 @@ def newGetEnvironments():
     # ... do rest of platforms ...
 
 import sys
-sys.path.append('src/mugen/parser')
+sys.path.append('src/mugen/parser/vembyr')
 import peg
 
 env = getEnvironment(getDebug())
@@ -1459,8 +1459,6 @@ else:
             staticEnv.Append(CPPDEFINES = 'LINUX')
             env.Append(CPPDEFINES = 'LINUX')
     
-    # Always need libz
-    env.Append(LIBS = ['z'])
 
     def buildRtech(env):
         root = 'r-tech1'
@@ -1472,6 +1470,9 @@ else:
         # env.Append(LIBS = [buildRtech(env.Clone())])
     else:
         scons.utils.safeParseConfig(env, 'pkg-config r-tech1 --cflags --libs')
+
+    # Always need libz
+    env.Append(LIBS = ['z'])
 
     config = env.Configure(custom_tests = custom_tests)
     try:

@@ -1467,6 +1467,8 @@ def create_peg(peg, kind = 'file'):
     out = open(name + ".py", 'w')
     out.write(python_generator.generate(peg))
     out.close()
+    import sys
+    sys.path.append('.')
     module = __import__(name, globals(), locals(), ['parse'])
     # print module
     # print dir(module)
