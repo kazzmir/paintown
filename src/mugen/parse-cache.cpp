@@ -181,6 +181,7 @@ static list<Ast::Section*> * reallyParseX(const Filesystem::AbsolutePath & path,
         delete[] data;
         throw;
     }
+    delete[] data;
     return out;
 }
 
