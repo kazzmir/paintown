@@ -1467,13 +1467,15 @@ else:
         #rtech1 = Command('r-tech1/lib/libr-tech1.a', 'r-tech1/SConscript', 'scons -C r-tech1')
         #Clean(rtech1, 'scons -C r-tech1 -c')
         #return rtech1
-        return SConscript('r-tech1/SConscript', variant_dir = buildDir + '/r-tech1', exports = ['env', 'root'])
+        return env.SConscript('r-tech1/SConscript', variant_dir = buildDir + '/r-tech1', exports = ['env', 'root'])
 
     if os.path.exists('r-tech1'):
         # env.Prepend(CPPPATH = '#/r-tech1/include')
-        env.Append(ARCHIVES = [buildRtech(env.Clone())])
-        # env.Prepend(CPPPATH = Dir('#' + buildDir + '/r-tech1/headers/include'))
-        # env.Prepend(CPPPATH = Dir('r-tech1/headers/include'))
+        rtech1Env = env.Clone()
+        env.Append(ARCHIVES = [buildRtech(rtech1Env)])
+        env.Prepend(CPPPATH = rtech1Env['RTECH1_HEADERS'])
+        # env.Prepend(CPPPATH = Dir('#' + buildDir + '/r-tech1/build/release/headers/include'))
+        # env.Prepend(CPPPATH = Dir('r-tech1/include'))
         # env.Append(LIBS = [buildRtech(env.Clone())])
     else:
         scons.utils.safeParseConfig(env, 'pkg-config r-tech1 --cflags --libs')
