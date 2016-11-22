@@ -200,7 +200,7 @@ def useDistcc():
         
 def getDebug():
     try:
-        return int(os.environ[ 'DEBUG' ])
+        return int(os.environ['DEBUG'])
     except KeyError:
         return 0
 
@@ -1462,11 +1462,18 @@ else:
 
     def buildRtech(env):
         root = 'r-tech1'
+        #Execute('scons -C r-tech1')
+        #rtech1 = File('r-tech1/lib/libr-tech1.a')
+        #rtech1 = Command('r-tech1/lib/libr-tech1.a', 'r-tech1/SConscript', 'scons -C r-tech1')
+        #Clean(rtech1, 'scons -C r-tech1 -c')
+        #return rtech1
         return SConscript('r-tech1/SConscript', variant_dir = buildDir + '/r-tech1', exports = ['env', 'root'])
 
     if os.path.exists('r-tech1'):
-        env.Prepend(CPPPATH = '#/r-tech1/include')
+        # env.Prepend(CPPPATH = '#/r-tech1/include')
         env.Append(ARCHIVES = [buildRtech(env.Clone())])
+        # env.Prepend(CPPPATH = Dir('#' + buildDir + '/r-tech1/headers/include'))
+        # env.Prepend(CPPPATH = Dir('r-tech1/headers/include'))
         # env.Append(LIBS = [buildRtech(env.Clone())])
     else:
         scons.utils.safeParseConfig(env, 'pkg-config r-tech1 --cflags --libs')

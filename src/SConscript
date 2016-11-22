@@ -161,7 +161,7 @@ def test(env):
     use = config.Finish()
     SConscript('test/SConstruct', exports = ['use'])
 
-test(use)
+# test(use)
 
 buildStuff(paintownEnv)
 # FIXME: adding psp_prx here is ugly, find a better way
