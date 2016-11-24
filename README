@@ -1,8 +1,8 @@
-Paintown (http://paintown.sf.net)
+Paintown http://paintown.org
 Version 3.6.1
 Jon Rafkind
 
-Readme last updated on 10/16/2011
+Readme last updated on 11/23/2016
 
 Topics:
   Get Source
@@ -20,13 +20,10 @@ Topics:
 * Get Source:
 
   If you are reading this you might already have the source. If not get it from here
-  Game engine: $ svn co http://svn.code.sourceforge.net/p/paintown/code/trunk paintown
+  Game engine: $ git clone https://github.com/kazzmir/paintown
 
-  You need the svn program, which is part of subversion - http://subversion.tigris.org/, to do this. Put the data directory inside the trunk directory, trunk/data.
-
-  As of r1124 the data/ directory is an external resource for trunk, so you only have to check out trunk and svn will automatically get data/ for you.
-  
-  Data: $ svn co http://svn.code.sourceforge.net/p/paintown/code/data
+  The default data is in a different repo:
+  Data: $ git clone https://github.com/kazzmir/paintown-data
 
 * Compilation:
   
@@ -55,10 +52,6 @@ Topics:
     $ make
      or
     $ scons
-
-    Will build SDL by default. Set an environment variable to get different backends.
-    $ export ALLEGRO=1 # to use Allegro4 (software renderer)
-    $ export ALLEGRO5=1 # to use Allegro5 (hardware renderer)
 
     Cmake also works.
 
@@ -145,14 +138,8 @@ Topics:
     * pthreads - If you are on Unix you should have this or you can install glibc and you will get it. Windows people: http://sources.redhat.com/pthreads-win32/
     * freetype - Installed on most Unix systems along with X11. Windows people: http://gnuwin32.sourceforge.net/packages/freetype.htm.
     * Python headers, usually this comes with python
-    
-    One of:
-      * Allegro 4.x - 4.1 or higher. http://alleg.sf.net
-      * Allegro 5.x - http://alleg.sf.net
-      * SDL 1.2.x - http://libsdl.org
-
-  * Quick instructions for ubuntu (also see easy-compile-ubuntu)
-    $ sudo apt-get install python-dev libfreetype6-dev liballegro4.2 zlib1g-dev
+    * Allegro 5.x - http://liballeg.org
+    * r-tech1 - http://github.com/kazzmir/r-tech1 put it in the paintown directory and it will be built automatically
 
   * Detailed windows instructions
     *Note* it may be easier to get the gcc4.5 environment from svn:
