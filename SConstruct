@@ -1467,7 +1467,8 @@ else:
         #rtech1 = Command('r-tech1/lib/libr-tech1.a', 'r-tech1/SConscript', 'scons -C r-tech1')
         #Clean(rtech1, 'scons -C r-tech1 -c')
         #return rtech1
-        return env.SConscript('r-tech1/SConscript', variant_dir = buildDir + '/r-tech1', exports = ['env', 'root'])
+        build_dir_root = 'out'
+        return env.SConscript('r-tech1/SConscript', variant_dir = buildDir + '/r-tech1', exports = ['env', 'root', 'build_dir_root'])
 
     if os.path.exists('r-tech1'):
         # env.Prepend(CPPPATH = '#/r-tech1/include')
