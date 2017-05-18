@@ -119,6 +119,31 @@ public:
     }
 };
 
+class SoundArgument: public Argument::Parameter {
+public:
+    SoundArgument(Global::InitConditions * conditions):
+    conditions(conditions){
+    }
+
+    Global::InitConditions * conditions;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("-s");
+        out.push_back("nosound");
+        return out;
+    }
+
+    string description() const {
+        return " : Disable sound";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
+        conditions->sound = false;
+        return current;
+    }
+};
+
 class HelpArgument: public Argument::Parameter {
 public:
     HelpArgument(const vector<Util::ReferenceCount<Argument::Parameter> > & arguments):
@@ -835,6 +860,7 @@ int rtech_main(int argc, char ** argv){
     vector<Util::ReferenceCount<Argument::Parameter> > arguments;
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new WindowedArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DataPathArgument()));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new SoundArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new MusicArgument(&music_on)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DebugArgument()));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DebugFileArgument()));
