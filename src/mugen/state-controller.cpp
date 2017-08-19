@@ -1015,6 +1015,7 @@ public:
         }
 
         /* TODO: adjust the pan of a sound */
+        pan = pan;
     }
     
     StateController * deepCopy() const {

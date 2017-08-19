@@ -44,6 +44,8 @@ public:
         return out;
     }
 
+    using Constraint::deserialize;
+
     void deserialize(const Token * token){
         TokenView view = token->view();
         Constraint::deserialize(view);
@@ -104,6 +106,7 @@ public:
         return out;
     }
 
+    using Constraint::deserialize;
     virtual void deserialize(const Token * token){
     }
  
@@ -132,6 +135,7 @@ public:
         return token;
     }
 
+    using Constraint::deserialize;
     virtual void deserialize(const Token * token){
         const Token * token1 = NULL;
         const Token * token2 = NULL;

@@ -77,6 +77,7 @@ public:
         totalImages = reader.readByte4();
         suboffset = reader.readByte4();
         subhead = reader.readByte4();
+        subhead = subhead;
         sharedPal = reader.readByte1();
 
         if (sharedPal && sharedPal != 1){
