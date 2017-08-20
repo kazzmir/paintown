@@ -137,7 +137,7 @@ def makeUseArgument(key, default):
             return default
     return use
 
-useGch = makeUseArgument('gch', True)
+useGch = makeUseArgument('gch', False)
 usePrx = makeUseEnvironment('prx', False)
 isVerbose = makeUseArgument('verbose', False)
 useIntel = makeUseEnvironment('intel', False)
