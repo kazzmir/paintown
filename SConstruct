@@ -1462,6 +1462,8 @@ else:
 
     def buildRtech(env):
         root = 'r-tech1'
+        env.Append(CXXFLAGS = ['-fPIC'])
+        env.Append(CCFLAGS = ['-fPIC'])
         #Execute('scons -C r-tech1')
         #rtech1 = File('r-tech1/lib/libr-tech1.a')
         #rtech1 = Command('r-tech1/lib/libr-tech1.a', 'r-tech1/SConscript', 'scons -C r-tech1')
