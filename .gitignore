@@ -6,3 +6,4 @@ peg_*.py
 *.pyc
 *.log
 r-tech1
+*.swp

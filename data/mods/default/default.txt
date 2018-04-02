@@ -1,0 +1,7 @@
+(game
+  ; Name of Mod
+  (name sample)
+  ; Menu to use
+  (menu menu/main.txt)	 
+)
+ 

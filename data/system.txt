@@ -1,0 +1,3 @@
+; Default mod
+(system
+ (default-mod mods/default/default.txt))
