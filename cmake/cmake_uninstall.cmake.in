@@ -20,3 +20,20 @@ FOREACH(file ${files})
     MESSAGE(STATUS "File \"${file}\" does not exist.")
   ENDIF(EXISTS "${file}")
 ENDFOREACH(file)
+
+IF ("@DELETE_INSTALLED_DATA_PATH@" STREQUAL "ON")
+    IF (EXISTS "@DATA_PATH@")
+        MESSAGE(STATUS "Uninstalling top level configuration path: @DATA_PATH@")
+        EXEC_PROGRAM(
+          "@CMAKE_COMMAND@" ARGS "-E remove_directory \"@DATA_PATH@\""
+          OUTPUT_VARIABLE rm_out
+          RETURN_VALUE rm_retval
+        )
+        IF("${rm_retval}" STREQUAL 0)
+        ELSE("${rm_retval}" STREQUAL 0)
+          MESSAGE(FATAL_ERROR "Problem when removing \"@DATA_PATH@\"")
+        ENDIF("${rm_retval}" STREQUAL 0)
+    ENDIF (EXISTS "@DATA_PATH@")
+ELSE()
+    MESSAGE(STATUS "Leaving data directories at \"@DATA_PATH@\"")
+ENDIF("@DELETE_INSTALLED_DATA_PATH@" STREQUAL "ON")

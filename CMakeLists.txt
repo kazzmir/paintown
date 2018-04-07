@@ -78,7 +78,13 @@ mark_as_advanced(CLEAR PNG_LIBRARY)
 # -------------------------------------------------------
 # User setable options
 # -------------------------------------------------------
+set(STARTING_DATA_PATH "${CMAKE_SOURCE_DIR}/data" CACHE INTERNAL "Starting data path." FORCE)
 option(DEBUG "Compile paintown with debug information?" OFF)
+set(DATA_PATH "${STARTING_DATA_PATH}" CACHE FILEPATH "Set the data path (Recommend /usr/local/games/paintown for system installation)")
+option(DELETE_INSTALLED_DATA_PATH "Delete the installation data directory when running uninstall?" OFF)
+
+# Data path
+add_definitions(-DDATA_PATH=\"${DATA_PATH}\")
 
 if($ENV{DEBUG})
     set(DEBUG ON)
@@ -125,10 +131,6 @@ endif(NOT RTECH1_FOUND)
 # Libraries
 set(GRAPHICS_LIBRARIES ${RTECH1_LIBRARIES})
 set(GRAPHICS_INCLUDES ${RTECH1_INCLUDE_DIR})
-
-# Data path
-add_definitions(-DDATA_PATH=\"data\")
-
 
 if(MPG123_FOUND)
     add_definitions(-DHAVE_MP3_MPG123)
@@ -213,3 +215,12 @@ target_link_libraries(paintown ${GROUP_START} base_module paintown_module script
 #  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
 #endif(UNIX OR LINUX OR CYGWIN OR MINGW)
 
+
+# Install
+if ("${DATA_PATH}" STREQUAL "${STARTING_DATA_PATH}")
+    message(STATUS "Change DATA_PATH if you want to install the application. (Recommend /usr/local/games/paintown)")
+else ("${DATA_PATH}" STREQUAL "${STARTING_DATA_PATH}")
+    message(STATUS "Install configuration data path is set to ${DATA_PATH}")
+    install (TARGETS paintown DESTINATION bin)
+    install (DIRECTORY "${CMAKE_SOURCE_DIR}/data/" DESTINATION ${DATA_PATH})
+endif ("${DATA_PATH}" STREQUAL "${STARTING_DATA_PATH}")
