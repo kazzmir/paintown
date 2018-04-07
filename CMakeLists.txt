@@ -1,9 +1,6 @@
 # -------------------------------------------------------
 # Paintown cmake build script. Creates makefiles for unix
 # based systems, cygwin(sp?) or mingw
-#
-# Written by: juvinious
-# Modified: 06/27/2009
 # -------------------------------------------------------
 
 # -------------------------------------------------------
@@ -157,15 +154,6 @@ if(NOT FREETYPE_FOUND)
 	message(FATAL_ERROR "Couldn't find freetype")
 endif(NOT FREETYPE_FOUND)
 
-# regex
-#if(NOT GNUREGEX_FOUND)
-#	message(FATAL_ERROR "Couldn't find GNU Regex")
-#endif(NOT GNUREGEX_FOUND)
-
-# -------------------------------------------------------
-# Paths and system setup
-# -------------------------------------------------------
-
 # -------------------------------------------------------
 # MINGW
 # -------------------------------------------------------
@@ -214,46 +202,14 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 # -------------------------------------------------------
 # Paintown and test
 # -------------------------------------------------------
-
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
-
-
-#add_library(base_module ${BASE_SRC})
-#add_library(factory_module ${FACTORY_SRC})
-#add_library(openbor_module ${OPENBOR_SRC})
-# add_library(util_module ${UTIL_SRC})
-# add_library(loadpng_module ${LOADPNG_SRC})
-# add_library(menu_module ${MENU_SRC})
-# add_library(gui_module ${GUI_SRC})
-# add_library(algif_module src/util/gif/algif.c src/util/gif/gif.c src/util/gif/lzw.c)
-
-
-#Script directory
-# add_subdirectory(${CMAKE_SOURCE_DIR}/src/paintown-engine/script)
-
-#paintown executable
-# add_executable (paintown src/util/xmain.cpp)
-
-# set_target_properties(paintown PROPERTIES LINK_FLAGS "-Wl,--wrap=open -Wl,--wrap=read -Wl,--wrap=close -Wl,--wrap=lseek -Wl,--wrap=lstat -Wl,--wrap=access")
 
 add_executable(paintown src/xmain.cpp)
 target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module mugen_module ${GROUP_END} ${REQUIRED_LIBS})
 
-#add_executable (test src/test.cpp)
-#target_link_libraries(test main_module dumb_module hawknl_module ${REQUIRED_LIBS})
-
-#add_executable (menutest src/menu/menutest.cpp)
-#target_link_libraries(menutest main_module dumb_module hawknl_module ${REQUIRED_LIBS})
-
-#if (NOT USE_SDL)
-#    add_executable (mugentest src/mugen/test.cpp)
-#    target_link_libraries(mugentest ${GROUP_START} base_module level_module factory_module object_module util_module loadpng_module 
-#        menu_module env_module network_module gui_module script_module game_module mugen_module ogg_module trigger_module pcre_module dumb_module hawknl_module gme_module ${GROUP_END} ${REQUIRED_LIBS})
-#endif (NOT USE_SDL)
-
 # Copy scripts and setup lex files
-if(UNIX OR LINUX OR CYGWIN OR MINGW)
-  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
-  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
-endif(UNIX OR LINUX OR CYGWIN OR MINGW)
+#if(UNIX OR LINUX OR CYGWIN OR MINGW)
+#  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.py ${CMAKE_SOURCE_DIR}/data/scripts/paintown.py COPYONLY)
+#  configure_file(${CMAKE_SOURCE_DIR}/src/paintown-engine/script/modules/paintown.rb ${CMAKE_SOURCE_DIR}/data/scripts/paintown.rb COPYONLY)
+#endif(UNIX OR LINUX OR CYGWIN OR MINGW)
 
