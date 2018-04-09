@@ -1,0 +1,13 @@
+Import('use')
+
+import helpers
+import os.path
+modules = helpers.read_cmake_list(os.path.join(Dir('#src/openbor').abspath, 'CMakeLists.txt'))
+
+source = []
+for module in modules:
+    source.append(modules[module])
+
+library = use.StaticLibrary('openbor', source)
+use.Append(ARCHIVES = library)
+Return('library')

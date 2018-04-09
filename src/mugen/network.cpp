@@ -14,7 +14,7 @@
 
 #include "network.h"
 #include "behavior.h"
-#include "util/system.h"
+#include "system.h"
 #include "world.h"
 #include "character.h"
 #include "game.h"
@@ -22,10 +22,10 @@
 // #include "command.h"
 #include "constraint.h"
 
-#include "util/network/network.h"
-#include "util/thread.h"
-#include "util/token.h"
-#include "util/lz4/lz4.h"
+#include "network/network.h"
+#include "thread.h"
+#include "token.h"
+#include "lz4/lz4.h"
 
 #include <string>
 #include <vector>

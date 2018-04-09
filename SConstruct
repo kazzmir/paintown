@@ -1189,7 +1189,7 @@ if showTiming():
 
 env['PAINTOWN_USE_PRX'] = useMinpspw() and usePrx()
 # Disable networking for now
-if False and not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useAndroidX86() and not useIos() and not useGCW():
+if not useMinpspw() and not useNDS() and not useDingoo() and not useXenon() and not useNacl() and not useAndroid() and not useAndroidX86() and not useIos() and not useGCW():
     env['PAINTOWN_NETWORKING'] = True
     env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
 else:

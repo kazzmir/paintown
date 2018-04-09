@@ -4,13 +4,13 @@
 #ifdef HAVE_NETWORKING
 
 #include "../game/adventure_world.h"
-#include "util/network/network.h"
+#include "network/network.h"
 #include "../object/object.h"
-#include "util/file-system.h"
-#include "util/input/input-map.h"
-#include "util/input/text-input.h"
+#include "file-system.h"
+#include "input/input-map.h"
+#include "input/text-input.h"
 #include "chat-widget.h"
-#include "util/thread.h"
+#include "thread.h"
 #include <vector>
 
 namespace Graphics{

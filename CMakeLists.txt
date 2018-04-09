@@ -102,7 +102,7 @@ else(DEBUG)
 endif(DEBUG)
     
 # No networking
-# add_definitions(-DHAVE_NETWORKING)
+add_definitions(-DHAVE_NETWORKING)
 
 # Allegro5 is required
 set(USE_ALLEGRO5 ON)
