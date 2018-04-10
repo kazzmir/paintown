@@ -54,6 +54,7 @@ project (paintown)
 # -------------------------------------------------------
 # Including needed macros
 # -------------------------------------------------------
+include(UseLLVM)
 include(CheckCSourceCompiles)
 include(CheckCXXSourceCompiles)
 find_package(ZLIB)
@@ -83,18 +84,6 @@ option(DEBUG "Compile paintown with debug information?" OFF)
 set(DATA_PATH "${STARTING_DATA_PATH}" CACHE FILEPATH "Set the data path (Recommend /usr/local/games/paintown for system installation)")
 option(DELETE_INSTALLED_DATA_PATH "Delete the installation data directory when running uninstall?" OFF)
 
-# LLVM
-option(LLVM "Use llvm (clang) to build?" OFF)
-
-if($ENV{LLVM})
-    set(LLVM ON)
-    message(STATUS "Using LLVM")
-    set(CMAKE_C_COMPILER clang CACHE PATH "" FORCE)
-    set(CMAKE_CXX_COMPILER clang++ CACHE PATH "" FORCE)
-elseif(not $ENV{DEBUG})
-    set(LLVM OFF)
-endif($ENV{LLVM})
-
 # Data path
 add_definitions(-DDATA_PATH=\"${DATA_PATH}\")
 
@@ -106,21 +95,21 @@ endif($ENV{DEBUG})
 
 if(DEBUG)
     add_definitions(-DDEBUG)
-    if(LLVM)
+    if(USE_LLVM)
         set(CMAKE_CXX_FLAGS "-Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -Woverloaded-virtual -g3 -ggdb")
         set(CMAKE_C_FLAGS "-Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -g3 -ggdb")
-    else(LLVM)
+    else(USE_LLVM)
         set(CMAKE_CXX_FLAGS "-Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -fexpensive-optimizations -Woverloaded-virtual -g3 -ggdb")
         set(CMAKE_C_FLAGS "-Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -fexpensive-optimizations -g3 -ggdb")
-    endif(LLVM)
+    endif(USE_LLVM)
 else(DEBUG)
-    if (LLVM)
+    if (USE_LLVM)
         set(CMAKE_CXX_FLAGS "-O2 -Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -Woverloaded-virtual")
         set(CMAKE_C_FLAGS "-O2 -Wall -Wno-unused-variable -Wno-unused-function -funroll-loops")
-    else(LLVM)
+    else(USE_LLVM)
         set(CMAKE_CXX_FLAGS "-O2 -Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -fexpensive-optimizations -Woverloaded-virtual")
         set(CMAKE_C_FLAGS "-O2 -Wall -Wno-unused-variable -Wno-unused-function -funroll-loops -fexpensive-optimizations")
-    endif(LLVM)
+    endif(USE_LLVM)
 endif(DEBUG)
     
 # No networking
