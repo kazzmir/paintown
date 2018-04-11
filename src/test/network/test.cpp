@@ -34,7 +34,7 @@ namespace Global{
         return 0;
     }
 
-    const Filesystem::RelativePath DEFAULT_FONT = Filesystem::RelativePath("fonts/arial.ttf");
+    const Filesystem::RelativePath DEFAULT_FONT = Filesystem::RelativePath("fonts/LiberationSans-Regular.ttf");
 }
 
 /* global shared port */

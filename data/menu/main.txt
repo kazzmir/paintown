@@ -85,9 +85,8 @@
   (ok-sound menu/sounds/menu-ok.wav)
   ; **Optional** Set default gamespeed
   (action (fixedspeed 1.0))
-  ; **Optional** Font name and size (default /fonts/arial.ttf 24 24) 
-  ; (font "fonts/arial.ttf" 24 24)
-  (font "fonts/Neuropol.ttf" 24 24)
+  ; **Optional** Font name and size (default /fonts/LiberationSans-Regular.ttf 24 24) 
+  (font "fonts/LiberationSans-Regular.ttf" 24 24)
 
   ;; list of languages this menu can use. add as many more as you want
   (languages "English" "Deutsch" "Русский" "Português" "Français" "Español")

@@ -360,7 +360,7 @@ int main(int argc, char ** argv){
         InputManager manager;
         
         Util::Parameter<Util::ReferenceCount<Path::RelativePath> > 
-            defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
+            defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
         
         try {
             doIrc(hostname, port, username);

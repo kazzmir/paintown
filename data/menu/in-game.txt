@@ -20,8 +20,7 @@
   (back-sound menu/sounds/menu-back.wav)
   (ok-sound menu/sounds/menu-ok.wav)
   (action (fixedspeed 1.0))
-  ; (font "fonts/arial.ttf" 24 24)
-  (font "fonts/Neuropol.ttf" 24 24)
+  (font "fonts/LiberationSans-Regular.ttf" 24 24)
   ; Menu settings
   (display-list
     (type normal)

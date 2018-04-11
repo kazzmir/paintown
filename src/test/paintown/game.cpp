@@ -73,7 +73,7 @@ int paintown_main(int argc, char ** argv){
     InputManager manager;
     Util::Thread::initializeLock(&MessageQueue::messageLock);
 
-    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/arial.ttf")));
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
 
     Paintown::Mod::loadDefaultMod();
     Global::setDebug(1);

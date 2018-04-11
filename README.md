@@ -1,10 +1,10 @@
 # [Paintown](http://paintown.org)
 by [Jon Rafkind](https://github.com/kazzmir)
 ```
-Readme last updated on 04/11/2018
+Updated on 04/11/2018
 ```
 
-## Topics
+## Table of Contents
 
 * [Releases](#releases)
 * [Get Source](#get-source)
@@ -115,7 +115,7 @@ Copy the binary and data somewhere. Otherwise use the prepackaged installers.
 ## Scripting
 
 A python engine has been added to paintown so you can script a level. 
-See [scripting.txt](../blob/master/scripting.txt) for more details.
+See [scripting.txt](scripting.txt) for more details.
 
 ## OS Specific Instructions
 
@@ -135,7 +135,7 @@ $ misc/make-osx-bundle
 This will create paintown-x-y.app/ and paintown-x-y.dmg.
 
 You need [buildDmg.pl](http://www.objectpark.org/buildDMG.html)
-I have placed the perl script in the [misc directory](../blob/master/misc/buildDMG.pl), so just put
+I have placed the perl script in the [misc directory](misc/buildDMG.pl), so just put
 that in a directory that is part of your path.
 
 ### Windows

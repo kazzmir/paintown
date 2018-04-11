@@ -8,13 +8,13 @@
    (frame (alpha 255) (image "menu/paintown.png") (time 500)))
   (anim
    (depth background middle)
-   (text (alpha 255) (message "Hello world!") (font "fonts/arial.ttf")
+   (text (alpha 255) (message "Hello world!") (font "fonts/LiberationSans-Regular.ttf")
          (color 255 0 0)
          (offset 1 1)
          (time 500)))
   (anim
     (depth background top)
-    (text (message "Hello world!") (font "fonts/arial.ttf")
+    (text (message "Hello world!") (font "fonts/LiberationSans-Regular.ttf")
          (gradient (low 32 32 0)
                    (high 255 128 32)
                    (size 20))
