@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 class TestException(Exception):
     def __init__(self, message):
@@ -34,10 +34,10 @@ def get_peg_output(option, grammar):
     out, err = peg_out.communicate()
     if code != 0:
         raise TestException(out)
-    return out
+    return str(out)
 
 def do_bnf(name, grammar):
-    print "[%s] Test bnf.." % name
+    print("[%s] Test bnf.." % name)
     # peg_out = subprocess.Popen(['./peg.py', '--bnf', grammar], stdout = subprocess.PIPE)
     # out, err = peg_out.communicate()
     out = get_peg_output('--bnf', grammar)
@@ -48,15 +48,15 @@ def do_bnf(name, grammar):
     # out2, err2 = peg_out2.communicate()
     erase(g2)
     if out != out2:
-        print "error with bnf generation!!"
-        print out
-        print "vs"
-        print out2
+        print("error with bnf generation!!")
+        print(out)
+        print("vs")
+        print(out2)
         return False
     return True
 
 def do_ruby(name, grammar, input):
-    print "[%s] Test ruby.." % name
+    print("[%s] Test ruby.." % name)
     out = get_peg_output('--ruby', grammar)
     file = newFile('.rb')
     write(out, file)
@@ -75,7 +75,7 @@ def do_python(name, grammar, input):
     import re
     # import subprocess
     try:
-        print "[%s] Test python.." % name
+        print("[%s] Test python.." % name)
         out = get_peg_output('--python', grammar)
         # peg_out = subprocess.Popen(['./peg.py', '--python', grammar], stdout = subprocess.PIPE)
         # out, err = peg_out.communicate()
@@ -96,7 +96,7 @@ def do_python(name, grammar, input):
 
 def do_cpp(name, grammar, input):
     import subprocess
-    print "[%s] Test c++.." % name
+    print("[%s] Test c++.." % name)
     out = get_peg_output("--cpp", grammar)
     cpp = '.test_cpp.cpp'
     write(out, cpp)
@@ -402,9 +402,9 @@ data = readAll('cmd.peg')
 
     def test(times):
         import timeit
-        print "Performance test %d" % times
+        print("Performance test %d" % times)
         time = timeit.timeit('parser(data)', setup, number = times)
-        print "Total %f. Single run %f" % (time, time / times)
+        print("Total %f. Single run %f" % (time, time / times))
 
     for i in xrange(1, 4):
         test(i)
@@ -421,9 +421,9 @@ def run():
                 tests[int(num) - 1]()
             except TestException as t:
                 failures += 1
-                print t
+                print(t)
             except IndexError:
-                print "No test for %s" % num
+                print("No test for %s" % num)
     else:
         for test in tests:
             try:
@@ -431,9 +431,9 @@ def run():
                 test()
             except TestException as t:
                 failures += 1
-                print t
-    print
-    print "Tests run %d. Failures %d" % (run, failures)
+                print(t)
+    print()
+    print("Tests run %d. Failures %d" % (run, failures))
     performanceTest()
 
 run()

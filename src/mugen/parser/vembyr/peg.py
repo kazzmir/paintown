@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Packrat PEG (parsing expression grammar) generator
 #   http://pdos.csail.mit.edu/~baford/packrat/
@@ -26,6 +26,7 @@ from core import CodeGenerator, newResult, gensym, resetGensym, indent, newOut
 from cpp_generator import CppGenerator
 from python_generator import PythonGenerator
 import cpp_generator, python_generator
+import functools
 
 # substitute variables in a string named by $foo
 # "$foo + $bar - $foo" with {foo:1, bar:2} => "1 + 2 - 1"
@@ -309,7 +310,7 @@ class PatternRule(Pattern):
 
     def ensureRules(self, find):
         if not find(self.rule):
-            print "*warning* could not find rule " + self.rule
+            print("*warning* could not find rule " + self.rule)
 
     def generate_bnf(self, code = True):
         rules = ""
@@ -413,7 +414,7 @@ class PatternSequence(Pattern):
         return self.patterns[-1].tailRecursive(rule)
 
     def isFixed(self):
-        return reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
+        return functools.reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
 
     def canBeEmpty(self, peg):
         for pattern in self.patterns:
@@ -692,7 +693,7 @@ class PatternOr(Pattern):
             pattern.ensureRules(find)
 
     def isFixed(self):
-        return reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
+        return functools.reduce(lambda ok, pattern: ok and pattern.isFixed(), self.patterns, True)
 
     def generate_bnf(self, code = True):
         return "or"
@@ -1455,7 +1456,7 @@ value = (void *) 2;
         Rule("all", [PatternSequence([PatternVerbatim("abc"), PatternVerbatim("def"), PatternVerbatim("ghi")])]),
     ]
     peg = Peg("Peg", "s", rules)
-    print cpp_generator.generate(peg)
+    print(cpp_generator.generate(peg))
 
 def create_peg(peg, kind = 'file'):
     # import imp
@@ -1501,7 +1502,7 @@ std::cout << "Parsed def!" << std::endl;
     ]
 
     peg = Peg("Peg", "start", rules)
-    print cpp_generator.generate(peg)
+    print(cpp_generator.generate(peg))
 
 # BNF for parsing BNF description
 # This bootstraps the system so we can write normal BNF rules in a file
@@ -1583,7 +1584,7 @@ for option in ([option1] + option_rest):
     out = debug.match(option)
     if out != None:
         num = int(out.group(1))
-        for x in xrange(1,num+1):
+        for x in range(1,num+1):
             value.append('debug%d' % x)
     elif option == 'no-memo':
         value.append(option)
@@ -2114,7 +2115,7 @@ rules:
         tempFile2 = 'regex_input'
         writeFile(input, tempFile2)
         out = regex_parser(tempFile2)
-        print "Parsed %s" % out
+        print("Parsed %s" % out)
         return out
 
     def convert_to_peg(data):
@@ -2151,45 +2152,49 @@ rules:
         add_rule(start, data)
         return Peg(start, None, None, 'regex1', rules, None)
         
-    print "Convert %s" % regex
+    print("Convert %s" % regex)
     parsed = parse_regex(regex)
     peg = convert_to_peg(parsed)
-    print peg.generate_bnf()
+    print(peg.generate_bnf())
     exit(0)
 
 # test()
 # test2()
 
 def help_syntax():
-    print "start-symbol: <name>"
-    print "rules:"
-    print "  <name> = <pattern> | <pattern> ... "
-    print
-    print "A Pattern can be:"
-    print "  \"<literal>\""
-    print "  <name of rule>"
-    print "  pattern*"
-    print "  pattern?"
-    print "  pattern+"
-    print "  [<characters>]"
-    print "  <eof>"
-    print
-    print "BNF grammar for a peg grammar"
-    print peg_bnf('peg').generate_bnf()
+    print("""
+    start-symbol: <name>
+    rules:
+      <name> = <pattern> | <pattern> ...
+    )
+    A Pattern can be:
+      \"<literal>\"
+      <name of rule>
+      pattern*
+      pattern?
+      pattern+
+      [<characters>]
+      <eof>
+    )
+    BNF grammar for a peg grammar
+    """)
+    print(peg_bnf('peg').generate_bnf())
 
 def help():
-    print "Options:"
-    print "-h,--help,help : Print this help"
-    print "--help-syntax : Explain syntax of BNF (Backus-Naur form) for grammar files"
-    print "--bnf : Generate BNF description (grammar language)"
-    print "--ruby : Generate Ruby parser"
-    print "--python : Generate Python parser"
-    print "--lua : Generate Lua parser"
-    print "--cpp,--c++ : Generate C++ parser"
-    print "--h : Generate C++ header for the C++ functions"
-    # print "--c++-interpreter : Generate a C++ parser that uses an interpreter"
-    print "--save=filename : Save all generated parser output to a file, 'filename'"
-    print "--peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'."
+    print("""
+Options:
+  -h,--help,help : Print this help
+  --help-syntax : Explain syntax of BNF (Backus-Naur form) for grammar files
+  --bnf : Generate BNF description (grammar language)
+  --ruby : Generate Ruby parser
+  --python : Generate Python parser
+  --lua : Generate Lua parser
+  --cpp,--c++ : Generate C++ parser
+  --h : Generate C++ header for the C++ functions
+   "--c++-interpreter : Generate a C++ parser that uses an interpreter
+  --save=filename : Save all generated parser output to a file, 'filename'
+  --peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'.
+    """)
 
 # make_peg_parser()
 if __name__ == '__main__':
@@ -2207,7 +2212,7 @@ if __name__ == '__main__':
     peg_name_re = re.compile('--peg-name=(.*)')
     regex_re = re.compile('--regex=(.*)')
     def print_it(p):
-        print p
+        print(p)
     do_output = print_it
     do_close = lambda : 0
     return_code = 0
@@ -2272,17 +2277,17 @@ if __name__ == '__main__':
         # print out
         if out != None:
             if len(doit) == 0:
-                print "Grammar file '%s' looks good!. Use some options to generate a peg parser. -h will list all available options." % file
+                print("Grammar file '%s' looks good!. Use some options to generate a peg parser. -h will list all available options." % file)
             else:
                 for generate in doit:
                     do_output(generate(out))
         else:
-            print "Uh oh, couldn't parse " + file + ". Are you sure its using BNF format?"
+            print("Uh oh, couldn't parse " + file + ". Are you sure its using BNF format?")
             return_code = 1
     else:
         if helped == 0:
             help()
-            print "Give a BNF grammar file as an argument"
+            print("Give a BNF grammar file as an argument")
 
     do_close()
     exit(return_code)
