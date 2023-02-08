@@ -19,7 +19,7 @@ class CodeGenerator:
     def generate_void(self, *args):
         self.fail()
     
-    def generate_predicate(me, *args):
+    def generate_predicate(self, *args):
         self.fail()
 
     def generate_eof(self, *args):
