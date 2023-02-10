@@ -207,4 +207,4 @@ all required dlls are around.
 
 
 ## IRC
-Join the chat at [freenode](https://webchat.freenode.net/?randomnick=1&channels=paintown)
+Join the chat at [libera](https://web.libera.chat/#paintown)
