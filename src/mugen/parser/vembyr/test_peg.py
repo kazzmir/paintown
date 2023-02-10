@@ -12,9 +12,8 @@ def erase(file):
         pass
 
 def write(data, file):
-    f = open(file, 'w')
-    f.write(data)
-    f.close()
+    with open(file, 'w') as f:
+        f.write(data)
 
 def rootPath():
     return ".test"
@@ -44,6 +43,7 @@ def do_bnf(name, grammar):
     g2 = ".bnf2"
     write(out, g2)
     out2 = get_peg_output('--bnf', g2)
+    print("out2: %" % out2)
     # peg_out2 = subprocess.Popen(['./peg.py', '--bnf', g2], stdout = subprocess.PIPE)
     # out2, err2 = peg_out2.communicate()
     erase(g2)
@@ -406,7 +406,7 @@ data = readAll('cmd.peg')
         time = timeit.timeit('parser(data)', setup, number = times)
         print("Total %f. Single run %f" % (time, time / times))
 
-    for i in xrange(1, 4):
+    for i in range(1, 4):
         test(i)
 
 def run():
