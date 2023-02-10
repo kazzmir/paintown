@@ -1060,7 +1060,7 @@ def generate(self, parallel = False, separate = None, directory = '.', main = Fa
         all = []
         pre = ""
         chunk_to_rules = {}
-        for i in xrange(0,int(math.ceil(float(len(rules)) / values_per_chunk))):
+        for i in range(0,int(math.ceil(float(len(rules)) / values_per_chunk))):
             values = rules[i*values_per_chunk:(i+1)*values_per_chunk]
             name = "Chunk%d" % i
             chunk_to_rules[name.lower()] = values

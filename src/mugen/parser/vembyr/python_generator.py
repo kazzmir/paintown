@@ -82,14 +82,14 @@ class Stream:
             self.file.seek(position)
         self.position = position + 1
         if position > self.limit:
-            print position
+            print(position)
             self.limit += 5000
         return self.file.read(1)
 
     def reportError(self):
         line = 1
         column = 1
-        for i in xrange(0, self.furthest):
+        for i in range(self.furthest):
             if self.all[i] == '\\n':
                 line += 1
                 column = 1
