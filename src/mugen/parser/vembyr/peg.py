@@ -920,7 +920,7 @@ class PatternVerbatim(Pattern):
     def generate_cpp(self, peg, result, stream, failure, tail, peg_args):
         return CppGenerator().generate_verbatim(self, peg, result, stream, failure, tail, peg_args)
         
-class Rule:
+class Rule(object):
     def __init__(self, name, patterns, rules = None, inline = False, parameters = None, fail = None):
         self.name = name
         self.patterns = patterns
@@ -945,9 +945,15 @@ class Rule:
         total_length = len(self.name)
         if self.inline:
             total_length += len('inline ')
+        rules = ''
+        if self.rules is not None:
+            rules = '[' + ','.join(self.rules) + ']'
+        parameters = ''
+        if self.parameters is not None:
+            parameters = '(' + ','.join(self.parameters) + ')'
         data = """
-%s = %s
-""" % (self.name, (('\n%s | ') % (' ' * total_length)).join([p.generate_bnf(code) for p in self.patterns]))
+%s%s%s = %s
+""" % (self.name, rules, parameters, (('\n%s | ') % (' ' * total_length)).join([p.generate_bnf(code) for p in self.patterns]))
         if self.inline:
             return "inline " + data.strip() + "\n"
         return data.strip() + "\n"
@@ -1321,7 +1327,7 @@ Result rule_%s(Stream & %s, const int %s%s%s){
 
         return data
     
-class Peg:
+class Peg(object):
     def __init__(self, start, include_code, more_code, module, rules, options):
         self.start = start
         self.rules = rules
@@ -2191,13 +2197,13 @@ Options:
   --lua : Generate Lua parser
   --cpp,--c++ : Generate C++ parser
   --h : Generate C++ header for the C++ functions
-   "--c++-interpreter : Generate a C++ parser that uses an interpreter
+  --c++-interpreter : Generate a C++ parser that uses an interpreter
   --save=filename : Save all generated parser output to a file, 'filename'
   --peg-name=name : Name the peg module 'name'. The intermediate peg module will be written as peg_<name>.py. Defaults to 'peg'.
     """)
 
+def main():
 # make_peg_parser()
-if __name__ == '__main__':
     import sys
     import re
     doit = []
@@ -2291,6 +2297,9 @@ if __name__ == '__main__':
 
     do_close()
     exit(return_code)
+
+if __name__ == '__main__':
+    main()
 
 # Done
 # memoize in python parsers
