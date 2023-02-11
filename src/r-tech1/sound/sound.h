@@ -8,6 +8,10 @@
 #include "allegro5/sound.h"
 #endif
 
+#ifdef USE_SDL
+#include "sdl/sound.h"
+#endif
+
 struct SAMPLE;
 
 namespace Storage{

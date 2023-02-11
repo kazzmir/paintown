@@ -5,8 +5,21 @@ includes = include_directories('src')
 all_code = [
   'src/xmain.cpp',
   'src/main-menu.cpp',
+
   'src/r-tech1/configuration.cpp',
   'src/r-tech1/input/keyboard.cpp',
+  'src/r-tech1/file-system.cpp',
+  'src/r-tech1/debug.cpp',
+  'src/r-tech1/funcs.cpp',
+  'src/r-tech1/tokenreader.cpp',
+  'src/r-tech1/token.cpp',
+  'src/r-tech1/exceptions/load_exception.cpp',
+  'src/r-tech1/exceptions/exception.cpp',
+  'src/r-tech1/graphics/bitmap.cpp',
+  'src/r-tech1/system.cpp',
+
+  'src/factory/collector.cpp',
+  'src/paintown-engine/game/mod.cpp',
   ]
 
 add_global_arguments('-DUSE_SDL=1', language: 'cpp')
