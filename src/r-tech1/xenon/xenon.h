@@ -1,0 +1,1 @@
+void xenon_init();
