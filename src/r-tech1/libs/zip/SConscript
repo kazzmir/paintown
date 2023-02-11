@@ -1,0 +1,9 @@
+Import('env')
+
+zenv = env.Clone()
+source = Split("""ioapi.c unzip.c zip.c""")
+
+library = []
+for s in source:
+    library.append(env.Object(s))
+Return('library')

@@ -1,0 +1,79 @@
+Import('env', 'options', 'root')
+
+#import sys
+#sys.path.append(Dir('..').rel_path(Dir("#r-tech1")))
+#print sys.path
+#import scons_rtech1.helpers
+
+import imp
+
+helpers_source = File("scons_rtech1/helpers.py", Dir(".").rel_path(Dir("#%s" % root)))
+helpers = imp.load_source("scons_rtech1.helpers", helpers_source.abspath)
+# from scons import helpers
+import os.path
+
+def tryKey(hashx, key, default):
+    try:
+        return hashx[key]
+    except KeyError:
+        return default
+
+def useNetwork(options):
+    return tryKey(options, 'networking', False)
+    
+def utilLibrary(env):
+    modules = helpers.read_cmake_list(helpers.findFile(root, 'src/CMakeLists.txt'))
+
+    source = []
+    for module in modules:
+        source.append(env.Object(modules[module]))
+    
+    return source
+
+def minizipLibrary(env):
+    return env.SConscript('libs/zip/SConscript', exports = ['env'])
+
+def gmeLibrary(env):
+    use = env
+    return SConscript('libs/gme/SConscript', exports = ['use'])
+
+def lzmaLibrary7z(env):
+    use = env
+    return SConscript('libs/7z/SConscript', exports = ['use', 'root'])
+
+def sflLibrary(env):
+    use = env
+    return SConscript('libs/sfl/SConscript', exports = ['use'])
+
+def pcreLibrary(env):
+    pcreEnv = env.Clone()
+    env = pcreEnv
+    return env.SConscript('libs/pcre/SConstruct', exports = ['env'])
+
+def dumbLibrary(env):
+    dumbEnv = env.Clone()
+    env = dumbEnv
+    return env.SConscript('libs/dumb/SConscript', exports = ['env'])
+
+def hawknlLibrary(env):
+    hawkEnv = env.Clone()
+    env = hawkEnv
+    # if isOSX():
+    #    env.Append(CPPDEFINES = 'MACOSX')
+    return env.SConscript('libs/hawknl/SConscript', exports = ['env'])
+    
+def lz4Library(env):
+    lz4Env = env.Clone()
+    env = lz4Env
+    return env.SConscript('libs/lz4/SConscript', exports = ['env'])
+
+env.Append(CPPPATH = Dir('src', Dir(Dir('.').rel_path(Dir('#%s' % root)))).abspath)
+
+all = [utilLibrary(env), minizipLibrary(env), gmeLibrary(env), lzmaLibrary7z(env), sflLibrary(env), pcreLibrary(env), dumbLibrary(env), lz4Library(env)]
+
+if useNetwork(options):
+    # Have networking
+    env.Append(CPPDEFINES = ['HAVE_NETWORKING'])
+    all.append(hawknlLibrary(env))
+
+Return('all')
