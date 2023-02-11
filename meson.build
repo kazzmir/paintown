@@ -1,5 +1,5 @@
 # Warning: changing the default_options requires a new build directory and doing 'meson setup ...' again
-project('paintown', 'cpp', default_options: ['cpp_std=c++11'])
+project('paintown', ['c', 'cpp'], default_options: ['cpp_std=c++11'])
 
 includes = include_directories('src')
 all_code = [
@@ -25,12 +25,43 @@ all_code = [
   'src/r-tech1/font.cpp',
   'src/r-tech1/menu/menu.cpp',
   'src/r-tech1/menu/font-info.cpp',
+  'src/r-tech1/menu/menu_option.cpp',
+  'src/r-tech1/menu/options.cpp',
+  'src/r-tech1/menu/optionfactory.cpp',
+  'src/r-tech1/directory.cpp',
+  'src/r-tech1/thread.cpp',
+  'src/r-tech1/utf.cpp',
+
+  'src/r-tech1/libs/sfl/sfldir.c',
+
+  'src/r-tech1/libs/7z/7zAlloc.c',
+  'src/r-tech1/libs/7z/7zBuf.c',
+  'src/r-tech1/libs/7z/7zBuf2.c',
+  'src/r-tech1/libs/7z/7zCrc.c',
+  'src/r-tech1/libs/7z/7zCrcOpt.c',
+  'src/r-tech1/libs/7z/7zDec.c',
+  'src/r-tech1/libs/7z/7zIn.c',
+  'src/r-tech1/libs/7z/CpuArch.c',
+  'src/r-tech1/libs/7z/LzmaDec.c',
+  'src/r-tech1/libs/7z/Lzma2Dec.c',
+  'src/r-tech1/libs/7z/Bra.c',
+  'src/r-tech1/libs/7z/Bra86.c',
+  'src/r-tech1/libs/7z/Bcj2.c',
+  'src/r-tech1/libs/7z/7zFile.c',
+  'src/r-tech1/libs/7z/7zStream.c',
+
+  'src/r-tech1/libs/zip/ioapi.c',
+  'src/r-tech1/libs/zip/unzip.c',
+  'src/r-tech1/libs/zip/zip.c',
 
   'src/factory/collector.cpp',
   'src/paintown-engine/game/mod.cpp',
   'src/paintown-engine/game/argument.cpp',
+  'src/paintown-engine/game/options.cpp',
 
   'src/mugen/argument.cpp',
+  'src/mugen/option-options.cpp',
+  'src/mugen/exception.cpp',
   ]
 
 add_global_arguments('-DUSE_SDL=1', language: 'cpp')
@@ -38,5 +69,6 @@ add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 
 sdl_dependency = dependency('sdl', required: true)
 freetype_dependency = dependency('freetype2', required: true)
+zlib_dependency = dependency('zlib', required: true)
 
-executable('paintown', all_code, include_directories: includes, dependencies: [sdl_dependency, freetype_dependency])
+executable('paintown', all_code, include_directories: includes, dependencies: [sdl_dependency, freetype_dependency, zlib_dependency])
