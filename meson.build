@@ -2,7 +2,12 @@
 project('paintown', 'cpp', default_options: ['cpp_std=c++11'])
 
 includes = include_directories('src')
-all_code = ['src/xmain.cpp', 'src/main-menu.cpp']
+all_code = [
+  'src/xmain.cpp',
+  'src/main-menu.cpp',
+  'src/r-tech1/configuration.cpp',
+  'src/r-tech1/input/keyboard.cpp',
+  ]
 
 add_global_arguments('-DUSE_SDL=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')

@@ -2,6 +2,10 @@
 #include "allegro5/keyboard.cpp"
 #endif
 
+#ifdef USE_SDL
+#include "sdl/keyboard.cpp"
+#endif
+
 std::vector<bool> Keyboard::repeatState;
 std::set<KeyboardListener*> Keyboard::listeners;
 bool Keyboard::isNumber( int key ){
@@ -53,6 +57,8 @@ bool Keyboard::isAlpha( int key ){
 
 
 const char * Keyboard::keyToName( int key ){
+    return "FIXME";
+    /*
     switch ( key ){
         case Keyboard::Key_A : return "A";
         case Keyboard::Key_B : return "B";
@@ -160,7 +166,7 @@ const char * Keyboard::keyToName( int key ){
         case Keyboard::Key_BACKQUOTE : return "BACKQUOTE";
         case Keyboard::Key_SEMICOLON : return "SEMICOLON";
         case Keyboard::Key_COMMAND : return "COMMAND";
-        /*
+        / *
         case Keyboard::Key_UNKNOWN1 : return "UNKNOWN1";
         case Keyboard::Key_UNKNOWN2 : return "UNKNOWN2";
         case Keyboard::Key_UNKNOWN3 : return "UNKNOWN3";
@@ -169,7 +175,7 @@ const char * Keyboard::keyToName( int key ){
         case Keyboard::Key_UNKNOWN6 : return "UNKNOWN6";
         case Keyboard::Key_UNKNOWN7 : return "UNKNOWN7";
         case Keyboard::Key_UNKNOWN8 : return "UNKNOWN8";
-        */
+        * /
         // case Keyboard::Key_MODIFIERS : return "MODIFIERS";
         case Keyboard::Key_LSHIFT : return "LSHIFT";
         case Keyboard::Key_RSHIFT : return "RSHIFT";
@@ -185,6 +191,7 @@ const char * Keyboard::keyToName( int key ){
         case Keyboard::Key_CAPSLOCK : return "CAPSLOCK";
         default : return "Unknown key";
     }
+*/
 }
 
 void Keyboard::setDelay( const int key, const int delay ){
@@ -262,7 +269,7 @@ void Keyboard::setAllDelay( const int delay ){
     setDelay( Key_COLON, delay );
     setDelay( Key_QUOTE, delay );
     setDelay( Key_BACKSLASH, delay );
-    setDelay( Key_BACKSLASH2, delay );
+    // setDelay( Key_BACKSLASH2, delay );
     setDelay( Key_COMMA, delay );
     setDelay( Key_STOP, delay );
     setDelay( Key_SLASH, delay );
