@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # GTK or QT based installer
@@ -35,7 +35,7 @@ verbose = 0
 
 def debug(s):
     if verbose > 0:
-        print s
+        print(s)
 
 #Create Directory
 def createDirectory(path):
@@ -97,9 +97,9 @@ def copyData(currentRoot, binDirectory, widget, emitter):
                 # Use str to convert from QString to plain python string
                 createDirectory(str(currentRoot + '/' + root))
                 shutil.copy(str(tmpFile), str(currentRoot + '/' + tmpFile))
-            except Exception, e:
+            except Exception as e:
                 updateGui("Could not copy '%s' because %s" % (tmpFile, e))
-                print "Could not copy '%s' because %s!" % (tmpFile, e)
+                print("Could not copy '%s' because %s!" % (tmpFile, e))
 
     def createRunScript(script, binary):
         out = open(script, 'w')
@@ -116,9 +116,9 @@ def copyData(currentRoot, binDirectory, widget, emitter):
         createDirectory(str(binDirectory))
         shutil.copy('paintown', str(currentRoot + '/' + 'paintown-bin'))
         os.chmod(str(currentRoot + '/' + 'paintown-bin'), stat.S_IRWXU)
-    except Exception, e:
+    except Exception as e:
         updateGui('Could not copy the paintown binary because %s!' % e)
-        print 'Could not copy the paintown binary because %s!' % e
+        print('Could not copy the paintown binary because %s!' % e)
 
     updateGui('Creating run script in %s/%s' % (str(binDirectory), 'paintown'))
     createRunScript('%s/paintown' % str(binDirectory), '%s/paintown-bin' % str(currentRoot))
@@ -272,7 +272,7 @@ def forwardButton():
         widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
         widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
         widget.next.setText('&Exit')
-	widget.next.setShortcut('Alt+E')
+        widget.next.setShortcut('Alt+E')
     widget.stackedWidget.setCurrentIndex(currentPage[0])
     updatePageNumber()
 
