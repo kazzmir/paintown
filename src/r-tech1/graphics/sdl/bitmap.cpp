@@ -13,3 +13,8 @@ bool operator<(const INTERNAL_COLOR&, const INTERNAL_COLOR&){
     /* FIXME */
     return false;
 }
+
+Graphics::Bitmap * Graphics::getScreenBuffer(){
+    /* FIXME */
+    return nullptr;
+}

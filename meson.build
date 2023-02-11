@@ -17,9 +17,20 @@ all_code = [
   'src/r-tech1/exceptions/exception.cpp',
   'src/r-tech1/graphics/bitmap.cpp',
   'src/r-tech1/system.cpp',
+  'src/r-tech1/version.cpp',
+  'src/r-tech1/argument.cpp',
+  'src/r-tech1/init.cpp',
+  'src/r-tech1/input/input-manager.cpp',
+  'src/r-tech1/sound/music.cpp',
+  'src/r-tech1/font.cpp',
+  'src/r-tech1/menu/menu.cpp',
+  'src/r-tech1/menu/font-info.cpp',
 
   'src/factory/collector.cpp',
   'src/paintown-engine/game/mod.cpp',
+  'src/paintown-engine/game/argument.cpp',
+
+  'src/mugen/argument.cpp',
   ]
 
 add_global_arguments('-DUSE_SDL=1', language: 'cpp')
