@@ -14,14 +14,6 @@ all_code = [
   'src/factory/collector.cpp',
   'src/factory/font_render.cpp',
 
-  
-  'src/openbor/animation.cpp',
-  'src/openbor/data.cpp',
-  'src/openbor/display-character.cpp',
-  'src/openbor/mod.cpp',
-  'src/openbor/pack-reader.cpp',
-  'src/openbor/util.cpp',
-
   'src/globals.cpp',
 ]
 
@@ -32,9 +24,10 @@ zlib_dependency = dependency('zlib', required: true)
 subdir('src/r-tech1')
 subdir('src/mugen')
 subdir('src/paintown-engine')
+subdir('src/openbor')
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
   dependencies: [sdl_dependency, freetype_dependency, zlib_dependency],
-  link_with: [rtech1_library, mugen_library, paintown_library],
+  link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
   )
