@@ -713,6 +713,10 @@ static void sortArguments(vector<Util::ReferenceCount<Argument::Parameter> > & a
 }
 
 static void setUpTouch(const Util::ReferenceCount<DeviceInput::Touch> & touch){
+    if (touch == nullptr){
+        return;
+    }
+
     int screenWidth = Graphics::Bitmap::getScreenWidth();
     int screenHeight = Graphics::Bitmap::getScreenHeight();
     int buttonSize = (int) (0.06 * sqrt(screenWidth * screenWidth + screenHeight * screenHeight));
