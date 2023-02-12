@@ -4,7 +4,7 @@
 #ifdef USE_SDL
 /* for Uint8 */
 #include <SDL.h>
-#include "sdl/mixer/SDL_mixer.h"
+#include <SDL/SDL_mixer.h>
 #include "audio.h"
 #endif
 

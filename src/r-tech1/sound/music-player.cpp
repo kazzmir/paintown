@@ -1,15 +1,15 @@
-#include "r-tech1/sound/music-renderer.h"
-#include "r-tech1/sound/music-player.h"
-#include "r-tech1/debug.h"
+#include "music-renderer.h"
+#include "music-player.h"
+#include "../debug.h"
 #include <iostream>
-#include "r-tech1/configuration.h"
-#include "r-tech1/sound/sound.h"
-#include "r-tech1/sound/music-exception.h"
-#include "r-tech1/timedifference.h"
-#include "libs/dumb/include/dumb.h"
-#include "libs/gme/Music_Emu.h"
-#include "r-tech1/exceptions/exception.h"
-#include "r-tech1/file-system.h"
+#include "../configuration.h"
+#include "sound.h"
+#include "music-exception.h"
+#include "../timedifference.h"
+#include "../libs/dumb/include/dumb.h"
+#include "../libs/gme/Music_Emu.h"
+#include "../exceptions/exception.h"
+#include "../file-system.h"
 #include <sstream>
 #include <stdio.h>
 

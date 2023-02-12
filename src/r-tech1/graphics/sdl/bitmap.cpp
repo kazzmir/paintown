@@ -1,4 +1,7 @@
+#ifdef USE_SDL
+
 #include "bitmap.h"
+#include "../bitmap.h"
 
 bool operator==(const INTERNAL_COLOR&, const INTERNAL_COLOR&){
     /* FIXME */
@@ -100,7 +103,7 @@ Graphics::Color Graphics::MaskColor(){
     return c;
 }
 
-void Graphics::initializeExtraStuff(){
+void initializeExtraStuff(){
 }
 
 Graphics::Bitmap::Bitmap( const std::string & load_file ){
@@ -351,3 +354,5 @@ int Graphics::setGfxModeText(){
 int Graphics::setGraphicsMode(int mode, int width, int height){
     return 0;
 }
+
+#endif
