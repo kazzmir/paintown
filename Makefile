@@ -2,6 +2,7 @@
 
 debug: build-debug
 	meson compile -C build-debug
+	cp build-debug/paintown .
 
 build-debug:
 	mkdir build-debug
