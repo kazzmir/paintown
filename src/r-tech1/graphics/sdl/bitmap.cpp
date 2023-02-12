@@ -117,6 +117,7 @@ void Graphics::Bitmap::save( const std::string & str ) const {
 }
 
 Graphics::Color Graphics::Bitmap::blendColor(const Color & input) const {
+    return input;
 }
 
 void Graphics::Bitmap::startDrawing() const {
@@ -266,4 +267,83 @@ void Graphics::TranslucentBitmap::ellipse( int x, int y, int rx, int ry, Color c
 }
 
 void Graphics::TranslucentBitmap::ellipseFill( int x, int y, int rx, int ry, Color color ) const {
+}
+
+void Graphics::TranslucentBitmap::roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const {
+}
+
+void Graphics::TranslucentBitmap::roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const {
+}
+
+void Graphics::TranslucentBitmap::circleFill( int x, int y, int radius, Color color ) const {
+}
+
+void Graphics::TranslucentBitmap::hLine( const int x1, const int y, const int x2, const Color color ) const {
+}
+
+void Graphics::TranslucentBitmap::rectangleFill(int x1, int y1, int x2, int y2, Color color) const {
+}
+
+void Graphics::TranslucentBitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {
+}
+
+void Graphics::TranslucentBitmap::line( const int x1, const int y1, const int x2, const int y2, const Color color ) const {
+}
+
+void Graphics::TranslucentBitmap::arc(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color) const {
+}
+
+void Graphics::TranslucentBitmap::arcFilled(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color ) const {
+}
+
+void Graphics::TranslucentBitmap::draw(const int x, const int y, Filter * filter, const Bitmap & where) const {
+}
+
+void Graphics::TranslucentBitmap::drawHFlip(const int x, const int y, Filter * filter, const Bitmap & where) const {
+}
+    
+void Graphics::TranslucentBitmap::drawHFlip(const int x, const int y, const Bitmap & where) const {
+}
+
+void Graphics::TranslucentBitmap::drawVFlip( const int x, const int y, const Bitmap & where ) const {
+}
+
+void Graphics::TranslucentBitmap::drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
+}
+
+void Graphics::TranslucentBitmap::putPixelNormal(int x, int y, Color col) const {
+}
+
+void Graphics::TranslucentBitmap::drawHVFlip( const int x, const int y, const Bitmap & where ) const {
+}
+
+void Graphics::TranslucentBitmap::drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::draw(const int x, const int y, const Bitmap & where) const {
+}
+
+void Graphics::LitBitmap::draw(const int x, const int y, Filter * filter, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::drawHFlip( const int x, const int y, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::drawHFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::drawVFlip( const int x, const int y, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::drawHVFlip( const int x, const int y, const Bitmap & where ) const {
+}
+
+void Graphics::LitBitmap::drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
+}
+
+int Graphics::setGfxModeText(){
+    return 0;
 }

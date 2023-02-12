@@ -31,6 +31,7 @@ all_code = [
   'src/r-tech1/directory.cpp',
   'src/r-tech1/thread.cpp',
   'src/r-tech1/utf.cpp',
+  'src/r-tech1/system/init.cpp',
 
   'src/r-tech1/libs/sfl/sfldir.c',
 
