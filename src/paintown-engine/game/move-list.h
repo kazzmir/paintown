@@ -2,7 +2,7 @@
 #define _paintown_move_list_h
 
 #include <vector>
-#include <r-tech1/menu/menu_option.h>
+#include "r-tech1/menu/menu_option.h"
 
 namespace Gui{
     class ContextBox;

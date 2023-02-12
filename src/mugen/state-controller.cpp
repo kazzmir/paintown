@@ -1,7 +1,7 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/message-queue.h>
-#include <r-tech1/parameter.h>
-#include <r-tech1/debug.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/message-queue.h"
+#include "r-tech1/parameter.h"
+#include "r-tech1/debug.h"
 #include "ast/all.h"
 #include "state-controller.h"
 #include "random.h"

@@ -1,10 +1,10 @@
 #include "character.h"
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/font.h>
-#include <r-tech1/message-queue.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/input/input-source.h>
-#include <r-tech1/file-system.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/font.h"
+#include "r-tech1/message-queue.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/input/input-source.h"
+#include "r-tech1/file-system.h"
 #include "../game/nameplacer.h"
 #include "animation.h"
 #include "../game/world.h"

@@ -1,6 +1,6 @@
 #include "trigger.h"
-#include <r-tech1/token.h>
-#include <r-tech1/exceptions/load_exception.h>
+#include "r-tech1/token.h"
+#include "r-tech1/exceptions/load_exception.h"
 #include "../level/scene.h"
 #include "../environment/atmosphere.h"
 #include <vector>
@@ -36,7 +36,7 @@ protected:
     const Token * message;
 };
 
-Trigger * Trigger::parse(const Token * token) throw (TokenException) {
+Trigger * Trigger::parse(const Token * token){
     const Token * token_type = token->findToken("trigger/type");
     if (token_type == NULL){
         throw TokenException(__FILE__, __LINE__, "Expected to find trigger/type");

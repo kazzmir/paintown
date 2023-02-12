@@ -2,7 +2,7 @@
 #define _paintown_mugen_config_h
 
 #include <string>
-#include <r-tech1/file-system.h>
+#include "r-tech1/file-system.h"
 
 class Collector;
 

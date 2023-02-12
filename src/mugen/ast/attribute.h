@@ -6,7 +6,7 @@
 #include <string>
 #include "ast.h"
 #include "exception.h"
-#include <r-tech1/token.h>
+#include "r-tech1/token.h"
 
 namespace Ast{
 

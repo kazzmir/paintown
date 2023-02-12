@@ -2,10 +2,10 @@
 #define _paintown_item_h
 
 #include "object_nonattack.h"
-#include <r-tech1/file-system.h>
-#include <r-tech1/sound/sound.h>
-#include <r-tech1/network/network.h>
-#include <r-tech1/pointer.h>
+#include "r-tech1/file-system.h"
+#include "r-tech1/sound/sound.h"
+#include "r-tech1/network/network.h"
+#include "r-tech1/pointer.h"
 #include "stimulation.h"
 #include "animation.h"
 

@@ -1,10 +1,10 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/menu/menu_option.h>
-#include <r-tech1/menu/menu.h>
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/loading.h>
-#include <r-tech1/configuration.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/menu/menu_option.h"
+#include "r-tech1/menu/menu.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/loading.h"
+#include "r-tech1/configuration.h"
 #include "options.h"
 #include "game.h"
 #include "menu.h"
@@ -21,14 +21,14 @@
 
 #include "ast/all.h"
 #include "parser/all.h"
-#include <r-tech1/events.h>
-#include <r-tech1/init.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/input/input-manager.h>
-#include <r-tech1/input/input-source.h>
-#include <r-tech1/exceptions/exception.h>
+#include "r-tech1/events.h"
+#include "r-tech1/init.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/input/input-manager.h"
+#include "r-tech1/input/input-source.h"
+#include "r-tech1/exceptions/exception.h"
 
 #include "globals.h"
 

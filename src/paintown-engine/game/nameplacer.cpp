@@ -1,9 +1,9 @@
 #include <map>
 
 #include "nameplacer.h"
-#include <r-tech1/font.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/file-system.h>
+#include "r-tech1/font.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/file-system.h"
 #include "globals.h"
 
 using namespace std;

@@ -6,8 +6,8 @@
 #include "sprite.h"
 #include "font.h"
 
-#include <r-tech1/pointer.h>
-#include <r-tech1/gui/fadetool.h>
+#include "r-tech1/pointer.h"
+#include "r-tech1/gui/fadetool.h"
 
 namespace Graphics{
 class Bitmap;

@@ -1,7 +1,7 @@
 #ifndef _paintown_mugen_effect_h
 #define _paintown_mugen_effect_h
 
-#include <r-tech1/pointer.h>
+#include "r-tech1/pointer.h"
 #include "common.h"
 
 namespace Graphics{

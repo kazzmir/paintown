@@ -1,5 +1,5 @@
 #include "projectile.h"
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include "character.h"
 #include "animation.h"
 #include "stage.h"

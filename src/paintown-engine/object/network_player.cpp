@@ -1,8 +1,8 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/font.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/funcs.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/font.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/funcs.h"
 #include "animation.h"
 #include "factory/font_render.h"
 #include "globals.h"

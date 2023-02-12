@@ -1,4 +1,4 @@
-#include <r-tech1/main.h>
+#include "r-tech1/main.h"
 
 #ifdef USE_ALLEGRO
 #include <allegro.h>

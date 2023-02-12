@@ -1,7 +1,7 @@
 #ifndef _paintown_trigger_h
 #define _paintown_trigger_h
 
-#include <r-tech1/token_exception.h>
+#include "r-tech1/token_exception.h"
 
 class Token;
 class Scene;
@@ -31,7 +31,7 @@ public:
 
     virtual ~Trigger();
 
-    static Trigger * parse(const Token * token) throw (TokenException);
+    static Trigger * parse(const Token * token);
 };
 
 #endif

@@ -2,7 +2,7 @@
 #define _paintown_enemy_guy_h
 
 #include "character.h"
-#include <r-tech1/file-system.h>
+#include "r-tech1/file-system.h"
 
 #include <string>
 #include <vector>

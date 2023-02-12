@@ -183,8 +183,8 @@ Win
 #include "helper.h"
 #include "random.h"
 #include "stage.h"
-#include <r-tech1/funcs.h>
-#include <r-tech1/regex.h>
+#include "r-tech1/funcs.h"
+#include "r-tech1/regex.h"
 #include <math.h>
 #include <sstream>
 #include <string>

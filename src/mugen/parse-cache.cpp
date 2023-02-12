@@ -6,9 +6,9 @@
 #include "ast/all.h"
 #include "ast/extra.h"
 #include "globals.h"
-#include <r-tech1/file-system.h>
-#include <r-tech1/system.h>
-#include <r-tech1/debug.h>
+#include "r-tech1/file-system.h"
+#include "r-tech1/system.h"
+#include "r-tech1/debug.h"
 
 using namespace std;
 

@@ -4,7 +4,7 @@
 #include "Value.h"
 #include <string>
 #include <algorithm>
-#include <r-tech1/funcs.h>
+#include "r-tech1/funcs.h"
 
 namespace Ast{
 

@@ -2,7 +2,7 @@
 #define _paintown_a0739024d79cadca8f06a994adc0bdf9_h
 
 #include <deque>
-#include <r-tech1/input/text-input.h>
+#include "r-tech1/input/text-input.h"
 #include "../object/object.h"
 
 class World;

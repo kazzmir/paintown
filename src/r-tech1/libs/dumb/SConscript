@@ -1,0 +1,76 @@
+import os
+Import( 'env' )
+
+# env = Environment( ENV = os.environ )
+
+source = Split("""
+it/itorder.c
+it/xmeffect.c
+it/itrender.c
+it/itread2.c
+it/itunload.c
+it/loadmod.c
+it/loads3m.c
+it/loadxm2.c
+it/itload2.c
+it/readmod2.c
+it/reads3m2.c
+it/loadmod2.c
+it/loadxm.c
+it/loads3m2.c
+it/itload.c
+it/itmisc.c
+it/itread.c
+it/readxm.c
+it/readmod.c
+it/reads3m.c
+it/readxm2.c
+core/makeduh.c
+core/unload.c
+core/loadduh.c
+core/rawsig.c
+core/rendduh.c
+core/rendsig.c
+core/duhlen.c
+core/duhtag.c
+core/atexit.c
+core/readduh.c
+core/register.c
+core/dumbfile.c
+helpers/sampbuf.c
+helpers/stdfile.c
+helpers/clickrem.c
+helpers/silence.c
+helpers/memfile.c
+helpers/resample.c
+""");
+
+unused = Split("""
+allegro/alplay.c
+allegro/datit.c
+allegro/datxm.c
+allegro/datduh.c
+allegro/datitq.c
+allegro/datmod.c
+allegro/dats3m.c
+allegro/datxmq.c
+allegro/datmodq.c
+allegro/dats3mq.c
+allegro/datunld.c
+allegro/packfile.c
+""")
+
+# helpers/resample.inc
+# helpers/resamp2.inc
+# helpers/resamp3.inc
+
+env.Prepend(CPPPATH = ['include','include/internal'])
+# env.Append( CCFLAGS = ['-Wall','-W','-Wwrite-strings','-Wstrict-prototypes','-Wmissing-declarations', '-O2', '-ffast-math', '-fomit-frame-pointer', '-Wno-missing-declarations'] )
+env.Append(CCFLAGS = ['-Wall','-W','-Wwrite-strings','-Wstrict-prototypes','-Wmissing-declarations', '-ffast-math', '-Wno-missing-declarations'] )
+
+env.Append(CPPDEFINES = 'DUMB_DECLARE_DEPRECATED')
+
+x = []
+for s in map( lambda x: 'src/%s' % x, source ):
+    x.append(env.Object(s))
+Return( 'x' )

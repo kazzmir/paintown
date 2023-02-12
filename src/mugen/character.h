@@ -9,9 +9,9 @@
 #include "exception.h"
 
 // #include "util/network/network.h"
-#include <r-tech1/pointer.h>
-#include <r-tech1/input/input-map.h>
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/pointer.h"
+#include "r-tech1/input/input-map.h"
+#include "r-tech1/graphics/bitmap.h"
 #include "animation.h"
 #include "util.h"
 #include "compiler.h"

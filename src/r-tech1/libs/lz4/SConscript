@@ -1,0 +1,10 @@
+Import('env')
+
+source = Split("""
+lz4.c
+""")
+
+x = []
+for s in source:
+    x.append(env.Object(s))
+Return('x')

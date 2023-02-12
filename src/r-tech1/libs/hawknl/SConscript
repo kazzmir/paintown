@@ -1,0 +1,27 @@
+import os
+Import( 'env' )
+
+# env = Environment( ENV = os.environ )
+
+source = Split("""
+src/crc.cpp
+src/err.cpp
+src/errorstr.cpp
+src/group.cpp
+src/ipx.cpp
+src/loopback.cpp
+src/nl.cpp
+src/nltime.cpp
+src/sock.cpp
+""");
+
+# src/hthread.cpp
+# src/htcondition.cpp
+# src/htmutex.cpp
+
+env.Append(CPPPATH = ['.', 'hawknl'])
+
+x = []
+for s in source:
+    x.append(env.Object(s))
+Return('x')

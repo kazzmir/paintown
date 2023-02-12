@@ -5,8 +5,8 @@
 #include "common.h"
 #include "compiler.h"
 #include "serialize.h"
-#include <r-tech1/graphics/color.h>
-#include <r-tech1/token.h>
+#include "r-tech1/graphics/color.h"
+#include "r-tech1/token.h"
 #include <map>
 
 class Token;

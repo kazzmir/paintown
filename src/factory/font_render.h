@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include <r-tech1/font.h>
-#include <r-tech1/file-system.h>
+#include "r-tech1/font.h"
+#include "r-tech1/file-system.h"
 
 namespace Graphics{
 class Bitmap;

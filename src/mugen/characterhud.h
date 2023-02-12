@@ -6,7 +6,7 @@
 
 #include "util.h"
 #include "exception.h"
-#include <r-tech1/gui/fadetool.h>
+#include "r-tech1/gui/fadetool.h"
 #include "character.h"
 #include "behavior.h"
 

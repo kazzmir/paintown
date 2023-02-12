@@ -21,8 +21,8 @@ class Gradient;
 #include <map>
 #include <string>
 
-#include <r-tech1/file-system.h>
-#include <r-tech1/network/network.h>
+#include "r-tech1/file-system.h"
+#include "r-tech1/network/network.h"
 #include "world.h"
 #include "../level/cacher.h"
 #include "../level/block.h"

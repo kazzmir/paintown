@@ -2,9 +2,9 @@
 #define _paintown_game_object_h
 
 #include "../network/network.h"
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/sound/sound.h>
-#include <r-tech1/pointer.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/sound/sound.h"
+#include "r-tech1/pointer.h"
 #include "trigger.h"
 #include <string>
 #include <vector>

@@ -1,4 +1,4 @@
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include "animation.h"
 #include "state.h"
 

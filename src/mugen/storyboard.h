@@ -8,9 +8,9 @@
 #include "exception.h"
 #include "util.h"
 #include "ast/extra.h"
-#include <r-tech1/pointer.h>
-#include <r-tech1/gui/fadetool.h>
-#include <r-tech1/input/input-map.h>
+#include "r-tech1/pointer.h"
+#include "r-tech1/gui/fadetool.h"
+#include "r-tech1/input/input-map.h"
 #include "animation.h"
 
 

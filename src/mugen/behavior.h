@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include "util.h"
-#include <r-tech1/input/input-map.h>
+#include "r-tech1/input/input-map.h"
 #include "command.h"
 
 namespace Mugen{

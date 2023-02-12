@@ -2,16 +2,16 @@
 #include <sstream>
 #include <string>
 
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/ebox.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/sound/sound.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/token.h>
-#include <r-tech1/token_exception.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/ebox.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/sound/sound.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/token.h"
+#include "r-tech1/token_exception.h"
 
 #include "animation.h"
 #include "animation_event.h"

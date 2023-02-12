@@ -1,16 +1,16 @@
 #include "character-select.h"
 
-#include <r-tech1/resource.h>
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/font.h>
-#include <r-tech1/input/input.h>
-#include <r-tech1/input/input-manager.h>
-#include <r-tech1/token.h>
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/gui/select-list.h>
+#include "r-tech1/resource.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/font.h"
+#include "r-tech1/input/input.h"
+#include "r-tech1/input/input-manager.h"
+#include "r-tech1/token.h"
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/gui/select-list.h"
 
 #include "../object/player.h"
 #include "globals.h"

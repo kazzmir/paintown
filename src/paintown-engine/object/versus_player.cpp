@@ -1,9 +1,9 @@
 #include "player.h"
-#include <r-tech1/input/input-source.h>
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/configuration.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/input/input.h>
+#include "r-tech1/input/input-source.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/configuration.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/input/input.h"
 #include "versus_player.h"
 #include "animation.h"
 #include "globals.h"

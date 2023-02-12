@@ -1,4 +1,4 @@
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include "animation_trail.h"
 #include "character.h"
 #include "object.h"

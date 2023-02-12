@@ -5,9 +5,9 @@
 #include <vector>
 #include <map>
 
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/input/input.h>
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/input/input.h"
+#include "r-tech1/graphics/bitmap.h"
 #include "attack.h"
 
 /* is that crazy hat for chicken? */

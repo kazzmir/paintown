@@ -1,6 +1,6 @@
 #include <string.h>
 #include "sound.h"
-#include <r-tech1/sound/sound.h>
+#include "r-tech1/sound/sound.h"
 
 namespace Mugen{
 

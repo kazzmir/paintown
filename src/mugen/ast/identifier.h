@@ -8,8 +8,8 @@
 #include <map>
 
 #include "Value.h"
-#include <r-tech1/funcs.h>
-#include <r-tech1/token.h>
+#include "r-tech1/funcs.h"
+#include "r-tech1/token.h"
 
 namespace Ast{
 

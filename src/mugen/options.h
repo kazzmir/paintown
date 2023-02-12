@@ -3,10 +3,10 @@
 
 #include "exception.h"
 #include "menu.h"
-#include <r-tech1/menu/optionfactory.h>
-#include <r-tech1/gui/scroll-list.h>
-#include <r-tech1/gui/fadetool.h>
-#include <r-tech1/pointer.h>
+#include "r-tech1/menu/optionfactory.h"
+#include "r-tech1/gui/scroll-list.h"
+#include "r-tech1/gui/fadetool.h"
+#include "r-tech1/pointer.h"
 #include "util.h"
 
 #include <vector>

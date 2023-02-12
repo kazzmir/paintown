@@ -5,8 +5,8 @@
 #include <vector>
 #include <string>
 #include "command.h"
-#include <r-tech1/token.h>
-#include <r-tech1/pointer.h>
+#include "r-tech1/token.h"
+#include "r-tech1/pointer.h"
 
 class Token;
 namespace PaintownUtil = ::Util;

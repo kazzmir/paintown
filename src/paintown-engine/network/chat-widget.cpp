@@ -1,9 +1,9 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/input/text-input.h>
-#include <r-tech1/input/input-manager.h>
-#include <r-tech1/font.h>
-#include <r-tech1/resource.h>
-#include <r-tech1/file-system.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/input/text-input.h"
+#include "r-tech1/input/input-manager.h"
+#include "r-tech1/font.h"
+#include "r-tech1/resource.h"
+#include "r-tech1/file-system.h"
 #include <deque>
 #include "chat-widget.h"
 #include "../game/world.h"

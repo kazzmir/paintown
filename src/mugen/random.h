@@ -2,7 +2,7 @@
 #define _paintown_mugen_random_h
 
 #include <stdint.h>
-#include <r-tech1/pointer.h>
+#include "r-tech1/pointer.h"
 
 namespace PaintownUtil = ::Util;
 class Token;

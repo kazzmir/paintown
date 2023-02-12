@@ -1,10 +1,10 @@
 #include "storyboard.h"
 
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/resource.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/events.h>
-#include <r-tech1/init.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/resource.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/events.h"
+#include "r-tech1/init.h"
 #include "globals.h"
 #include "factory/font_render.h"
 #include "parse-cache.h"
@@ -19,12 +19,12 @@
 
 #include "ast/all.h"
 #include "parser/all.h"
-#include <r-tech1/debug.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/sound/music.h>
-#include <r-tech1/input/input-map.h>
-#include <r-tech1/input/input-source.h>
-#include <r-tech1/input/input-manager.h>
+#include "r-tech1/debug.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/sound/music.h"
+#include "r-tech1/input/input-map.h"
+#include "r-tech1/input/input-source.h"
+#include "r-tech1/input/input-manager.h"
 
 namespace PaintownUtil = ::Util;
 

@@ -2,8 +2,8 @@
 #define _paintown_display_character_h
 
 #include "character.h"
-#include <r-tech1/file-system.h>
-#include <r-tech1/thread.h>
+#include "r-tech1/file-system.h"
+#include "r-tech1/thread.h"
 #include <string>
 #include <vector>
 

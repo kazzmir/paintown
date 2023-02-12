@@ -3,9 +3,9 @@
 
 #include <string>
 #include <map>
-#include <r-tech1/thread.h>
-#include <r-tech1/pointer.h>
-#include <r-tech1/file-system.h>
+#include "r-tech1/thread.h"
+#include "r-tech1/pointer.h"
+#include "r-tech1/file-system.h"
 #include "ast/extra.h"
 
 class OptionMugenMenu;
