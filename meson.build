@@ -38,6 +38,9 @@ all_code = [
   'src/r-tech1/system/timer.cpp',
   'src/r-tech1/message-queue.cpp',
   'src/r-tech1/resource.cpp',
+  'src/r-tech1/events.cpp',
+
+  'src/r-tech1/input/sdl/joystick.cpp',
 
   'src/r-tech1/libs/sfl/sfldir.c',
 
