@@ -2,6 +2,7 @@
 project('paintown', ['c', 'cpp'], default_options: ['cpp_std=c++11'])
 
 includes = include_directories('src')
+dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
 all_code = [
   'src/xmain.cpp',
   'src/main-menu.cpp',
@@ -21,6 +22,7 @@ all_code = [
   'src/r-tech1/argument.cpp',
   'src/r-tech1/init.cpp',
   'src/r-tech1/input/input-manager.cpp',
+  'src/r-tech1/input/touch.cpp',
   'src/r-tech1/sound/music.cpp',
   'src/r-tech1/sound/sound.cpp',
   'src/r-tech1/font.cpp',
@@ -33,8 +35,51 @@ all_code = [
   'src/r-tech1/thread.cpp',
   'src/r-tech1/utf.cpp',
   'src/r-tech1/system/init.cpp',
+  'src/r-tech1/system/timer.cpp',
+  'src/r-tech1/message-queue.cpp',
+  'src/r-tech1/resource.cpp',
 
   'src/r-tech1/libs/sfl/sfldir.c',
+
+  'src/r-tech1/libs/dumb/src/it/itorder.c',
+  'src/r-tech1/libs/dumb/src/it/xmeffect.c',
+  'src/r-tech1/libs/dumb/src/it/itrender.c',
+  'src/r-tech1/libs/dumb/src/it/itread2.c',
+  'src/r-tech1/libs/dumb/src/it/itunload.c',
+  'src/r-tech1/libs/dumb/src/it/loadmod.c',
+  'src/r-tech1/libs/dumb/src/it/loads3m.c',
+  'src/r-tech1/libs/dumb/src/it/loadxm2.c',
+  'src/r-tech1/libs/dumb/src/it/itload2.c',
+  'src/r-tech1/libs/dumb/src/it/readmod2.c',
+  'src/r-tech1/libs/dumb/src/it/reads3m2.c',
+  'src/r-tech1/libs/dumb/src/it/loadmod2.c',
+  'src/r-tech1/libs/dumb/src/it/loadxm.c',
+  'src/r-tech1/libs/dumb/src/it/loads3m2.c',
+  'src/r-tech1/libs/dumb/src/it/itload.c',
+  'src/r-tech1/libs/dumb/src/it/itmisc.c',
+  'src/r-tech1/libs/dumb/src/it/itread.c',
+  'src/r-tech1/libs/dumb/src/it/readxm.c',
+  'src/r-tech1/libs/dumb/src/it/readmod.c',
+  'src/r-tech1/libs/dumb/src/it/reads3m.c',
+  'src/r-tech1/libs/dumb/src/it/readxm2.c',
+  'src/r-tech1/libs/dumb/src/core/makeduh.c',
+  'src/r-tech1/libs/dumb/src/core/unload.c',
+  'src/r-tech1/libs/dumb/src/core/loadduh.c',
+  'src/r-tech1/libs/dumb/src/core/rawsig.c',
+  'src/r-tech1/libs/dumb/src/core/rendduh.c',
+  'src/r-tech1/libs/dumb/src/core/rendsig.c',
+  'src/r-tech1/libs/dumb/src/core/duhlen.c',
+  'src/r-tech1/libs/dumb/src/core/duhtag.c',
+  'src/r-tech1/libs/dumb/src/core/atexit.c',
+  'src/r-tech1/libs/dumb/src/core/readduh.c',
+  'src/r-tech1/libs/dumb/src/core/register.c',
+  'src/r-tech1/libs/dumb/src/core/dumbfile.c',
+  'src/r-tech1/libs/dumb/src/helpers/sampbuf.c',
+  'src/r-tech1/libs/dumb/src/helpers/stdfile.c',
+  'src/r-tech1/libs/dumb/src/helpers/clickrem.c',
+  'src/r-tech1/libs/dumb/src/helpers/silence.c',
+  'src/r-tech1/libs/dumb/src/helpers/memfile.c',
+  'src/r-tech1/libs/dumb/src/helpers/resample.c',
 
   'src/r-tech1/libs/7z/7zAlloc.c',
   'src/r-tech1/libs/7z/7zBuf.c',
@@ -73,4 +118,4 @@ sdl_dependency = dependency('sdl', required: true)
 freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
 
-executable('paintown', all_code, include_directories: includes, dependencies: [sdl_dependency, freetype_dependency, zlib_dependency])
+executable('paintown', all_code, include_directories: [includes, dumb_includes], dependencies: [sdl_dependency, freetype_dependency, zlib_dependency])

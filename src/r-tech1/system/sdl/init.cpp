@@ -6,4 +6,7 @@ namespace System{
 void initSystem(const Global::InitConditions & conditions, Global::stream_type & out){
 }
 
+void startTimers(){
+}
+
 }

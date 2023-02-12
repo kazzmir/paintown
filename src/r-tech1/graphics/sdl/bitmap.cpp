@@ -347,3 +347,7 @@ void Graphics::LitBitmap::drawHVFlip( const int x, const int y, Filter * filter,
 int Graphics::setGfxModeText(){
     return 0;
 }
+
+int Graphics::setGraphicsMode(int mode, int width, int height){
+    return 0;
+}

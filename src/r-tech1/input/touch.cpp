@@ -1,5 +1,9 @@
-#include "r-tech1/input/touch.h"
+#include "touch.h"
 #include <vector>
+
+#ifdef USE_SDL
+#include "sdl/touch.cpp"
+#endif
 
 namespace DeviceInput{
 
