@@ -83,68 +83,17 @@ all_code = [
   'src/openbor/util.cpp',
 
   'src/globals.cpp',
-
-  'src/mugen/argument.cpp',
-  'src/mugen/option-options.cpp',
-  'src/mugen/exception.cpp',
-  'src/mugen/config.cpp',
-
-  'src/mugen/animation.cpp',
-  'src/mugen/background.cpp',
-  'src/mugen/behavior.cpp',
-  'src/mugen/character.cpp',
-  'src/mugen/characterhud.cpp',
-  'src/mugen/character-select.cpp',
-  'src/mugen/command.cpp',
-  'src/mugen/compiler.cpp',
-  'src/mugen/constraint.cpp',
-  'src/mugen/effect.cpp',
-  'src/mugen/font.cpp',
-  'src/mugen/game.cpp',
-  'src/mugen/helper.cpp',
-  'src/mugen/item-content.cpp',
-  'src/mugen/item.cpp',
-  'src/mugen/match.cpp',
-  'src/mugen/menu.cpp',
-  'src/mugen/network-behavior.cpp',
-  'src/mugen/network.cpp',
-  'src/mugen/parse-cache.cpp',
-  'src/mugen/projectile.cpp',
-  'src/mugen/random.cpp',
-  'src/mugen/reader.cpp',
-  'src/mugen/run-match.cpp',
-  'src/mugen/search.cpp',
-  'src/mugen/section.cpp',
-  'src/mugen/serialize-auto.cpp',
-  'src/mugen/serialize.cpp',
-  'src/mugen/sff.cpp',
-  'src/mugen/sound.cpp',
-  'src/mugen/sprite.cpp',
-  'src/mugen/stage.cpp',
-  'src/mugen/state-controller.cpp',
-  'src/mugen/state.cpp',
-  'src/mugen/storyboard.cpp',
-  'src/mugen/util.cpp',
-  'src/mugen/versus.cpp',
-  'src/mugen/widgets.cpp',
-  'src/mugen/world.cpp',
-
-  'src/mugen/parser/air.cpp',
-  'src/mugen/parser/cmd.cpp',
-  'src/mugen/parser/def.cpp',
-  'src/mugen/parser/parse-exception.cpp',
-  'src/mugen/ast/ast.cpp',
-
-  ]
+]
 
 sdl_dependency = dependency('sdl', required: true)
 freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
 
 subdir('src/r-tech1')
+subdir('src/mugen')
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
   dependencies: [sdl_dependency, freetype_dependency, zlib_dependency],
-  link_with: rtech1_library,
+  link_with: [rtech1_library, mugen_library],
   )
