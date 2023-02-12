@@ -2,8 +2,8 @@
 
 #include <iostream>
 
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/timedifference.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/timedifference.h"
 #include "ast/all.h"
 #include "sound.h"
 #include "font.h"

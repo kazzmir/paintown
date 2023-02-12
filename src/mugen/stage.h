@@ -8,7 +8,7 @@
 #include <deque>
 #include "exception.h"
 #include "util.h"
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include "common.h"
 #include "stage-state.h"
 

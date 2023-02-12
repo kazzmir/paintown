@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
-#include <r-tech1/token.h>
+#include "r-tech1/token.h"
 
 namespace Mugen{
 

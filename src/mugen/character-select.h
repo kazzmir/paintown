@@ -9,11 +9,11 @@
 #include "font.h"
 #include "search.h"
 
-#include <r-tech1/events.h>
-#include <r-tech1/pointer.h>
-#include <r-tech1/gui/select-list.h>
-#include <r-tech1/gui/fadetool.h>
-#include <r-tech1/input/input-map.h>
+#include "r-tech1/events.h"
+#include "r-tech1/pointer.h"
+#include "r-tech1/gui/select-list.h"
+#include "r-tech1/gui/fadetool.h"
+#include "r-tech1/input/input-map.h"
 
 namespace Mugen{
     

@@ -10,11 +10,11 @@
 #include "sound.h"
 #include "sprite.h"
 #include "common.h"
-#include <r-tech1/configuration.h>
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/pointer.h>
-#include <r-tech1/input/input-manager.h>
-#include <r-tech1/network/network.h>
+#include "r-tech1/configuration.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/pointer.h"
+#include "r-tech1/input/input-manager.h"
+#include "r-tech1/network/network.h"
 #include "ast/extra.h"
 
 

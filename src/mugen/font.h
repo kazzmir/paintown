@@ -8,8 +8,8 @@
 
 // Extend the font interface already made for paintown
 // #include "util/font.h"
-#include <r-tech1/file-system.h>
-#include <r-tech1/pointer.h>
+#include "r-tech1/file-system.h"
+#include "r-tech1/pointer.h"
 
 namespace PaintownUtil = ::Util;
 

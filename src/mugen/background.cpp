@@ -1,4 +1,4 @@
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include "background.h"
 #include <math.h>
 #include <ostream>
@@ -7,11 +7,11 @@
 #include <list>
 #include <algorithm>
 #include "globals.h"
-#include <r-tech1/debug.h>
+#include "r-tech1/debug.h"
 #include "sprite.h"
-#include <r-tech1/regex.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/timedifference.h>
+#include "r-tech1/regex.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/timedifference.h"
 #include "ast/all.h"
 #include "parser/all.h"
 

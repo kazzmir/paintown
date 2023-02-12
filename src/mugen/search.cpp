@@ -1,7 +1,7 @@
 #include <r-tech1/file-system.h>
 #include "search.h"
 #include "config.h"
-#include <r-tech1/debug.h>
+#include "r-tech1/debug.h"
 
 #include <algorithm>
 #include <iostream>

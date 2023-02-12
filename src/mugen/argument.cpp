@@ -2,7 +2,7 @@
 #include "config.h"
 #include "util.h"
 #include "menu.h"
-#include <r-tech1/debug.h>
+#include "r-tech1/debug.h"
 #include "game.h"
 
 using std::vector;

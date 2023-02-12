@@ -2,10 +2,10 @@
 #include <vector>
 #include <string>
 #include <math.h>
-#include <r-tech1/input/input-map.h>
-#include <r-tech1/input/input-source.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/funcs.h>
+#include "r-tech1/input/input-map.h"
+#include "r-tech1/input/input-source.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/funcs.h"
 // #include "command.h"
 #include "constraint.h"
 #include "random.h"

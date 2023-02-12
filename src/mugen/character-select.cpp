@@ -8,10 +8,10 @@
 #include "config.h"
 #include "util.h"
 
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/input/input.h>
-#include <r-tech1/input/input-manager.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/input/input.h"
+#include "r-tech1/input/input-manager.h"
 
 using namespace Mugen;
 

@@ -1,5 +1,5 @@
 #include "serialize.h"
-#include <r-tech1/token.h>
+#include "r-tech1/token.h"
 #include "compiler.h"
 #include <sstream>
 #include "character-state.h"

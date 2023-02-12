@@ -1,12 +1,12 @@
 #include <string>
 #include <ostream>
 
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/sound/music.h>
-#include <r-tech1/exceptions/shutdown_exception.h>
-#include <r-tech1/system.h>
-#include <r-tech1/console.h>
-#include <r-tech1/message-queue.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/sound/music.h"
+#include "r-tech1/exceptions/shutdown_exception.h"
+#include "r-tech1/system.h"
+#include "r-tech1/console.h"
+#include "r-tech1/message-queue.h"
 // #include <r-tech1/lz4/lz4.h>
 #include <r-tech1/init.h>
 #include "game.h"

@@ -1,4 +1,4 @@
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -15,13 +15,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <r-tech1/funcs.h>
-#include <r-tech1/font.h>
-#include <r-tech1/parameter.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/message-queue.h>
+#include "r-tech1/funcs.h"
+#include "r-tech1/font.h"
+#include "r-tech1/parameter.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/message-queue.h"
 #include "factory/font_render.h"
 
 #include "animation.h"
@@ -43,8 +43,8 @@
 #include "state-controller.h"
 #include "helper.h"
 
-#include <r-tech1/input/input-map.h>
-#include <r-tech1/input/input-manager.h>
+#include "r-tech1/input/input-map.h"
+#include "r-tech1/input/input-manager.h"
 
 #include "parse-cache.h"
 #include "parser/all.h"

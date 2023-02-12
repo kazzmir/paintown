@@ -2,8 +2,8 @@
 #define mugen_widgets_h
 
 #include "util.h"
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/input/text-input.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/input/text-input.h"
 
 #include <string>
 #include <deque>

@@ -1,4 +1,4 @@
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include <fstream>
 #include <iostream>
 #include <algorithm>
@@ -17,12 +17,12 @@
 
 #include <stdint.h>
 
-#include <r-tech1/configuration.h>
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/timedifference.h>
+#include "r-tech1/configuration.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/timedifference.h"
 
 #include "font.h"
 #include "util.h"
@@ -36,7 +36,7 @@
 #include "config.h"
 #include "sprite.h"
 #include "globals.h"
-#include <r-tech1/init.h>
+#include "r-tech1/init.h"
 #include "state.h"
 #include "parse-cache.h"
 

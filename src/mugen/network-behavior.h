@@ -4,8 +4,8 @@
 #include <vector>
 #include <string>
 #include <deque>
-#include <r-tech1/network/network.h>
-#include <r-tech1/thread.h>
+#include "r-tech1/network/network.h"
+#include "r-tech1/thread.h"
 #include "behavior.h"
 
 namespace Mugen{
