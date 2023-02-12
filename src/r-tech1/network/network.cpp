@@ -395,6 +395,28 @@ char * parseString(char * where, std::string * out, uint16_t length){
     return where;
 }
 
+char * parse16(char * where, uint16_t * out){
+    return nullptr;
+}
+
+void close(Socket socket){
+}
+
+Socket openReliable(int port){
+    return 0;
+}
+
+void listen(Socket s){
+}
+
+Socket connectReliable(std::string server, int port){
+    return 0;
+}
+
+Socket accept(Socket s){
+    return 0;
+}
+
 #endif
 
 

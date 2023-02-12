@@ -7,7 +7,7 @@
 
 #include "script.h"
 #include "globals.h"
-#include <r-tech1/debug.h>
+#include "r-tech1/debug.h"
 #include "../object/character.h"
 #include <string>
 

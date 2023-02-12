@@ -29,6 +29,9 @@ Graphics::Bitmap::Bitmap( const Bitmap & copy, bool deep_copy ){
 Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int height ){
 }
 
+Graphics::Bitmap::Bitmap(const char * data, int length){
+}
+
 Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
     return Graphics::Bitmap();
 }
@@ -39,8 +42,8 @@ Graphics::Bitmap * Graphics::getScreenBuffer(){
 }
 
 Graphics::Color Graphics::makeColor(int r, int g, int b){
-    Graphics::Color c;
-    return c;
+    INTERNAL_COLOR c;
+    return Graphics::Color(c);
 }
 
 void Graphics::Bitmap::fill(Graphics::Color color) const {
@@ -373,6 +376,54 @@ void Graphics::StretchedBitmap::start(){
 
 int Graphics::changeGraphicsMode(int mode, int width, int height){
     return 0;
+}
+
+bool Graphics::Bitmap::getError(){
+    /* TODO */
+    return false;
+}
+
+void Graphics::Bitmap::shutdown(){
+}
+
+Graphics::RestoreState::RestoreState(){
+}
+
+Graphics::RestoreState::~RestoreState(){
+}
+
+Graphics::TranslatedBitmap::TranslatedBitmap(int x, int y, const Bitmap & where){
+}
+
+Graphics::TranslatedBitmap::~TranslatedBitmap(){
+}
+    
+void Graphics::TranslatedBitmap::BlitToScreen() const {
+}
+
+void Graphics::Bitmap::lock() const {
+}
+
+void Graphics::Bitmap::lock(int x, int y, int width, int height) const {
+}
+
+void Graphics::Bitmap::unlock() const {
+}
+
+Graphics::Bitmap Graphics::memoryPCX(unsigned char * const data, const int length, const bool mask){
+    return Graphics::Bitmap();
+}
+
+void Graphics::Bitmap::replaceColor(const Color & original, const Color & replaced){
+}
+
+void Graphics::Bitmap::addBlender( int r, int g, int b, int a ){
+}
+
+void Graphics::Bitmap::differenceBlender( int r, int g, int b, int a ){
+}
+
+void Graphics::Bitmap::alphaBlender(int source, int dest){
 }
 
 #endif

@@ -218,7 +218,7 @@ public:
 	Bitmap();
 	Bitmap( int x, int y );
 	Bitmap( const char * load_file );
-        Bitmap(const char * data, int length);
+    Bitmap(const char * data, int length);
 	Bitmap( const std::string & load_file );
 	Bitmap( const char * load_file, int sx, int sy );
 
@@ -787,6 +787,13 @@ protected:
     Bitmap translucent;
 #endif
     const Clear clearKind;
+};
+
+class RestoreState{
+public:
+    RestoreState();
+    ~RestoreState();
+protected:
 };
 
 }

@@ -2,7 +2,7 @@
 #include "globals.h"
 #include <string>
 #include <fstream>
-#include "util/funcs.h"
+#include "r-tech1/funcs.h"
 
 #include "parsers.h"
 
@@ -89,6 +89,8 @@ Parser::~Parser(){
 
 }
 
+/*
 extern "C" int parser_get_pipe(int files[2]){
     return Util::getPipe(files);
 }
+*/
