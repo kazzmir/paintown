@@ -10,10 +10,8 @@ dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
 all_code = [
   'src/xmain.cpp',
   'src/main-menu.cpp',
-  
   'src/factory/collector.cpp',
   'src/factory/font_render.cpp',
-
   'src/globals.cpp',
 ]
 
