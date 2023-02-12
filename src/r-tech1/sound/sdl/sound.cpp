@@ -1,6 +1,9 @@
 #ifdef USE_SDL
 
 #include "../sound.h"
+    
+Sound::Sound(const std::string & path){
+}
 
 void Sound::initialize(){
 }

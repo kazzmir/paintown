@@ -29,6 +29,10 @@ Graphics::Bitmap::Bitmap( const Bitmap & copy, bool deep_copy ){
 Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int height ){
 }
 
+Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
+    return Graphics::Bitmap();
+}
+
 Graphics::Bitmap * Graphics::getScreenBuffer(){
     /* FIXME */
     return nullptr;
@@ -103,7 +107,7 @@ Graphics::Color Graphics::MaskColor(){
     return c;
 }
 
-void initializeExtraStuff(){
+void Graphics::initializeExtraStuff(){
 }
 
 Graphics::Bitmap::Bitmap( const std::string & load_file ){
@@ -367,7 +371,7 @@ void Graphics::StretchedBitmap::finish(){
 void Graphics::StretchedBitmap::start(){
 }
 
-int changeGraphicsMode(int mode, int width, int height){
+int Graphics::changeGraphicsMode(int mode, int width, int height){
     return 0;
 }
 

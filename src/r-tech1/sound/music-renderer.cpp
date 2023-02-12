@@ -222,18 +222,21 @@ void MusicRenderer::mixer(void * arg, Uint8 * stream, int bytes){
 }
 
 void MusicRenderer::play(MusicPlayer & player){
-    Mix_HookMusic(mixer, &player);
+    /* FIXME */
+    // Mix_HookMusic(mixer, &player);
 }
 
 void MusicRenderer::pause(){
-    Mix_HookMusic(NULL, NULL);
+    /* FIXME */
+    // Mix_HookMusic(NULL, NULL);
 }
 
 void MusicRenderer::poll(MusicPlayer & player){
 }
 
 MusicRenderer::~MusicRenderer(){
-    Mix_HookMusic(NULL, NULL);
+    /* FIXME */
+    // Mix_HookMusic(NULL, NULL);
     delete[] data;
 }
 #elif USE_ALLEGRO

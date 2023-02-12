@@ -137,6 +137,7 @@ int setGfxModeWindowed( int x, int y );
 /* Only call this method once, from init. After that call changeGraphicsMode */
 int setGraphicsMode(int mode, int width, int height);
 int changeGraphicsMode(int mode, int width, int height);
+void initializeExtraStuff();
 
 /* get color components */
 int getRed(Color x);

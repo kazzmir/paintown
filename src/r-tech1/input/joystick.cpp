@@ -19,6 +19,7 @@ JoystickListener::~JoystickListener(){
 }
 
 Joystick * Joystick::create(int i){
+    /*
 #ifdef USE_ALLEGRO
     return new AllegroJoystick();
 #endif
@@ -35,6 +36,7 @@ Joystick * Joystick::create(int i){
 #ifdef USE_ALLEGRO5
     return new Allegro5Joystick(i);
 #endif
+*/
 
     /* TODO: support allegro5 joystick */
 /*
