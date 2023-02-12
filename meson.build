@@ -22,6 +22,7 @@ all_code = [
   'src/r-tech1/init.cpp',
   'src/r-tech1/input/input-manager.cpp',
   'src/r-tech1/sound/music.cpp',
+  'src/r-tech1/sound/sound.cpp',
   'src/r-tech1/font.cpp',
   'src/r-tech1/menu/menu.cpp',
   'src/r-tech1/menu/font-info.cpp',

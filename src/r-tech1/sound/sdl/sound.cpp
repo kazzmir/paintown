@@ -1,0 +1,2 @@
+void Sound::initialize(){
+}

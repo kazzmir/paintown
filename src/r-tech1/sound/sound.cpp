@@ -5,6 +5,10 @@
 #include "sound/allegro5/sound.cpp"
 #endif
 
+#ifdef USE_SDL
+#include "sdl/sound.cpp"
+#endif
+
 #include "r-tech1/configuration.h"
 #include "r-tech1/file-system.h"
         
