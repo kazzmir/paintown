@@ -14,67 +14,7 @@ all_code = [
   'src/factory/collector.cpp',
   'src/factory/font_render.cpp',
 
-  'src/paintown-engine/game/mod.cpp',
-  'src/paintown-engine/game/argument.cpp',
-  'src/paintown-engine/game/options.cpp',
-  'src/paintown-engine/game/nameplacer.cpp',
-
-  'src/paintown-engine/game/adventure_world.cpp',
-  'src/paintown-engine/game/character-select.cpp',
-  'src/paintown-engine/game/game.cpp',
-  'src/paintown-engine/game/move-list.cpp',
-  'src/paintown-engine/game/select_player.cpp',
-  'src/paintown-engine/game/world.cpp',
-
-  'src/paintown-engine/script/script.cpp',
-
-  'src/paintown-engine/network/cacher.cpp',
-  'src/paintown-engine/network/chat_client.cpp',
-  'src/paintown-engine/network/chat_server.cpp',
-  'src/paintown-engine/network/chat-widget.cpp',
-  'src/paintown-engine/network/client.cpp',
-  'src/paintown-engine/network/network.cpp',
-  'src/paintown-engine/network/network_world_client.cpp',
-  'src/paintown-engine/network/network_world.cpp',
-  'src/paintown-engine/network/server.cpp',
-
-  'src/paintown-engine/object/actor.cpp',
-  'src/paintown-engine/object/alliance.cpp',
-  'src/paintown-engine/object/animation.cpp',
-  'src/paintown-engine/object/animation_event.cpp',
-  'src/paintown-engine/object/animation_trail.cpp',
-  'src/paintown-engine/object/attack.cpp',
-  'src/paintown-engine/object/buddy_player.cpp',
-  'src/paintown-engine/object/cat.cpp',
-  'src/paintown-engine/object/character.cpp',
-  'src/paintown-engine/object/display_character.cpp',
-  'src/paintown-engine/object/draw-effect.cpp',
-  'src/paintown-engine/object/effect.cpp',
-  'src/paintown-engine/object/enemy.cpp',
-  'src/paintown-engine/object/gib.cpp',
-  'src/paintown-engine/object/item.cpp',
-  'src/paintown-engine/object/network_character.cpp',
-  'src/paintown-engine/object/network_player.cpp',
-  'src/paintown-engine/object/object_attack.cpp',
-  'src/paintown-engine/object/object.cpp',
-  'src/paintown-engine/object/object_nonattack.cpp',
-  'src/paintown-engine/object/player-common.cpp',
-  'src/paintown-engine/object/player.cpp',
-  'src/paintown-engine/object/projectile.cpp',
-  'src/paintown-engine/object/stimulation.cpp',
-  'src/paintown-engine/object/trigger.cpp',
-
-  'src/paintown-engine/factory/object_factory.cpp',
-  'src/paintown-engine/level/block.cpp',
-  'src/paintown-engine/level/blockobject.cpp',
-  'src/paintown-engine/level/cacher.cpp',
-  'src/paintown-engine/level/random-scene.cpp',
-  'src/paintown-engine/level/scene.cpp',
-  'src/paintown-engine/level/utils.cpp',
-  'src/paintown-engine/trigger/trigger.cpp',
-
-  'src/paintown-engine/environment/atmosphere.cpp',
-
+  
   'src/openbor/animation.cpp',
   'src/openbor/data.cpp',
   'src/openbor/display-character.cpp',
@@ -91,9 +31,10 @@ zlib_dependency = dependency('zlib', required: true)
 
 subdir('src/r-tech1')
 subdir('src/mugen')
+subdir('src/paintown-engine')
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
   dependencies: [sdl_dependency, freetype_dependency, zlib_dependency],
-  link_with: [rtech1_library, mugen_library],
+  link_with: [rtech1_library, mugen_library, paintown_library],
   )
