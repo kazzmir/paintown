@@ -1,4 +1,4 @@
-.PHONY: debug
+.PHONY: debug clean
 
 debug: build-debug
 	meson compile -C build-debug
