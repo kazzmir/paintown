@@ -1,11 +1,11 @@
 #include <iostream>
 
 #include "animation.h"
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/token.h>
-#include <r-tech1/token_exception.h>
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/exceptions/load_exception.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/token.h"
+#include "r-tech1/token_exception.h"
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/exceptions/load_exception.h"
 #include "effect.h"
 #include "globals.h"
 #include "object.h"

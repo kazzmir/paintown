@@ -1,6 +1,6 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/font.h>
-#include <r-tech1/funcs.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/font.h"
+#include "r-tech1/funcs.h"
 #include <string>
 #include <vector>
 #include <stdarg.h>

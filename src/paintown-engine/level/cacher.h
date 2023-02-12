@@ -1,7 +1,7 @@
 #ifndef _paintown_cacher_h
 #define _paintown_cacher_h
 
-#include <r-tech1/pointer.h>
+#include "r-tech1/pointer.h"
 
 class BlockObject;
 

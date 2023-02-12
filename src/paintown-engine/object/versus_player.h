@@ -3,7 +3,7 @@
 
 #include "player.h"
 #include <string>
-#include <r-tech1/exceptions/load_exception.h>
+#include "r-tech1/exceptions/load_exception.h"
 
 class World;
 namespace Graphics{

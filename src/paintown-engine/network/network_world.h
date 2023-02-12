@@ -1,10 +1,10 @@
 #ifndef _paintown_network_world_h
 #define _paintown_network_world_h
 
-#include <r-tech1/network/network.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/input/text-input.h>
-#include <r-tech1/thread.h>
+#include "r-tech1/network/network.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/input/text-input.h"
+#include "r-tech1/thread.h"
 #include "../object/object.h"
 #include "../game/adventure_world.h"
 #include "chat-widget.h"

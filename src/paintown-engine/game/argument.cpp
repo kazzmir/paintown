@@ -1,11 +1,11 @@
 #include "argument.h"
 #include "game.h"
 #include "mod.h"
-#include <r-tech1/regex.h>
-#include <r-tech1/configuration.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/input/input-source.h>
+#include "r-tech1/regex.h"
+#include "r-tech1/configuration.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/input/input-source.h"
 #include "../level/utils.h"
 #include "../object/player.h"
 #include <vector>

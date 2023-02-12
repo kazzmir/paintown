@@ -1,9 +1,9 @@
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 #include "object_nonattack.h"
 #include "globals.h"
 #include "animation.h"
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/token.h>
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/token.h"
 #include "actor.h"
 
 using namespace std;

@@ -18,37 +18,37 @@ static const int DEFAULT_DEBUG = -1;
 static const int DEFAULT_DEBUG = 0;
 #endif
 
-#include <r-tech1/graphics/bitmap.h>
+#include "r-tech1/graphics/bitmap.h"
 
 #include "factory/collector.h"
-#include <r-tech1/network/network.h>
-#include <r-tech1/token_exception.h>
-#include <r-tech1/system.h>
-#include <r-tech1/sound/music.h>
-#include <r-tech1/menu/menu.h>
-#include <r-tech1/menu/menu-exception.h>
-#include <r-tech1/menu/optionfactory.h>
-#include <r-tech1/input/input-manager.h>
+#include "r-tech1/network/network.h"
+#include "r-tech1/token_exception.h"
+#include "r-tech1/system.h"
+#include "r-tech1/sound/music.h"
+#include "r-tech1/menu/menu.h"
+#include "r-tech1/menu/menu-exception.h"
+#include "r-tech1/menu/optionfactory.h"
+#include "r-tech1/input/input-manager.h"
 #include "paintown-engine/game/options.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/network/client.h"
 #include "paintown-engine/network/server.h"
-#include <r-tech1/exceptions/shutdown_exception.h>
-#include <r-tech1/exceptions/exception.h>
-#include <r-tech1/exceptions/load_exception.h>
-#include <r-tech1/timedifference.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/ftalleg.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/token.h>
-#include <r-tech1/parameter.h>
-#include <r-tech1/version.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/configuration.h>
-#include <r-tech1/init.h>
-#include <r-tech1/main.h>
-#include <r-tech1/argument.h>
+#include "r-tech1/exceptions/shutdown_exception.h"
+#include "r-tech1/exceptions/exception.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/ftalleg.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/token.h"
+#include "r-tech1/parameter.h"
+#include "r-tech1/version.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/configuration.h"
+#include "r-tech1/init.h"
+#include "r-tech1/main.h"
+#include "r-tech1/argument.h"
 
 #include "paintown-engine/game/argument.h"
 

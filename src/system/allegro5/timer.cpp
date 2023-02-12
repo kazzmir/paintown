@@ -1,5 +1,5 @@
 #include "system/timer.h"
-#include <r-tech1/init.h>
+#include "r-tech1/init.h"
 
 #ifdef USE_ALLEGRO5
 #include <allegro5/allegro.h>

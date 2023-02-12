@@ -1,7 +1,7 @@
 #include "display-character.h"
 #include "pack-reader.h"
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/token.h>
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/token.h"
 #include "util.h"
 #include "paintown-engine/object/animation.h"
 #include "paintown-engine/object/draw-effect.h"

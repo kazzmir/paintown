@@ -1,6 +1,6 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/configuration.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/configuration.h"
 #include <iostream>
 #include "object_nonattack.h"
 #include "gib.h"

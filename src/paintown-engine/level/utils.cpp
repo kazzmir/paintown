@@ -1,9 +1,9 @@
 #include "utils.h"
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/token.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/debug.h>
-#include <r-tech1/gui/cutscene.h>
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/token.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/gui/cutscene.h"
 #include "globals.h"
 
 namespace Level{

@@ -5,8 +5,8 @@ namespace Graphics{
 class Bitmap;
 }
 
-#include <r-tech1/token_exception.h>
-#include <r-tech1/graphics/color.h>
+#include "r-tech1/token_exception.h"
+#include "r-tech1/graphics/color.h"
 #include "atmosphere.h"
 #include <vector>
 

@@ -5,10 +5,10 @@
 #include <vector>
 #include <map>
 #include "object_attack.h"
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/pointer.h>
-#include <r-tech1/network/network.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/pointer.h"
+#include "r-tech1/network/network.h"
 
 namespace Graphics{
 class Bitmap;

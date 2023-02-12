@@ -5,7 +5,7 @@
 #include "player-common.h"
 #include <deque>
 #include <vector>
-#include <r-tech1/thread.h>
+#include "r-tech1/thread.h"
 
 class World;
 

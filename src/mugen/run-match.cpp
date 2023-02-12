@@ -7,8 +7,8 @@
 #include "r-tech1/system.h"
 #include "r-tech1/console.h"
 #include "r-tech1/message-queue.h"
-// #include <r-tech1/lz4/lz4.h>
-#include <r-tech1/init.h>
+// #include "r-tech1/lz4/lz4.h"
+#include "r-tech1/init.h"
 #include "game.h"
 #include "stage.h"
 #include "factory/font_render.h"

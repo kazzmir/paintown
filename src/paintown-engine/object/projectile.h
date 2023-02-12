@@ -2,7 +2,7 @@
 #define _paintown_projectile_h
 
 #include "object_attack.h"
-#include <r-tech1/network/network.h>
+#include "r-tech1/network/network.h"
 #include <vector>
 #include <string>
 

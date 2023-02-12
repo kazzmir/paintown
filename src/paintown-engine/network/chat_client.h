@@ -1,9 +1,9 @@
 #ifndef _paintown_chat_client_h
 #define _paintown_chat_client_h
 
-#include <r-tech1/network/network.h>
-#include <r-tech1/messages.h>
-#include <r-tech1/thread.h>
+#include "r-tech1/network/network.h"
+#include "r-tech1/messages.h"
+#include "r-tech1/thread.h"
 #include <string>
 #include <queue>
 

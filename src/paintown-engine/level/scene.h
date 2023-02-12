@@ -6,8 +6,8 @@
 #include <map>
 #include <deque>
 #include "block.h"
-#include <r-tech1/pointer.h>
-#include <r-tech1/file-system.h>
+#include "r-tech1/pointer.h"
+#include "r-tech1/file-system.h"
 
 namespace Graphics{
 class Bitmap;

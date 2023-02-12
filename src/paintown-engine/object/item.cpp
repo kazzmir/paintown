@@ -1,10 +1,10 @@
-#include <r-tech1/graphics/bitmap.h>
-#include <r-tech1/tokenreader.h>
-#include <r-tech1/token.h>
-#include <r-tech1/ebox.h>
-#include <r-tech1/funcs.h>
-#include <r-tech1/file-system.h>
-#include <r-tech1/debug.h>
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/token.h"
+#include "r-tech1/ebox.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/debug.h"
 #include "item.h"
 #include "object_attack.h"
 #include "stimulation.h"
