@@ -355,4 +355,20 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
     return 0;
 }
 
+Graphics::StretchedBitmap::StretchedBitmap(int width, int height, const Bitmap & where, Clear clear, QualityFilter filter):
+where(where),
+filter(filter),
+clearKind(clear){
+}
+
+void Graphics::StretchedBitmap::finish(){
+}
+
+void Graphics::StretchedBitmap::start(){
+}
+
+int changeGraphicsMode(int mode, int width, int height){
+    return 0;
+}
+
 #endif
