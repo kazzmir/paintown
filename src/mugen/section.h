@@ -41,7 +41,7 @@ public:
     
     MugenSection & operator=( const MugenSection & s);
     
-    MugenSection & operator<<( MugenItemContent * item ) throw( MugenException );
+    MugenSection & operator<<( MugenItemContent * item );
     
     MugenItemContent * getNext();
     

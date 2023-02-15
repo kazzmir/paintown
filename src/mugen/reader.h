@@ -17,7 +17,7 @@ public:
 
 	~MugenReader();
 	
-	const std::vector< MugenSection * > & getCollection() throw(MugenException);
+	const std::vector< MugenSection * > & getCollection();
 
 protected:
 

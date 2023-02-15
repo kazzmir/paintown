@@ -47,7 +47,7 @@ MugenReader::~MugenReader(){
 
 }
 
-const std::vector< MugenSection * > & MugenReader::getCollection() throw(MugenException){
+const std::vector< MugenSection * > & MugenReader::getCollection() {
     if ( configData.empty() && !ifile ){
 	throw MugenException( std::string("Could not open file: \"") + myfile + std::string("\" or Read Text!"), __FILE__, __LINE__);
     }

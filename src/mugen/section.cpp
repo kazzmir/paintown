@@ -34,7 +34,7 @@ MugenSection & MugenSection::operator=( const MugenSection & s){
   return *this;
 }
 
-MugenSection & MugenSection::operator<<( MugenItemContent * item ) throw( MugenException ){
+MugenSection & MugenSection::operator<<( MugenItemContent * item ){
   if ( header == "empty" ) throw MugenException( std::string("This section has no header, cannot add items!"), __FILE__, __LINE__);
   this->itemContent.push_back( item );  
   return *this;
