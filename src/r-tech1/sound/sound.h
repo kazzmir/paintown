@@ -12,6 +12,10 @@
 #include "sdl/sound.h"
 #endif
 
+#ifdef USE_SDL2
+#include "sdl2/sound.h"
+#endif
+
 struct SAMPLE;
 
 namespace Storage{

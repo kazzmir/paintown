@@ -72,11 +72,16 @@ sources = [
 
   'ftalleg.cpp',
   'input/sdl/joystick.cpp',
+  'input/sdl/keyboard.cpp',
+  'input/sdl/touch.cpp',
   'sound/sdl/sound.cpp',
   'graphics/sdl/bitmap.cpp',
 
   'graphics/sdl2/bitmap.cpp',
   'input/sdl2/joystick.cpp',
+  'input/sdl2/keyboard.cpp',
+  'input/sdl2/touch.cpp',
+  'sound/sdl2/sound.cpp',
 
   'libs/sfl/sfldir.c',
   'libs/sfl/sflmem.c',
