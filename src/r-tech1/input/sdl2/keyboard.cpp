@@ -1,4 +1,4 @@
-#ifdef USE_SDL
+#ifdef USE_SDL2
 
 #include <SDL/SDL_keyboard.h>
 #include "r-tech1/input/keyboard.h"

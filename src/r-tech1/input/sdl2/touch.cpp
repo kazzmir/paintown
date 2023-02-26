@@ -1,4 +1,4 @@
-#ifdef USE_SDL
+#ifdef USE_SDL2
 
 #include "r-tech1/pointer.h"
 #include "r-tech1/input/touch.h"

@@ -76,6 +76,7 @@ sources = [
   'graphics/sdl/bitmap.cpp',
 
   'graphics/sdl2/bitmap.cpp',
+  'input/sdl2/joystick.cpp',
 
   'libs/sfl/sfldir.c',
   'libs/sfl/sflmem.c',
