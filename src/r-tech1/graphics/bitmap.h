@@ -15,6 +15,9 @@
 #ifdef USE_SDL
 #include "sdl/bitmap.h"
 #endif
+#ifdef USE_SDL2
+#include "sdl2/bitmap.h"
+#endif
 #ifdef USE_ALLEGRO5
 #include "allegro5/bitmap.h"
 struct ALLEGRO_SHADER;
@@ -22,8 +25,8 @@ struct ALLEGRO_SHADER;
 
 #include "color.h"
 
-#if !defined(USE_ALLEGRO) && !defined(USE_SDL) && !defined(USE_ALLEGRO5)
-#error No backend specified. Define one of USE_ALLEGRO, USE_SDL, or USE_ALLEGRO5
+#if !defined(USE_ALLEGRO) && !defined(USE_SDL) && !defined(USE_ALLEGRO5) && !defined(USE_SDL2)
+#error No backend specified. Define one of USE_ALLEGRO, USE_SDL, USE_SDL2, or USE_ALLEGRO5
 #endif
 
 namespace Storage{

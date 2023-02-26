@@ -1,7 +1,7 @@
 # Warning: changing the default_options requires a new build directory and doing 'meson setup ...' again
 project('paintown', ['c', 'cpp'], default_options: ['cpp_std=c++11'])
 
-add_global_arguments('-DUSE_SDL=1', language: 'cpp')
+add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function'], language: ['cpp', 'c'])
@@ -16,7 +16,7 @@ all_code = [
   'src/globals.cpp',
 ]
 
-sdl_dependency = dependency('sdl', required: true)
+sdl_dependency = dependency('sdl2', required: true)
 freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
 

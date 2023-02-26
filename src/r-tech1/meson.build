@@ -75,6 +75,8 @@ sources = [
   'sound/sdl/sound.cpp',
   'graphics/sdl/bitmap.cpp',
 
+  'graphics/sdl2/bitmap.cpp',
+
   'libs/sfl/sfldir.c',
   'libs/sfl/sflmem.c',
   'libs/sfl/sfldate.c',
