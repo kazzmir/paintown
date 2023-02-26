@@ -8,6 +8,10 @@
 #include <SDL/SDL.h>
 #endif
 
+#ifdef USE_SDL2
+#include <SDL2/SDL.h>
+#endif
+
 #ifndef WINDOWS
 #include <unistd.h>
 #include <sys/stat.h>
@@ -82,6 +86,8 @@ uint64_t System::currentMicroseconds(){
     
 uint64_t System::currentMilliseconds(){
 #ifdef USE_SDL
+    return SDL_GetTicks();
+#elif USE_SDL2
     return SDL_GetTicks();
 #else
     struct timeval hold;

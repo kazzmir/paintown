@@ -9,6 +9,10 @@
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_mutex.h>
+#elif USE_SDL2
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_mutex.h>
 #elif USE_ALLEGRO5
 #include <allegro5/allegro5.h>
 #else
@@ -44,6 +48,11 @@ namespace Thread{
     typedef int (*ThreadFunction)(void*);
     typedef SDL_cond* Condition;
     // typedef SDL_semaphore* Semaphore;
+#elif USE_SDL2
+    typedef SDL_mutex* Lock;
+    typedef SDL_Thread* Id;
+    typedef int (*ThreadFunction)(void*);
+    typedef SDL_cond* Condition;
 #elif USE_ALLEGRO5
     typedef ALLEGRO_MUTEX* Lock;
     typedef ALLEGRO_THREAD* Id;

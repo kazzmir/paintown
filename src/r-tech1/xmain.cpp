@@ -39,3 +39,9 @@ int main( int argc, char ** argv ){
 #endif
 #endif
 #endif
+
+#ifdef USE_SDL2
+int main( int argc, char ** argv ){
+    return rtech_main(argc, argv);
+}
+#endif

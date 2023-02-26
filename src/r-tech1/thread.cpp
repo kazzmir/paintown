@@ -1,4 +1,4 @@
-#include "r-tech1/thread.h"
+#include "thread.h"
 
 #ifdef WII
 /* So we can call ogc's create thread directly */
@@ -298,6 +298,47 @@ void cancelThread(Id thread){
     
 void destroyLock(Lock * lock){
     al_destroy_mutex(*lock);
+}
+
+#elif USE_SDL2
+bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg){
+    // FIXME: name
+    *thread = SDL_CreateThread(function, "thread", arg);
+    return *thread != NULL;
+}
+
+void cancelThread(Id thread){
+    // FIXME
+    // SDL_KillThread(thread);
+}
+
+void joinThread(Id thread){
+    if (!isUninitialized(thread)){
+#ifdef WII
+        wiiJoinThread(thread);
+#else
+        SDL_WaitThread(thread, NULL);
+#endif
+    }
+}
+
+Id uninitializedValue = NULL;
+    
+bool initializeLock(Lock * lock){
+    *lock = SDL_CreateMutex();
+    return *lock != NULL;
+}
+
+int acquireLock(Lock * lock){
+    return SDL_LockMutex(*lock);
+}
+
+int releaseLock(Lock * lock){
+    return SDL_UnlockMutex(*lock);
+}
+
+void destroyLock(Lock * lock){
+    SDL_DestroyMutex(*lock);
 }
 
 #else
