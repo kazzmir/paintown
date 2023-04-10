@@ -972,7 +972,8 @@ int rtech_main(int argc, char ** argv){
 
     Configuration::saveConfiguration();
 
-    Global::debug(0) << "Bye!" << endl;
+    System::shutdown();
+    DebugLog << "Bye!" << endl;
     Global::closeLog();
 
     return 0;
