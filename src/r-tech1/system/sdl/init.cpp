@@ -1,3 +1,5 @@
+#ifdef USE_SDL
+
 #include "r-tech1/system/init.h"
 #include "r-tech1/debug.h"
 
@@ -10,3 +12,5 @@ void startTimers(){
 }
 
 }
+
+#endif
