@@ -7,7 +7,6 @@
 
 namespace Graphics{
 
-static Bitmap * Screen = NULL;
 /* bitmaps that should always be resized to the dimensions of the screen */
 static std::vector<Bitmap*> needResize;
 

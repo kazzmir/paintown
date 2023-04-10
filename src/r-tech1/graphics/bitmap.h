@@ -197,26 +197,26 @@ std::string defaultPixelShader();
 
 class Bitmap{
 private:
-	
-        /* these constructors don't really matter, get rid of them at some point */
-        Bitmap( const Bitmap & copy, int sx, int sy, double accuracy );
+
+    /* these constructors don't really matter, get rid of them at some point */
+    Bitmap( const Bitmap & copy, int sx, int sy, double accuracy );
 	Bitmap( const char * load_file, int sx, int sy, double accuracy );
 public:
 
-        /* equivalent to a GPU shader */
-        class Filter{
-        public:
-            virtual Color filter(Color pixel) const = 0;
+    /* equivalent to a GPU shader */
+    class Filter{
+    public:
+        virtual Color filter(Color pixel) const = 0;
 
-            /* getShader should only return the Shader object and not set any uniforms/attributes */
-            virtual Util::ReferenceCount<Shader> getShader() = 0;
+        /* getShader should only return the Shader object and not set any uniforms/attributes */
+        virtual Util::ReferenceCount<Shader> getShader() = 0;
 
-            /* set the uniforms/attributes */
-            virtual void setupShader(const Util::ReferenceCount<Shader> &) = 0;
-            virtual ~Filter(){
-            }
-        };
-        	
+        /* set the uniforms/attributes */
+        virtual void setupShader(const Util::ReferenceCount<Shader> &) = 0;
+        virtual ~Filter(){
+        }
+    };
+
 	/* default constructor makes 10x10 bitmap */
 	Bitmap();
 	Bitmap( int x, int y );
@@ -225,15 +225,18 @@ public:
 	Bitmap( const std::string & load_file );
 	Bitmap( const char * load_file, int sx, int sy );
 
-        /* Load a bitmap from an abstract file */
-        Bitmap(Storage::File & file);
+    /* Load a bitmap from an abstract file */
+    Bitmap(Storage::File & file);
 
-        /* 4/24/2010: remove this at some point */
+    /* 4/24/2010: remove this at some point */
 #ifdef USE_ALLEGRO
 	explicit Bitmap( BITMAP * who, bool deep_copy = false );
 #endif
 #ifdef USE_SDL
 	explicit Bitmap(SDL_Surface * who, bool deep_copy = false );
+#endif
+#ifdef USE_SDL2
+    explicit Bitmap(SDL_Window* window, SDL_Renderer* renderer, bool deep_copy=false);
 #endif
 #ifdef USE_ALLEGRO5
 	explicit Bitmap(ALLEGRO_BITMAP * who, bool deep_copy = false );
@@ -359,8 +362,8 @@ public:
 	virtual void ellipse( int x, int y, int rx, int ry, Color color ) const;
 	virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const;
 
-        virtual void light(int x, int y, int width, int height, int start_y, int focus_alpha, int edge_alpha, Color focus_color, Color edge_color) const;
-        virtual void applyTrans(const Color color) const;
+    virtual void light(int x, int y, int width, int height, int start_y, int focus_alpha, int edge_alpha, Color focus_color, Color edge_color) const;
+    virtual void applyTrans(const Color color) const;
 
 	virtual void border( int min, int max, Color color ) const;
 	virtual void rectangle( int x1, int y1, int x2, int y2, Color color ) const;
@@ -798,6 +801,8 @@ public:
     ~RestoreState();
 protected:
 };
+
+static Bitmap * Screen = NULL;
 
 }
 
