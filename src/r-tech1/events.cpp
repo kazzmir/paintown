@@ -613,6 +613,10 @@ static void doStandardLoop(Logic & logic, Draw & draw){
             }
 
             while (Global::speed_counter4 == 0){
+                if (shutdown()){
+                    throw ShutdownException();
+                }
+
                 /* if the fps is limited then don't keep redrawing */
                 if (Global::rateLimit){
                     rest(1);

@@ -150,16 +150,24 @@ static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
 */
 #endif
 
+static void handleSigInt(int signal, siginfo_t* info, void* context){
+    DebugLog << "Shut down due to ctrl-c" << endl;
+    Util::do_shutdown += 1;
+}
+
 static void registerSignals(){
 #if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
     struct sigaction action;
-    memset( &action, 0, sizeof(struct sigaction) );
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_sigaction = handleSigPipe;
     sigaction( SIGPIPE, &action, NULL );
 
-    memset( &action, 0, sizeof(struct sigaction) );
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_sigaction = handleSigSegV;
     sigaction( SIGSEGV, &action, NULL );
+
+    action.sa_sigaction = handleSigInt;
+    sigaction(SIGINT, &action, NULL);
 
     /*
     action.sa_sigaction = handleSigUsr1;
