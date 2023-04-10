@@ -9,7 +9,7 @@ namespace Exception{
 /* Base class for all exceptions */
 class Base: public std::exception {
 public:
-    Base(const std::string & file, int line);
+    Base(const std::string & file, int line, const std::string & reason = "no reason given");
     Base(const std::string & file, int line, const Base & nested);
     Base(const Base & copy);
 
@@ -30,6 +30,7 @@ protected:
     virtual const std::string getReason() const;
 
     std::string file;
+    std::string reason;
     int line;
     Base * nested;
 };

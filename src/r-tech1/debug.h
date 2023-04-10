@@ -11,6 +11,7 @@
  * https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html#Common-Predefined-Macros
  */
 #if defined(__FILE_NAME__)
+/* only since gcc 12 */
 #define PAINTOWN_FILENAME __FILE__NAME
 #elif defined(__BASE_FILE__)
 #define PAINTOWN_FILENAME __BASE_FILE__
@@ -21,6 +22,7 @@
 #define PAINTOWN_DEBUG_CONTEXT Global::debug_context(PAINTOWN_FILENAME, __LINE__)
 #define _xdebug Global::debug(0, PAINTOWN_DEBUG_CONTEXT)
 #define DebugLog Global::debug(0, PAINTOWN_DEBUG_CONTEXT)
+#define DebugLog1 Global::debug(1, PAINTOWN_DEBUG_CONTEXT)
 
 /* Enable this if you can't get regular debug output but have networking
  */

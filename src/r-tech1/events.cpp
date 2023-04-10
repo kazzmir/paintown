@@ -544,7 +544,7 @@ static bool useTouchOverlay(){
 
 static void doStandardLoop(Logic & logic, Draw & draw){
     if (Graphics::screenParameter.current() == NULL){
-        throw Exception::Base(__FILE__, __LINE__);
+        throw Exception::Base(__FILE__, __LINE__, "no screen parameter set");
     }
     const Graphics::Bitmap & screen = *Graphics::screenParameter.current();
     screen.clear();

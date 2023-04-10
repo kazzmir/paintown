@@ -222,7 +222,7 @@ static Tx_ removeVectorElement( vector< Tx_ > & toRemove, int pos ){
 void Music::loadSong(vector<Filesystem::AbsolutePath> songs){
     std::random_shuffle(songs.begin(), songs.end());
     for (vector<Filesystem::AbsolutePath>::iterator it = songs.begin(); it != songs.end(); it++){
-        Global::debug(1) << "Trying to load song " << (*it).path() << endl;
+        DebugLog1 << "Trying to load song " << (*it).path() << endl;
         if (doLoadSong((*it).path())){
             break;
         }
@@ -411,7 +411,7 @@ bool Music::internal_loadSong(string path){
         currentSong = path;
     }
     
-    Global::debug(0) << "Trying to load '" << path << "'" << endl;
+    DebugLog1 << "Trying to load '" << path << "'" << endl;
 
     /*
     if (musicPlayer != NULL){
