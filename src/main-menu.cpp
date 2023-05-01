@@ -818,6 +818,9 @@ int rtech_main(int argc, char ** argv){
     }
 #endif
 
+    // scope for collector
+    {
+
     bool music_on = true;
     // bool joystick_on = true;
     // bool mugen = false;
@@ -971,6 +974,8 @@ int rtech_main(int argc, char ** argv){
     startMain(actions, allow_quit);
 
     Configuration::saveConfiguration();
+
+    }
 
     System::shutdown();
     DebugLog << "Bye!" << endl;

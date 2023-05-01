@@ -15,12 +15,18 @@ public:
     SDL_Window* window;
     SDL_Renderer* renderer;
 
-    SDLGlobalHandler(SDL_Window* window, SDL_Renderer* renderer){
+    SDLGlobalHandler(SDL_Window* window, SDL_Renderer* renderer):
+    window(window),
+    renderer(renderer){
     }
 
     ~SDLGlobalHandler(){
-        SDL_DestroyRenderer(renderer);
-        SDL_DestroyWindow(window);
+        if (renderer != nullptr){
+            SDL_DestroyRenderer(renderer);
+        }
+        if (window != nullptr){
+            SDL_DestroyWindow(window);
+        }
 
         renderer = nullptr;
         window = nullptr;

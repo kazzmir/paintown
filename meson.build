@@ -4,7 +4,8 @@ project('paintown', ['c', 'cpp'], default_options: ['cpp_std=c++11'])
 add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
-add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function'], language: ['cpp', 'c'])
+add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
+add_global_arguments(['-fsanitize=address'], language: ['cpp', 'c'])
 
 includes = include_directories('src')
 dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
@@ -29,4 +30,5 @@ executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
   dependencies: [sdl_dependency, freetype_dependency, zlib_dependency],
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
+  link_args: ['-fsanitize=address'],
   )

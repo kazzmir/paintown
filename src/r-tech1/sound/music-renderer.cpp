@@ -277,7 +277,9 @@ Encoding formatType(int sdlFormat){
     }
     */
 }
-MusicRenderer::MusicRenderer(){
+MusicRenderer::MusicRenderer():
+data(nullptr)
+{
     // FIXME
     /*
 convert(formatType(AUDIO_S16SYS), Sound::Info.channels, Sound::Info.frequency,
@@ -286,7 +288,9 @@ convert(formatType(AUDIO_S16SYS), Sound::Info.channels, Sound::Info.frequency,
     */
 }
 
-MusicRenderer::MusicRenderer(int frequency, int channels){
+MusicRenderer::MusicRenderer(int frequency, int channels):
+data(nullptr)
+{
     // FIXME
     /*
 convert(formatType(AUDIO_S16SYS), channels, frequency,
