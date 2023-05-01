@@ -1,6 +1,6 @@
 #ifdef USE_SDL2
 
-#include <SDL/SDL_keyboard.h>
+#include <SDL2/SDL_keyboard.h>
 #include "r-tech1/input/keyboard.h"
 
 const Keyboard::KeyType Keyboard::Key_A = SDLK_a;
