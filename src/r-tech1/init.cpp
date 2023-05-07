@@ -75,11 +75,11 @@
 
 using namespace std;
 
-volatile int Global::speed_counter4 = 0;
+atomic<uint64_t> Global::speed_counter4(0);
 bool Global::rateLimit = true;
 
-/* enough seconds for 136 years */
-volatile unsigned int Global::second_counter = 0;
+/* enough seconds for 5.8 * 10^11 years */
+atomic<uint64_t> Global::second_counter(0);
 
 /* the original engine was running at 90 ticks per second, but we dont
  * need to render that fast, so TICS_PER_SECOND is really fps and

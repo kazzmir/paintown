@@ -73,6 +73,9 @@ private:
 #ifdef USE_SDL
     virtual void runSDL(Keyboard &, std::map<int, ReferenceCount<Joystick> >);
 #endif
+#ifdef USE_SDL2
+    virtual void runSDL2(Keyboard &, std::map<int, ReferenceCount<Joystick> >);
+#endif
 #ifdef USE_ALLEGRO
     virtual void runAllegro(Keyboard & keyboard, std::map<int, ReferenceCount<Joystick> >);
 #endif

@@ -6,6 +6,7 @@
 #endif
 #include <vector>
 #include <map>
+#include <iostream>
 #include "r-tech1/graphics/bitmap.h"
 #include "r-tech1/events.h"
 #include "r-tech1/exceptions/shutdown_exception.h"
@@ -197,6 +198,84 @@ void EventManager::runSDL(Keyboard & keyboard, map<int, ReferenceCount<Joystick>
 }
 #endif
 
+#ifdef USE_SDL2
+void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick> > joysticks){
+    keyboard.poll();
+    for (map<int, ReferenceCount<Joystick> >::iterator it = joysticks.begin(); it != joysticks.end(); it++){
+        ReferenceCount<Joystick> joystick = it->second;
+        if (joystick != NULL){
+            joystick->poll();
+        }
+    }
+    SDL_Event event;
+    /* FIXME: android gets into an infinite loop while reading events */
+#ifdef ANDROID
+    // int good = SDL_PollEvent(&event);
+    // for (int check = 0; check < 10 && good; check++, good = SDL_PollEvent(&event)){
+    // if (SDL_PollEvent(&event) == 1){
+    while (SDL_PollEvent(&event) == 1){
+#else
+    while (SDL_PollEvent(&event) == 1){
+#endif
+        // DebugLog << "sdl event type: " << event.type << std::endl;
+        switch (event.type){
+            case SDL_QUIT : {
+                dispatch(CloseWindow);
+                break;
+            }
+                            /*
+            case SDL_KEYDOWN : {
+                handleKeyDown(keyboard, event);
+                 // dispatch(Key, event.key.keysym.sym);
+                 break;
+            }
+            case SDL_KEYUP : {
+                handleKeyUp(keyboard, event);
+                break;
+            }
+            case SDL_JOYBUTTONDOWN: {
+                handleJoystickButtonDown(joysticks, event);
+                break;
+            }
+            case SDL_JOYHATMOTION : {
+                handleJoystickHat(joysticks, event);
+                break;
+            }
+            case SDL_JOYBUTTONUP: {
+                handleJoystickButtonUp(joysticks, event);
+                break;
+            }
+            case SDL_JOYAXISMOTION: {
+                handleJoystickAxis(joysticks, event);
+                break;
+            }
+            */
+            case SDL_WINDOWEVENT_RESIZED: {
+                int width = event.window.data1;
+                int height = event.window.data2;
+                /* to keep the perspective correct
+                 * 640/480 = 1.33333
+                 */
+                /*
+                double ratio = (double) 640 / (double) 480;
+                if (width > height){
+                    height = (int)((double) width / ratio);
+                } else {
+                    width = (int)((double) height * ratio);
+                }
+                */
+                dispatch(ResizeScreen, width, height);
+                break;
+            }
+            default : {
+                break;
+            }
+        }
+    }
+}
+#endif
+
+
 #ifdef USE_ALLEGRO
 void EventManager::runAllegro(Keyboard & keyboard, map<int, ReferenceCount<Joystick> > joystick){
     keyboard.poll();
@@ -374,6 +453,8 @@ void EventManager::runAllegro5(Keyboard & keyboard, const map<int, ReferenceCoun
 void EventManager::run(Keyboard & keyboard, std::map<int, ReferenceCount<Joystick> > joysticks){
 #ifdef USE_SDL
     runSDL(keyboard, joysticks);
+#elif USE_SDL2
+    runSDL2(keyboard, joysticks);
 #elif USE_ALLEGRO
     runAllegro(keyboard, joysticks);
 #elif USE_ALLEGRO5
@@ -434,7 +515,7 @@ void EventManager::dispatch(Event type, int arg1, int arg2){
                 resize.height = arg2;
                 resize.enable = true;
             } else {
-                Global::debug(1) << "Resizing screen to " << arg1 << ", " << arg2 << std::endl;
+                DebugLog1 << "Resizing screen to " << arg1 << ", " << arg2 << std::endl;
                 if (Graphics::setGraphicsMode(0, arg1, arg2) == 0){
                     Configuration::setScreenWidth(arg1);
                     Configuration::setScreenHeight(arg2);
@@ -605,7 +686,7 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                     frameTime += (later - now);
 
                     if (frameCount >= maxCount){
-                        Global::debug(0) << "Draw average " << (frameTime / frameCount) << "ms" << std::endl;
+                        DebugLog << "Draw average " << (frameTime / frameCount) << "ms" << std::endl;
                         frameCount = 0;
                         frameTime = 0;
                     }

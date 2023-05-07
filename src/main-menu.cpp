@@ -608,7 +608,7 @@ static int startMain(const vector<Util::ReferenceCount<Argument::Action> > & act
             Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
 // #endif
         } catch (...){
-            Global::debug(0) << "Uncaught exception!" << endl;
+            DebugLog << "Uncaught exception!" << endl;
         }
 
         if (allow_quit && normal_quit){

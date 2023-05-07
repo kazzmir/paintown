@@ -8,9 +8,11 @@
 #define GFX_Y 480
 */
 
+#include <atomic>
+
 namespace Global{
-    extern volatile int speed_counter4;
-    extern volatile unsigned int second_counter;
+    extern std::atomic<uint64_t> speed_counter4;
+    extern std::atomic<uint64_t> second_counter;
 
     // extern const double LOGIC_MULTIPLIER;
     extern int TICS_PER_SECOND;
