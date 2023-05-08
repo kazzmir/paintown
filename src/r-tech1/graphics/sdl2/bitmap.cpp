@@ -3,8 +3,10 @@
 #include "bitmap.h"
 #include "../bitmap.h"
 #include "../../debug.h"
+#include "r-tech1/file-system.h"
 #include <iostream>
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <memory>
 
 using namespace std;
@@ -83,6 +85,39 @@ Graphics::Color Graphics::makeColor(int r, int g, int b){
 }
 
 void Graphics::Bitmap::fill(Graphics::Color color) const {
+    activate();
+
+    SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    SDL_RenderClear(global_handler->renderer);
+}
+
+void Graphics::Bitmap::doLoad(Storage::File& file){
+    /* FIXME: don't load the entire file into memory, use an rwops instead */
+    int length = file.getSize();
+    if (length == -1){
+        throw BitmapException(__FILE__, __LINE__, std::string("Could not read from file"));
+    }
+    char * data = new char[length];
+    try{
+        file.readLine(data, length);
+        loadFromMemory(data, length);
+        delete[] data;
+    } catch (const BitmapException & fail){
+        delete[] data;
+        throw;
+    } catch (...){
+        delete[] data;
+        throw;
+    }
+
+    /*
+    SDL_RWops* io = SDL_AllocRW();
+    if (io == nullptr){
+        DebugLog1 << "Unable to allocate SDL_RWops for file " << endl;
+        return;
+    }
+    SDL_FreeRW(io);
+    */
 }
 
 int Graphics::Bitmap::getWidth() const {
@@ -103,6 +138,12 @@ void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
 }
 
 void Graphics::Bitmap::loadFromMemory(const char * data, int length){
+    SDL_RWops* ops = SDL_RWFromConstMem(data, length);
+
+    SDL_Texture* texture = IMG_LoadTexture_RW(global_handler->renderer, ops, 0);
+    setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
+
+    SDL_FreeRW(ops);
 }
 
 void Graphics::Bitmap::internalLoadFile( const char * load_file ){
@@ -146,10 +187,16 @@ Graphics::Color Graphics::MaskColor(){
     return c;
 }
 
+void Graphics::Bitmap::activate() const {
+    if (this->getData() != nullptr && SDL_GetRenderTarget(global_handler->renderer) != this->getData()->texture){
+        SDL_SetRenderTarget(global_handler->renderer, this->getData()->texture);
+    }
+}
+
 void Graphics::initializeExtraStuff(){
 }
 
-Graphics::Bitmap::Bitmap( const std::string & load_file ){
+Graphics::Bitmap::Bitmap(const std::string & load_file){
 }
 
 void Graphics::Bitmap::applyTrans(const Color color) const {

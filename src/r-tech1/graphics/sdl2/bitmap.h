@@ -8,6 +8,13 @@ struct BitmapData{
     }
 
     SDL_Texture* texture;
+
+    ~BitmapData(){
+        if (texture != nullptr){
+            SDL_DestroyTexture(texture);
+            texture = nullptr;
+        }
+    }
 };
 
 typedef SDL_Color INTERNAL_COLOR;

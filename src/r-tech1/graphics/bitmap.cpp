@@ -63,6 +63,11 @@ Bitmap::Bitmap(Storage::File & file):
 mustResize(false),
 error(false),
 bit8MaskColor(makeColor(0, 0, 0)){
+    doLoad(file);
+}
+
+#ifndef USE_SDL2
+void Bitmap::doLoad(Storage::File& file){
     int length = file.getSize();
     if (length == -1){
         throw BitmapException(__FILE__, __LINE__, std::string("Could not read from file"));
@@ -80,6 +85,7 @@ bit8MaskColor(makeColor(0, 0, 0)){
         throw;
     }
 }
+#endif
 
 QualityFilter qualityFilterName(const std::string & type){
     if (type == "xbr"){

@@ -229,6 +229,8 @@ public:
     /* Load a bitmap from an abstract file */
     Bitmap(Storage::File & file);
 
+    virtual void doLoad(Storage::File & file);
+
     /* 4/24/2010: remove this at some point */
 #ifdef USE_ALLEGRO
 	explicit Bitmap( BITMAP * who, bool deep_copy = false );
@@ -292,6 +294,11 @@ public:
 		return my_bitmap->h;
 	}
 	*/
+
+#ifdef USE_SDL2
+        // make this bitmap the active target for rendering
+        void activate() const;
+#endif
 
 	void detach();
 
