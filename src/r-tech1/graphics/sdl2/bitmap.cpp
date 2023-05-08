@@ -50,6 +50,7 @@ bool operator<(const INTERNAL_COLOR&, const INTERNAL_COLOR&){
 }
 
 Graphics::Bitmap::Bitmap(){
+    setData(std::shared_ptr<BitmapData>(new BitmapData(nullptr)));
 }
 
 Graphics::Bitmap::Bitmap(int x, int y){
@@ -64,8 +65,8 @@ Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int heig
 Graphics::Bitmap::Bitmap(const char * data, int length){
 }
 
-Graphics::Bitmap::Bitmap(SDL_Window* window, SDL_Renderer* renderer, bool deep_copy){
-    setData(Util::ReferenceCount<BitmapData>(new BitmapData(window, renderer)));
+Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
+    setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 }
 
 Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
@@ -277,6 +278,7 @@ void Graphics::Bitmap::BlitAreaToScreen(const int upper_left_x, const int upper_
 }
 
 void Graphics::Bitmap::BlitToScreen(const int upper_left_x, const int upper_left_y) const {
+    SDL_SetRenderTarget(global_handler->renderer, nullptr);
     SDL_RenderPresent(global_handler->renderer);
 }
 
@@ -405,6 +407,18 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
     if (renderer == nullptr){
         DebugLog << "Could not create renderer: " << SDL_GetError() << endl;
         return 1;
+    }
+
+    SDL_RendererInfo info;
+    int ok = SDL_GetRendererInfo(renderer, &info);
+    if (ok == 0){
+        if (info.flags & SDL_RENDERER_TARGETTEXTURE){
+            DebugLog << "Renderer supports rendering to texture" << endl;
+        } else {
+            DebugLog << "Renderer does not support rendering to texture" << endl;
+        }
+    } else {
+        DebugLog << "Unable to get renderer info: " << SDL_GetError() << endl;
     }
 
     global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));

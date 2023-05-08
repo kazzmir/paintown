@@ -4,11 +4,10 @@
 #include <SDL2/SDL_render.h>
 
 struct BitmapData{
-    BitmapData(SDL_Window* window, SDL_Renderer* renderer):window(window), renderer(renderer){
+    BitmapData(SDL_Texture* texture):texture(texture){
     }
 
-    SDL_Window* window;
-    SDL_Renderer* renderer;
+    SDL_Texture* texture;
 };
 
 typedef SDL_Color INTERNAL_COLOR;

@@ -8,6 +8,7 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <memory>
 
 #ifdef USE_ALLEGRO
 #include "allegro/bitmap.h"
@@ -236,7 +237,7 @@ public:
 	explicit Bitmap(SDL_Surface * who, bool deep_copy = false );
 #endif
 #ifdef USE_SDL2
-    explicit Bitmap(SDL_Window* window, SDL_Renderer* renderer, bool deep_copy=false);
+    explicit Bitmap(SDL_Texture* texture, bool deep_copy=false);
 #endif
 #ifdef USE_ALLEGRO5
 	explicit Bitmap(ALLEGRO_BITMAP * who, bool deep_copy = false );
@@ -478,15 +479,15 @@ public:
 
 	bool getError();
 
-	inline const Util::ReferenceCount<BitmapData> & getData() const {
+	inline const std::shared_ptr<BitmapData> & getData() const {
             return data;
 	}
 	
-        inline Util::ReferenceCount<BitmapData> getData(){
+        inline std::shared_ptr<BitmapData> getData(){
             return data;
 	}
 
-        void setData(Util::ReferenceCount<BitmapData> data){
+        void setData(std::shared_ptr<BitmapData> data){
             this->data = data;
         }
 	
@@ -600,7 +601,7 @@ protected:
         void internalLoadFile( const char * load_file );
 
         /* implementation specific data */
-        Util::ReferenceCount<BitmapData> data;
+        std::shared_ptr<BitmapData> data;
         // int * own;
         bool mustResize;
         // bool own;
