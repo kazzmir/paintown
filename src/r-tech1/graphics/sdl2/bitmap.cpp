@@ -277,6 +277,7 @@ void Graphics::Bitmap::BlitAreaToScreen(const int upper_left_x, const int upper_
 }
 
 void Graphics::Bitmap::BlitToScreen(const int upper_left_x, const int upper_left_y) const {
+    SDL_RenderPresent(global_handler->renderer);
 }
 
 void Graphics::Bitmap::roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const {
