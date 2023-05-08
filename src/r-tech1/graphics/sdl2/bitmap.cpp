@@ -394,7 +394,6 @@ int Graphics::setGfxModeText(){
 }
 
 int Graphics::setGraphicsMode(int mode, int width, int height){
-
     SDL_Window* window = SDL_CreateWindow("paintown", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (window == nullptr){
         DebugLog << "Could not create a window: " << SDL_GetError() << endl;

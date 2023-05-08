@@ -516,7 +516,7 @@ void EventManager::dispatch(Event type, int arg1, int arg2){
                 resize.enable = true;
             } else {
                 DebugLog1 << "Resizing screen to " << arg1 << ", " << arg2 << std::endl;
-                if (Graphics::setGraphicsMode(0, arg1, arg2) == 0){
+                if (Graphics::changeGraphicsMode(0, arg1, arg2) == 0){
                     Configuration::setScreenWidth(arg1);
                     Configuration::setScreenHeight(arg2);
                 }
