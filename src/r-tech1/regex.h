@@ -1,5 +1,4 @@
-#ifndef _rtech1_regex_h
-#define _rtech1_regex_h
+#pragma once
 
 #include <string>
 
@@ -18,5 +17,3 @@ namespace Util{
     bool matchRegex(const std::string & str, const Regex & regex);
     std::string captureRegex(const std::string & str, const Regex & regex, int capture);
 }
-
-#endif
