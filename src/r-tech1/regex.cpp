@@ -1,10 +1,11 @@
 #include <string>
 #include <map>
 #include <string.h>
+#include <regex>
 /* gnu/posix's regex header */
 // #include <regex.h>
 // #include "trex/trex.h"
-#include "libs/pcre/pcre.h"
+// #include "libs/pcre/pcre.h"
 /* our regex header */
 #include "r-tech1/regex.h"
 
@@ -12,7 +13,7 @@ using namespace std;
 
 namespace Util{
 
-static map<string, pcre*> cachedPatterns;
+// static map<string, pcre*> cachedPatterns;
 
 Regex::Regex(const string & data):
 data(data){
@@ -21,9 +22,17 @@ data(data){
 const std::string & Regex::get() const {
     return data;
 }
-    
+
 /* http://www.gnu.org/s/libc/manual/html_node/Regular-Expressions.html */
 bool matchRegex(const string & str, const Regex & pattern){
+    std::smatch match;
+    if (std::regex_match(str, match, std::regex(pattern.get()))){
+        return true;
+    }
+
+    return false;
+
+    /*
     pcre * regex;
     const char * error;
     int errorOffset;
@@ -40,9 +49,22 @@ bool matchRegex(const string & str, const Regex & pattern){
     count = pcre_exec(regex, NULL, str.c_str(), str.size(), 0, 0, NULL, 0);
     // pcre_free(regex);
     return count >= 0;
+    */
 }
     
 string captureRegex(const string & str, const Regex & pattern, int capture){
+    std::smatch match;
+    if (std::regex_match(str, match, std::regex(pattern.get()))){
+        if ((int) match.size() > capture+1){
+            return match[capture+1];
+        }
+        return "";
+    }
+
+    return "";
+
+
+    /*
     pcre * regex;
     const char * error;
     int errorOffset;
@@ -67,6 +89,7 @@ string captureRegex(const string & str, const Regex & pattern, int capture){
     }
     
     return "";
+    */
 }
 
 } // namespace
