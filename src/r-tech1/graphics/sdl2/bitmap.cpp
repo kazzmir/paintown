@@ -268,6 +268,20 @@ void Graphics::Bitmap::arcFilled(const int x, const int y, const double ang1, co
 }
 
 void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) const {
+    if (this->getData() != nullptr){
+        /*
+        SDL_Rect rect;
+        rect.x = x;
+        rect.y = y;
+        SDL_Point size;
+        // FIXME: cache the texture size
+        SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        rect.w = size.x;
+        rect.h = size.y;
+        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+        */
+        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::drawCharacter( const int x, const int y, const Color color, const int background, const Bitmap & where ) const {
