@@ -153,19 +153,19 @@ void Graphics::Bitmap::drawHFlip(const int x, const int y, Filter * filter, cons
 }
 
 int Graphics::getRed(Color x){
-    return 0;
+    return x.color.r;
 }
 
 int Graphics::getBlue(Color x){
-    return 0;
+    return x.color.b;
 }
 
 int Graphics::getGreen(Color x){
-    return 0;
+    return x.color.g;
 }
 
 int Graphics::getAlpha(Color x){
-    return 0;
+    return x.color.a;
 }
 
 Graphics::Color Graphics::Bitmap::getPixel( const int x, const int y ) const {
@@ -360,6 +360,9 @@ void Graphics::Bitmap::readLine( std::vector<Color> & vec, int y ){
 }
 
 void Graphics::Bitmap::putPixelNormal(int x, int y, Color col) const {
+    // set col as the current color
+    SDL_SetRenderDrawColor(global_handler->renderer, col.color.r, col.color.g, col.color.b, col.color.a);
+    SDL_RenderDrawPoint(global_handler->renderer, x, y);
 }
 
 Graphics::Color Graphics::TranslucentBitmap::blendColor(const Color & color) const {
