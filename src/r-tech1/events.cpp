@@ -199,6 +199,15 @@ void EventManager::runSDL(Keyboard & keyboard, map<int, ReferenceCount<Joystick>
 #endif
 
 #ifdef USE_SDL2
+static void handleKeyDown(Keyboard & keyboard, const SDL_Event & event){
+    // keyboard.press(event.key.keysym.sym, event.key.keysym.unicode);
+    keyboard.press(event.key.keysym.sym, event.key.keysym.sym);
+}
+
+static void handleKeyUp(Keyboard & keyboard, const SDL_Event & event){
+    keyboard.release(event.key.keysym.sym);
+}
+
 void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick> > joysticks){
     keyboard.poll();
     for (map<int, ReferenceCount<Joystick> >::iterator it = joysticks.begin(); it != joysticks.end(); it++){
@@ -223,7 +232,6 @@ void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick
                 dispatch(CloseWindow);
                 break;
             }
-                            /*
             case SDL_KEYDOWN : {
                 handleKeyDown(keyboard, event);
                  // dispatch(Key, event.key.keysym.sym);
@@ -233,6 +241,7 @@ void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick
                 handleKeyUp(keyboard, event);
                 break;
             }
+                            /*
             case SDL_JOYBUTTONDOWN: {
                 handleJoystickButtonDown(joysticks, event);
                 break;
