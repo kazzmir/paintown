@@ -23,6 +23,8 @@
 #define _xdebug Global::debug(0, PAINTOWN_DEBUG_CONTEXT)
 #define DebugLog Global::debug(0, PAINTOWN_DEBUG_CONTEXT)
 #define DebugLog1 Global::debug(1, PAINTOWN_DEBUG_CONTEXT)
+#define DebugLog2 Global::debug(2, PAINTOWN_DEBUG_CONTEXT)
+#define DebugLog3 Global::debug(3, PAINTOWN_DEBUG_CONTEXT)
 
 /* Enable this if you can't get regular debug output but have networking
  */

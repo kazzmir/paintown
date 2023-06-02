@@ -498,7 +498,7 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
                 }
             }
         } catch (const LoadException & le){
-            Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
+            DebugLog3 << "Could not read option: " << le.getTrace() << endl;
             token->print(" ");
         }
     } else if ( *token == "position" ) {
@@ -1212,7 +1212,7 @@ Menu::Menu::Menu(const Filesystem::AbsolutePath & filename, const Renderer::Type
 type(type){
     // Load up tokenizer
     try{
-        Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
+        DebugLog1 << "Loading menu " << filename.path() << endl;
         TokenReader tr;
         Token * token = tr.readTokenFromFile(*Storage::instance().open(filename));
         OptionFactory defaultFactory;
@@ -1227,7 +1227,7 @@ renderer(0),
 type(type){
     // Load up tokenizer
     try{
-        Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
+        DebugLog1 << "Loading menu " << filename.path() << endl;
         TokenReader tr;
         Token * token = tr.readTokenFromFile(*Storage::instance().open(filename));
         load(token, factory);
@@ -1299,7 +1299,7 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
             } catch (const TokenException & ex){
             }
         } else {
-            Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
+            DebugLog << "No version indicated, assuming 3.3.1 or below." << endl;
             major = 3;
             minor = 3;
             micro = 1;
@@ -1635,8 +1635,8 @@ void Menu::Menu::addData(ValueHolder * item){
     std::pair<std::map<std::string,ValueHolder *>::iterator,bool> check;
     check = data.insert( std::pair<std::string,ValueHolder *>(item->getName(),item) );
     if (check.second == false){
-        Global::debug(0,"menu") << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
-        Global::debug(0,"menu") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
+        DebugLog << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
+        DebugLog << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
         data[item->getName()] = item;
     }
 }
@@ -1663,7 +1663,7 @@ void Menu::Menu::handleCurrentVersion(const Token * token){
             } else if (*tok == "context"){
                 context.parseToken(tok);
             } else {
-                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                DebugLog3 <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
@@ -1679,7 +1679,7 @@ void Menu::Menu::handleCurrentVersion(const Token * token){
 }
 
 void Menu::Menu::handleCompatibility(const Token * token, int version, const OptionFactory & factory){
-    Global::debug(1,"menu") << "Trying version: " << version << endl;
+    DebugLog1 << "Trying version: " << version << endl;
     if (version <= Version::getVersion(3, 3, 1)){
 
         const Token * languages = token->findToken("_/languages");
@@ -1816,7 +1816,7 @@ void Menu::Menu::handleCompatibility(const Token * token, int version, const Opt
                     } catch (const MenuException & ex){
                     } 
                 } else {
-                    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                    DebugLog3 <<"Unhandled menu attribute: "<<endl;
                     if (Global::getDebug() >= 3){
                         tok->print(" ");
                     }
@@ -1829,6 +1829,8 @@ void Menu::Menu::handleCompatibility(const Token * token, int version, const Opt
                 throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
             }
         }
+    } else {
+        DebugLog << "Unknown menu version " << version << endl;
     }
 }
         

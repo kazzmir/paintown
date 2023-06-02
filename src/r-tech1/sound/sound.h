@@ -39,7 +39,7 @@ public:
     /* cleanup */
     static void uninitialize();
 
-    Sound & operator=( const Sound & rhs );
+    Sound & operator=(const Sound & rhs);
 
     void play();
     void play(double volume, int pan);

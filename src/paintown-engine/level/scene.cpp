@@ -392,8 +392,10 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
 void Scene::drawBack( int x, Graphics::Bitmap * work ){
     if (background){
         int y = 0;
-        background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
-        background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
+        if (background->getWidth() != 0){
+            background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
+            background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
+        }
     }
 
     int fx = 0;
