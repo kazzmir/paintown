@@ -33,4 +33,3 @@ executable('paintown', all_code,
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: ['-fsanitize=address'],
   )
-
