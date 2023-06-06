@@ -49,6 +49,7 @@ static const int DEFAULT_DEBUG = 0;
 #include "r-tech1/init.h"
 #include "r-tech1/main.h"
 #include "r-tech1/argument.h"
+#include "r-tech1/context.h"
 
 #include "paintown-engine/game/argument.h"
 
@@ -818,8 +819,13 @@ int rtech_main(int argc, char ** argv){
     }
 #endif
 
+    std::shared_ptr<Context> mainContext = std::make_shared<Context>();
+
     // scope for collector
     {
+
+
+        AutoCancel cancel(mainContext->autoCancel());
 
     bool music_on = true;
     // bool joystick_on = true;

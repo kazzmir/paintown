@@ -10,6 +10,18 @@ bool Context::isDone() const {
     return done.load() || (parent != nullptr && parent->isDone());
 }
 
+AutoCancel Context::autoCancel() {
+    return AutoCancel(*this);
+}
+
 void Context::cancel() {
     done.store(true);
+}
+
+AutoCancel::AutoCancel(Context & context):
+context(context) {
+}
+
+AutoCancel::~AutoCancel() {
+    context.cancel();
 }
