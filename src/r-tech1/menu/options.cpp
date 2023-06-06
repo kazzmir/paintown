@@ -1604,7 +1604,7 @@ void OptionMenu::run(const Menu::Context & context){
     // Do our new menu
     try{
         menu->run(context);
-    } catch (const Exception::Return ignore){
+    } catch (const Exception::Return & ignore){
         throw Menu::Reload(__FILE__, __LINE__);
     }
 }
@@ -2274,7 +2274,7 @@ void OptionTabMenu::run(const Menu::Context & context){
     // menu->run(context);
     try{
         menu->run(context);
-    } catch (const Exception::Return ignore){
+    } catch (const Exception::Return & ignore){
         throw Menu::Reload(__FILE__, __LINE__);
     }
 }

@@ -44,6 +44,10 @@ public:
     color(color){
     }
 
+    Color(const Color & him):
+    color(him.color){
+    }
+
     static INTERNAL_COLOR defaultColor();
 
     Color():
