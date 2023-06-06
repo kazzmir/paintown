@@ -33,8 +33,8 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 #include <math.h>
 #include <exception>
 #include "file-system.h"
-#include <ft2build.h>
-#include FT_FREETYPE_H
+// #include <ft2build.h>
+// #include FT_FREETYPE_H
 #include "thread.h"
 #include "graphics/color.h"
 
@@ -126,8 +126,10 @@ namespace ftalleg {
             fontSize();
             fontSize(int width, int height);
             ~fontSize();
-            FT_UInt width;
-            FT_UInt height;
+            // FT_UInt width;
+            // FT_UInt height;
+            int width;
+            int height;
             int italics;
             int angle;
 

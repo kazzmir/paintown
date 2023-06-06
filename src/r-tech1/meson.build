@@ -212,5 +212,5 @@ includes = include_directories('..')
 
 rtech1_library = static_library('r-tech1', sources,
   include_directories: [includes, dumb_includes],
-  dependencies: [sdl_dependency, freetype_dependency, zlib_dependency],
+  dependencies: [sdl_dependency, zlib_dependency],
   )

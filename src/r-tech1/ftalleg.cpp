@@ -80,7 +80,7 @@ namespace ftalleg{
     }
     // Static count of instances of fonts to track library
     static int instances = 0;
-    static FT_Library ftLibrary = 0;
+    // static FT_Library ftLibrary = 0;
 
     character::character() {
     }

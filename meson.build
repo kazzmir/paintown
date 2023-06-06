@@ -20,7 +20,7 @@ all_code = [
 sdl_dependency = dependency('sdl2', required: true)
 sdl_image_dependency = dependency('SDL2_image', required: true)
 sdl_ttf_dependency = dependency('SDL2_ttf', required: true)
-freetype_dependency = dependency('freetype2', required: true)
+# freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
 
 subdir('src/r-tech1')
@@ -30,7 +30,7 @@ subdir('src/openbor')
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
-  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, freetype_dependency, zlib_dependency],
+  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, zlib_dependency],
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: ['-fsanitize=address'],
   )
