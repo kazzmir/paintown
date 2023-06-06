@@ -38,6 +38,10 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 #include "thread.h"
 #include "graphics/color.h"
 
+#ifdef USE_SDL2
+#include <SDL2/SDL_ttf.h>
+#endif
+
 #ifdef USE_ALLEGRO5
 struct ALLEGRO_FONT;
 #endif
@@ -176,6 +180,9 @@ namespace ftalleg {
         };
 #elif USE_SDL2
         class freetype{
+        private:
+            TTF_Font* font;
+
         public:
             freetype(const Filesystem::AbsolutePath & str, const int x, const int y);
             ~freetype();

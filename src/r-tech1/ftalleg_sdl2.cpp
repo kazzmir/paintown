@@ -8,14 +8,21 @@
 #include <sstream>
 #include <cassert>
 #include <exception>
-
+#include <SDL2/SDL_ttf.h>
 
 namespace ftalleg{
 
 freetype::freetype(const Filesystem::AbsolutePath & str, const int x, const int y ){
+    font = TTF_OpenFont(str.path().c_str(), 12);
+    if (font == nullptr){
+        DebugLog << "Could not load font " << str.path() << ": " << TTF_GetError() << std::endl;
+    }
 }
 
 freetype::~freetype(){
+    if (font != nullptr){
+        TTF_CloseFont(font);
+    }
 }
 
 void freetype::destroyGlyphIndex(){

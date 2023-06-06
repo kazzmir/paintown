@@ -20,7 +20,7 @@ void initSystem(const Global::InitConditions & conditions, Global::stream_type &
     }
 
     if (TTF_Init() != 0){
-        DebugLog << "SDL2 TTF initialization failed: " << SDL_GetError() << std::endl;
+        DebugLog << "SDL2 TTF initialization failed: " << TTF_GetError() << std::endl;
         exit(1);
     }
 }
