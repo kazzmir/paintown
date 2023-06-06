@@ -4,6 +4,7 @@
 #include "r-tech1/system/init.h"
 #include "r-tech1/debug.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 namespace System{
 
@@ -15,6 +16,11 @@ void initSystem(const Global::InitConditions & conditions, Global::stream_type &
     DebugLog << "SDL2 initialization: " << ok << std::endl;
     if (ok != 0){
         DebugLog << "  error: " << SDL_GetError() << std::endl;
+        exit(1);
+    }
+
+    if (TTF_Init() != 0){
+        DebugLog << "SDL2 TTF initialization failed: " << SDL_GetError() << std::endl;
         exit(1);
     }
 }
@@ -34,6 +40,8 @@ void startTimers(){
 }
 
 void shutdown(){
+    TTF_Quit();
+
     if (timer != 0){
         if (!SDL_RemoveTimer(timer)){
             DebugLog << "SDL2: unable to remove timer" << std::endl;
