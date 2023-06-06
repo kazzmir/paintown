@@ -87,11 +87,11 @@ public:
        }*/
     
     inline const std::string & getMusic() const {
-	return this->music;
+        return this->music;
     }
     
-    inline const int getMusicVolume() const {
-	return this->musicVolume;
+    inline int getMusicVolume() const {
+        return this->musicVolume;
     }
 
     virtual void begin();

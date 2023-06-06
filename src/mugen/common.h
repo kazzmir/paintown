@@ -27,6 +27,7 @@ public:
     CharacterId(const CharacterId & copy);
     explicit CharacterId(int value);
     virtual ~CharacterId();
+    CharacterId& operator=(const CharacterId & copy);
     bool operator==(const CharacterId &) const;
     bool operator!=(const CharacterId &) const;
     bool operator<(const CharacterId &) const;

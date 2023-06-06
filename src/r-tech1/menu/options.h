@@ -41,9 +41,9 @@ public:
         
         int print(int x, int y, Graphics::Color defaultTitleColor, Graphics::Color defaultColor, const Font &, const Graphics::Bitmap &, const Justification &) const;
         
-        const int size(const Font &) const;
+        int size(const Font &) const;
         
-        inline const bool empty() const {
+        inline bool empty() const {
             return title.empty() && credits.empty();
         }
         
@@ -82,7 +82,7 @@ public:
             Roll,
         };
         
-        inline const bool isDone() const {
+        inline bool isDone() const {
             return this->done;
         }
         

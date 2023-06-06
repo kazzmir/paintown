@@ -283,7 +283,7 @@ int OptionCredits::Block::print(int x, int y, Graphics::Color defaultTitleColor,
     return currentY;
 }
 
-const int OptionCredits::Block::size(const Font & font) const{
+int OptionCredits::Block::size(const Font & font) const {
     // Counts title and space in between
     int total = 0;
     if (topAnimation != NULL){

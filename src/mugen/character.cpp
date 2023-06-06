@@ -105,6 +105,11 @@ CharacterId::CharacterId(const CharacterId & copy):
 id(copy.id){
 }
 
+CharacterId& CharacterId::operator=(const CharacterId & copy){
+    id = copy.id;
+    return *this;
+}
+
 bool CharacterId::operator<(const CharacterId & him) const {
     return id < him.id;
 }

@@ -71,7 +71,7 @@ public:
     virtual void setCurrentIndex(unsigned int cursor, unsigned int location) = 0;
     virtual unsigned int getCurrentIndex(unsigned int cursor) const = 0;
     virtual void setCurrentState(unsigned int cursor, const CursorState &) = 0;
-    virtual const CursorState getCurrentState(unsigned int cursor) const = 0;
+    virtual CursorState getCurrentState(unsigned int cursor) const = 0;
     virtual bool up(unsigned int cursor) = 0;
     virtual bool down(unsigned int cursor) = 0;
     virtual bool left(unsigned int cursor) = 0;
@@ -165,7 +165,7 @@ public:
     virtual void setCurrentIndex(unsigned int cursor, unsigned int location);
     virtual unsigned int getCurrentIndex(unsigned int cursor) const;
     virtual void setCurrentState(unsigned int cursor, const SelectListInterface::CursorState &);
-    virtual const SelectListInterface::CursorState getCurrentState(unsigned int cursor) const;
+    virtual SelectListInterface::CursorState getCurrentState(unsigned int cursor) const;
     virtual void getDrawLocation(const Util::ReferenceCount<SelectItem> & item, int * x, int * y) const;
     virtual bool up(unsigned int cursor);
     virtual bool down(unsigned int cursor);
@@ -244,7 +244,7 @@ public:
     virtual void setCurrentIndex(unsigned int cursor, unsigned int location);
     virtual unsigned int getCurrentIndex(unsigned int cursor) const;
     virtual void setCurrentState(unsigned int cursor, const SelectListInterface::CursorState &);
-    virtual const SelectListInterface::CursorState getCurrentState(unsigned int cursor) const;
+    virtual SelectListInterface::CursorState getCurrentState(unsigned int cursor) const;
     virtual void getDrawLocation(const Util::ReferenceCount<SelectItem> & item, int * x, int * y) const;
     virtual bool up(unsigned int cursor);
     virtual bool down(unsigned int cursor);
@@ -274,10 +274,10 @@ public:
         this->gridX = x;
         this->gridY = y;
     }
-    virtual const int getGridX() const {
+    virtual int getGridX() const {
         return this->gridX;
     }
-    virtual const int getGridY() const {
+    virtual int getGridY() const {
         return this->gridY;
     }
     
