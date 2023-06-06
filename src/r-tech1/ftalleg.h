@@ -25,8 +25,7 @@ SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef FT_FONT_H
-#define FT_FONT_H
+#pragma once
 
 // #include <allegro.h>
 #include <map>
@@ -284,5 +283,3 @@ namespace ftalleg {
         };
 #endif
 }
-
-#endif /* FT_FONT_H */

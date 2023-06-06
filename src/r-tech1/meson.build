@@ -73,6 +73,7 @@ sources = [
   'gui/widget.cpp',
 
   'ftalleg.cpp',
+  'ftalleg_sdl2.cpp',
   'input/sdl/joystick.cpp',
   'input/sdl/keyboard.cpp',
   'input/sdl/touch.cpp',
