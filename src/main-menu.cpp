@@ -819,13 +819,13 @@ int rtech_main(int argc, char ** argv){
     }
 #endif
 
-    std::shared_ptr<Context> mainContext = std::make_shared<Context>();
+    std::shared_ptr<Util::Context> mainContext = std::make_shared<Util::Context>();
 
     // scope for collector
     {
 
 
-        AutoCancel cancel(mainContext->autoCancel());
+        Util::AutoCancel cancel(mainContext->autoCancel());
 
     bool music_on = true;
     // bool joystick_on = true;

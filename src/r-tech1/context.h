@@ -2,6 +2,8 @@
 
 #include <atomic>
 
+namespace Util {
+
 class Context;
 
 class AutoCancel{
@@ -26,3 +28,5 @@ public:
     const Context* parent;
     std::atomic<bool> done;
 };
+
+}

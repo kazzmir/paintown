@@ -1,5 +1,7 @@
 #include "context.h"
 
+namespace Util {
+
 Context::Context(): parent(nullptr), done(false) {}
 
 Context::Context(const Context* parent):
@@ -24,4 +26,6 @@ context(context) {
 
 AutoCancel::~AutoCancel() {
     context.cancel();
+}
+
 }
