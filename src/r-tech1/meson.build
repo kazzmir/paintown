@@ -4,6 +4,7 @@ sources = [
   'file-system.cpp',
   'debug.cpp',
   'funcs.cpp',
+  'context.cpp',
   'tokenreader.cpp',
   'token.cpp',
   'exceptions/load_exception.cpp',
