@@ -174,6 +174,43 @@ namespace ftalleg {
             Util::Thread::LockObject lock;
             std::map<int, FontUse> fonts;
         };
+#elif USE_SDL2
+        class freetype{
+        public:
+            freetype(const Filesystem::AbsolutePath & str, const int x, const int y);
+            ~freetype();
+
+            enum ftAlign{
+                ftLeft = 0,
+                ftCenter = 1,
+                ftRight = 2
+            };
+
+            void setSize( unsigned int w, unsigned int h);
+            int getHeight(const std::string & str) const;
+            int getLength(const std::string & text) const;
+            void getSize(int * w, int * h) const;
+            void render(int x, int y, const Graphics::Color & color, const Graphics::Bitmap & bmp, ftAlign alignment, const std::string & text, int marker, ...);
+            void createIndex();
+            character * extractGlyph(signed long unicode);
+
+            //! Load font from memory
+            bool load(const unsigned char *memoryFont, unsigned int length, int index, unsigned int width, unsigned int height);
+
+            //! Load font from file
+            bool load(const Filesystem::AbsolutePath & filename, int index, unsigned int width, unsigned int height);
+            void drawCharacter(signed long unicode, int &x1, int &y1, const Graphics::Bitmap & bitmap, const Graphics::Color & color);
+            void destroyGlyphIndex();
+
+            int height( long code ) const;
+            int getLength(const std::string & text);
+
+            int getItalics();
+            void setItalics(int i);
+            int getWidth() const;
+            int calculateMaximumHeight();
+            int calculateHeight( const std::string & str ) const;
+        };
 #else
 	//!  Freetype based font system
 	/*!  
