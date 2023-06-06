@@ -40,8 +40,6 @@ void startTimers(){
 }
 
 void shutdown(){
-    TTF_Quit();
-
     if (timer != 0){
         if (!SDL_RemoveTimer(timer)){
             DebugLog << "SDL2: unable to remove timer" << std::endl;
@@ -49,6 +47,7 @@ void shutdown(){
     }
 
     DebugLog << "Shutting down SDL2" << std::endl;
+    TTF_Quit();
     SDL_Quit();
 }
 
