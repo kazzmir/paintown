@@ -243,6 +243,7 @@ public:
 	explicit Bitmap(SDL_Surface * who, bool deep_copy = false );
 #endif
 #ifdef USE_SDL2
+    explicit Bitmap(SDL_Surface* texture);
     explicit Bitmap(SDL_Texture* texture, bool deep_copy=false);
 #endif
 #ifdef USE_ALLEGRO5

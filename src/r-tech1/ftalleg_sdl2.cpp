@@ -6,9 +6,11 @@
 #include "r-tech1/utf.h"
 #include <iostream>
 #include <sstream>
-#include <cassert>
-#include <exception>
+#include <string>
 #include <SDL2/SDL_ttf.h>
+#include <stdarg.h>
+
+using namespace std;
 
 namespace ftalleg{
 
@@ -51,6 +53,43 @@ int freetype::getLength(const std::string & text) {
 }
 
 void freetype::render(int x, int y, const Graphics::Color & color, const Graphics::Bitmap & bmp, ftAlign alignment, const std::string & text, int marker ...) {
+    ostringstream str;
+    /* use vsnprintf/Util::limitPrintf here? */
+
+    // Get extra arguments
+    va_list ap;
+    va_start(ap, marker);
+    for(unsigned int i = 0; i<text.length();++i) {
+        if (text[i] == '%') {
+            if(text[i+1]=='s') {
+                str << va_arg(ap, char *);
+                ++i;
+            } else if(text[i+1]=='d'||text[i+1]=='i') {
+                str << va_arg(ap, signed int);
+                ++i;
+            } else if(text[i+1]=='c') {
+                str << (char)va_arg(ap, int);
+                ++i;
+            } else {
+                str << text[i];
+            }
+        } else {
+            str << text[i];
+        }
+    }
+    va_end(ap);
+
+    string data = str.str();
+
+    SDL_Color xcolor;
+    xcolor.r = 255;
+    xcolor.g = 0;
+    xcolor.b = 0;
+    xcolor.a = 255;
+    SDL_Surface* text_surface = TTF_RenderText_Solid(font, data.c_str(), xcolor);
+    Graphics::Bitmap copy(text_surface);
+    SDL_FreeSurface(text_surface);
+    copy.draw(x, y, bmp);
 }
 
 int freetype::calculateMaximumHeight(){

@@ -67,6 +67,11 @@ Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int heig
 Graphics::Bitmap::Bitmap(const char * data, int length){
 }
 
+Graphics::Bitmap::Bitmap(SDL_Surface* surface){
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, surface);
+    setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
+}
+
 Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 }
@@ -269,7 +274,6 @@ void Graphics::Bitmap::arcFilled(const int x, const int y, const double ang1, co
 
 void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) const {
     if (this->getData() != nullptr){
-        /*
         SDL_Rect rect;
         rect.x = x;
         rect.y = y;
@@ -279,8 +283,8 @@ void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) cons
         rect.w = size.x;
         rect.h = size.y;
         SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
-        */
-        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
     }
 }
 
