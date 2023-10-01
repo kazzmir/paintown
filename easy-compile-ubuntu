@@ -9,10 +9,10 @@ echo your priveleges so that new packages can be installed on your system.
 echo When prompted for a password type the password you use to login.
 
 # For Allegro
-# sudo apt-get install scons liballegro-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python-dev make
+# sudo apt install scons liballegro-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python2-dev make
 # For SDL
-sudo apt-get install scons libsdl1.2-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python-dev make libogg-dev libvorbis-dev libmpg123-dev
-make
+sudo apt install scons libsdl1.2-dev libpng-dev libfreetype6-dev g++ zlib1g-dev python2-dev make libogg-dev libvorbis-dev libmpg123-dev
+make build-cmake
 
 ls -l paintown
 echo "Here is the executable. To run it type: ./paintown"

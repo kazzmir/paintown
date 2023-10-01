@@ -6,3 +6,5 @@ peg_*.py
 *.pyc
 *.log
 *.swp
+cmake-build-debug
+.idea

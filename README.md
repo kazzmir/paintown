@@ -194,11 +194,26 @@ the stuff in prebuilt\include to your mingw\include directory. copy the
 allegro - http://alleg.sf.net
 get the 4.2.3 package and dx70_mgw.zip
 Get freetype from http://gnuwin32.sourceforge.net/packages/freetype.htm. Copy
-the resulting headers into your include path. Dont copy in freetype2, just the
+the resulting headers into your include path. Don't copy in freetype2, just the
 path underneath it, freetype2\freetype.
 Gnu regex: http://gnuwin32.sourceforge.net/packages/regex.htm
 Use the dependancy walker: http://www.dependencywalker.com/ to check that
 all required dlls are around.
+
+##### Docker
+
+Building
+```shell
+make build/docker
+```
+The executable will end up in build/bin/paintown
+
+Running
+```shell
+cp build/bin/paitown
+./paintown --data ./data
+```
+
 
 ## Thanks
 * [Rain sound - by inchadney.](http://freesound.iua.upf.edu/usersViewSingle.php?id=28867)
