@@ -210,7 +210,7 @@ The executable will end up in build/bin/paintown
 
 Running
 ```shell
-cp build/bin/paitown
+cp build/bin/paintown .
 ./paintown --data ./data
 ```
 
