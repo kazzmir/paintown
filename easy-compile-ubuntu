@@ -13,6 +13,6 @@ echo When prompted for a password type the password you use to login.
 
 make build-cmake
 
-find . -name paintown
+find . -executable -type f -name paintown
 echo "Here is the executable. To run it type: ./paintown"
 
