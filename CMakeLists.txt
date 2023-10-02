@@ -84,12 +84,17 @@ mark_as_advanced(CLEAR PNG_LIBRARY)
 # -------------------------------------------------------
 # User setable options
 # -------------------------------------------------------
+
 set(STARTING_DATA_PATH "${CMAKE_SOURCE_DIR}/data" CACHE INTERNAL "Starting data path." FORCE)
 option(DEBUG "Compile paintown with debug information?" OFF)
-set(DATA_PATH "${STARTING_DATA_PATH}" CACHE FILEPATH "Set the data path (Recommend /usr/local/games/paintown for system installation)")
+if(NOT DATA_PATH)
+    set(DATA_PATH "${STARTING_DATA_PATH}" CACHE FILEPATH "Set the data path (Recommend /usr/local/games/paintown for system installation)")
+endif ()
 option(DELETE_INSTALLED_DATA_PATH "Delete the installation data directory when running uninstall?" OFF)
 
+
 # Data path
+message("DATA_PATH:${DATA_PATH} - STARTING_DATA_PATH:${STARTING_DATA_PATH}")
 add_definitions(-DDATA_PATH=\"${DATA_PATH}\")
 
 if($ENV{DEBUG})

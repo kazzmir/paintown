@@ -1,18 +1,18 @@
-#!/bin/sh
+#!/bin/bash
 
 # If you are trying to compile Paintown from source but have no idea what to do
 # try running this script. It will attempt to install all the dependencies you
 # need and compile Paintown.
 
+source fn-ubuntu.sh
+sudo install_dependencies
+
 echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
 echo your priveleges so that new packages can be installed on your system.
 echo When prompted for a password type the password you use to login.
 
-# For Allegro
-# sudo apt install scons liballegro-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python2-dev make
-# For SDL
-sudo apt install scons libsdl1.2-dev libpng-dev libfreetype6-dev g++ zlib1g-dev python2-dev make libogg-dev libvorbis-dev libmpg123-dev
 make build-cmake
 
-ls -l paintown
+find . -name paintown
 echo "Here is the executable. To run it type: ./paintown"
+

@@ -204,14 +204,13 @@ all required dlls are around.
 
 Building
 ```shell
-make build/docker
+make build-docker
 ```
 The executable will end up in build/bin/paintown
 
 Running
 ```shell
-cp build/bin/paintown .
-./paintown --data ./data
+./build/bin/paintown
 ```
 
 
