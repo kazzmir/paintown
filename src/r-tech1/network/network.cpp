@@ -334,13 +334,13 @@ bool noDelay(Socket s, bool b){
     return nlSetSocketOpt(s, NL_TCP_NO_DELAY, b) == NL_TRUE;
 }
 
-void listen( Socket s ) throw( NetworkException ){
+void listen( Socket s ){
     if ( nlListen( s ) == NL_FALSE ){
         throw CannotListenException( string(nlGetSystemErrorStr( nlGetSystemError() )) );
     }
 }
 
-Socket accept( Socket s ) throw( NetworkException ){
+Socket accept( Socket s ){
     Socket connection = nlAcceptConnection(s);
     if ( connection == NL_INVALID ){
         /*
