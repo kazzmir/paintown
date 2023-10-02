@@ -4,7 +4,7 @@ FROM ubuntu:22.04
 SHELL ["/bin/bash", "-c"]
 
 # Common
-RUN apt update -y && apt install -y scons meson cmake python2-dev python3-dev vim-tiny git make g++
+RUN apt update -y && apt install -y cmake python2-dev python3-dev vim-tiny git make g++
 
 # install
 ADD fn-ubuntu.sh /
