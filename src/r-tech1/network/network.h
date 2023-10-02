@@ -120,8 +120,8 @@ bool noDelay(Socket s, bool b);
 /* Whether or not new sockets re-use ports */
 void reuseSockets(bool what);
 
-void listen(Socket s) throw( NetworkException );
-Socket accept(Socket s) throw( NetworkException );
+void listen(Socket s) throw();
+Socket accept(Socket s) throw();
 
 Socket openReliable(int port);
 Socket openUnreliable(int port);
