@@ -1,0 +1,30 @@
+#ifndef _rtech1_init_h
+#define _rtech1_init_h
+
+#define HAS_CXX11 %has_cxx11%
+
+
+#if HAS_CXX11 == 1
+#elif
+/*
+   If no cxx11 support 
+   fake nullptr:
+http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2431.pdf - page 3
+ */
+const // this is a const object...
+class {
+    public:
+        template<class T> // convertible to any type
+            operator T*() const // of null non-member
+            { return 0; } // pointer...
+        template<class C, class T> // or any type of null
+            operator T C::*() const // member pointer...
+            { return 0; }
+    private:
+        void operator&() const; // whose address can't be taken
+} nullptr = {}; // and whose name is nullptr
+
+#endif 
+
+#endif
+

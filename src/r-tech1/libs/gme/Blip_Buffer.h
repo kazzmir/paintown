@@ -94,8 +94,8 @@ public:
 public:
 	Blip_Buffer();
 	~Blip_Buffer();
-	
-	Blip_Buffer(Blip_Buffer &&) = default;
+
+    Blip_Buffer(const Blip_Buffer&) = default;
 
 	// Deprecated
 	typedef blip_resampled_time_t resampled_time_t;
@@ -103,7 +103,7 @@ public:
 	blargg_err_t sample_rate( long r, int msec ) { return set_sample_rate( r, msec ); }
 private:
 	// noncopyable
-	Blip_Buffer( const Blip_Buffer& );
+	//Blip_Buffer( const Blip_Buffer& );
 	Blip_Buffer& operator = ( const Blip_Buffer& );
 public:
 	typedef blip_time_t buf_t_;

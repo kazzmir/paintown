@@ -196,7 +196,7 @@ public:
     static const KeyType Key_COLON;
     static const KeyType Key_QUOTE;
     static const KeyType Key_BACKSLASH;
-    // static const KeyType Key_BACKSLASH2;
+    static const KeyType Key_BACKSLASH2;
     static const KeyType Key_COMMA;
     static const KeyType Key_STOP;
     static const KeyType Key_SLASH;

@@ -14,7 +14,7 @@
 
 #include "factory/collector.h"
 #include "factory/font_render.h"
-#include "fonts.h"
+//#include "fonts.h"
 #include "level/scene.h"
 #include "loading.h"
 #include "object/character.h"
@@ -24,20 +24,20 @@
 #include "object/object_attack.h"
 #include "object/player.h"
 #include "music.h"
-#include "util/bitmap.h"
-#include "util/funcs.h"
-#include "util/font.h"
-#include "util/exceptions/load_exception.h"
-#include "util/timedifference.h"
+//#include "util/bitmap.h"
+//#include "util/funcs.h"
+//#include "util/font.h"
+//#include "util/exceptions/load_exception.h"
+//#include "util/timedifference.h"
 #include "object/animation.h"
 #include "world.h"
 
 #include "init.h"
 
 #include "menu/menu.h"
-#include "menu/menu_global.h"
-#include "util/token_exception.h"
-#include "util/load_exception.h"
+//#include "menu/menu_global.h"
+//#include "util/token_exception.h"
+//#include "util/load_exception.h"
 
 using namespace std;
 

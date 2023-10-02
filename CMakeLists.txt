@@ -144,14 +144,13 @@ if(NOT ALLEGRO_FOUND)
 endif(NOT ALLEGRO_FOUND)
 
 # r-tech1 libraries
-find_package(RTECH1)
-if (NOT RTECH1_FOUND)
-    message(FATAL_ERROR "Could not find r-tech1 library, which is required to build paintown.")
-endif(NOT RTECH1_FOUND)
+add_subdirectory("${CMAKE_SOURCE_DIR}/src/r-tech1" r-tech1)
+set(RTECH1_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/src/r-tech1" "${CMAKE_SOURCE_DIR}/src/r-tech1/libs")
+set(RTECH1_LIBRARIES "")
 
 # Libraries
-set(GRAPHICS_LIBRARIES ${RTECH1_LIBRARIES})
-set(GRAPHICS_INCLUDES ${RTECH1_INCLUDE_DIR})
+set(GRAPHICS_LIBRARIES ${RTECH1_LIBRARIES} ${ALLEGRO_LIBRARIES})
+set(GRAPHICS_INCLUDES ${RTECH1_INCLUDE_DIR} ${ALLEGRO_INCLUDE_DIR})
 
 if(MPG123_FOUND)
     add_definitions(-DHAVE_MP3_MPG123)
@@ -228,7 +227,9 @@ set(REQUIRED_LIBS ${GRAPHICS_LIBRARIES}  ${CMAKE_THREAD_LIBS_INIT} ${FREETYPE_LI
 add_subdirectory(${CMAKE_SOURCE_DIR}/src)
 
 add_executable(paintown src/xmain.cpp)
-target_link_libraries(paintown ${GROUP_START} base_module paintown_module script_module openbor_module mugen_module ${GROUP_END} ${REQUIRED_LIBS})
+target_link_libraries(paintown PRIVATE ${GROUP_START} base_module paintown_module script_module openbor_module mugen_module util_module
+        rtech1_static ${GROUP_END} ${REQUIRED_LIBS})
+# And also we specify dependence on static library
 
 # Copy scripts and setup lex files
 #if(UNIX OR LINUX OR CYGWIN OR MINGW)

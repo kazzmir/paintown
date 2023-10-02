@@ -794,6 +794,7 @@ public:
     RestoreState();
     ~RestoreState();
 protected:
+    ALLEGRO_STATE state;
 };
 
 }

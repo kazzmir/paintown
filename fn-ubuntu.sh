@@ -1,13 +1,3 @@
-install_rtech1(){
-  URL=$1
-  TDIR=$(mktemp -d)
-  cd $TDIR \
-      && git clone $URL . \
-      && mkdir build && cd build \
-      && cmake .. && make && make install \
-      && rm -rf $TDIR
-}
-
 install_allegro4(){
   apt install -y scons liballegro-dev libpng-dev libfreetype6-dev g++ zlib1g-dev python2-dev python3-dev make
 }
@@ -28,6 +18,5 @@ install_dependencies(){
   install_allegro4 \
   && install_allegro5 \
   && install_sdl1 \
-  && install_sdl2 \
-  && install_rtech1 "https://github.com/humbertodias/paintown-rtech1"
+  && install_sdl2
 }

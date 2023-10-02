@@ -1,0 +1,14 @@
+prefix=@prefix@
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+version=@rtech1_version@
+lib=@lib@
+libs=@libs@
+
+Name: ${lib}
+Description: R-Tech1 Library Wrapper Utility
+Version: ${version}
+Libs: -L${libdir} -l${lib}
+Cflags: -I${includedir} -I${includedir}/r-tech1 -I${includedir}/r-tech1/libs
+Requires: ${libs}

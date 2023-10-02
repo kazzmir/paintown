@@ -42,7 +42,7 @@ namespace Graphics{
     typedef ALLEGRO_COLOR INTERNAL_COLOR;
     /* events.cpp needs this */
     extern ALLEGRO_DISPLAY * the_display;
-/*
+    /*
     class RestoreState{
     public:
         RestoreState();
