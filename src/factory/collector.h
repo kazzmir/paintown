@@ -5,6 +5,7 @@
 class Collector{
 public:
     friend int rtech_main(int, char**);
+    friend int test_main(int, char**);
 protected:
     Collector();
     ~Collector();

@@ -38,6 +38,7 @@ public:
      * should the janitor have the reference instead?
      */
     friend int rtech_main(int, char**);
+    friend int test_main(int, char**);
     friend int main(int, char **);
 
     /* returns true if any input device is activated (keys pressed, joystick button */

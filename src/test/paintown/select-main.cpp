@@ -1,16 +1,19 @@
 #include <iostream>
 #include <vector>
 
-#include "r-tech1/init.h"
 #include "paintown-engine/game/character-select.h"
+#include "paintown-engine/game/mod.h"
+
+#include "r-tech1/init.h"
 #include "r-tech1/debug.h"
 #include "r-tech1/exceptions/load_exception.h"
 #include "r-tech1/token_exception.h"
 #include "r-tech1/graphics/bitmap.h"
 #include "r-tech1/input/input.h"
 #include "r-tech1/input/input-manager.h"
-#include "paintown-engine/game/mod.h"
+#include "r-tech1/font.h"
 
+#include "factory/collector.h"
 
 enum Keys{
     Up=0,
@@ -119,8 +122,13 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
-int main(int argc, char ** argv){
+int test_main(int argc, char** argv){
     if (argc > 1){
+        Collector janitor;
+        Util::setDataPath("paintown-data");
+
+        Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
+
         Global::InitConditions conditions;
         Global::init(conditions);
         
@@ -162,4 +170,8 @@ int main(int argc, char ** argv){
         std::cout << "Usage: ./" << argv[0] << " select-screen.txt" << std::endl;
     }
     return 0;
+}
+
+int main(int argc, char ** argv){
+    test_main(argc, argv);
 }
