@@ -134,6 +134,8 @@ int Graphics::Bitmap::getHeight() const {
 }
 
 void Graphics::Bitmap::draw(const int x, const int y, Filter * filter, const Bitmap & where) const {
+    /* FIXME: handle filter */
+    draw(x, y, where);
 }
 
 void Graphics::TranslucentBitmap::draw(const int x, const int y, const Graphics::Bitmap & where) const {

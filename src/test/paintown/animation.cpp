@@ -91,19 +91,30 @@ static int load(const char * path, AfterLoad then){
     // showMemory();
 }
 
+struct Data{
+    int drawX;
+    int drawY;
+
+    Data(int x, int y):
+        drawX(x), drawY(y){
+        }
+};
+
 class Logic: public Util::Logic {
 public:
-    Logic(InputMap<Keys> & input, Paintown::Player & player):
+    Logic(InputMap<Keys> & input, Paintown::Player & player, Data & data):
     is_done(false),
     input(input),
     player(player),
-    ticker(0){
+    ticker(0),
+    data(data){
     }
 
     bool is_done;
     InputMap<Keys> & input;
     Paintown::Player & player;
     int ticker;
+    Data & data;
     
     bool done(){
         return is_done;
@@ -118,19 +129,28 @@ public:
                     is_done = true;
                 }
                 /* NOTE Assumes only one cursor */
-                /*
+                bool moved = false;
                 if (event.out == Up){
-                    select.moveUp(0);
+                    data.drawY -= 1;
+                    moved = true;
                 }
                 if (event.out == Down){
-                    select.moveDown(0);
+                    data.drawY += 1;
+                    moved = true;
                 }
                 if (event.out == Left){
-                    select.moveLeft(0);
+                    data.drawX -= 1;
+                    moved = true;
                 }
                 if (event.out == Right){
-                    select.moveRight(0);
+                    data.drawX += 1;
+                    moved = true;
                 }
+
+                if (moved){
+                    Global::debug(0) << "Moved to " << data.drawX << ", " << data.drawY << endl;
+                }
+                /*
                 if (event.out == Enter){
                     select.nextMessages();
                 }
@@ -161,15 +181,22 @@ public:
 
 class Draw: public Util::Draw {
 public:
-    Draw(Paintown::Player & player):
-    player(player){
+    Draw(Paintown::Player & player, Data & data):
+    player(player),
+    data(data){
     }
     
     Paintown::Player & player;
+    Data & data;
 
     void draw(const Graphics::Bitmap & buffer){
         buffer.clear();
-        // select.draw(buffer);
+        Graphics::Bitmap work(320, 240);
+        // work.start();
+        work.clear();
+        player.draw(&work, data.drawX, data.drawY);
+        // work.finish();
+        work.draw(0, 0, buffer);
         buffer.BlitToScreen();
     }
 };
@@ -188,8 +215,9 @@ void showAnimation(Paintown::Player & player){
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
 
     try {
-        Logic logic(input, player);
-        Draw draw(player);
+        Data data(0, 0);
+        Logic logic(input, player, data);
+        Draw draw(player, data);
 
         Util::standardLoop(logic, draw);
 

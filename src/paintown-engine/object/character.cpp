@@ -1893,8 +1893,7 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
             */
         }
 
-        for (vector<DrawEffect*>::iterator it = effects.begin(); it != effects.end(); it++){
-            DrawEffect * effect = *it;
+        for (DrawEffect* effect: effects){
             effect->draw(rel_x, getCurrentRemap(), work);
         }
 
