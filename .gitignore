@@ -1,5 +1,5 @@
 build
-paintown
+./paintown
 .scon*
 peg_*.py
 *.a

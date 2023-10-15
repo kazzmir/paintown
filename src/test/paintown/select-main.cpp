@@ -1,14 +1,14 @@
 #include <iostream>
 #include <vector>
 
-#include "util/init.h"
+#include "r-tech1/init.h"
 #include "paintown-engine/game/character-select.h"
-#include "util/debug.h"
-#include "util/exceptions/load_exception.h"
-#include "util/token_exception.h"
-#include "util/graphics/bitmap.h"
-#include "util/input/input.h"
-#include "util/input/input-manager.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/token_exception.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/input/input.h"
+#include "r-tech1/input/input-manager.h"
 #include "paintown-engine/game/mod.h"
 
 
@@ -100,6 +100,24 @@ public:
         buffer.BlitToScreen();
     }
 };
+
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
 
 int main(int argc, char ** argv){
     if (argc > 1){

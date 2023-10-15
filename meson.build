@@ -28,9 +28,15 @@ subdir('src/mugen')
 subdir('src/paintown-engine')
 subdir('src/openbor')
 
+test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, zlib_dependency]
+test_linkages = [rtech1_library, mugen_library, paintown_library, openbor_library]
+test_link_args = ['-fsanitize=address']
+
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
   dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, zlib_dependency],
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: ['-fsanitize=address'],
   )
+
+subdir('src/test/paintown')
