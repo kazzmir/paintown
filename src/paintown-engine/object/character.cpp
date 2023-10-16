@@ -838,8 +838,8 @@ bool Character::testAnimation(){
 	vector< Object * > more;
 	act( &others, &w, &more );
         */
-    if (animation_current != NULL){
-	return animation_current->Act();
+    if (animation_current != nullptr){
+        return animation_current->Act();
     }
     return false;
 }

@@ -122,8 +122,7 @@ public:
 
     void run(){
         std::vector<InputMap<Keys>::InputEvent> out = InputManager::getEvents(input, InputSource(true));
-        for (std::vector<InputMap<Keys>::InputEvent>::iterator it = out.begin(); it != out.end(); it++){
-            const InputMap<Keys>::InputEvent & event = *it;
+        for (const InputMap<Keys>::InputEvent & event: out){
             if (event.enabled){
                 if (event.out == Esc){
                     is_done = true;
@@ -157,6 +156,11 @@ public:
                 */
             }
         }
+
+        if (player.testAnimation()){
+            Global::debug(0) << "Animation is done" << endl;
+            player.testReset();
+        }
         
         /*
         select.act();
@@ -175,7 +179,8 @@ public:
     }
 
     double ticks(double system){
-        return system;
+        // return system * Global::ticksPerSecond(90);
+        return system / 4;
     }
 };
 
@@ -193,7 +198,7 @@ public:
         buffer.clear();
         Graphics::Bitmap work(320, 240);
         // work.start();
-        work.clear();
+        // work.clear();
         player.draw(&work, data.drawX, data.drawY);
         // work.finish();
         work.draw(0, 0, buffer);

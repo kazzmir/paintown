@@ -654,6 +654,7 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                 runCounter += logic.ticks(Global::speed_counter4);
                 Global::speed_counter4 = 0;
                 bool need_draw = false;
+                // Global::debug(0) << "Run counter: " << runCounter << std::endl;
                 while (runCounter >= 1.0){
                     need_draw = true;
                     InputManager::poll();

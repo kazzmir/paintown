@@ -123,6 +123,9 @@ void Util::rest( int x ){
 #ifdef USE_ALLEGRO5
     al_rest((double) x / 1000.0);
 #endif
+#ifdef USE_SDL2
+    SDL_Delay(x);
+#endif
 }
 
 void Util::restSeconds(double x){
