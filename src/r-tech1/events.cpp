@@ -687,7 +687,8 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                     draw.updateFrames();
                     uint64_t now = System::currentMilliseconds();
                     screen.clear();
-                    draw.draw(screen.aspectRatio(640, 480));
+                    // draw.draw(screen.aspectRatio(640, 480));
+                    draw.draw(screen);
                     if (useTouchOverlay()){
                         InputManager::getTouch()->drawTouchOverlay(screen);
                     }

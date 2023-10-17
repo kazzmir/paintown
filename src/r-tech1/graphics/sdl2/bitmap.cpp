@@ -55,10 +55,13 @@ Graphics::Bitmap::Bitmap(){
     setData(std::shared_ptr<BitmapData>(new BitmapData(nullptr)));
 }
 
-Graphics::Bitmap::Bitmap(int x, int y){
+Graphics::Bitmap::Bitmap(int width, int height){
+    SDL_Texture* texture = SDL_CreateTexture(global_handler->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
+    setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 }
 
 Graphics::Bitmap::Bitmap( const Bitmap & copy, bool deep_copy ){
+    setData(copy.data);
 }
 
 Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int height ){
@@ -86,6 +89,9 @@ Graphics::Bitmap * Graphics::getScreenBuffer(){
 
 Graphics::Color Graphics::makeColor(int r, int g, int b){
     INTERNAL_COLOR c;
+    c.r = r;
+    c.g = g;
+    c.b = b;
     return Graphics::Color(c);
 }
 
@@ -190,13 +196,15 @@ void Graphics::Bitmap::setClipRect( int x1, int y1, int x2, int y2 ) const {
 }
 
 Graphics::Color Graphics::MaskColor(){
-    Graphics::Color c;
-    return c;
+    return makeColor(255, 0, 255);
 }
 
 void Graphics::Bitmap::activate() const {
     if (this->getData() != nullptr && SDL_GetRenderTarget(global_handler->renderer) != this->getData()->texture){
-        SDL_SetRenderTarget(global_handler->renderer, this->getData()->texture);
+        int ok = SDL_SetRenderTarget(global_handler->renderer, this->getData()->texture);
+        if (ok != 0){
+            Global::debug(0, "graphics") << "Unable to set render target: " << SDL_GetError() << endl;
+        }
     }
 }
 
@@ -238,7 +246,15 @@ void Graphics::Bitmap::ellipseFill( int x, int y, int rx, int ry, Color color ) 
 void Graphics::Bitmap::light(int x, int y, int width, int height, int start_y, int focus_alpha, int edge_alpha, Color focus_color, Color edge_color) const {
 }
 
-void Graphics::Bitmap::rectangle( int x1, int y1, int x2, int y2, Color color ) const {
+void Graphics::Bitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {
+    activate();
+    SDL_Rect rect;
+    rect.x = x1;
+    rect.y = y1;
+    rect.w = x2 - x1;
+    rect.h = y2 - y1;
+    SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    SDL_RenderDrawRect(global_handler->renderer, &rect);
 }
 
 void Graphics::Bitmap::rectangleFill( int x1, int y1, int x2, int y2, Color color ) const {
@@ -276,6 +292,7 @@ void Graphics::Bitmap::arcFilled(const int x, const int y, const double ang1, co
 
 void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) const {
     if (this->getData() != nullptr){
+        where.activate();
         SDL_Rect rect;
         rect.x = x;
         rect.y = y;
@@ -284,6 +301,7 @@ void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) cons
         SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
         rect.w = size.x;
         rect.h = size.y;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl; 
         SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);

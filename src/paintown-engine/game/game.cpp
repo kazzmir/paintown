@@ -298,16 +298,21 @@ public:
     void run(const Graphics::Bitmap & screen_buffer, GameState & state){
         Graphics::RestoreState graphicsState;
         /* FIXME: replace these constants */
-        Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
-        Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
+        // Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+        // Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
         // updateFrames();
+        /* FIXME: use the stretched bitmap */
+        Graphics::Bitmap work(320, 240);
 
-        work.start();
+        // work.start();
         work.clear();
         world.draw(&work);
 
-        work.finish();
+        // work.finish();
+        work.draw(0, 0, screen_buffer);
         // work.Stretch(screen_buffer);
+
+        /* FIXME
         FontRender * render = FontRender::getInstance();
         render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
 
@@ -325,6 +330,7 @@ public:
             font.printf((int)(screen_buffer.getWidth() - 120 * work.getScaleWidth() / 2), (int)(10 * work.getScaleHeight() / 2), Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
         }
         console.draw(screen_buffer);
+        */
 
         /* getX/Y move when the world is quaking */
         // screen_buffer.BlitToScreen(world.getX(), world.getY());
