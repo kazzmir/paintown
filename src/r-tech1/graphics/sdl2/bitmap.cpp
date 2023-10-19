@@ -37,9 +37,8 @@ public:
 
 unique_ptr<SDLGlobalHandler> global_handler;
 
-bool operator==(const INTERNAL_COLOR&, const INTERNAL_COLOR&){
-    /* FIXME */
-    return false;
+bool operator==(const INTERNAL_COLOR& left, const INTERNAL_COLOR& right){
+    return left.r == right.r && left.g == right.g && left.b == right.b;
 }
 
 bool operator!=(const INTERNAL_COLOR& left, const INTERNAL_COLOR& right){
@@ -58,25 +57,60 @@ Graphics::Bitmap::Bitmap(){
 Graphics::Bitmap::Bitmap(int width, int height){
     SDL_Texture* texture = SDL_CreateTexture(global_handler->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
+
+    clip_x1 = 0;
+    clip_y1 = 0;
+    clip_x2 = width;
+    clip_y2 = height;
 }
 
-Graphics::Bitmap::Bitmap( const Bitmap & copy, bool deep_copy ){
+Graphics::Bitmap::Bitmap( const Bitmap & copy, bool deep_copy ):
+clip_x1(copy.clip_x1),
+clip_y1(copy.clip_y1),
+clip_x2(copy.clip_x2),
+clip_y2(copy.clip_y2){
     setData(copy.data);
 }
 
 Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int height ){
+    setData(copy.data);
+
+    clip_x1 = copy.clip_x1 + x;
+    clip_y1 = copy.clip_y1 + y;
+    clip_x2 = min(clip_x1 + width, copy.clip_x2);
+    clip_y2 = min(clip_y1 + height, copy.clip_y2);
 }
 
 Graphics::Bitmap::Bitmap(const char * data, int length){
+    /* FIXME: load from PCX data? */
 }
 
 Graphics::Bitmap::Bitmap(SDL_Surface* surface){
     SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, surface);
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
+
+    SDL_Point size;
+    // FIXME: cache the texture size
+    SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+
+    clip_x1 = 0;
+    clip_y1 = 0;
+    clip_x2 = size.x;
+    clip_y2 = size.y;
 }
 
 Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
+
+    SDL_Point size;
+    // FIXME: cache the texture size
+    SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+
+    clip_x1 = 0;
+    clip_y1 = 0;
+    clip_x2 = size.x;
+    clip_y2 = size.y;
+
 }
 
 Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
@@ -95,11 +129,27 @@ Graphics::Color Graphics::makeColor(int r, int g, int b){
     return Graphics::Color(c);
 }
 
+void Graphics::Bitmap::enableClip() const {
+    SDL_Rect clipRect;
+    clipRect.x = clip_x1;
+    clipRect.y = clip_y1;
+    clipRect.w = clip_x2 - clip_x1;
+    clipRect.h = clip_y2 - clip_y1;
+    SDL_RenderSetClipRect(global_handler->renderer, &clipRect);
+}
+
+void Graphics::Bitmap::disableClip() const {
+    SDL_RenderSetClipRect(global_handler->renderer, nullptr);
+}
+
 void Graphics::Bitmap::fill(Graphics::Color color) const {
     activate();
 
+    enableClip();
     SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
-    SDL_RenderClear(global_handler->renderer);
+    SDL_RenderFillRect(global_handler->renderer, nullptr);
+    // SDL_RenderClear(global_handler->renderer);
+    disableClip();
 }
 
 void Graphics::Bitmap::doLoad(Storage::File& file){
@@ -132,11 +182,11 @@ void Graphics::Bitmap::doLoad(Storage::File& file){
 }
 
 int Graphics::Bitmap::getWidth() const {
-    return 0;
+    return clip_x2 - clip_x1;
 }
 
 int Graphics::Bitmap::getHeight() const {
-    return 0;
+    return clip_y2 - clip_y1;
 }
 
 void Graphics::Bitmap::draw(const int x, const int y, Filter * filter, const Bitmap & where) const {
@@ -157,6 +207,18 @@ void Graphics::Bitmap::loadFromMemory(const char * data, int length){
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 
     SDL_FreeRW(ops);
+
+    SDL_Point size;
+
+    if (getData() != nullptr){
+        // FIXME: cache the texture size
+        SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+
+        clip_x1 = 0;
+        clip_y1 = 0;
+        clip_x2 = size.x;
+        clip_y2 = size.y;
+    }
 }
 
 void Graphics::Bitmap::internalLoadFile( const char * load_file ){
@@ -253,14 +315,27 @@ void Graphics::Bitmap::rectangle(int x1, int y1, int x2, int y2, Color color) co
     rect.y = y1;
     rect.w = x2 - x1;
     rect.h = y2 - y1;
+    enableClip();
     SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
     SDL_RenderDrawRect(global_handler->renderer, &rect);
+    disableClip();
 }
 
 void Graphics::Bitmap::rectangleFill( int x1, int y1, int x2, int y2, Color color ) const {
+    activate();
+    SDL_Rect rect;
+    rect.x = x1;
+    rect.y = y1;
+    rect.w = x2 - x1;
+    rect.h = y2 - y1;
+    enableClip();
+    SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    SDL_RenderFillRect(global_handler->renderer, &rect);
+    disableClip();
 }
 
 void Graphics::Bitmap::circleFill( int x, int y, int radius, Color color ) const {
+    activate();
 }
 
 void Graphics::Bitmap::circle( int x, int y, int radius, Color color ) const {
@@ -302,7 +377,10 @@ void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) cons
         rect.w = size.x;
         rect.h = size.y;
         // DebugLog << "draw size is " << size.x << " " << size.y << endl; 
+
+        enableClip();
         SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+        disableClip();
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
     }
@@ -512,6 +590,10 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
     global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));
 
     Screen = new Bitmap();
+    Screen->clip_x1 = 0;
+    Screen->clip_y1 = 0;
+    Screen->clip_x2 = width;
+    Screen->clip_y2 = height;
 
     return 0;
 }

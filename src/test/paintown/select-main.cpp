@@ -85,7 +85,7 @@ public:
     }
 
     double ticks(double system){
-        return system;
+        return system / 4;
     }
 };
 

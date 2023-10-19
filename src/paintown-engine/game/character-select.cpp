@@ -541,13 +541,19 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         smaller.setDrawShadow(false);
 #endif
 
+        /*
         Graphics::StretchedBitmap temp(displayWidth, displayHeight, area, Graphics::StretchedBitmap::Mask);
         temp.start();
+        */
         smaller.setX(displayWidth / 2);
         smaller.setY(0);
         smaller.setZ(displayHeight);
-        smaller.draw(&temp, 0, 0);
-        temp.finish();
+
+        // area.fill(Graphics::makeColor(0, 255, 0));
+
+        smaller.draw(&area, 0, 0);
+
+        // temp.finish();
     } else {
         const int length = font.textLength(displayed->getName().c_str());
         const int middle = font.getHeight()/4;
@@ -610,8 +616,12 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         Paintown::Character copy(*character);
         Graphics::Bitmap window2 = window1.aspectRatio(copy.getAverageWidth(), copy.getAverageHeight() * 2);
         // window2.border(0, 2, Graphics::makeColor(255, 255, 255));
+
+        /*
         Graphics::StretchedBitmap temp(copy.getAverageWidth(), copy.getAverageHeight() * 2, window2, Graphics::StretchedBitmap::Mask);
         temp.start();
+        */
+        Graphics::Bitmap temp(window2);
 
         copy.setDrawShadow(false);
         copy.setX(temp.getWidth()/2);
@@ -623,7 +633,7 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         copy.drawReflection(&temp, 0, temp.getHeight() - stand - stand, 128);
         copy.draw(&temp, 0, temp.getHeight()/2);
 
-        temp.finish();
+        // temp.finish();
 
         /*
            double widthRatio = (double) profile.bitmap->getWidth() / temp.getWidth();

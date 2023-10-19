@@ -40,3 +40,4 @@ executable('paintown', all_code,
   )
 
 subdir('src/test/paintown')
+subdir('src/test/graphics')

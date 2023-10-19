@@ -489,6 +489,8 @@ public:
 		this->fill(MaskColor());
 	}
 
+    friend int setGraphicsMode(int mode, int width, int height);
+
 	bool getError();
 
 	inline const std::shared_ptr<BitmapData> & getData() const {
@@ -531,6 +533,9 @@ public:
 			_putpixel16( my_bitmap, x, y, col );
 	}
 	*/
+
+    void enableClip() const;
+    void disableClip() const;
 	
 	void setClipRect( int x1, int y1, int x2, int y2 ) const;
 	void getClipRect( int & x1, int & y1, int & x2, int & y2 ) const;
@@ -622,6 +627,8 @@ protected:
         static Bitmap * temporary_bitmap;
         static Bitmap * temporary_bitmap2;
         Color bit8MaskColor;
+
+        int clip_x1 = -1, clip_y1 = -1, clip_x2 = -1, clip_y2 = -1;
 
         /* only used by allegro5 for now */
         int width, height;
