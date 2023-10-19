@@ -962,7 +962,14 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
+    /*
+    Graphics::Bitmap x1(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("players/akuma/idle/18279.png"))));
+    x1.draw(x - w, y - h, *work);
+    */
+
     frame.draw(x - w, y - h, remap, *work);
+
+    work->rectangle(x, y, w, h, Graphics::makeColor(255, 255, 255));
 }
 
 void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){

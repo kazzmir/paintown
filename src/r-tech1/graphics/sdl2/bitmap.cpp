@@ -310,8 +310,8 @@ void Graphics::Bitmap::light(int x, int y, int width, int height, int start_y, i
 void Graphics::Bitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {
     activate();
     SDL_Rect rect;
-    rect.x = x1;
-    rect.y = y1;
+    rect.x = x1 + clip_x1;
+    rect.y = y1 + clip_y1;
     rect.w = x2 - x1;
     rect.h = y2 - y1;
     enableClip();
@@ -323,8 +323,8 @@ void Graphics::Bitmap::rectangle(int x1, int y1, int x2, int y2, Color color) co
 void Graphics::Bitmap::rectangleFill( int x1, int y1, int x2, int y2, Color color ) const {
     activate();
     SDL_Rect rect;
-    rect.x = x1;
-    rect.y = y1;
+    rect.x = x1 + clip_x1;
+    rect.y = y1 + clip_y1;
     rect.w = x2 - x1;
     rect.h = y2 - y1;
     enableClip();

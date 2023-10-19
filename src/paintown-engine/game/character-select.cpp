@@ -11,6 +11,7 @@
 #include "r-tech1/timedifference.h"
 #include "r-tech1/exceptions/load_exception.h"
 #include "r-tech1/gui/select-list.h"
+#include "r-tech1/file-system.h"
 
 #include "../object/player.h"
 #include "globals.h"
@@ -552,6 +553,10 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
 
         area.fill(Graphics::makeColor(0, 255, 0));
 
+        /*
+        Graphics::Bitmap x1(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("players/akuma/idle/18273.png"))));
+        x1.draw(0, 0, area);
+        */
         smaller.draw(&area, 0, 0);
 
         // temp.finish();
