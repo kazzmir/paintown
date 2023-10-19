@@ -534,9 +534,10 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         int displayWidth = smaller.getWidth();
         int displayHeight = smaller.getHeight();
 
-        Graphics::Bitmap area(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
+        // Graphics::Bitmap area(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
+        Graphics::Bitmap area(bmp, x, y, width, height);
 
-#ifdef USE_SDL
+#ifdef USE_SDL2
         /* Shadows are messed up in sdl for some reason. They look like a purple blotch. Allegro5 looks ok though. */
         smaller.setDrawShadow(false);
 #endif
@@ -549,7 +550,7 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         smaller.setY(0);
         smaller.setZ(displayHeight);
 
-        // area.fill(Graphics::makeColor(0, 255, 0));
+        area.fill(Graphics::makeColor(0, 255, 0));
 
         smaller.draw(&area, 0, 0);
 
@@ -558,15 +559,21 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         const int length = font.textLength(displayed->getName().c_str());
         const int middle = font.getHeight()/4;
         Graphics::Bitmap area(bmp, x, y, width, height);
+
+        font.printf(0, middle, Graphics::makeColor(255, 255, 255), area, player->guy->getName(), 0);
+
+        /*
         Graphics::StretchedBitmap temp(length, font.getHeight(), area, Graphics::StretchedBitmap::Mask);
         temp.start();
         // temp.clearToMask();
         font.printf(0, middle, Graphics::makeColor(255, 255, 255), temp, player->guy->getName(), 0);
         temp.finish();
+
         // temp.draw(x, y, bmp);
         double widthRatio = (double) width / (double) temp.getWidth();
         double heightRatio = (double) temp.getHeight() / (double) height;
         double use = (double) height / (2.5 * temp.getHeight());
+        */
         // temp.drawStretched(1, 0, temp.getWidth() * use, temp.getHeight() * use, area);
     }
     

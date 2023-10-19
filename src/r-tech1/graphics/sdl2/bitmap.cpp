@@ -110,7 +110,6 @@ Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
     clip_y1 = 0;
     clip_x2 = size.x;
     clip_y2 = size.y;
-
 }
 
 Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
@@ -351,6 +350,12 @@ void Graphics::Bitmap::floodfill( const int x, const int y, const Color color ) 
 }
 
 void Graphics::Bitmap::hLine( const int x1, const int y, const int x2, const Color color ) const {
+    activate();
+
+    enableClip();
+    SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    SDL_RenderDrawLine(global_handler->renderer, x1 + clip_x1, y + clip_y1, x2 + clip_x1, y + clip_y1);
+    disableClip();
 }
 
 void Graphics::Bitmap::vLine( const int y1, const int x, const int y2, const Color color ) const {
@@ -369,8 +374,8 @@ void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) cons
     if (this->getData() != nullptr){
         where.activate();
         SDL_Rect rect;
-        rect.x = x;
-        rect.y = y;
+        rect.x = x + where.clip_x1;
+        rect.y = y + where.clip_y1;
         SDL_Point size;
         // FIXME: cache the texture size
         SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
@@ -378,9 +383,9 @@ void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) cons
         rect.h = size.y;
         // DebugLog << "draw size is " << size.x << " " << size.y << endl; 
 
-        enableClip();
+        where.enableClip();
         SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
-        disableClip();
+        where.disableClip();
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
     }

@@ -85,12 +85,20 @@ public:
         work.draw(100, 100, buffer);
 
         /* sub bitmap */
-        Graphics::Bitmap sub(buffer, 400, 300, 100, 100);
+        Graphics::Bitmap sub(buffer, 350, 300, 150, 150);
         sub.fill(Graphics::makeColor(0, 255, 0));
 
         /* sub bitmap inside another sub bitmap */
         Graphics::Bitmap sub2(sub, 10, 10, 50, 50);
         sub2.clear();
+
+        Graphics::Bitmap box(50, 50);
+        box.fill(Graphics::makeColor(255, 255, 0));
+
+        box.draw(50, 50, sub);
+
+        sub.hLine(0, 50, 50, Graphics::makeColor(255, 255, 255));
+        sub.hLine(0, 100, 50, Graphics::makeColor(255, 255, 255));
 
         /*
         buffer.clear();
