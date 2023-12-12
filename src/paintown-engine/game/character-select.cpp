@@ -559,7 +559,9 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         */
         smaller.draw(&area, 0, 0);
         Graphics::Bitmap sub(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
-        area.draw(0, 0, sub);
+        area.drawStretched(sub);
+
+        // area.drawStretched(0, 0, sub.getWidth(), sub.getHeight(), sub);
         // area.drawStretched(x, y, width, height, bmp);
 
         // temp.finish();
