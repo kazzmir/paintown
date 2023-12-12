@@ -202,7 +202,17 @@ void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
 void Graphics::Bitmap::loadFromMemory(const char * data, int length){
     SDL_RWops* ops = SDL_RWFromConstMem(data, length);
 
+    SDL_Surface* surface = IMG_Load_RW(ops, 0);
+    /* set bright pink as the color key */
+    SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 0, 255));
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, surface);
+    SDL_FreeSurface(surface);
+
+    /*
     SDL_Texture* texture = IMG_LoadTexture_RW(global_handler->renderer, ops, 0);
+    */
+
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 
     SDL_FreeRW(ops);
