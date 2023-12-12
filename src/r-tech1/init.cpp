@@ -281,7 +281,8 @@ Global::InitConditions::InitConditions():
 graphics(Default),
 sound(true),
 fullscreen(false),
-networking(true){
+networking(true),
+softwareRenderer(false){
 }
 
 bool Global::init(const InitConditions & conditions){

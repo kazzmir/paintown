@@ -33,10 +33,15 @@ namespace Global{
             Fullscreen
         };
 
+        bool useSoftwareRenderer() const {
+            return softwareRenderer;
+        }
+
         WindowMode graphics;
         bool sound;
         bool fullscreen;
         bool networking;
+        bool softwareRenderer;
     };
 
     bool init(const InitConditions & conditions);

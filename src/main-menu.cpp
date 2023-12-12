@@ -120,6 +120,31 @@ public:
     }
 };
 
+class SoftwareRendererArgument: public Argument::Parameter {
+public:
+    SoftwareRendererArgument(Global::InitConditions * conditions):
+    conditions(conditions){
+    }
+
+    Global::InitConditions * conditions;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("--software");
+        out.push_back("software");
+        return out;
+    }
+
+    string description() const {
+        return " : Use a software renderer instead of opengl/hardware";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
+        conditions->softwareRenderer = true;
+        return current;
+    }
+};
+
 class SoundArgument: public Argument::Parameter {
 public:
     SoundArgument(Global::InitConditions * conditions):
@@ -156,6 +181,7 @@ public:
     vector<string> keywords() const {
         vector<string> out;
         out.push_back("help");
+        out.push_back("-h");
         out.push_back("--help");
         return out;
     }
@@ -872,6 +898,7 @@ int rtech_main(int argc, char ** argv){
 
     vector<Util::ReferenceCount<Argument::Parameter> > arguments;
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new WindowedArgument(&conditions)));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new SoftwareRendererArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DataPathArgument()));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new SoundArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new MusicArgument(&music_on)));
