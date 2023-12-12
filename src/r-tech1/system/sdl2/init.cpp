@@ -6,11 +6,50 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
+#include <spawn.h>
+#include <sys/wait.h>
+
 namespace System{
 
 SDL_TimerID timer;
 
+static bool hasGlxInfo(){
+    /* FIXME: on windows just return true */
+
+    char glxinfo[] = "glxinfo";
+    char* const argv[] = {glxinfo, NULL};
+    pid_t pid = 0;
+    int ok = posix_spawnp(&pid, "glxinfo", NULL, NULL, argv, NULL);
+    if (ok != 0){
+        DebugLog << "SDL2: unable to run glxinfo: " << strerror(errno) << std::endl;
+        return true;
+    }
+
+    int status = 0;
+    if (waitpid(pid, &status, 0) != pid){
+        DebugLog << "SDL2: unable to wait for glxinfo" << std::endl;
+        return true;
+    }
+
+    if (WIFEXITED(status)){
+        if (WEXITSTATUS(status) == 0){
+            return true;
+        } else {
+            DebugLog << "SDL2: glxinfo exited with status " << WEXITSTATUS(status) << std::endl;
+        }
+    }
+
+    return false;
+}
+
 void initSystem(const Global::InitConditions & conditions, Global::stream_type & out){
+    /* if glx info fails to run then we probably need to use a software renderer */
+    if (!hasGlxInfo()){
+        DebugLog << "SDL2: attempting to use software renderer" << std::endl;
+        // set hint to use software renderer
+        SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
+    }
+
     // initialize SDL
     int ok = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
     DebugLog << "SDL2 initialization: " << ok << std::endl;
