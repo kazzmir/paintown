@@ -551,7 +551,7 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         smaller.setY(0);
         smaller.setZ(displayHeight);
 
-        area.fill(Graphics::makeColor(0, 255, 0));
+        area.fill(Graphics::makeColor(0, 0, 0));
 
         /*
         Graphics::Bitmap x1(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("players/akuma/idle/18273.png"))));
