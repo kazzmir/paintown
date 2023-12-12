@@ -259,21 +259,29 @@ void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick
                 break;
             }
             */
-            case SDL_WINDOWEVENT_RESIZED: {
-                int width = event.window.data1;
-                int height = event.window.data2;
-                /* to keep the perspective correct
-                 * 640/480 = 1.33333
-                 */
-                /*
-                double ratio = (double) 640 / (double) 480;
-                if (width > height){
-                    height = (int)((double) width / ratio);
-                } else {
-                    width = (int)((double) height * ratio);
+            case SDL_WINDOWEVENT: {
+                switch (event.window.event){
+                    case SDL_WINDOWEVENT_RESIZED: {
+                        int width = event.window.data1;
+                        int height = event.window.data2;
+                        /* to keep the perspective correct
+                         * 640/480 = 1.33333
+                         */
+                        /*
+                        double ratio = (double) 640 / (double) 480;
+                        if (width > height){
+                            height = (int)((double) width / ratio);
+                        } else {
+                            width = (int)((double) height * ratio);
+                        }
+                        */
+                        dispatch(ResizeScreen, width, height);
+                        break;
+                    }
+                    default : {
+                        break;
+                    }
                 }
-                */
-                dispatch(ResizeScreen, width, height);
                 break;
             }
             default : {

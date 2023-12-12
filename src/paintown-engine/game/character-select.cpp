@@ -535,8 +535,8 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         int displayWidth = smaller.getWidth();
         int displayHeight = smaller.getHeight();
 
-        // Graphics::Bitmap area(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
-        Graphics::Bitmap area(bmp, x, y, width, height);
+        // Graphics::Bitmap area(bmp, x, y, width, height);
+        Graphics::Bitmap area(displayWidth, displayHeight);
 
 #ifdef USE_SDL2
         /* Shadows are messed up in sdl for some reason. They look like a purple blotch. Allegro5 looks ok though. */
@@ -558,6 +558,9 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         x1.draw(0, 0, area);
         */
         smaller.draw(&area, 0, 0);
+        Graphics::Bitmap sub(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
+        area.draw(0, 0, sub);
+        // area.drawStretched(x, y, width, height, bmp);
 
         // temp.finish();
     } else {

@@ -419,7 +419,25 @@ void Graphics::Bitmap::drawHVFlip( const int x, const int y, const Bitmap & wher
 void Graphics::Bitmap::drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
 }
 
-void Graphics::Bitmap::drawStretched( const int x, const int y, const int new_width, const int new_height, const Bitmap & who ) const {
+void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_width, const int new_height, const Bitmap & where) const {
+    if (this->getData() != nullptr){
+        where.activate();
+        SDL_Rect rect;
+        rect.x = x + where.clip_x1;
+        rect.y = y + where.clip_y1;
+        // SDL_Point size;
+        // FIXME: cache the texture size
+        // SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        rect.w = new_width;
+        rect.h = new_height;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        where.enableClip();
+        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where){
