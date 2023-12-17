@@ -289,7 +289,7 @@ void Graphics::Bitmap::applyTrans(const Color color) const {
 }
 
 Graphics::Bitmap Graphics::Bitmap::subBitmap(int x, int y, int width, int height){
-    return Graphics::Bitmap();
+    return Graphics::Bitmap(*this, x, y, width, height);
 }
 
 void Graphics::Bitmap::save( const std::string & str ) const {
