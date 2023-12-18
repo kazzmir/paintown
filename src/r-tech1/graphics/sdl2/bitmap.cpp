@@ -631,6 +631,8 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
         DebugLog << "Unable to get renderer info: " << SDL_GetError() << endl;
     }
 
+    SDL_RenderSetLogicalSize(renderer, width, height);
+
     global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));
 
     Screen = new Bitmap();
