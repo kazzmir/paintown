@@ -100,6 +100,14 @@ public:
         sub.hLine(0, 50, 50, Graphics::makeColor(255, 255, 255));
         sub.hLine(0, 100, 50, Graphics::makeColor(255, 255, 255));
 
+        Graphics::Bitmap sub3(buffer, 50, 350, 250, 300);
+        sub3.fill(Graphics::makeColor(128, 192, 0));
+
+        Graphics::StretchedBitmap stuff(50, 50, sub3);
+        stuff.start();
+        stuff.hLine(10, 25, 30, Graphics::makeColor(255, 0, 255));
+        stuff.finish();
+
         /*
         buffer.clear();
         work.activate();

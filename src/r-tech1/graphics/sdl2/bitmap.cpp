@@ -354,21 +354,32 @@ void Graphics::Bitmap::circle(int x, int y, int radius, int thickness, Color col
 }
 
 void Graphics::Bitmap::line( const int x1, const int y1, const int x2, const int y2, const Color color ) const {
+    activate();
+
+    enableClip();
+    SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    SDL_RenderDrawLine(global_handler->renderer, clip_x1 + x1, clip_y1 + y1, clip_x1 + x2, clip_y1 + y2);
+    disableClip();
+
 }
 
 void Graphics::Bitmap::floodfill( const int x, const int y, const Color color ) const {
 }
 
 void Graphics::Bitmap::hLine( const int x1, const int y, const int x2, const Color color ) const {
+    /*
     activate();
 
     enableClip();
     SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
-    SDL_RenderDrawLine(global_handler->renderer, x1 + clip_x1, y + clip_y1, x2 + clip_x1, y + clip_y1);
+    SDL_RenderDrawLine(global_handler->renderer, clip_x1 + x, clip_y1 + y, clip_x1 + x2, clip_y1 + y);
     disableClip();
+    */
+    line(x1, y, x2, y, color);
 }
 
 void Graphics::Bitmap::vLine( const int y1, const int x, const int y2, const Color color ) const {
+    line(x, y1, x, y2, color);
 }
 
 void Graphics::Bitmap::polygon( const int * verts, const int nverts, const Color color ) const {
@@ -632,16 +643,49 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
 }
 
 Graphics::StretchedBitmap::StretchedBitmap(int width, int height, const Bitmap & where, Clear clear, QualityFilter filter):
+Graphics::Bitmap(width, height),
+width(width),
+height(height),
+scale_x(where.getWidth() / (float) width),
+scale_y(where.getHeight() / (float) height),
 where(where),
 filter(filter),
 clearKind(clear){
 }
 
 void Graphics::StretchedBitmap::finish(){
+    // reset
+    // SDL_RenderSetLogicalSize(global_handler->renderer, 0, 0);
+    // SDL_RenderSetScale(global_handler->renderer, 1, 1);
+    // where.activate();
+    // SDL_RenderSetViewport(global_handler->renderer, NULL);
+    // SDL_RenderSetScale(global_handler->renderer, 1.0, 1.0);
+    drawStretched(where);
 }
 
 void Graphics::StretchedBitmap::start(){
+    // SDL_RenderSetLogicalSize(global_handler->renderer, width, height);
+    // SDL_RenderSetScale(global_handler->renderer, where.getWidth() / (float) width, where.getHeight() / (float) height);
+    // SDL_RenderSetScale(global_handler->renderer, scale_x, scale_y);
+    /*
+    SDL_Rect clipRect;
+    clipRect.x = clip_x1;
+    clipRect.y = clip_y1;
+    clipRect.w = clip_x2 - clip_x1;
+    clipRect.h = clip_y2 - clip_y1;
+    SDL_RenderSetViewport(global_handler->renderer, &clipRect);
+    // SDL_RenderSetScale(global_handler->renderer, scale_x, scale_y);
+    SDL_RenderSetScale(global_handler->renderer, 2.0, 2.0);
+    */
+    // activate();
+    // SDL_RenderSetScale(global_handler->renderer, scale_x, scale_y);
 }
+
+/*
+void Graphics::StretchedBitmap::hLine(const int x1, const int y, const int x2, const Color color ) const {
+    where.hLine(x1, y, x2, color);
+}
+*/
 
 int Graphics::changeGraphicsMode(int mode, int width, int height){
     return 0;
