@@ -466,6 +466,7 @@ WaitThread::~WaitThread(){
     /* FIXME: Should we join the thread? */
     /* pthread_join(thread); */
     Thread::joinThread(thread);
+    Thread::destroyLock(&doneLock);
 }
 
 ThreadBoolean::ThreadBoolean(volatile bool & what, Thread::Lock & lock):

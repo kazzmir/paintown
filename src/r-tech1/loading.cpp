@@ -464,6 +464,7 @@ finished(false){
 }
 
 LoadingContext::~LoadingContext(){
+    Util::Thread::destroyLock(&lock);
 }
 
 void LoadingContext::doLoad(){
