@@ -489,7 +489,7 @@ public:
 
 	virtual void clear() const;
 	
-        inline void clearToMask() const{
+    inline void clearToMask() const{
 		this->fill(MaskColor());
 	}
 

@@ -113,6 +113,9 @@ static vector<Background> readBackgrounds( const Filesystem::AbsolutePath & path
     return backgrounds;
 }
 
+/* given a name like 'xyz.txt', return 'xyz1.txt' if that file doesn't exist, or find
+ * the lowest number N such that 'xyzN.txt' doesn't exist, and return 'xyzN.txt'
+ */
 static string findNextFile( const char * name ){
     char buf[ 128 ];
     const char * extension = strchr( name, '.' );
@@ -298,18 +301,18 @@ public:
     void run(const Graphics::Bitmap & screen_buffer, GameState & state){
         Graphics::RestoreState graphicsState;
         /* FIXME: replace these constants */
-        // Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
+        Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
         // Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
         // updateFrames();
         /* FIXME: use the stretched bitmap */
-        Graphics::Bitmap work(320, 240);
+        // Graphics::Bitmap work(320, 240);
 
-        // work.start();
-        work.clear();
+        work.start();
+        // work.clear();
         world.draw(&work);
 
-        // work.finish();
-        work.draw(0, 0, screen_buffer);
+        work.finish();
+        // work.draw(0, 0, screen_buffer);
         // work.Stretch(screen_buffer);
 
         /* FIXME

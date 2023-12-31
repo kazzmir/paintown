@@ -58,6 +58,8 @@ Graphics::Bitmap::Bitmap(int width, int height){
     SDL_Texture* texture = SDL_CreateTexture(global_handler->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
     clip_x1 = 0;
     clip_y1 = 0;
     clip_x2 = width;
@@ -88,6 +90,8 @@ Graphics::Bitmap::Bitmap(const char * data, int length){
 Graphics::Bitmap::Bitmap(SDL_Surface* surface){
     SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, surface);
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
+    
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
     SDL_Point size;
     // FIXME: cache the texture size
@@ -125,6 +129,7 @@ Graphics::Color Graphics::makeColor(int r, int g, int b){
     c.r = r;
     c.g = g;
     c.b = b;
+    c.a = 255;
     return Graphics::Color(c);
 }
 
@@ -209,6 +214,8 @@ void Graphics::Bitmap::loadFromMemory(const char * data, int length){
     SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, surface);
     SDL_FreeSurface(surface);
 
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
     /*
     SDL_Texture* texture = IMG_LoadTexture_RW(global_handler->renderer, ops, 0);
     */
@@ -267,7 +274,13 @@ void Graphics::Bitmap::setClipRect( int x1, int y1, int x2, int y2 ) const {
 }
 
 Graphics::Color Graphics::MaskColor(){
-    return makeColor(255, 0, 255);
+    INTERNAL_COLOR color;
+    color.r = 0;
+    color.g = 0;
+    color.b = 0;
+    color.a = 0;
+
+    return Color(color);
 }
 
 void Graphics::Bitmap::activate() const {
@@ -476,6 +489,30 @@ void Graphics::Bitmap::StretchXbr(const Bitmap & where, const int sourceX, const
 }
 
 void Graphics::Bitmap::Blit( const int mx, const int my, const int width, const int height, const int wx, const int wy, const Bitmap & where ) const {
+    if (this->getData() != nullptr){
+        where.activate();
+        SDL_Rect destRect;
+        destRect.x = wx + where.clip_x1;
+        destRect.y = wy + where.clip_y1;
+        // SDL_Point size;
+        // FIXME: cache the texture size
+        // SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        destRect.w = width;
+        destRect.h = height;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        SDL_Rect sourceRect;
+        sourceRect.x = this->clip_x1 + mx;
+        sourceRect.y = this->clip_y1 + my;
+        sourceRect.w = width;
+        sourceRect.h = height;
+
+        where.enableClip();
+        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, &sourceRect, &destRect);
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::BlitMasked( const int mx, const int my, const int width, const int height, const int wx, const int wy, const Bitmap & where ) const {

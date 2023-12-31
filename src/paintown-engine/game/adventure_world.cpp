@@ -824,7 +824,7 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
         }
 
         /* draw the minimaps where the camera is always centered on the guy */
-        drawMiniMap(work, *it, object_z, mini_position_x, mini_position_y, mini_width, mini_height);
+        // drawMiniMap(work, *it, object_z, mini_position_x, mini_position_y, mini_width, mini_height);
 
         mini_position_x -= mini_width - 2;
         if (mini_position_x <= 0){

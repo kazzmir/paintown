@@ -409,10 +409,12 @@ void Scene::drawBack( int x, Graphics::Bitmap * work ){
         fx += normal->getWidth();
     }
 
+    /*
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
         atmosphere->drawBackground(work, x);
     }
+    */
 
     arrow_blink = (arrow_blink + 1) % 10;
 }
@@ -451,7 +453,7 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
         atmosphere->drawFront(frontBuffer, x);
     }
 
-    frontBuffer->draw(0, 0, *work);
+    // frontBuffer->draw(0, 0, *work);
     
     /* draw anything on the entire screen */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
