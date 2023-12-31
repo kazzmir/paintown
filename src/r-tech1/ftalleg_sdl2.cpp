@@ -14,8 +14,9 @@ using namespace std;
 
 namespace ftalleg{
 
-freetype::freetype(const Filesystem::AbsolutePath & str, const int x, const int y ){
-    font = TTF_OpenFont(str.path().c_str(), 12);
+freetype::freetype(const Filesystem::AbsolutePath & str, const int x, const int y ):
+_height(y){
+    font = TTF_OpenFont(str.path().c_str(), y);
     if (font == nullptr){
         DebugLog << "Could not load font " << str.path() << ": " << TTF_GetError() << std::endl;
     }
@@ -115,7 +116,7 @@ int freetype::getWidth() const {
 }
 
 int freetype::getHeight(const std::string & str) const {
-    return 0;
+    return _height;
 }
 
 void freetype::getSize(int * w, int * h) const {

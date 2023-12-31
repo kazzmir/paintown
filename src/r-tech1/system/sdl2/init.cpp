@@ -55,6 +55,7 @@ static bool hasGlxInfo(){
 }
 
 void initSystem(const Global::InitConditions & conditions, Global::stream_type & out){
+    DebugLog << "SDL2 Init start" << std::endl;
     /* if glx info fails to run then we probably need to use a software renderer */
     if (conditions.useSoftwareRenderer() || !hasGlxInfo()){
         DebugLog << "SDL2: attempting to use software renderer" << std::endl;

@@ -209,6 +209,8 @@ static void handleKeyUp(Keyboard & keyboard, const SDL_Event & event){
 }
 
 void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick> > joysticks){
+    // DebugLog << "EventManager::runSDL2" << std::endl;
+
     keyboard.poll();
     for (map<int, ReferenceCount<Joystick> >::iterator it = joysticks.begin(); it != joysticks.end(); it++){
         ReferenceCount<Joystick> joystick = it->second;

@@ -184,6 +184,7 @@ namespace ftalleg {
         class freetype{
         private:
             TTF_Font* font;
+            int _height;
 
         public:
             freetype(const Filesystem::AbsolutePath & str, const int x, const int y);
