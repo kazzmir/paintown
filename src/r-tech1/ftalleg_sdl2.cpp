@@ -82,12 +82,14 @@ void freetype::render(int x, int y, const Graphics::Color & color, const Graphic
 
     string data = str.str();
 
+    /*
     SDL_Color xcolor;
     xcolor.r = 255;
     xcolor.g = 0;
     xcolor.b = 0;
     xcolor.a = 255;
-    SDL_Surface* text_surface = TTF_RenderText_Solid(font, data.c_str(), xcolor);
+    */
+    SDL_Surface* text_surface = TTF_RenderText_Solid(font, data.c_str(), color.getInternalColor());
     Graphics::Bitmap copy(text_surface);
     SDL_FreeSurface(text_surface);
     copy.draw(x, y, bmp);

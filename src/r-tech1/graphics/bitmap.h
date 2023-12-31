@@ -71,6 +71,10 @@ public:
         return this->color < him.color;
     }
 
+    const INTERNAL_COLOR getInternalColor() const {
+        return this->color;
+    }
+
     INTERNAL_COLOR color;
 };
 
