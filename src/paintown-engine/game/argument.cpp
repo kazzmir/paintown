@@ -20,12 +20,12 @@ class ArcadeArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
-        out.push_back("paintown:arcade player=<name>");
+        out.push_back("paintown:arcade");
         return out;
     }
 
     string description() const {
-        return " : Start an arcade game in the Paintown engine";
+        return " player=<name>: Start an arcade game in the Paintown engine";
     }
 
     struct Data{
@@ -76,19 +76,16 @@ public:
 
     Data parse(string input){
         Data out;
-        vector<string> args = split(input, ',');
+        vector<string> args = split(input, '=');
 
-        for (vector<string>::iterator it = args.begin(); it != args.end(); it++){
-            string arg = *it;
-            if (Util::matchRegex(arg, Util::Regex("player=.*"))){
-                string name = Util::captureRegex(arg, Util::Regex("player=(.*)"), 0);
-                out.player = findPlayer(name);
-            }
+        if (args.size() == 2 && args[0] == "player"){
+            out.player = findPlayer(args[1]);
         }
 
         return out;
     }
 
+    /* given the rest of the arguments, try to read player=x from the next argument */
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){
