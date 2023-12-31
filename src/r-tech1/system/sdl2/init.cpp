@@ -5,6 +5,8 @@
 #include "r-tech1/debug.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <string>
+#include <fcntl.h>
 
 #include <spawn.h>
 #include <sys/wait.h>
@@ -16,10 +18,20 @@ SDL_TimerID timer;
 static bool hasGlxInfo(){
     /* FIXME: on windows just return true */
 
+    std::string display = std::string("DISPLAY=") + getenv("DISPLAY");
+
+    char* const envp[] = {(char*) display.c_str()};
+
     char glxinfo[] = "glxinfo";
     char* const argv[] = {glxinfo, NULL};
+
+    posix_spawn_file_actions_t files;
+    posix_spawn_file_actions_init(&files);
+    posix_spawn_file_actions_addopen(&files, 1, "/dev/null", O_WRONLY, 0);
+    posix_spawn_file_actions_addopen(&files, 2, "/dev/null", O_WRONLY, 0);
+
     pid_t pid = 0;
-    int ok = posix_spawnp(&pid, "glxinfo", NULL, NULL, argv, NULL);
+    int ok = posix_spawnp(&pid, "glxinfo", &files, NULL, argv, envp);
     if (ok != 0){
         DebugLog << "SDL2: unable to run glxinfo: " << strerror(errno) << std::endl;
         return true;
