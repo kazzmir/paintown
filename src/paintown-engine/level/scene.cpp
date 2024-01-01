@@ -90,6 +90,11 @@ newBlock(true){
                 string n;
                 tok->view() >> n;
                 background = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(n))));
+
+                /*
+                background = new Graphics::Bitmap(200, 200);
+                background->fill(Graphics::makeColor(255, 0, 0));
+                */
             } else if ( *tok == "background-parallax" ){
                 double d;
                 tok->view() >> d;
@@ -389,7 +394,7 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
 }
 
 /* draw the background */
-void Scene::drawBack( int x, Graphics::Bitmap * work ){
+void Scene::drawBack(int x, Graphics::Bitmap * work){
     if (background){
         int y = 0;
         if (background->getWidth() != 0){
@@ -409,18 +414,16 @@ void Scene::drawBack( int x, Graphics::Bitmap * work ){
         fx += normal->getWidth();
     }
 
-    /*
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
         atmosphere->drawBackground(work, x);
     }
-    */
 
     arrow_blink = (arrow_blink + 1) % 10;
 }
 
 /* draw the foreground */
-void Scene::drawFront( int x, Graphics::Bitmap * work ){
+void Scene::drawFront(int x, Graphics::Bitmap * work){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
@@ -437,15 +440,15 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
     frontBuffer->clearToMask();
 
     double fx = 0;
-    if ( front_panels.size() > 0 ){
-        while ( fx < scene_length * getForegroundParallax() ){
-            for ( vector< Graphics::Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-                Graphics::Bitmap * b = *it;
-                b->draw( (int)(fx - x * getForegroundParallax()), 0, *frontBuffer);
+    if (front_panels.size() > 0){
+        while (fx < scene_length * getForegroundParallax()){
+            for (Graphics::Bitmap* b: front_panels){
+                b->draw((int)(fx - x * getForegroundParallax()), 0, *frontBuffer);
                 fx += b->getWidth();
             }
         }
     }
+
 
     /* just draw on the foreground */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
@@ -453,7 +456,8 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
         atmosphere->drawFront(frontBuffer, x);
     }
 
-    // frontBuffer->draw(0, 0, *work);
+    frontBuffer->draw(0, 0, *work);
+
     
     /* draw anything on the entire screen */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){

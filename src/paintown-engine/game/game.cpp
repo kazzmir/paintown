@@ -309,6 +309,7 @@ public:
 
         work.start();
         // work.clear();
+
         world.draw(&work);
 
         work.finish();
@@ -995,7 +996,8 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         MessageQueue::clearInfo();
         MessageQueue::info("Setting up world");
         GameContext context(futurePlayers, Filesystem::RelativePath(level), setup_players);
-        Loader::loadScreen(context, Level::convert(levelInfo));
+        // Loader::loadScreen(context, Level::convert(levelInfo));
+        context.load();
         context.failure();
         MessageQueue::info("World setup");
         MessageQueue::info(funnyGo());

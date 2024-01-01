@@ -222,10 +222,14 @@ void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
      * the temporary should live past the end of the thread life
      * so the memory will stick around.
      */
+    /*
     LoadLevelInfo * info = new LoadLevelInfo(this, path);
     Util::WaitThread thread((Util::Thread::ThreadFunction) do_load_level, info);
     Util::EventManager manager;
     manager.waitForThread(thread);
+    */
+
+    loadLevel(path);
 }
 
 bool AdventureWorld::randomLevel() const {
@@ -687,6 +691,7 @@ void AdventureWorld::addObject( Paintown::Object * o ){
 }
 
 void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z, double cameraX){
+
     scene->drawBack((int) cameraX, where);
 
     for (map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
@@ -785,6 +790,7 @@ void AdventureWorld::showDescription(Graphics::Bitmap * work, int time, const st
 }
 
 void AdventureWorld::draw(Graphics::Bitmap * work){
+
     map<int, vector<Paintown::Object*> > object_z;
 
     for (vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++){
