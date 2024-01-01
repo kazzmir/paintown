@@ -12,7 +12,7 @@
  */
 #if defined(__FILE_NAME__)
 /* only since gcc 12 */
-#define PAINTOWN_FILENAME __FILE__NAME__
+#define PAINTOWN_FILENAME __FILE_NAME__
 #elif defined(__BASE_FILE__)
 #define PAINTOWN_FILENAME __BASE_FILE__
 #else
