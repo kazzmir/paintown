@@ -15,12 +15,23 @@ namespace System{
 
 SDL_TimerID timer;
 
+/* lame wrapper class for a malloc'd string that free's in the destructor */
+class CString {
+public:
+    CString(const char* str) : str(strdup(str)) {}
+    ~CString() { free(str); }
+    char* get(){ return str; }
+    char* str;
+};
+
 static bool hasGlxInfo(){
     /* FIXME: on windows just return true */
 
     std::string display = std::string("DISPLAY=") + getenv("DISPLAY");
 
-    char* const envp[] = {strdup(display.c_str()), NULL};
+    CString displayString(display.c_str());
+
+    char* const envp[] = {displayString.get(), NULL};
 
     char glxinfo[] = "glxinfo";
     char* const argv[] = {glxinfo, NULL};
