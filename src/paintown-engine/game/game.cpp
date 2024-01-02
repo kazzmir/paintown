@@ -57,7 +57,7 @@ static bool show_loading_screen = true;
 
 namespace Game{
 
-const int Ticks = 90;
+const int Ticks = 10;
 
 struct Background{
     string path;
