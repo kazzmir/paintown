@@ -703,7 +703,7 @@ public:
     }
 
     double ticks(double system){
-        return system * Global::ticksPerSecond(90);
+        return system * Global::ticksPerSecond(10);
     }
     
     void draw(const Graphics::Bitmap & buffer){
@@ -2516,7 +2516,7 @@ public:
     }
 
     double ticks(double system){
-        return system * Global::ticksPerSecond(60);
+        return system * Global::ticksPerSecond(10);
     }
 
     void drawButtons(const Font & font, const Graphics::Bitmap & buffer, int y){
@@ -2922,7 +2922,7 @@ static void runJoystickMenu(int joystickId, const Util::ReferenceCount<Joystick>
                 }
 
                 double ticks(double system){
-                    return system * Global::ticksPerSecond(60);
+                    return system * Global::ticksPerSecond(10);
                 }
 
                 bool done(){
