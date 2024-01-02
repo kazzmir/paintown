@@ -50,7 +50,9 @@ bool freetype::load(const Filesystem::AbsolutePath & filename, int index, unsign
 }
 
 int freetype::getLength(const std::string & text) {
-    return 0;
+    int width, height;
+    TTF_SizeUTF8(font, text.c_str(), &width, &height);
+    return width;
 }
 
 void freetype::render(int x, int y, const Graphics::Color & color, const Graphics::Bitmap & bmp, ftAlign alignment, const std::string & text, int marker ...) {
@@ -110,7 +112,7 @@ void freetype::render(int x, int y, const Graphics::Color & color, const Graphic
 }
 
 int freetype::calculateMaximumHeight(){
-    return 0;
+    return TTF_FontHeight(font);
 }
 
 int freetype::height(long code) const {
@@ -118,28 +120,37 @@ int freetype::height(long code) const {
 }
 
 int freetype::calculateHeight(const std::string & str) const {
-    return 0;
+    int width, height;
+    TTF_SizeUTF8(font, str.c_str(), &width, &height);
+    return height;
 }
 
 void freetype::setSize( unsigned int w, unsigned int h){
+    TTF_SetFontSize(font, h);
 }
 
 void freetype::setItalics(int i){
+    TTF_SetFontStyle(font, TTF_STYLE_ITALIC);
 }
 
 int freetype::getWidth() const {
-    return 0;
-}
-
-int freetype::getHeight(const std::string & str) const {
     return _height;
 }
 
+int freetype::getHeight(const std::string & str) const {
+   int width, height;
+   TTF_SizeUTF8(font, str.c_str(), &width, &height);
+   return height;
+}
+
 void freetype::getSize(int * w, int * h) const {
+    //TTF_SizeUTF8(font, text.c_str(), w, h);
+    *w = *h = _height;
 }
 
 int freetype::getItalics(){
-    return 0;
+    // We can't set the slant size so just send 1 if set
+    return TTF_GetFontStyle(font) == TTF_STYLE_ITALIC;
 }
 
 }
