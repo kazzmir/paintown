@@ -11,7 +11,13 @@ echo When prompted for a password type the password you use to login.
 # For Allegro
 # sudo apt-get install scons liballegro-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python-dev make
 # For SDL
-sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python-dev make libogg-dev libvorbis-dev libmpg123-dev meson ninja-build
+# libpng12-dev
+
+# FIXME: Eventually
+# libogg-dev libvorbis-dev libmpg123-dev
+
+sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev libfreetype6-dev g++ zlib1g-dev meson ninja-build make
+
 make
 
 ls -l paintown
