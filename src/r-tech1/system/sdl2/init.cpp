@@ -20,7 +20,7 @@ static bool hasGlxInfo(){
 
     std::string display = std::string("DISPLAY=") + getenv("DISPLAY");
 
-    char* const envp[] = {strdup(display.c_str())};
+    char* const envp[] = {strdup(display.c_str()), NULL};
 
     char glxinfo[] = "glxinfo";
     char* const argv[] = {glxinfo, NULL};
