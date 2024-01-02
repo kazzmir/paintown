@@ -19,7 +19,7 @@ all_code = [
 
 sdl_dependency = dependency('sdl2', required: true)
 sdl_image_dependency = dependency('SDL2_image', required: true)
-sdl_ttf_dependency = dependency('SDL2_ttf', required: true)
+sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18')
 sdl_mixer_dependency = dependency('SDL2_mixer', required: true)
 # freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
