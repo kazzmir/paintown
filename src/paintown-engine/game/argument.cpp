@@ -47,9 +47,23 @@ public:
                 return;
             }
             int remap = 0;
+
+            /*
             PlayerFuture future(data.player, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0))));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);
+            */
+
+            Util::ReferenceCount<InputSource> source = Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0)));
+
+            Player * player = new Player(data.player, source);
+            player->setInvincible(Configuration::getInvincible());
+            player->setMap(remap);
+            player->setObjectId(-1);
+            player->setLives(Configuration::getLives());
+            vector<Util::ReferenceCount<Object>> players;
+            players.push_back(Util::ReferenceCount<Object>(player));
+
             Game::realGame(players, levels[0]);
         }
     };

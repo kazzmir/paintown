@@ -1176,11 +1176,15 @@ void CharacterSelect::load(const Token * token){
         }
     };
 
+    /*
     loadingThread = Util::ReferenceCount<Util::Thread::ThreadObject>(new DisplayThread(loader));
     
     if (!loadingThread->start()){
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
+    */
+
+    loader->load();
     
     for (PlayerVector::iterator i = players.begin(); i != players.end(); ++i){
         items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list, *i, cells)));

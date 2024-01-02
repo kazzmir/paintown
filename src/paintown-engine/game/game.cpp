@@ -882,7 +882,7 @@ static void showCutscene(const Filesystem::RelativePath & path){
     }
 }
 
-static void showEnding(Paintown::Player * player){
+static void showEnding(Paintown::Player* player){
     showCutscene(player->getEndingFile());
 }
 
@@ -899,21 +899,19 @@ static void showIntros(const vector<Paintown::Object*> & players){
     }
 }
 
-static void showEndings(const vector<Util::Future<Paintown::Object*> * > & futurePlayers){
-    for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
-        Util::Future<Paintown::Object*> * future = *fit;
-        Paintown::Object * player = future->get();
+static void showEndings(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers){
+    for (Util::ReferenceCount<Paintown::Object> player: futurePlayers){
         if (player != NULL){
-            showEnding((Paintown::Player*) player);
+            showEnding((Paintown::Player*) player.raw());
         }
     }
 }
 
-static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level, void (*setup_players)(const vector<Paintown::Object*> & players), bool firstLevel){
+static void realGame(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo, const string & level, void (*setup_players)(const vector<Paintown::Object*> & players), bool firstLevel){
 
     class GameContext: public Loader::LoadingContext {
     public:
-        GameContext(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Filesystem::RelativePath & path, void (*setup_players)(const vector<Paintown::Object*> & players)):
+        GameContext(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Filesystem::RelativePath & path, void (*setup_players)(const vector<Paintown::Object*> & players)):
             data(NULL),
             futurePlayers(futurePlayers),
             path(path),
@@ -936,6 +934,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         virtual void load(){
             try{
                 vector<Paintown::Object*> players;
+#if 0
                 /* start the futures so they can run in parallel */
                 for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
                     Util::Future<Paintown::Object*> * future = *fit;
@@ -946,6 +945,11 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
                     Util::Future<Paintown::Object*> * future = *fit;
                     players.push_back(future->get());
                 }
+#endif
+                for (Util::ReferenceCount<Paintown::Object> player: futurePlayers){
+                    players.push_back(player.raw());
+                }
+
                 setup_players(players);
                 data = new GameData(players, Storage::instance().find(path));
             } catch (const LoadException & exception){
@@ -970,7 +974,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         }
 
         Util::ReferenceCount<GameData> data;
-        vector<Util::Future<Paintown::Object*> * > futurePlayers;
+        vector<Util::ReferenceCount<Paintown::Object>> futurePlayers;
         Filesystem::RelativePath path;
         Util::ReferenceCount<LoadException> failed;
         void (*setup_players)(const vector<Paintown::Object*> & players);
@@ -1045,7 +1049,7 @@ static void setupLocalPlayers(const vector<Paintown::Object*> & objects){
     }
 }
 
-static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, void (*setup_players)(const vector<Paintown::Object*> & players)){
+static void doRealGame(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo, void (*setup_players)(const vector<Paintown::Object*> & players)){
 
     levelInfo.playIntro();
 
@@ -1077,11 +1081,11 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
     levelInfo.playEnding();
 }
 
-void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+void realGame(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo){
     doRealGame(futurePlayers, levelInfo, doNothingSpecial);
 }
 
-void realGameLocal(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+void realGameLocal(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo){
     doRealGame(futurePlayers, levelInfo, setupLocalPlayers);
 }
 
