@@ -93,7 +93,6 @@ public:
     }
 
     void run(const Menu::Context & context){
-        Object * player = NULL;
         try{
             //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
             Level::LevelInfo info = doLevelMenu("/levels", context);
@@ -110,7 +109,7 @@ public:
             playerObject->setLives(Configuration::getLives());
 
             vector<Util::ReferenceCount<Object>> players;
-            players.push_back(Util::ReferenceCount<Object>(player));
+            players.push_back(Util::ReferenceCount<Object>(playerObject));
             Game::realGame(players, info);
         } catch ( const LoadException & le ){
             Global::debug(0) << "Error while loading: " << le.getTrace() << endl;

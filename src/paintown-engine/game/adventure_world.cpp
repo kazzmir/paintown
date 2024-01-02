@@ -97,26 +97,26 @@ camera(_screen_size / 2, 0){
 	bang = NULL;
 	screen_size = _screen_size;
 
-        /* we add players to the player tracker here because the world wants to set
-         * some attributes (x/y coordinates).
-         * then we load the world and afterwards set up the script object
-         */
+    /* we add players to the player tracker here because the world wants to set
+     * some attributes (x/y coordinates).
+     * then we load the world and afterwards set up the script object
+     */
 	for ( vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
 		PlayerTracker t;
 		t.min_x = 0;
 		t.player = *it;
 		// this->players.push_back( (PlayerTracker) { .min_x = 0, .player = *it } );
-		this->players.push_back( t );
+		this->players.push_back(t);
 	}
 
 	threadedLoadLevel(path);
 
-        for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
-            PlayerTracker & tracker = *it;
-            void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
-            tracker.player->setScriptObject(handle);
-            tracker.script = handle;
-        }
+    for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
+        PlayerTracker & tracker = *it;
+        void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
+        tracker.player->setScriptObject(handle);
+        tracker.script = handle;
+    }
 
 	/*
 	if ( player != NULL ){
@@ -305,18 +305,18 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
     }
     scene = Util::ReferenceCount<Scene>(s);
 
-        Filesystem::AbsolutePath bang_path(Storage::instance().find(Filesystem::RelativePath("misc/flash/flash.txt")));
-        Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
+    Filesystem::AbsolutePath bang_path(Storage::instance().find(Filesystem::RelativePath("misc/flash/flash.txt")));
+    Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;
 	}
 	bang = effect;
 		
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-            Paintown::Object * const player = it->player;	
-            player->setX(100 + Util::rnd( 75 ));
-            player->setZ(getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
-            player->setY(0);
+	for ( vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
+        Paintown::Object * const player = it->player;
+        player->setX(100 + Util::rnd( 75 ));
+        player->setZ(getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
+        player->setY(0);
 	}
 
 	deleteObjects( &objects );
