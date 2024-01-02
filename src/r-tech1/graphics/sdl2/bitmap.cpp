@@ -241,6 +241,8 @@ void Graphics::Bitmap::internalLoadFile( const char * load_file ){
 }
 
 void Graphics::Bitmap::drawHFlip(const int x, const int y, Filter * filter, const Bitmap & where) const {
+    /* FIXME: handle filter */
+    drawHFlip(x, y, where);
 }
 
 int Graphics::getRed(Color x){
@@ -429,6 +431,29 @@ void Graphics::Bitmap::drawCharacter( const int x, const int y, const Color colo
 }
 
 void Graphics::Bitmap::drawHFlip(const int x, const int y, const Bitmap & where) const {
+    if (this->getData() != nullptr){
+        where.activate();
+        SDL_Rect rect;
+        rect.x = x + where.clip_x1;
+        rect.y = y + where.clip_y1;
+        SDL_Point size;
+        // FIXME: cache the texture size
+        SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        rect.w = size.x;
+        rect.h = size.y;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        where.enableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+
+        SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
+        SDL_RenderCopyEx(global_handler->renderer, this->getData()->texture, NULL, &rect, 0, NULL, flip);
+
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::drawVFlip( const int x, const int y, const Bitmap & where ) const {
