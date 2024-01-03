@@ -5,6 +5,7 @@
 #include "r-tech1/debug.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 #include <string>
 #include <fcntl.h>
 
@@ -84,6 +85,13 @@ void initSystem(const Global::InitConditions & conditions, Global::stream_type &
 
     if (TTF_Init() != 0){
         DebugLog << "SDL2 TTF initialization failed: " << TTF_GetError() << std::endl;
+        exit(1);
+    }
+
+    //Initialize SDL_mixer
+    if(Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+    {
+        DebugLog << "SDL_mixer initialization failed! SDL_mixer Error: " << Mix_GetError() << std::endl;
         exit(1);
     }
 }
