@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include "util/sound/music-player.h"
-#include "util/file-system.h"
-#include "util/debug.h"
+#include "r-tech1/sound/music-player.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/debug.h"
 
 #ifdef USE_SDL
 #include "util/sound/sdl/mixer/SDL_mixer.h"
