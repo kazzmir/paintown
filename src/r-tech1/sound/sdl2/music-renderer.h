@@ -1,5 +1,6 @@
 #pragma once
 
+/*
 #include <SDL2/SDL.h>
 #include "dumb.h"
 
@@ -27,3 +28,5 @@ struct SDL_STREAM {
     float volume;
     const char *input;
 };
+
+*/

@@ -58,7 +58,7 @@ protected:
     Uint8 * data;
     int position;
     int converted;
-    SDL_STREAM * stream;
+    // SDL_STREAM * stream;
 #endif
 
 #ifdef USE_ALLEGRO

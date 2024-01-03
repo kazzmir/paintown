@@ -24,7 +24,7 @@ Encoding formatType(int sdlFormat){
     }
 
     std::ostringstream out;
-    out << "Don't know how to deal with SDL format " << sdlFormat << std::endl;
+    out << "Don't know how to deal with SDL format " << sdlFormat << " ; bitsize: " << SDL_AUDIO_BITSIZE(sdlFormat) << std::endl;
     throw MusicException(__FILE__, __LINE__, out.str());
 
     /*
@@ -43,6 +43,7 @@ Encoding formatType(int sdlFormat){
 }
 
 // Borrowed from dumbplay.c 
+/*
 void stream_audio(void *userdata, Uint8 *stream, int len) {
     SDL_STREAM *streamer = (SDL_STREAM *)userdata;
 
@@ -65,6 +66,7 @@ void stream_audio(void *userdata, Uint8 *stream, int len) {
         streamer->spos = streamer->ssize;
     }
 }
+*/
 
 MusicRenderer::MusicRenderer():
 convert(formatType(AUDIO_S16SYS), Sound::Info.channels, Sound::Info.frequency,
@@ -88,12 +90,12 @@ void MusicRenderer::create(int frequency, int channels){
                                 */
 
     // FIXME
-    /*
+    
     int size = convert.convertedLength(BUFFER_SIZE);
     data = new Uint8[size < BUFFER_SIZE ? BUFFER_SIZE : size];
     position = 0;
     converted = 0;
-    */
+    
 }
 
 void MusicRenderer::fill(MusicPlayer * player){
@@ -106,7 +108,7 @@ void MusicRenderer::fill(MusicPlayer * player){
     // Global::debug(0) << time.printTime("Render time") << std::endl;
 
     // FIXME
-    // converted = convert.convert(data, BUFFER_SIZE);
+    converted = convert.convert(data, BUFFER_SIZE);
 }
 
 void MusicRenderer::read(MusicPlayer * player, Uint8 * stream, int bytes){
@@ -146,12 +148,12 @@ void MusicRenderer::mixer(void * arg, Uint8 * stream, int bytes){
 
 void MusicRenderer::play(MusicPlayer & player){
     /* FIXME */
-    // Mix_HookMusic(mixer, &player);
+    Mix_HookMusic(mixer, &player);
 }
 
 void MusicRenderer::pause(){
     /* FIXME */
-    // Mix_HookMusic(NULL, NULL);
+    Mix_HookMusic(NULL, NULL);
 }
 
 void MusicRenderer::poll(MusicPlayer & player){
@@ -159,7 +161,7 @@ void MusicRenderer::poll(MusicPlayer & player){
 
 MusicRenderer::~MusicRenderer(){
     /* FIXME */
-    // Mix_HookMusic(NULL, NULL);
+    Mix_HookMusic(NULL, NULL);
     delete[] data;
 }
 
