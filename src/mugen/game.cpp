@@ -528,7 +528,9 @@ void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen
 #ifdef WII
         context.load();
 #else
-        Loader::loadScreen(context, info);
+        /* FIXME: threads */
+        // Loader::loadScreen(context, info);
+        context.load();
 #endif
         context.maybeFail();
     } catch (const MugenException & e){
