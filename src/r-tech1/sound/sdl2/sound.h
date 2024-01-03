@@ -3,7 +3,9 @@ struct Mix_Chunk;
 
 struct SoundData{
     SoundData():
-    sample(NULL){
+    sample(NULL),
+    channel(-1){
     }
     Mix_Chunk * sample;
+    int channel;
 };

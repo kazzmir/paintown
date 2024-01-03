@@ -1,6 +1,7 @@
 #ifdef USE_SDL2
 
 #include "../sound.h"
+#include "debug.h"
 
 #include <SDL2/SDL_mixer.h>
 
@@ -19,14 +20,13 @@ own(nullptr){
 }
 
 void Sound::initialize(){
-    // Already handled 
-    // r-tech1/system/sdl2/init.cpp:78:    int ok = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER | SDL_INIT_EVENTS | SDL_INIT_GAMECONTROLLER);
 }
 
 void Sound::uninitialize(){
 }
     
 void Sound::loadFromMemory(const char * data, int length){
+    Global::debug(0) << "Loading " << data << std::endl;
     this->data.sample = Mix_LoadWAV(data);
     own = new int;
     *own = 1;
@@ -44,14 +44,21 @@ void Sound::destroy(){
 }
 
 void Sound::stop(){
+    if (data.sample != NULL){
+        Mix_HaltChannel(this->data.channel);
+    }
 }
     
 void Sound::play(){
-    Mix_PlayChannel(-1, data.sample, 0);
+    if (data.sample != NULL){
+        this->data.channel = Mix_PlayChannel(-1, data.sample, 0);
+    }
 }
 
 void Sound::play(double volume, int pan){
-    Mix_PlayChannel(-1, data.sample, 0);
+    if (data.sample != NULL){
+        this->data.channel = Mix_PlayChannel(-1, data.sample, 0);
+    }
 }
 
 void Sound::setVolume(double volume){
