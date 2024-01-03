@@ -12,6 +12,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_mixer.h>
 #include "audio.h"
+struct SDL_STREAM;
 #endif
 
 #ifdef USE_ALLEGRO
@@ -53,9 +54,11 @@ protected:
     static void mixer(void * arg, Uint8 * stream, int length);
     void fill(MusicPlayer * player);
     void read(MusicPlayer * player, Uint8 * stream, int bytes);
+    AudioConverter convert;
     Uint8 * data;
     int position;
     int converted;
+    SDL_STREAM * stream;
 #endif
 
 #ifdef USE_ALLEGRO

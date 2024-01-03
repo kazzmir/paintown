@@ -117,11 +117,11 @@ public:
         return self->doGetc();
     }
 
-    int doGetnc(unsigned char * ptr, long n){
+    int doGetnc(char * ptr, long n){
         return file->readLine((char*) ptr, n);
     }
 
-    static long getnc(unsigned char *ptr, long n, void *f){
+    static dumb_ssize_t getnc(char *ptr, size_t n, void *f){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doGetnc(ptr, n);
     }
@@ -151,6 +151,13 @@ public:
         reset();
         dumb = dumbfile_open_ex(this, &system);
         return reader(dumb);
+    }
+
+    DUH * loadMod(DUH * (*reader)(DUMBFILE *,int)){
+        closeDumb();
+        reset();
+        dumb = dumbfile_open_ex(this, &system);
+        return reader(dumb, DUMB_MOD_RESTRICT_OLD_PATTERN_COUNT);
     }
 
     virtual ~StreamingSystem(){
@@ -183,7 +190,7 @@ public:
                     break;
                 }
                 case 3: {
-                    what = load(dumb_read_mod_quick);
+                    what = loadMod(dumb_read_mod_quick);
                     break;
                 }
             }
@@ -261,7 +268,7 @@ public:
         return self->doGetc();
     }
 
-    int doGetnc(unsigned char * ptr, long n){
+    int doGetnc(char * ptr, long n){
         int actual = n;
         if (actual + position >= length){
             actual = length - position;
@@ -271,7 +278,7 @@ public:
         return actual;
     }
 
-    static long getnc(unsigned char *ptr, long n, void *f){
+    static dumb_ssize_t getnc(char *ptr, size_t n, void *f){
         MemorySystem * self = (MemorySystem*) f;
         return self->doGetnc(ptr, n);
     }
@@ -302,6 +309,13 @@ public:
         return reader(dumb);
     }
 
+    DUH * loadMod(DUH * (*reader)(DUMBFILE *,int)){
+        closeDumb();
+        reset();
+        dumb = dumbfile_open_ex(this, &system);
+        return reader(dumb,DUMB_MOD_RESTRICT_OLD_PATTERN_COUNT);
+    }
+
     DUH * loadDumbFile(){
         DUH * what = NULL;
         for (int i = 0; i < 4; i++){
@@ -322,7 +336,7 @@ public:
                     break;
                 }
                 case 3: {
-                    what = load(dumb_read_mod_quick);
+                    what = loadMod(dumb_read_mod_quick);
                     break;
                 }
             }
