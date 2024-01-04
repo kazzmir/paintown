@@ -53,11 +53,8 @@ public:
     /* global frequency to use */
     // static const int FREQUENCY = 22050;
     struct SoundInfo{
-        SoundInfo():
-            frequency(44100),
-            channels(2),
-            format(0){
-            }
+        /* implemented in <backend>/sound.cpp */
+        SoundInfo();
 
         int frequency;
         int channels;

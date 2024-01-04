@@ -5,6 +5,12 @@
 
 #include <SDL2/SDL_mixer.h>
 
+Sound::SoundInfo::SoundInfo():
+frequency(44100),
+channels(2),
+format(AUDIO_S16SYS){
+}
+
 Sound::Sound():
 own(nullptr){
 }
