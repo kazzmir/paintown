@@ -34,9 +34,9 @@ executable('test-player', test_player + test_extra_files,
   )
 
 # SDL
-#executable('test-wav', test_wav + test_extra_files,
-#  include_directories: [includes],
-#  dependencies: test_dependencies,
-#  link_with: [rtech1_library],
-#  link_args: test_link_args,
-#  )
+executable('test-wav', test_wav + test_extra_files,
+  include_directories: [includes],
+  dependencies: test_dependencies,
+  link_with: [rtech1_library],
+  link_args: test_link_args,
+  )

@@ -1,9 +1,11 @@
 #include <iostream>
 #include <string>
-#include <SDL/SDL.h>
-#include "util/debug.h"
-#include "util/sound/sound.h"
-#include "util/sound/sdl/mixer/SDL_mixer.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/sound/sound.h"
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 #if 0
 class Sound{
@@ -26,6 +28,25 @@ public:
 #endif
 
 // Sound::SoundInfo Sound::Info;
+
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
 
 class Configuration{
 public:
@@ -87,3 +108,4 @@ int main(int argc, char ** argv){
         Global::debug(0) << "Failed" << endl;
     }
 }
+
