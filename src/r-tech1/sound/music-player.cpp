@@ -94,6 +94,8 @@ public:
         system.getc = getc;
         system.getnc = getnc;
         system.close = close;
+        system.seek = seek;
+        system.get_size = get_size;
     }
 
     int doSkip(long n){
@@ -132,6 +134,17 @@ public:
     static void close(void *f){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doClose();
+    }
+
+    static int seek(void *f, dumb_off_t n){
+        StreamingSystem * self = (StreamingSystem*) f;
+        self->file->seek(n, 0);
+        return 0;
+    }
+
+    static dumb_off_t get_size(void *f){
+        StreamingSystem * self = (StreamingSystem*) f;
+        return self->file->getSize();
     }
 
     void closeDumb(){
@@ -224,6 +237,8 @@ public:
         system.getc = getc;
         system.getnc = getnc;
         system.close = close;
+        system.seek = seek;
+        system.get_size = get_size;
     }
 
     virtual ~MemorySystem(){
@@ -300,6 +315,17 @@ public:
 
     void reset(){
         position = 0;
+    }
+
+    static int seek(void *f, dumb_off_t n){
+        return 0;
+    }
+
+    static dumb_off_t get_size(void *f){
+        // Not sure just returning 0 for now
+        /*MemorySystem * self = (MemorySystem*) f;
+        return self-> ? */
+        return 0;
     }
 
     DUH * load(DUH * (*reader)(DUMBFILE *)){
