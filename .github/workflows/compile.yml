@@ -1,8 +1,7 @@
 name: Compile Paintown
 
 on:
-  push:
-    branches: [ sdl2 ]
+  push
 
 jobs:
   build:
