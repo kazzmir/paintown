@@ -621,6 +621,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             console.act();
 
             endMatch = stage->isMatchOver();
+            if (endMatch){
+                DebugLog << "match ended" << std::endl;
+            }
 
             if (showGameSpeed > 0){
                 showGameSpeed -= 1;

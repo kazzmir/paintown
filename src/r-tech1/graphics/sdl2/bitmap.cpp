@@ -83,8 +83,8 @@ Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int heig
     clip_y2 = min(clip_y1 + height, copy.clip_y2);
 }
 
-Graphics::Bitmap::Bitmap(const char * data, int length){
-    /* FIXME: load from PCX data? */
+Graphics::Bitmap::Bitmap(const uint8_t* data, int length){
+    loadFromMemory(data, length);
 }
 
 Graphics::Bitmap::Bitmap(SDL_Surface* surface){
@@ -162,9 +162,9 @@ void Graphics::Bitmap::doLoad(Storage::File& file){
     if (length == -1){
         throw BitmapException(__FILE__, __LINE__, std::string("Could not read from file"));
     }
-    char * data = new char[length];
+    uint8_t* data = new uint8_t[length];
     try{
-        file.readLine(data, length);
+        file.readLine((char*) data, length);
         loadFromMemory(data, length);
         delete[] data;
     } catch (const BitmapException & fail){
@@ -204,7 +204,7 @@ void Graphics::TranslucentBitmap::draw(const int x, const int y, const Graphics:
 void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
 }
 
-void Graphics::Bitmap::loadFromMemory(const char * data, int length){
+void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length){
     SDL_RWops* ops = SDL_RWFromConstMem(data, length);
 
     SDL_Surface* surface = IMG_Load_RW(ops, 0);
@@ -789,8 +789,9 @@ void Graphics::Bitmap::lock(int x, int y, int width, int height) const {
 void Graphics::Bitmap::unlock() const {
 }
 
-Graphics::Bitmap Graphics::memoryPCX(unsigned char * const data, const int length, const bool mask){
-    return Graphics::Bitmap();
+Graphics::Bitmap Graphics::memoryPCX(uint8_t * const data, const int length, const bool mask){
+    /* FIXME: use mask */
+    return Graphics::Bitmap(data, length);
 }
 
 void Graphics::Bitmap::replaceColor(const Color & original, const Color & replaced){
