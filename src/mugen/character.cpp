@@ -1846,7 +1846,7 @@ void Character::load(int useAct){
     }
 #endif
 
-    MessageQueue::info("Loading " + getLocalData().location.getFilename().path());
+    MessageQueue::info("Loading character '" + getLocalData().location.getFilename().path() + "'");
     
     // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
     getLocalData().baseDir = getLocalData().location.getDirectory();
