@@ -180,7 +180,7 @@ void SpriteV1::read(const PaintownUtil::ReferenceCount<Storage::File> & ifile, c
      
     // Last sprite
     if (next == 0){
-	if (samePalette){
+        if (samePalette){
             newlength = reallength = length - 768;
         } else {
             newlength = reallength = length;
@@ -398,14 +398,12 @@ void SpriteV1::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile
 
     loaded = true;
 
-    /*
-    PaintownUtil::ReferenceCount<Graphics::Bitmap> sprite = load(mask, false);
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> sprite = load(mask);
     if (mask){
         maskedBitmap = sprite;
     } else {
         unmaskedBitmap = sprite;
     }
-    */
 }
 
 void SpriteV1::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){

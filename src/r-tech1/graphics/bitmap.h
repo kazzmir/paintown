@@ -230,7 +230,7 @@ public:
 	Bitmap();
 	Bitmap(int width, int height);
 	Bitmap(const char * load_file);
-    Bitmap(const char * data, int length);
+    Bitmap(const uint8_t* data, int length);
 	Bitmap(const std::string & load_file);
 	Bitmap(const char * load_file, int sx, int sy);
 
@@ -617,7 +617,7 @@ protected:
         }
         */
 
-        void loadFromMemory(const char * data, int length);
+        void loadFromMemory(const uint8_t* data, int length);
 
         void internalLoadFile( const char * load_file );
 
@@ -626,7 +626,7 @@ protected:
         // int * own;
         bool mustResize;
         // bool own;
-        bool error;
+        bool error = false;
         std::string path;
         static Bitmap * temporary_bitmap;
         static Bitmap * temporary_bitmap2;
