@@ -1,7 +1,7 @@
-#include "util/sound/sound.h"
-#include "util/sound/music.h"
-#include "util/configuration.h"
-#include "util/file-system.h"
+#include "r-tech1/sound/sound.h"
+#include "r-tech1/sound/music.h"
+#include "r-tech1/configuration.h"
+#include "r-tech1/file-system.h"
 #include <string>
 #include <algorithm>
 
@@ -21,12 +21,12 @@ int Configuration::getMusicVolume(){
     return 100;
 }
 
+#if 0
 namespace Util{
 
 Filesystem::AbsolutePath getDataPath2(){
     return Filesystem::AbsolutePath("data");
 }
-
 void rest(int x){
 }
 
@@ -48,6 +48,28 @@ string lowerCaseAll(std::string str){
     return str;
 }
 
+}
+#endif
+
+
+
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
 }
 
 int main(){

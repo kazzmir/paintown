@@ -94,6 +94,8 @@ public:
         system.getc = getc;
         system.getnc = getnc;
         system.close = close;
+        system.seek = seek;
+        system.get_size = get_size;
     }
 
     int doSkip(long n){
@@ -117,11 +119,11 @@ public:
         return self->doGetc();
     }
 
-    int doGetnc(unsigned char * ptr, long n){
+    int doGetnc(char * ptr, long n){
         return file->readLine((char*) ptr, n);
     }
 
-    static long getnc(unsigned char *ptr, long n, void *f){
+    static dumb_ssize_t getnc(char *ptr, size_t n, void *f){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doGetnc(ptr, n);
     }
@@ -132,6 +134,17 @@ public:
     static void close(void *f){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doClose();
+    }
+
+    static int seek(void *f, dumb_off_t n){
+        StreamingSystem * self = (StreamingSystem*) f;
+        self->file->seek(n, 0);
+        return 0;
+    }
+
+    static dumb_off_t get_size(void *f){
+        StreamingSystem * self = (StreamingSystem*) f;
+        return self->file->getSize();
     }
 
     void closeDumb(){
@@ -151,6 +164,13 @@ public:
         reset();
         dumb = dumbfile_open_ex(this, &system);
         return reader(dumb);
+    }
+
+    DUH * loadMod(DUH * (*reader)(DUMBFILE *,int)){
+        closeDumb();
+        reset();
+        dumb = dumbfile_open_ex(this, &system);
+        return reader(dumb, DUMB_MOD_RESTRICT_OLD_PATTERN_COUNT);
     }
 
     virtual ~StreamingSystem(){
@@ -183,7 +203,7 @@ public:
                     break;
                 }
                 case 3: {
-                    what = load(dumb_read_mod_quick);
+                    what = loadMod(dumb_read_mod_quick);
                     break;
                 }
             }
@@ -217,6 +237,8 @@ public:
         system.getc = getc;
         system.getnc = getnc;
         system.close = close;
+        system.seek = seek;
+        system.get_size = get_size;
     }
 
     virtual ~MemorySystem(){
@@ -261,7 +283,7 @@ public:
         return self->doGetc();
     }
 
-    int doGetnc(unsigned char * ptr, long n){
+    int doGetnc(char * ptr, long n){
         int actual = n;
         if (actual + position >= length){
             actual = length - position;
@@ -271,7 +293,7 @@ public:
         return actual;
     }
 
-    static long getnc(unsigned char *ptr, long n, void *f){
+    static dumb_ssize_t getnc(char *ptr, size_t n, void *f){
         MemorySystem * self = (MemorySystem*) f;
         return self->doGetnc(ptr, n);
     }
@@ -295,11 +317,29 @@ public:
         position = 0;
     }
 
+    static int seek(void *f, dumb_off_t n){
+        return 0;
+    }
+
+    static dumb_off_t get_size(void *f){
+        // Not sure just returning 0 for now
+        /*MemorySystem * self = (MemorySystem*) f;
+        return self-> ? */
+        return 0;
+    }
+
     DUH * load(DUH * (*reader)(DUMBFILE *)){
         closeDumb();
         reset();
         dumb = dumbfile_open_ex(this, &system);
         return reader(dumb);
+    }
+
+    DUH * loadMod(DUH * (*reader)(DUMBFILE *,int)){
+        closeDumb();
+        reset();
+        dumb = dumbfile_open_ex(this, &system);
+        return reader(dumb,DUMB_MOD_RESTRICT_OLD_PATTERN_COUNT);
     }
 
     DUH * loadDumbFile(){
@@ -322,7 +362,7 @@ public:
                     break;
                 }
                 case 3: {
-                    what = load(dumb_read_mod_quick);
+                    what = loadMod(dumb_read_mod_quick);
                     break;
                 }
             }

@@ -17,19 +17,9 @@
  *                                                       \__/
  */
 
-#ifdef USE_ALLEGRO
-
 #include <allegro.h>
 
 #include "aldumb.h"
 #include "internal/aldumb.h"
 
-
-
-void _dat_unload_duh(void *duh)
-{
-	unload_duh(duh);
-}
-
-#endif
-
+void _dat_unload_duh(void *duh) { unload_duh(duh); }
