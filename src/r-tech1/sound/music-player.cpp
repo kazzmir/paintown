@@ -642,9 +642,9 @@ static void initializeMpg123(mpg123_handle ** mp3, const Filesystem::AbsolutePat
         /* FIXME workaround for libmpg issues with "generic" decoder frequency not being set */
         error = mpg123_open(*mp3, (char*) path.path().c_str());
         if (error == -1){
-            std::ostringstream error;
-            error << "Could not open mpg123 file " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not open mpg123 file " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
         
         /* reading a frame is the only surefire way to get mpg123 to set the
@@ -654,18 +654,18 @@ static void initializeMpg123(mpg123_handle ** mp3, const Filesystem::AbsolutePat
         unsigned char tempBuffer[4096];
         error = mpg123_read(*mp3, tempBuffer, sizeof(tempBuffer), &dont_care);
 	if (!(error == MPG123_OK || error == MPG123_NEW_FORMAT)){
-            std::ostringstream error;
-            error << "Could not read mpg123 file " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not read mpg123 file " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
 	mpg123_close(*mp3);
 	
         /* stream has progressed a little bit so reset it by opening it again */
 	error = mpg123_open(*mp3, (char*) path.path().c_str());
         if (error == -1){
-            std::ostringstream error;
-            error << "Could not open mpg123 file " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not open mpg123 file " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
         /* FIXME end */
 
@@ -674,9 +674,9 @@ static void initializeMpg123(mpg123_handle ** mp3, const Filesystem::AbsolutePat
          */
         error = mpg123_decoder(*mp3, "generic");
         if (error != MPG123_OK){
-            std::ostringstream error;
-            error << "Could not use 'generic' mpg123 decoder for " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not use 'generic' mpg123 decoder for " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
         // Global::debug(0) << "mpg support " << mpg123_format_support(mp3, Sound::FREQUENCY, MPG123_ENC_SIGNED_16) << std::endl;
 

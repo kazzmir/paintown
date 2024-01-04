@@ -6,6 +6,9 @@ add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
 add_global_arguments(['-fsanitize=address'], language: ['cpp', 'c'])
+# Disabled for now
+add_global_arguments('-DHAVE_OGG=1', language: 'cpp')
+add_global_arguments('-DHAVE_MP3_MPG123=1', language: 'cpp')
 
 includes = include_directories('src')
 dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
@@ -23,19 +26,23 @@ sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18')
 sdl_mixer_dependency = dependency('SDL2_mixer', required: true)
 # freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
+vorbis_dependency = dependency('vorbis', required: true)
+vorbis_file_dependency = dependency('vorbisfile', required: true)
+ogg_dependency = dependency('ogg', required: true)
+mpg123_dependency = dependency('libmpg123', required: true)
 
 subdir('src/r-tech1')
 subdir('src/mugen')
 subdir('src/paintown-engine')
 subdir('src/openbor')
 
-test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, zlib_dependency]
+test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency,sdl_mixer_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
 test_linkages = [rtech1_library, mugen_library, paintown_library, openbor_library]
 test_link_args = ['-fsanitize=address']
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
-  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, zlib_dependency],
+  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: ['-fsanitize=address'],
   )
