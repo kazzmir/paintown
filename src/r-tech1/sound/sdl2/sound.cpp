@@ -32,7 +32,6 @@ void Sound::uninitialize(){
 }
     
 void Sound::loadFromMemory(const char * data, int length){
-    DebugLog << "Loading sound '" << data << "'" << std::endl;
     this->data.sample = Mix_LoadWAV(data);
     own = new int;
     *own = 1;
