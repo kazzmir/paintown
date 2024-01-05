@@ -8,12 +8,12 @@
 #include <map>
 
 #include "globals.h"
-#include "util/init.h"
-#include "util/configuration.h"
-#include "util/sound/music.h"
-#include "util/timedifference.h"
+#include "r-tech1/init.h"
+#include "r-tech1/configuration.h"
+#include "r-tech1/sound/music.h"
+#include "r-tech1/timedifference.h"
 
-#include "util/exceptions/exception.h"
+#include "r-tech1/exceptions/exception.h"
 #include "mugen/config.h"
 #include "mugen/reader.h"
 #include "mugen/section.h"
@@ -30,17 +30,35 @@
 #include "mugen/parser/parsers.h"
 #include "mugen/parser/parse-exception.h"
 #include "mugen/background.h"
-#include "util/graphics/bitmap.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/file-system.h"
 #include "factory/font_render.h"
-#include "util/input/input-manager.h"
+#include "r-tech1/input/input-manager.h"
 
 namespace PaintownUtil = ::Util;
 
 using namespace std;
 
-static void showCollision( const std::vector< Mugen::Area > &vec, Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+
+static void showCollision( const std::vector< Mugen::Area > &vec, const Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
     int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
@@ -169,21 +187,111 @@ void showCharacter(const string & ourFile){
         exit(0);
     }
 
-    Graphics::Bitmap work( 640, 480 );
+    // Graphics::Bitmap work( 640, 480 );
+    // Graphics::Bitmap work(*Graphics::getScreenBuffer());
 
     int xaxis = 260;
     int yaxis = 230;
 
+    Graphics::Bitmap screen(*Graphics::getScreenBuffer());
+    Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
+    InputSource inputSource(true);
+
+    InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
+
+    std::function<bool()> logic = [&](){
+        if (animate) it->second->logic();
+
+        for (InputMap<LocalKeyboard::Keys>::InputEvent event: InputManager::getEvents(input, inputSource)){
+            if (event[LocalKeyboard::Up]) {
+                if (currentAnim < lastAnim){
+                    currentAnim++;
+                    it++;
+                }
+                currentFrame = 0;
+            } else if (event[LocalKeyboard::Down]){
+                if (currentAnim > 0){
+                    currentAnim--;
+                    it--;
+                }
+                currentFrame = 0;
+            } else if (event[LocalKeyboard::Left] && !animate){
+                it->second->forwardFrame();
+                currentFrame = it->second->getPosition();
+            } else if (event[LocalKeyboard::Right] && !animate){
+                it->second->backFrame();
+                currentFrame = it->second->getPosition();
+            } else if (event[LocalKeyboard::Space]){
+                animate = !animate;
+            } else if (event[LocalKeyboard::F1]){
+                showClsn1 = !showClsn1;
+                it->second->toggleOffense();
+            } else if (event[LocalKeyboard::F2]){
+                showClsn2 = !showClsn2;
+                it->second->toggleDefense();
+            } else if (event[LocalKeyboard::F3]){
+                character.priorPalette();
+            } else if (event[LocalKeyboard::F4]){
+                character.nextPalette();
+            } else if (event[LocalKeyboard::Esc]){
+                return true;
+            }
+        }
+
+        /*
+        if (mouse_b & 1)moveImage = true;
+        else if( !(mouse_b & 1) )moveImage = false;
+        */
+
+        /*
+        if (moveImage){ xaxis=mouse_x; yaxis =mouse_y; }
+        */
+
+        return false;
+    };
+
+    std::function<void(const Graphics::Bitmap &)> draw = [&](const Graphics::Bitmap& work){
+        // screen.fill(Graphics::makeColor(255, 0, 0));
+        // work.clear();
+        it->second->render(xaxis, yaxis, work.aspectRatio(640, 480));
+        int start = 10;
+        if (showClsn2) showCollision(it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor(0, 255, 0), start);
+        if (showClsn1) showCollision(it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor(255, 0, 0), start);
+
+        int y = 310;
+
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str()); y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset); y += Font::getDefaultFont().getHeight();
+        if (it->second->getCurrentFrame()->sprite!=0){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second->getCurrentFrame()->sprite;
+            Font::getDefaultFont().printf( 15, y, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
+        }
+        y += Font::getDefaultFont().getHeight();
+
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight()); y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(space) Animation enabled:            %i",0, animate);
+        y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(d)     Show Defense enabled (green): %i",0, showClsn2);
+        y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1);
+        y += Font::getDefaultFont().getHeight();
+
+        // show_mouse(work.getData().getBitmap());
+    };
+
+    Util::standardLoop(logic, [](double ticks){ return ticks; }, draw);
+
+#if 0
     double gameSpeed = .5;
     double runCounter = 0;
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
-    while( !quit ){
+    while (!quit){
         bool draw = false;
 
         if ( Global::speed_counter4 > 0 ){
-            runCounter += Global::ticksPerSecond(60) * Global::speed_counter4 * gameSpeed;
+            runCounter += Global::ticksPerSecond(10) * Global::speed_counter4 * gameSpeed;
             while (runCounter > 1){
-                if( animate ) it->second->logic();
+                if (animate) it->second->logic();
                 runCounter -= 1;
                 draw = true;
 
@@ -243,22 +351,28 @@ void showCharacter(const string & ourFile){
 
         if (draw){
             work.clear();
-            it->second->render( xaxis, yaxis, work );
+            it->second->render(xaxis, yaxis, work.aspectRatio(640, 480));
             int start = 10;
-            if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor( 0,255,0 ), start  );
-            if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor( 255,0,0 ), start  );
+            if (showClsn2) showCollision(it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor(0, 255, 0), start);
+            if (showClsn1) showCollision(it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor(255, 0, 0), start);
 
-            Font::getDefaultFont().printf( 15, 310, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str() );
-            Font::getDefaultFont().printf( 15, 320, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset );
+            int y = 310;
+
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str()); y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset); y += Font::getDefaultFont().getHeight();
             if (it->second->getCurrentFrame()->sprite!=0){
                 PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second->getCurrentFrame()->sprite;
-                Font::getDefaultFont().printf( 15, 330, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
+                Font::getDefaultFont().printf( 15, y, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
             }
+            y += Font::getDefaultFont().getHeight();
 
-            Font::getDefaultFont().printf( 15, 340, Graphics::makeColor( 255, 255, 255 ), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight() );
-            Font::getDefaultFont().printf( 15, 350, Graphics::makeColor( 255, 255, 255 ), work, "(space) Animation enabled:            %i",0, animate );
-            Font::getDefaultFont().printf( 15, 360, Graphics::makeColor( 255, 255, 255 ), work, "(d)     Show Defense enabled (green): %i",0, showClsn2 );
-            Font::getDefaultFont().printf( 15, 370, Graphics::makeColor( 255, 255, 255 ), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1 );
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight()); y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(space) Animation enabled:            %i",0, animate);
+            y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(d)     Show Defense enabled (green): %i",0, showClsn2);
+            y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1);
+            y += Font::getDefaultFont().getHeight();
 
             // show_mouse(work.getData().getBitmap());
 
@@ -271,6 +385,7 @@ void showCharacter(const string & ourFile){
             InputManager::poll();
         }
     }
+#endif
 
 }
 
@@ -753,356 +868,356 @@ void doBackground(const std::string &file, const std::string &section){
 }
 
 int main( int argc, char ** argv ){
-	
-	if(argc <= 1){
-	    showOptions();
-	    return 0;
-	}
 
-	const char * FILE_ARG = "-f";
-	const char * CHAR_ARG = "-c";
-        const char * DEBUG_ARG = "-l";
-	const char * STAGE_ARG = "-s";
-	const char * FONT_ARG = "-font";
-        const char * PARSE_ARG = "-parse";
-        const char * PARSE_AIR_ARG = "-parse-air";
-        const char * PARSE_CNS_ARG = "-parse-cns";
-        const char * PARSE_CMD_ARG = "-parse-cmd";
-        const char * PARSE_DEF_ARG = "-parse-def";
-	const char * STORY_ARG = "-storyboard";
-	const char * SFF_ARG = "-sff";
-	const char * SELECT_ARG = "-select";
-	const char * BG_ARG = "-background";
-	std::string ourFile;
-	std::string other;
-	int configLoaded = -1;
-	
-	std::string player1_name = "";
-	std::string player2_name = "";
+    if (argc <= 1){
+        showOptions();
+        return 0;
+    }
 
-        /*allegro_init();
-        install_timer();
-	install_keyboard();
-	install_mouse();*/
+    const char * FILE_ARG = "-f";
+    const char * CHAR_ARG = "-c";
+    const char * DEBUG_ARG = "-l";
+    const char * STAGE_ARG = "-s";
+    const char * FONT_ARG = "-font";
+    const char * PARSE_ARG = "-parse";
+    const char * PARSE_AIR_ARG = "-parse-air";
+    const char * PARSE_CNS_ARG = "-parse-cns";
+    const char * PARSE_CMD_ARG = "-parse-cmd";
+    const char * PARSE_DEF_ARG = "-parse-def";
+    const char * STORY_ARG = "-storyboard";
+    const char * SFF_ARG = "-sff";
+    const char * SELECT_ARG = "-select";
+    const char * BG_ARG = "-background";
+    std::string ourFile;
+    std::string other;
+    int configLoaded = -1;
 
-	for ( int q = 1; q < argc; q++ ){
-		if ( isArg( argv[ q ], FILE_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 0;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
+    std::string player1_name = "";
+    std::string player2_name = "";
+
+    /*allegro_init();
+      install_timer();
+      install_keyboard();
+      install_mouse();*/
+
+    for ( int q = 1; q < argc; q++ ){
+        if ( isArg( argv[ q ], FILE_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 0;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
 
 #if 0
         } else if (isArg(argv[q], PARSE_AIR_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        try{
-                            Mugen::parseAir(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                            return -1;
-                        }
-                        return 0;
-                    }
-                } else if (isArg(argv[q], PARSE_CNS_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        try{
-                            Mugen::parseCns(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                            return -1;
-                        }
-                        return 0;
-                    }
-                } else if (isArg(argv[q], PARSE_CMD_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        try{
-                            Mugen::parseCmd(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                            return -1;
-                        }
-                        return 0;
-                    }
-                } else if (isArg(argv[q], PARSE_DEF_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        // for (int i = 0; ; i++){
-                            // printf("%d\n", i);
-                            try{
-                                Mugen::parseDef(argv[q]);
-                            } catch (const Mugen::ParserException & p){
-                                Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                                return -1;
-                            }
-                        // }
-                        return 0;
-                    }
+            q += 1;
+            if (q < argc){
+                try{
+                    Mugen::parseAir(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                return 0;
+            }
+        } else if (isArg(argv[q], PARSE_CNS_ARG)){
+            q += 1;
+            if (q < argc){
+                try{
+                    Mugen::parseCns(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                return 0;
+            }
+        } else if (isArg(argv[q], PARSE_CMD_ARG)){
+            q += 1;
+            if (q < argc){
+                try{
+                    Mugen::parseCmd(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                return 0;
+            }
+        } else if (isArg(argv[q], PARSE_DEF_ARG)){
+            q += 1;
+            if (q < argc){
+                // for (int i = 0; ; i++){
+                // printf("%d\n", i);
+                try{
+                    Mugen::parseDef(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                // }
+                return 0;
+            }
 #endif
-                    /*
-                } else if (isArg(argv[q], PARSE_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        extern Ast::Configuration * (mugenParse)(std::string filename);
-                        string s(argv[q]);
-                        Ast::Configuration * configuration = mugenParse(s);
-                        if (!configuration){
-                            Global::debug(0) << "Could not parse " << s << endl;
-                        } else {
-                            configuration->debugExplain();
-                        }
-                    }
-                    */
-		} else if ( isArg( argv[ q ], CHAR_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 1;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], STAGE_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 2;
-				/*
-				q += 1;
-				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
-				// player 1
-				if (q < argc ){
-				    player1_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
-				}
-				q += 1;
-				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
-				// player 2
-				if (q < argc ){
-				    player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
-				}*/
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], FONT_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 3;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], STORY_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 4;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], SFF_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 5;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-			q += 1;
-			if ( q < argc ){
-				other = std::string( argv[ q ] );
-			}
-		} else if ( isArg( argv[ q ], SELECT_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 6;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], BG_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 7;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-			q += 1;
-			if ( q < argc ){
-				other = std::string( argv[ q ] );
-			}
-			else{
-                            Global::debug(0) << "Error no Section Given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if (isArg(argv[q], DEBUG_ARG)){
-		    //debuglevel:
-                    q += 1;
-                    if (q < argc){
-                        istringstream i( argv[ q ] );
-                        int f;
-                        i >> f;
-                        Global::setDebug( f );
-                    } else {
-                        Global::debug(0) << "No number given for " << DEBUG_ARG << endl;
-                    }
-                } else {
-		    // WHAT?
-		    // showOptions();
-		    // return 0;
-                    Global::debug(0) << "Ignoring unrecognized option " << argv[q] << endl;
-		}
-	}
-	
-        Global::InitConditions conditions;
-        Global::init(conditions);
+            /*
+               } else if (isArg(argv[q], PARSE_ARG)){
+               q += 1;
+               if (q < argc){
+               extern Ast::Configuration * (mugenParse)(std::string filename);
+               string s(argv[q]);
+               Ast::Configuration * configuration = mugenParse(s);
+               if (!configuration){
+               Global::debug(0) << "Could not parse " << s << endl;
+               } else {
+               configuration->debugExplain();
+               }
+               }
+               */
+        } else if ( isArg( argv[ q ], CHAR_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 1;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], STAGE_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 2;
+                /*
+                   q += 1;
+                   if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
+                // player 1
+                if (q < argc ){
+                player1_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
+                }
+                q += 1;
+                if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
+                // player 2
+                if (q < argc ){
+                player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
+                }*/
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], FONT_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 3;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], STORY_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 4;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], SFF_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 5;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+            q += 1;
+            if ( q < argc ){
+                other = std::string( argv[ q ] );
+            }
+        } else if ( isArg( argv[ q ], SELECT_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 6;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], BG_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 7;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+            q += 1;
+            if ( q < argc ){
+                other = std::string( argv[ q ] );
+            }
+            else{
+                Global::debug(0) << "Error no Section Given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if (isArg(argv[q], DEBUG_ARG)){
+            //debuglevel:
+            q += 1;
+            if (q < argc){
+                istringstream i( argv[ q ] );
+                int f;
+                i >> f;
+                Global::setDebug( f );
+            } else {
+                Global::debug(0) << "No number given for " << DEBUG_ARG << endl;
+            }
+        } else {
+            // WHAT?
+            // showOptions();
+            // return 0;
+            Global::debug(0) << "Ignoring unrecognized option " << argv[q] << endl;
+        }
+    }
 
-        InputManager input;
-    
-        Keyboard::pushRepeatState(true);
-	
-	if( configLoaded == 0 ){
-	    MugenReader reader( ourFile );
-	    
-	    std::vector< MugenSection * > collection;
-	    
-	    try{
-		collection = reader.getCollection();
-                Global::debug(0) << endl << "---------------------------------------------------------" << endl;
-		for( unsigned int i = 0; i < collection.size(); ++i ){
-                    Global::debug(0) << collection[i]->getHeader() << endl;
-                    Global::debug(0) << "---------------------------------------------------------" << endl;
-		    while( collection[i]->hasItems() ){
-			MugenItemContent *content = collection[i]->getNext();
-                        while( content->hasItems() ){
-                            Global::debug(0) << content->getNext()->query();
-                            if( content->hasItems() ) Global::debug(0) << ",";
-                        }
-                        Global::debug(0) << endl;
-		    }
-                    Global::debug(0) << "---------------------------------------------------------" << endl;
-		}
-                Global::debug(0) << endl;
-	    }
-	    catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    }
-	}
-	else if (configLoaded == 1){
-	    try{
-                showCharacter(ourFile);
-            } catch(const MugenException & ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-            } catch (const Filesystem::NotFound & found){
-                Global::debug(0) << "Could not find a file: " << found.getTrace() << endl;
-                return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	}
-	else if ( configLoaded == 2 ){
-	    try{
-                showStage(ourFile, player1_name, player2_name);
-            } catch(const MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	}
-	else if ( configLoaded == 3 ){
-	    try{
-                showFont(ourFile);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	}
-	else if ( configLoaded == 4 ){
-	    try{
-                Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile), true);
-		story.setInput(Mugen::getPlayer1Keys());
-		// run it and repeat
-		story.run(true);
-            } catch (const MugenException & ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch (const Filesystem::NotFound & found){
-                Global::debug(0) << "Could not find file: " << found.getTrace() << endl;
-            } catch (...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else if ( configLoaded == 5 ){
-	    try{
-                showSFF(ourFile, other);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else if ( configLoaded == 6 ){
-	    try{
-                doSelectScreen(ourFile);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else if ( configLoaded == 7 ){
-	    try{
-                doBackground(ourFile,other);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else showOptions();
-	
-	return 0;
+    Global::InitConditions conditions;
+    Global::init(conditions);
+
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
+
+    InputManager input;
+
+    Keyboard::pushRepeatState(true);
+
+    if( configLoaded == 0 ){
+        MugenReader reader( ourFile );
+
+        std::vector< MugenSection * > collection;
+
+        try{
+            collection = reader.getCollection();
+            Global::debug(0) << endl << "---------------------------------------------------------" << endl;
+            for( unsigned int i = 0; i < collection.size(); ++i ){
+                Global::debug(0) << collection[i]->getHeader() << endl;
+                Global::debug(0) << "---------------------------------------------------------" << endl;
+                while( collection[i]->hasItems() ){
+                    MugenItemContent *content = collection[i]->getNext();
+                    while( content->hasItems() ){
+                        Global::debug(0) << content->getNext()->query();
+                        if( content->hasItems() ) Global::debug(0) << ",";
+                    }
+                    Global::debug(0) << endl;
+                }
+                Global::debug(0) << "---------------------------------------------------------" << endl;
+            }
+            Global::debug(0) << endl;
+        }
+        catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        }
+    }
+    else if (configLoaded == 1){
+        try{
+            showCharacter(ourFile);
+        } catch(const MugenException & ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch (const Filesystem::NotFound & found){
+            Global::debug(0) << "Could not find a file: " << found.getTrace() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 2){
+        try{
+            showStage(ourFile, player1_name, player2_name);
+        } catch(const MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    }
+    else if (configLoaded == 3){
+        try{
+            showFont(ourFile);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    }
+    else if (configLoaded == 4){
+        try{
+            Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile), true);
+            story.setInput(Mugen::getPlayer1Keys());
+            // run it and repeat
+            story.run(true);
+        } catch (const MugenException & ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch (const Filesystem::NotFound & found){
+            Global::debug(0) << "Could not find file: " << found.getTrace() << endl;
+        } catch (...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 5){
+        try{
+            showSFF(ourFile, other);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 6){
+        try{
+            doSelectScreen(ourFile);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 7){
+        try{
+            doBackground(ourFile,other);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else {
+        showOptions();
+    }
+
+    return 0;
 }
-#ifdef ALLEGRO
-END_OF_MAIN()
-#endif

@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <map>
+#include <functional>
 #include "pointer.h"
 
 #ifdef USE_ALLEGRO5
@@ -127,6 +128,7 @@ protected:
 };
 
 void standardLoop(Logic & logic, Draw & draw);
+void standardLoop(std::function<bool()> logic, std::function<double(double)> ticks, std::function<void(const Graphics::Bitmap &)> draw);
 /* true if the game should shutdown immediately */
 bool shutdown();
 extern int do_shutdown;

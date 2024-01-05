@@ -1,6 +1,8 @@
 # Warning: changing the default_options requires a new build directory and doing 'meson setup ...' again
 project('paintown', ['c', 'cpp'], default_options: ['cpp_std=c++11'], version: '4.0')
 
+build_tests = get_option('build_tests')
+
 add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
@@ -47,6 +49,9 @@ executable('paintown', all_code,
   link_args: ['-fsanitize=address'],
   )
 
-subdir('src/test/paintown')
-subdir('src/test/graphics')
-subdir('src/test/audio')
+if build_tests == true
+  subdir('src/test/paintown')
+  subdir('src/test/graphics')
+  subdir('src/test/audio')
+  subdir('src/test/mugen')
+endif
