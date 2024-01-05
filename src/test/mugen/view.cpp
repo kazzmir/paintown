@@ -771,356 +771,356 @@ void doBackground(const std::string &file, const std::string &section){
 }
 
 int main( int argc, char ** argv ){
-	
-	if(argc <= 1){
-	    showOptions();
-	    return 0;
-	}
 
-	const char * FILE_ARG = "-f";
-	const char * CHAR_ARG = "-c";
-        const char * DEBUG_ARG = "-l";
-	const char * STAGE_ARG = "-s";
-	const char * FONT_ARG = "-font";
-        const char * PARSE_ARG = "-parse";
-        const char * PARSE_AIR_ARG = "-parse-air";
-        const char * PARSE_CNS_ARG = "-parse-cns";
-        const char * PARSE_CMD_ARG = "-parse-cmd";
-        const char * PARSE_DEF_ARG = "-parse-def";
-	const char * STORY_ARG = "-storyboard";
-	const char * SFF_ARG = "-sff";
-	const char * SELECT_ARG = "-select";
-	const char * BG_ARG = "-background";
-	std::string ourFile;
-	std::string other;
-	int configLoaded = -1;
-	
-	std::string player1_name = "";
-	std::string player2_name = "";
+    if (argc <= 1){
+        showOptions();
+        return 0;
+    }
 
-        /*allegro_init();
-        install_timer();
-	install_keyboard();
-	install_mouse();*/
+    const char * FILE_ARG = "-f";
+    const char * CHAR_ARG = "-c";
+    const char * DEBUG_ARG = "-l";
+    const char * STAGE_ARG = "-s";
+    const char * FONT_ARG = "-font";
+    const char * PARSE_ARG = "-parse";
+    const char * PARSE_AIR_ARG = "-parse-air";
+    const char * PARSE_CNS_ARG = "-parse-cns";
+    const char * PARSE_CMD_ARG = "-parse-cmd";
+    const char * PARSE_DEF_ARG = "-parse-def";
+    const char * STORY_ARG = "-storyboard";
+    const char * SFF_ARG = "-sff";
+    const char * SELECT_ARG = "-select";
+    const char * BG_ARG = "-background";
+    std::string ourFile;
+    std::string other;
+    int configLoaded = -1;
 
-	for ( int q = 1; q < argc; q++ ){
-		if ( isArg( argv[ q ], FILE_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 0;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
+    std::string player1_name = "";
+    std::string player2_name = "";
+
+    /*allegro_init();
+      install_timer();
+      install_keyboard();
+      install_mouse();*/
+
+    for ( int q = 1; q < argc; q++ ){
+        if ( isArg( argv[ q ], FILE_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 0;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
 
 #if 0
         } else if (isArg(argv[q], PARSE_AIR_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        try{
-                            Mugen::parseAir(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                            return -1;
-                        }
-                        return 0;
-                    }
-                } else if (isArg(argv[q], PARSE_CNS_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        try{
-                            Mugen::parseCns(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                            return -1;
-                        }
-                        return 0;
-                    }
-                } else if (isArg(argv[q], PARSE_CMD_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        try{
-                            Mugen::parseCmd(argv[q]);
-                        } catch (const Mugen::ParserException & p){
-                            Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                            return -1;
-                        }
-                        return 0;
-                    }
-                } else if (isArg(argv[q], PARSE_DEF_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        // for (int i = 0; ; i++){
-                            // printf("%d\n", i);
-                            try{
-                                Mugen::parseDef(argv[q]);
-                            } catch (const Mugen::ParserException & p){
-                                Global::debug(0) << "Error parsing: " << p.getReason() << endl;
-                                return -1;
-                            }
-                        // }
-                        return 0;
-                    }
+            q += 1;
+            if (q < argc){
+                try{
+                    Mugen::parseAir(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                return 0;
+            }
+        } else if (isArg(argv[q], PARSE_CNS_ARG)){
+            q += 1;
+            if (q < argc){
+                try{
+                    Mugen::parseCns(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                return 0;
+            }
+        } else if (isArg(argv[q], PARSE_CMD_ARG)){
+            q += 1;
+            if (q < argc){
+                try{
+                    Mugen::parseCmd(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                return 0;
+            }
+        } else if (isArg(argv[q], PARSE_DEF_ARG)){
+            q += 1;
+            if (q < argc){
+                // for (int i = 0; ; i++){
+                // printf("%d\n", i);
+                try{
+                    Mugen::parseDef(argv[q]);
+                } catch (const Mugen::ParserException & p){
+                    Global::debug(0) << "Error parsing: " << p.getReason() << endl;
+                    return -1;
+                }
+                // }
+                return 0;
+            }
 #endif
-                    /*
-                } else if (isArg(argv[q], PARSE_ARG)){
-                    q += 1;
-                    if (q < argc){
-                        extern Ast::Configuration * (mugenParse)(std::string filename);
-                        string s(argv[q]);
-                        Ast::Configuration * configuration = mugenParse(s);
-                        if (!configuration){
-                            Global::debug(0) << "Could not parse " << s << endl;
-                        } else {
-                            configuration->debugExplain();
-                        }
-                    }
-                    */
-		} else if ( isArg( argv[ q ], CHAR_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 1;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], STAGE_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 2;
-				/*
-				q += 1;
-				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
-				// player 1
-				if (q < argc ){
-				    player1_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
-				}
-				q += 1;
-				if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
-				// player 2
-				if (q < argc ){
-				    player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
-				}*/
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], FONT_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 3;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], STORY_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 4;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], SFF_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 5;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-			q += 1;
-			if ( q < argc ){
-				other = std::string( argv[ q ] );
-			}
-		} else if ( isArg( argv[ q ], SELECT_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 6;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if ( isArg( argv[ q ], BG_ARG ) ){
-			q += 1;
-			if ( q < argc ){
-				ourFile = std::string( argv[ q ] );
-				configLoaded = 7;
-			}
-			else{
-                            Global::debug(0) << "Error no file given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-			q += 1;
-			if ( q < argc ){
-				other = std::string( argv[ q ] );
-			}
-			else{
-                            Global::debug(0) << "Error no Section Given!" << endl;
-			  showOptions();
-			  return 0;
-			}
-		} else if (isArg(argv[q], DEBUG_ARG)){
-		    //debuglevel:
-                    q += 1;
-                    if (q < argc){
-                        istringstream i( argv[ q ] );
-                        int f;
-                        i >> f;
-                        Global::setDebug( f );
-                    } else {
-                        Global::debug(0) << "No number given for " << DEBUG_ARG << endl;
-                    }
-                } else {
-		    // WHAT?
-		    // showOptions();
-		    // return 0;
-                    Global::debug(0) << "Ignoring unrecognized option " << argv[q] << endl;
-		}
-	}
-	
-        Global::InitConditions conditions;
-        Global::init(conditions);
+            /*
+               } else if (isArg(argv[q], PARSE_ARG)){
+               q += 1;
+               if (q < argc){
+               extern Ast::Configuration * (mugenParse)(std::string filename);
+               string s(argv[q]);
+               Ast::Configuration * configuration = mugenParse(s);
+               if (!configuration){
+               Global::debug(0) << "Could not parse " << s << endl;
+               } else {
+               configuration->debugExplain();
+               }
+               }
+               */
+        } else if ( isArg( argv[ q ], CHAR_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 1;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], STAGE_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 2;
+                /*
+                   q += 1;
+                   if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
+                // player 1
+                if (q < argc ){
+                player1_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
+                }
+                q += 1;
+                if (isArg(argv[q], DEBUG_ARG))goto debuglevel;
+                // player 2
+                if (q < argc ){
+                player2_name = "data/players/" + std::string( argv[ q ] ) + "/" + std::string( argv[ q ] ) + ".txt";
+                }*/
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], FONT_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 3;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], STORY_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 4;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], SFF_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 5;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+            q += 1;
+            if ( q < argc ){
+                other = std::string( argv[ q ] );
+            }
+        } else if ( isArg( argv[ q ], SELECT_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 6;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if ( isArg( argv[ q ], BG_ARG ) ){
+            q += 1;
+            if ( q < argc ){
+                ourFile = std::string( argv[ q ] );
+                configLoaded = 7;
+            }
+            else{
+                Global::debug(0) << "Error no file given!" << endl;
+                showOptions();
+                return 0;
+            }
+            q += 1;
+            if ( q < argc ){
+                other = std::string( argv[ q ] );
+            }
+            else{
+                Global::debug(0) << "Error no Section Given!" << endl;
+                showOptions();
+                return 0;
+            }
+        } else if (isArg(argv[q], DEBUG_ARG)){
+            //debuglevel:
+            q += 1;
+            if (q < argc){
+                istringstream i( argv[ q ] );
+                int f;
+                i >> f;
+                Global::setDebug( f );
+            } else {
+                Global::debug(0) << "No number given for " << DEBUG_ARG << endl;
+            }
+        } else {
+            // WHAT?
+            // showOptions();
+            // return 0;
+            Global::debug(0) << "Ignoring unrecognized option " << argv[q] << endl;
+        }
+    }
 
-        InputManager input;
-    
-        Keyboard::pushRepeatState(true);
-	
-	if( configLoaded == 0 ){
-	    MugenReader reader( ourFile );
-	    
-	    std::vector< MugenSection * > collection;
-	    
-	    try{
-		collection = reader.getCollection();
-                Global::debug(0) << endl << "---------------------------------------------------------" << endl;
-		for( unsigned int i = 0; i < collection.size(); ++i ){
-                    Global::debug(0) << collection[i]->getHeader() << endl;
-                    Global::debug(0) << "---------------------------------------------------------" << endl;
-		    while( collection[i]->hasItems() ){
-			MugenItemContent *content = collection[i]->getNext();
-                        while( content->hasItems() ){
-                            Global::debug(0) << content->getNext()->query();
-                            if( content->hasItems() ) Global::debug(0) << ",";
-                        }
-                        Global::debug(0) << endl;
-		    }
-                    Global::debug(0) << "---------------------------------------------------------" << endl;
-		}
-                Global::debug(0) << endl;
-	    }
-	    catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    }
-	}
-	else if (configLoaded == 1){
-	    try{
-                showCharacter(ourFile);
-            } catch(const MugenException & ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-            } catch (const Filesystem::NotFound & found){
-                Global::debug(0) << "Could not find a file: " << found.getTrace() << endl;
-                return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	}
-	else if ( configLoaded == 2 ){
-	    try{
-                showStage(ourFile, player1_name, player2_name);
-            } catch(const MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	}
-	else if ( configLoaded == 3 ){
-	    try{
-                showFont(ourFile);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	}
-	else if ( configLoaded == 4 ){
-	    try{
-                Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile), true);
-		story.setInput(Mugen::getPlayer1Keys());
-		// run it and repeat
-		story.run(true);
-            } catch (const MugenException & ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch (const Filesystem::NotFound & found){
-                Global::debug(0) << "Could not find file: " << found.getTrace() << endl;
-            } catch (...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else if ( configLoaded == 5 ){
-	    try{
-                showSFF(ourFile, other);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else if ( configLoaded == 6 ){
-	    try{
-                doSelectScreen(ourFile);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else if ( configLoaded == 7 ){
-	    try{
-                doBackground(ourFile,other);
-            } catch( MugenException &ex){
-                Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
-		return 1;
-	    } catch(...){
-		Global::debug(0) << "Unknown problem loading file" << endl;
-		return 1;
-	    }
-	} else showOptions();
-	
-	return 0;
+    Global::InitConditions conditions;
+    Global::init(conditions);
+
+    Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
+
+    InputManager input;
+
+    Keyboard::pushRepeatState(true);
+
+    if( configLoaded == 0 ){
+        MugenReader reader( ourFile );
+
+        std::vector< MugenSection * > collection;
+
+        try{
+            collection = reader.getCollection();
+            Global::debug(0) << endl << "---------------------------------------------------------" << endl;
+            for( unsigned int i = 0; i < collection.size(); ++i ){
+                Global::debug(0) << collection[i]->getHeader() << endl;
+                Global::debug(0) << "---------------------------------------------------------" << endl;
+                while( collection[i]->hasItems() ){
+                    MugenItemContent *content = collection[i]->getNext();
+                    while( content->hasItems() ){
+                        Global::debug(0) << content->getNext()->query();
+                        if( content->hasItems() ) Global::debug(0) << ",";
+                    }
+                    Global::debug(0) << endl;
+                }
+                Global::debug(0) << "---------------------------------------------------------" << endl;
+            }
+            Global::debug(0) << endl;
+        }
+        catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        }
+    }
+    else if (configLoaded == 1){
+        try{
+            showCharacter(ourFile);
+        } catch(const MugenException & ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch (const Filesystem::NotFound & found){
+            Global::debug(0) << "Could not find a file: " << found.getTrace() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 2){
+        try{
+            showStage(ourFile, player1_name, player2_name);
+        } catch(const MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    }
+    else if (configLoaded == 3){
+        try{
+            showFont(ourFile);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    }
+    else if (configLoaded == 4){
+        try{
+            Mugen::Storyboard story = Mugen::Storyboard(Filesystem::AbsolutePath(ourFile), true);
+            story.setInput(Mugen::getPlayer1Keys());
+            // run it and repeat
+            story.run(true);
+        } catch (const MugenException & ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch (const Filesystem::NotFound & found){
+            Global::debug(0) << "Could not find file: " << found.getTrace() << endl;
+        } catch (...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 5){
+        try{
+            showSFF(ourFile, other);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 6){
+        try{
+            doSelectScreen(ourFile);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else if (configLoaded == 7){
+        try{
+            doBackground(ourFile,other);
+        } catch( MugenException &ex){
+            Global::debug(0) << "Problem loading file, error was: " << ex.getReason() << endl;
+            return 1;
+        } catch(...){
+            Global::debug(0) << "Unknown problem loading file" << endl;
+            return 1;
+        }
+    } else {
+        showOptions();
+    }
+
+    return 0;
 }
-#ifdef ALLEGRO
-END_OF_MAIN()
-#endif
