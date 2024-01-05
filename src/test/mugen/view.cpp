@@ -187,7 +187,8 @@ void showCharacter(const string & ourFile){
         exit(0);
     }
 
-    Graphics::Bitmap work( 640, 480 );
+    // Graphics::Bitmap work( 640, 480 );
+    Graphics::Bitmap work(*Graphics::getScreenBuffer());
 
     int xaxis = 260;
     int yaxis = 230;
@@ -195,13 +196,13 @@ void showCharacter(const string & ourFile){
     double gameSpeed = .5;
     double runCounter = 0;
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
-    while( !quit ){
+    while (!quit){
         bool draw = false;
 
         if ( Global::speed_counter4 > 0 ){
-            runCounter += Global::ticksPerSecond(60) * Global::speed_counter4 * gameSpeed;
+            runCounter += Global::ticksPerSecond(10) * Global::speed_counter4 * gameSpeed;
             while (runCounter > 1){
-                if( animate ) it->second->logic();
+                if (animate) it->second->logic();
                 runCounter -= 1;
                 draw = true;
 
@@ -261,7 +262,7 @@ void showCharacter(const string & ourFile){
 
         if (draw){
             work.clear();
-            it->second->render( xaxis, yaxis, work );
+            it->second->render(xaxis, yaxis, work.aspectRatio(640, 480));
             int start = 10;
             if( showClsn2 )showCollision( it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor( 0,255,0 ), start  );
             if( showClsn1 )showCollision( it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor( 255,0,0 ), start  );
