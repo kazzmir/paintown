@@ -3,18 +3,7 @@ test_player = ['test.cpp'] #all formats
 test_wav = ['wav.cpp']
 
 test_extra_files = [
-  '../../r-tech1/sound/music-player.cpp',
-  '../../r-tech1/sound/music-renderer.cpp',
-  '../../r-tech1/debug.cpp',
-  '../../r-tech1/utf.cpp',
-  '../../r-tech1/sound/audio.cpp',
-  '../../r-tech1/exceptions/exception.cpp',
-  '../../r-tech1/token.cpp', 
-  '../../r-tech1/file-system.cpp',
-  '../../r-tech1/directory.cpp', 
-  '../../r-tech1/thread.cpp',
-  '../../r-tech1/system.cpp',
-  '../../globals.cpp',
+    '../../globals.cpp',
 ]
 
 includes = include_directories('../..')
