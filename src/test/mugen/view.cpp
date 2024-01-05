@@ -267,17 +267,23 @@ void showCharacter(const string & ourFile){
             if (showClsn2) showCollision(it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor(0, 255, 0), start);
             if (showClsn1) showCollision(it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor(255, 0, 0), start);
 
-            Font::getDefaultFont().printf(15, 310, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str());
-            Font::getDefaultFont().printf(15, 320, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset);
+            int y = 310;
+
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str()); y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset); y += Font::getDefaultFont().getHeight();
             if (it->second->getCurrentFrame()->sprite!=0){
                 PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second->getCurrentFrame()->sprite;
-                Font::getDefaultFont().printf( 15, 330, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
+                Font::getDefaultFont().printf( 15, y, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
             }
+            y += Font::getDefaultFont().getHeight();
 
-            Font::getDefaultFont().printf(15, 340, Graphics::makeColor(255, 255, 255), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight());
-            Font::getDefaultFont().printf(15, 350, Graphics::makeColor(255, 255, 255), work, "(space) Animation enabled:            %i",0, animate);
-            Font::getDefaultFont().printf(15, 360, Graphics::makeColor(255, 255, 255), work, "(d)     Show Defense enabled (green): %i",0, showClsn2);
-            Font::getDefaultFont().printf(15, 370, Graphics::makeColor(255, 255, 255), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1);
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight()); y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(space) Animation enabled:            %i",0, animate);
+            y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(d)     Show Defense enabled (green): %i",0, showClsn2);
+            y += Font::getDefaultFont().getHeight();
+            Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1);
+            y += Font::getDefaultFont().getHeight();
 
             // show_mouse(work.getData().getBitmap());
 
