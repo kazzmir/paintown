@@ -8,12 +8,12 @@
 #include <map>
 
 #include "globals.h"
-#include "util/init.h"
-#include "util/configuration.h"
-#include "util/sound/music.h"
-#include "util/timedifference.h"
+#include "r-tech1/init.h"
+#include "r-tech1/configuration.h"
+#include "r-tech1/sound/music.h"
+#include "r-tech1/timedifference.h"
 
-#include "util/exceptions/exception.h"
+#include "r-tech1/exceptions/exception.h"
 #include "mugen/config.h"
 #include "mugen/reader.h"
 #include "mugen/section.h"
@@ -30,15 +30,33 @@
 #include "mugen/parser/parsers.h"
 #include "mugen/parser/parse-exception.h"
 #include "mugen/background.h"
-#include "util/graphics/bitmap.h"
-#include "util/funcs.h"
-#include "util/file-system.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/funcs.h"
+#include "r-tech1/file-system.h"
 #include "factory/font_render.h"
-#include "util/input/input-manager.h"
+#include "r-tech1/input/input-manager.h"
 
 namespace PaintownUtil = ::Util;
 
 using namespace std;
+
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
 
 static void showCollision( const std::vector< Mugen::Area > &vec, Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
     int next = start;
