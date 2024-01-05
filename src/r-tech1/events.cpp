@@ -751,4 +751,54 @@ void standardLoop(Logic & logic, Draw & draw){
     doStandardLoop(logic, draw);
 }
 
+void standardLoop(std::function<bool()> logic, std::function<double(double)> ticks, std::function<void(const Graphics::Bitmap &)> draw){
+    class LocalLogic: public Logic {
+    public:
+        std::function<bool()> logic;
+        std::function<double(double)> ticks_;
+        bool is_done;
+
+        LocalLogic(std::function<bool()> logic, std::function<double(double)> ticks):
+        logic(logic),
+        ticks_(ticks),
+        is_done(false){
+        }
+
+        virtual bool done(){
+            return is_done;
+        }
+
+        virtual void run(){
+            is_done = logic() || is_done;
+        }
+
+        virtual double ticks(double systemTicks){
+            return ticks_(systemTicks);
+        }
+
+    };
+
+    class LocalDraw: public Draw {
+    public:
+        std::function<void(const Graphics::Bitmap &)> draw_;
+
+        LocalDraw(std::function<void(const Graphics::Bitmap &)> draw):
+        draw_(draw){
+        }
+
+        virtual void drawFirst(const Graphics::Bitmap & screen){
+            draw_(screen);
+        }
+
+        virtual void draw(const Graphics::Bitmap & screen){
+            draw_(screen);
+        }
+    };
+
+    LocalLogic logicObject(logic, ticks);
+    LocalDraw drawObject(draw);
+
+    standardLoop(logicObject, drawObject);
+}
+
 }
