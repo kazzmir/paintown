@@ -58,7 +58,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
-static void showCollision( const std::vector< Mugen::Area > &vec, Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
+static void showCollision( const std::vector< Mugen::Area > &vec, const Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
     int next = start;
     for( unsigned int i = 0; i < vec.size(); ++i ){
 	bmp.rectangle( x + vec[i].x1, y + vec[i].y1, x + vec[i].x2, y + vec[i].y2, color );
@@ -188,11 +188,100 @@ void showCharacter(const string & ourFile){
     }
 
     // Graphics::Bitmap work( 640, 480 );
-    Graphics::Bitmap work(*Graphics::getScreenBuffer());
+    // Graphics::Bitmap work(*Graphics::getScreenBuffer());
 
     int xaxis = 260;
     int yaxis = 230;
 
+    Graphics::Bitmap screen(*Graphics::getScreenBuffer());
+    Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
+    InputSource inputSource(true);
+
+    InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
+
+    std::function<bool()> logic = [&](){
+        if (animate) it->second->logic();
+
+        for (InputMap<LocalKeyboard::Keys>::InputEvent event: InputManager::getEvents(input, inputSource)){
+            if (event[LocalKeyboard::Up]) {
+                if (currentAnim < lastAnim){
+                    currentAnim++;
+                    it++;
+                }
+                currentFrame = 0;
+            } else if (event[LocalKeyboard::Down]){
+                if (currentAnim > 0){
+                    currentAnim--;
+                    it--;
+                }
+                currentFrame = 0;
+            } else if (event[LocalKeyboard::Left] && !animate){
+                it->second->forwardFrame();
+                currentFrame = it->second->getPosition();
+            } else if (event[LocalKeyboard::Right] && !animate){
+                it->second->backFrame();
+                currentFrame = it->second->getPosition();
+            } else if (event[LocalKeyboard::Space]){
+                animate = !animate;
+            } else if (event[LocalKeyboard::F1]){
+                showClsn1 = !showClsn1;
+                it->second->toggleOffense();
+            } else if (event[LocalKeyboard::F2]){
+                showClsn2 = !showClsn2;
+                it->second->toggleDefense();
+            } else if (event[LocalKeyboard::F3]){
+                character.priorPalette();
+            } else if (event[LocalKeyboard::F4]){
+                character.nextPalette();
+            } else if (event[LocalKeyboard::Esc]){
+                return true;
+            }
+        }
+
+        /*
+        if (mouse_b & 1)moveImage = true;
+        else if( !(mouse_b & 1) )moveImage = false;
+        */
+
+        /*
+        if (moveImage){ xaxis=mouse_x; yaxis =mouse_y; }
+        */
+
+        return false;
+    };
+
+    std::function<void(const Graphics::Bitmap &)> draw = [&](const Graphics::Bitmap& work){
+        // screen.fill(Graphics::makeColor(255, 0, 0));
+        // work.clear();
+        it->second->render(xaxis, yaxis, work.aspectRatio(640, 480));
+        int start = 10;
+        if (showClsn2) showCollision(it->second->getCurrentFrame()->defenseCollision, work, xaxis, yaxis, Graphics::makeColor(0, 255, 0), start);
+        if (showClsn1) showCollision(it->second->getCurrentFrame()->attackCollision, work, xaxis, yaxis,  Graphics::makeColor(255, 0, 0), start);
+
+        int y = 310;
+
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor( 0, 255, 0 ), work, "Name: %s",0, character.getName().c_str()); y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor( 255, 255, 255 ), work, "Current Animation: %i (%s) [%i/%i], Frame: %i, xoffset: %i, yoffset: %i", 0, it->first, Mugen::Animation::getName(Mugen::AnimationType(it->first)).c_str() ,currentAnim,character.getAnimations().size(),currentFrame, it->second->getFrames()[currentFrame]->xoffset, it->second->getFrames()[currentFrame]->yoffset); y += Font::getDefaultFont().getHeight();
+        if (it->second->getCurrentFrame()->sprite!=0){
+            PaintownUtil::ReferenceCount<Mugen::Sprite> sprite = it->second->getCurrentFrame()->sprite;
+            Font::getDefaultFont().printf( 15, y, Graphics::makeColor( 255, 255, 255 ), work, "x-axis: %d | y-axis: %d | Group: %d | Image: %d",0, sprite->getX(), sprite->getY(), sprite->getGroupNumber(), sprite->getImageNumber());
+        }
+        y += Font::getDefaultFont().getHeight();
+
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "Bitmap info - Width: %i Height: %i",0, it->second->getCurrentFrame()->sprite->getWidth(), it->second->getCurrentFrame()->sprite->getHeight()); y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(space) Animation enabled:            %i",0, animate);
+        y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(d)     Show Defense enabled (green): %i",0, showClsn2);
+        y += Font::getDefaultFont().getHeight();
+        Font::getDefaultFont().printf(15, y, Graphics::makeColor(255, 255, 255), work, "(a)     Show Attack enabled (red):    %i",0, showClsn1);
+        y += Font::getDefaultFont().getHeight();
+
+        // show_mouse(work.getData().getBitmap());
+    };
+
+    Util::standardLoop(logic, [](double ticks){ return ticks; }, draw);
+
+#if 0
     double gameSpeed = .5;
     double runCounter = 0;
     InputMap<LocalKeyboard::Keys> input = LocalKeyboard::getKeys();
@@ -296,6 +385,7 @@ void showCharacter(const string & ourFile){
             InputManager::poll();
         }
     }
+#endif
 
 }
 
