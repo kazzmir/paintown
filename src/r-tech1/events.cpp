@@ -648,7 +648,7 @@ static void doStandardLoop(Logic & logic, Draw & draw){
     }
     const Graphics::Bitmap & screen = *Graphics::screenParameter.current();
     screen.clear();
-    draw.drawFirst(screen.aspectRatio(640, 480));
+    draw.drawFirst(screen);
     screen.BlitToScreen();
     Global::speed_counter4 = 0;
     double runCounter = 0;
