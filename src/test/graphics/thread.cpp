@@ -1,4 +1,6 @@
 #include <iostream>
+#include <mutex>
+#include <thread>
 
 #include "r-tech1/file-system.h"
 #include "r-tech1/debug.h"
@@ -61,7 +63,18 @@ int test_main(int argc, char** argv){
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
 
-    Graphics::Bitmap simple(std::string("src/test/graphics/simple.png"));
+    Graphics::Bitmap simple1(std::string("src/test/graphics/simple.png"));
+
+    std::mutex lock;
+    Util::ReferenceCount<Graphics::Bitmap> simple2;
+
+    /* load the bitmap in a thread */
+    /*
+    std::thread thread([&](){
+        std::lock_guard<std::mutex> guard(lock);
+        simple2 = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(std::string("src/test/graphics/simple.png")));
+    });
+    */
 
     std::function<bool()> logic = [&]()->bool{
         for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
@@ -76,10 +89,24 @@ int test_main(int argc, char** argv){
     };
 
     std::function<void(const Graphics::Bitmap&)> draw = [&](const Graphics::Bitmap& screen){
-        simple.draw(10, 10, screen);
+        simple1.draw(10, 10, screen);
+
+        int x = 150;
+        int y = 10;
+
+        screen.rectangle(x-1, y-1, simple1.getWidth() + x + 1, simple1.getHeight() + y + 1, Graphics::makeColor(255, 0, 0));
+
+        {
+            std::lock_guard<std::mutex> guard(lock);
+            if (simple2 != nullptr){
+                simple2->draw(x, y, screen);
+            }
+        }
     };
 
     Util::standardLoop(logic, [](double ticks){ return ticks; }, draw);
+
+    // thread.join();
 
     return 0;
 }
