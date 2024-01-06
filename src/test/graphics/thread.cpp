@@ -61,6 +61,8 @@ int test_main(int argc, char** argv){
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
 
+    Graphics::Bitmap simple(std::string("src/test/graphics/simple.png"));
+
     std::function<bool()> logic = [&]()->bool{
         for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
             if (event.enabled){
@@ -74,6 +76,7 @@ int test_main(int argc, char** argv){
     };
 
     std::function<void(const Graphics::Bitmap&)> draw = [&](const Graphics::Bitmap& screen){
+        simple.draw(10, 10, screen);
     };
 
     Util::standardLoop(logic, [](double ticks){ return ticks; }, draw);

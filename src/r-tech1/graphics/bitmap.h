@@ -229,10 +229,10 @@ public:
 	/* default constructor makes 10x10 bitmap */
 	Bitmap();
 	Bitmap(int width, int height);
-	Bitmap(const char * load_file);
+	// Bitmap(const char * load_file);
     Bitmap(const uint8_t* data, int length);
 	Bitmap(const std::string & load_file);
-	Bitmap(const char * load_file, int sx, int sy);
+	// Bitmap(const char * load_file, int sx, int sy);
 
     /* Load a bitmap from an abstract file */
     Bitmap(Storage::File & file);

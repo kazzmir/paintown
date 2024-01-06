@@ -313,6 +313,10 @@ void Graphics::initializeExtraStuff(){
 }
 
 Graphics::Bitmap::Bitmap(const std::string & load_file){
+    Util::ReferenceCount<Storage::File> file = Storage::instance().open(Filesystem::AbsolutePath(load_file));
+    if (file != nullptr){
+        doLoad(*file.raw());
+    }
 }
 
 void Graphics::Bitmap::applyTrans(const Color color) const {
