@@ -423,19 +423,30 @@ void Graphics::Bitmap::arcFilled(const int x, const int y, const double ang1, co
 
 void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) const {
     if (this->getData() != nullptr){
+        SDL_Rect sourceRect;
+        sourceRect.x = clip_x1;
+        sourceRect.y = clip_y1;
+        sourceRect.w = clip_x2 - clip_x1;
+        sourceRect.h = clip_y2 - clip_y1;
+
         where.activate();
         SDL_Rect rect;
         rect.x = x + where.clip_x1;
         rect.y = y + where.clip_y1;
+
+        /*
         SDL_Point size;
         // FIXME: cache the texture size
         SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
         rect.w = size.x;
         rect.h = size.y;
         // DebugLog << "draw size is " << size.x << " " << size.y << endl; 
+        */
+        rect.w = sourceRect.w;
+        rect.h = sourceRect.h;
 
         where.enableClip();
-        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, &sourceRect, &rect);
         where.disableClip();
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);

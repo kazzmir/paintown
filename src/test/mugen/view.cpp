@@ -426,71 +426,59 @@ void showFont(const string & ourFile){
     
     int backgroundChange = 1;
     int backgroundColor = 0;
-   
-    while( !quit ){
-        bool draw = false;
-        
-        if ( Global::speed_counter4 > 0 ){
-            runCounter += Global::speed_counter4 * gameSpeed * Global::ticksPerSecond(60);
-            while (runCounter > 1){
-                InputManager::poll();
-                runCounter -= 1;
-                draw = true;
-                vector<InputMap<LocalKeyboard::Keys>::InputEvent> events = InputManager::getEvents(input, InputSource(true));
-                for (vector<InputMap<LocalKeyboard::Keys>::InputEvent>::iterator it = events.begin(); it != events.end(); it++){
-                    const InputMap<LocalKeyboard::Keys>::InputEvent & event = *it;
-                    if (event.enabled){
-                        if (event.out == LocalKeyboard::Down || event.out == LocalKeyboard::Right){
-                            if (currentBank > 0){
-                                currentBank--;
-                            }
-                        } else if (event.out == LocalKeyboard::Up || event.out == LocalKeyboard::Left){
-                            if (currentBank < font.getTotalBanks()-1){
-                                currentBank++;
-                            }
-                        } else if (event.out == LocalKeyboard::Esc){
-                            quit = true;
-                        }
+
+    Graphics::Bitmap screen(*Graphics::getScreenBuffer());
+    Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
+    InputSource inputSource(true);
+
+    std::function<bool()> logic = [&](){
+        for (const InputMap<LocalKeyboard::Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
+            if (event.enabled){
+                if (event.out == LocalKeyboard::Down || event.out == LocalKeyboard::Right){
+                    if (currentBank > 0){
+                        currentBank--;
                     }
+                } else if (event.out == LocalKeyboard::Up || event.out == LocalKeyboard::Left){
+                    if (currentBank < font.getTotalBanks()-1){
+                        currentBank++;
+                    }
+                } else if (event.out == LocalKeyboard::Esc){
+                    return true;
                 }
-                
-                backgroundColor += backgroundChange;
-                if (backgroundColor > 255){
-                    backgroundColor = 255;
-                    backgroundChange = -1;
-                } else if (backgroundColor < 0){
-                    backgroundColor = 0;
-                    backgroundChange = 1;
-                }
-                
             }
-        
-        Global::speed_counter4 = 0;
-        }
-        
-        if (draw){
-            back.clear();
-            Graphics::StretchedBitmap work(480, 480, back);
-            work.fill(Graphics::makeColor(backgroundColor,backgroundColor,backgroundColor));
-            work.start();
-            font.render( 240, 120, 0, currentBank, work, "0123456789");
-            work.line(0, 120, 480, 120, Graphics::makeColor(255,0,0));
-            font.render( 240, 120 + font.getHeight(), 0, currentBank, work, "ABCDEFGHIJKLN");
-            work.line(0, 120 + font.getHeight(), 480, 120 + font.getHeight(), Graphics::makeColor(255,0,0));
-            font.render( 240, 120 + font.getHeight() * 2, 0, currentBank, work, "MNOPQRSTUVWXYZ");
-            work.line(0, 120 + font.getHeight() * 2, 480, 120 + font.getHeight() * 2, Graphics::makeColor(255,0,0));
-            std::ostringstream out;
-            out << "CURRENT BANK SET TO " << currentBank;
-            font.render( 240, 120 + font.getHeight() * 3, 0, currentBank, work, out.str());
-            work.line(0, 120 + font.getHeight() * 3, 480, 120 + font.getHeight() * 3, Graphics::makeColor(255,0,0));
-            work.finish();
-            back.BlitToScreen();
         }
 
-        while (Global::speed_counter4 == 0){
-            Util::rest(1);
+        backgroundColor += backgroundChange;
+        if (backgroundColor > 255){
+            backgroundColor = 255;
+            backgroundChange = -1;
+        } else if (backgroundColor < 0){
+            backgroundColor = 0;
+            backgroundChange = 1;
         }
-    }
+
+        return false;
+    };
+
+    std::function<void(const Graphics::Bitmap &)> draw = [&](const Graphics::Bitmap& work){
+        work.fill(Graphics::makeColor(backgroundColor, backgroundColor, backgroundColor));
+        // work.start();
+        font.render(240, 120, 0, currentBank, work, "0123456789");
+        work.line(0, 120, 480, 120, Graphics::makeColor(255,0,0));
+        font.render(240, 120 + font.getHeight(), 0, currentBank, work, "ABCDEFGHIJKLN");
+        work.line(0, 120 + font.getHeight(), 480, 120 + font.getHeight(), Graphics::makeColor(255,0,0));
+        font.render(240, 120 + font.getHeight() * 2, 0, currentBank, work, "MNOPQRSTUVWXYZ");
+        work.line(0, 120 + font.getHeight() * 2, 480, 120 + font.getHeight() * 2, Graphics::makeColor(255,0,0));
+        std::ostringstream out;
+        out << "CURRENT BANK SET TO " << currentBank;
+        font.render(240, 120 + font.getHeight() * 3, 0, currentBank, work, out.str());
+        work.line(0, 120 + font.getHeight() * 3, 480, 120 + font.getHeight() * 3, Graphics::makeColor(255,0,0));
+
+        // work.finish();
+        // back.BlitToScreen();
+    };
+
+    Util::standardLoop(logic, [](double ticks){ return ticks; }, draw);
 }
 
 void showSFF(const string & ourFile, const std::string &actFile){

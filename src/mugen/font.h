@@ -78,7 +78,7 @@ protected:
     int offsetx;
     int offsety;
     std::map<int, PaintownUtil::ReferenceCount<Graphics::Bitmap> > banks;
-    unsigned char *pcx;
+    uint8_t *pcx;
     unsigned char palette[768];
     uint32_t pcxsize;
     // mapping positions of font in bitmap
