@@ -17,7 +17,7 @@ own(nullptr){
     
 Sound::Sound(const std::string & path):
 own(nullptr){
-    loadFromMemory(path.c_str(), 0);
+    loadFromFile(path);
 }
 
 Sound::Sound(const char * data, int length):
@@ -30,9 +30,22 @@ void Sound::initialize(){
 
 void Sound::uninitialize(){
 }
-    
+
+void Sound::loadFromFile(const std::string & path){
+    this->data.sample = Mix_LoadWAV(path.c_str());
+    if (this->data.sample == NULL){
+        DebugLog << "Unable to load sound from memory: " << SDL_GetError() << std::endl;
+    }
+    own = new int;
+    *own = 1;
+}
+
 void Sound::loadFromMemory(const char * data, int length){
-    this->data.sample = Mix_LoadWAV(data);
+    SDL_RWops* ops = SDL_RWFromConstMem(data, length);
+    this->data.sample = Mix_LoadWAV_RW(ops, 1);
+    if (this->data.sample == NULL){
+        DebugLog << "Unable to load sound from memory: " << SDL_GetError() << std::endl;
+    }
     own = new int;
     *own = 1;
 }

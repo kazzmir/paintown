@@ -66,6 +66,7 @@ public:
 
 protected:
 
+    void loadFromFile(const std::string & path);
     void loadFromMemory(const char * data, int length);
 
     /* scale to the configuration sound level */
