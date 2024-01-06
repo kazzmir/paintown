@@ -238,13 +238,14 @@ unsigned char * Font::findBankPalette(int bank) const {
 Graphics::Bitmap * Font::makeBank(int bank) const {
     unsigned char newpal[768];
     // Reset palette
-    memcpy(pcx + (pcxsize - 768), palette, 768);
-    memcpy(newpal, pcx+(pcxsize)-768, 768);
+    memcpy(pcx + (pcxsize - sizeof(newpal)), palette, sizeof(newpal));
+    memcpy(newpal, pcx+(pcxsize)-sizeof(newpal), sizeof(newpal));
     unsigned char * newBank = findBankPalette(bank);
     // Global::debug(1) << "palette start: " << (void*)(pcx + pcxsize - 768) << ". new bank: " << (void*)newBank << endl;
-    memcpy((void*) &newpal[768 - colors*3], (void*) newBank, colors * 3);
+    memcpy((void*) &newpal[sizeof(newpal) - colors*3], (void*) newBank, colors * 3);
 
     /* hack to get around the 16-bit masking color */
+    /*
     for (int i = 768 - colors * 3; i < 768; i += 3){
         int r = newpal[i];
         int g = newpal[i+1];
@@ -261,10 +262,16 @@ Graphics::Bitmap * Font::makeBank(int bank) const {
             newpal[i+2] = b;
         }
     }
+    */
 
-    memcpy(pcx + (pcxsize - 768), newpal, 768);
-    Graphics::Bitmap * bmp = new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, pcxsize));
-    bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
+    /* copy palette into pcx */
+    uint8_t* palette = pcx + (pcxsize - sizeof(newpal));
+    memcpy(palette, newpal, sizeof(newpal));
+
+    Graphics::Color maskColor = Graphics::makeColor(palette[0], palette[1], palette[2]);
+
+    Graphics::Bitmap * bmp = new Graphics::Bitmap(Graphics::memoryPCX(pcx, pcxsize, maskColor));
+    // bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
     return bmp;
 }
 
@@ -310,7 +317,7 @@ void Font::load(const Filesystem::AbsolutePath & path){
 
     /* 16 skips the header stuff */
     /*
-    int location = 16;
+       int location = 16;
     // Lets go ahead and skip the crap -> (Elecbyte signature and version) start at the 16th byte
     ifile.seekg(location,ios::beg);
     */
@@ -337,9 +344,9 @@ void Font::load(const Filesystem::AbsolutePath & path){
     memcpy(palette, pcx+(pcxsize)-768, 768);
 
     /*
-    bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
-    bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
-    */
+       bmp = new Graphics::Bitmap(Graphics::Bitmap::memoryPCX((unsigned char*) pcx, pcxsize));
+       bmp->replaceColor(bmp->get8BitMaskColor(), Graphics::MaskColor());
+       */
 
     // Get the text
     ifile->seek(pcxlocation+pcxsize, ios::beg);
@@ -352,7 +359,7 @@ void Font::load(const Filesystem::AbsolutePath & path){
 
     /* FIXME!! Replace with peg parser */
     MugenReader reader(ourText);
-    
+
     std::vector< MugenSection * > collection = reader.getCollection();
 
     for (unsigned int i = 0; i < collection.size(); ++i){
@@ -404,15 +411,15 @@ void Font::load(const Filesystem::AbsolutePath & path){
                 std::string character;
                 int startx = locationx * width;
                 int chrwidth = width;
-		if (opt->hasItems()){
-		    *opt->getNext() >> character;
-		    if (character.size() > 1){
-			character = Mugen::Util::fixCase(character);
-			// 0x5b
-			if (character.compare("0x5b")==0)character = "[";
-			// 0x3b
-			else if (character.compare("0x3b")==0)character = ";";
-		    }
+                if (opt->hasItems()){
+                    *opt->getNext() >> character;
+                    if (character.size() > 1){
+                        character = Mugen::Util::fixCase(character);
+                        // 0x5b
+                        if (character.compare("0x5b")==0)character = "[";
+                        // 0x3b
+                        else if (character.compare("0x3b")==0)character = ";";
+                    }
                     if (type != Fixed){
                         // get other two
                         *opt->getNext() >> startx;
