@@ -131,8 +131,8 @@ class SpriteV1: public Sprite {
 	uint16_t prev;
 	bool samePalette;
 	char comments[12];
-	char * pcx;
-    int maskColor;
+	uint8_t* pcx;
+    Graphics::Color maskColor;
 
     /* come straight from the pcx */
     int width, height;

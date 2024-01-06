@@ -104,6 +104,7 @@ Graphics::Bitmap::Bitmap(SDL_Surface* surface){
 }
 
 Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
+    /* FIXME: use deep_copy */
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
 
     SDL_Point size;
@@ -204,25 +205,39 @@ void Graphics::TranslucentBitmap::draw(const int x, const int y, const Graphics:
 void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
 }
 
-void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length){
+static SDL_Texture* loadFromMemory(const uint8_t* data, int length, bool useMask, const Graphics::Color & maskColor){
     SDL_RWops* ops = SDL_RWFromConstMem(data, length);
 
     SDL_Surface* surface = IMG_Load_RW(ops, 0);
-    /* set bright pink as the color key */
-    SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, 255, 0, 255));
+
+    if (useMask){
+        INTERNAL_COLOR maskColorInternal = maskColor.getInternalColor();
+        SDL_SetColorKey(surface, SDL_TRUE, SDL_MapRGB(surface->format, maskColorInternal.r, maskColorInternal.g, maskColorInternal.b));
+    }
+
+    /*
+    SDL_Texture* texture = IMG_LoadTexture_RW(global_handler->renderer, ops, 0);
+    */
 
     SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, surface);
     SDL_FreeSurface(surface);
 
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-    /*
-    SDL_Texture* texture = IMG_LoadTexture_RW(global_handler->renderer, ops, 0);
-    */
+    SDL_FreeRW(ops);
+
+    return texture;
+}
+
+void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length){
+    /* default mask color is bright pink */
+    return loadFromMemory(data, length, makeColor(255, 0, 255));
+}
+
+void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length, const Color & maskColor){
+    SDL_Texture* texture = ::loadFromMemory(data, length, true, maskColor);
 
     setData(std::shared_ptr<BitmapData>(new BitmapData(texture)));
-
-    SDL_FreeRW(ops);
 
     SDL_Point size;
 
@@ -789,9 +804,14 @@ void Graphics::Bitmap::lock(int x, int y, int width, int height) const {
 void Graphics::Bitmap::unlock() const {
 }
 
-Graphics::Bitmap Graphics::memoryPCX(uint8_t * const data, const int length, const bool mask){
-    /* FIXME: use mask */
-    return Graphics::Bitmap(data, length);
+Graphics::Bitmap Graphics::memoryPCX(uint8_t * const data, const int length){
+    SDL_Texture* texture = loadFromMemory(data, length, false, makeColor(0, 0, 0));
+    return Graphics::Bitmap(texture);
+}
+
+Graphics::Bitmap Graphics::memoryPCX(uint8_t * const data, const int length, const Color & maskColor){
+    SDL_Texture* texture = loadFromMemory(data, length, true, maskColor);
+    return Graphics::Bitmap(texture);
 }
 
 void Graphics::Bitmap::replaceColor(const Color & original, const Color & replaced){

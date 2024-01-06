@@ -618,6 +618,7 @@ protected:
         */
 
         void loadFromMemory(const uint8_t* data, int length);
+        void loadFromMemory(const uint8_t* data, int length, const Color & maskColor);
 
         void internalLoadFile( const char * load_file );
 
@@ -649,7 +650,10 @@ protected:
     Color palette[256];
 };
 
-Bitmap memoryPCX(unsigned char * const data, const int length, const bool mask = true);
+/* load but don't convert mask pixels to transparent */
+Bitmap memoryPCX(unsigned char * const data, const int length);
+/* convert mask color pixels to transparent */
+Bitmap memoryPCX(unsigned char * const data, const int length, const Color & maskColor);
 
 /* creates a bitmap that can be used as a buffer for the screen.
  * on opengl/allegro5 systems this will return the current backbuffer
