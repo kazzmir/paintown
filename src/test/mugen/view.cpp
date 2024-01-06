@@ -413,10 +413,6 @@ void showFont(const string & ourFile){
     Mugen::Font font( Storage::instance().find(Filesystem::RelativePath(ourFile)));
     Global::debug(0) << "Loaded font: \"" << ourFile << "\" successfully." << endl;
     
-    bool quit = false;
-    
-    Graphics::Bitmap back( 640, 480 );
-    
     double gameSpeed = 1.0;
     double runCounter = 0;
     
