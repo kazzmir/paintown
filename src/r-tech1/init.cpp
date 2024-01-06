@@ -285,7 +285,15 @@ networking(true),
 softwareRenderer(false){
 }
 
+std::thread::id Global::mainThreadId;
+bool Global::isMainThread(){
+    return mainThreadId == std::this_thread::get_id();
+}
+
 bool Global::init(const InitConditions & conditions){
+
+    mainThreadId = std::this_thread::get_id();
+
     /* Can xenon_init be moved lower? Probably.. */
 #ifdef XENON
     xenon_init();

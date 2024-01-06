@@ -69,12 +69,11 @@ int test_main(int argc, char** argv){
     Util::ReferenceCount<Graphics::Bitmap> simple2;
 
     /* load the bitmap in a thread */
-    /*
     std::thread thread([&](){
+        DebugLog << "main thread: " << Global::isMainThread() << std::endl;
         std::lock_guard<std::mutex> guard(lock);
         simple2 = Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(std::string("src/test/graphics/simple.png")));
     });
-    */
 
     std::function<bool()> logic = [&]()->bool{
         for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
@@ -106,7 +105,7 @@ int test_main(int argc, char** argv){
 
     Util::standardLoop(logic, [](double ticks){ return ticks; }, draw);
 
-    // thread.join();
+    thread.join();
 
     return 0;
 }
