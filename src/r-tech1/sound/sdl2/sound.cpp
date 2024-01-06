@@ -17,7 +17,7 @@ own(nullptr){
     
 Sound::Sound(const std::string & path):
 own(nullptr){
-    loadFromFile(path.c_str());
+    loadFromFile(path);
 }
 
 Sound::Sound(const char * data, int length):
