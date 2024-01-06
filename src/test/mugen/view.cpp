@@ -465,8 +465,6 @@ void showFont(const string & ourFile){
         // work.start();
         font.render(240, 120, 0, currentBank, work, "0123456789");
         work.line(0, 120, 480, 120, Graphics::makeColor(255,0,0));
-
-        /*
         font.render(240, 120 + font.getHeight(), 0, currentBank, work, "ABCDEFGHIJKLN");
         work.line(0, 120 + font.getHeight(), 480, 120 + font.getHeight(), Graphics::makeColor(255,0,0));
         font.render(240, 120 + font.getHeight() * 2, 0, currentBank, work, "MNOPQRSTUVWXYZ");
@@ -475,7 +473,6 @@ void showFont(const string & ourFile){
         out << "CURRENT BANK SET TO " << currentBank;
         font.render(240, 120 + font.getHeight() * 3, 0, currentBank, work, out.str());
         work.line(0, 120 + font.getHeight() * 3, 480, 120 + font.getHeight() * 3, Graphics::makeColor(255,0,0));
-        */
 
         // work.finish();
         // back.BlitToScreen();
