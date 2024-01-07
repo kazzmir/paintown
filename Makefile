@@ -15,10 +15,10 @@ test: build-debug
 
 mingw: build-mingw
 	(cd build-mingw; meson configure -Dbuild_tests=false)
-	meson compile -C build-mingw
+	meson compile --verbose -C build-mingw
 
 build-mingw:
-	mkdir -p build-mingw/SDL
+	mkdir build-mingw
 	misc/mingw-environment.sh
 	meson setup --cross-file mingw_x86_64.txt build-mingw
 

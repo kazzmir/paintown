@@ -8,9 +8,6 @@ add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
 add_global_arguments(['-fsanitize=address'], language: ['cpp', 'c'])
-# Disabled for now
-add_global_arguments('-DHAVE_OGG=1', language: 'cpp')
-add_global_arguments('-DHAVE_MP3_MPG123=1', language: 'cpp')
 
 includes = include_directories('src')
 dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
@@ -28,10 +25,19 @@ sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18')
 sdl_mixer_dependency = dependency('SDL2_mixer', required: true)
 # freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
-vorbis_dependency = dependency('vorbis', required: true)
-vorbis_file_dependency = dependency('vorbisfile', required: true)
-ogg_dependency = dependency('ogg', required: true)
-mpg123_dependency = dependency('libmpg123', required: true)
+vorbis_dependency = dependency('vorbis', required: false)
+vorbis_file_dependency = dependency('vorbisfile', required: false)
+ogg_dependency = dependency('ogg', required: false)
+mpg123_dependency = dependency('libmpg123', required: false)
+
+if vorbis_dependency.found() and vorbis_file_dependency.found() and ogg_dependency.found()
+  add_global_arguments('-DHAVE_OGG=1', language: 'cpp')
+endif
+
+if mpg123_dependency.found()
+  add_global_arguments('-DHAVE_MP3_MPG123=1', language: 'cpp')
+endif
+
 
 subdir('src/r-tech1')
 subdir('src/mugen')
