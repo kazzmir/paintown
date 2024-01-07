@@ -9,6 +9,7 @@
 */
 
 #include <atomic>
+#include <thread>
 
 namespace Global{
     extern std::atomic<uint64_t> speed_counter4;
@@ -58,6 +59,10 @@ namespace Global{
 
     /* Updates TICS_PER_SECOND */
     void setTicksPerSecond(int ticks);
+
+    extern std::thread::id mainThreadId;
+
+    bool isMainThread();
 }
 
 /*
