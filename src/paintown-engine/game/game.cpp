@@ -57,7 +57,7 @@ static bool show_loading_screen = true;
 
 namespace Game{
 
-const int Ticks = 10;
+const int Ticks = 90;
 
 struct Background{
     string path;
@@ -634,7 +634,7 @@ bool playLevel(World & world, const vector<Paintown::Object *> & players){
         }
 
         double ticks(double system){
-            return system * gameSpeed * Global::ticksPerSecond(Ticks);
+            return gameSpeed * Global::ticksPerSecond(system) * Ticks;
         }
 
         void doInput(GameState & state, bool & force_quit){

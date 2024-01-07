@@ -4,6 +4,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <string>
+#include <stdint.h>
 
 class TimeDifference{
 public:
@@ -12,7 +13,7 @@ public:
     void startTime();
     void endTime();
 
-    unsigned long long int getTime();
+    uint64_t getTime();
 
     const std::string printTime();
     const std::string printTime(const std::string & description, int runs = 1);

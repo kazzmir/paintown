@@ -84,6 +84,10 @@ void freetype::render(int x, int y, const Graphics::Color & color, const Graphic
 
     string data = str.str();
 
+    if (data == ""){
+        return;
+    }
+
     /*
     SDL_Color xcolor;
     xcolor.r = 255;
@@ -92,8 +96,12 @@ void freetype::render(int x, int y, const Graphics::Color & color, const Graphic
     xcolor.a = 255;
     */
     SDL_Surface* text_surface = TTF_RenderText_Solid(font, data.c_str(), color.getInternalColor());
+    if (text_surface == nullptr){
+        /* FIXME: log an error? */
+        return;
+    }
     Graphics::Bitmap copy(text_surface);
-    SDL_FreeSurface(text_surface);
+    // SDL_FreeSurface(text_surface);
     switch (alignment){
         case ftLeft: {
             /* nothing to do */
