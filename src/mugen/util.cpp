@@ -259,7 +259,7 @@ MugenItemContent *Mugen::Util::parseOpt( const std::string &opt ){
 
 double Mugen::Util::gameTicks(double ticks, double gameSpeed){
     /* FIXME: mugenSpeed should be 60, but fix ticksPerSecond */
-    int mugenSpeed = 5;
+    int mugenSpeed = 60;
     return ticks * gameSpeed * Global::ticksPerSecond(mugenSpeed);
 }
 

@@ -93,7 +93,7 @@ void freetype::render(int x, int y, const Graphics::Color & color, const Graphic
     */
     SDL_Surface* text_surface = TTF_RenderText_Solid(font, data.c_str(), color.getInternalColor());
     Graphics::Bitmap copy(text_surface);
-    SDL_FreeSurface(text_surface);
+    // SDL_FreeSurface(text_surface);
     switch (alignment){
         case ftLeft: {
             /* nothing to do */
