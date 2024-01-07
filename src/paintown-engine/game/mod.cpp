@@ -48,8 +48,8 @@ Mod::Mod(const Util::ReferenceCount<Storage::File> & path){
     }
 }
     
-Graphics::Bitmap * Mod::createBitmap(const Filesystem::RelativePath & path){
-    return new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(path)));
+Graphics::Bitmap * Mod::createBitmap(const Filesystem::RelativePath & path, bool keepInMemory){
+    return new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(path)), keepInMemory);
 }
 
 Graphics::Bitmap Mod::makeBitmap(const Filesystem::RelativePath & path){

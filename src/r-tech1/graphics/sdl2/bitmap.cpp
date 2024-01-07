@@ -88,7 +88,7 @@ Graphics::Bitmap::Bitmap( const Bitmap & copy, int x, int y, int width, int heig
 }
 
 Graphics::Bitmap::Bitmap(const uint8_t* data, int length){
-    loadFromMemory(data, length);
+    loadFromMemory(data, length, false);
 }
 
 Graphics::Bitmap::Bitmap(SDL_Surface* surface){
@@ -163,7 +163,7 @@ void Graphics::Bitmap::fill(Graphics::Color color) const {
     disableClip();
 }
 
-void Graphics::Bitmap::doLoad(Storage::File& file){
+void Graphics::Bitmap::doLoad(Storage::File& file, bool keepInMemory){
     /* FIXME: don't load the entire file into memory, use an rwops instead */
     int length = file.getSize();
     if (length == -1){
@@ -172,7 +172,7 @@ void Graphics::Bitmap::doLoad(Storage::File& file){
     uint8_t* data = new uint8_t[length];
     try{
         file.readLine((char*) data, length);
-        loadFromMemory(data, length);
+        loadFromMemory(data, length, keepInMemory);
         delete[] data;
     } catch (const BitmapException & fail){
         delete[] data;
@@ -236,12 +236,12 @@ static SDL_Surface* loadFromMemory(const uint8_t* data, int length, bool useMask
     return surface;
 }
 
-void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length){
+void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length, bool keepInMemory){
     /* default mask color is bright pink */
-    return loadFromMemory(data, length, makeColor(255, 0, 255));
+    return loadFromMemory(data, length, makeColor(255, 0, 255), keepInMemory);
 }
 
-void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length, const Color & maskColor){
+void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length, const Color & maskColor, bool keepInMemory){
     SDL_Surface* surface = ::loadFromMemory(data, length, true, maskColor);
 
     if (surface == nullptr){
@@ -256,7 +256,7 @@ void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length, const Col
     setData(std::shared_ptr<BitmapData>(new BitmapData(surface, nullptr)));
 
     /* force texture upload if on the main thread */
-    getTexture();
+    getTexture(keepInMemory);
 
     /*
     SDL_Point size;
@@ -272,7 +272,7 @@ void Graphics::Bitmap::loadFromMemory(const uint8_t* data, int length, const Col
     */
 }
 
-SDL_Texture* Graphics::Bitmap::getTexture() const {
+SDL_Texture* Graphics::Bitmap::getTexture(bool keepInMemory) const {
     if (getData() == nullptr){
         return nullptr;
     }
@@ -287,10 +287,12 @@ SDL_Texture* Graphics::Bitmap::getTexture() const {
         if (data->surface != nullptr){
             SDL_Texture* texture = SDL_CreateTextureFromSurface(global_handler->renderer, data->surface);
             SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-            SDL_FreeSurface(data->surface);
 
             data->texture = texture;
-            data->surface = nullptr;
+            if (!keepInMemory){
+                SDL_FreeSurface(data->surface);
+                data->surface = nullptr;
+            }
             return texture;
         }
     }
@@ -322,9 +324,65 @@ int Graphics::getAlpha(Color x){
     return x.color.a;
 }
 
-Graphics::Color Graphics::Bitmap::getPixel( const int x, const int y ) const {
-    Graphics::Color c;
-    return c;
+uint32_t getpixel(SDL_Surface *surface, int x, int y) {
+    int bpp = surface->format->BytesPerPixel;
+    /* Here p is the address to the pixel we want to retrieve */
+    uint8_t *p = (uint8_t *)surface->pixels + y * surface->pitch + x * bpp;
+
+    switch (bpp) {
+        case 1:
+            return *p;
+            break;
+
+        case 2:
+            return *(uint16_t *)p;
+            break;
+
+        case 3:
+            if (SDL_BYTEORDER == SDL_BIG_ENDIAN)
+                return p[0] << 16 | p[1] << 8 | p[2];
+            else
+                return p[0] | p[1] << 8 | p[2] << 16;
+            break;
+
+        case 4:
+            return *(uint32_t *)p;
+            break;
+
+        default:
+            return 0;       /* shouldn't happen, but avoids warnings */
+    }
+}
+
+Graphics::Color Graphics::Bitmap::getPixel(const int x, const int y) const {
+
+    if (getData() == nullptr){
+        return makeColor(0, 0, 0);
+    }
+
+    SDL_Surface* surface = getData()->surface;
+    if (surface == nullptr){
+        return makeColor(0, 0, 0);
+    }
+
+    int true_x = x + clip_x1;
+    int true_y = y + clip_y1;
+
+    if (true_x > clip_x2 || true_y > clip_y2){
+        return makeColor(0, 0, 0);
+    }
+
+    uint8_t red, green, blue;
+
+    SDL_LockSurface(surface);
+
+    uint32_t pixel = getpixel(surface, true_x, true_y);
+
+    SDL_GetRGB(pixel, surface->format, &red, &green, &blue);
+
+    SDL_UnlockSurface(surface);
+
+    return makeColor(red, green, blue);
 }
 
 void Graphics::Bitmap::putPixel( int x, int y, Color col ) const {
@@ -347,7 +405,7 @@ Graphics::Color Graphics::MaskColor(){
 }
 
 void Graphics::Bitmap::activate() const {
-    SDL_Texture* texture = getTexture();
+    SDL_Texture* texture = getTexture(false);
 
     /* when texture is null then we are rendering to the screen */
     if (SDL_GetRenderTarget(global_handler->renderer) != texture){
@@ -364,7 +422,7 @@ void Graphics::initializeExtraStuff(){
 Graphics::Bitmap::Bitmap(const std::string & load_file){
     Util::ReferenceCount<Storage::File> file = Storage::instance().open(Filesystem::AbsolutePath(load_file));
     if (file != nullptr){
-        doLoad(*file.raw());
+        doLoad(*file.raw(), false);
     }
 }
 
@@ -475,7 +533,7 @@ void Graphics::Bitmap::arcFilled(const int x, const int y, const double ang1, co
 }
 
 void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) const {
-    if (getTexture() != nullptr){
+    if (getTexture(false) != nullptr){
         SDL_Rect sourceRect;
         sourceRect.x = clip_x1;
         sourceRect.y = clip_y1;
@@ -499,7 +557,7 @@ void Graphics::Bitmap::draw(const int x, const int y, const Bitmap & where) cons
         rect.h = sourceRect.h;
 
         where.enableClip();
-        SDL_RenderCopy(global_handler->renderer, getTexture(), &sourceRect, &rect);
+        SDL_RenderCopy(global_handler->renderer, getTexture(false), &sourceRect, &rect);
         where.disableClip();
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
@@ -510,7 +568,7 @@ void Graphics::Bitmap::drawCharacter( const int x, const int y, const Color colo
 }
 
 void Graphics::Bitmap::drawHFlip(const int x, const int y, const Bitmap & where) const {
-    SDL_Texture* texture = getTexture();
+    SDL_Texture* texture = getTexture(false);
 
     if (texture != nullptr){
         where.activate();
@@ -595,7 +653,7 @@ void Graphics::Bitmap::StretchXbr(const Bitmap & where, const int sourceX, const
 }
 
 void Graphics::Bitmap::Blit( const int mx, const int my, const int width, const int height, const int wx, const int wy, const Bitmap & where ) const {
-    SDL_Texture* texture = getTexture();
+    SDL_Texture* texture = getTexture(false);
 
     if (texture != nullptr){
         where.activate();

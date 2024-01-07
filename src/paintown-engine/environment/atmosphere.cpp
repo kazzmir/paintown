@@ -334,7 +334,7 @@ playing(false){
                                 "sprites/rain-drop/drop4.png",
                                 "sprites/rain-drop/drop5.png"};
         for (unsigned int i = 0; i < sizeof(files) / sizeof(const char*); i++){
-            splashes.push_back(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(files[i]))))));
+            splashes.push_back(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(files[i]))), false)));
         }
     } catch (const Filesystem::NotFound & ignore){
     }

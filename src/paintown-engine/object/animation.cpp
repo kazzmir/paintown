@@ -428,7 +428,7 @@ changedAttacks(false){
                 Filesystem::RelativePath full = Filesystem::RelativePath(basedir).join(Filesystem::RelativePath(path));
                 // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
                 if (frames.find(full.path()) == frames.end()){
-                    Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
+                    Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full, true);
                     if (owner != NULL && owner->getSpriteScale() != 1){
                         *pic = pic->scaleBy(owner->getSpriteScale(), owner->getSpriteScale());
                     }
