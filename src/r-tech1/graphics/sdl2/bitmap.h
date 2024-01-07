@@ -4,9 +4,14 @@
 #include <SDL2/SDL_render.h>
 
 struct BitmapData{
-    BitmapData(SDL_Texture* texture):texture(texture){
+    BitmapData(SDL_Surface* surface, SDL_Texture* texture):
+    surface(surface),
+    texture(texture){
     }
 
+    /* if loaded in a thread then this will be non-null */
+    SDL_Surface* surface;
+    /* if available to use on the gpu this will be non-null */
     SDL_Texture* texture;
 
     ~BitmapData(){

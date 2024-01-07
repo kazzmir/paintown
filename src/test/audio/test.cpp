@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include "r-tech1/sound/sound.h"
 #include "r-tech1/sound/music-player.h"
 #include "r-tech1/file-system.h"
 #include "r-tech1/debug.h"
@@ -63,6 +64,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
+#if 0
 class Sound{
 public:
     struct SoundInfo{
@@ -82,6 +84,7 @@ public:
 };
 
 Sound::SoundInfo Sound::Info;
+#endif
 
 using namespace std;
 

@@ -622,6 +622,10 @@ protected:
 
         void internalLoadFile( const char * load_file );
 
+#ifdef USE_SDL2
+        SDL_Texture* getTexture() const;
+#endif
+
         /* implementation specific data */
         std::shared_ptr<BitmapData> data;
         // int * own;

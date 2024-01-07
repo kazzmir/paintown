@@ -13,6 +13,7 @@
 
 using std::string;
 
+/*
 int Configuration::getSoundVolume(){
     return 100;
 }
@@ -20,6 +21,7 @@ int Configuration::getSoundVolume(){
 int Configuration::getMusicVolume(){
     return 100;
 }
+*/
 
 #if 0
 namespace Util{
