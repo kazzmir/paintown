@@ -1,5 +1,6 @@
 #!/bin/bash
 
+TEMP_DIR=".tmp"
 BUILD_DIR="build-mingw"
 
 mkdir -p ${BUILD_DIR}/cross-env
@@ -9,15 +10,15 @@ function download () {
     URL="$2"
     FOLDER="$3"
 
-    if [ ! -d "${BUILD_DIR}/${FOLDER}" ]; then
+    if [ ! -d "${TEMP_DIR}/${FOLDER}" ]; then
         echo "Downloading ${NAME}..."
-        mkdir ${BUILD_DIR}/${FOLDER}
-        wget -q -O- "${URL}" | tar -xz -C "${BUILD_DIR}/${FOLDER}" --strip-components=1
+        mkdir -p ${TEMP_DIR}/${FOLDER}
+        wget -q -O- "${URL}" | tar -xz -C "${TEMP_DIR}/${FOLDER}" --strip-components=1
     else
         echo "${NAME} already downloaded..."
     fi
 
-    cp -R ${BUILD_DIR}/${FOLDER}/x86_64-w64-mingw32/* ${BUILD_DIR}/cross-env
+    cp -R ${TEMP_DIR}/${FOLDER}/x86_64-w64-mingw32/* ${BUILD_DIR}/cross-env
 }
 
 download "SDL" "https://github.com/libsdl-org/SDL/releases/download/release-2.28.5/SDL2-devel-2.28.5-mingw.tar.gz" "SDL"
