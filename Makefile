@@ -19,7 +19,7 @@ mingw: build-mingw
 
 build-mingw:
 	mkdir -p build-mingw/SDL
-	(wget -q -O- "https://github.com/libsdl-org/SDL/releases/download/release-2.28.5/SDL2-devel-2.28.5-mingw.tar.gz" | tar -xz -C "build-mingw/SDL" --strip-components=1)
+	misc/mingw-environment.sh
 	meson setup --cross-file mingw_x86_64.txt build-mingw
 
 clean:
