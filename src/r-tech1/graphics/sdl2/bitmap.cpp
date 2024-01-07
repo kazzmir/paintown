@@ -349,7 +349,8 @@ Graphics::Color Graphics::MaskColor(){
 void Graphics::Bitmap::activate() const {
     SDL_Texture* texture = getTexture();
 
-    if (texture != nullptr && SDL_GetRenderTarget(global_handler->renderer) != texture){
+    /* when texture is null then we are rendering to the screen */
+    if (SDL_GetRenderTarget(global_handler->renderer) != texture){
         int ok = SDL_SetRenderTarget(global_handler->renderer, texture);
         if (ok != 0){
             Global::debug(0, "graphics") << "Unable to set render target: " << SDL_GetError() << endl;

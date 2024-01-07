@@ -634,7 +634,7 @@ bool playLevel(World & world, const vector<Paintown::Object *> & players){
         }
 
         double ticks(double system){
-            return system * gameSpeed * Global::ticksPerSecond(Ticks);
+            return gameSpeed * Global::ticksPerSecond(system) * Ticks;
         }
 
         void doInput(GameState & state, bool & force_quit){
