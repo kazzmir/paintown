@@ -129,25 +129,24 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     const int x2 = popup.getArea().getX2()-(int)(popup.getTransforms().getRadius()/2);
     const int y2 = popup.getArea().getY2()-2;
 
-    // bmp.setClipRect(x1, y1, x2, y2);
-    Graphics::Bitmap subBmp(bmp, x1, y1, x2, y2);
+    bmp.setClipRect(x1, y1, x2, y2);
+    // Graphics::Bitmap subBmp(bmp, x1, y1, x2, y2);
     
     // FIXME height is proportionally wrong in a majority of the cases, this is perhaps due to ftalleg.
     int sy = location.getY() - vFont.getHeight()/6;// - location.getHeight()/2 - vFont.getHeight()/2;
     static Graphics::Color white = Graphics::makeColor(255,255,255);
     unsigned int padding_index = 0;
-    for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
-        string & str = *it;
+    for (const string & str: text){
         if (fadeAlpha < 255){
             // Graphics::Bitmap::transBlender(0, 0, 0, fadeAlpha);
-            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, subBmp.translucent(fadeAlpha), str, 0 );
+            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp.translucent(fadeAlpha), str, 0 );
         } else {
-            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, subBmp, str, 0 );
+            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp, str, 0 );
         }
         sy += vFont.getHeight();
         padding_index++;
     }
-    // bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
+    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
 
 void Menu::InfoBox::open(){
