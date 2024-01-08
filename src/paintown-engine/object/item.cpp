@@ -177,19 +177,19 @@ void Item::act(vector< Object * > * others, World * world, vector< Object * > * 
     }
 }
 
-void Item::drawShadow(Graphics::Bitmap * work, int cameraX, int cameraY, double scale){
+void Item::drawShadow(const Graphics::Bitmap & work, int cameraX, int cameraY, double scale){
     if (animation != NULL){
         const Graphics::Bitmap * frame = animation->getCurrentFrame();
         if (frame != NULL){
             int x = (int)(getRX() - cameraX - frame->getWidth()/2);
             int y = (int)(getRZ() + getY() * scale);
 
-            frame->drawShadow(*work, x, y, 128, Graphics::makeColor(0, 0, 0), scale, true);
+            frame->drawShadow(work, x, y, 128, Graphics::makeColor(0, 0, 0), scale, true);
         }
     }
 }
 
-void Item::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
+void Item::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
     drawShadow(work, rel_x, rel_y, -0.5);
 
     if (animation != NULL){
@@ -204,10 +204,10 @@ void Item::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
                 finalY -= floating.height + floating.amplitude * sin(angle);
             }
 
-            frame->draw(finalX, finalY, *work);
+            frame->draw(finalX, finalY, work);
 
             if (Global::getDebug() > 5){
-                work->circleFill(getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ));
+                work.circleFill(getRX() - rel_x, (int) getZ(), 5, Graphics::makeColor( 255, 255, 255 ));
             }
         }
     }

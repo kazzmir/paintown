@@ -91,6 +91,7 @@ static int load(const char * path, AfterLoad then){
     // showMemory();
 }
 
+#if 0
 class Logic: public Util::Logic {
 public:
     Logic(InputMap<Keys> & input, Paintown::Player & player):
@@ -199,6 +200,7 @@ public:
         buffer.BlitToScreen();
     }
 };
+#endif
 
 void showAnimation(Paintown::Player & player){
     Graphics::Bitmap screen(*Graphics::getScreenBuffer());
@@ -214,10 +216,88 @@ void showAnimation(Paintown::Player & player){
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
 
     try {
+        std::function<bool()> logic = [&](){
+            for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
+                if (event.enabled){
+                    if (event.out == Esc){
+                        return true;
+                    }
+
+                    /* NOTE Assumes only one cursor */
+                    bool moved = false;
+                    if (event.out == Up){
+                        player.setZ(player.getZ() - 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Down){
+                        player.setZ(player.getZ() + 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Left){
+                        player.setX(player.getX() - 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Right){
+                        player.setX(player.getX() + 1);
+                        moved = true;
+                    }
+
+                    if (moved){
+                        Global::debug(0) << "Moved to " << player.getX() << ", " << player.getRY() << endl;
+                    }
+                    /*
+                       if (event.out == Enter){
+                       select.nextMessages();
+                       }
+                       */
+                }
+            }
+
+            if (player.testAnimation()){
+                Global::debug(0) << "Animation is done" << endl;
+                player.testReset();
+            }
+
+            return false;
+
+            /*
+               select.act();
+
+            //! Update a message in a collection programmatically
+            if (ticker++ >= 50){
+            Util::ReferenceCount<MessageCollection> message = select.getMessages("player1");
+            if (message != NULL){
+            std::ostringstream number;
+            number << random() % 9999999999;
+            message->setReplaceMessage("number", number.str());
+            }
+            ticker = 0;
+            }
+            */
+
+        };
+
+        /*
         Logic logic(input, player);
         Draw draw(player);
+        */
 
-        Util::standardLoop(logic, draw);
+        std::function<void(const Graphics::Bitmap&)> draw = [&](const Graphics::Bitmap& screen){
+            // work.rectangle(10, 10, 30, 30, Graphics::makeColor(255, 255, 255));
+            // work.start();
+            // work.clear();
+            player.draw(screen, 0, 0);
+            // work.finish();
+            // work.fill(Graphics::makeColor(0, 255, 0));
+            // work.draw(0, 0, buffer);
+            // buffer.rectangle(20, 20, 40, 40, Graphics::makeColor(255, 0, 0));
+            // buffer.BlitToScreen();
+        };
+
+        Util::standardLoop(logic, [](double ticks){ return Global::ticksPerSecond(ticks) * 90; }, draw);
 
         /*
     } catch (const LoadException & ex){

@@ -32,21 +32,21 @@ image(g.image),
 bloodImage(g.bloodImage){
 }
 
-void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
+void Gib::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
     if (fade > 0){
         // Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
         Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
-        image.translucent().draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, *work);
+        image.translucent().draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, work);
     } else {
         // Graphics::Bitmap::transBlender(0, 0, 0, 200);
         /* hack to make sure bloodImage gets converted to a video bitmap */
-        bloodImage->draw(-999999, 999999, *work);
-        work->startDrawing();
+        bloodImage->draw(-999999, 999999, work);
+        work.startDrawing();
         for (std::vector< Point >::iterator it = blood.begin(); it != blood.end(); it++){
             const Point & p = *it;
 
             // bloodImage->translucent().draw(p.x - rel_x, p.y, *work);
-            bloodImage->draw(p.x - rel_x - bloodImage->getWidth() / 2, p.y - bloodImage->getHeight() / 2, *work);
+            bloodImage->draw(p.x - rel_x - bloodImage->getWidth() / 2, p.y - bloodImage->getHeight() / 2, work);
             /*
             int l = 200 + p.life * 15;
             Graphics::Color red = Graphics::makeColor(l > 255 ? 255 : l, 0, 0);
@@ -54,9 +54,9 @@ void Gib::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
             */
             // work->putPixel( p.x - rel_x, p.y, red );
         }
-        work->endDrawing();
+        work.endDrawing();
         // image->draw( getRX() - rel_x - image->getWidth() / 2, getRY() - image->getHeight() / 2, *work );
-        image.drawRotate(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, angle, *work);
+        image.drawRotate(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, angle, work);
     }
 }
 	

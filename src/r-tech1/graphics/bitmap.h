@@ -468,7 +468,7 @@ public:
         virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const;
         virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const;
 
-        virtual void drawShadow(Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const;
+        virtual void drawShadow(const Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const;
 
         /* Return a bitmap that has an aspect ratio the same as the given numbers */
         virtual Bitmap aspectRatio(int aspectWidth, int aspectHeight) const;

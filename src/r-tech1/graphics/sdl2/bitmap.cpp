@@ -698,7 +698,7 @@ void Graphics::Bitmap::roundRect(int radius, int x1, int y1, int x2, int y2, Col
 void Graphics::Bitmap::roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const {
 }
 
-void Graphics::Bitmap::drawShadow(Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const {
+void Graphics::Bitmap::drawShadow(const Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const {
 }
 
 Graphics::Bitmap Graphics::Bitmap::scaleTo(const int width, const int height) const {

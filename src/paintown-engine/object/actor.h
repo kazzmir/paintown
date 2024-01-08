@@ -23,8 +23,8 @@ public:
 	Actor( const Filesystem::AbsolutePath & filename );
 	Actor( const Actor & item );
 	
-	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
+	virtual void act(std::vector<Object *> * others, World * world, std::vector< Object * > * add);
+	virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) override;
 	virtual bool isCollidable( Object * obj );
 	virtual bool isGettable();
 	virtual int getWidth() const;

@@ -81,19 +81,19 @@ void Enemy::hurt( int x ){
 	show_name_time += 90;
 }
 	
-void Enemy::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
-	drawLifeBar( x, y, getDeath() == 0 ? show_life : 0, work );
+void Enemy::drawLifeBar( int x, int y, const Graphics::Bitmap & work ){
+	drawLifeBar( x, y, getDeath() == 0 ? show_life : 0, work);
 }
 
-void Enemy::drawFront( Graphics::Bitmap * work, int rel_x ){
+void Enemy::drawFront(const Graphics::Bitmap & work, int rel_x ){
 	if ( show_name_time > 0 ){
 		show_name_time--;
 
 		int x, y;
-		NamePlacer::getPlacement( x, y, id );
+		NamePlacer::getPlacement(x, y, id);
 
 		if ( icon ){
-			icon->draw( x, y, *work );
+			icon->draw(x, y, work);
 		}
 		int icon_x = icon ? icon->getWidth() : 0;
 
@@ -105,10 +105,9 @@ void Enemy::drawFront( Graphics::Bitmap * work, int rel_x ){
 		const string & name = getName();
 		// const int height = my_font.getHeight( name ) / 2;
 		const int height = 20 / 2;
-		fac->addMessage( my_font, (icon_x+x+1)*2, y*2, Graphics::makeColor(255,255,255), Graphics::MaskColor(), name );
+		fac->addMessage(my_font, (icon_x+x+1)*2, y*2, Graphics::makeColor(255,255,255), Graphics::MaskColor(), name);
 
-
-		drawLifeBar( icon_x + x + 1, y + height + 1, work );
+		drawLifeBar(icon_x + x + 1, y + height + 1, work);
 	}
 }
         

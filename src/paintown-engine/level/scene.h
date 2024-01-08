@@ -37,8 +37,8 @@ public:
     Scene(const Filesystem::AbsolutePath & filename, const Level::Cacher & cacher);
 
     // void Draw( int x, Bitmap * work );
-    void drawFront( int x, Graphics::Bitmap * work );
-    void drawBack( int x, Graphics::Bitmap * work );
+    void drawFront(int x, const Graphics::Bitmap & work);
+    void drawBack(int x, const Graphics::Bitmap & work);
 
     int getFinished() const;
 

@@ -950,15 +950,15 @@ const string Animation::getCurrentFramePath() const {
     return current_frame->getPath();
 }
 
-void Animation::DrawLit( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+void Animation::DrawLit( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
     doDraw(x, y, Graphics::LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+void Animation::DrawLitFlipped( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
     doDrawFlipped(x, y, Graphics::LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
+void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work ){
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
@@ -967,12 +967,12 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
     x1.draw(x - w, y - h, *work);
     */
 
-    frame.draw(x - w, y - h, remap, *work);
+    frame.draw(x - w, y - h, remap, work);
 
     // work->rectangle(x, y, w, h, Graphics::makeColor(255, 255, 255));
 }
 
-void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+void Animation::Draw( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
     doDraw(x, y, *current_frame, remap, work);
 
     // For debugging the collision boxes
@@ -984,15 +984,15 @@ void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){
 
 }
 
-void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
+void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work ){
 
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
-    frame.drawHFlip( x-w, y-h, remap, *work);
+    frame.drawHFlip( x-w, y-h, remap, work);
 }
 
-void Animation::DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+void Animation::DrawFlipped( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
     doDrawFlipped(x, y, *current_frame, remap, work);
 }
 	

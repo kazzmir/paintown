@@ -1621,14 +1621,14 @@ bool Character::collision(ObjectAttack * obj){
     return realCollision(obj);
 }
 	
-void Character::drawLifeBar(int x, int y, Graphics::Bitmap * work){
+void Character::drawLifeBar(int x, int y, const Graphics::Bitmap & work){
     drawLifeBar(x, y, getHealth(), work);
 }
 	
 /* draw a nifty translucent life bar */
 /* FIXME: make this customizable */
-void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
-    Graphics::TranslucentBitmap translucent(*work);
+void Character::drawLifeBar(int x, int y, int health, const Graphics::Bitmap & work){
+    Graphics::TranslucentBitmap translucent(work);
     Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     const int health_height = 7;
     const int maxHealthWidth = 100;
@@ -1654,7 +1654,7 @@ void Character::drawLifeBar(int x, int y, int health, Graphics::Bitmap * work){
         }
     }
 
-    Graphics::TranslucentBitmap border(Graphics::Bitmap(*work, x, y, max+1, health_height));
+    Graphics::TranslucentBitmap border(Graphics::Bitmap(work, x, y, max+1, health_height));
     border.border(0, 1, Graphics::makeColor(255, 255, 255));
 }
 
@@ -1864,7 +1864,7 @@ bool Character::showDebugging() const {
     return false;
 }
 
-void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
+void Character::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
 
     /* this makes a character blink when they die. death increases
      * so after 15 game ticks the character will start blinking.
@@ -1904,19 +1904,19 @@ void Character::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
             if (getFacing() == Object::FACING_LEFT){
                 x2 = x - animation_current->getRange();
             }
-            work->rectangle( x, y, x2, y + 1, Graphics::makeColor(255,255,255) );
+            work.rectangle( x, y, x2, y + 1, Graphics::makeColor(255,255,255) );
 
-            work->circleFill(getX() - rel_x, getRY(), 2, Graphics::makeColor(255, 255, 255));
-            work->circleFill(getRX() - rel_x, getRY(), 2, Graphics::makeColor(0, 0, 255));
+            work.circleFill(getX() - rel_x, getRY(), 2, Graphics::makeColor(255, 255, 255));
+            work.circleFill(getRX() - rel_x, getRY(), 2, Graphics::makeColor(0, 0, 255));
 
-            work->circleFill(getRX() - getWidth() / 2 - rel_x, getRY() - getHeight() - rel_y, 2, Graphics::makeColor(0, 255, 0));
+            work.circleFill(getRX() - getWidth() / 2 - rel_x, getRY() - getHeight() - rel_y, 2, Graphics::makeColor(0, 255, 0));
 
             vector<ECollide*> collides = getCollide();
             for (vector<ECollide*>::iterator it = collides.begin(); it != collides.end(); it++){
                 ECollide * collide = *it;
                 int whereX = this->getRX() - getWidth() / 2;
                 int whereY = this->getRY() - getHeight();
-                collide->draw(*work, whereX - rel_x, whereY - rel_y, Graphics::makeColor(255, 0, 0), getFacing() != FACING_RIGHT);
+                collide->draw(work, whereX - rel_x, whereY - rel_y, Graphics::makeColor(255, 0, 0), getFacing() != FACING_RIGHT);
             }
         }
     }
@@ -1929,44 +1929,44 @@ const Graphics::Bitmap * Character::getCurrentFrame() const {
     return NULL;
 }
 
-void Character::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
+void Character::drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity){
     const Graphics::Bitmap * frame = this->getCurrentFrame();
     if (frame){
         Graphics::Bitmap::transBlender(0, 0, 0, intensity);
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            frame->translucent().drawVFlip(x , y, getCurrentRemap(), *work);
+            frame->translucent().drawVFlip(x , y, getCurrentRemap(), work);
         } else { 
-            frame->translucent().drawHVFlip(x, y, getCurrentRemap(), *work );
+            frame->translucent().drawHVFlip(x, y, getCurrentRemap(), work);
         }
     }
 }
 
 /* FIXME: abstract this and drawReflection so they can use similar code */
-void Character::drawOutline(Graphics::Bitmap * work, int rel_x, int rel_y, int red, int green, int blue, int intensity){
+void Character::drawOutline(const Graphics::Bitmap & work, int rel_x, int rel_y, int red, int green, int blue, int intensity){
     const Graphics::Bitmap * frame = this->getCurrentFrame();
     if (frame){
         Graphics::Bitmap::transBlender(red, green, blue, intensity);
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            frame->lit().drawVFlip(x , y, getCurrentRemap(), *work);
+            frame->lit().drawVFlip(x , y, getCurrentRemap(), work);
         } else { 
-            frame->lit().drawHVFlip(x, y, getCurrentRemap(), *work );
+            frame->lit().drawHVFlip(x, y, getCurrentRemap(), work);
         }
     }
 }
 
 /* draws a real looking shadow */
-void Character::drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
+void Character::drawShade(const Graphics::Bitmap & work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
     if (animation_current != NULL){
         const Graphics::Bitmap *bmp = animation_current->getCurrentFrame();
             
         int x = (int)(getRX() - rel_x - bmp->getWidth()/2);
         int y = (int)(getRZ() + getY() * scale);
 
-        bmp->drawShadow(*work, x, y, intensity, color, scale, getFacing() == FACING_RIGHT);
+        bmp->drawShadow(work, x, y, intensity, color, scale, getFacing() == FACING_RIGHT);
 
 #if 0
 

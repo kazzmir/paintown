@@ -29,7 +29,7 @@ public:
     Item(const Item & item);
 
     virtual void act(std::vector< Object * > * others, World * world, std::vector< Object * > * add);
-    virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y);
+    virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) override;
     virtual bool isCollidable(Object * obj);
     virtual std::vector<ECollide*> getCollide() const;
     virtual bool collision( ObjectAttack * obj );
@@ -45,7 +45,7 @@ public:
     virtual ~Item();
 
 protected:
-    void drawShadow(Graphics::Bitmap * work, int cameraX, int cameraY, double scale);
+    void drawShadow(const Graphics::Bitmap & work, int cameraX, int cameraY, double scale);
 
     inline const Filesystem::AbsolutePath & getPath() const {
         return path;
