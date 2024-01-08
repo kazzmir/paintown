@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# If you are trying to compile Paintown from source but have no idea what to do
+# try running this script. It will attempt to install all the dependencies you
+# need and compile Paintown.
+
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+
+# For Allegro
+# sudo apt-get install scons liballegro-dev libpng12-dev libfreetype6-dev g++ zlib1g-dev python-dev make
+# For SDL
+# libpng12-dev
+
+# sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev libfreetype6-dev g++ libogg-dev libvorbis-dev libmpg123-dev zlib1g-dev meson ninja-build make
+
+sudo apt install -y g++-mingw-w64 gcc-mingw-w64 libz-mingw-w64 libz-mingw-w64-dev mingw-w64-tools mingw-w64-common cmake meson ninja-build make wget
+
+make mingw
+
+#ls -l paintown
+#echo "Here is the executable. To run it type: ./paintown"

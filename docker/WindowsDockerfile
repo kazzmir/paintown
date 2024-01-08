@@ -1,0 +1,17 @@
+FROM ubuntu:23.10
+
+RUN mkdir /build
+
+COPY src /build/src
+COPY meson.build /build
+COPY easy-compile-mingw /build
+COPY mingw_x86_64.txt /build
+COPY misc/mingw-environment.sh /build/misc/
+COPY meson.options /build
+COPY Makefile /build
+
+RUN apt update && apt install -y sudo
+
+RUN cd /build && ./easy-compile-mingw
+
+CMD [ "/bin/bash" ]
