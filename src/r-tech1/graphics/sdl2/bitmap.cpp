@@ -608,7 +608,8 @@ void Graphics::Bitmap::drawHVFlip( const int x, const int y, Filter * filter, co
 }
 
 void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_width, const int new_height, const Bitmap & where) const {
-    if (this->getData() != nullptr){
+    SDL_Texture* texture = getTexture(false);
+    if (texture != nullptr){
         where.activate();
         SDL_Rect rect;
         rect.x = x + where.clip_x1;
@@ -621,7 +622,7 @@ void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_wid
         // DebugLog << "draw size is " << size.x << " " << size.y << endl;
 
         where.enableClip();
-        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+        SDL_RenderCopy(global_handler->renderer, texture, NULL, &rect);
         where.disableClip();
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
@@ -629,6 +630,30 @@ void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_wid
 }
 
 void Graphics::Bitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where){
+    SDL_Texture* texture = getTexture(false);
+    if (texture != nullptr){
+        where.activate();
+        SDL_Rect rect;
+        rect.x = x + where.clip_x1;
+        rect.y = y + where.clip_y1;
+        // SDL_Point size;
+        // FIXME: cache the texture size
+        // SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        SDL_Point size;
+        // FIXME: cache the texture size
+        SDL_QueryTexture(texture, NULL, NULL, &size.x, &size.y);
+        rect.w = size.x;
+        rect.h = size.y;
+
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        where.enableClip();
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+        SDL_RenderCopyEx(global_handler->renderer, texture, NULL, &rect, angle, NULL, flip);
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::drawPivot( const int centerX, const int centerY, const int x, const int y, const int angle, const Bitmap & where ){

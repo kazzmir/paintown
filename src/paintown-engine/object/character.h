@@ -445,6 +445,10 @@ public:
 
     virtual bool showDebugging() const;
 
+    virtual inline void setExplode(bool b){
+        explode = b;
+    }
+
 protected:
 
     virtual Network::Message jumpMessage( double x, double y );
@@ -474,9 +478,6 @@ protected:
     void upperCase( std::string & who );
 
 
-    virtual inline void setExplode( bool b ){
-        explode = b;
-    }
 
     virtual bool getExplode();
 

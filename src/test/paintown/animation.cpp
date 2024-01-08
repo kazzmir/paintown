@@ -14,6 +14,7 @@
 #include "r-tech1/sound/sound.h"
 #include "r-tech1/funcs.h"
 #include "paintown-engine/game/mod.h"
+#include "paintown-engine/level/scene.h"
 #include "paintown-engine/object/player.h"
 #include "factory/collector.h"
 
@@ -31,6 +32,7 @@ enum Keys{
     Right,
     Esc,
     Enter,
+    Space,
 };
 
 /* FIXME: dont put these methods in this test file */
@@ -68,7 +70,7 @@ static void showMemory(){
 }
 */
 
-typedef std::function<void(Paintown::Player&)> AfterLoad;
+typedef std::function<void(Paintown::Character&)> AfterLoad;
 
 static int load(const char * path, AfterLoad then){
     // showMemory();
@@ -77,7 +79,7 @@ static int load(const char * path, AfterLoad then){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)), Util::ReferenceCount<InputSource>(new InputSource(true)));
+            Paintown::Character player(Storage::instance().find(Filesystem::RelativePath(path)), 0);
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
 
@@ -202,7 +204,7 @@ public:
 };
 #endif
 
-void showAnimation(Paintown::Player & player){
+void showAnimation(Paintown::Character & player){
     Graphics::Bitmap screen(*Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
     Keyboard::pushRepeatState(true);
@@ -214,12 +216,15 @@ void showAnimation(Paintown::Player & player){
     input.set(Keyboard::Key_DOWN, 0, true, Down);
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_SPACE, 0, true, Space);
 
     player.setX(100);
     player.setY(0);
     player.setZ(200);
 
     try {
+        vector<Paintown::Object*> gibs;
+
         std::function<bool()> logic = [&](){
             for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
                 if (event.enabled){
@@ -249,6 +254,13 @@ void showAnimation(Paintown::Player & player){
                         moved = true;
                     }
 
+                    if (event.out == Space){
+                        DebugLog << "Create gibs" << endl;
+                        player.setExplode(true);
+                        player.died(Util::ReferenceCount<Scene>(nullptr), gibs);
+                        player.setExplode(false);
+                    }
+
                     if (moved){
                         Global::debug(0) << "Moved to " << player.getX() << ", " << player.getRY() << endl;
                     }
@@ -264,6 +276,17 @@ void showAnimation(Paintown::Player & player){
                 Global::debug(0) << "Animation is done" << endl;
                 player.testReset();
             }
+
+            vector<Paintown::Object*> keep;
+            for (Paintown::Object* obj: gibs){
+                obj->act(&gibs, nullptr, &keep);
+                if (obj->getHealth() > 0){
+                    keep.push_back(obj);
+                } else {
+                    delete obj;
+                }
+            }
+            gibs = keep;
 
             return false;
 
@@ -296,6 +319,11 @@ void showAnimation(Paintown::Player & player){
             // work.start();
             // work.clear();
             player.draw(stretch, 0, 0);
+
+            for (Paintown::Object* gib: gibs){
+                gib->draw(stretch, 0, 0);
+            }
+
             stretch.finish();
             // work.finish();
             // work.fill(Graphics::makeColor(0, 255, 0));
@@ -305,6 +333,10 @@ void showAnimation(Paintown::Player & player){
         };
 
         Util::standardLoop(logic, [](double ticks){ return Global::ticksPerSecond(ticks) * 90; }, draw);
+
+        for (Paintown::Object* gib: gibs){
+            delete gib;
+        }
 
         /*
     } catch (const LoadException & ex){

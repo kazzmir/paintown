@@ -498,16 +498,16 @@ public:
 	bool getError();
 
 	inline const std::shared_ptr<BitmapData> & getData() const {
-            return data;
+        return data;
 	}
 	
-        inline std::shared_ptr<BitmapData> getData(){
-            return data;
-	}
+    inline std::shared_ptr<BitmapData> getData(){
+        return data;
+    }
 
-        void setData(std::shared_ptr<BitmapData> data){
-            this->data = data;
-        }
+    void setData(std::shared_ptr<BitmapData> data){
+        this->data = data;
+    }
 	
 	virtual void readLine( std::vector<Color> & vec, int y );
 	Color getPixel( const int x, const int y ) const;
