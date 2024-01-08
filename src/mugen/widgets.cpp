@@ -16,18 +16,18 @@ namespace Widgets{
 void drawBox(int radius, int x, int y, int width, int height, const Graphics::Color & body, const Graphics::Color & border, int alpha, const Graphics::Bitmap & where){
     if (radius > 0){
         if (alpha < 255){
-            Graphics::Bitmap::transBlender(0,0,0,alpha);
-            where.translucent().roundRectFill(radius, x, y, x+width, y+height, body);
-            where.translucent().roundRect(radius, x, y, x+width, y+height, border);
+            // Graphics::Bitmap::transBlender(0,0,0,alpha);
+            where.translucent(alpha).roundRectFill(radius, x, y, x+width, y+height, body);
+            where.translucent(alpha).roundRect(radius, x, y, x+width, y+height, border);
         } else {
             where.roundRectFill(radius, x, y, x+width, y+height, body);
             where.roundRect(radius, x, y, x+width, y+height, border);
         }
     } else {
         if (alpha < 255){
-            Graphics::Bitmap::transBlender(0,0,0,alpha);
-            where.translucent().rectangleFill(x, y, x+width, y+height, body);
-            where.translucent().rectangle(x, y, x+width, y+height, border);
+            // Graphics::Bitmap::transBlender(0,0,0,alpha);
+            where.translucent(alpha).rectangleFill(x, y, x+width, y+height, body);
+            where.translucent(alpha).rectangle(x, y, x+width, y+height, border);
         } else {
             where.rectangleFill(x, y, x+width, y+height, body);
             where.rectangle(x, y, x+width, y+height, border);

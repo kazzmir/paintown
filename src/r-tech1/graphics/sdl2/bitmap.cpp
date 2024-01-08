@@ -206,6 +206,14 @@ void Graphics::Bitmap::draw(const int x, const int y, Filter * filter, const Bit
 }
 
 void Graphics::TranslucentBitmap::draw(const int x, const int y, const Graphics::Bitmap & where) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture == nullptr){
+        return;
+    }
+
+    SDL_SetTextureAlphaMod(texture, alpha);
+    Graphics::Bitmap::draw(x, y, where);
+    SDL_SetTextureAlphaMod(texture, 255);
 }
 
 void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
@@ -392,6 +400,12 @@ void Graphics::Bitmap::getClipRect( int & x1, int & y1, int & x2, int & y2 ) con
 }
 
 void Graphics::Bitmap::setClipRect( int x1, int y1, int x2, int y2 ) const {
+    /*
+    clip_x1 = x1;
+    clip_y1 = y1;
+    clip_x2 = x2;
+    clip_y2 = y2;
+    */
 }
 
 Graphics::Color Graphics::MaskColor(){
@@ -629,7 +643,7 @@ void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_wid
     }
 }
 
-void Graphics::Bitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where){
+void Graphics::Bitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where) const {
     SDL_Texture* texture = getTexture(false);
     if (texture != nullptr){
         where.activate();
@@ -747,6 +761,9 @@ void Graphics::TranslucentBitmap::startDrawing() const {
 }
 
 void Graphics::TranslucentBitmap::endDrawing() const {
+}
+
+void Graphics::TranslucentBitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where) const {
 }
 
 void Graphics::TranslucentBitmap::ellipse( int x, int y, int rx, int ry, Color color ) const {

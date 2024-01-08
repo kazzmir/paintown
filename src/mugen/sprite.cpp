@@ -477,7 +477,7 @@ static void drawReal(Graphics::Bitmap * bmp, const int xaxis, const int yaxis, c
 	    break;
 	}
         case Translucent: {
-            Graphics::Bitmap::transBlender(0, 0, 0, effects.alphaSource);
+            // Graphics::Bitmap::transBlender(0, 0, 0, effects.alphaSource);
             break;
         }
 	case Add1 : {
@@ -505,27 +505,27 @@ static void drawReal(Graphics::Bitmap * bmp, const int xaxis, const int yaxis, c
     } else {
         if (effects.facing && !effects.vfacing){
             if (effects.trans != None){
-                bmp->translucent().drawHFlip(flippedX, normalY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).drawHFlip(flippedX, normalY, effects.filter, where);
             } else {
                 // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
                 bmp->drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
             }
         } else if (effects.vfacing && !effects.facing){ 
             if (effects.trans != None){
-                bmp->translucent().drawVFlip(normalX, flippedY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).drawVFlip(normalX, flippedY, effects.filter, where);
             } else {
                 bmp->drawVFlip(normalX, flippedY, effects.filter, where);
             }
         } else if (effects.vfacing && effects.facing){
             if (effects.trans != None){
-                bmp->translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).drawHVFlip(flippedX, flippedY, effects.filter, where);
             } else {
                 bmp->drawHVFlip(flippedX, flippedY, effects.filter, where);
             }
         } else {
             //if( effects.mask ){
             if (effects.trans != None){
-                bmp->translucent().draw(normalX, normalY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).draw(normalX, normalY, effects.filter, where);
             } else {
                 bmp->draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
             }

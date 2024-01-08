@@ -23,11 +23,12 @@ void AnimationTrail::draw(int rel_x, Remap * remap, const Graphics::Bitmap & wor
     int w = sprite.getWidth() / 2;
     int h = sprite.getHeight();
 
-    Graphics::Bitmap::transBlender(0, 0, 0, life * 255 / max_life);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 
+    int alpha = life * 255 / max_life;
     if (facing == Object::FACING_RIGHT){
-        sprite.translucent().draw(x-w - rel_x, y-h, remap, work);
+        sprite.translucent(alpha).draw(x-w - rel_x, y-h, remap, work);
     } else {
-        sprite.translucent().draw(x-w - rel_x, y-h, remap, work);
+        sprite.translucent(alpha).draw(x-w - rel_x, y-h, remap, work);
     }
 
     /*

@@ -62,8 +62,8 @@ void Messages::addMessage( const std::string & s ){
     
 void Messages::draw( int x, int y, const Graphics::Bitmap & work, const Font & font ){
     // work.drawingMode( Bitmap::MODE_TRANS );
-    Graphics::Bitmap::transBlender(0, 0, 0, this->opaque);
-    work.translucent().rectangleFill( x, y, x + width, y + height, Graphics::makeColor( 0, 0, 0 ) );
+    // Graphics::Bitmap::transBlender(0, 0, 0, this->opaque);
+    work.translucent(this->opaque).rectangleFill( x, y, x + width, y + height, Graphics::makeColor( 0, 0, 0 ) );
     // work.drawingMode( Bitmap::MODE_SOLID );
     // work.rectangle( x, y, x + width-1, y + height-1, Bitmap::makeColor( 255, 255, 255 ) );
     work.border(0, 1, borderColor);

@@ -154,22 +154,22 @@ void Widget::drawBox(int radius, int x1, int y1, int x2, int y2, const Gui::Colo
     // rounded body?
     if (radius > 0){
         if (colors.bodyAlpha < 255){
-            Graphics::Bitmap::transBlender(0,0,0,colors.bodyAlpha);
-            work.translucent().roundRectFill(radius, x1, y1, x2, y2, colors.body);
-            Graphics::Bitmap::transBlender(0,0,0,colors.borderAlpha);
-            work.translucent().roundRect(radius, x1, y1, x2-1, y2-1, colors.border);
+            // Graphics::Bitmap::transBlender(0,0,0,colors.bodyAlpha);
+            work.translucent(colors.bodyAlpha).roundRectFill(radius, x1, y1, x2, y2, colors.body);
+            // Graphics::Bitmap::transBlender(0,0,0,colors.borderAlpha);
+            work.translucent(colors.borderAlpha).roundRect(radius, x1, y1, x2-1, y2-1, colors.border);
         } else {
             work.roundRectFill(radius, x1, y1, x2, y2, colors.body);
             work.roundRect(radius, x1, y1, x2-1, y2-1, colors.border);
         }
     } else {
         if (colors.bodyAlpha < 255){
-            Graphics::Bitmap::transBlender(0,0,0,colors.bodyAlpha);
-            work.translucent().rectangleFill(x1, y1, x2, y2, colors.body );
-            Graphics::Bitmap::transBlender(0,0,0,colors.borderAlpha);
-            work.translucent().vLine(y1,x1,y2-1,colors.border);
-            work.translucent().hLine(x1,y2-1,x2,colors.border);
-            work.translucent().vLine(y1,x2-1,y2-1,colors.border);
+            // Graphics::Bitmap::transBlender(0,0,0,colors.bodyAlpha);
+            work.translucent(colors.bodyAlpha).rectangleFill(x1, y1, x2, y2, colors.body );
+            // Graphics::Bitmap::transBlender(0,0,0,colors.borderAlpha);
+            work.translucent(colors.borderAlpha).vLine(y1,x1,y2-1,colors.border);
+            work.translucent(colors.borderAlpha).hLine(x1,y2-1,x2,colors.border);
+            work.translucent(colors.borderAlpha).vLine(y1,x2-1,y2-1,colors.border);
         } else {
             work.rectangleFill(x1, y1, x2, y2, colors.body );
             work.vLine(y1,x1,y2-1,colors.border);

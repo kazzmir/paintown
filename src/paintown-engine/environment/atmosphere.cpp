@@ -89,10 +89,10 @@ void FogAtmosphere::drawFront(const Graphics::Bitmap & work, int x){
 }
 
 void FogAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
-    Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
+    // Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
     for (Fog* f: fogs){
         int y = (int)(f->y + sin( f->ang * 3.14159 / 180.0 ) * 2);
-        fog->translucent().draw( f->x, y, work);
+        fog->translucent(64).draw( f->x, y, work);
     }
     /*
        screenX();
@@ -183,7 +183,7 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, const Graphics::Bit
     int top = y;
 
     if (draw_light){
-        Graphics::Bitmap::transBlender(0, 0, 0, dark_alpha);
+        // Graphics::Bitmap::transBlender(0, 0, 0, dark_alpha);
         // Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_TRANS);
         /*
         int top = -save.getHeight() / 3;
@@ -195,12 +195,12 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, const Graphics::Bit
         int lamp_top = (int)(((double)lower_width * 2.0 / (double)lamp_height) * (double)upper_width);
 
         // int top = 0;
-        save.translucent().triangle(left, top, middle, top, left, save.getHeight(), black);
-        save.translucent().triangle(right, top, middle, top, right, save.getHeight(), black);
+        save.translucent(dark_alpha).triangle(left, top, middle, top, left, save.getHeight(), black);
+        save.translucent(dark_alpha).triangle(right, top, middle, top, right, save.getHeight(), black);
         int nwidth = (int)((double) lamp_top / ((double) lamp_height / (double) lower_width));
-        save.translucent().triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
+        save.translucent(dark_alpha).triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
 
-        save.translucent().rectangleFill(0, 0, right, top, black);
+        save.translucent(dark_alpha).rectangleFill(0, 0, right, top, black);
         // Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_SOLID);
         int xwidth = (int)((double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width));
         save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
@@ -344,7 +344,7 @@ RainAtmosphere::~RainAtmosphere(){
 
 void RainAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
     // const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
-    Graphics::Bitmap::transBlender(0, 0, 0, 64);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Util::ReferenceCount<Puddle> >::iterator it = puddles.begin(); it != puddles.end(); it++){
         Util::ReferenceCount<Puddle> puddle = *it;
         if (puddle->x == -1000){
@@ -356,7 +356,7 @@ void RainAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
         int use = puddle->size;
         if (use >= 0 && use < (int) splashes.size()){
             Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
-            splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
+            splash->translucent(64).draw(puddle->x - x - splash->getWidth() / 2,
                                        puddle->y - splash->getHeight(),
                                        work);
         }
@@ -374,7 +374,7 @@ void RainAtmosphere::interpret(const Token * message){
 }
 
 void RainAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
-    Graphics::Bitmap::transBlender(0, 0, 0, 64);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Util::ReferenceCount<Puddle> >::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
         Util::ReferenceCount<Puddle> puddle = *it;
         int rx = (int) puddle->current;
@@ -383,7 +383,7 @@ void RainAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
         int use = puddle->size;
         if (use >= 0 && use < (int) splashes.size()){
             Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
-            splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
+            splash->translucent(64).draw(puddle->x - x - splash->getWidth() / 2,
                                        puddle->y - splash->getHeight(),
                                        work);
         }

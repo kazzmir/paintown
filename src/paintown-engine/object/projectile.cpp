@@ -129,14 +129,14 @@ void Projectile::draw(const Graphics::Bitmap & work, int rel_x, int rel_y ){
 
 void Projectile::drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity){
     if (currentAnimation){
-        Graphics::Bitmap::transBlender( 0, 0, 0, intensity );
+        // Graphics::Bitmap::transBlender( 0, 0, 0, intensity );
 
         int x = (int)((getRX() - rel_x) - currentAnimation->getCurrentFrame()->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            currentAnimation->getCurrentFrame()->translucent().drawVFlip(x, y, NULL, work);
+            currentAnimation->getCurrentFrame()->translucent(intensity).drawVFlip(x, y, NULL, work);
         } else { 
-            currentAnimation->getCurrentFrame()->translucent().drawHVFlip(x, y, NULL, work);
+            currentAnimation->getCurrentFrame()->translucent(intensity).drawHVFlip(x, y, NULL, work);
         }
     }
 }

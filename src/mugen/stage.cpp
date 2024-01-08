@@ -1652,8 +1652,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     /* darken the background */
     if (getStateData().superPause.time > 0){
         /* FIXME: this should be faded I think */
-        Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        work->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
+        // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+        work->translucent(128).rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
     }
 
     //! Render layer 0 HUD
@@ -2444,8 +2444,8 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         
             // do darkened background
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
-            Graphics::Bitmap::transBlender(0,0,0,150);
-	    board.translucent().rectangleFill(0, 0, board.getWidth(), board.getHeight(), Graphics::makeColor(0,0,0));
+            // Graphics::Bitmap::transBlender(0,0,0,150);
+            board.translucent(150).rectangleFill(0, 0, board.getWidth(), board.getHeight(), Graphics::makeColor(0,0,0));
 	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
             
             // Render character

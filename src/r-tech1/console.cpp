@@ -228,9 +228,9 @@ void Console::draw(const Graphics::Bitmap & work){
     int x = 3;
     /* if we can show something */
     if (height > 0){
-        Graphics::Bitmap::transBlender(0, 0, 0, 160);
-        work.translucent().rectangleFill(0, 0, work.getWidth(), height, Graphics::makeColor(200,0,0));
-        work.translucent().horizontalLine(0, height, work.getWidth(), Graphics::makeColor(200, 200, 200));
+        // Graphics::Bitmap::transBlender(0, 0, 0, 160);
+        work.translucent(160).rectangleFill(0, 0, work.getWidth(), height, Graphics::makeColor(200,0,0));
+        work.translucent(160).horizontalLine(0, height, work.getWidth(), Graphics::makeColor(200, 200, 200));
         const Font & font = Font::getFont(getFont(), textWidth, textHeight);
         int start = height - font.getHeight() * 2;
         Graphics::Color white = Graphics::makeColor(255, 255, 255);

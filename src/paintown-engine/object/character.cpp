@@ -1628,13 +1628,14 @@ void Character::drawLifeBar(int x, int y, const Graphics::Bitmap & work){
 /* draw a nifty translucent life bar */
 /* FIXME: make this customizable */
 void Character::drawLifeBar(int x, int y, int health, const Graphics::Bitmap & work){
-    Graphics::TranslucentBitmap translucent(work);
-    Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
+    Graphics::TranslucentBitmap translucent(work, 128);
+    // Graphics::Bitmap::transBlender( 0, 0, 0, 128 );
     const int health_height = 7;
     const int maxHealthWidth = 100;
     int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
     translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::makeColor(192, 32, 32));
-    Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
+    // Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
+    translucent.setAlpha(64);
 
     Graphics::Color colors[ 5 ] = { Graphics::makeColor(16, 162, 246),
         Graphics::makeColor(214, 184, 48),
@@ -1654,7 +1655,7 @@ void Character::drawLifeBar(int x, int y, int health, const Graphics::Bitmap & w
         }
     }
 
-    Graphics::TranslucentBitmap border(Graphics::Bitmap(work, x, y, max+1, health_height));
+    Graphics::TranslucentBitmap border(Graphics::Bitmap(work, x, y, max+1, health_height), 64);
     border.border(0, 1, Graphics::makeColor(255, 255, 255));
 }
 
@@ -1932,13 +1933,13 @@ const Graphics::Bitmap * Character::getCurrentFrame() const {
 void Character::drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity){
     const Graphics::Bitmap * frame = this->getCurrentFrame();
     if (frame){
-        Graphics::Bitmap::transBlender(0, 0, 0, intensity);
+        // Graphics::Bitmap::transBlender(0, 0, 0, intensity);
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
         if (getFacing() == FACING_RIGHT){ 
-            frame->translucent().drawVFlip(x , y, getCurrentRemap(), work);
+            frame->translucent(intensity).drawVFlip(x , y, getCurrentRemap(), work);
         } else { 
-            frame->translucent().drawHVFlip(x, y, getCurrentRemap(), work);
+            frame->translucent(intensity).drawHVFlip(x, y, getCurrentRemap(), work);
         }
     }
 }

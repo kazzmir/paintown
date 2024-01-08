@@ -773,9 +773,9 @@ void AdventureWorld::drawMiniMap(const Graphics::Bitmap & work, const PlayerTrac
     drawWorld(player, *mini_map, object_z, player.min_x);
     Graphics::Bitmap mini(width, height);
     mini_map->Stretch(mini);
-    Graphics::Bitmap::transBlender(0, 0, 0, 160);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 160);
     mini.border(0, 1, Graphics::makeColor(255, 255, 255));
-    mini.translucent().draw(x, y, work);
+    mini.translucent(160).draw(x, y, work);
 }
 
 void AdventureWorld::showDescription(const Graphics::Bitmap & work, int time, const string & description){
@@ -846,8 +846,8 @@ void AdventureWorld::draw(const Graphics::Bitmap & work){
     }
 
     if (is_paused){
-        work.transBlender( 0, 0, 0, 128 );
-        work.translucent().fill(Graphics::makeColor(0, 0, 0));
+        // work.transBlender( 0, 0, 0, 128 );
+        work.translucent(128).fill(Graphics::makeColor(0, 0, 0));
         const Font & font = Font::getDefaultFont(15, 15);
         font.printf(work.getWidth() / 2 - font.textLength("Paused") / 2, work.getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), work, "Paused", 0 );
     }
