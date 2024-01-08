@@ -21,6 +21,8 @@
 #include <signal.h>
 #include <string.h>
 #include <unistd.h>
+#else
+#include <csignal>
 #endif
 
 #if defined(LINUX) && !defined(UCLIBC)

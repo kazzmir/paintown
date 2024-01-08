@@ -103,7 +103,7 @@ public:
         return 0;
     }
 
-    static int skip(void *f, long n){
+    static int skip(void *f, dumb_off_t n){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doSkip(n);
     }
@@ -264,7 +264,7 @@ public:
         return 0;
     }
 
-    static int skip(void *f, long n){
+    static int skip(void *f, dumb_off_t n){
         MemorySystem * self = (MemorySystem*) f;
         return self->doSkip(n);
     }
