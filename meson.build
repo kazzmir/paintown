@@ -7,7 +7,14 @@ add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
-add_global_arguments(['-fsanitize=address'], language: ['cpp', 'c'])
+
+link_args = []
+
+# Not supported in mingw
+if not meson.is_cross_build()
+  add_global_arguments(['-fsanitize=address'], language: ['cpp', 'c'])
+  link_args = ['-fsanitize=address']
+endif
 
 includes = include_directories('src')
 dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
@@ -46,13 +53,13 @@ subdir('src/openbor')
 
 test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency,sdl_mixer_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
 test_linkages = [rtech1_library, mugen_library, paintown_library, openbor_library]
-test_link_args = ['-fsanitize=address']
+test_link_args = link_args
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
   dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
-  link_args: ['-fsanitize=address'],
+  link_args: link_args,
   )
 
 if build_tests == true
