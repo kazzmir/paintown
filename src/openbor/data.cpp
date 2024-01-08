@@ -664,7 +664,12 @@ std::string * combineItems(const Value & items){
 std::string * toString(const Value & input){
     std::ostringstream out;
     for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-        out << (char) (long) (*it).getValue();
+#ifdef WINDOWS
+    // Needs to be a long long on windows
+    out << static_cast<char>(reinterpret_cast<long long>((*it).getValue()));
+#else
+    out << (char) (long) (*it).getValue();
+#endif
     }
     std::string * object = makeString(out.str());
     return object;

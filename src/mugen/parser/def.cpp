@@ -709,7 +709,12 @@ SectionList * makeSectionList(){
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
+#ifdef WINDOWS
+    // Needs to be a long long on windows
+    out << static_cast<char>(reinterpret_cast<long long>((*it).getValue()));
+#else
     out << (char) (long) (*it).getValue();
+#endif
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -3685,7 +3690,11 @@ Result rule_name(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
+#ifdef WINDOWS
+                    value = toString((char)(long long)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+#else
                     value = toString((char)(long)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+#endif
                     result_peg_3.setValue(value);
                 }
             
