@@ -308,7 +308,7 @@ protected:
 
 	Character * const parent;
 
-        Graphics::Bitmap * current_frame;
+    Graphics::Bitmap * current_frame;
 	ECollide * current_collide;
 	// ECollide * attack_collide;
 	double delay;

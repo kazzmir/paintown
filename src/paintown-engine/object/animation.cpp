@@ -974,6 +974,14 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
 
 void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){
     doDraw(x, y, *current_frame, remap, work);
+
+    // For debugging the collision boxes
+    /*
+    if (current_collide != nullptr){
+        current_collide->draw(*work, x - current_frame->getWidth() / 2, y - current_frame->getHeight(), Graphics::makeColor(255, 0, 0));
+    }
+    */
+
 }
 
 void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
