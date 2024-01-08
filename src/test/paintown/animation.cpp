@@ -215,6 +215,10 @@ void showAnimation(Paintown::Player & player){
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
 
+    player.setX(100);
+    player.setY(0);
+    player.setZ(200);
+
     try {
         std::function<bool()> logic = [&](){
             for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
@@ -286,10 +290,13 @@ void showAnimation(Paintown::Player & player){
         */
 
         std::function<void(const Graphics::Bitmap&)> draw = [&](const Graphics::Bitmap& screen){
+            Graphics::StretchedBitmap stretch(320, 240, screen, Graphics::StretchedBitmap::NoClear);
+            // screen.rectangle(0, 0, 50, 50, Graphics::makeColor(255, 255, 255));
             // work.rectangle(10, 10, 30, 30, Graphics::makeColor(255, 255, 255));
             // work.start();
             // work.clear();
-            player.draw(screen, 0, 0);
+            player.draw(stretch, 0, 0);
+            stretch.finish();
             // work.finish();
             // work.fill(Graphics::makeColor(0, 255, 0));
             // work.draw(0, 0, buffer);

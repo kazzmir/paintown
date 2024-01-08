@@ -969,7 +969,7 @@ void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * re
 
     frame.draw(x - w, y - h, remap, work);
 
-    // work->rectangle(x, y, w, h, Graphics::makeColor(255, 255, 255));
+    // work.rectangle(x - w, y - h, x + w, y, Graphics::makeColor(255, 255, 255));
 }
 
 void Animation::Draw( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
