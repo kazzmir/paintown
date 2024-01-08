@@ -491,7 +491,7 @@ void Character::loadSelf(const Filesystem::AbsolutePath & filename ){
                 string icon_path;
                 n->view() >> icon_path;
                 // cout<<"Loading icon "<<icon_path<<endl;
-                icon = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(icon_path))));
+                icon = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(icon_path))), false);
             } else if ( *n == "remap" ){
                 string first;
                 string second;

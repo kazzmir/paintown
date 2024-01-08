@@ -89,7 +89,7 @@ newBlock(true){
             } else if ( *tok == "background" ){
                 string n;
                 tok->view() >> n;
-                background = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(n))));
+                background = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(n))), false);
 
                 /*
                 background = new Graphics::Bitmap(200, 200);
@@ -154,7 +154,7 @@ newBlock(true){
                 Graphics::Bitmap * x_screen = NULL;
                 */
                 if (normal != "none"){
-                    x_normal = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(normal))));
+                    x_normal = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(normal))), false);
                 }
                 Panel * p = new Panel(x_normal);
                 panels[num] = p;
@@ -168,7 +168,7 @@ newBlock(true){
             } else if ( *tok == "frontpanel" ){
                 string file;
                 tok->view() >> file;
-                Graphics::Bitmap * front = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(file))));
+                Graphics::Bitmap * front = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(file))), false);
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
@@ -199,7 +199,7 @@ newBlock(true){
     current_block = level_blocks.front();
     level_blocks.pop_front();
 
-    arrow = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png"))));
+    arrow = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png"))), false);
     arrow_blink = 0;
 
     // delete current;

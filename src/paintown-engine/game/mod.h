@@ -25,8 +25,11 @@ public:
     Mod(const Util::ReferenceCount<Storage::File> & path);
 
     virtual const std::string getMenu();
-    /* use the heap */
-    virtual Graphics::Bitmap * createBitmap(const Filesystem::RelativePath & path);
+
+    /* use the heap.
+     * keepInMemory means to keep the bitmap in a surface, otherwise the bitmap might only exist as a texture on the gpu
+     */
+    virtual Graphics::Bitmap * createBitmap(const Filesystem::RelativePath & path, bool keepInMemory=false);
 
     /* use the stack */
     virtual Graphics::Bitmap makeBitmap(const Filesystem::RelativePath & path);

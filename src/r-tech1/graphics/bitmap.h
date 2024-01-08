@@ -235,9 +235,9 @@ public:
 	// Bitmap(const char * load_file, int sx, int sy);
 
     /* Load a bitmap from an abstract file */
-    Bitmap(Storage::File & file);
+    Bitmap(Storage::File & file, bool keepInMemory);
 
-    virtual void doLoad(Storage::File & file);
+    virtual void doLoad(Storage::File & file, bool keepInMemory);
 
     /* 4/24/2010: remove this at some point */
 #ifdef USE_ALLEGRO
@@ -617,13 +617,13 @@ protected:
         }
         */
 
-        void loadFromMemory(const uint8_t* data, int length);
-        void loadFromMemory(const uint8_t* data, int length, const Color & maskColor);
+        void loadFromMemory(const uint8_t* data, int length, bool keepInMemory);
+        void loadFromMemory(const uint8_t* data, int length, const Color & maskColor, bool keepInMemory);
 
         void internalLoadFile( const char * load_file );
 
 #ifdef USE_SDL2
-        SDL_Texture* getTexture() const;
+        SDL_Texture* getTexture(bool keepInMemory) const;
 #endif
 
         /* implementation specific data */

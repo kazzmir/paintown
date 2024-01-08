@@ -59,11 +59,11 @@ INTERNAL_COLOR Color::defaultColor(){
     
 void initializeExtraStuff();
         
-Bitmap::Bitmap(Storage::File & file):
+Bitmap::Bitmap(Storage::File & file, bool keepInMemory):
 mustResize(false),
 error(false),
 bit8MaskColor(makeColor(0, 0, 0)){
-    doLoad(file);
+    doLoad(file, keepInMemory);
 }
 
 #ifndef USE_SDL2
