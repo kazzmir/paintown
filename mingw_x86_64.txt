@@ -1,0 +1,32 @@
+[constants]
+cross_root = 'build-mingw' / 'cross-env'
+# Figure out a way to get these or append to c_args/c++_args without overwritting
+# x86_64-w64-mingw32-g++  -xc   /dev/null -E -Wp,-v 2>&1 | sed -n 's,^ ,,p'
+common_args = ['-I/usr/lib/gcc/x86_64-w64-mingw32/12-win32/include', '-I/usr/lib/gcc/x86_64-w64-mingw32/12-win32/include-fixed','-I/usr/lib/gcc/x86_64-w64-mingw32/12-win32/../../../../x86_64-w64-mingw32/include','-DWINDOWS',]
+
+[binaries]
+c = 'x86_64-w64-mingw32-gcc'
+cpp = 'x86_64-w64-mingw32-g++'
+ar = 'x86_64-w64-mingw32-ar'
+strip = 'x86_64-w64-mingw32-strip'
+exe_wrapper = 'wine64'
+pkg-config = 'x86_64-w64-mingw32-pkg-config'
+sdl2-config = cross_root / 'bin/sdl2-config'
+cmake = 'cmake'
+
+[properties]
+pkg_config_libdir = cross_root / 'lib/pkgconfig'
+
+[host_machine]
+system = 'windows'
+cpu_family = 'x86_64'
+cpu = 'x86_64'
+endian = 'little'
+
+[built-in options]
+pkg_config_path = cross_root / 'lib/pkg-config'
+c_include_path = cross_root / 'include'
+cpp_include_path = cross_root / 'include'
+c_args = common_args + ['-I../build-mingw/cross-env/include',]
+cpp_args = common_args + ['-I../build-mingw/cross-env/include',]
+includedir = cross_root / 'include'
