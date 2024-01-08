@@ -9,11 +9,13 @@ add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
 
 link_args = []
+is_static = true
 
 # Not supported in mingw
 if not meson.is_cross_build()
   add_global_arguments(['-fsanitize=address'], language: ['cpp', 'c'])
   link_args = ['-fsanitize=address']
+  is_static = false
 endif
 
 includes = include_directories('src')
@@ -26,16 +28,16 @@ all_code = [
   'src/globals.cpp',
 ]
 
-sdl_dependency = dependency('sdl2', required: true)
-sdl_image_dependency = dependency('SDL2_image', required: true)
-sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18')
-sdl_mixer_dependency = dependency('SDL2_mixer', required: true)
+sdl_dependency = dependency('sdl2', required: true, static: is_static)
+sdl_image_dependency = dependency('SDL2_image', required: true, static: is_static)
+sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18', static: is_static)
+sdl_mixer_dependency = dependency('SDL2_mixer', required: true, static: is_static)
 # freetype_dependency = dependency('freetype2', required: true)
-zlib_dependency = dependency('zlib', required: true)
-vorbis_dependency = dependency('vorbis', required: false)
-vorbis_file_dependency = dependency('vorbisfile', required: false)
-ogg_dependency = dependency('ogg', required: false)
-mpg123_dependency = dependency('libmpg123', required: false)
+zlib_dependency = dependency('zlib', required: true, static: is_static)
+vorbis_dependency = dependency('vorbis', required: false, static: is_static)
+vorbis_file_dependency = dependency('vorbisfile', required: false, static: is_static)
+ogg_dependency = dependency('ogg', required: false, static: is_static)
+mpg123_dependency = dependency('libmpg123', required: false, static: is_static)
 
 if vorbis_dependency.found() and vorbis_file_dependency.found() and ogg_dependency.found()
   add_global_arguments('-DHAVE_OGG=1', language: 'cpp')
