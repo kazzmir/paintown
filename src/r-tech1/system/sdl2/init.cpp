@@ -9,8 +9,10 @@
 #include <string>
 #include <fcntl.h>
 
+#ifndef WINDOWS
 #include <spawn.h>
 #include <sys/wait.h>
+#endif
 
 namespace System{
 
@@ -27,6 +29,9 @@ public:
 
 static bool hasGlxInfo(){
     /* FIXME: on windows just return true */
+#ifdef WINDOWS
+    return true;
+#else
 
     std::string display = std::string("DISPLAY=") + getenv("DISPLAY");
 
@@ -64,6 +69,7 @@ static bool hasGlxInfo(){
     }
 
     return false;
+#endif
 }
 
 void initSystem(const Global::InitConditions & conditions, Global::stream_type & out){
