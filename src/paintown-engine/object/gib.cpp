@@ -41,6 +41,7 @@ void Gib::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
     if (fade > 0){
         // Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
         Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
+        /* FIXME: implement translucent drawing */
         // image.translucent().draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, work);
         image.draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, work);
     } else {
