@@ -1508,7 +1508,7 @@ void Menu::Menu::run(const Context & parentContext){
             }
 
             double ticks(double system){
-                return system * Global::ticksPerSecond(10);
+                return Global::ticksPerSecond(system) * 90;
             }
 
             bool done(){

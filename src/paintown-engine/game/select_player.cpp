@@ -124,7 +124,7 @@ class Selecter: public Util::Logic, public Util::Draw {
         }
 
         double ticks(double system){
-            return system * Global::ticksPerSecond(10);
+            return Global::ticksPerSecond(system) * 90;
         }
 
         void draw(const Graphics::Bitmap & buffer){

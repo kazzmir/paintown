@@ -12,7 +12,7 @@ using namespace std;
 
 
 void Global::showTitleScreen(){
-    Graphics::Bitmap s(*Storage::instance().open(titleScreen()));
+    Graphics::Bitmap s(*Storage::instance().open(titleScreen()), false);
     s.BlitToScreen();
 }
 
