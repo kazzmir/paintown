@@ -29,4 +29,7 @@ c_include_path = cross_root / 'include'
 cpp_include_path = cross_root / 'include'
 c_args = common_args + ['-I../build-mingw/cross-env/include',]
 cpp_args = common_args + ['-I../build-mingw/cross-env/include',]
+c_link_args = '-L../' + cross_root / 'lib'
+cpp_link_args = '-L../' + cross_root / 'lib'
 includedir = cross_root / 'include'
+libdir = cross_root / 'lib'
