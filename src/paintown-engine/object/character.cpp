@@ -1949,9 +1949,10 @@ void Character::drawReflection(const Graphics::Bitmap & work, int rel_x, int rel
 void Character::drawOutline(const Graphics::Bitmap & work, int rel_x, int rel_y, int red, int green, int blue, int intensity){
     const Graphics::Bitmap * frame = this->getCurrentFrame();
     if (frame){
-        Graphics::Bitmap::transBlender(red, green, blue, intensity);
+        // Graphics::Bitmap::transBlender(red, green, blue, intensity);
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
+        /* FIXME: pass colors to lit */
         if (getFacing() == FACING_RIGHT){ 
             frame->lit().drawVFlip(x , y, getCurrentRemap(), work);
         } else { 

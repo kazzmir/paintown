@@ -73,15 +73,15 @@ void DrawGlowEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     int color_g = (int)((Graphics::getGreen(endColor) - Graphics::getGreen(startColor)) * f + Graphics::getGreen(startColor));
     int color_b = (int)((Graphics::getBlue(endColor) - Graphics::getBlue(startColor)) * f + Graphics::getBlue(startColor));
 
-    Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
+    // Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
 
     Util::ReferenceCount<Animation> animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
     if (owner->getFacing() == Object::FACING_RIGHT ){
-        animation->DrawLit(rx, ry, remap, work);
+        animation->DrawLit(rx, ry, remap, Graphics::makeColor(color_r, color_g, color_b, alpha), work);
     } else {
-        animation->DrawLitFlipped(rx, ry, remap, work); 
+        animation->DrawLitFlipped(rx, ry, remap, Graphics::makeColor(color_r, color_g, color_b, alpha), work);
     }
 }
 

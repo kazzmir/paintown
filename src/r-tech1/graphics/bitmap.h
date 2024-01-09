@@ -140,6 +140,7 @@ protected:
 
 /* create a color from components */
 Color makeColor(int r, int g, int b);
+Color makeColor(int r, int g, int b, int a);
 Color darken(Color color, double factor);
 void hsvToRGB( float h, float s, float v, int * r, int * g, int * b );
 
@@ -322,7 +323,7 @@ public:
          * pixel = source_pixel * source / 255 + dest_pixel * dest / 255
          */
 	static void alphaBlender(int source, int dest);
-	static void transBlender( int r, int g, int b, int a );
+	// static void transBlender( int r, int g, int b, int a );
 	static void multiplyBlender( int r, int g, int b, int a );
 	static void dissolveBlender( int r, int g, int b, int a );
 	static void addBlender( int r, int g, int b, int a );
@@ -760,7 +761,7 @@ public:
     virtual void putPixelNormal(int x, int y, Color col) const;
     virtual void rectangleFill(int x1, int y1, int x2, int y2, Color color) const;
     virtual void rectangle(int x1, int y1, int x2, int y2, Color color) const;
-    virtual void fill(Color color) const;
+    virtual void fill(Color color) const override;
     virtual void line( const int x1, const int y1, const int x2, const int y2, const Color color ) const;
     virtual void hLine( const int x1, const int y, const int x2, const Color color ) const;
     virtual void arc(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color) const;

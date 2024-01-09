@@ -411,7 +411,7 @@ static void loadingScreenSimpleX1(LoadingContext & context, const Info & levelIn
             colors[1] = Graphics::makeColor(0x00, 0x99, 0xff);
             colors[2] = Graphics::makeColor(0xff, 0x22, 0x33);
             colors[3] = Graphics::makeColor(0x44, 0x77, 0x33);
-            Graphics::Bitmap::transBlender(0, 0, 0, 64);
+            // Graphics::Bitmap::transBlender(0, 0, 0, 64);
         }
 
         Graphics::Bitmap background;

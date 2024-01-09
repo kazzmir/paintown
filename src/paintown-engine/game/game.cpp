@@ -1089,9 +1089,11 @@ void realGameLocal(const vector<Util::ReferenceCount<Paintown::Object>> & future
     doRealGame(futurePlayers, levelInfo, setupLocalPlayers);
 }
 
-void fadeOut( const Graphics::Bitmap & work, const string & message ){
-    Graphics::Bitmap::transBlender(0, 0, 0, 128);
-    work.applyTrans(Graphics::makeColor(0, 0, 0));
+void fadeOut(const Graphics::Bitmap & work, const string & message){
+    // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+    // work.applyTrans(Graphics::makeColor(0, 0, 0));
+
+    work.translucent(128).fill(Graphics::makeColor(0, 0, 0));
 
     const Font & f = Font::getDefaultFont(50, 50 );
     f.printf(200, 200, Graphics::makeColor(255, 0, 0), work, message, 0);
