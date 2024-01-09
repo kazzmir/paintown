@@ -35,3 +35,23 @@ cpp_link_args = ['-L../' + cross_root / 'lib', '-static', '-static-libgcc', '-st
 includedir = cross_root / 'include'
 libdir = cross_root / 'lib'
 default_library='static'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
