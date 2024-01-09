@@ -15,7 +15,7 @@ test: build-debug
 
 mingw: build-mingw
 	(cd build-mingw; meson configure -Dbuild_tests=false)
-	meson compile --verbose -C build-mingw
+	meson compile -C build-mingw
 
 build-mingw:
 	mkdir build-mingw

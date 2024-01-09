@@ -684,12 +684,7 @@ X as(const Value & value){
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-#ifdef WINDOWS
-    // Needs to be a long long on windows
-    out << static_cast<char>(reinterpret_cast<long long>((*it).getValue()));
-#else
-    out << (char) (long) (*it).getValue();
-#endif
+    out << static_cast<intptr_t>(reinterpret_cast<uint64_t>((*it).getValue()));
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
