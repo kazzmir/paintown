@@ -15,7 +15,7 @@ echo When prompted for a password type the password you use to login.
 
 # sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev libfreetype6-dev g++ libogg-dev libvorbis-dev libmpg123-dev zlib1g-dev meson ninja-build make
 
-sudo apt install -y g++-mingw-w64 gcc-mingw-w64 libz-mingw-w64 libz-mingw-w64-dev mingw-w64-tools mingw-w64-common cmake meson ninja-build make wget
+sudo apt install -y g++-mingw-w64 gcc-mingw-w64 libz-mingw-w64 libz-mingw-w64-dev mingw-w64-tools mingw-w64-common cmake meson ninja-build make git wget
 
 make mingw
 
