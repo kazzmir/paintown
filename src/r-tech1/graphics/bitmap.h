@@ -381,7 +381,7 @@ public:
 	virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const;
 
     virtual void light(int x, int y, int width, int height, int start_y, int focus_alpha, int edge_alpha, Color focus_color, Color edge_color) const;
-    virtual void applyTrans(const Color color) const;
+    // virtual void applyTrans(const Color color) const;
 
 	virtual void border( int min, int max, Color color ) const;
 	virtual void rectangle( int x1, int y1, int x2, int y2, Color color ) const;

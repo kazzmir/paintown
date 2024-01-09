@@ -448,8 +448,10 @@ Graphics::Bitmap::Bitmap(const std::string & load_file){
     }
 }
 
+/*
 void Graphics::Bitmap::applyTrans(const Color color) const {
 }
+*/
 
 Graphics::Bitmap Graphics::Bitmap::subBitmap(int x, int y, int width, int height){
     return Graphics::Bitmap(*this, x, y, width, height);
