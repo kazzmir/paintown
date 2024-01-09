@@ -1,6 +1,7 @@
 build
 ./paintown
 .scon*
+.tmp
 peg_*.py
 *.a
 *.pyc
