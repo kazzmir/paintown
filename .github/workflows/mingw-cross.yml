@@ -1,4 +1,4 @@
-name: Cross compile Paintown for Windows
+name: mingw cross compile build
 
 on:
   push

@@ -1,4 +1,4 @@
-name: Compile Paintown
+name: linux ubuntu build
 
 on:
   push
