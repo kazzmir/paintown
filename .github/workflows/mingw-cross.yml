@@ -1,0 +1,16 @@
+name: Cross compile Paintown for Windows
+
+on:
+  push
+
+jobs:
+  build:
+    name: Compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Run build
+        run: |
+          ./easy-compile-mingw
