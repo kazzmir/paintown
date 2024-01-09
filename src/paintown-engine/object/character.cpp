@@ -620,6 +620,7 @@ void Character::addEffect(DrawEffect * effect){
     std::sort(effects.begin(), effects.end(), DrawEffect::compare);
 }
 
+/* FIXME: this function doesn't really work anymore */
 static int nonMaskingPixels(const Graphics::Bitmap & bitmap){
     int total = 0;
     for (int x = 0; x < bitmap.getWidth(); x++){
@@ -655,14 +656,14 @@ vector<BodyPart> Character::getBodyParts(Util::ReferenceCount<Animation> animati
             // Bitmap * sub = new Bitmap( *bitmap, x, y, gib_size, gib_size );
             Graphics::Bitmap sub = Graphics::Bitmap::createMemoryBitmap(gib_size, gib_size);
             sub.fill(Graphics::MaskColor());
-            bitmap->Blit(x, y, 0, 0, sub);
+            bitmap->Blit(x, y, gib_size, gib_size, 0, 0, sub);
 
             for (int num = 0; num < 2; num++){
                 sub.circleFill(Util::rnd(sub.getWidth()), Util::rnd(sub.getHeight()), 1, Graphics::MaskColor());
                 sub.circleFill(Util::rnd(sub.getWidth()), Util::rnd(sub.getHeight()), 1, Graphics::makeColor(255,0,0));
             }
 
-            if (100.0 * (double) nonMaskingPixels(sub) / (double) (sub.getWidth() * sub.getHeight()) < 10.0){
+            if (false && 100.0 * (double) nonMaskingPixels(sub) / (double) (sub.getWidth() * sub.getHeight()) < 10.0){
                 /* ignore it */
             } else {
                 parts.push_back(BodyPart(x - getWidth() / 2, getHeight() - y, sub));

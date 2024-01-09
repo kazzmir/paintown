@@ -42,7 +42,7 @@ void Gib::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
         // Bitmap::dissolveBlender( 0, 0, 0, 255 - fade );
         // Graphics::Bitmap::transBlender(0, 0, 0, 255 - fade);
         /* FIXME: implement translucent drawing */
-        image.translucent(255 - fade).draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, work);
+        image.translucent(255 - fade).drawRotate(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, angle, work);
         // image.draw(getRX() - rel_x - image.getWidth() / 2, getRY() - image.getHeight() / 2, work);
     } else {
         // Graphics::Bitmap::transBlender(0, 0, 0, 200);
@@ -53,7 +53,7 @@ void Gib::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
             const Point & p = *it;
 
             // bloodImage->translucent().draw(p.x - rel_x, p.y, *work);
-            bloodImage->draw(p.x - rel_x - bloodImage->getWidth() / 2, p.y - bloodImage->getHeight() / 2, work);
+            bloodImage->translucent(196).draw(p.x - rel_x - bloodImage->getWidth() / 2, p.y - bloodImage->getHeight() / 2, work);
             /*
             int l = 200 + p.life * 15;
             Graphics::Color red = Graphics::makeColor(l > 255 ? 255 : l, 0, 0);

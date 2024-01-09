@@ -8,6 +8,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <memory>
 
 using namespace std;
@@ -124,7 +125,7 @@ Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
 }
 
 Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
-    return Graphics::Bitmap();
+    return Graphics::Bitmap(width, height);
 }
 
 Graphics::Bitmap * Graphics::getScreenBuffer(){
@@ -500,6 +501,15 @@ void Graphics::Bitmap::rectangleFill( int x1, int y1, int x2, int y2, Color colo
 
 void Graphics::Bitmap::circleFill( int x, int y, int radius, Color color ) const {
     activate();
+
+    enableClip();
+    filledCircleRGBA(global_handler->renderer, x + clip_x1, y + clip_y1, radius, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    disableClip();
+    /*
+    if (getTexture(false) != nullptr){
+        SDL_RenderPresent(global_handler->renderer);
+    }
+    */
 }
 
 void Graphics::Bitmap::circle( int x, int y, int radius, Color color ) const {
@@ -764,6 +774,14 @@ void Graphics::TranslucentBitmap::endDrawing() const {
 }
 
 void Graphics::TranslucentBitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture == nullptr){
+        return;
+    }
+
+    SDL_SetTextureAlphaMod(texture, alpha);
+    Graphics::Bitmap::drawRotate(x, y, angle, where);
+    SDL_SetTextureAlphaMod(texture, 255);
 }
 
 void Graphics::TranslucentBitmap::ellipse( int x, int y, int rx, int ry, Color color ) const {
