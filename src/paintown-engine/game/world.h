@@ -49,7 +49,7 @@ public:
 	}
 
 	virtual void act() = 0;
-	virtual void draw( Graphics::Bitmap * work ) = 0;
+	virtual void draw(const Graphics::Bitmap & work) = 0;
 	virtual void addObject( Paintown::Object * o ) = 0;
 
 	virtual bool finished() const = 0;

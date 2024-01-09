@@ -213,8 +213,8 @@ void TabContainer::drawTabs(const Font & font, const Graphics::Bitmap & work){
         } else {
             drawBox(transforms.getRadius(), currentX, inactiveY, currentX + width, work.getHeight()*2, colors, work);
             if (colors.bodyAlpha < 255){
-                Graphics::Bitmap::transBlender(0,0,0,colors.borderAlpha);
-                work.translucent().hLine(currentX,work.getHeight()-1,currentX + width,colors.border);
+                // Graphics::Bitmap::transBlender(0,0,0,colors.borderAlpha);
+                work.translucent(colors.borderAlpha).hLine(currentX,work.getHeight()-1,currentX + width,colors.border);
             } else {
                 work.hLine(currentX,work.getHeight()-1,currentX + width,colors.border);
             }

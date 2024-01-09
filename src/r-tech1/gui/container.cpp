@@ -29,22 +29,27 @@ void Container::remove(Widget *widget)
 
 // Logic
 void Container::act(const Font & font){
+    /*
     std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
     while(i!=end){
         (*i)->act(font);
         i++;
     }
+    */
+    for (Widget* widget: widgets){
+        widget->act(font);
+    }
+
 }
 
 // Render
 void Container::render(const Graphics::Bitmap & work)
 {
+    // Graphics::Bitmap sub(work, position.x, position.y, position.getX2(), position.getY2());
     work.setClipRect(position.x,position.y,position.getX2(),position.getY2());
-    std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
-    while(i!=end)
-    {
-        (*i)->render(work);
-        i++;
+    // std::list<Widget *>::iterator i = widgets.begin(), end = widgets.end();
+    for (Widget* widget: widgets){
+        widget->render(work);
     }
     work.setClipRect(0,0,work.getWidth(),work.getHeight());
 }

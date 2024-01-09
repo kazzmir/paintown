@@ -14,6 +14,7 @@
 #include "r-tech1/sound/sound.h"
 #include "r-tech1/funcs.h"
 #include "paintown-engine/game/mod.h"
+#include "paintown-engine/level/scene.h"
 #include "paintown-engine/object/player.h"
 #include "factory/collector.h"
 
@@ -31,6 +32,7 @@ enum Keys{
     Right,
     Esc,
     Enter,
+    Space,
 };
 
 /* FIXME: dont put these methods in this test file */
@@ -68,7 +70,7 @@ static void showMemory(){
 }
 */
 
-typedef std::function<void(Paintown::Player&)> AfterLoad;
+typedef std::function<void(Paintown::Character&)> AfterLoad;
 
 static int load(const char * path, AfterLoad then){
     // showMemory();
@@ -77,7 +79,7 @@ static int load(const char * path, AfterLoad then){
             TimeDifference diff;
             diff.startTime();
             Global::debug(0) << "Loading " << path << endl;
-            Paintown::Player player(Storage::instance().find(Filesystem::RelativePath(path)), Util::ReferenceCount<InputSource>(new InputSource(true)));
+            Paintown::Character player(Storage::instance().find(Filesystem::RelativePath(path)), 0);
             diff.endTime();
             Global::debug(0, "test") << diff.printTime("Success! Took") << endl;
 
@@ -91,6 +93,7 @@ static int load(const char * path, AfterLoad then){
     // showMemory();
 }
 
+#if 0
 class Logic: public Util::Logic {
 public:
     Logic(InputMap<Keys> & input, Paintown::Player & player):
@@ -199,8 +202,9 @@ public:
         buffer.BlitToScreen();
     }
 };
+#endif
 
-void showAnimation(Paintown::Player & player){
+void showAnimation(Paintown::Character & player){
     Graphics::Bitmap screen(*Graphics::getScreenBuffer());
     Util::Parameter<Graphics::Bitmap*> use(Graphics::screenParameter, &screen);
     Keyboard::pushRepeatState(true);
@@ -212,12 +216,127 @@ void showAnimation(Paintown::Player & player){
     input.set(Keyboard::Key_DOWN, 0, true, Down);
     input.set(Keyboard::Key_LEFT, 0, true, Left);
     input.set(Keyboard::Key_RIGHT, 0, true, Right);
+    input.set(Keyboard::Key_SPACE, 0, true, Space);
+
+    player.setX(100);
+    player.setY(0);
+    player.setZ(200);
 
     try {
+        vector<Paintown::Object*> gibs;
+
+        std::function<bool()> logic = [&](){
+            for (const InputMap<Keys>::InputEvent & event: InputManager::getEvents(input, InputSource(true))){
+                if (event.enabled){
+                    if (event.out == Esc){
+                        return true;
+                    }
+
+                    /* NOTE Assumes only one cursor */
+                    bool moved = false;
+                    if (event.out == Up){
+                        player.setZ(player.getZ() - 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Down){
+                        player.setZ(player.getZ() + 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Left){
+                        player.setX(player.getX() - 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Right){
+                        player.setX(player.getX() + 1);
+                        moved = true;
+                    }
+
+                    if (event.out == Space){
+                        DebugLog << "Create gibs" << endl;
+                        player.setExplode(true);
+                        player.died(Util::ReferenceCount<Scene>(nullptr), gibs);
+                        player.setExplode(false);
+                    }
+
+                    if (moved){
+                        Global::debug(0) << "Moved to " << player.getX() << ", " << player.getRY() << endl;
+                    }
+                    /*
+                       if (event.out == Enter){
+                       select.nextMessages();
+                       }
+                       */
+                }
+            }
+
+            if (player.testAnimation()){
+                Global::debug(0) << "Animation is done" << endl;
+                player.testReset();
+            }
+
+            vector<Paintown::Object*> keep;
+            for (Paintown::Object* obj: gibs){
+                obj->act(&gibs, nullptr, &keep);
+                if (obj->getHealth() > 0){
+                    keep.push_back(obj);
+                } else {
+                    delete obj;
+                }
+            }
+            gibs = keep;
+
+            return false;
+
+            /*
+               select.act();
+
+            //! Update a message in a collection programmatically
+            if (ticker++ >= 50){
+            Util::ReferenceCount<MessageCollection> message = select.getMessages("player1");
+            if (message != NULL){
+            std::ostringstream number;
+            number << random() % 9999999999;
+            message->setReplaceMessage("number", number.str());
+            }
+            ticker = 0;
+            }
+            */
+
+        };
+
+        /*
         Logic logic(input, player);
         Draw draw(player);
+        */
 
-        Util::standardLoop(logic, draw);
+        std::function<void(const Graphics::Bitmap&)> draw = [&](const Graphics::Bitmap& screen){
+            Graphics::StretchedBitmap stretch(320, 240, screen, Graphics::StretchedBitmap::NoClear);
+            // screen.rectangle(0, 0, 50, 50, Graphics::makeColor(255, 255, 255));
+            // work.rectangle(10, 10, 30, 30, Graphics::makeColor(255, 255, 255));
+            // work.start();
+            // work.clear();
+            player.draw(stretch, 0, 0);
+
+            for (Paintown::Object* gib: gibs){
+                gib->draw(stretch, 0, 0);
+            }
+
+            stretch.finish();
+            // work.finish();
+            // work.fill(Graphics::makeColor(0, 255, 0));
+            // work.draw(0, 0, buffer);
+            // buffer.rectangle(20, 20, 40, 40, Graphics::makeColor(255, 0, 0));
+            // buffer.BlitToScreen();
+        };
+
+        Util::standardLoop(logic, [](double ticks){ return Global::ticksPerSecond(ticks) * 90; }, draw);
+
+        for (Paintown::Object* gib: gibs){
+            delete gib;
+        }
 
         /*
     } catch (const LoadException & ex){

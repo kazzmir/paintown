@@ -19,6 +19,10 @@ struct BitmapData{
             SDL_DestroyTexture(texture);
             texture = nullptr;
         }
+        if (surface != nullptr){
+            SDL_FreeSurface(surface);
+            surface = nullptr;
+        }
     }
 };
 

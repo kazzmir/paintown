@@ -24,7 +24,7 @@ public:
     Gib(const int x, const int y, const int z, double dx, double dy, double dz, const Graphics::Bitmap & image, const Util::ReferenceCount<Graphics::Bitmap> & blood);
     Gib(const Gib & g);
 
-    virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y);
+    virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y);
 
     virtual Object * copy();
     virtual bool isCollidable( Object * obj );

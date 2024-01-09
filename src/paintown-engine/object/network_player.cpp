@@ -111,12 +111,13 @@ Network::Message NetworkPlayer::scoreMessage(){
     return m;
 }
 
-void NetworkPlayer::drawFront( Graphics::Bitmap * work, int rel_x ){
+void NetworkPlayer::drawFront(const Graphics::Bitmap & work, int rel_x){
     int x1, y1;
     NamePlacer::getPlacement( x1, y1, name_id );
 
-    if ( icon )
-        icon->draw( x1, y1, *work );
+    if (icon){
+        icon->draw( x1, y1, work);
+    }
 
     int hasIcon = icon ? icon->getWidth() : 0;
 

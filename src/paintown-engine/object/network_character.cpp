@@ -88,23 +88,24 @@ void NetworkCharacter::alwaysShowName(){
     Global::debug( 1 ) << getId() << " name time is " << show_name_time << endl;
 }
 
-void NetworkCharacter::drawFront(Graphics::Bitmap * work, int rel_x){
+void NetworkCharacter::drawFront(const Graphics::Bitmap & work, int rel_x){
     if ( show_name_time > 0 || show_name_time == -1 ){
         int x1, y1;
         NamePlacer::getPlacement( x1, y1, name_id );
 
-        if ( icon )
-            icon->draw( x1, y1, *work );
+        if (icon){
+            icon->draw( x1, y1, work);
+        }
 
         int hasIcon = icon ? icon->getWidth() : 0;
 
         const Font & player_font = Font::getDefaultFont(20, 20 );
         const string & name = getName();
-        int nameHeight = player_font.getHeight( name ) / 2;
+        int nameHeight = player_font.getHeight(name) / 2;
         nameHeight = 20 / 2;
         FontRender * render = FontRender::getInstance();
-        render->addMessage( player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), Graphics::MaskColor(), name );
-        drawLifeBar( hasIcon + x1, y1 + nameHeight, work );
+        render->addMessage(player_font, (hasIcon + x1) * 2, y1 * 2, Graphics::makeColor(255,255,255), Graphics::MaskColor(), name);
+        drawLifeBar(hasIcon + x1, y1 + nameHeight, work);
         if ( show_name_time > 0 ){
             show_name_time -= 1;
         }

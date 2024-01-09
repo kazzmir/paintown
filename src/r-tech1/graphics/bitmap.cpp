@@ -477,27 +477,35 @@ LitBitmap Bitmap::lit() const {
     return LitBitmap(*this);
 }
 
-TranslucentBitmap Bitmap::translucent() const {
-    return TranslucentBitmap(*this);
+TranslucentBitmap Bitmap::translucent(uint8_t alpha) const {
+    return TranslucentBitmap(*this, alpha);
 }
         
 TranslucentBitmap Bitmap::translucent(int red, int green, int blue, int alpha) const {
-    transBlender(red, green, blue, alpha);
-    return TranslucentBitmap(*this);
+    // transBlender(red, green, blue, alpha);
+    return TranslucentBitmap(*this, alpha);
 }
 
-TranslucentBitmap::TranslucentBitmap(const Bitmap & b):
-Bitmap(b){
+TranslucentBitmap::TranslucentBitmap(const Bitmap & b, uint8_t alpha):
+Bitmap(b),
+alpha(alpha){
+    /*
     int x1, y1, x2, y2;
     b.getClipRect(x1, y1, x2, y2);
     setClipRect(x1, y1, x2, y2);
+    */
 }
 
 TranslucentBitmap::TranslucentBitmap():
-Bitmap(){
+Bitmap(),
+alpha(255){
 }
 
 TranslucentBitmap::~TranslucentBitmap(){
+}
+
+void TranslucentBitmap::setAlpha(uint8_t alpha){
+    this->alpha = alpha;
 }
 
 void TranslucentBitmap::fill(Color color) const {

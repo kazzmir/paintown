@@ -3992,9 +3992,9 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         if (getAlliance() == Mugen::Stage::Player2Side){
             wx = work->getWidth() - width - 1;
         }
-        Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Graphics::makeColor(0, 0, 0));
-        work->translucent().line(0, wy+height, wx+width, wy+height, Graphics::makeColor(64, 64, 64));
+        // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+        work->translucent(128).rectangleFill(wx, wy, wx+width, wy+height, Graphics::makeColor(0, 0, 0));
+        work->translucent(128).line(0, wy+height, wx+width, wy+height, Graphics::makeColor(64, 64, 64));
     }
 }
 

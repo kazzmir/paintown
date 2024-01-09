@@ -20,15 +20,15 @@ using namespace Gui;
 // Temporary solution
 static void renderSprite(const Graphics::Bitmap & bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, const Graphics::Bitmap & work){
     if (alpha != 255){
-        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        // Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
         if (hflip && !vflip){
-            bmp.translucent().drawHFlip(x,y, work);
+            bmp.translucent(alpha).drawHFlip(x,y, work);
         } else if (!hflip && vflip){
-            bmp.translucent().drawVFlip(x,y, work);
+            bmp.translucent(alpha).drawVFlip(x,y, work);
         } else if (hflip && vflip){
-            bmp.translucent().drawHVFlip(x,y, work);
+            bmp.translucent(alpha).drawHVFlip(x,y, work);
         } else if (!hflip && !vflip){
-            bmp.translucent().draw(x,y, work);
+            bmp.translucent(alpha).draw(x,y, work);
         }
     } else {
         if (hflip && !vflip){

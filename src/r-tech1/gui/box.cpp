@@ -34,8 +34,8 @@ void Box::act(const Font & font){
 void Box::render(const Graphics::Bitmap & work){
     Util::ReferenceCount<Graphics::Bitmap> workArea = checkWorkArea(work);
     if (workArea != NULL){
-        Graphics::Bitmap::transBlender(0, 0, 0, colors.bodyAlpha);
-        const Graphics::TranslucentBitmap area = workArea->translucent();
+        // Graphics::Bitmap::transBlender(0, 0, 0, colors.bodyAlpha);
+        const Graphics::TranslucentBitmap area = workArea->translucent(colors.bodyAlpha);
         // Check if we are using a rounded box
         if (transforms.getRadius() > 0){
             area.roundRectFill((int)transforms.getRadius(), 0, 0, area.getWidth() - 1, area.getHeight()-1, colors.body);
