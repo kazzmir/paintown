@@ -478,12 +478,12 @@ void Player::attacked( World * world, Object * something, vector< Object * > & o
     world->addMessage(scoreMessage());
 }
 	
-void Player::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
+void Player::drawLifeBar( int x, int y, const Graphics::Bitmap & work ){
 	drawLifeBar( x, y, show_life, work );
 }
 
 /* present the current input to the user */
-void Player::drawButtons(Graphics::Bitmap * work, int x, int y){
+void Player::drawButtons(const Graphics::Bitmap & work, int x, int y){
     Graphics::Color color = Graphics::makeColor(255, 255, 255);
     const Font & font = Font::getDefaultFont(10, 10);
     y -= 10;
@@ -491,31 +491,31 @@ void Player::drawButtons(Graphics::Bitmap * work, int x, int y){
         Input::PaintownInput key = *it;
         /* FIXME: replace letters with nicer looking symbols / graphics */
         switch (key){
-            case Input::Unknown: font.printf(x, y, color, *work, "?", 0); break;
-            case Input::Forward: font.printf(x, y, color, *work, "F", 0); break;
-            case Input::Back: font.printf(x, y, color, *work, "B", 0); break;
-            case Input::Up: font.printf(x, y, color, *work, "U", 0); break;
-            case Input::Down: font.printf(x, y, color, *work, "D", 0); break;
-            case Input::Attack1: font.printf(x, y, color, *work, "1", 0); break;
-            case Input::Attack2: font.printf(x, y, color, *work, "2", 0); break;
-            case Input::Attack3: font.printf(x, y, color, *work, "3", 0); break;
-            case Input::Attack4: font.printf(x, y, color, *work, "4", 0); break;
-            case Input::Attack5: font.printf(x, y, color, *work, "5", 0); break;
-            case Input::Attack6: font.printf(x, y, color, *work, "6", 0); break;
-            case Input::Jump: font.printf(x, y, color, *work, "J", 0); break;
-            case Input::Grab: font.printf(x, y, color, *work, "G", 0); break;
+            case Input::Unknown: font.printf(x, y, color, work, "?", 0); break;
+            case Input::Forward: font.printf(x, y, color, work, "F", 0); break;
+            case Input::Back: font.printf(x, y, color, work, "B", 0); break;
+            case Input::Up: font.printf(x, y, color, work, "U", 0); break;
+            case Input::Down: font.printf(x, y, color, work, "D", 0); break;
+            case Input::Attack1: font.printf(x, y, color, work, "1", 0); break;
+            case Input::Attack2: font.printf(x, y, color, work, "2", 0); break;
+            case Input::Attack3: font.printf(x, y, color, work, "3", 0); break;
+            case Input::Attack4: font.printf(x, y, color, work, "4", 0); break;
+            case Input::Attack5: font.printf(x, y, color, work, "5", 0); break;
+            case Input::Attack6: font.printf(x, y, color, work, "6", 0); break;
+            case Input::Jump: font.printf(x, y, color, work, "J", 0); break;
+            case Input::Grab: font.printf(x, y, color, work, "G", 0); break;
         }
         x += 10 + 5;
     }
 }
 
-void Player::drawFront(Graphics::Bitmap * work, int rel_x){
+void Player::drawFront(const Graphics::Bitmap & work, int rel_x){
 
 	int x1, y1;
 	NamePlacer::getPlacement(x1, y1, name_id);
 	
 	if ( icon )
-		icon->draw( x1, y1, *work );
+		icon->draw( x1, y1, work );
 
 	int hasIcon = icon ? icon->getWidth() : 0;
 
@@ -526,7 +526,7 @@ void Player::drawFront(Graphics::Bitmap * work, int rel_x){
         /* TODO: make 'show_buttons' an option somewhere */
         bool show_buttons = false;
         if (show_buttons){
-            drawButtons(work, 5, work->getHeight() - 5);
+            drawButtons(work, 5, work.getHeight() - 5);
         }
 
 	// Font * player_font = FontFactory::getFont( NAME_FONT );

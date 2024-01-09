@@ -310,7 +310,7 @@ public:
         work.start();
         // work.clear();
 
-        world.draw(&work);
+        world.draw(work);
 
         work.finish();
         // work.draw(0, 0, screen_buffer);

@@ -263,7 +263,7 @@ public:
          */
         static Bitmap createMemoryBitmap(int width, int height);
 
-        virtual TranslucentBitmap translucent() const;
+        virtual TranslucentBitmap translucent(uint8_t alpha) const;
         /* will call transBlender() with the supplied values for you */
         virtual TranslucentBitmap translucent(int red, int green, int blue, int alpha) const;
 
@@ -434,7 +434,7 @@ public:
         /* middle of the bitmap is at x, y */
 	virtual void drawRotateCenter(const int x, const int y, const int angle, const Bitmap & where);
         /* upper left hand corner is at x, y*/
-	virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where);
+	virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where) const;
 	virtual void drawPivot( const int centerX, const int centerY, const int x, const int y, const int angle, const Bitmap & where );
 	virtual void drawPivot( const int centerX, const int centerY, const int x, const int y, const int angle, const double scale, const Bitmap & where );
 
@@ -468,7 +468,7 @@ public:
         virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const;
         virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const;
 
-        virtual void drawShadow(Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const;
+        virtual void drawShadow(const Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const;
 
         /* Return a bitmap that has an aspect ratio the same as the given numbers */
         virtual Bitmap aspectRatio(int aspectWidth, int aspectHeight) const;
@@ -498,16 +498,16 @@ public:
 	bool getError();
 
 	inline const std::shared_ptr<BitmapData> & getData() const {
-            return data;
+        return data;
 	}
 	
-        inline std::shared_ptr<BitmapData> getData(){
-            return data;
-	}
+    inline std::shared_ptr<BitmapData> getData(){
+        return data;
+    }
 
-        void setData(std::shared_ptr<BitmapData> data){
-            this->data = data;
-        }
+    void setData(std::shared_ptr<BitmapData> data){
+        this->data = data;
+    }
 	
 	virtual void readLine( std::vector<Color> & vec, int y );
 	Color getPixel( const int x, const int y ) const;
@@ -541,8 +541,8 @@ public:
     void enableClip() const;
     void disableClip() const;
 	
-	void setClipRect( int x1, int y1, int x2, int y2 ) const;
-	void getClipRect( int & x1, int & y1, int & x2, int & y2 ) const;
+	void setClipRect(int x1, int y1, int x2, int y2) const;
+	void getClipRect(int & x1, int & y1, int & x2, int & y2) const;
 
 	inline const std::string & getPath() const{
 		return path;
@@ -748,7 +748,7 @@ public:
 
 class TranslucentBitmap: public Bitmap {
 public:
-    TranslucentBitmap(const Bitmap & b);
+    TranslucentBitmap(const Bitmap & b, uint8_t alpha);
     TranslucentBitmap();
     virtual ~TranslucentBitmap();
 
@@ -770,6 +770,9 @@ public:
     virtual void circleFill( int x, int y, int radius, Color color ) const;
     virtual void ellipse( int x, int y, int rx, int ry, Color color ) const;
     virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const;
+	
+    using Bitmap::drawRotate;
+    virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where) const override;
 
     using Bitmap::draw;
     virtual void draw(const int x, const int y, const Bitmap & where) const;
@@ -788,10 +791,14 @@ public:
     virtual void drawHVFlip( const int x, const int y, const Bitmap & where ) const;
     virtual void drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const;
 
+    void setAlpha(uint8_t alpha);
+
 protected:
 #ifdef USE_ALLEGRO5
     virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where, int flags) const;
 #endif
+
+    uint8_t alpha;
 };
 
 /* Normal drawing operations but ultimately is drawn translucently onto the parent */

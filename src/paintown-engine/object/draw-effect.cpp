@@ -31,7 +31,7 @@ effect(effect),
 countdown(countdown){
 }
 
-void DrawCountdownEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawCountdownEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     effect->draw(x, remap, work);
 }
 
@@ -65,7 +65,7 @@ startColor(startColor),
 endColor(endColor){
 }
 
-void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawGlowEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     double f = fabs(sin(Util::radians(180) * angle / period));
     int alpha = 50;
 
@@ -106,7 +106,7 @@ DrawNormalEffect::DrawNormalEffect(const Character * owner):
 DrawEffect(owner, 0){
 }
     
-void DrawNormalEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawNormalEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     Util::ReferenceCount<Animation> animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
@@ -134,7 +134,7 @@ effect(effect),
 end(end){
 }
 
-void DrawUntilEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawUntilEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     effect->draw(x, remap,work);
 }
 

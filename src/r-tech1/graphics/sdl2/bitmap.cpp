@@ -8,6 +8,7 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <memory>
 
 using namespace std;
@@ -124,7 +125,7 @@ Graphics::Bitmap::Bitmap(SDL_Texture* texture, bool deep_copy){
 }
 
 Graphics::Bitmap Graphics::Bitmap::createMemoryBitmap(int width, int height){
-    return Graphics::Bitmap();
+    return Graphics::Bitmap(width, height);
 }
 
 Graphics::Bitmap * Graphics::getScreenBuffer(){
@@ -206,6 +207,14 @@ void Graphics::Bitmap::draw(const int x, const int y, Filter * filter, const Bit
 }
 
 void Graphics::TranslucentBitmap::draw(const int x, const int y, const Graphics::Bitmap & where) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture == nullptr){
+        return;
+    }
+
+    SDL_SetTextureAlphaMod(texture, alpha);
+    Graphics::Bitmap::draw(x, y, where);
+    SDL_SetTextureAlphaMod(texture, 255);
 }
 
 void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
@@ -392,6 +401,12 @@ void Graphics::Bitmap::getClipRect( int & x1, int & y1, int & x2, int & y2 ) con
 }
 
 void Graphics::Bitmap::setClipRect( int x1, int y1, int x2, int y2 ) const {
+    /*
+    clip_x1 = x1;
+    clip_y1 = y1;
+    clip_x2 = x2;
+    clip_y2 = y2;
+    */
 }
 
 Graphics::Color Graphics::MaskColor(){
@@ -486,6 +501,15 @@ void Graphics::Bitmap::rectangleFill( int x1, int y1, int x2, int y2, Color colo
 
 void Graphics::Bitmap::circleFill( int x, int y, int radius, Color color ) const {
     activate();
+
+    enableClip();
+    filledCircleRGBA(global_handler->renderer, x + clip_x1, y + clip_y1, radius, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
+    disableClip();
+    /*
+    if (getTexture(false) != nullptr){
+        SDL_RenderPresent(global_handler->renderer);
+    }
+    */
 }
 
 void Graphics::Bitmap::circle( int x, int y, int radius, Color color ) const {
@@ -608,7 +632,8 @@ void Graphics::Bitmap::drawHVFlip( const int x, const int y, Filter * filter, co
 }
 
 void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_width, const int new_height, const Bitmap & where) const {
-    if (this->getData() != nullptr){
+    SDL_Texture* texture = getTexture(false);
+    if (texture != nullptr){
         where.activate();
         SDL_Rect rect;
         rect.x = x + where.clip_x1;
@@ -621,14 +646,38 @@ void Graphics::Bitmap::drawStretched(const int x, const int y, const int new_wid
         // DebugLog << "draw size is " << size.x << " " << size.y << endl;
 
         where.enableClip();
-        SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+        SDL_RenderCopy(global_handler->renderer, texture, NULL, &rect);
         where.disableClip();
 
         // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
     }
 }
 
-void Graphics::Bitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where){
+void Graphics::Bitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture != nullptr){
+        where.activate();
+        SDL_Rect rect;
+        rect.x = x + where.clip_x1;
+        rect.y = y + where.clip_y1;
+        // SDL_Point size;
+        // FIXME: cache the texture size
+        // SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        SDL_Point size;
+        // FIXME: cache the texture size
+        SDL_QueryTexture(texture, NULL, NULL, &size.x, &size.y);
+        rect.w = size.x;
+        rect.h = size.y;
+
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        where.enableClip();
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
+        SDL_RenderCopyEx(global_handler->renderer, texture, NULL, &rect, angle, NULL, flip);
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::drawPivot( const int centerX, const int centerY, const int x, const int y, const int angle, const Bitmap & where ){
@@ -698,7 +747,7 @@ void Graphics::Bitmap::roundRect(int radius, int x1, int y1, int x2, int y2, Col
 void Graphics::Bitmap::roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const {
 }
 
-void Graphics::Bitmap::drawShadow(Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const {
+void Graphics::Bitmap::drawShadow(const Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const {
 }
 
 Graphics::Bitmap Graphics::Bitmap::scaleTo(const int width, const int height) const {
@@ -722,6 +771,17 @@ void Graphics::TranslucentBitmap::startDrawing() const {
 }
 
 void Graphics::TranslucentBitmap::endDrawing() const {
+}
+
+void Graphics::TranslucentBitmap::drawRotate(const int x, const int y, const int angle, const Bitmap & where) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture == nullptr){
+        return;
+    }
+
+    SDL_SetTextureAlphaMod(texture, alpha);
+    Graphics::Bitmap::drawRotate(x, y, angle, where);
+    SDL_SetTextureAlphaMod(texture, 255);
 }
 
 void Graphics::TranslucentBitmap::ellipse( int x, int y, int rx, int ry, Color color ) const {

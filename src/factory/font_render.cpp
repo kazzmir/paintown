@@ -62,8 +62,8 @@ void FontRender::render(const Graphics::Bitmap * work, double scaleWidth, double
         */
 
         if (r.translucency != -1){
-            Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
-            r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, work->translucent(), r.str, 0);
+            // Graphics::Bitmap::transBlender(0, 0, 0, r.translucency);
+            r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, work->translucent(r.translucency), r.str, 0);
         } else {
             r.r_font.printf((int)(r.x * scaleWidth), (int)(r.y * scaleHeight), (int)(r.sizeX * scaleWidth), (int)(r.sizeY * scaleHeight), r.fg, *work, r.str, 0);
         }

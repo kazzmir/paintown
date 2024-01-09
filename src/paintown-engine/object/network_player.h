@@ -21,32 +21,32 @@ public:
 	virtual Object * copy();
 
 public:
-	virtual void drawFront( Graphics::Bitmap * work, int rel_x );
+	virtual void drawFront(const Graphics::Bitmap & work, int rel_x );
 	virtual void interpretMessage(World * world, Network::Message & m );
-        virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
+    virtual void attacked( World * world, Object * something, std::vector< Object * > & objects );
 
 	/* logic */
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
-        virtual inline bool confirm() const {
-            return need_confirm;
-        }
+    virtual inline bool confirm() const {
+        return need_confirm;
+    }
 
-        void needConfirm();
-	
-        virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
+    void needConfirm();
+
+    virtual void collided(World * world, ObjectAttack * obj, std::vector< Object * > & objects );
 	
 protected:
-        void initializeAttackGradient();
+    void initializeAttackGradient();
 	virtual Network::Message scoreMessage();
 
 protected:
-        unsigned int score;
-        double attack_bonus;
-        static const int num_attack_gradient = 50;
-        Graphics::Color attack_gradient[num_attack_gradient];
-        bool need_confirm;
-        bool need_confirm_message;
+    unsigned int score;
+    double attack_bonus;
+    static const int num_attack_gradient = 50;
+    Graphics::Color attack_gradient[num_attack_gradient];
+    bool need_confirm;
+    bool need_confirm_message;
 };
 
 }

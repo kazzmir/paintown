@@ -119,21 +119,21 @@ public:
     virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
     /* drawing */
-    virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
+    virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y );
 
     /* intensity is the amount of alpha blending to do.
      * 0 = translucent
      * 255 = opaque
      */
-    virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
+    virtual void drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity);
 
     /* draw the character in a solid color. red, green, blue, intensity change
      * what color the pixels are drawn.
      * 0, 0, 0, 255 will draw all non-masking pixels as black
      */
-    virtual void drawOutline(Graphics::Bitmap * work, int rel_x, int rel_y, int red, int green, int blue, int intensity);
+    virtual void drawOutline(const Graphics::Bitmap & work, int rel_x, int rel_y, int red, int green, int blue, int intensity);
 
-    virtual void drawShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
+    virtual void drawShade(const Graphics::Bitmap & work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 
     virtual const Graphics::Bitmap * getCurrentFrame() const;
 
@@ -386,7 +386,7 @@ public:
         return z_velocity;
     }
 
-    virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
+    virtual void drawLifeBar(int x, int y, const Graphics::Bitmap & work);
 
     virtual inline const Filesystem::AbsolutePath & getPath() const {
         return path;
@@ -445,6 +445,10 @@ public:
 
     virtual bool showDebugging() const;
 
+    virtual inline void setExplode(bool b){
+        explode = b;
+    }
+
 protected:
 
     virtual Network::Message jumpMessage( double x, double y );
@@ -460,11 +464,11 @@ protected:
     void loadSelf(const Filesystem::AbsolutePath & filename );
     bool realCollision( ObjectAttack * obj );
 
-    std::vector< BodyPart > getBodyParts(Util::ReferenceCount<Animation> animation );
+    std::vector< BodyPart > getBodyParts(Util::ReferenceCount<Animation> animation);
 
-    virtual void landed( World * world );
+    virtual void landed(World * world);
 
-    virtual void drawLifeBar( int x, int y, int he, Graphics::Bitmap * work );
+    virtual void drawLifeBar( int x, int y, int he, const Graphics::Bitmap & work);
 
     virtual std::vector<ECollide*> getNormalCollide() const;
 
@@ -474,9 +478,6 @@ protected:
     void upperCase( std::string & who );
 
 
-    virtual inline void setExplode( bool b ){
-        explode = b;
-    }
 
     virtual bool getExplode();
 

@@ -17,8 +17,8 @@ public:
 	Projectile( const Projectile * projectile );
 	
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
-	virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
+	virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) override;
+	virtual void drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity) override;
 	virtual void grabbed( Object * obj );
 	virtual void unGrab();
 	virtual bool isGrabbed();

@@ -150,8 +150,8 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     // Flash
     if (flash){
         // FIXME hot pink shows up after white
-        Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-        work.translucent().rectangleFill(x-1, y-1, x-1+width, y-1+height, Graphics::makeColor(255,255,255));
+        // Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+        work.translucent(int(25.5 * flash)).rectangleFill(x-1, y-1, x-1+width, y-1+height, Graphics::makeColor(255,255,255));
     }
 }
 

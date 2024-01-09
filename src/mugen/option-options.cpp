@@ -151,11 +151,11 @@ void ScrollAction::render(const Graphics::Bitmap & work, const ::Font &) const{
             const FontSystem::Font & useFont = (index != current) ? font : activeFont;
             if (expandState == Disabled){
                 if (index == current && showCursor){
-                    Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
+                    // Graphics::Bitmap::transBlender(0,0,0,cursorAlpha);
                     if (autoCursor){
-                        work.translucent().rectangleFill(leftBoundary-2, y - useFont.getHeight()-1, rightBoundary+2, y+1, Graphics::makeColor(128,200,255));
+                        work.translucent(cursorAlpha).rectangleFill(leftBoundary-2, y - useFont.getHeight()-1, rightBoundary+2, y+1, Graphics::makeColor(128,200,255));
                     } else {
-                        work.translucent().rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(128,200,255));
+                        work.translucent(cursorAlpha).rectangleFill(x + cursorX1, y + cursorY1, x + cursorX2, y + cursorY2, Graphics::makeColor(128,200,255));
                     }
                 }
                 item->render(x, y, work, useFont, leftBoundary, rightBoundary);
@@ -336,8 +336,8 @@ void Option::render(Mugen::Font & font, int x1, int x2, int y, const Graphics::B
             alpha = 128;
             alphaMod = -6;
         }
-        Graphics::Bitmap::transBlender(0,0,0,alpha);
-        bmp.translucent().rectangleFill(x1-2, y-font.getHeight()-2, x2+2, y+2, Graphics::makeColor(255,255,255));
+        // Graphics::Bitmap::transBlender(0,0,0,alpha);
+        bmp.translucent(alpha).rectangleFill(x1-2, y-font.getHeight()-2, x2+2, y+2, Graphics::makeColor(255,255,255));
     }
 }
 
@@ -901,8 +901,8 @@ void OptionMenu::draw(const Graphics::Bitmap & work){
         if (screenCapture != NULL){
             screenCapture->drawStretched(workArea);
         }
-        Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
-        workArea.translucent().fill(clearColor);
+        // Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
+        workArea.translucent(clearAlpha).fill(clearColor);
     }
     
     const int width = list.getMaxWidth();
@@ -947,8 +947,8 @@ void OptionMenu::drawList(const Graphics::Bitmap & work){
     
     // Background
     if (clearAlpha > 0){
-        Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
-        work.translucent().fill(clearColor);
+        // Graphics::Bitmap::transBlender(0,0,0,clearAlpha);
+        work.translucent(clearAlpha).fill(clearColor);
     }
     
     // Name of options

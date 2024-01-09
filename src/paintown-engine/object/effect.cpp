@@ -131,9 +131,9 @@ void Effect::act( vector< Object * > * others, World * world, vector< Object * >
     }
 }
 	
-void Effect::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
+void Effect::draw(const Graphics::Bitmap & work, int rel_x, int rel_y ){
     if (image){
-        image->Draw( getRX() - rel_x, getRY(), NULL, work);
+        image->Draw(getRX() - rel_x, getRY(), NULL, work);
     }
 }
 

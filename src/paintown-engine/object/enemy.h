@@ -25,11 +25,11 @@ public:
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
 
 	using Character::drawLifeBar;
-	virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
+	virtual void drawLifeBar( int x, int y, const Graphics::Bitmap & work );
 	
-	virtual void drawFront( Graphics::Bitmap * work, int rel_x );
+	virtual void drawFront( const Graphics::Bitmap & work, int rel_x );
 	
-        virtual void died(const Util::ReferenceCount<Scene> & scene, std::vector< Object * > & objects);
+    virtual void died(const Util::ReferenceCount<Scene> & scene, std::vector< Object * > & objects);
 	
 	virtual void hurt( int x );
 
@@ -38,7 +38,7 @@ public:
 		show_life = h;
 	}
         
-        virtual void created(Scene & scene);
+    virtual void created(Scene & scene);
 
         /*
 	virtual inline Heart * getHeart() const{

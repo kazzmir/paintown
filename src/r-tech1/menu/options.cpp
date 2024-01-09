@@ -214,7 +214,8 @@ int OptionCredits::Block::print(int x, int y, Graphics::Color defaultTitleColor,
         const Graphics::Bitmap temp(topWidth, topHeight);
         //topAnimation->draw(x - xmod, y, topWidth, topHeight, work);
         topAnimation->draw(0, 0, topWidth, topHeight, temp);
-        temp.translucent().draw(x-xmod, y, work);
+        /* FIXME: what should alpha be here? */
+        temp.translucent(128).draw(x-xmod, y, work);
         currentY += topHeight;
     }
     
@@ -274,7 +275,8 @@ int OptionCredits::Block::print(int x, int y, Graphics::Color defaultTitleColor,
         const Graphics::Bitmap temp(topWidth, topHeight);
         //bottomAnimation->draw(x - xmod, y, bottomWidth, bottomHeight, work);
         bottomAnimation->draw(0, 0, bottomWidth, bottomHeight, temp);
-        temp.translucent().draw(x-xmod, y, work);
+        /* FIXME: what should alpha be here? */
+        temp.translucent(128).draw(x-xmod, y, work);
         currentY += bottomHeight;
     }
     
@@ -495,8 +497,8 @@ void OptionCredits::Sequence::draw(Graphics::Color title, Graphics::Color color,
                 rollY = block.print(x, rollY, title, color, Menu::menuFontParameter.current()->get(), work, justification);
             }
         } else if (type == Primary){
-            Graphics::Bitmap::transBlender(0, 0, 0, alpha);
-            credits[current].print(x, y, title, color, Menu::menuFontParameter.current()->get(), work.translucent(), justification);
+            // Graphics::Bitmap::transBlender(0, 0, 0, alpha);
+            credits[current].print(x, y, title, color, Menu::menuFontParameter.current()->get(), work.translucent(alpha), justification);
         }
     }
 }

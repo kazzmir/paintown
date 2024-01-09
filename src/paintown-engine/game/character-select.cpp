@@ -557,7 +557,7 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         Graphics::Bitmap x1(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("players/akuma/idle/18273.png"))));
         x1.draw(0, 0, area);
         */
-        smaller.draw(&area, 0, 0);
+        smaller.draw(area, 0, 0);
         Graphics::Bitmap sub(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
         area.drawStretched(sub);
 
@@ -646,9 +646,9 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         copy.setZ(copy.getAverageHeight());
 
         /* FIXME: the y parameter actually isn't used in the outline and reflection. */
-        copy.drawOutline(&temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
-        copy.drawReflection(&temp, 0, temp.getHeight() - stand - stand, 128);
-        copy.draw(&temp, 0, temp.getHeight()/2);
+        copy.drawOutline(temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
+        copy.drawReflection(temp, 0, temp.getHeight() - stand - stand, 128);
+        copy.draw(temp, 0, temp.getHeight()/2);
 
         // temp.finish();
 

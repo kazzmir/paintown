@@ -23,7 +23,7 @@ public:
 public:
     virtual Network::Message requestNameMessage() const;
     virtual Network::Message grabMessage( unsigned int from, unsigned int who );
-    virtual void drawFront(Graphics::Bitmap * work, int rel_x);
+    virtual void drawFront(const Graphics::Bitmap & work, int rel_x) override;
 
     virtual void setNameTime( int d );
     virtual void alwaysShowName();

@@ -92,12 +92,12 @@ void FadeTool::act(){
 void FadeTool::draw(const Graphics::Bitmap &bmp){
     switch (currentState){
         case FadeIn:
-            Graphics::Bitmap::transBlender(0,0,0, fadeTime);
-            bmp.translucent().rectangleFill(0, 0, bmp.getWidth(), bmp.getHeight(), fadeInColor);
+            // Graphics::Bitmap::transBlender(0,0,0, fadeTime);
+            bmp.translucent(fadeTime).rectangleFill(0, 0, bmp.getWidth(), bmp.getHeight(), fadeInColor);
             break;
         case FadeOut:
-            Graphics::Bitmap::transBlender(0,0,0, fadeTime);
-            bmp.translucent().rectangleFill(0, 0, bmp.getWidth(), bmp.getHeight(), fadeOutColor);
+            // Graphics::Bitmap::transBlender(0,0,0, fadeTime);
+            bmp.translucent(fadeTime).rectangleFill(0, 0, bmp.getWidth(), bmp.getHeight(), fadeOutColor);
             break;
         case NoFade:
         case EndFade:

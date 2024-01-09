@@ -262,10 +262,10 @@ public:
 
         std::vector<ECollide*> getCollide(int facing);
         std::vector<ECollide*> getNormalCollide();
-	void Draw(int x, int y, Remap * remap, Graphics::Bitmap * work );
-	void DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
-	void DrawLit( int x, int y, Remap * remap, Graphics::Bitmap * work );
-	void DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work );
+	void Draw(int x, int y, Remap * remap, const Graphics::Bitmap & work);
+	void DrawFlipped(int x, int y, Remap * remap, const Graphics::Bitmap & work);
+	void DrawLit(int x, int y, Remap * remap, const Graphics::Bitmap & work );
+	void DrawLitFlipped(int x, int y, Remap * remap, const Graphics::Bitmap & work);
 	void setDelay(double delay);
 	void setStatus( const int status );
         void setPerpetual(bool enabled);
@@ -299,8 +299,8 @@ protected:
 	// void parseObject( string str ) throw( exception );
 	void upperCase( std::string & who );
 
-	void doDraw(int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work);
-	void doDrawFlipped(int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work);
+	void doDraw(int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work);
+	void doDrawFlipped(int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work);
 
 protected:
         std::string name;

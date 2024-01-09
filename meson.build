@@ -26,6 +26,7 @@ sdl_dependency = dependency('sdl2', required: true)
 sdl_image_dependency = dependency('SDL2_image', required: true)
 sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18')
 sdl_mixer_dependency = dependency('SDL2_mixer', required: true)
+sdl_graphics_dependency = dependency('SDL2_gfx', required: true)
 # freetype_dependency = dependency('freetype2', required: true)
 zlib_dependency = dependency('zlib', required: true)
 vorbis_dependency = dependency('vorbis', required: true)
@@ -38,13 +39,13 @@ subdir('src/mugen')
 subdir('src/paintown-engine')
 subdir('src/openbor')
 
-test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency,sdl_mixer_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
+test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
 test_linkages = [rtech1_library, mugen_library, paintown_library, openbor_library]
 test_link_args = ['-fsanitize=address']
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
-  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
+  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
   link_with: [rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: ['-fsanitize=address'],
   )

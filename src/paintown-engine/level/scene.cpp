@@ -394,12 +394,12 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
 }
 
 /* draw the background */
-void Scene::drawBack(int x, Graphics::Bitmap * work){
+void Scene::drawBack(int x, const Graphics::Bitmap & work){
     if (background){
         int y = 0;
         if (background->getWidth() != 0){
-            background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
-            background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
+            background->Blit((int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, work);
+            background->Blit((int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, work);
         }
     }
 
@@ -410,7 +410,7 @@ void Scene::drawBack(int x, Graphics::Bitmap * work){
             continue;
         }
         Graphics::Bitmap * normal = cur->pic;
-        normal->draw( fx-x, 0, *work );
+        normal->draw( fx-x, 0, work);
         fx += normal->getWidth();
     }
 
@@ -423,7 +423,7 @@ void Scene::drawBack(int x, Graphics::Bitmap * work){
 }
 
 /* draw the foreground */
-void Scene::drawFront(int x, Graphics::Bitmap * work){
+void Scene::drawFront(int x, const Graphics::Bitmap & work){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
@@ -434,7 +434,7 @@ void Scene::drawFront(int x, Graphics::Bitmap * work){
      * to be drawn on.
      */
     if (frontBuffer == NULL){
-        frontBuffer = new Graphics::Bitmap(work->getWidth(), work->getHeight());
+        frontBuffer = new Graphics::Bitmap(work.getWidth(), work.getHeight());
     }
 
     frontBuffer->clearToMask();
@@ -453,11 +453,10 @@ void Scene::drawFront(int x, Graphics::Bitmap * work){
     /* just draw on the foreground */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
-        atmosphere->drawFront(frontBuffer, x);
+        atmosphere->drawFront(*frontBuffer, x);
     }
 
-    frontBuffer->draw(0, 0, *work);
-
+    frontBuffer->draw(0, 0, work);
     
     /* draw anything on the entire screen */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
@@ -467,7 +466,7 @@ void Scene::drawFront(int x, Graphics::Bitmap * work){
 
     if (numberOfEnemies() == 0 && !passedBoundary(x)){
         if (arrow_blink > 5){
-            arrow->draw(work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work);
+            arrow->draw(work.getWidth() - ( arrow->getWidth() + 10 ), 50, work);
         }
     }
 

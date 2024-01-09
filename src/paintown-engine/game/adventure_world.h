@@ -80,7 +80,7 @@ public:
         virtual void end();
 
 	virtual void act();
-	virtual void draw( Graphics::Bitmap * work );
+	virtual void draw(const Graphics::Bitmap & work );
 	virtual void addObject( Paintown::Object * o );
 
 	virtual bool finished() const;
@@ -150,9 +150,9 @@ protected:
 	void loadLevel( const Filesystem::AbsolutePath & path );
 	void threadedLoadLevel( const Filesystem::AbsolutePath & path );
 
-	virtual void drawWorld( const PlayerTracker & tracker, Graphics::Bitmap * where, const std::map< int, std::vector< Paintown::Object * > > & object_z, double cameraX);
-        virtual void drawMiniMap(Graphics::Bitmap * work, const PlayerTracker & player, const std::map<int, std::vector<Paintown::Object*> > & objects, int x, int y, int width, int height);
-        virtual void showDescription(Graphics::Bitmap * work, int time, const std::string & description);
+	virtual void drawWorld( const PlayerTracker & tracker, const Graphics::Bitmap & where, const std::map< int, std::vector< Paintown::Object * > > & object_z, double cameraX);
+    virtual void drawMiniMap(const Graphics::Bitmap & work, const PlayerTracker & player, const std::map<int, std::vector<Paintown::Object*> > & objects, int x, int y, int width, int height);
+    virtual void showDescription(const Graphics::Bitmap & work, int time, const std::string & description);
 
 	virtual void deleteObjects( std::vector< Paintown::Object * > * objects );
 
@@ -170,7 +170,7 @@ protected:
         takeAScreenshot = true;
     }
 
-    virtual void doTakeScreenshot(Graphics::Bitmap * work);
+    virtual void doTakeScreenshot(const Graphics::Bitmap & work);
 
     static void * do_load_level(void * arg);
 

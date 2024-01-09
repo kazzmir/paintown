@@ -30,10 +30,10 @@ public:
     Player(const Character & chr);
 
     /* drawing */
-    virtual void drawFront(Graphics::Bitmap * work, int rel_x);
+    virtual void drawFront(const Graphics::Bitmap & work, int rel_x);
 
     using Character::drawLifeBar;
-    virtual void drawLifeBar(int x, int y, Graphics::Bitmap * work);
+    virtual void drawLifeBar(int x, int y, const Graphics::Bitmap & work);
 
     virtual Object * copy();
 
@@ -124,7 +124,7 @@ protected:
     void grabEnemy(Object * enemy);
 
     /* shows keys on the screen */
-    void drawButtons(Graphics::Bitmap * work, int x, int y);
+    void drawButtons(const Graphics::Bitmap & work, int x, int y);
 
     Network::Message thrownMessage(unsigned int id);
 
