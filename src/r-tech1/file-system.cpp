@@ -583,7 +583,11 @@ public:
     }
 
     long getModificationTime(){
+#ifndef WINDOWS
         return ::System::getModificationTime(path.path());
+#else   
+        return 0;
+#endif
     }
 
     bool canStream(){

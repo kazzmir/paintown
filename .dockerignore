@@ -1,5 +1,7 @@
 tmp
 build-debug
+build-mingw
 data
 paintown-data
 .git
+.tmp

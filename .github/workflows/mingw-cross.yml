@@ -1,4 +1,4 @@
-name: linux ubuntu build
+name: mingw cross compile build
 
 on:
   push
@@ -13,4 +13,4 @@ jobs:
 
       - name: Run build
         run: |
-          ./easy-compile-ubuntu
+          docker build -f docker/WindowsDockerfile .
