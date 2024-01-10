@@ -908,7 +908,7 @@ public:
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << static_cast<intptr_t>(reinterpret_cast<uint64_t>((*it).getValue()));
+    out << static_cast<char>(reinterpret_cast<int64_t>((*it).getValue()));
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -1079,7 +1079,7 @@ Ast::Value * negateExpression(const Value & exp){
 Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     Ast::Value * expression = as<Ast::Value*>(exp);
     for (Value::iterator it = unaries.getValues().begin(); it != unaries.getValues().end(); it++){
-        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (uint64_t) (*it).getValue();
+        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (int64_t) (*it).getValue();
         /* FIXME: fix line numbers here */
         expression = new Ast::ExpressionUnary(-1, -1, unary, expression);
         GC::save(expression);
@@ -6364,7 +6364,7 @@ Result rule_name(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = toString((char)(uint64_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+                    value = toString((char)(int64_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
                     result_peg_3.setValue(value);
                 }
             

@@ -684,7 +684,7 @@ X as(const Value & value){
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << static_cast<intptr_t>(reinterpret_cast<uint64_t>((*it).getValue()));
+    out << static_cast<intptr_t>(reinterpret_cast<int64_t>((*it).getValue()));
   }
   std::string * object = new std::string(out.str());
   GC::save(object);

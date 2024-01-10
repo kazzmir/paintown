@@ -709,7 +709,7 @@ SectionList * makeSectionList(){
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << static_cast<intptr_t>(reinterpret_cast<uint64_t>((*it).getValue()));
+    out << static_cast<char>(reinterpret_cast<int64_t>((*it).getValue()));
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -3685,7 +3685,7 @@ Result rule_name(Stream & stream, const int position){
             
             {   
                 Value value((void*) 0);
-                value = toString((char)(uint64_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+                value = toString((char)(int64_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
                 result_peg_3.setValue(value);
             }
             
