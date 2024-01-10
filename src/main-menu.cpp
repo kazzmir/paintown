@@ -63,6 +63,7 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
+#if !defined(WINDOWS) || !defined(_WIN32)
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
     /* what if HOME isn't set? */
@@ -80,6 +81,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 static void showOptions(const vector<Util::ReferenceCount<Argument::Parameter> > & arguments){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
@@ -631,9 +633,11 @@ static int startMain(const vector<Util::ReferenceCount<Argument::Action> > & act
             DebugLog << "Base exception: " << base.getTrace() << endl;
 /* android doesn't have bad_alloc for some reason */
 // #ifndef ANDROID
+#ifndef WINDOWS
         } catch (const std::bad_alloc & fail){
             Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
 // #endif
+#endif
         } catch (...){
             DebugLog << "Uncaught exception!" << endl;
         }
@@ -864,7 +868,9 @@ int rtech_main(int argc, char ** argv){
 
     Version::setVersion(3, 6, 1);
 
+#ifndef WINDOWS
     System::startMemoryUsage();
+#endif
 
     Global::setDebug(DEFAULT_DEBUG);
     Global::setDefaultDebugContext("paintown");

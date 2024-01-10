@@ -2606,7 +2606,9 @@ void *node_relink_before (void *node, void *before);
 #if (!defined (DOES_UID) && !defined (__DJGPP__))
 typedef unsigned short      mode_t;
 typedef unsigned short      nlink_t;
+#ifndef WINDOWS
 typedef long                off_t;
+#endif
 #endif
 
 /*  Microsoft tends to use _stat instead of stat.                            */

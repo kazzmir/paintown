@@ -664,7 +664,7 @@ std::string * combineItems(const Value & items){
 std::string * toString(const Value & input){
     std::ostringstream out;
     for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-        out << (char) (long) (*it).getValue();
+        out << static_cast<char>(reinterpret_cast<int64_t>((*it).getValue()));
     }
     std::string * object = makeString(out.str());
     return object;

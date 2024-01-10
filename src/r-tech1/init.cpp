@@ -135,6 +135,11 @@ static void handleSigSegV(int i, siginfo_t * sig, void * data){
      */
     exit(1);
 }
+#elif defined(WINDOWS)
+// Define an empty struct for siginfo_t on windows since the functions don't use the context anyways
+struct siginfo_t {
+  void * nothing;  
+};
 #else
 #endif
 

@@ -100,6 +100,7 @@ sources = [
   'libs/sfl/sflcvsb.c',
   'libs/sfl/sflsymb.c',
   'libs/sfl/sflconv.c',
+  'libs/sfl/sflcons.c',
 
   'libs/dumb/src/it/itorder.c',
   'libs/dumb/src/it/xmeffect.c',

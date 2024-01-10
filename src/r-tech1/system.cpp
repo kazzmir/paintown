@@ -115,6 +115,35 @@ void System::startMemoryUsage(){
     start_memory = sbrk(0);
 }
 
+#else
+
+// FIXME For the time being on cross-build, needs to be corrected
+
+
+void System::makeDirectory(const std::string & path){
+    // ?
+}
+
+bool System::isDirectory(const std::string & path){
+    return true;
+}
+
+bool System::readable(const std::string & path){
+    return true;
+}
+
+uint64_t System::currentMilliseconds(){
+#ifdef USE_SDL
+    return SDL_GetTicks();
+#elif USE_SDL2
+    return SDL_GetTicks();
+#endif
+}
+
+unsigned long System::memoryUsage(){
+    return 0;
+}
+
 #endif
     
 void System::makeAllDirectory(const std::string & path){

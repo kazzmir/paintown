@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
+#include <chrono>
 
 #ifdef ANDROID
 #include <android/log.h>
@@ -420,6 +421,8 @@ void Global::setDefaultDebugContext(const std::string & context){
 }
 
 static std::string now(){
+    /* Replace with chrono */
+
     time_t t = time(NULL);
     tm * timeData;
     timeData = localtime(&t);
@@ -435,7 +438,19 @@ static std::string now(){
         // return std::string(buffer);
     }
 
-    return std::string();
+
+#if 0
+    auto time = std::chrono::system_clock::now();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch());
+    char buffer[200];
+    //strftime(buffer, sizeof(buffer), "%F %I:%M:%S", timeData);
+    std::ostringstream out;
+    out << buffer << "." << millis.count();
+    //strftime(buffer, sizeof(buffer), " %p", timeData);
+    out << buffer;
+    return out.str();
+#endif 
+    //return std::string();
 }
 
 std::string Global::debug_context(const char * file, int line){
