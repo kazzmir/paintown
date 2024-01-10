@@ -324,19 +324,23 @@ void Graphics::Bitmap::drawHFlip(const int x, const int y, Filter * filter, cons
     drawHFlip(x, y, where);
 }
 
-int Graphics::getRed(Color x){
+Graphics::Color Graphics::Color::updateAlpha(int alpha) const {
+    return makeColor(color.r, color.g, color.b, alpha);
+}
+
+int Graphics::getRed(const Color & x){
     return x.color.r;
 }
 
-int Graphics::getBlue(Color x){
+int Graphics::getBlue(const Color & x){
     return x.color.b;
 }
 
-int Graphics::getGreen(Color x){
+int Graphics::getGreen(const Color & x){
     return x.color.g;
 }
 
-int Graphics::getAlpha(Color x){
+int Graphics::getAlpha(const Color & x){
     return x.color.a;
 }
 

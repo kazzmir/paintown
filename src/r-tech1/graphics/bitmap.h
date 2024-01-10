@@ -75,6 +75,8 @@ public:
         return this->color;
     }
 
+    Color updateAlpha(int alpha) const;
+
     INTERNAL_COLOR color;
 };
 
@@ -153,10 +155,10 @@ int changeGraphicsMode(int mode, int width, int height);
 void initializeExtraStuff();
 
 /* get color components */
-int getRed(Color x);
-int getBlue(Color x);
-int getGreen(Color x);
-int getAlpha(Color x);
+int getRed(const Color & x);
+int getBlue(const Color & x);
+int getGreen(const Color & x);
+int getAlpha(const Color & x);
 
 Color MaskColor();
 
