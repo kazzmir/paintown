@@ -34,8 +34,13 @@
 
 #ifndef USE_ALLEGRO
 /* some sfl symbols conflict with allegro */
-#include "libs/sfl/sfl.h"
-#include "libs/sfl/sfldir.h"
+//#include "libs/sfl/sfl.h"
+//#include "libs/sfl/sfldir.h"
+#endif
+
+#ifdef WINDOWS
+// https://github.com/gulrak/filesystem/
+#include "libs/filesystem/filesystem.hpp"
 #endif
 
 #ifdef _WIN32
@@ -583,11 +588,7 @@ public:
     }
 
     long getModificationTime(){
-#ifndef WINDOWS
         return ::System::getModificationTime(path.path());
-#else   
-        return 0;
-#endif
     }
 
     bool canStream(){
@@ -1731,7 +1732,7 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
 
     vector<AbsolutePath> more = virtualDirectory.findFiles(dataPath, find, caseInsensitive);
     files.insert(files.end(), more.begin(), more.end());
-
+#if 0
     DIRST sflEntry;
     // bool ok = open_dir(&sflEntry, removeTrailingSlash(dataPath.path()).c_str());
     bool ok = open_dir(&sflEntry, dataPath.path().c_str());
@@ -1754,7 +1755,7 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
         ok = read_dir(&sflEntry);
     }
     close_dir(&sflEntry);
-
+#endif
     /*
     for (map<AbsolutePath, Util::ReferenceCount<Storage::ZipContainer> >::iterator it = overlays.begin(); it != overlays.end(); it++){
         AbsolutePath path = it->first;

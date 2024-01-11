@@ -16,9 +16,13 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#else
+#include <chrono>
+#include <libs/filesystem/filesystem.hpp>
 #endif
 
 #ifndef WINDOWS
+
 
 /* devkitpro doesn't have an implementation of access() yet. if it gets one this function
  * can be removed.
@@ -120,16 +124,31 @@ void System::startMemoryUsage(){
 // FIXME For the time being on cross-build, needs to be corrected
 
 
+uint64_t System::getModificationTime(const std::string & path){
+    auto p = ghc::filesystem::path(path);
+    auto time = ghc::filesystem::last_write_time(p);
+    
+    // FIXME figure out how to convert to unit64_t
+
+    return 0;
+}
+
 void System::makeDirectory(const std::string & path){
-    // ?
+    auto p = ghc::filesystem::path(path);
+    ghc::filesystem::create_directory(p);
 }
 
 bool System::isDirectory(const std::string & path){
-    return true;
+    return ghc::filesystem::is_directory(ghc::filesystem::path(path));
 }
 
 bool System::readable(const std::string & path){
-    return true;
+    auto p = ghc::filesystem::path(path);
+    auto perms = ghc::filesystem::status(p).permissions();
+
+    return ((perms & ghc::filesystem::perms::owner_read) != ghc::filesystem::perms::none &&
+            (perms & ghc::filesystem::perms::group_read) != ghc::filesystem::perms::none &&
+            (perms & ghc::filesystem::perms::others_read) != ghc::filesystem::perms::none);
 }
 
 uint64_t System::currentMilliseconds(){

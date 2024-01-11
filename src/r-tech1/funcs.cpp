@@ -23,8 +23,8 @@
 
 #ifndef USE_ALLEGRO
 /* FIXME: move this to the filesystem module */
-#include "libs/sfl/sfl.h"
-#include "libs/sfl/sflfile.h"
+//#include "libs/sfl/sfl.h"
+//#include "libs/sfl/sflfile.h"
 #endif
 
 #ifndef WINDOWS
