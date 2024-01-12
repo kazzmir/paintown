@@ -316,10 +316,10 @@ public:
         // work.draw(0, 0, screen_buffer);
         // work.Stretch(screen_buffer);
 
-        /* FIXME
         FontRender * render = FontRender::getInstance();
         render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
 
+        /* FIXME
         const Font & font = Font::getDefaultFont((int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
 
         if (state.helpTime > 0){
