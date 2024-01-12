@@ -950,11 +950,11 @@ const string Animation::getCurrentFramePath() const {
     return current_frame->getPath();
 }
 
-void Animation::DrawLit( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
+void Animation::DrawLit(int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work){
     doDraw(x, y, Graphics::LitBitmap(*current_frame), remap, work);
 }
 
-void Animation::DrawLitFlipped( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
+void Animation::DrawLitFlipped( int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work ){
     doDrawFlipped(x, y, Graphics::LitBitmap(*current_frame), remap, work);
 }
 

@@ -116,7 +116,7 @@ void freetype::render(int x, int y, const Graphics::Color & color, const Graphic
             break;
         }
     }
-    copy.draw(x, y, bmp);
+    copy.translucent(Graphics::getAlpha(color)).draw(x, y, bmp);
 }
 
 int freetype::calculateMaximumHeight(){

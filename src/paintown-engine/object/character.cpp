@@ -1634,7 +1634,7 @@ void Character::drawLifeBar(int x, int y, int health, const Graphics::Bitmap & w
     const int health_height = 7;
     const int maxHealthWidth = 100;
     int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
-    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::makeColor(192, 32, 32));
+    translucent.rectangleFill(x, y, x + max, y + health_height, Graphics::makeColor(192, 32, 32));
     // Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
     translucent.setAlpha(64);
 
@@ -1949,9 +1949,10 @@ void Character::drawReflection(const Graphics::Bitmap & work, int rel_x, int rel
 void Character::drawOutline(const Graphics::Bitmap & work, int rel_x, int rel_y, int red, int green, int blue, int intensity){
     const Graphics::Bitmap * frame = this->getCurrentFrame();
     if (frame){
-        Graphics::Bitmap::transBlender(red, green, blue, intensity);
+        // Graphics::Bitmap::transBlender(red, green, blue, intensity);
         int x = (int)((getRX() - rel_x) - frame->getWidth()/2);
         int y = (int)(getRZ() + getY());
+        /* FIXME: pass colors to lit */
         if (getFacing() == FACING_RIGHT){ 
             frame->lit().drawVFlip(x , y, getCurrentRemap(), work);
         } else { 

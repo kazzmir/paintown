@@ -228,8 +228,8 @@ int NightAtmosphere::getSkyDarkness() const {
 }
 
 void NightAtmosphere::drawFront(const Graphics::Bitmap & work, int x){
-    Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
-    work.applyTrans(getSkyColor());
+    // Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
+    work.translucent(getSkyDarkness()).fill(getSkyColor());
 }
 
 void NightAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
@@ -243,9 +243,9 @@ void NightAtmosphere::addLight(const int x, const int y, const int lower_width, 
 }
 
 void NightAtmosphere::drawForeground(const Graphics::Bitmap & work, int x){
-    const Graphics::Color sky = getSkyColor();
-    Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
-    work.applyTrans(sky);
+    work.translucent(getSkyDarkness()).fill(getSkyColor());
+    // Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
+    // work.applyTrans(sky);
 
     /* FIXME: lights are broken in sdl, valgrind spits out some error:
      * == Invalid read of size 2

@@ -445,10 +445,10 @@ void CellData::act(){
 
 void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
     if (cell != NULL){
-        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
-        cell->draw(x,y,width,height,work);
+        // Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        cell->draw(x, y, width, height, work);
     } else {
-        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        // Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
         if (fill){
             switch (shape){
                 case ROUND:
