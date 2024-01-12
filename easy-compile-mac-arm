@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# If you are trying to compile Paintown from source but have no idea what to do
+# try running this script. It will attempt to install all the dependencies you
+# need and compile Paintown.
+
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+
+# Command Line Tools (CLT) for Xcode
+sudo xcode-select --install
+
+# Brew
+export NONINTERACTIVE=1
+export HOMEBREW_NO_INSTALL_FROM_API=1
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+
+# Deps
+sudo brew install sdl2 sdl2_ttf sdl2_image sdl2_gfx sdl2_mixer libpng libogg zlib meson ninja make
+make
+
+ls -l paintown
+echo "Here is the executable. To run it type: ./paintown"
