@@ -18,7 +18,7 @@
 #include <sys/time.h>
 #else
 #include <chrono>
-#include <libs/filesystem/filesystem.hpp>
+#include <libs/filesystem/fs-wrapper.h>
 #endif
 
 #ifndef WINDOWS
@@ -125,8 +125,8 @@ void System::startMemoryUsage(){
 
 
 uint64_t System::getModificationTime(const std::string & path){
-    auto p = ghc::filesystem::path(path);
-    auto time = ghc::filesystem::last_write_time(p);
+    auto p = fs::path(path);
+    auto time = fs::last_write_time(p);
     
     // FIXME figure out how to convert to unit64_t
 
@@ -134,21 +134,21 @@ uint64_t System::getModificationTime(const std::string & path){
 }
 
 void System::makeDirectory(const std::string & path){
-    auto p = ghc::filesystem::path(path);
-    ghc::filesystem::create_directory(p);
+    auto p = fs::path(path);
+    fs::create_directory(p);
 }
 
 bool System::isDirectory(const std::string & path){
-    return ghc::filesystem::is_directory(ghc::filesystem::path(path));
+    return fs::is_directory(fs::path(path));
 }
 
 bool System::readable(const std::string & path){
-    auto p = ghc::filesystem::path(path);
-    auto perms = ghc::filesystem::status(p).permissions();
+    auto p = fs::path(path);
+    auto perms = fs::status(p).permissions();
 
-    return ((perms & ghc::filesystem::perms::owner_read) != ghc::filesystem::perms::none &&
-            (perms & ghc::filesystem::perms::group_read) != ghc::filesystem::perms::none &&
-            (perms & ghc::filesystem::perms::others_read) != ghc::filesystem::perms::none);
+    return ((perms & fs::perms::owner_read) != fs::perms::none &&
+            (perms & fs::perms::group_read) != fs::perms::none &&
+            (perms & fs::perms::others_read) != fs::perms::none);
 }
 
 uint64_t System::currentMilliseconds(){

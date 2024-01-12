@@ -32,15 +32,9 @@
 #include "libs/7z/7zAlloc.h"
 #include "libs/7z/7zCrc.h"
 
-#ifndef USE_ALLEGRO
-/* some sfl symbols conflict with allegro */
-//#include "libs/sfl/sfl.h"
-//#include "libs/sfl/sfldir.h"
-#endif
-
 #ifdef WINDOWS
 // https://github.com/gulrak/filesystem/
-#include "libs/filesystem/filesystem.hpp"
+#include "libs/filesystem/fs-wrapper.h"
 #endif
 
 #ifdef _WIN32

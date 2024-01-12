@@ -5,10 +5,7 @@
 #include <vector>
 #include <map>
 
-#ifndef USE_ALLEGRO
-#include "libs/sfl/sfl.h"
-#include "libs/sfl/sfldir.h"
-#endif
+#include "libs/filesystem/fs-wrapper.h"
 
 using std::string;
 using std::vector;
@@ -88,7 +85,8 @@ vector<Path::AbsolutePath> Directory::findDirectories(const Path::AbsolutePath &
 #ifndef USE_ALLEGRO
     for (vector<string>::iterator it = names.begin(); it != names.end(); it++){
         Global::debug(1) << "Check if " << *it << " matches " << find << std::endl;
-        if (file_matches(it->c_str(), find.c_str())){
+        //if (file_matches(it->c_str(), find.c_str())){
+        if (it->find(find) != std::string::npos) {
             out.push_back(dataPath.join(Path::RelativePath(*it)));
         }
     }
@@ -137,7 +135,8 @@ vector<Path::AbsolutePath> Directory::findFiles(const Path::AbsolutePath & dataP
 #ifndef USE_ALLEGRO
     for (vector<string>::iterator it = names.begin(); it != names.end(); it++){
         Global::debug(1) << "Check if " << *it << " matches " << find << std::endl;
-        if (file_matches(it->c_str(), find.c_str())){
+        //if (file_matches(it->c_str(), find.c_str())){
+        if (it->find(find) != std::string::npos) {
             out.push_back(dataPath.join(Path::RelativePath(*it)));
         }
     }
