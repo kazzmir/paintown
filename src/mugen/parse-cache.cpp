@@ -257,6 +257,7 @@ void ParseCache::destroyCache(){
 
 ParseCache::~ParseCache(){
     if (cache == this){
+        destroyCache();
         cache = NULL;
     }
 }

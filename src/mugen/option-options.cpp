@@ -1009,6 +1009,10 @@ void OptionMenu::drawInfoWithBackground(const std::string & title, int x, int y,
     workArea.finish();
 }
 
+void OptionMenu::clearList(){
+    list.clearItems();
+}
+
 void OptionMenu::updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > & newList){
     list.clearItems();
     list.addItems(newList);
