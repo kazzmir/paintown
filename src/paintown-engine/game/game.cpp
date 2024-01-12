@@ -316,10 +316,10 @@ public:
         // work.draw(0, 0, screen_buffer);
         // work.Stretch(screen_buffer);
 
-        /* FIXME
         FontRender * render = FontRender::getInstance();
         render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
 
+        /* FIXME
         const Font & font = Font::getDefaultFont((int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
 
         if (state.helpTime > 0){
@@ -1089,9 +1089,11 @@ void realGameLocal(const vector<Util::ReferenceCount<Paintown::Object>> & future
     doRealGame(futurePlayers, levelInfo, setupLocalPlayers);
 }
 
-void fadeOut( const Graphics::Bitmap & work, const string & message ){
-    Graphics::Bitmap::transBlender(0, 0, 0, 128);
-    work.applyTrans(Graphics::makeColor(0, 0, 0));
+void fadeOut(const Graphics::Bitmap & work, const string & message){
+    // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+    // work.applyTrans(Graphics::makeColor(0, 0, 0));
+
+    work.translucent(128).fill(Graphics::makeColor(0, 0, 0));
 
     const Font & f = Font::getDefaultFont(50, 50 );
     f.printf(200, 200, Graphics::makeColor(255, 0, 0), work, message, 0);

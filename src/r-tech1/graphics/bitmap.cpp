@@ -508,9 +508,11 @@ void TranslucentBitmap::setAlpha(uint8_t alpha){
     this->alpha = alpha;
 }
 
+/*
 void TranslucentBitmap::fill(Color color) const {
     Bitmap::applyTrans(color);
 }
+*/
 
 int StretchedBitmap::getWidth() const {
     return width;

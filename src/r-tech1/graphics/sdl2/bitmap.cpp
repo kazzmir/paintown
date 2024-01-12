@@ -133,11 +133,15 @@ Graphics::Bitmap * Graphics::getScreenBuffer(){
 }
 
 Graphics::Color Graphics::makeColor(int r, int g, int b){
+    return makeColor(r, g, b, 255);
+}
+
+Graphics::Color Graphics::makeColor(int r, int g, int b, int a){
     INTERNAL_COLOR c;
     c.r = r;
     c.g = g;
     c.b = b;
-    c.a = 255;
+    c.a = a;
     return Graphics::Color(c);
 }
 
@@ -159,7 +163,8 @@ void Graphics::Bitmap::fill(Graphics::Color color) const {
 
     enableClip();
     SDL_SetRenderDrawColor(global_handler->renderer, getRed(color), getGreen(color), getBlue(color), getAlpha(color));
-    SDL_RenderFillRect(global_handler->renderer, nullptr);
+    SDL_Rect* rect = nullptr;
+    SDL_RenderFillRect(global_handler->renderer, rect);
     // SDL_RenderClear(global_handler->renderer);
     disableClip();
 }
@@ -217,8 +222,10 @@ void Graphics::TranslucentBitmap::draw(const int x, const int y, const Graphics:
     SDL_SetTextureAlphaMod(texture, 255);
 }
 
+/*
 void Graphics::Bitmap::transBlender( int r, int g, int b, int a ){
 }
+*/
 
 static SDL_Surface* loadFromMemory(const uint8_t* data, int length, bool useMask, const Graphics::Color & maskColor){
     SDL_RWops* ops = SDL_RWFromConstMem(data, length);
@@ -317,19 +324,23 @@ void Graphics::Bitmap::drawHFlip(const int x, const int y, Filter * filter, cons
     drawHFlip(x, y, where);
 }
 
-int Graphics::getRed(Color x){
+Graphics::Color Graphics::Color::updateAlpha(int alpha) const {
+    return makeColor(color.r, color.g, color.b, alpha);
+}
+
+int Graphics::getRed(const Color & x){
     return x.color.r;
 }
 
-int Graphics::getBlue(Color x){
+int Graphics::getBlue(const Color & x){
     return x.color.b;
 }
 
-int Graphics::getGreen(Color x){
+int Graphics::getGreen(const Color & x){
     return x.color.g;
 }
 
-int Graphics::getAlpha(Color x){
+int Graphics::getAlpha(const Color & x){
     return x.color.a;
 }
 
@@ -441,8 +452,10 @@ Graphics::Bitmap::Bitmap(const std::string & load_file){
     }
 }
 
+/*
 void Graphics::Bitmap::applyTrans(const Color color) const {
 }
+*/
 
 Graphics::Bitmap Graphics::Bitmap::subBitmap(int x, int y, int width, int height){
     return Graphics::Bitmap(*this, x, y, width, height);
@@ -767,6 +780,12 @@ Graphics::Color Graphics::TranslucentBitmap::blendColor(const Color & color) con
     return color;
 }
 
+void Graphics::TranslucentBitmap::fill(Color color) const {
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
+    Graphics::Bitmap::fill(makeColor(getRed(color), getGreen(color), getBlue(color), alpha));
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
+}
+
 void Graphics::TranslucentBitmap::startDrawing() const {
 }
 
@@ -803,6 +822,9 @@ void Graphics::TranslucentBitmap::hLine( const int x1, const int y, const int x2
 }
 
 void Graphics::TranslucentBitmap::rectangleFill(int x1, int y1, int x2, int y2, Color color) const {
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
+    Graphics::Bitmap::rectangleFill(x1, y1, x2, y2, color.updateAlpha(alpha));
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
 }
 
 void Graphics::TranslucentBitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {

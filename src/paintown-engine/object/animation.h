@@ -264,8 +264,8 @@ public:
         std::vector<ECollide*> getNormalCollide();
 	void Draw(int x, int y, Remap * remap, const Graphics::Bitmap & work);
 	void DrawFlipped(int x, int y, Remap * remap, const Graphics::Bitmap & work);
-	void DrawLit(int x, int y, Remap * remap, const Graphics::Bitmap & work );
-	void DrawLitFlipped(int x, int y, Remap * remap, const Graphics::Bitmap & work);
+	void DrawLit(int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work );
+	void DrawLitFlipped(int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work);
 	void setDelay(double delay);
 	void setStatus( const int status );
         void setPerpetual(bool enabled);
