@@ -82,7 +82,7 @@ void Enemy::hurt( int x ){
 }
 	
 void Enemy::drawLifeBar( int x, int y, const Graphics::Bitmap & work ){
-	drawLifeBar( x, y, getDeath() == 0 ? show_life : 0, work);
+	drawLifeBar(x, y, getDeath() == 0 ? show_life : 0, work);
 }
 
 void Enemy::drawFront(const Graphics::Bitmap & work, int rel_x ){
@@ -101,7 +101,7 @@ void Enemy::drawFront(const Graphics::Bitmap & work, int rel_x ){
 		FontRender * fac = FontRender::getInstance();
 		// Font * my_font = FontFactory::getFont( NAME_FONT );
 		// const Font & my_font = Font::getFont( NAME_FONT );
-		const Font & my_font = Font::getDefaultFont(20, 20 );
+		const Font & my_font = Font::getDefaultFont(20, 20);
 		const string & name = getName();
 		// const int height = my_font.getHeight( name ) / 2;
 		const int height = 20 / 2;

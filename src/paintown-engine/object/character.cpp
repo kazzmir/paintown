@@ -1634,7 +1634,7 @@ void Character::drawLifeBar(int x, int y, int health, const Graphics::Bitmap & w
     const int health_height = 7;
     const int maxHealthWidth = 100;
     int max = getMaxHealth() < maxHealthWidth ? getMaxHealth() : maxHealthWidth;
-    translucent.rectangleFill( x, y, x + max, y + health_height, Graphics::makeColor(192, 32, 32));
+    translucent.rectangleFill(x, y, x + max, y + health_height, Graphics::makeColor(192, 32, 32));
     // Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
     translucent.setAlpha(64);
 

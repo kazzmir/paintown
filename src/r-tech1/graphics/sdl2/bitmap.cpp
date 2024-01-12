@@ -822,6 +822,9 @@ void Graphics::TranslucentBitmap::hLine( const int x1, const int y, const int x2
 }
 
 void Graphics::TranslucentBitmap::rectangleFill(int x1, int y1, int x2, int y2, Color color) const {
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
+    Graphics::Bitmap::rectangleFill(x1, y1, x2, y2, color.updateAlpha(alpha));
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
 }
 
 void Graphics::TranslucentBitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {
