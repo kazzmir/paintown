@@ -157,6 +157,9 @@ public:
     static void disableSave();
     static void setSave(bool what);
     static bool getSave();
+
+    /* call at the end of the program to clean up resources */
+    static void cleanup();
     
 protected:
     Configuration();
