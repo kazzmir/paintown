@@ -1,0 +1,16 @@
+name: mac arm build
+
+on:
+  push
+
+jobs:
+  build:
+    name: Compile
+    runs-on: macos-12
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Run build
+        run: |
+          ./easy-compile-mac-arm
