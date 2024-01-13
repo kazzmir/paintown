@@ -7,3 +7,5 @@ peg_*.py
 *.pyc
 *.log
 *.swp
+# mac
+.DS_Store
