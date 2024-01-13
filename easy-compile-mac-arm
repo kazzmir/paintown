@@ -17,7 +17,7 @@ export HOMEBREW_NO_INSTALL_FROM_API=1
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 
 # Deps
-sudo brew install sdl2 sdl2_ttf sdl2_image sdl2_gfx sdl2_mixer libpng libogg zlib meson ninja make
+brew install sdl2 sdl2_ttf sdl2_image sdl2_gfx sdl2_mixer libpng libogg zlib meson ninja make
 make
 
 ls -l paintown
