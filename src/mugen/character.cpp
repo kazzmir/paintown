@@ -1742,6 +1742,9 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Storage::instance().cleanse(full));
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
+
+    DebugLog1 << "Loading state file " << full.path() << endl;
+
     AstRef parsed(Util::parseCmd(full));
     map<int, PaintownUtil::ReferenceCount<State> > out;
     PaintownUtil::ReferenceCount<State> currentState;

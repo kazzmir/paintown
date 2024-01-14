@@ -79,7 +79,7 @@ public:
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << (char) (long) (*it).getValue();
+    out << (char) (int64_t) (*it).getValue();
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -250,7 +250,7 @@ Ast::Value * negateExpression(const Value & exp){
 Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     Ast::Value * expression = as<Ast::Value*>(exp);
     for (Value::iterator it = unaries.getValues().begin(); it != unaries.getValues().end(); it++){
-        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (long) (*it).getValue();
+        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (int64_t) (*it).getValue();
         /* FIXME: fix line numbers here */
         expression = new Ast::ExpressionUnary(-1, -1, unary, expression);
         GC::save(expression);
@@ -715,7 +715,7 @@ rules:
           | "(" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::AllExclusive, low, high); }}
           | "(" s low:expr_c s "," s high:expr_c s "]" {{ value = makeRange(Ast::Range::LeftExclusiveRightInclusive, low, high); }}
           | "[" s low:expr_c s "," s high:expr_c s ")" {{ value = makeRange(Ast::Range::LeftInclusiveRightExclusive, low, high); }}
-    name = letter alpha_digit* {{ value = toString((char)(long)$1.getValue(),$2); }}
+    name = letter alpha_digit* {{ value = toString((char)(int64_t)$1.getValue(),$2); }}
     letter = [abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_]
     inline alpha_digit = letter
                        | digit
@@ -1000,6 +1000,8 @@ rules:
                | "size.shadowoffset"{case}
                | "size.draw.offset.x"{case}
                | "size.draw.offset.y"{case}
+               | "st"{case}
+               | "square"
 
     resource-f = "frontedgebodydist"{case}
                | "frontedgedist"{case}
