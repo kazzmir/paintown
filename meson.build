@@ -78,4 +78,5 @@ if build_tests == true
   subdir('src/test/audio')
   subdir('src/test/mugen')
   subdir('src/test/timing')
+  subdir('src/test/util')
 endif

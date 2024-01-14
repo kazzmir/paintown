@@ -125,16 +125,16 @@ void System::startMemoryUsage(){
 
 
 uint64_t System::getModificationTime(const std::string & path){
-    auto p = fs::path(path);
-    auto time = fs::last_write_time(p);
     
-    // FIXME figure out how to convert to unit64_t
+    // FIXME figure out how to convert to unit64_t and remove auto
+    //auto p = fs::path(path);
+    //auto time = fs::last_write_time(p);
 
     return 0;
 }
 
 void System::makeDirectory(const std::string & path){
-    auto p = fs::path(path);
+    fs::path p = fs::path(path);
     fs::create_directory(p);
 }
 
@@ -143,12 +143,12 @@ bool System::isDirectory(const std::string & path){
 }
 
 bool System::readable(const std::string & path){
-    auto p = fs::path(path);
-    auto perms = fs::status(p).permissions();
+    fs::path p = fs::path(path);
+    fs::perms permissions = fs::status(p).permissions();
 
-    return ((perms & fs::perms::owner_read) != fs::perms::none &&
-            (perms & fs::perms::group_read) != fs::perms::none &&
-            (perms & fs::perms::others_read) != fs::perms::none);
+    return ((permissions & fs::perms::owner_read) != fs::perms::none &&
+            (permissions & fs::perms::group_read) != fs::perms::none &&
+            (permissions & fs::perms::others_read) != fs::perms::none);
 }
 
 uint64_t System::currentMilliseconds(){

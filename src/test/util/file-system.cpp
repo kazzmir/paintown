@@ -4,7 +4,28 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
-#include "util/file-system.h"
+#include "r-tech1/file-system.h"
+
+
+
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
 
 namespace Util{
 
@@ -12,6 +33,7 @@ static int upperCase(int c){
     return toupper(c);
 }
 
+/*
 std::string upperCaseAll(std::string str){
     std::transform(str.begin(), str.end(), str.begin(), upperCase);
     return str;
@@ -20,8 +42,9 @@ std::string upperCaseAll(std::string str){
 Filesystem::AbsolutePath getDataPath2(){
     return Filesystem::AbsolutePath(".");
 }
-
+*/
 }
+
 
 void testGetFiles(){
     std::vector<Filesystem::AbsolutePath> paths = Storage::instance().getFiles(Filesystem::AbsolutePath("data"), Filesystem::RelativePath("m*/*.txt"), false);
