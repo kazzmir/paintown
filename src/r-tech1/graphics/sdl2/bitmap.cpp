@@ -814,7 +814,8 @@ void Graphics::TranslucentBitmap::roundRect(int radius, int x1, int y1, int x2, 
 
 void Graphics::TranslucentBitmap::roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const {
     SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
-    Graphics::Bitmap::rectangleFill(x1, y1, x2, y2, color.updateAlpha(alpha));
+    Graphics::Bitmap::circleFill(x1 + radius, y1 + radius, radius, color.updateAlpha(alpha));
+    Graphics::Bitmap::rectangleFill(x1 + radius, y1, x2 - radius, y2, color.updateAlpha(alpha));
     SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
 }
 

@@ -1,6 +1,6 @@
 #include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/graphics/texture-cache.h"
 #include "r-tech1/gui/box.h"
-
 #include "r-tech1/font.h"
 
 using namespace Gui;
