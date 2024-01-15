@@ -1728,8 +1728,11 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     vector<AbsolutePath> more = virtualDirectory.findFiles(dataPath, find, caseInsensitive);
     files.insert(files.end(), more.begin(), more.end());
 
-    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << dataPath.path() << find << ")"  << std::endl;
-    for (fs::path & globFile : glob::glob(dataPath.path() + find)){
+    // Convert to type std::filesystem::path
+    fs::path path = dataPath.path();
+
+    DebugLog2 << "Looking for file: " << find << " in dataPath: " << path << " (" << path / find << ")"  << std::endl;
+    for (fs::path & globFile : glob::glob(path / find)){
         DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << endl;
         files.push_back(AbsolutePath(globFile.string()));
     }
