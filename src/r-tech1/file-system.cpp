@@ -1728,14 +1728,12 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     vector<AbsolutePath> more = virtualDirectory.findFiles(dataPath, find, caseInsensitive);
     files.insert(files.end(), more.begin(), more.end());
 
-    for (const fs::directory_entry & dirEntry : fs::recursive_directory_iterator(dataPath.path())){
-        Global::debug(2) << "Looking for file: " << find << " in directory: " << dirEntry << std::endl;
-        for (fs::path & globFile : glob::glob(dataPath.path() + "/" + dirEntry.path().filename().string())){
-            // FIXME Need to actually search, this is just getting all available files from a glob
-            //globFile.filename().string()
-            files.push_back(AbsolutePath(dataPath.path() + "/" + globFile.filename().string()));
-        }
+    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << dataPath.path() << find << ")"  << std::endl;
+    for (fs::path & globFile : glob::glob(dataPath.path() + find)){
+        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << endl;
+        files.push_back(AbsolutePath(globFile.string()));
     }
+
     /*
     for (map<AbsolutePath, Util::ReferenceCount<Storage::ZipContainer> >::iterator it = overlays.begin(); it != overlays.end(); it++){
         AbsolutePath path = it->first;
