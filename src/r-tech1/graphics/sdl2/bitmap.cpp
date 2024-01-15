@@ -52,6 +52,21 @@ bool operator<(const INTERNAL_COLOR&, const INTERNAL_COLOR&){
     return false;
 }
 
+Graphics::Bitmap Graphics::makeRoundedRect(int width, int height, int radius, const Graphics::Color & fillColor, const Graphics::Color & borderColor){
+
+    SDL_Texture* texture = SDL_CreateTexture(global_handler->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
+    SDL_SetRenderTarget(global_handler->renderer, texture);
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(global_handler->renderer, 0, 0, 0, 0);
+    SDL_RenderFillRect(global_handler->renderer, nullptr);
+
+    roundedBoxRGBA(global_handler->renderer, 0, 0, width, height, radius, getRed(fillColor), getGreen(fillColor), getBlue(fillColor), 255);
+    roundedRectangleRGBA(global_handler->renderer, 0, 0, width-1, height-1, radius, getRed(borderColor), getGreen(borderColor), getBlue(borderColor), 255);
+
+    return Graphics::Bitmap(texture);
+}
+
 Graphics::Bitmap::Bitmap(){
     setData(std::shared_ptr<BitmapData>(new BitmapData(nullptr, nullptr)));
 }
@@ -813,10 +828,6 @@ void Graphics::TranslucentBitmap::roundRect(int radius, int x1, int y1, int x2, 
 }
 
 void Graphics::TranslucentBitmap::roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const {
-    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
-    Graphics::Bitmap::circleFill(x1 + radius, y1 + radius, radius, color.updateAlpha(alpha));
-    Graphics::Bitmap::rectangleFill(x1 + radius, y1, x2 - radius, y2, color.updateAlpha(alpha));
-    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
 }
 
 void Graphics::TranslucentBitmap::circleFill( int x, int y, int radius, Color color ) const {
@@ -832,6 +843,9 @@ void Graphics::TranslucentBitmap::rectangleFill(int x1, int y1, int x2, int y2, 
 }
 
 void Graphics::TranslucentBitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
+    Graphics::Bitmap::rectangle(x1, y1, x2, y2, color.updateAlpha(alpha));
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
 }
 
 void Graphics::TranslucentBitmap::line( const int x1, const int y1, const int x2, const int y2, const Color color ) const {
