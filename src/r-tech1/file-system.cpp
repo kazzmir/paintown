@@ -1731,13 +1731,14 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
 // FIXME Can't seem to get glob to work in windows, it returns 0 files
 #ifndef WINDOWS
     // Convert to type std::filesystem::path
-    fs::path path = dataPath.path();
-    path /= find;
+    //fs::path path = dataPath.path();
+    //path /= find;
 
-    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << path.generic_string() << ")"  << std::endl;
-    for (fs::path & globFile : glob::glob(path.generic_string())){
+    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << find << ")"  << std::endl;
+    // for (fs::path & globFile : glob::glob(path.generic_string())){
+    for (fs::path & globFile : glob::glob1(dataPath.path(), find, false)){
         DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << endl;
-        files.push_back(AbsolutePath(globFile.string()));
+        files.push_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile.string()))));
     }
 #else
     DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << dataPath.path() + "/" + find << ")"  << std::endl;
