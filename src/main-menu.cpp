@@ -19,6 +19,7 @@ static const int DEFAULT_DEBUG = 0;
 #endif
 
 #include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/graphics/texture-cache.h"
 
 #include "factory/collector.h"
 #include "r-tech1/network/network.h"
@@ -1009,6 +1010,8 @@ int rtech_main(int argc, char ** argv){
     Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
 
     Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultMenuFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(*defaultFont.current(), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
+
+    Util::Parameter<std::shared_ptr<Graphics::TextureCache>> defaultTextureCache(Graphics::TextureCache::cache, std::shared_ptr<Graphics::TextureCache>(new Graphics::TextureCache()));
 
     startMain(actions, allow_quit);
 

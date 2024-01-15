@@ -1,4 +1,5 @@
 #include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/graphics/texture-cache.h"
 #include "r-tech1/menu/menu.h"
 #include "r-tech1/menu/menu_option.h"
 #include "r-tech1/version.h"
@@ -1410,6 +1411,8 @@ void Menu::Menu::run(const Context & parentContext){
         // Setup context from parent and this menu and initialize
         Context localContext(parentContext, context);
         Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont(menuFontParameter);
+        /* create a local texture cache for this menu */
+        Util::Parameter<std::shared_ptr<Graphics::TextureCache>> defaultTextureCache(Graphics::TextureCache::cache, std::shared_ptr<Graphics::TextureCache>(new Graphics::TextureCache()));
         if (context.hasFont()){
             currentFont.push(context.getFontInfo());
         }

@@ -37,9 +37,16 @@ void Box::render(const Graphics::Bitmap & work){
         // Graphics::Bitmap::transBlender(0, 0, 0, colors.bodyAlpha);
         // Check if we are using a rounded box
         if (transforms.getRadius() > 0){
-            Graphics::Bitmap round = Graphics::makeRoundedRect(workArea->getWidth(), workArea->getHeight(), transforms.getRadius(), colors.body, colors.border);
 
-            round.translucent(colors.bodyAlpha).draw(0, 0, *workArea);
+            std::string key = std::string(__FILE__) + ":" + std::to_string(__LINE__) + ":" + std::to_string(workArea->getWidth()) + ":" + std::to_string(workArea->getHeight());
+
+            // Graphics::Bitmap round = Graphics::makeRoundedRect(workArea->getWidth(), workArea->getHeight(), transforms.getRadius(), colors.body, colors.border);
+            std::shared_ptr<Graphics::Bitmap> round = Graphics::TextureCache::cache.current()->getTexture(key, [&]{
+                // DebugLog << "Generate box texture" << std::endl;
+                return std::shared_ptr<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::makeRoundedRect(workArea->getWidth(), workArea->getHeight(), transforms.getRadius(), colors.body, colors.border)));
+            });
+
+            round->translucent(colors.bodyAlpha).draw(0, 0, *workArea);
 
             /*
             area.roundRectFill((int)transforms.getRadius(), 0, 0, area.getWidth() - 1, area.getHeight()-1, colors.body);

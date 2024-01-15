@@ -1,10 +1,10 @@
 #pragma once
 
-#include "parameter.h"
+#include "r-tech1/parameter.h"
 #include <memory>
 #include <functional>
 #include <map>
-#include "graphics/bitmap.h"
+#include "bitmap.h"
 
 namespace Graphics {
 
