@@ -11,6 +11,7 @@ sources = [
   'exceptions/exception.cpp',
   'graphics/bitmap.cpp',
   'graphics/gradient.cpp',
+  'graphics/texture-cache.cpp',
   'system.cpp',
   'version.cpp',
   'argument.cpp',
