@@ -1,0 +1,7 @@
+#!/bin/bash
+
+docker build -t paintown-mingw-build -f docker/WindowsDockerfile .
+docker run --rm -iv${PWD}:/paintown-bin paintown-mingw-build sh -s <<EOF
+chown $(id -u):$(id -g) /build/build-mingw/paintown.exe
+cp -a /build/build-mingw/paintown.exe /paintown-bin
+EOF
