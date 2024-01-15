@@ -1728,14 +1728,33 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     vector<AbsolutePath> more = virtualDirectory.findFiles(dataPath, find, caseInsensitive);
     files.insert(files.end(), more.begin(), more.end());
 
+// FIXME Can't seem to get glob to work in windows, it returns 0 files
+#ifndef WINDOWS
     // Convert to type std::filesystem::path
     fs::path path = dataPath.path();
+    path /= find;
 
-    DebugLog2 << "Looking for file: " << find << " in dataPath: " << path << " (" << path / find << ")"  << std::endl;
-    for (fs::path & globFile : glob::glob(path / find)){
+    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << path.generic_string() << ")"  << std::endl;
+    for (fs::path & globFile : glob::glob(path.generic_string())){
         DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << endl;
         files.push_back(AbsolutePath(globFile.string()));
     }
+#else
+    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << dataPath.path() + "/" + find << ")"  << std::endl;
+    for (const fs::directory_entry & dirEntry : fs::directory_iterator(dataPath.path())){
+        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " file: " << dirEntry.path().string() << endl;
+        // FIXME Glob * crudely, will probably pick up bad data... 
+        if (find == "*"){
+            // Add since we want everything anyways
+            files.push_back(AbsolutePath(dirEntry.path().string()));
+        } else if(find.find("*") && dirEntry.path().filename().string().find(find.substr(1))){
+            // ie *.zip or *.tar or whatever *.... we'll accept
+            files.push_back(AbsolutePath(dirEntry.path().string()));
+        } else {
+            DebugLog2 << "Couldn't identify file with pattern.";
+        }
+    }
+#endif
 
     /*
     for (map<AbsolutePath, Util::ReferenceCount<Storage::ZipContainer> >::iterator it = overlays.begin(); it != overlays.end(); it++){
