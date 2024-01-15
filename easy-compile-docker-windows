@@ -5,3 +5,7 @@ docker run --rm -iv${PWD}:/paintown-bin paintown-mingw-build sh -s <<EOF
 chown $(id -u):$(id -g) /build/build-mingw/paintown.exe
 cp -a /build/build-mingw/paintown.exe /paintown-bin
 EOF
+echo "
+To run with wine do:
+WINEDEBUG=-msvcrt wine start /unix paintown.exe -d data-new
+"
