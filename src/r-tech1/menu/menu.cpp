@@ -1412,7 +1412,7 @@ void Menu::Menu::run(const Context & parentContext){
         Context localContext(parentContext, context);
         Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont(menuFontParameter);
         /* create a local texture cache for this menu */
-        Util::Parameter<std::shared_ptr<Graphics::TextureCache>> defaultTextureCache(Graphics::TextureCache::cache, std::shared_ptr<Graphics::TextureCache>(new Graphics::TextureCache()));
+        Graphics::LocalTextureCache textureCache;
         if (context.hasFont()){
             currentFont.push(context.getFontInfo());
         }

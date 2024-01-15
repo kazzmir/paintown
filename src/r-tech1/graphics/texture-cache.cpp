@@ -23,4 +23,8 @@ std::shared_ptr<Graphics::Bitmap> TextureCache::getTexture(const std::string & k
     return it->second;
 }
 
+LocalTextureCache::LocalTextureCache():
+local(TextureCache::cache, std::shared_ptr<TextureCache>(new TextureCache())){
+}
+
 }

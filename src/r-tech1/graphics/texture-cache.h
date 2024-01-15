@@ -21,4 +21,12 @@ private:
     std::map<std::string, std::shared_ptr<Graphics::Bitmap>> textures;
 };
 
+class LocalTextureCache {
+public:
+    LocalTextureCache();
+
+private:
+    Util::Parameter<std::shared_ptr<TextureCache>> local;
+};
+
 }
