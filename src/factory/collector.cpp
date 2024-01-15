@@ -3,6 +3,7 @@
 #include "r-tech1/font_factory.h"
 #include "r-tech1/sound/sound.h"
 #include "r-tech1/init.h"
+#include "r-tech1/configuration.h"
 #include "collector.h"
 #include "paintown-engine/game/nameplacer.h"
 #include "font_render.h"
@@ -30,5 +31,6 @@ Collector::~Collector(){
     Mugen::Data::destroy();
     Sound::uninitialize();
     Resource::destroy();
+    Configuration::cleanup();
     Global::close();
 }

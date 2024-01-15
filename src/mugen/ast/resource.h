@@ -125,6 +125,7 @@ public:
     }
 
     virtual ~Resource(){
+        delete value;
     }
 
 protected:

@@ -908,7 +908,7 @@ public:
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << static_cast<char>(reinterpret_cast<int64_t>((*it).getValue()));
+    out << (char) (int64_t) (*it).getValue();
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -18173,6 +18173,50 @@ Result rule_resource__s(Stream & stream, const int position){
         
         return result_peg_134;
         out_peg_135:
+        Result result_peg_136(myposition);
+        
+        
+        result_peg_136.setValue(Value((void*) "st"));
+        for (int i = 0; i < 2; i++){
+            if (compareCharCase("st"[i], stream.get(result_peg_136.getPosition()))){
+                result_peg_136.nextPosition();
+            } else {
+                goto out_peg_137;
+            }
+        }
+        
+        
+        if (column_peg_2.chunk11 == 0){
+            column_peg_2.chunk11 = new Chunk11();
+        }
+        column_peg_2.chunk11->chunk_resource__s = result_peg_136;
+        stream.update(result_peg_136.getPosition());
+        
+        
+        return result_peg_136;
+        out_peg_137:
+        Result result_peg_138(myposition);
+        
+        
+        result_peg_138.setValue(Value((void*) "square"));
+        for (int i = 0; i < 6; i++){
+            if (compareChar("square"[i], stream.get(result_peg_138.getPosition()))){
+                result_peg_138.nextPosition();
+            } else {
+                goto out_peg_139;
+            }
+        }
+        
+        
+        if (column_peg_2.chunk11 == 0){
+            column_peg_2.chunk11 = new Chunk11();
+        }
+        column_peg_2.chunk11->chunk_resource__s = result_peg_138;
+        stream.update(result_peg_138.getPosition());
+        
+        
+        return result_peg_138;
+        out_peg_139:
     
         if (column_peg_2.chunk11 == 0){
             column_peg_2.chunk11 = new Chunk11();

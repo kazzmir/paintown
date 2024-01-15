@@ -68,14 +68,14 @@ helperMax(),
 playerProjectileMax(),
 firstRun(),
 search(SelectDefAndAuto){
-    
+
     Filesystem::AbsolutePath baseDir = configFile.getDirectory();
     const Filesystem::AbsolutePath ourDefFile = Mugen::Util::fixFileName(baseDir, configFile.getFilename().path());
-    
+
     if (ourDefFile.isEmpty()){
         throw MugenException("Cannot locate definition file for: " + configFile.path(), __FILE__, __LINE__);
     }
-    
+
     TimeDifference diff;
     diff.startTime();
     AstRef parsed(Util::parseDef(ourDefFile));
@@ -119,8 +119,8 @@ search(SelectDefAndAuto){
                         simple.view() >> out;
                         /* FIXME: read the motif properly */
                         self.motif = Filesystem::AbsolutePath(out);
-                    } 
-                }  
+                    }
+                }
             };
 
             OptionWalk walk(*this);
@@ -186,11 +186,11 @@ Data::~Data(){
 Data & Data::getInstance(){
     if (!data){
         // Grab mugen.cfg
-	data = new Data(Storage::instance().find(Filesystem::RelativePath("mugen/data/mugen.cfg"))); 
+        data = new Data(Storage::instance().find(Filesystem::RelativePath("mugen/data/mugen.cfg")));
     }
     return *data;
 }
-        
+
 void Data::destroy(){
     if (data){
         delete data;
@@ -241,8 +241,9 @@ void Data::setMotif(const Filesystem::AbsolutePath & motif){
     this->motif = motif;
     ::Util::ReferenceCount<Storage::File> opened = Storage::instance().open(motif);
     if (opened != NULL){
-        Global::debug(1) << "Motif path '" << opened->location()->toString() << "'" << std::endl;
-        Mugen::Configuration::set("motif", opened->location());
+        Token* location = opened->location();
+        Global::debug(1) << "Motif path '" << location->toString() << "'" << std::endl;
+        Mugen::Configuration::set("motif", location);
     }
 }
 
@@ -273,7 +274,7 @@ void Data::setTime(int time){
     Mugen::Configuration::set("time", time);
 }
 
-int Data::getTime(){ 
+int Data::getTime(){
     return time;
 }
 
@@ -282,7 +283,7 @@ void Data::setSpeed(int speed){
     Mugen::Configuration::set("speed", speed);
 }
 
-int Data::getSpeed(){ 
+int Data::getSpeed(){
     return speed;
 }
 
@@ -308,15 +309,15 @@ const std::string & Data::getGameType(){
     return gameType;
 }
 
-double Data::getDefaultAttackLifeToPowerMultiplier(){ 
+double Data::getDefaultAttackLifeToPowerMultiplier(){
     return defaultAttackLifeToPowerMultiplier;
 }
 
-double Data::getDefaultGetHitLifeToPowerMultiplier(){ 
+double Data::getDefaultGetHitLifeToPowerMultiplier(){
     return defaultGetHitLifeToPowerMultiplier;
 }
 
-double Data::getSuperTargetDefenceMultiplier(){ 
+double Data::getSuperTargetDefenceMultiplier(){
     return superTargetDefenceMultiplier;
 }
 
@@ -332,7 +333,7 @@ double Data::getGameSpeed(){
 bool Data::getDrawShadows(){
     return drawShadows;
 }
-        
+
 Filesystem::RelativePath Data::cleanse(const Filesystem::RelativePath & path){
     string str = path.path();
     if (str.find(getDirectory().path()) == 0){
