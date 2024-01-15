@@ -890,6 +890,10 @@ currentMessages(0){
 }
 
 CharacterSelect::~CharacterSelect(){
+    /* avoid circular references by clearing the list in case any list item has a reference to the list itself */
+    if (list != nullptr){
+        list->clearItems();
+    }
 }
 
 void CharacterSelect::initializeDefaults(){

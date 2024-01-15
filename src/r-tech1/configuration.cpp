@@ -720,11 +720,15 @@ static Token * removeDuplicates(Token * token){
 }
 
 Token * Configuration::getRawData(){
-    if (data == NULL){
+    if (data == nullptr){
         loadConfigurations();
         // data = new Token();
     }
     return data.raw();
+}
+
+void Configuration::cleanup(){
+    data = nullptr;
 }
 
 void Configuration::loadConfigurations(){

@@ -5,9 +5,18 @@ test_extra_files = [
   '../../globals.cpp',
 ]
 
+test_load = ['load.cpp']
+
 includes = include_directories('../..')
 
 executable('test-mugen-view', test_view + test_extra_files,
+  include_directories: [includes],
+  dependencies: test_dependencies,
+  link_with: [rtech1_library, mugen_library],
+  link_args: test_link_args,
+  )
+
+executable('test-mugen-load', test_load + test_extra_files,
   include_directories: [includes],
   dependencies: test_dependencies,
   link_with: [rtech1_library, mugen_library],

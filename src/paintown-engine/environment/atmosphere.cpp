@@ -124,7 +124,7 @@ static int screenY(){
 
 NightAtmosphere::NightAtmosphere():
 Atmosphere(),
-darkness(128),
+darkness(150),
 thunder(NULL),
 lightning(false),
 thunderPause(-1){
