@@ -32,10 +32,11 @@
 #include "libs/7z/7zAlloc.h"
 #include "libs/7z/7zCrc.h"
 
-#ifdef WINDOWS
+//#ifdef WINDOWS
 // https://github.com/gulrak/filesystem/
 #include "libs/filesystem/fs-wrapper.h"
-#endif
+#include "libs/filesystem/glob.h"
+//#endif
 
 #ifdef _WIN32
 // #define _WIN32_IE 0x400
@@ -1726,30 +1727,15 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
 
     vector<AbsolutePath> more = virtualDirectory.findFiles(dataPath, find, caseInsensitive);
     files.insert(files.end(), more.begin(), more.end());
-#if 0
-    DIRST sflEntry;
-    // bool ok = open_dir(&sflEntry, removeTrailingSlash(dataPath.path()).c_str());
-    bool ok = open_dir(&sflEntry, dataPath.path().c_str());
-    if (!ok){
-        /* sfldir.c claims that you have to call close_dir even if
-         * open_dir fails but close_dir will do ASSERT(dir->dir_handle) which is sometimes
-         * NULL when open_dir fails so we first check if the dir_handle is non-NULL and
-         * then call close_dir.
-         */
-        if (sflEntry._dir_handle != NULL){
-            close_dir(&sflEntry);
-        }
 
-        return files;
-    }
-    while (ok){
-        if (file_matches(sflEntry.file_name, find.c_str())){
-            files.push_back(AbsolutePath(dataPath.path() + "/" + string(sflEntry.file_name)));
+    for (const fs::directory_entry & dirEntry : fs::recursive_directory_iterator(dataPath.path())){
+        Global::debug(2) << "Looking for file: " << find << " in directory: " << dirEntry << std::endl;
+        for (fs::path & globFile : glob::glob(dataPath.path() + "/" + dirEntry.path().filename().string())){
+            // FIXME Need to actually search, this is just getting all available files from a glob
+            //globFile.filename().string()
+            files.push_back(AbsolutePath(dataPath.path() + "/" + globFile.filename().string()));
         }
-        ok = read_dir(&sflEntry);
     }
-    close_dir(&sflEntry);
-#endif
     /*
     for (map<AbsolutePath, Util::ReferenceCount<Storage::ZipContainer> >::iterator it = overlays.begin(); it != overlays.end(); it++){
         AbsolutePath path = it->first;

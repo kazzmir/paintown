@@ -15,6 +15,8 @@
 
 #include "factory/collector.h"
 
+#include "r-tech1/libs/filesystem/fs-wrapper.h"
+
 enum Keys{
     Up=0,
     Down,
@@ -122,17 +124,28 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
+// Use other directories
+std::string getDataPath(){
+    std::vector<std::string> locations = { "paintown-data", "data-new", "data-other" };
+    for (std::vector<std::string>::iterator it = locations.begin(); it != locations.end(); it++){
+        if (fs::is_directory(*it)){
+            return *it;
+        }
+    }
+    return "";
+}
+
 int test_main(int argc, char** argv){
     if (argc > 1){
         Collector janitor;
-        Util::setDataPath("paintown-data");
+        Util::setDataPath(getDataPath());
 
         Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
 
         Global::InitConditions conditions;
         Global::init(conditions);
         
-        Global::setDebug(0);
+        Global::setDebug(3);
         std::string file = argv[1];
 
         Paintown::Mod::loadDefaultMod();
