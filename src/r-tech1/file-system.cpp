@@ -1729,6 +1729,7 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     files.insert(files.end(), more.begin(), more.end());
 
 // FIXME Can't seem to get glob to work in windows, it returns 0 files
+    try {
 #ifndef WINDOWS
     // Convert to type std::filesystem::path
     //fs::path path = dataPath.path();
@@ -1737,26 +1738,34 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << find << ")"  << std::endl;
     // for (fs::path & globFile : glob::glob(path.generic_string())){
     for (fs::path & globFile : glob::glob1(dataPath.path(), find, false)){
-        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << endl;
+        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << std::endl;
         files.push_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile.string()))));
     }
 #else
     DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << dataPath.path() + "/" + find << ")"  << std::endl;
     for (const fs::directory_entry & dirEntry : fs::directory_iterator(dataPath.path())){
-        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " file: " << dirEntry.path().string() << endl;
-        // FIXME Glob * crudely, will probably pick up bad data... 
+        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " file: " << dirEntry.path().string() << std::endl;
         if (find == "*"){
             // Add since we want everything anyways
             files.push_back(AbsolutePath(dirEntry.path().string()));
-        } else if(find.find("*") && dirEntry.path().filename().string().find(find.substr(1))){
-            // ie *.zip or *.tar or whatever *.... we'll accept
+            continue;
+        } 
+        // Have to use a copy of string
+        std::string file = dirEntry.path().filename().string();
+        // should be something like \\\\.zip
+        std::regex re(".*\\" + find.substr(1));
+        DebugLog2 << "Built regex for find: " << ".*\\" + find.substr(1) + " in file: " << file << std::endl;
+        //std::smatch match;
+        if (std::regex_search(file, re)){
             files.push_back(AbsolutePath(dirEntry.path().string()));
         } else {
-            DebugLog2 << "Couldn't identify file with pattern.";
+            DebugLog2 << "Couldn't identify file with pattern." << std::endl;
         }
     }
 #endif
-
+    } catch(fs::filesystem_error &ex){
+         DebugLog2 << "Directory or dataPath: " << dataPath.path() << " does not exist. Reason: " << ex.what() << std::endl;
+    }
     /*
     for (map<AbsolutePath, Util::ReferenceCount<Storage::ZipContainer> >::iterator it = overlays.begin(); it != overlays.end(); it++){
         AbsolutePath path = it->first;

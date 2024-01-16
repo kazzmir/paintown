@@ -175,34 +175,34 @@ const Filesystem::AbsolutePath Mugen::Util::findFile(const Filesystem::AbsoluteP
 }
 
 const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::AbsolutePath &dir, std::string str){
-    Global::debug(2) << "Current File: " << str << endl;
+    DebugLog2 << "Current File: " << str << endl;
     // Temp fix until the lexer fixes this crap
     str = Mugen::Util::removeSpaces(str);
     // Fixes windows paths
     str = Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
-    Global::debug(2) << "Checking for file in " << (dir.path()+str) << endl;
-    if (::Util::exists(dir.path() + str) == false){
-	Global::debug(2) << "Couldn't find file: " << str << endl;
-	std::string returnString = "";
-	std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(dir, "*");
-	Global::debug(2) << "Checking for " << str << " in directory: "<< dir.path() << ". Searching " << files.size() << " files." << endl;
+    DebugLog2 << "Checking for file in " << (dir.path() + "/" + str) << endl;
+    if (::Util::exists(dir.path() + "/" + str) == false){
+        DebugLog2 << "Couldn't find file: " << str << endl;
+        std::string returnString = "";
+        std::vector<Filesystem::AbsolutePath> files = Storage::instance().getFiles(dir, "*");
+        DebugLog2 << "Checking for " << str << " in directory: "<< dir.path() << ". Searching " << files.size() << " files." << endl;
         for (vector<Filesystem::AbsolutePath>::iterator it = files.begin(); it != files.end(); it++){
             Filesystem::AbsolutePath & path = *it;
-	    // temp = Mugen::Util::fixCase( temp );
-	    if (Filesystem::InsensitivePath(dir.join(Filesystem::RelativePath(str))) == path){
-		// We got number one chinese retaurant
-                Global::debug(2) << "Found " << path.path() << std::endl;
+            // temp = Mugen::Util::fixCase( temp );
+            if (Filesystem::InsensitivePath(dir.join(Filesystem::RelativePath(str))) == path){
+                // We got number one chinese retaurant
+                DebugLog2 << "Found " << path.path() << std::endl;
                 return path;
+	        }
 	    }
-	}
         ostringstream out;
         out << "Could not find " << str;
         throw Filesystem::NotFound(__FILE__, __LINE__, out.str());
-	// Global::debug(2) << "Corrected file: " << returnString << endl;
-	// return returnString;
+        // Global::debug(2) << "Corrected file: " << returnString << endl;
+        // return returnString;
     }
-    return Filesystem::AbsolutePath(dir.path() + str);
+    return Filesystem::AbsolutePath(dir.path() + "/" + str);
 }
 
 /* this is basename() */
