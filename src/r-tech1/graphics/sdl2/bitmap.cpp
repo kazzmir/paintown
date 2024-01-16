@@ -934,15 +934,25 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
         DebugLog << "Unable to get renderer info: " << SDL_GetError() << endl;
     }
 
-    SDL_RenderSetLogicalSize(renderer, width, height);
+    /*
+    double ratio = 640 / (double) 480;
+    if (width / ratio > height){
+        width = height * ratio;
+    } else {
+        height = width / ratio;
+    }
+    */
+    // SDL_RenderSetLogicalSize(renderer, width, height);
+    /* always render at 640x480 resolution */
+    SDL_RenderSetLogicalSize(renderer, 640, 480);
 
     global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));
 
     Screen = new Bitmap();
     Screen->clip_x1 = 0;
     Screen->clip_y1 = 0;
-    Screen->clip_x2 = width;
-    Screen->clip_y2 = height;
+    Screen->clip_x2 = 640;
+    Screen->clip_y2 = 480;
 
     return 0;
 }
@@ -993,6 +1003,17 @@ void Graphics::StretchedBitmap::hLine(const int x1, const int y, const int x2, c
 */
 
 int Graphics::changeGraphicsMode(int mode, int width, int height){
+    /*
+    double ratio = 640 / (double) 480;
+    if (width / ratio > height){
+        width = height * ratio;
+    } else {
+        height = width / ratio;
+    }
+    */
+    // SDL_RenderSetLogicalSize(global_handler->renderer, width, height);
+
+    // SDL_RenderSetLogicalSize(global_handler->renderer, width, height);
     return 0;
 }
 
