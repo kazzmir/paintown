@@ -1,3 +1,5 @@
+# Build:        docker build -t paintown-mingw-build -f docker/WindowsDockerfile .
+# Access shell: docker run --rm -it --entrypoint /bin/bash  paintown-mingw-build 
 FROM ubuntu:23.10
 
 RUN mkdir /build
