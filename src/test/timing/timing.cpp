@@ -10,6 +10,7 @@
 #include "r-tech1/input/input.h"
 #include "r-tech1/input/input-manager.h"
 
+#ifndef WINDOWS
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
     /* what if HOME isn't set? */
@@ -27,6 +28,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 bool epsilon(double a, double small){
     return a < small;

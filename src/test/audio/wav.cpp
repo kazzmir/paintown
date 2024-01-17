@@ -29,6 +29,7 @@ public:
 
 // Sound::SoundInfo Sound::Info;
 
+#ifndef WINDOWS
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
@@ -48,9 +49,11 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
+#endif
+
 class Configuration{
 public:
-    static int getSoundVolume(){
+    static int getSoundVolume2(){
         return 100;
     }
 };
@@ -70,7 +73,7 @@ void play(const string & path){
 }
 
 void initialize(int rate){
-    Configuration::getSoundVolume();
+    Configuration::getSoundVolume2();
     SDL_Init(SDL_INIT_AUDIO);
     atexit(SDL_Quit);
 

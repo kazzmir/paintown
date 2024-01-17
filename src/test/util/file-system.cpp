@@ -7,6 +7,7 @@
 #include "r-tech1/file-system.h"
 
 
+#ifndef WINDOWS
 
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
@@ -26,6 +27,8 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+
+#endif
 
 namespace Util{
 

@@ -45,6 +45,8 @@ std::string lowerCaseAll(std::string str){
 }
 #endif
 
+
+#ifndef WINDOWS
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
@@ -63,6 +65,8 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+
+#endif
 
 #if 0
 class Sound{
