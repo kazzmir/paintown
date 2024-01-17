@@ -7,5 +7,5 @@ cp -a /build/build-mingw/paintown.exe /paintown-bin
 EOF
 echo "
 To run with wine do:
-WINEDEBUG=-msvcrt wine start /unix paintown.exe -d data-new
+WINEDEBUG=-msvcrt wine start /unix paintown.exe -d data
 "
