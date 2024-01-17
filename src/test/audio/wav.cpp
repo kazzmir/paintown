@@ -95,8 +95,12 @@ void initialize(int rate){
 
     Global::debug(0) << "Opened audio frequency " << audio_rate << " channels " << audio_channels << " format " << audio_format << endl;
 }
-
+#ifndef WINDOWS
 int main(int argc, char ** argv){
+#else
+#include <SDL2/SDL.h>
+int main(int argc, char *argv[]){
+#endif
     if (argc < 2){
         Global::debug(0) << "Give an audio file as an argument" << endl;
         return 0;
@@ -107,5 +111,7 @@ int main(int argc, char ** argv){
     } catch (...){
         Global::debug(0) << "Failed" << endl;
     }
+
+    return 0;
 }
 

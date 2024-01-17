@@ -107,12 +107,18 @@ static void testDirectory(){
 static void test7z(){
     Storage::instance().addOverlay(Filesystem::AbsolutePath("src/test/util/test.7z"), Filesystem::AbsolutePath("test"));
 }
-
+#ifndef WINDOWS
 int main(){
+#else
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+#endif
     Global::setDebug(1);
     testGetFiles();
     testZip();
     testLastComponent();
     testDirectory();
     test7z();
+
+    return 0;
 }

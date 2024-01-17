@@ -1,3 +1,4 @@
+#ifndef WINDOWS
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -113,3 +114,10 @@ int test_main(int argc, char** argv){
 int main(int argc, char** argv){
     test_main(argc, argv);
 }
+#else 
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+    // No mutex available in mingw
+    return 0;
+}
+#endif

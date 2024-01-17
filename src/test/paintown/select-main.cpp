@@ -3,6 +3,7 @@
 
 #include "paintown-engine/game/character-select.h"
 #include "paintown-engine/game/mod.h"
+#include "mugen/random.h"
 
 #include "r-tech1/init.h"
 #include "r-tech1/debug.h"
@@ -16,6 +17,8 @@
 #include "factory/collector.h"
 
 #include "r-tech1/libs/filesystem/fs-wrapper.h"
+
+using namespace Mugen;
 
 enum Keys{
     Up=0,
@@ -186,5 +189,5 @@ int test_main(int argc, char** argv){
 }
 
 int main(int argc, char ** argv){
-    test_main(argc, argv);
+    return test_main(argc, argv);
 }

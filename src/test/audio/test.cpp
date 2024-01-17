@@ -203,4 +203,6 @@ int main(int argc, char ** argv){
     } catch (...){
         Global::debug(0) << "Failed" << std::endl;
     }
+
+    return 0;
 }

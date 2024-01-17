@@ -22,6 +22,10 @@ build-mingw:
 	misc/mingw-environment.sh
 	meson setup --cross-file mingw_x86_64.txt build-mingw
 
+testmingw: build-mingw
+	(cd build-mingw; meson configure -Dbuild_tests=true)
+	meson compile -C build-mingw
+
 clean:
 	rm -rf build-debug
 	rm -rf build-mingw
