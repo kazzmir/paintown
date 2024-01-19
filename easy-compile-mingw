@@ -17,7 +17,8 @@ echo When prompted for a password type the password you use to login.
 
 sudo apt install -y g++-mingw-w64 gcc-mingw-w64 libz-mingw-w64 libz-mingw-w64-dev mingw-w64-tools mingw-w64-common cmake meson ninja-build make git wget
 
-make mingw
+# FIXME Include tests until most issues are resolved, then just do mingw
+make testmingw
 
 #ls -l paintown
 #echo "Here is the executable. To run it type: ./paintown"

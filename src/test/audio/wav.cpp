@@ -29,6 +29,7 @@ public:
 
 // Sound::SoundInfo Sound::Info;
 
+#ifndef WINDOWS
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
@@ -48,9 +49,11 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
+#endif
+
 class Configuration{
 public:
-    static int getSoundVolume(){
+    static int getSoundVolume2(){
         return 100;
     }
 };
@@ -70,7 +73,7 @@ void play(const string & path){
 }
 
 void initialize(int rate){
-    Configuration::getSoundVolume();
+    Configuration::getSoundVolume2();
     SDL_Init(SDL_INIT_AUDIO);
     atexit(SDL_Quit);
 
@@ -95,8 +98,12 @@ void initialize(int rate){
 
     Global::debug(0) << "Opened audio frequency " << audio_rate << " channels " << audio_channels << " format " << audio_format << endl;
 }
-
+#ifndef WINDOWS
 int main(int argc, char ** argv){
+#else
+#include <SDL2/SDL.h>
+int main(int argc, char *argv[]){
+#endif
     if (argc < 2){
         Global::debug(0) << "Give an audio file as an argument" << endl;
         return 0;
@@ -107,5 +114,7 @@ int main(int argc, char ** argv){
     } catch (...){
         Global::debug(0) << "Failed" << endl;
     }
+
+    return 0;
 }
 

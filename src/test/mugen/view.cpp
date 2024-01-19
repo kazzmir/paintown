@@ -40,6 +40,7 @@ namespace PaintownUtil = ::Util;
 
 using namespace std;
 
+#ifndef WINDOWS
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
     /* what if HOME isn't set? */
@@ -57,6 +58,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 static void showCollision( const std::vector< Mugen::Area > &vec, const Graphics::Bitmap &bmp, int x, int y, Graphics::Color color, int &start ){
     int next = start;

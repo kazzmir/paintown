@@ -20,6 +20,8 @@ enum Keys{
     Enter,
 };
 
+#ifndef WINDOWS
+
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
@@ -38,6 +40,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 class Logic: public Util::Logic {
 public:
@@ -157,5 +160,5 @@ int test_main(int argc, char** argv){
 }
 
 int main(int argc, char** argv){
-    test_main(argc, argv);
+    return test_main(argc, argv);
 }

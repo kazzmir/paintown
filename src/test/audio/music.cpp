@@ -53,7 +53,7 @@ string lowerCaseAll(std::string str){
 }
 #endif
 
-
+#ifndef WINDOWS
 
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
@@ -74,7 +74,14 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     return Filesystem::AbsolutePath(str.str());
 }
 
-int main(){
+#endif
+
+#ifndef WINDOWS
+int main(int argc, char ** argv){
+#else
+#include <SDL2/SDL.h>
+int main(int argc, char *argv[]){
+#endif
     Sound::initialize();
     Music music(true);
     // music.loadSong("data/music/Aurora.ogg");
@@ -82,4 +89,6 @@ int main(){
         music.loadSong("data/music/Aurora.ogg");
         music.loadSong("data/music/Techtopia.ogg");
     }
+
+    return 0;
 }

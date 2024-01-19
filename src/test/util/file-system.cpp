@@ -7,6 +7,7 @@
 #include "r-tech1/file-system.h"
 
 
+#ifndef WINDOWS
 
 /* FIXME: dont put these methods in this test file */
 Filesystem::AbsolutePath Filesystem::configFile(){
@@ -26,6 +27,8 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+
+#endif
 
 namespace Util{
 
@@ -107,12 +110,18 @@ static void testDirectory(){
 static void test7z(){
     Storage::instance().addOverlay(Filesystem::AbsolutePath("src/test/util/test.7z"), Filesystem::AbsolutePath("test"));
 }
-
+#ifndef WINDOWS
 int main(){
+#else
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+#endif
     Global::setDebug(1);
     testGetFiles();
     testZip();
     testLastComponent();
     testDirectory();
     test7z();
+
+    return 0;
 }
