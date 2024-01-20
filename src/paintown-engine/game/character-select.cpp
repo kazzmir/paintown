@@ -645,7 +645,7 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
 
         /* FIXME: the y parameter actually isn't used in the outline and reflection. */
         copy.drawOutline(temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
-        copy.drawReflection(temp, 0, temp.getHeight() - stand - stand, 128);
+        copy.drawReflection(temp, 0, temp.getHeight() - stand - stand, 150);
         copy.draw(temp, 0, temp.getHeight()/2);
 
         temp.finish();

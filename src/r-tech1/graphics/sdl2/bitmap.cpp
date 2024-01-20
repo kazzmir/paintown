@@ -648,6 +648,31 @@ void Graphics::Bitmap::drawHFlip(const int x, const int y, const Bitmap & where)
 }
 
 void Graphics::Bitmap::drawVFlip( const int x, const int y, const Bitmap & where ) const {
+    SDL_Texture* texture = getTexture(false);
+
+    if (texture != nullptr){
+        where.activate();
+        SDL_Rect rect;
+        rect.x = x + where.clip_x1;
+        rect.y = y + where.clip_y1;
+        SDL_Point size;
+        // FIXME: cache the texture size
+        SDL_QueryTexture(texture, NULL, NULL, &size.x, &size.y);
+        rect.w = size.x;
+        rect.h = size.y;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        where.enableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, &rect);
+
+        SDL_RendererFlip flip = SDL_FLIP_VERTICAL;
+        SDL_RenderCopyEx(global_handler->renderer, texture, NULL, &rect, 0, NULL, flip);
+
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
@@ -902,9 +927,19 @@ void Graphics::TranslucentBitmap::drawHFlip(const int x, const int y, const Bitm
 }
 
 void Graphics::TranslucentBitmap::drawVFlip( const int x, const int y, const Bitmap & where ) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture == nullptr){
+        return;
+    }
+
+    SDL_SetTextureAlphaMod(texture, alpha);
+    Graphics::Bitmap::drawVFlip(x, y, where);
+    SDL_SetTextureAlphaMod(texture, 255);
 }
 
 void Graphics::TranslucentBitmap::drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const {
+    /* FIXME: handle filter */
+    drawVFlip(x, y, where);
 }
 
 void Graphics::TranslucentBitmap::putPixelNormal(int x, int y, Color col) const {
