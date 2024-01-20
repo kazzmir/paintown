@@ -725,7 +725,8 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                 } else {
                     draw.updateFrames();
                     screen.clear();
-                    draw.draw(screen.aspectRatio(640, 480));
+                    // draw.draw(screen.aspectRatio(640, 480));
+                    draw.draw(screen);
                     if (useTouchOverlay()){
                         InputManager::getTouch()->drawTouchOverlay(screen);
                     }
