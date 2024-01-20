@@ -718,6 +718,41 @@ void Graphics::Bitmap::StretchHqx(const Bitmap & where, const int sourceX, const
 }
 
 void Graphics::Bitmap::Stretch(const Bitmap & where, const int sourceX, const int sourceY, const int sourceWidth, const int sourceHeight, const int destX, const int destY, const int destWidth, const int destHeight ) const {
+    SDL_Texture* texture = getTexture(false);
+
+    if (texture != nullptr){
+        where.activate();
+        SDL_Rect destRect;
+        destRect.x = destX + where.clip_x1;
+        destRect.y = destY + where.clip_y1;
+        // SDL_Point size;
+        // FIXME: cache the texture size
+        // SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        destRect.w = destWidth;
+        destRect.h = destHeight;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        SDL_Rect sourceRect;
+        sourceRect.x = this->clip_x1 + sourceX;
+        sourceRect.y = this->clip_y1 + sourceY;
+
+        if (sourceWidth + sourceX > this->clip_x2 - this->clip_x1){
+            sourceRect.w = this->clip_x2 - this->clip_x1 - sourceX;
+        } else {
+            sourceRect.w = sourceWidth;
+        }
+        if (sourceHeight + sourceY > this->clip_y2 - this->clip_y1){
+            sourceRect.h = this->clip_y2 - this->clip_y1 - sourceY;
+        } else {
+            sourceRect.h = sourceHeight;
+        }
+
+        where.enableClip();
+        SDL_RenderCopy(global_handler->renderer, texture, &sourceRect, &destRect);
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::StretchBy2( const Bitmap & where ){
