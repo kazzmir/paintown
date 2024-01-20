@@ -634,11 +634,9 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         Graphics::Bitmap window2 = window1.aspectRatio(copy.getAverageWidth(), copy.getAverageHeight() * 2);
         // window2.border(0, 2, Graphics::makeColor(255, 255, 255));
 
-        /*
         Graphics::StretchedBitmap temp(copy.getAverageWidth(), copy.getAverageHeight() * 2, window2, Graphics::StretchedBitmap::Mask);
         temp.start();
-        */
-        Graphics::Bitmap temp(window2);
+        // Graphics::Bitmap temp(window2);
 
         copy.setDrawShadow(false);
         copy.setX(temp.getWidth()/2);
@@ -650,7 +648,7 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         copy.drawReflection(temp, 0, temp.getHeight() - stand - stand, 128);
         copy.draw(temp, 0, temp.getHeight()/2);
 
-        // temp.finish();
+        temp.finish();
 
         /*
            double widthRatio = (double) profile.bitmap->getWidth() / temp.getWidth();
