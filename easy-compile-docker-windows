@@ -1,11 +1,23 @@
 #!/bin/bash
 
 docker build -t paintown-mingw-build -f docker/WindowsDockerfile .
+mkdir -p ${PWD}/mingw-bin
 docker run --rm -iv${PWD}:/paintown-bin paintown-mingw-build sh -s <<EOF
 chown $(id -u):$(id -g) /build/build-mingw/paintown.exe
-cp -a /build/build-mingw/paintown.exe /paintown-bin
+cp -a /build/build-mingw/paintown.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/mugen/test-mugen-load.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/mugen/test-mugen-view.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/timing/test-timing.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/paintown/test-animation.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/paintown/test-paintown-select.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/audio/test-wav.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/audio/test-music.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/audio/test-player.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/util/test-fs.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/graphics/test-graphics.exe /paintown-bin/mingw-bin
+cp -a /build/build-mingw/src/test/graphics/test-thread.exe /paintown-bin/mingw-bin
 EOF
 echo "
 To run with wine do:
-WINEDEBUG=-msvcrt wine start /unix paintown.exe -d data
+WINEDEBUG=-msvcrt wine start /unix mingw-bin/paintown.exe -d data
 "
