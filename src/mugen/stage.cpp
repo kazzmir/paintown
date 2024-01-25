@@ -513,13 +513,13 @@ void Mugen::Stage::load(){
 	filesdir += "/";
     }
     
-    Global::debug(1) << "Got subdir: " << filesdir << endl;
+    DebugLog1 << "Got subdir: " << filesdir << endl;
 
     TimeDifference diff;
     diff.startTime();
     AstRef parsed(Mugen::Util::parseDef(ourDefFile));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
+    DebugLog1 << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
     struct cymk_holder shadow;
@@ -1983,7 +1983,7 @@ void Mugen::Stage::begin(){
 const std::string Mugen::Stage::getStageName(const std::string &filename){
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath dir = Storage::instance().find(Filesystem::RelativePath("mugen/stages/"));
-    Global::debug(1) << dir.path() << endl;
+    DebugLog1 << dir.path() << endl;
     string fullname = filename;
     if ( fullname.find(".def") == std::string::npos){
 	fullname += ".def";
@@ -2002,7 +2002,7 @@ const std::string Mugen::Stage::getStageName(const std::string &filename){
 	filesdir += "/";
     }
     
-    Global::debug(1) << "Got subdir: " << filesdir << endl;
+    DebugLog1 << "Got subdir: " << filesdir << endl;
     
     AstRef parsed(Mugen::Util::parseDef(defFile));
     return parsed->findSection("info")->findAttribute("name")->valueAsString();

@@ -181,7 +181,7 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
     // Fixes windows paths
     str = Mugen::Util::invertSlashes(str);
     // Lets check if we need to fix anything first
-    DebugLog2 << "Checking for file in " << (dir.path() + "/" + str) << endl;
+    DebugLog2 << "Checking for file in " << (dir.path() + "/" + str) << " exists: " << ::Util::exists(dir.path() + "/" + str) << endl;
     if (::Util::exists(dir.path() + "/" + str) == false){
         DebugLog2 << "Couldn't find file: " << str << endl;
         std::string returnString = "";
@@ -202,6 +202,8 @@ const Filesystem::AbsolutePath Mugen::Util::fixFileName(const Filesystem::Absolu
         // Global::debug(2) << "Corrected file: " << returnString << endl;
         // return returnString;
     }
+
+    DebugLog2 << "Returning: " << (dir.path() + "/" + str) << endl;
     return Filesystem::AbsolutePath(dir.path() + "/" + str);
 }
 
