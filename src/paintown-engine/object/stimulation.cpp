@@ -93,6 +93,7 @@ HealthStimulation::HealthStimulation(const Token & data){
 }
 
 HealthStimulation::HealthStimulation( const HealthStimulation & h ):
+Stimulation(),
 value(h.value){
 }
     
@@ -132,6 +133,7 @@ InvincibilityStimulation::InvincibilityStimulation(const Token & data){
 }
 
 InvincibilityStimulation::InvincibilityStimulation(const InvincibilityStimulation & copy):
+Stimulation(),
 duration(copy.duration){
 }
 
@@ -171,6 +173,7 @@ SpeedStimulation::SpeedStimulation(Network::Message & data){
 }
 
 SpeedStimulation::SpeedStimulation(const SpeedStimulation & copy):
+Stimulation(),
 boost(copy.boost),
 ticks(copy.ticks){
 }
@@ -205,6 +208,7 @@ lives(0){
 }
 
 ExtraLifeStimulation::ExtraLifeStimulation(const ExtraLifeStimulation & copy):
+Stimulation(),
 lives(copy.lives){
 }
 
