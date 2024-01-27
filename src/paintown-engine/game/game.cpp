@@ -117,20 +117,28 @@ static vector<Background> readBackgrounds( const Filesystem::AbsolutePath & path
  * the lowest number N such that 'xyzN.txt' doesn't exist, and return 'xyzN.txt'
  */
 static string findNextFile( const char * name ){
+#ifdef __GNUC__
+// Ignore truncation
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
     char buf[ 128 ];
     const char * extension = strchr( name, '.' );
     char first[ 128 ];
     strncpy( first, name, extension - name );
     first[ extension - name ] = '\0';
     unsigned int num = 0;
-    sprintf( buf, "%s%u%s", first, num, extension );
+    snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
     do{
         num += 1;
-        sprintf( buf, "%s%u%s", first, num, extension );
+        snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
         /* num != 0 prevents an infinite loop in the extremely
          * remote case that the user has 2^32 files in the directory
          */
     } while (num != 0 && Util::exists(buf));
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
     return string(buf);
 }
 
