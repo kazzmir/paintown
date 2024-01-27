@@ -43,6 +43,7 @@ body(640,480){
 }
 
 TabContainer::TabContainer(const TabContainer & copy):
+Widget(),
 tabs(copy.tabs),
 current(copy.current),
 body(copy.body){
