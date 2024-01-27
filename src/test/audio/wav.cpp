@@ -51,13 +51,6 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
 
 #endif
 
-class Configuration{
-public:
-    static int getSoundVolume2(){
-        return 100;
-    }
-};
-
 using namespace std;
 
 void play(const string & path){
@@ -73,7 +66,6 @@ void play(const string & path){
 }
 
 void initialize(int rate){
-    Configuration::getSoundVolume2();
     SDL_Init(SDL_INIT_AUDIO);
     atexit(SDL_Quit);
 
