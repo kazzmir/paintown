@@ -16,9 +16,13 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#else
+#include <chrono>
+#include "libs/filesystem/fs-wrapper.h"
 #endif
 
 #ifndef WINDOWS
+
 
 /* devkitpro doesn't have an implementation of access() yet. if it gets one this function
  * can be removed.
@@ -120,16 +124,31 @@ void System::startMemoryUsage(){
 // FIXME For the time being on cross-build, needs to be corrected
 
 
+uint64_t System::getModificationTime(const std::string & path){
+    
+    // FIXME figure out how to convert to unit64_t and remove auto
+    //auto p = fs::path(path);
+    //auto time = fs::last_write_time(p);
+
+    return 0;
+}
+
 void System::makeDirectory(const std::string & path){
-    // ?
+    fs::path p = fs::path(path);
+    fs::create_directory(p);
 }
 
 bool System::isDirectory(const std::string & path){
-    return true;
+    return fs::is_directory(fs::path(path));
 }
 
 bool System::readable(const std::string & path){
-    return true;
+    fs::path p = fs::path(path);
+    fs::perms permissions = fs::status(p).permissions();
+
+    return ((permissions & fs::perms::owner_read) != fs::perms::none &&
+            (permissions & fs::perms::group_read) != fs::perms::none &&
+            (permissions & fs::perms::others_read) != fs::perms::none);
 }
 
 uint64_t System::currentMilliseconds(){

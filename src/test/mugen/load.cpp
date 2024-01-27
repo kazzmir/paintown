@@ -33,6 +33,7 @@ static void showMemory(){
 }
 */
 
+#ifndef WINDOWS
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
     /* what if HOME isn't set? */
@@ -50,6 +51,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 static void mount(const char * path){
     Filesystem::AbsolutePath container(path);

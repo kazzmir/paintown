@@ -21,10 +21,13 @@
 #include "r-tech1/file-system.h"
 #include <math.h>
 
+#include "libs/filesystem/fs-wrapper.h"
+//#include "libs/filesystem/glob.h"
+
 #ifndef USE_ALLEGRO
 /* FIXME: move this to the filesystem module */
-#include "libs/sfl/sfl.h"
-#include "libs/sfl/sflfile.h"
+//#include "libs/sfl/sfl.h"
+//#include "libs/sfl/sflfile.h"
 #endif
 
 #ifndef WINDOWS
@@ -163,7 +166,12 @@ Filesystem::AbsolutePath Util::getDataPath2(){
 
 /* FIXME: remove this method */
 bool Util::exists( const string & file ){
+#ifndef WINDOWS
     return Storage::instance().exists(Filesystem::AbsolutePath(file));
+#else
+    return fs::exists(fs::path(Filesystem::AbsolutePath(file).path()));
+#endif
+
 /*
 #ifdef USE_ALLEGRO
     return ::exists(file.c_str()) != 0;
