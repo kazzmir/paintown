@@ -22,7 +22,6 @@ if not meson.is_cross_build()
 endif
 
 includes = include_directories('src')
-dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
 all_code = [
   'src/xmain.cpp',
   'src/main-menu.cpp',
