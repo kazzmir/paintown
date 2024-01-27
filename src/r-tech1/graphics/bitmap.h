@@ -160,6 +160,8 @@ int getBlue(const Color & x);
 int getGreen(const Color & x);
 int getAlpha(const Color & x);
 
+Bitmap makeRoundedRect(int width, int height, int radius, const Color & fillColor, const Color & borderColor);
+
 Color MaskColor();
 
 enum QualityFilter{

@@ -52,6 +52,21 @@ bool operator<(const INTERNAL_COLOR&, const INTERNAL_COLOR&){
     return false;
 }
 
+Graphics::Bitmap Graphics::makeRoundedRect(int width, int height, int radius, const Graphics::Color & fillColor, const Graphics::Color & borderColor){
+
+    SDL_Texture* texture = SDL_CreateTexture(global_handler->renderer, SDL_PIXELFORMAT_RGBA32, SDL_TEXTUREACCESS_TARGET, width, height);
+    SDL_SetRenderTarget(global_handler->renderer, texture);
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(global_handler->renderer, 0, 0, 0, 0);
+    SDL_RenderFillRect(global_handler->renderer, nullptr);
+
+    roundedBoxRGBA(global_handler->renderer, 0, 0, width, height, radius, getRed(fillColor), getGreen(fillColor), getBlue(fillColor), 255);
+    roundedRectangleRGBA(global_handler->renderer, 0, 0, width-1, height-1, radius, getRed(borderColor), getGreen(borderColor), getBlue(borderColor), 255);
+
+    return Graphics::Bitmap(texture);
+}
+
 Graphics::Bitmap::Bitmap(){
     setData(std::shared_ptr<BitmapData>(new BitmapData(nullptr, nullptr)));
 }
@@ -703,6 +718,41 @@ void Graphics::Bitmap::StretchHqx(const Bitmap & where, const int sourceX, const
 }
 
 void Graphics::Bitmap::Stretch(const Bitmap & where, const int sourceX, const int sourceY, const int sourceWidth, const int sourceHeight, const int destX, const int destY, const int destWidth, const int destHeight ) const {
+    SDL_Texture* texture = getTexture(false);
+
+    if (texture != nullptr){
+        where.activate();
+        SDL_Rect destRect;
+        destRect.x = destX + where.clip_x1;
+        destRect.y = destY + where.clip_y1;
+        // SDL_Point size;
+        // FIXME: cache the texture size
+        // SDL_QueryTexture(this->getData()->texture, NULL, NULL, &size.x, &size.y);
+        destRect.w = destWidth;
+        destRect.h = destHeight;
+        // DebugLog << "draw size is " << size.x << " " << size.y << endl;
+
+        SDL_Rect sourceRect;
+        sourceRect.x = this->clip_x1 + sourceX;
+        sourceRect.y = this->clip_y1 + sourceY;
+
+        if (sourceWidth + sourceX > this->clip_x2 - this->clip_x1){
+            sourceRect.w = this->clip_x2 - this->clip_x1 - sourceX;
+        } else {
+            sourceRect.w = sourceWidth;
+        }
+        if (sourceHeight + sourceY > this->clip_y2 - this->clip_y1){
+            sourceRect.h = this->clip_y2 - this->clip_y1 - sourceY;
+        } else {
+            sourceRect.h = sourceHeight;
+        }
+
+        where.enableClip();
+        SDL_RenderCopy(global_handler->renderer, texture, &sourceRect, &destRect);
+        where.disableClip();
+
+        // SDL_RenderCopy(global_handler->renderer, this->getData()->texture, NULL, NULL);
+    }
 }
 
 void Graphics::Bitmap::StretchBy2( const Bitmap & where ){
@@ -828,6 +878,9 @@ void Graphics::TranslucentBitmap::rectangleFill(int x1, int y1, int x2, int y2, 
 }
 
 void Graphics::TranslucentBitmap::rectangle(int x1, int y1, int x2, int y2, Color color) const {
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_BLEND);
+    Graphics::Bitmap::rectangle(x1, y1, x2, y2, color.updateAlpha(alpha));
+    SDL_SetRenderDrawBlendMode(global_handler->renderer, SDL_BLENDMODE_NONE);
 }
 
 void Graphics::TranslucentBitmap::line( const int x1, const int y1, const int x2, const int y2, const Color color ) const {
@@ -916,15 +969,25 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
         DebugLog << "Unable to get renderer info: " << SDL_GetError() << endl;
     }
 
-    SDL_RenderSetLogicalSize(renderer, width, height);
+    /*
+    double ratio = 640 / (double) 480;
+    if (width / ratio > height){
+        width = height * ratio;
+    } else {
+        height = width / ratio;
+    }
+    */
+    // SDL_RenderSetLogicalSize(renderer, width, height);
+    /* always render at 640x480 resolution */
+    SDL_RenderSetLogicalSize(renderer, 640, 480);
 
     global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));
 
     Screen = new Bitmap();
     Screen->clip_x1 = 0;
     Screen->clip_y1 = 0;
-    Screen->clip_x2 = width;
-    Screen->clip_y2 = height;
+    Screen->clip_x2 = 640;
+    Screen->clip_y2 = 480;
 
     return 0;
 }
@@ -975,6 +1038,17 @@ void Graphics::StretchedBitmap::hLine(const int x1, const int y, const int x2, c
 */
 
 int Graphics::changeGraphicsMode(int mode, int width, int height){
+    /*
+    double ratio = 640 / (double) 480;
+    if (width / ratio > height){
+        width = height * ratio;
+    } else {
+        height = width / ratio;
+    }
+    */
+    // SDL_RenderSetLogicalSize(global_handler->renderer, width, height);
+
+    // SDL_RenderSetLogicalSize(global_handler->renderer, width, height);
     return 0;
 }
 
