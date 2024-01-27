@@ -19,7 +19,8 @@ LanguageString::LanguageString(const std::string & stuff, const std::string & la
     add(stuff, language);
 }
 
-LanguageString::LanguageString(const LanguageString & language){
+LanguageString::LanguageString(const LanguageString & language):
+std::string(){
     languages = language.languages;
 }
     
