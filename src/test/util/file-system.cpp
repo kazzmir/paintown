@@ -4,6 +4,7 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
+#include "r-tech1/debug.h"
 #include "r-tech1/file-system.h"
 
 
@@ -50,7 +51,11 @@ Filesystem::AbsolutePath getDataPath2(){
 
 
 void testGetFiles(){
-    std::vector<Filesystem::AbsolutePath> paths = Storage::instance().getFiles(Filesystem::AbsolutePath("data"), Filesystem::RelativePath("m*/*.txt"), false);
+    DebugLog << "Testing get files. Setting data path to data." << std::endl;
+    Filesystem::AbsolutePath dataPath = Filesystem::AbsolutePath("data");
+    DebugLog << "Setting relative path m*/*.txt" << std::endl;
+    Filesystem::RelativePath relativePath = Filesystem::RelativePath("m*/*.txt");
+    std::vector<Filesystem::AbsolutePath> paths = Storage::instance().getFiles(dataPath, relativePath, false);
     for (std::vector<Filesystem::AbsolutePath>::iterator it = paths.begin(); it != paths.end(); it++){
         std::cout << it->path() << std::endl;
     }
@@ -116,7 +121,7 @@ int main(){
 #include <SDL2/SDL.h>
 int main(int argv, char *args[]){
 #endif
-    Global::setDebug(1);
+    Global::setDebug(3);
     testGetFiles();
     testZip();
     testLastComponent();
