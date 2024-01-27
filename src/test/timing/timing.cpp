@@ -10,6 +10,7 @@
 #include "r-tech1/input/input.h"
 #include "r-tech1/input/input-manager.h"
 
+#ifndef WINDOWS
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
     /* what if HOME isn't set? */
@@ -27,6 +28,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 bool epsilon(double a, double small){
     return a < small;
@@ -63,7 +65,12 @@ void test1(){
     }
 }
 
+#ifndef WINDOWS
 int test_main(int argc, char** argv){
+#else
+#include <SDL2/SDL.h>
+int test_main(int argc, char *argv[]){
+#endif
     Global::setDebug(1);
 
     Global::InitConditions conditions;
@@ -80,6 +87,11 @@ int test_main(int argc, char** argv){
     return 0;
 }
 
+#ifndef WINDOWS
 int main(int argc, char** argv){
+#else
+#include <SDL2/SDL.h>
+int main(int argc, char *argv[]){
+#endif
     return test_main(argc, argv);
 }

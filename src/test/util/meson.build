@@ -1,4 +1,4 @@
-test_timing = ['timing.cpp']
+filesystem_test = ['file-system.cpp']
 
 test_extra_files = [
     '../../globals.cpp',
@@ -6,7 +6,7 @@ test_extra_files = [
 
 includes = include_directories('../..')
 
-executable('test-timing', test_timing + test_extra_files,
+executable('test-fs', filesystem_test + test_extra_files,
   include_directories: [includes],
   dependencies: test_dependencies,
   link_with: [sdl_graphics_library, rtech1_library],

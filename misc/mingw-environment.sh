@@ -9,6 +9,7 @@ function download () {
     NAME="$1"
     URL="$2"
     FOLDER="$3"
+    IGNORE_BINS_DIR="$4"
 
     if [ ! -d "${TEMP_DIR}/${FOLDER}" ]; then
         echo "Downloading ${NAME}..."
@@ -16,6 +17,10 @@ function download () {
         wget -q -O- "${URL}" | tar -xz -C "${TEMP_DIR}/${FOLDER}" --strip-components=1
     else
         echo "${NAME} already downloaded..."
+    fi
+
+    if [ ! -z "${IGNORE_BINS_DIR}" ] && [ "${IGNORE_BINS_DIR}" -eq "1" ]; then
+        return
     fi
 
     if [ -d "${TEMP_DIR}/${FOLDER}/x86_64-w64-mingw32" ]; then
@@ -60,3 +65,32 @@ sdl_graphics_library = static_library('SDL2_gfx', sources,
   dependencies: [sdl_dependency, zlib_dependency],
   )
 EOT
+
+# FIXME zlib library 
+#download "zlib" "https://www.zlib.net/current/zlib.tar.gz" "zlib" "1"
+#cat >${TEMP_DIR}/zlib/meson.build <<'EOT'
+#sources = [
+#  'adler32.c',
+#  'compress.c',
+#  'crc32.c',
+#  'deflate.c',
+#  'gzclose.c',
+#  'gzlib.c',
+#  'gzread.c',
+#  'gzwrite.c',
+#  'infback.c',
+#  'inffast.c',
+#  'inflate.c',
+#  'inftrees.c',
+#  'trees.c',
+#  'uncompr.c',
+#  'zutil.c',
+#]
+#
+#includes = include_directories('.')
+#
+#zlib_library = static_library('z', sources,
+#  include_directories: [includes],
+#  dependencies: [],
+#  )
+#EOT

@@ -4,7 +4,32 @@
 #include <fstream>
 #include <algorithm>
 #include <vector>
-#include "util/file-system.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/file-system.h"
+
+
+#ifndef WINDOWS
+
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+
+#endif
 
 namespace Util{
 
@@ -12,6 +37,7 @@ static int upperCase(int c){
     return toupper(c);
 }
 
+/*
 std::string upperCaseAll(std::string str){
     std::transform(str.begin(), str.end(), str.begin(), upperCase);
     return str;
@@ -20,11 +46,16 @@ std::string upperCaseAll(std::string str){
 Filesystem::AbsolutePath getDataPath2(){
     return Filesystem::AbsolutePath(".");
 }
-
+*/
 }
 
+
 void testGetFiles(){
-    std::vector<Filesystem::AbsolutePath> paths = Storage::instance().getFiles(Filesystem::AbsolutePath("data"), Filesystem::RelativePath("m*/*.txt"), false);
+    DebugLog << "Testing get files. Setting data path to data." << std::endl;
+    Filesystem::AbsolutePath dataPath = Filesystem::AbsolutePath("data");
+    DebugLog << "Setting relative path m*/*.txt" << std::endl;
+    Filesystem::RelativePath relativePath = Filesystem::RelativePath("m*/*.txt");
+    std::vector<Filesystem::AbsolutePath> paths = Storage::instance().getFiles(dataPath, relativePath, false);
     for (std::vector<Filesystem::AbsolutePath>::iterator it = paths.begin(); it != paths.end(); it++){
         std::cout << it->path() << std::endl;
     }
@@ -84,12 +115,18 @@ static void testDirectory(){
 static void test7z(){
     Storage::instance().addOverlay(Filesystem::AbsolutePath("src/test/util/test.7z"), Filesystem::AbsolutePath("test"));
 }
-
+#ifndef WINDOWS
 int main(){
-    Global::setDebug(1);
+#else
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+#endif
+    Global::setDebug(3);
     testGetFiles();
     testZip();
     testLastComponent();
     testDirectory();
     test7z();
+
+    return 0;
 }

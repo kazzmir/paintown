@@ -62,7 +62,7 @@ subdir('src/paintown-engine')
 subdir('src/openbor')
 
 test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
-test_linkages = [rtech1_library, mugen_library, paintown_library, openbor_library]
+test_linkages = [sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library]
 test_link_args = link_args
 
 executable('paintown', all_code,
@@ -78,4 +78,5 @@ if build_tests == true
   subdir('src/test/audio')
   subdir('src/test/mugen')
   subdir('src/test/timing')
+  subdir('src/test/util')
 endif

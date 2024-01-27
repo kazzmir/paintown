@@ -5,10 +5,8 @@
 #include <vector>
 #include <map>
 
-#ifndef USE_ALLEGRO
-#include "libs/sfl/sfl.h"
-#include "libs/sfl/sfldir.h"
-#endif
+#include "libs/filesystem/fs-wrapper.h"
+#include "libs/filesystem/glob.h"
 
 using std::string;
 using std::vector;
@@ -88,9 +86,19 @@ vector<Path::AbsolutePath> Directory::findDirectories(const Path::AbsolutePath &
 #ifndef USE_ALLEGRO
     for (vector<string>::iterator it = names.begin(); it != names.end(); it++){
         Global::debug(1) << "Check if " << *it << " matches " << find << std::endl;
-        if (file_matches(it->c_str(), find.c_str())){
-            out.push_back(dataPath.join(Path::RelativePath(*it)));
+        //if (file_matches(it->c_str(), find.c_str())){
+        
+        for (const fs::directory_entry & dirEntry : fs::recursive_directory_iterator(fs::path(*it))){
+            Global::debug(2) << "Looking for file: " << find << " in directory: " << dirEntry << std::endl;
+            for (fs::path & globFile : glob::glob(dataPath.path() + "/" + dirEntry.path().filename().string())){
+                // FIXME add search, instead of just globbing all files
+                out.push_back(dataPath.join(Path::RelativePath(*it)));
+            }
         }
+        
+        /*if (it->find(find) != std::string::npos) {
+            out.push_back(dataPath.join(Path::RelativePath(*it)));
+        }*/
     }
 #endif
 
@@ -137,9 +145,19 @@ vector<Path::AbsolutePath> Directory::findFiles(const Path::AbsolutePath & dataP
 #ifndef USE_ALLEGRO
     for (vector<string>::iterator it = names.begin(); it != names.end(); it++){
         Global::debug(1) << "Check if " << *it << " matches " << find << std::endl;
-        if (file_matches(it->c_str(), find.c_str())){
-            out.push_back(dataPath.join(Path::RelativePath(*it)));
+        //if (file_matches(it->c_str(), find.c_str())){
+        
+        for (const fs::directory_entry & dirEntry : fs::recursive_directory_iterator(fs::path(*it))){
+            Global::debug(2) << "Looking for file: " << find << " in directory: " << dirEntry << std::endl;
+            for (fs::path & globFile : glob::glob(dataPath.path() + "/" + dirEntry.path().filename().string())){
+                // FIXME add search, instead of just globbing all files
+                out.push_back(dataPath.join(Path::RelativePath(*it)));
+            }
         }
+
+        /*if (it->find(find) != std::string::npos) {
+            out.push_back(dataPath.join(Path::RelativePath(*it)));
+        }*/
     }
 #endif
 
