@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <thread>
 
 using std::endl;
 using std::vector;
@@ -144,7 +145,6 @@ static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath
         
 Searcher::CharacterSearch::CharacterSearch(Searcher & owner):
 owner(owner),
-thread(PaintownUtil::Thread::uninitializedValue),
 searching(false),
 searchingCheck(searching, searchingLock.getLock()){
     /* data/<motif>/chars */
@@ -190,18 +190,20 @@ void * Searcher::CharacterSearch::runSearch(void * self_){
 void Searcher::CharacterSearch::start(){
     if (!searchingCheck.get()){
         searchingCheck.set(true);
+        thread = std::thread([this](){
+            this->search();
+        });
+        /*
         if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) runSearch, this)){
             searchingCheck.set(false);
         }
+        */
     }
 }
 
 void Searcher::CharacterSearch::pause(){
     searchingCheck.set(false);
-    if (thread != PaintownUtil::Thread::uninitializedValue){
-        PaintownUtil::Thread::joinThread(thread);
-        thread = PaintownUtil::Thread::uninitializedValue;
-    }
+    thread.join();
 }
         
 Searcher::CharacterSearch::~CharacterSearch(){
