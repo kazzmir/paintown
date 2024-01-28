@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <thread>
 #include "r-tech1/network/network.h"
 #include "r-tech1/thread.h"
 #include "behavior.h"
@@ -55,7 +56,7 @@ protected:
 
     Network::Socket socket;
     ::Util::Thread::LockObject lock;
-    ::Util::Thread::Id thread;
+    std::thread thread;
     std::deque<std::vector<std::string> > commands;
     bool polling;
 };
