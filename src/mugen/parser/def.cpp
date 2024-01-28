@@ -3691,7 +3691,7 @@ Result rule_name(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = toString((char)(long)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+                    value = toString((char)(intptr_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
                     result_peg_3.setValue(value);
                 }
             
