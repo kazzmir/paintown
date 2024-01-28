@@ -125,7 +125,7 @@ void Game::run(Searcher & searcher){
         }
     } catch (const CanceledException & cancel){
         /* its ok */
-    } catch (const MugenException e){
+    } catch (const MugenException & e){
         std::ostringstream out;
         out << "Press ENTER to continue\n";
         out << "\n";
@@ -1669,24 +1669,14 @@ void Game::startDemo(Searcher & searcher){
         class WithSubscription{
         public:
             WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
-            subscribeThread(PaintownUtil::Thread::uninitializedValue),
             search(search),
             subscription(subscription){
-                if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
-                    doSubscribe();
-                }
+                subscribeThread = std::thread([this](){
+                    this->doSubscribe();
+                });
             }
 
-            PaintownUtil::Thread::Id subscribeThread;
-
-            /* Start the subscription in a thread so that characters that are already found
-            * will be added in a separate thread instead of the main one
-            */
-            static void * subscribe(void * me){
-                WithSubscription * self = (WithSubscription*) me;
-                self->doSubscribe();
-                return NULL;
-            }
+            std::thread subscribeThread;
 
             void doSubscribe(){
                 // Only subscribe if auto search is enabled
@@ -1700,7 +1690,7 @@ void Game::startDemo(Searcher & searcher){
 
             virtual ~WithSubscription(){
                 /* Make sure we wait for the initial join to finish before trying to unsubscribe */
-                PaintownUtil::Thread::joinThread(subscribeThread);
+                subscribeThread.join();
                 search.unsubscribe(&subscription);
             }
         } withSubscription(searcher, subscription);
