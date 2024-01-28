@@ -60,7 +60,6 @@ protected:
         PaintownUtil::Thread::LockObject searchingLock;
         PaintownUtil::ThreadBoolean searchingCheck;
 
-        static void * runSearch(void * self_);
         void search();
     };
 
@@ -74,7 +73,7 @@ protected:
         virtual ~StageSearch();
 
         Searcher & owner;
-        PaintownUtil::Thread::Id thread;
+        std::thread thread;
         std::vector<Filesystem::AbsolutePath> paths;
         volatile bool searching;
         /* Searching lock *must be* initialized before searchingCheck */
@@ -82,7 +81,6 @@ protected:
         PaintownUtil::ThreadBoolean searchingCheck;
         bool isDone;
 
-        static void * runSearch(void * self_);
         void search();
     };
 
