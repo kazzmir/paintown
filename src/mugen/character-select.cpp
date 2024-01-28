@@ -3,6 +3,7 @@
 #include <iostream>
 #include <exception>
 #include <thread>
+#include <functional>
 
 #include "ast/all.h"
 #include "sound.h"
