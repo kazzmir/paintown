@@ -20,6 +20,7 @@
 // #include <semaphore.h>
 #endif
 
+#include <thread>
 #include "exceptions/exception.h"
 /*
 #include "exceptions/load_exception.h"
@@ -206,21 +207,20 @@ template<class X> class Future{
 public:
     Future():
         thing(0),
-        thread(Thread::uninitializedValue),
         done(false),
         exception(NULL),
         ran(false){ }
 
     virtual ~Future(){
-        Thread::joinThread(thread);
-        delete exception;
+        if (thread.joinable()){
+            thread.join();
+        }
     }
 
     virtual X get(){
         /* make sure the future has been started */
-        if (Thread::isUninitialized(thread)){
-            start();
-        }
+        start();
+
         Exception::Base * failed = NULL;
         bool ok = false;
         while (!ok){
@@ -247,10 +247,11 @@ public:
         if (ran){
             return;
         }
-        if (!Thread::createThread(&thread, NULL, (Thread::ThreadFunction) runit, this)){
-            Global::debug(0) << "Could not create future thread. Blocking until its done" << std::endl;
-            runit(this);
-        }
+
+        thread = std::thread([this](){
+            this->doRun();
+        });
+
         ran = true;
     }
 
@@ -260,10 +261,9 @@ protected:
         return done;
     }
 
-    static void * runit(void * arg){
-        Future<X> * me = (Future<X>*) arg;
+    void doRun(){
         try{
-            me->compute();
+            this->compute();
         /*
         } catch (const LoadException & load){
             me->exception = new LoadException(load);
@@ -273,15 +273,13 @@ protected:
             me->exception = new MugenException(m);
         */
         } catch (const Exception::Base & base){
-            me->exception = base.copy();
+            this->exception = base.copy();
         } catch (...){
-            me->exception = new Exception::Base(__FILE__, __LINE__);
+            this->exception = new Exception::Base(__FILE__, __LINE__);
         }
-        me->future.acquire();
-        me->done = true;
-        me->future.release();
-        // me->future.lockAndSignal(me->done, true);
-        return NULL;
+        this->future.acquire();
+        this->done = true;
+        this->future.release();
     }
 
     virtual void set(X x){
@@ -291,7 +289,7 @@ protected:
     virtual void compute() = 0;
 
     X thing;
-    Thread::Id thread;
+    std::thread thread;
     Thread::LockObject future;
     volatile bool done;
     /* if any exceptions occur, throw them from `get' */

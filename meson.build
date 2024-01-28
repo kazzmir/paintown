@@ -78,4 +78,5 @@ if build_tests == true
   subdir('src/test/mugen')
   subdir('src/test/timing')
   subdir('src/test/util')
+  subdir('src/test/thread')
 endif
