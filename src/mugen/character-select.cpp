@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <exception>
+#include <thread>
 
 #include "ast/all.h"
 #include "sound.h"
@@ -3580,19 +3581,15 @@ public:
         Subscriber(SelectLogic & owner):
         owner(owner),
         going(true),
-        check(going, lock.getLock()),
-        thread(PaintownUtil::Thread::uninitializedValue){
-            if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) doProcess, this)){
-                Global::debug(0) << "Could not create processing thread" << std::endl;
-            }
+        check(going, lock.getLock()){
+            thread = std::thread([this](){
+                this->process();
+            });
         }
 
         void stop(){
             check.set(false);
-            if (!PaintownUtil::Thread::isUninitialized(thread)){
-                PaintownUtil::Thread::joinThread(thread);
-                thread = PaintownUtil::Thread::uninitializedValue;
-            }
+            thread.join();
         }
 
         virtual ~Subscriber(){
@@ -3676,7 +3673,7 @@ public:
         PaintownUtil::Thread::LockObject lock;
         PaintownUtil::ThreadBoolean check;
 
-        PaintownUtil::Thread::Id thread;
+        std::thread thread;
         std::vector<Filesystem::AbsolutePath> characters;
         std::vector<Filesystem::AbsolutePath> stages;
     };
