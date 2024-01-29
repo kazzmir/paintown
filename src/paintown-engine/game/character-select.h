@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <thread>
 #include "r-tech1/file-system.h"
 #include "r-tech1/graphics/gradient.h"
 #include "r-tech1/pointer.h"
@@ -15,11 +16,6 @@ class Token;
 namespace Graphics{
     class Bitmap;
 }
-
-namespace Util{
-namespace Thread{
-    class ThreadObject;
-}}
 
 namespace Paintown{
     class DisplayCharacterLoader;
@@ -235,7 +231,7 @@ protected:
     Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader;
     
     /*! Display thread */
-    Util::ReferenceCount<Util::Thread::ThreadObject> loadingThread;
+    std::thread loadingThread;
     
     /*! Has More Low */
     Util::ReferenceCount<HasMore> hasMoreLow;

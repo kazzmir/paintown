@@ -9,6 +9,7 @@
 #include "r-tech1/funcs.h"
 #include "r-tech1/file-system.h"
 #include "r-tech1/sound/music-player.h"
+#include <thread>
 
 using namespace std;
 
@@ -16,11 +17,11 @@ static Music * instance = NULL;
 
 static double volume = 1.0;
 // static bool muted = false;
-static Util::Thread::Id musicThread;
+static std::thread musicThread;
 static Util::Thread::Lock musicMutex;
 static bool alive = true;
 
-static void * playMusic( void * );
+static void playMusic(Music* music);
 
 #define LOCK Util::Thread::acquireLock(&musicMutex);
 #define UNLOCK Util::Thread::releaseLock(&musicMutex);
@@ -31,10 +32,6 @@ static void * playMusic( void * );
 #define LOCK
 #define UNLOCK
 */
-
-static void * bogus_thread( void * x){
-	return NULL;
-}
 
 Music::Music(bool on):
 playing(false),
@@ -57,10 +54,10 @@ currentSong(""){
     Util::Thread::initializeLock(&musicMutex);
     Global::debug(1) << "Creating music thread" << endl;
     if (on){
-        Util::Thread::createThread(&musicThread, NULL, (Util::Thread::ThreadFunction) playMusic, (void *)instance);
+        musicThread = std::thread(playMusic, this);
     } else {
         /* FIXME: just don't create a thread at all.. */
-        Util::Thread::createThread(&musicThread, NULL, (Util::Thread::ThreadFunction) bogus_thread, NULL);
+        musicThread = std::thread([](){});
     }
 }
 
@@ -74,9 +71,7 @@ static bool isAlive(){
 }
 */
 
-static void * playMusic( void * _music ){
-    Music * music = (Music *) _music;
-
+static void playMusic(Music* music){
     Global::debug(1) << "Playing music" << endl;
 
     /*
@@ -100,8 +95,6 @@ static void * playMusic( void * _music ){
     }
 
     // cout << "Done with music thread" << endl;
-
-    return NULL;
 }
 
 double Music::getVolume(){
@@ -329,7 +322,7 @@ Music::~Music(){
     UNLOCK;
 
     Global::debug(1) << "Waiting for music thread to die" << endl;
-    Util::Thread::joinThread(musicThread);
+    musicThread.join();
         
     LOCK;{
         musicPlayer = NULL;

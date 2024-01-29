@@ -1,4 +1,5 @@
 #include "r-tech1/network/chat.h"
+#include <thread>
 
 #include <stdexcept>
 
@@ -166,11 +167,15 @@ static void * run_thread(void * t){
 }
 
 void Threadable::start(){
-    ::Util::Thread::createThread(&thread, NULL, (::Util::Thread::ThreadFunction) run_thread, this);
+    thread = std::thread([this](){
+        this->run();
+    });
 }
 
 void Threadable::join(){
-    ::Util::Thread::joinThread(thread);
+    if (thread.joinable()){
+        thread.join();
+    }
 }
 
 Client::Client(int id, Network::Socket socket):

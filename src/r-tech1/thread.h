@@ -68,8 +68,8 @@ namespace Thread{
     typedef void * (*ThreadFunction)(void*);
 #endif
 
-    extern Id uninitializedValue;
-    bool isUninitialized(Id thread);
+    // extern Id uninitializedValue;
+    // bool isUninitialized(Id thread);
     bool initializeLock(Lock * lock);
 
     /*
@@ -89,9 +89,11 @@ namespace Thread{
     int acquireLock(Lock * lock);
     int releaseLock(Lock * lock);
     void destroyLock(Lock * lock);
+    /*
     bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg);
     void joinThread(Id thread);
     void cancelThread(Id thread);
+    */
 
     /* wraps a Lock in a c++ class */
     class LockObject{
@@ -136,11 +138,12 @@ namespace Thread{
         const LockObject & lock;
     };
 
+    /*
     class ThreadObject{
     public:
         ThreadObject(void * data, void * (function)(void * arg));
 
-        /* true if the thread was started, false otherwise */
+        / * true if the thread was started, false otherwise * /
         virtual bool start();
         virtual ~ThreadObject();
 
@@ -149,6 +152,7 @@ namespace Thread{
         void * (*function)(void * arg);
         Id thread;
     };
+    */
 }
 
 class WaitThread{
@@ -169,11 +173,11 @@ public:
 
 public:
     /* actually runs the thread */
-    void doRun();
+    // void doRun();
 
 protected:
     Thread::Lock doneLock;
-    Thread::Id thread;
+    std::thread thread;
     volatile bool done;
     void * arg;
     Thread::ThreadFunction function;
