@@ -780,11 +780,13 @@ void OptionDummy::run(const Menu::Context & context){
 }
 
 OptionFullscreen::OptionFullscreen(const Gui::ContextBox & parent, const Token *token):
-MenuOption(parent, token),
+MenuOption(parent, token)
+    /*
 lblue(255),
 lgreen(255),
 rblue(255),
-rgreen(255){
+rgreen(255)
+*/{
 	setRunnable(false);
 	
 	if ( *token != "fullscreen" )
@@ -2185,11 +2187,13 @@ void OptionSelectFont::nextIndex(bool forward){
 
 OptionSpeed::OptionSpeed(const Gui::ContextBox & parent, const Token *token):
 MenuOption(parent, token),
-name(""),
+name("")
+    /*
 lblue(255),
 lgreen(255),
 rblue(255),
-rgreen(255){
+rgreen(255)
+*/{
     setRunnable(false);
 
     if ( *token != "speed" )
@@ -2231,7 +2235,7 @@ bool OptionSpeed::leftKey(){
 }
 bool OptionSpeed::rightKey(){
     Configuration::setGameSpeed(Configuration::getGameSpeed() + 0.05);
-    rblue = rgreen = 0;
+    // rblue = rgreen = 0;
     return false;
 }
 
@@ -2338,11 +2342,15 @@ bool OptionSound::rightKey(){
 }
 
 OptionMusic::OptionMusic(const Gui::ContextBox & parent, const Token *token):
-MenuOption(parent, token),
+MenuOption(parent, token)
+    /*
+    ,
 lblue(255),
 lgreen(255),
 rblue(255),
-rgreen(255){
+rgreen(255)
+*/
+{
     setRunnable(false);
 
     if (*token != "music" ){
@@ -2380,14 +2388,14 @@ void OptionMusic::changeMusic(int much){
 bool OptionMusic::leftKey(){
     changeMusic(-1);
     
-    lblue = lgreen = 0;
+    // lblue = lgreen = 0;
     return true;
 }
 
 bool OptionMusic::rightKey(){
     changeMusic(+1);
     
-    lblue = lgreen = 0;
+    // lblue = lgreen = 0;
     return true;
 }
 

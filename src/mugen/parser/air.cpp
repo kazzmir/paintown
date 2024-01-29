@@ -297,6 +297,12 @@ public:
         column(copy.column){
         }
 
+        LineInfo & operator=(const LineInfo & copy){
+            this->line = copy.line;
+            this->column = copy.column;
+            return *this;
+        }
+
         LineInfo():
         line(-1),
         column(-1){
@@ -684,7 +690,7 @@ X as(const Value & value){
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << static_cast<intptr_t>(reinterpret_cast<int64_t>((*it).getValue()));
+    out << (char) (intptr_t) (*it).getValue();
   }
   std::string * object = new std::string(out.str());
   GC::save(object);

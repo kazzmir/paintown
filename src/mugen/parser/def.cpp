@@ -299,6 +299,12 @@ public:
         column(copy.column){
         }
 
+        LineInfo & operator=(const LineInfo & copy){
+            this->line = copy.line;
+            this->column = copy.column;
+            return *this;
+        }
+
         LineInfo():
         line(-1),
         column(-1){
@@ -709,7 +715,7 @@ SectionList * makeSectionList(){
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << static_cast<char>(reinterpret_cast<int64_t>((*it).getValue()));
+    out << (char) (intptr_t) (*it).getValue();
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -3683,11 +3689,11 @@ Result rule_name(Stream & stream, const int position){
             
             Result result_peg_10 = result_peg_3;
             
-            {   
-                Value value((void*) 0);
-                value = toString((char)(int64_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
-                result_peg_3.setValue(value);
-            }
+            {
+                    Value value((void*) 0);
+                    value = toString((char)(intptr_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+                    result_peg_3.setValue(value);
+                }
             
             
         }

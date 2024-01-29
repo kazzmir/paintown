@@ -420,6 +420,8 @@ void Global::setDefaultDebugContext(const std::string & context){
     defaultDebugContext = context;
 }
 
+
+/* FIXME */
 static std::string now(){
     /* Replace with chrono */
 
@@ -438,7 +440,7 @@ static std::string now(){
         // return std::string(buffer);
     }
 
-
+    std::ostringstream out;
 #if 0
     auto time = std::chrono::system_clock::now();
     auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(time.time_since_epoch());
@@ -450,7 +452,7 @@ static std::string now(){
     out << buffer;
     return out.str();
 #endif 
-    //return std::string();
+    return out.str();
 }
 
 std::string Global::debug_context(const char * file, int line){

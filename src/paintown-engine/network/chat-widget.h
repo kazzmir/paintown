@@ -45,7 +45,7 @@ private:
 
     World & world;
     std::deque<Message> chatMessages;
-    int removeChatTimer;
+    // int removeChatTimer;
     bool enable_chat;
     TextInput chatInput;
     InputMap<Inputs> input;

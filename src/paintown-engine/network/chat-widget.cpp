@@ -19,7 +19,7 @@ static void do_finish_chat_input(void * arg){
 
 ChatWidget::ChatWidget(World & world, Paintown::Object::networkid_t id):
 world(world),
-removeChatTimer(0),
+// removeChatTimer(0),
 enable_chat(false),
 id(id){
     input.set(Keyboard::Key_T, 0, false, Talk);

@@ -6,7 +6,7 @@ build_tests = get_option('build_tests')
 add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
-add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
+add_global_arguments(['-Wextra', '-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter'], language: ['cpp', 'c'])
 
 link_args = []
 is_static = true
@@ -22,7 +22,6 @@ if not meson.is_cross_build()
 endif
 
 includes = include_directories('src')
-dumb_includes = include_directories('src/r-tech1/libs/dumb/include')
 all_code = [
   'src/xmain.cpp',
   'src/main-menu.cpp',
@@ -79,4 +78,5 @@ if build_tests == true
   subdir('src/test/mugen')
   subdir('src/test/timing')
   subdir('src/test/util')
+  subdir('src/test/thread')
 endif

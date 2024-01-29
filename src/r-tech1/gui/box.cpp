@@ -10,7 +10,8 @@ Box::Box(){
     // Nothing yet
 }
 
-Box::Box( const Box & b ){
+Box::Box( const Box & b ):
+Widget(){
     this->location = b.location;
     this->transforms = b.transforms;
 }

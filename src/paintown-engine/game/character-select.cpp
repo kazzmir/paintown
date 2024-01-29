@@ -1157,6 +1157,8 @@ void CharacterSelect::load(const Token * token){
     
     loader = Util::ReferenceCount<Paintown::DisplayCharacterLoader>(new Paintown::DisplayCharacterLoader(getCharacters(players)));
 
+    // FIXME: replace this with a thread + lambda
+#if 0
     class DisplayThread: public Util::Thread::ThreadObject {
     public:
         DisplayThread(Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader):
@@ -1177,6 +1179,7 @@ void CharacterSelect::load(const Token * token){
             loader->stop();
         }
     };
+#endif
 
     /*
     loadingThread = Util::ReferenceCount<Util::Thread::ThreadObject>(new DisplayThread(loader));
