@@ -5,6 +5,12 @@ debug: build-debug
 	meson compile -C build-debug
 	cp build-debug/paintown .
 
+clang:
+	test -d build-debug || (mkdir build-debug && CXX=clang++ CC=clang CXXFLAGS=-stdlib=libc++ meson setup build-debug)
+	(cd build-debug; meson configure -Dbuild_tests=false)
+	meson compile -C build-debug
+	cp build-debug/paintown .
+
 build-debug:
 	mkdir build-debug
 	meson setup build-debug
