@@ -22,19 +22,19 @@ def: def.cpp def-run.cpp gc.h
 	# -g++ -I../.. def.cpp def-run.cpp util.cpp ../../exceptions/exception.cpp ../exception.cpp -g3 -o def
 	-g++ -I../.. -g3 def.cpp def-run.cpp util.cpp ../../util/exceptions/exception.cpp ../../util/token.cpp ../../util/token.cpp ../ast/ast.cpp ../exception.cpp -o def
 
-def.cpp: def.peg vembyr/peg.py
+def.cpp: def.peg vembyr/peg.py vembyr/cpp_generator.py
 	vembyr/peg.py --cpp def.peg > def.cpp
 
 air: air.cpp air-run.cpp
 	-g++ -I../../ air.cpp air-run.cpp util.cpp ../../util/exceptions/exception.cpp ../exception.cpp ../../util/token.cpp ../../util/token.cpp ../ast/ast.cpp -g3 -o air
 
-air.cpp: air.peg vembyr/peg.py
+air.cpp: air.peg vembyr/peg.py vembyr/cpp_generator.py
 	vembyr/peg.py --cpp air.peg > air.cpp
 
 cns: cns.cpp cns-run.cpp
 	-g++ -I../.. cns.cpp cns-run.cpp util.cpp ../exception.cpp -g3 -o cns
 
-cns.cpp: cns.peg vembyr/peg.py
+cns.cpp: cns.peg vembyr/peg.py vembyr/cpp_generator.py
 	vembyr/peg.py --cpp cns.peg > cns.cpp
 
 cmd: cmd.cpp cmd-run.cpp

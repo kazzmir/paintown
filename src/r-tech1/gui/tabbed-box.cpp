@@ -76,6 +76,7 @@ currentTabFontColor(Graphics::makeColor(0,0,255)){
 }
 
 TabbedBox::TabbedBox(const TabbedBox & b):
+Widget(),
 activeTabFontColor(NULL){
     this->location = b.location;
 }

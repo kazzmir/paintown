@@ -219,6 +219,12 @@ public:
         column(copy.column){
         }
 
+        LineInfo & operator=(const LineInfo & copy){
+            this->line = copy.line;
+            this->column = copy.column;
+            return *this;
+        }
+
         LineInfo():
         line(-1),
         column(-1){

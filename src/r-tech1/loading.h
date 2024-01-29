@@ -3,6 +3,7 @@
 
 #include <string>
 #include "thread.h"
+#include <thread>
 #include "file-system.h"
 
 namespace Graphics{

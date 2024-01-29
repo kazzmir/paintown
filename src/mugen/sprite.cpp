@@ -36,6 +36,7 @@ width(0),
 height(0),
 loaded(false),
 defaultMask(mask){
+    memset(comments, 0, sizeof(comments));
 }
 
 SpriteV1::SpriteV1(const SpriteV1 &copy){
@@ -56,7 +57,7 @@ SpriteV1::SpriteV1(const SpriteV1 &copy){
     this->defaultMask = copy.defaultMask;
     this->maskColor = copy.maskColor;
 
-    if (copy.comments != 0){
+    if (strlen(copy.comments) != 0){
         /* this line is right */
         memcpy(this->comments, copy.comments, sizeof(SpriteV1::comments));
     }
@@ -93,8 +94,8 @@ SpriteV1 & SpriteV1::operator=(const SpriteV1 &copy){
     this->loaded = copy.loaded;
     this->defaultMask = copy.defaultMask;
     this->maskColor = copy.maskColor;
-    if (copy.comments){
-        memcpy( this->comments, copy.comments, sizeof(SpriteV1::comments) );
+    if (strlen(copy.comments) != 0){
+        memcpy(this->comments, copy.comments, sizeof(SpriteV1::comments) );
     }
 
     if (copy.pcx){

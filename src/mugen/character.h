@@ -188,6 +188,24 @@ struct PaletteEffects{
         counter(copy.counter){
         }
 
+    PaletteEffects& operator=(const PaletteEffects& copy){
+        this->time = copy.time;
+        this->addRed = copy.addRed;
+        this->addGreen = copy.addGreen;
+        this->addBlue = copy.addBlue;
+        this->multiplyRed = copy.multiplyRed;
+        this->multiplyGreen = copy.multiplyGreen;
+        this->multiplyBlue = copy.multiplyBlue;
+        this->sinRed = copy.sinRed;
+        this->sinGreen = copy.sinGreen;
+        this->sinBlue = copy.sinBlue;
+        this->period = copy.period;
+        this->invert = copy.invert;
+        this->color = copy.color;
+        this->counter = copy.counter;
+        return *this;
+    }
+
     int time;
     int addRed;
     int addGreen;

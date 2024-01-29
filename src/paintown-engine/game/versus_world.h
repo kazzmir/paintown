@@ -16,7 +16,7 @@ public:
 	VersusWorld( int z, Paintown::Character * player1, Paintown::Character * player2 );
 	virtual ~VersusWorld();
 
-	virtual void draw( Graphics::Bitmap * work );
+	virtual void draw(const Graphics::Bitmap & work );
 
 	virtual void act();
 	

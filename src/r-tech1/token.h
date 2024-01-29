@@ -50,6 +50,9 @@ public:
     template <typename X1, typename X2, typename X3, typename X4>
     bool match(X1 & obj1, X2 & obj2, X3 & obj3, X4 & obj4);
 
+    // Copy constructor
+    TokenMatcher(const TokenMatcher &);
+
     TokenMatcher & operator=(const TokenMatcher & matcher);
 
 protected:

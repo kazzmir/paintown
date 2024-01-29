@@ -168,8 +168,10 @@ public:
     virtual ~OptionFullscreen();
 private:
 
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 /*! Handles joystick reconfiguration */
@@ -459,8 +461,10 @@ class OptionSpeed: public MenuOption {
 		// name
 		std::string name;
 		
+        /*
 		int lblue, lgreen;
 		int rblue, rgreen;
+        */
 };
 
 /*! Handles sub menus */
@@ -528,8 +532,10 @@ protected:
     void changeMusic(int much);
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
     std::string originalName;
 };
 

@@ -588,6 +588,12 @@ TokenMatcher & TokenMatcher::operator=(const TokenMatcher & matcher){
     return *this;
 }
 
+// Copy constructor
+TokenMatcher::TokenMatcher(const TokenMatcher & tm){
+    tokens = tm.tokens;
+    current = tokens.begin();
+}
+
 TokenMatcher::TokenMatcher(std::vector<const Token*> tokens):
 tokens(tokens){
     current = this->tokens.begin();

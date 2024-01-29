@@ -18,21 +18,21 @@ public:
 
     virtual ~NetworkCharacter();
 
-    virtual Object * copy();
+    virtual Object * copy() override;
 
 public:
     virtual Network::Message requestNameMessage() const;
-    virtual Network::Message grabMessage( unsigned int from, unsigned int who );
+    virtual Network::Message grabMessage( unsigned int from, unsigned int who ) override;
     virtual void drawFront(const Graphics::Bitmap & work, int rel_x) override;
 
     virtual void setNameTime( int d );
     virtual void alwaysShowName();
-    virtual void interpretMessage(World * world, Network::Message & m );
+    virtual void interpretMessage(World * world, Network::Message & m ) override;
 
     /* logic */
-    virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-    virtual void landed( World * world );
-    virtual void deathReset();
+    virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ) override;
+    virtual void landed( World * world ) override;
+    virtual void deathReset() override;
 protected:
     int name_id;
     int show_name_time;

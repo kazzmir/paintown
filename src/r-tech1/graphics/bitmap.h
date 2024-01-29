@@ -758,43 +758,43 @@ public:
     virtual ~TranslucentBitmap();
 
     using Bitmap::operator=;
-    virtual Color blendColor(const Color & color) const;
-    virtual void startDrawing() const;
-    virtual void endDrawing() const;
+    virtual Color blendColor(const Color & color) const override;
+    virtual void startDrawing() const override;
+    virtual void endDrawing() const override;
 
-    virtual void putPixelNormal(int x, int y, Color col) const;
-    virtual void rectangleFill(int x1, int y1, int x2, int y2, Color color) const;
-    virtual void rectangle(int x1, int y1, int x2, int y2, Color color) const;
+    virtual void putPixelNormal(int x, int y, Color col) const override;
+    virtual void rectangleFill(int x1, int y1, int x2, int y2, Color color) const override;
+    virtual void rectangle(int x1, int y1, int x2, int y2, Color color) const override;
     virtual void fill(Color color) const override;
-    virtual void line( const int x1, const int y1, const int x2, const int y2, const Color color ) const;
-    virtual void hLine( const int x1, const int y, const int x2, const Color color ) const;
-    virtual void arc(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color) const;
-    virtual void arcFilled(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color ) const;
-    virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const;
-    virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const;
-    virtual void circleFill( int x, int y, int radius, Color color ) const;
-    virtual void ellipse( int x, int y, int rx, int ry, Color color ) const;
-    virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const;
+    virtual void line( const int x1, const int y1, const int x2, const int y2, const Color color ) const override;
+    virtual void hLine( const int x1, const int y, const int x2, const Color color ) const override;
+    virtual void arc(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color) const override;
+    virtual void arcFilled(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color ) const override;
+    virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const override;
+    virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const override;
+    virtual void circleFill( int x, int y, int radius, Color color ) const override;
+    virtual void ellipse( int x, int y, int rx, int ry, Color color ) const override;
+    virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const override;
 	
     using Bitmap::drawRotate;
     virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where) const override;
 
     using Bitmap::draw;
-    virtual void draw(const int x, const int y, const Bitmap & where) const;
-    virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where) const;
+    virtual void draw(const int x, const int y, const Bitmap & where) const override;
+    virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where) const override;
 
     // virtual void draw(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, const Bitmap & where) const;
     // virtual void draw(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, Filter * filter, const Bitmap & where) const;
 
     using Bitmap::drawHFlip;
-    virtual void drawHFlip(const int x, const int y, const Bitmap & where) const;
-    virtual void drawHFlip(const int x, const int y, Filter * filter, const Bitmap & where) const;
+    virtual void drawHFlip(const int x, const int y, const Bitmap & where) const override;
+    virtual void drawHFlip(const int x, const int y, Filter * filter, const Bitmap & where) const override;
     // virtual void drawHFlip(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, const Bitmap & where) const;
     // virtual void drawHFlip(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, Filter * filter, const Bitmap & where) const;
-    virtual void drawVFlip( const int x, const int y, const Bitmap & where ) const;
-    virtual void drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const;
-    virtual void drawHVFlip( const int x, const int y, const Bitmap & where ) const;
-    virtual void drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const;
+    virtual void drawVFlip( const int x, const int y, const Bitmap & where ) const override;
+    virtual void drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const override;
+    virtual void drawHVFlip( const int x, const int y, const Bitmap & where ) const override;
+    virtual void drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const override;
 
     void setAlpha(uint8_t alpha);
 

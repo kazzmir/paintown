@@ -23,16 +23,16 @@ public:
 	Actor( const Filesystem::AbsolutePath & filename );
 	Actor( const Actor & item );
 	
-	virtual void act(std::vector<Object *> * others, World * world, std::vector< Object * > * add);
+	virtual void act(std::vector<Object *> * others, World * world, std::vector< Object * > * add) override;
 	virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) override;
-	virtual bool isCollidable( Object * obj );
-	virtual bool isGettable();
-	virtual int getWidth() const;
-	virtual int getHeight() const;
+	virtual bool isCollidable( Object * obj ) override;
+	virtual bool isGettable() override;
+	virtual int getWidth() const override;
+	virtual int getHeight() const override;
 
-	virtual Network::Message getCreateMessage();
+	virtual Network::Message getCreateMessage() override;
 	
-	virtual Object * copy();
+	virtual Object * copy() override;
 	
 	virtual ~Actor();
 

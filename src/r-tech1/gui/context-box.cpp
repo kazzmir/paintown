@@ -169,6 +169,7 @@ renderOnlyText(false){
 }
 
 ContextBox::ContextBox( const ContextBox & copy ):
+Widget(),
 fadeState(NotActive),
 list(new ScrollList()),
 selectedGradient(standardGradient(GradientMax)),

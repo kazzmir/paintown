@@ -83,6 +83,13 @@ public:
         enabled(input.enabled){
         }
 
+        InputEvent& operator=(const InputEvent & copy){
+            out = copy.out;
+            unicode = copy.unicode;
+            enabled = copy.enabled;
+            return *this;
+        }
+
         InputEvent(){
         }
 

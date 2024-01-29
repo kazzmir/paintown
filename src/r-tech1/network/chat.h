@@ -3,6 +3,7 @@
 
 #include "network.h"
 #include "r-tech1/pointer.h"
+#include <thread>
 #include "r-tech1/thread.h"
 
 #include <string>
@@ -59,7 +60,7 @@ public:
     virtual void run() = 0;
     virtual void join();
 protected:
-    ::Util::Thread::Id thread;
+    std::thread thread;
     ::Util::Thread::LockObject lock;
 };
    

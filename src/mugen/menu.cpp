@@ -19,7 +19,6 @@
 #include "r-tech1/init.h"
 #include "r-tech1/resource.h"
 #include "r-tech1/funcs.h"
-#include "r-tech1/thread.h"
 #include "r-tech1/file-system.h"
 #include "r-tech1/timedifference.h"
 #include "r-tech1/sound/music.h"

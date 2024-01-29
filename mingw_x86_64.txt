@@ -6,8 +6,8 @@ common_args = ['-I/usr/lib/gcc/x86_64-w64-mingw32/12-win32/include', '-I/usr/lib
 #common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']
 
 [binaries]
-c = 'x86_64-w64-mingw32-gcc'
-cpp = 'x86_64-w64-mingw32-g++'
+c = 'x86_64-w64-mingw32-gcc-posix'
+cpp = 'x86_64-w64-mingw32-g++-posix'
 ar = 'x86_64-w64-mingw32-ar'
 strip = 'x86_64-w64-mingw32-strip'
 exe_wrapper = 'wine64'

@@ -847,11 +847,15 @@ private:
 class OptionNpcBuddies: public MenuOption {
 public:
     OptionNpcBuddies(const Gui::ContextBox & parent, const Token *token):
-        MenuOption(parent, token),
+        MenuOption(parent, token)
+        /*
+        ,
         lblue(255),
         lgreen(255),
         rblue(255),
-        rgreen(255){
+        rgreen(255)
+        */
+        {
             setRunnable(false);
 
             if ( *token != "npc" ){
@@ -888,24 +892,30 @@ public:
 
     bool rightKey(){
         Configuration::setNpcBuddies( Configuration::getNpcBuddies() + 1 );
-        rblue = rgreen = 0;
+        // rblue = rgreen = 0;
         return false;
     }
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 class OptionInvincible: public MenuOption {
 public:
 
     OptionInvincible(const Gui::ContextBox & parent, const Token *token):
-        MenuOption(parent, token),
+        MenuOption(parent, token)
+        /*
+        ,
         lblue(255),
         lgreen(255),
         rblue(255),
-        rgreen(255){
+        rgreen(255)
+        */
+        {
             setRunnable(false);
 
             if ( *token != "invincible" )
@@ -940,19 +950,25 @@ public:
     }
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 class OptionLives: public MenuOption {
 public:
 
     OptionLives(const Gui::ContextBox & parent, const Token * token):
-        MenuOption(parent, token),
+        MenuOption(parent, token)
+        /*
+        ,
         lblue(255),
         lgreen(255),
         rblue(255),
-        rgreen(255){
+        rgreen(255)
+        */
+        {
             setRunnable(false);
 
             if ( *token != "lives" ){
@@ -992,8 +1008,10 @@ public:
     }
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Token *token) const {
