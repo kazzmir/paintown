@@ -409,7 +409,16 @@ DumbPlayer::DumbPlayer(const Filesystem::AbsolutePath & path){
 void DumbPlayer::render(void * data, int samples){
     double delta = 65536.0 / Sound::Info.frequency;
     /* FIXME: use global music volume to scale the output here */
+#ifdef __GNUC__
+// Ignore deprecated warning because documentation for duh_render_float (or _int)
+// which is designed to replace this is not clear
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     int n = duh_render(renderer, 16, 0, volume, delta, samples, data);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 }
 
 void DumbPlayer::setVolume(double volume){
