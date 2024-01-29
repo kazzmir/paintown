@@ -91,5 +91,5 @@ dumb_includes = include_directories('./include')
 dumb_library = static_library('dumb', dumb_source,
   include_directories: [includes, dumb_includes],
   dependencies: [zlib_dependency],
-  c_args: ['--no-warn']
+  c_args: ['-w']
   )

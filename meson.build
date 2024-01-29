@@ -6,7 +6,7 @@ build_tests = get_option('build_tests')
 add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
 add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
-add_global_arguments(['-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter', '-Wextra'], language: ['cpp', 'c'])
+add_global_arguments(['-Wextra', '-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter'], language: ['cpp', 'c'])
 
 link_args = []
 is_static = true

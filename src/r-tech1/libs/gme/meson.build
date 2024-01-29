@@ -47,8 +47,10 @@ gme_source = [
   'Ym2612_Emu.cpp',
 ]
 
+
+
 gme_library = static_library('gme', gme_source,
   include_directories: [includes, '.'],
   dependencies: [zlib_dependency],
-  cpp_args: ['--no-warn']
+  cpp_args: ['-w']
   )
