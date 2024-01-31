@@ -1879,7 +1879,7 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     } catch(fs::filesystem_error &ex){
          DebugLog2 << "Directory or dataPath: " << dataPath.path() << " does not exist. Reason: " << ex.what() << std::endl;
     }
-    return std::move(files);
+    return files;
 #endif
 }
 

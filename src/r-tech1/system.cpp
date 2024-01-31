@@ -122,15 +122,11 @@ void System::startMemoryUsage(){
 
 #else
 
-// FIXME For the time being on cross-build, needs to be corrected
-
-
 uint64_t System::getModificationTime(const std::string & path){
 #ifndef WINDOWS
-    // FIXME figure out how to convert to unit64_t and remove auto
-    //auto p = fs::path(path);
-    //auto time = fs::last_write_time(p);
-    return 0;
+    fs::file_time_type lastWriteTime = fs::last_write_time(filePath);
+    std::chrono::time_point<fs::file_clock> timePoint = time_point_cast<milliseconds>(lastWriteTime);
+    return static_cast<uint64_t>(timePoint.time_since_epoch().count());
 #else
     HANDLE hFile = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
 
