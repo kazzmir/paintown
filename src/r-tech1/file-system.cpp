@@ -466,40 +466,35 @@ System::~System(){
 
 static int FileCounter = 0;
 vector<Filesystem::AbsolutePath> System::getFiles(const Filesystem::AbsolutePath & dataPath, const Filesystem::RelativePath & find, bool caseInsensitive){
-    try {
-        DebugLog2 << "Is find: " << find.path() << " a file? (" << find.isFile() << ")" << std::endl;
-        if (find.isFile()){
-            DebugLog2 << "File (" << find.getFilename().path() << ") passed returning directory: " << find.path() << std::endl;
-            std::vector<Filesystem::AbsolutePath> files = getFiles(dataPath, find.path(), caseInsensitive);
-            DebugLog2 << "Got total files: " << files.size() << " iteration: " << FileCounter << std::endl;
-            FileCounter++;
-            return files;
-        }
-
-        /* split the path into its consituent parts
-        * a/b/c -> a/b and c
-        * search for a/b, then search for c in the results
-        */
-        Filesystem::RelativePath directory = find.getDirectory();
-        Filesystem::RelativePath file = find.getFilename();
-
-        DebugLog2 << "Checking directory: " << directory.path() << " for file: " << file.path() << std::endl;
-        vector<Filesystem::AbsolutePath> more = getFiles(dataPath, directory, caseInsensitive);
-        DebugLog2 << "Total files: " << more.size() << " found." << std::endl;
-        vector<Filesystem::AbsolutePath> out;
-        for (vector<Filesystem::AbsolutePath>::iterator it = more.begin(); it != more.end(); it++){
-            Filesystem::AbsolutePath path = *it;
-            /* if its not a directory then we can't keep searching */
-            if (::System::isDirectory(path.path())){
-                vector<Filesystem::AbsolutePath> findMore = getFiles(path, file, caseInsensitive);
-                out.insert(out.end(), findMore.begin(), findMore.end());
-            }
-        }
-        return out;
-    } catch (std::logic_error & ex){
-        DebugLog2 << "Error retrieving files. Error: " << ex.what() << std::endl;
-        return std::vector<Filesystem::AbsolutePath>();
+    DebugLog3 << "Is find: " << find.path() << " a file? (" << find.isFile() << ")" << std::endl;
+    if (find.isFile()){
+        DebugLog3 << "File (" << find.getFilename().path() << ") passed returning directory: " << find.path() << std::endl;
+        std::vector<Filesystem::AbsolutePath> files = getFiles(dataPath, find.path(), caseInsensitive);
+        DebugLog3 << "Got total files: " << files.size() << " iteration: " << FileCounter << std::endl;
+        FileCounter++;
+        return files;
     }
+
+    /* split the path into its consituent parts
+    * a/b/c -> a/b and c
+    * search for a/b, then search for c in the results
+    */
+    Filesystem::RelativePath directory = find.getDirectory();
+    Filesystem::RelativePath file = find.getFilename();
+
+    DebugLog3 << "Checking directory: " << directory.path() << " for file: " << file.path() << std::endl;
+    vector<Filesystem::AbsolutePath> more = getFiles(dataPath, directory, caseInsensitive);
+    DebugLog3 << "Total files: " << more.size() << " found." << std::endl;
+    vector<Filesystem::AbsolutePath> out;
+    for (vector<Filesystem::AbsolutePath>::iterator it = more.begin(); it != more.end(); it++){
+        Filesystem::AbsolutePath path = *it;
+        /* if its not a directory then we can't keep searching */
+        if (::System::isDirectory(path.path())){
+            vector<Filesystem::AbsolutePath> findMore = getFiles(path, file, caseInsensitive);
+            out.insert(out.end(), findMore.begin(), findMore.end());
+        }
+    }
+    return out;
 }
         
 Filesystem::AbsolutePath System::findContainer(const RelativePath & dataPath){
@@ -1779,11 +1774,7 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
                 try {
                     
                     DebugLog3 << "String: " << origin << " path: " << path << std::endl;
-                    //for (const fs::directory_entry & entry : fs::directory_iterator{path}){
                     for (const File & entry: this->getFiles(path)){
-                        
-                        //fs::path relative_path = fs::relative(entry, origin);
-                        //DebugLog2 << "Entry: " << entry << " relative path: " << relative_path << std::endl;
                         DebugLog3 << "Entry: " << entry.filename <<  std::endl;
                         bool matched = std::regex_match(entry.filename, pattern);
                         
@@ -1798,12 +1789,9 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
                         } else if (matched){
                         */
                         if (matched){
-                            //matches.emplace_back(entry.path().string());
-                            matches.emplace_back(entry.filename);
-                            //DebugLog2 << "Found pattern match on entry: " << relative_path << std::endl;
                             DebugLog3 << "Found pattern match on entry: " << entry.filename << std::endl;
+                            matches.emplace_back(entry.filename);
                         } else {
-                            //DebugLog2 << "No match found for string: " << relative_path << std::endl;
                             DebugLog3 << "No match found for string: " << entry.path << std::endl;
                         }
                     }
@@ -1871,7 +1859,6 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
         Globber glob(find, dataPath.path());
         for (std::string globFile : glob.matches){
             DebugLog2 << "Got datapath: " << dataPath.path() << " globFile: " << globFile << std::endl;
-            //files.emplace_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile))));
             files.emplace_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile))));
         }
         DebugLog2 << "Got total matched files: " << files.size() << std::endl;
