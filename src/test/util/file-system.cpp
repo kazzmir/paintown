@@ -56,8 +56,9 @@ void testGetFiles(){
     DebugLog << "Setting relative path m*/*.txt" << std::endl;
     Filesystem::RelativePath relativePath = Filesystem::RelativePath("m*/*.txt");
     std::vector<Filesystem::AbsolutePath> paths = Storage::instance().getFiles(dataPath, relativePath, false);
+    DebugLog << "Got total matched files: " << paths.size() << std::endl;
     for (std::vector<Filesystem::AbsolutePath>::iterator it = paths.begin(); it != paths.end(); it++){
-        std::cout << it->path() << std::endl;
+        DebugLog << it->path() << std::endl;
     }
 }
 
@@ -121,7 +122,7 @@ int main(){
 #include <SDL2/SDL.h>
 int main(int argv, char *args[]){
 #endif
-    Global::setDebug(3);
+    Global::setDebug(2);
     testGetFiles();
     testZip();
     testLastComponent();

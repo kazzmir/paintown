@@ -32,7 +32,9 @@
 #include "libs/7z/7zAlloc.h"
 #include "libs/7z/7zCrc.h"
 
-//#ifdef WINDOWS
+#ifdef WINDOWS
+#include <windows.h>
+#endif
 // https://github.com/gulrak/filesystem/
 #include "libs/filesystem/fs-wrapper.h"
 #include "libs/filesystem/glob.h"
@@ -462,30 +464,42 @@ System::System(){
 System::~System(){
 }
 
+static int FileCounter = 0;
 vector<Filesystem::AbsolutePath> System::getFiles(const Filesystem::AbsolutePath & dataPath, const Filesystem::RelativePath & find, bool caseInsensitive){
-    if (find.isFile()){
-        DebugLog2 << "File (" << find.getFilename().path() << ") passed returning directory: " << find.path() << std::endl;
-        return getFiles(dataPath, find.path(), caseInsensitive);
-    }
-
-    /* split the path into its consituent parts
-     * a/b/c -> a/b and c
-     * search for a/b, then search for c in the results
-     */
-    Filesystem::RelativePath directory = find.getDirectory();
-    Filesystem::RelativePath file = find.getFilename();
-
-    vector<Filesystem::AbsolutePath> more = getFiles(dataPath, directory, caseInsensitive);
-    vector<Filesystem::AbsolutePath> out;
-    for (vector<Filesystem::AbsolutePath>::iterator it = more.begin(); it != more.end(); it++){
-        Filesystem::AbsolutePath path = *it;
-        /* if its not a directory then we can't keep searching */
-        if (::System::isDirectory(path.path())){
-            vector<Filesystem::AbsolutePath> findMore = getFiles(path, file, caseInsensitive);
-            out.insert(out.end(), findMore.begin(), findMore.end());
+    try {
+        DebugLog2 << "Is find: " << find.path() << " a file? (" << find.isFile() << ")" << std::endl;
+        if (find.isFile()){
+            DebugLog2 << "File (" << find.getFilename().path() << ") passed returning directory: " << find.path() << std::endl;
+            std::vector<Filesystem::AbsolutePath> files = getFiles(dataPath, find.path(), caseInsensitive);
+            DebugLog2 << "Got total files: " << files.size() << " iteration: " << FileCounter << std::endl;
+            FileCounter++;
+            return files;
         }
+
+        /* split the path into its consituent parts
+        * a/b/c -> a/b and c
+        * search for a/b, then search for c in the results
+        */
+        Filesystem::RelativePath directory = find.getDirectory();
+        Filesystem::RelativePath file = find.getFilename();
+
+        DebugLog2 << "Checking directory: " << directory.path() << " for file: " << file.path() << std::endl;
+        vector<Filesystem::AbsolutePath> more = getFiles(dataPath, directory, caseInsensitive);
+        DebugLog2 << "Total files: " << more.size() << " found." << std::endl;
+        vector<Filesystem::AbsolutePath> out;
+        for (vector<Filesystem::AbsolutePath>::iterator it = more.begin(); it != more.end(); it++){
+            Filesystem::AbsolutePath path = *it;
+            /* if its not a directory then we can't keep searching */
+            if (::System::isDirectory(path.path())){
+                vector<Filesystem::AbsolutePath> findMore = getFiles(path, file, caseInsensitive);
+                out.insert(out.end(), findMore.begin(), findMore.end());
+            }
+        }
+        return out;
+    } catch (std::logic_error & ex){
+        DebugLog2 << "Error retrieving files. Error: " << ex.what() << std::endl;
+        return std::vector<Filesystem::AbsolutePath>();
     }
-    return out;
 }
         
 Filesystem::AbsolutePath System::findContainer(const RelativePath & dataPath){
@@ -1729,105 +1743,143 @@ vector<Filesystem::AbsolutePath> Filesystem::getFiles(const AbsolutePath & dataP
     vector<AbsolutePath> more = virtualDirectory.findFiles(dataPath, find, caseInsensitive);
     files.insert(files.end(), more.begin(), more.end());
 
-// FIXME Can't seem to get glob to work in windows, it returns 0 files
     try {
 #ifndef WINDOWS
-    // Convert to type std::filesystem::path
-    //fs::path path = dataPath.path();
-    //path /= find;
+        // Convert to type std::filesystem::path
+        //fs::path path = dataPath.path();
+        //path /= find;
 
-    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << find << ")"  << std::endl;
-    // for (fs::path & globFile : glob::glob(path.generic_string())){
-    for (fs::path & globFile : glob::glob1(dataPath.path(), find, false)){
-        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << std::endl;
-        files.push_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile.string()))));
-    }
+        DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << find << ")"  << std::endl;
+        // for (fs::path & globFile : glob::glob(path.generic_string())){
+        for (fs::path & globFile : glob::glob1(dataPath.path(), find, false)){
+            DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << std::endl;
+            files.push_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile.string()))));
+        }
 #else
-    DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << dataPath.path() + "/" + find << ")"  << std::endl;
-    class Globber
-    {
-    public:
-        Globber(const std::string & pattern, const std::string & path):
-        pattern(createRegex(pattern)),
-        origin(path){
-            doMatches(path);
-        }
-        ~Globber(){
-        }
-        std::vector<std::string> matches;
-    private:
-        void doMatches(const std::string & path){
-            try {
-                for (const fs::directory_entry & entry : fs::directory_iterator(path)){
-                    fs::path relative_path = fs::relative(entry, origin);
-                    DebugLog2 << "Entry: " << entry.path() << " relative path: " << relative_path << std::endl;
-                    if (fs::is_directory(entry)){
-                        DebugLog2 << "Searching directory: " << entry.path() << std::endl;
-                        doMatches(entry.path().string());
-                    } else if (fs::is_regular_file(entry) && std::regex_match(relative_path.string(), pattern)) {
-                        matches.emplace_back(entry.path().string());
-                        DebugLog2 << "Found pattern match on entry: " << relative_path << std::endl;
-                    } else {
-                        DebugLog2 << "No match found for string: " << relative_path << std::endl;
+        DebugLog2 << "Looking for file: " << find << " in dataPath: " << dataPath.path() << " (" << find << ")"  << std::endl;
+        class Globber
+        {
+        private:
+            typedef struct {
+                std::string filename;
+                std::string path;
+                bool isDirectory;
+            } File;
+        public:
+            Globber(const std::string & pattern, const std::string & path):
+            pattern(createRegex(pattern)),
+            origin(path){
+                doMatches(path);
+            }
+            ~Globber(){
+            }
+            std::vector<std::string> matches;
+        private:
+            void doMatches(const std::string & path){
+                try {
+                    
+                    DebugLog3 << "String: " << origin << " path: " << path << std::endl;
+                    //for (const fs::directory_entry & entry : fs::directory_iterator{path}){
+                    for (const File & entry: this->getFiles(path)){
+                        
+                        //fs::path relative_path = fs::relative(entry, origin);
+                        //DebugLog2 << "Entry: " << entry << " relative path: " << relative_path << std::endl;
+                        DebugLog3 << "Entry: " << entry.filename <<  std::endl;
+                        bool matched = std::regex_match(entry.filename, pattern);
+                        
+                        // Do not recurse
+                        /*
+                        if (entry.isDirectory && matched){
+                            //DebugLog2 << "Searching directory: " << entry.path() << std::endl;
+                            DebugLog2 << "Searching directory: " << entry.filename << std::endl;
+                            //doMatches(entry.path().string());
+                            doMatches(entry.path);
+                        //} else if (fs::is_regular_file(entry) && std::regex_match(relative_path.string(), pattern)) {
+                        } else if (matched){
+                        */
+                        if (matched){
+                            //matches.emplace_back(entry.path().string());
+                            matches.emplace_back(entry.filename);
+                            //DebugLog2 << "Found pattern match on entry: " << relative_path << std::endl;
+                            DebugLog3 << "Found pattern match on entry: " << entry.filename << std::endl;
+                        } else {
+                            //DebugLog2 << "No match found for string: " << relative_path << std::endl;
+                            DebugLog3 << "No match found for string: " << entry.path << std::endl;
+                        }
+                    }
+                } catch (...){
+                    DebugLog2 << "Error parsing directories." << std::endl;
+                }
+            }
+            // Function to iterate over a directory using Windows API
+            const std::vector<File> getFiles(const std::string & path) {
+                //DebugLog << "Starting get files from path: " << path << std::endl;
+                std::vector<File> files;
+
+                WIN32_FIND_DATA findFileData;
+                HANDLE hFind = FindFirstFile((path + "\\*").c_str(), &findFileData);
+                
+                if (hFind != INVALID_HANDLE_VALUE) {
+                    do {
+                        File file = { 
+                                      std::string(findFileData.cFileName), 
+                                      path + "/" + std::string(findFileData.cFileName), 
+                                      (findFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) > 0 
+                                    };
+                        if (file.isDirectory && 
+                            (file.filename == "." || file.filename == "..")) {
+                            // Skip directories . and ..
+                            continue;
+                        }
+                        //DebugLog << "File: " << file.filename << std::endl;
+                        files.emplace_back(file);
+                    } while (FindNextFile(hFind, &findFileData) != 0);
+
+                    FindClose(hFind);
+                } else {
+                    DebugLog2 << "Error opening directory: " << GetLastError() << std::endl;
+                }
+                return files;
+            }
+
+            std::string createRegex(const std::string & glob){
+                std::string regexStr = "^";
+                for (char ch : glob) {
+                    switch (ch) {
+                        case '*':
+                            regexStr += ".*";
+                            break;
+                        case '?':
+                            regexStr += ".";
+                            break;
+                        case '.':
+                            regexStr += "\\.";
+                            break;
+                        default:
+                            regexStr += ch;
                     }
                 }
-            } catch (...){
-                DebugLog2 << "Error parsing directories." << std::endl;
+                regexStr += "$";
+                DebugLog3 << "Regex string: " << regexStr << std::endl; 
+                return regexStr;
             }
+
+            std::regex pattern;
+            std::string origin;
+        };
+
+        Globber glob(find, dataPath.path());
+        for (std::string globFile : glob.matches){
+            DebugLog2 << "Got datapath: " << dataPath.path() << " globFile: " << globFile << std::endl;
+            //files.emplace_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile))));
+            files.emplace_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile))));
         }
-        std::string createRegex(const std::string & glob){
-            std::string regexStr = "^";
-            for (char ch : glob) {
-                switch (ch) {
-                    case '*':
-                        regexStr += ".*";
-                        break;
-                    case '?':
-                        regexStr += ".";
-                        break;
-                    case '.':
-                        regexStr += "\\.";
-                        break;
-                    default:
-                        regexStr += ch;
-                }
-            }
-            regexStr += "$";
-            DebugLog2 << "Regex string: " << regexStr << std::endl; 
-            return regexStr;
-        }
-
-        std::regex pattern;
-        std::string origin;
-    };
-
-    Globber glob(find, dataPath.path());
-    for (std::string globFile : glob.matches){
-        DebugLog2 << "Got datapath: " << dataPath.path().c_str() << " globFile: " << globFile.c_str() << std::endl;
-        files.push_back(AbsolutePath(dataPath.join(Filesystem::RelativePath(globFile))));
-    }
-
+        DebugLog2 << "Got total matched files: " << files.size() << std::endl;
 #endif
     } catch(fs::filesystem_error &ex){
          DebugLog2 << "Directory or dataPath: " << dataPath.path() << " does not exist. Reason: " << ex.what() << std::endl;
     }
-    /*
-    for (map<AbsolutePath, Util::ReferenceCount<Storage::ZipContainer> >::iterator it = overlays.begin(); it != overlays.end(); it++){
-        AbsolutePath path = it->first;
-        if (it->second == NULL){
-            continue;
-        }
-        // Global::debug(0) << "Check " << path.path() << " (" << path.getDirectory().path() << ") vs directory " << dataPath.path() << " wildcard " << find << " to " << path.getFilename().path() << std::endl;
-        if (path.getDirectory() == dataPath &&
-            file_matches(path.getLastComponent().c_str(), find.c_str())){
-            // Global::debug(0) << "Found overlay " << path.path() << " in " << dataPath.path() << " for wildcard " << find << std::endl;
-            files.push_back(path);
-        }
-    }
-    */
-
-    // Global::debug(0) << "Warning: Filesystem::getFiles() is not implemented yet for SDL" << endl;
-    return files;
+    return std::move(files);
 #endif
 }
 

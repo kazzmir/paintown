@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <fstream>
+#include "r-tech1/debug.h"
 
 #ifdef USE_SDL
 #include <SDL/SDL.h>
@@ -125,30 +126,89 @@ void System::startMemoryUsage(){
 
 
 uint64_t System::getModificationTime(const std::string & path){
-    
+#ifndef WINDOWS
     // FIXME figure out how to convert to unit64_t and remove auto
     //auto p = fs::path(path);
     //auto time = fs::last_write_time(p);
-
     return 0;
+#else
+    HANDLE hFile = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+
+    if (hFile != INVALID_HANDLE_VALUE) {
+        FILETIME modificationTime;
+        if (GetFileTime(hFile, nullptr, nullptr, &modificationTime)) {
+            CloseHandle(hFile);
+
+            ULARGE_INTEGER uli;
+            uli.LowPart = modificationTime.dwLowDateTime;
+            uli.HighPart = modificationTime.dwHighDateTime;
+
+            return uli.QuadPart;
+        } else {
+            DebugLog2 << "Error getting file modification time: " << GetLastError() << std::endl;
+            CloseHandle(hFile);
+            return 0; // Return 0 or handle error as appropriate for your use case
+        }
+    } else {
+        DebugLog2 << "Error opening file: " << GetLastError() << std::endl;
+        return 0; // Return 0 or handle error as appropriate for your use case
+    }
+#endif
 }
 
 void System::makeDirectory(const std::string & path){
+#ifndef WINDOWS
     fs::path p = fs::path(path);
     fs::create_directory(p);
+#else
+    if (CreateDirectory(path.c_str(), nullptr) || ERROR_ALREADY_EXISTS == GetLastError()) {
+        return;
+    } else {
+        DebugLog2 << "Error creating directory: " << GetLastError() << std::endl;
+    }
+#endif
 }
 
 bool System::isDirectory(const std::string & path){
+#ifndef WINDOWS
     return fs::is_directory(fs::path(path));
+#else
+    DWORD attributes = GetFileAttributes(path.c_str());
+    if (attributes != INVALID_FILE_ATTRIBUTES) {
+        return (attributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+    }
+    return false;
+#endif
 }
 
 bool System::readable(const std::string & path){
+#ifndef WINDOWS
     fs::path p = fs::path(path);
     fs::perms permissions = fs::status(p).permissions();
 
     return ((permissions & fs::perms::owner_read) != fs::perms::none &&
             (permissions & fs::perms::group_read) != fs::perms::none &&
             (permissions & fs::perms::others_read) != fs::perms::none);
+#else
+    DWORD attributes = GetFileAttributes(path.c_str());
+    if (attributes != INVALID_FILE_ATTRIBUTES) {
+        // Check if the file is readable
+        if ((attributes & FILE_ATTRIBUTE_DIRECTORY) == 0) {
+            HANDLE hFile = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+            if (hFile != INVALID_HANDLE_VALUE) {
+                CloseHandle(hFile);
+                return true;
+            } else {
+                DebugLog2 << "Error opening file: " << GetLastError() << std::endl;
+                return false;
+            }
+        }
+
+        // For directories, assume readable
+        return true;
+    } 
+    return false;
+#endif
 }
 
 uint64_t System::currentMilliseconds(){
