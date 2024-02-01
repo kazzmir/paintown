@@ -43,7 +43,12 @@ void test2(){
     }
 }
 
+#ifndef WINDOWS
 int main(){
+#else
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+#endif
     test1();
     test2();
 }
