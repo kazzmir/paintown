@@ -1,5 +1,6 @@
-build
-./paintown
+build*
+mingw-bin
+paintown
 .scon*
 .tmp
 peg_*.py
@@ -9,3 +10,4 @@ peg_*.py
 *.swp
 # mac
 .DS_Store
+.vscode
