@@ -274,7 +274,7 @@ public:
 
         virtual Bitmap subBitmap(int x, int y, int width, int height);
 
-        virtual LitBitmap lit() const;
+        virtual LitBitmap lit(uint8_t red, uint8_t green, uint8_t blue) const;
 
 	virtual void save( const std::string & str ) const;
 
@@ -682,7 +682,7 @@ std::vector<Color> blend_palette(const std::vector<BlendPoint> & in);
 
 class LitBitmap: public Bitmap {
 public:
-    LitBitmap( const Bitmap & b );
+    LitBitmap(const Bitmap & b, uint8_t red, uint8_t green, uint8_t blue);
     LitBitmap();
     virtual ~LitBitmap();
 
@@ -704,6 +704,8 @@ protected:
 #ifdef USE_ALLEGRO5
     virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where, int flags) const;
 #endif
+
+    uint8_t red, green, blue;
 };
 
 class StretchedBitmap: public Bitmap {
