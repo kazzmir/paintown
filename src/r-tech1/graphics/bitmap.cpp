@@ -459,8 +459,11 @@ Color darken(Color color, double factor ){
     return makeColor(r, g, b);
 }
 
-LitBitmap::LitBitmap(const Bitmap & b):
-Bitmap(b){
+LitBitmap::LitBitmap(const Bitmap & b, uint8_t red, uint8_t green, uint8_t blue):
+Bitmap(b),
+red(red),
+green(green),
+blue(blue){
     int x1, y1, x2, y2;
     b.getClipRect(x1, y1, x2, y2);
     setClipRect(x1, y1, x2, y2);
@@ -473,8 +476,8 @@ Bitmap(){
 LitBitmap::~LitBitmap(){
 }
 
-LitBitmap Bitmap::lit() const {
-    return LitBitmap(*this);
+LitBitmap Bitmap::lit(uint8_t red, uint8_t green, uint8_t blue) const {
+    return LitBitmap(*this, red, green, blue);
 }
 
 TranslucentBitmap Bitmap::translucent(uint8_t alpha) const {

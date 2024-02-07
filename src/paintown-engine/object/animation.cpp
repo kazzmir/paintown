@@ -951,11 +951,11 @@ const string Animation::getCurrentFramePath() const {
 }
 
 void Animation::DrawLit(int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work){
-    doDraw(x, y, Graphics::LitBitmap(*current_frame), remap, work);
+    doDraw(x, y, current_frame->lit(Graphics::getRed(color), Graphics::getGreen(color), Graphics::getBlue(color)), remap, work);
 }
 
 void Animation::DrawLitFlipped( int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work ){
-    doDrawFlipped(x, y, Graphics::LitBitmap(*current_frame), remap, work);
+    doDrawFlipped(x, y, current_frame->lit(Graphics::getRed(color), Graphics::getGreen(color), Graphics::getBlue(color)), remap, work);
 }
 
 void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work ){

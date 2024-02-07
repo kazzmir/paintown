@@ -1954,9 +1954,9 @@ void Character::drawOutline(const Graphics::Bitmap & work, int rel_x, int rel_y,
         int y = (int)(getRZ() + getY());
         /* FIXME: pass colors to lit */
         if (getFacing() == FACING_RIGHT){ 
-            frame->lit().drawVFlip(x , y, getCurrentRemap(), work);
+            frame->lit(red, green, blue).drawVFlip(x , y, getCurrentRemap(), work);
         } else { 
-            frame->lit().drawHVFlip(x, y, getCurrentRemap(), work);
+            frame->lit(red, green, blue).drawHVFlip(x, y, getCurrentRemap(), work);
         }
     }
 }
