@@ -952,6 +952,14 @@ void Graphics::TranslucentBitmap::drawHVFlip( const int x, const int y, Filter *
 }
 
 void Graphics::LitBitmap::draw(const int x, const int y, const Bitmap & where) const {
+    SDL_Texture* texture = getTexture(false);
+    if (texture == nullptr){
+        return;
+    }
+
+    // SDL_SetTextureColorMod(texture, red, green, blue);
+    Bitmap::draw(x, y, where);
+    // SDL_SetTextureColorMod(texture, 255, 255, 255);
 }
 
 void Graphics::LitBitmap::draw(const int x, const int y, Filter * filter, const Bitmap & where ) const {

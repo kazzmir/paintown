@@ -75,13 +75,14 @@ class Draw: public Util::Draw {
 public:
     Draw():
     object(100, 100){
-        object.fill(Graphics::makeColor(255, 0, 0));
+        object.fill(Graphics::makeColor(255, 255, 255));
     }
     
     Graphics::Bitmap object;
 
     void draw(const Graphics::Bitmap & buffer){
         object.draw(100, 100, buffer);
+        object.lit(255, 128, 0).draw(250, 100, buffer);
     }
 };
 
