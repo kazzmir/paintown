@@ -33,14 +33,14 @@ leader(leader){
     NamePlacer::getPlacement(x, y, name_id);
 }
 	
-void BuddyPlayer::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
+void BuddyPlayer::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
     Character::draw(work, rel_x, rel_y);
 
     int x1, y1;
     NamePlacer::getPlacement(x1, y1, name_id);
 
     if (icon){
-        icon->draw(x1, y1, *work);
+        icon->draw(x1, y1, work);
     }
 
     int hasIcon = icon ? icon->getWidth() : 0;
@@ -61,7 +61,7 @@ void BuddyPlayer::draw(Graphics::Bitmap * work, int rel_x, int rel_y){
 
 }
 	
-void BuddyPlayer::drawLifeBar( int x, int y, Graphics::Bitmap * work ){
+void BuddyPlayer::drawLifeBar( int x, int y, const Graphics::Bitmap & work ){
     drawLifeBar(x, y, show_life, work);
 }
 	

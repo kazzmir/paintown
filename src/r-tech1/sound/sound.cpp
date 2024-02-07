@@ -10,10 +10,10 @@
         
 Sound::SoundInfo Sound::Info;
 
-Sound::Sound( const Sound & copy ):
-own( NULL ){
+Sound::Sound(const Sound & copy):
+own(NULL){
     own = copy.own;
-    if ( own ){
+    if (own){
         *own += 1;
     }
     data = copy.data;
@@ -33,12 +33,10 @@ own(NULL){
     }
 }
 
-Sound & Sound::operator=( const Sound & rhs ){
-    if ( own ){
-        destroy();
-    }
+Sound & Sound::operator=(const Sound & rhs){
+    destroy();
     own = rhs.own;
-    if ( own ){
+    if (own){
         *own += 1;
     }
 

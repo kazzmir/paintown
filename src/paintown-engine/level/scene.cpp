@@ -89,7 +89,12 @@ newBlock(true){
             } else if ( *tok == "background" ){
                 string n;
                 tok->view() >> n;
-                background = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(n))));
+                background = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(n))), false);
+
+                /*
+                background = new Graphics::Bitmap(200, 200);
+                background->fill(Graphics::makeColor(255, 0, 0));
+                */
             } else if ( *tok == "background-parallax" ){
                 double d;
                 tok->view() >> d;
@@ -149,7 +154,7 @@ newBlock(true){
                 Graphics::Bitmap * x_screen = NULL;
                 */
                 if (normal != "none"){
-                    x_normal = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(normal))));
+                    x_normal = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(normal))), false);
                 }
                 Panel * p = new Panel(x_normal);
                 panels[num] = p;
@@ -163,7 +168,7 @@ newBlock(true){
             } else if ( *tok == "frontpanel" ){
                 string file;
                 tok->view() >> file;
-                Graphics::Bitmap * front = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(file))));
+                Graphics::Bitmap * front = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(file))), false);
                 front_panels.push_back( front );
             } else if ( *tok == "order" ){
                 // *tok >> order;
@@ -194,7 +199,7 @@ newBlock(true){
     current_block = level_blocks.front();
     level_blocks.pop_front();
 
-    arrow = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png"))));
+    arrow = new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("sprites/arrow.png"))), false);
     arrow_blink = 0;
 
     // delete current;
@@ -389,11 +394,13 @@ void Scene::act(int min_x, int max_x, vector<Paintown::Object *> * objects){
 }
 
 /* draw the background */
-void Scene::drawBack( int x, Graphics::Bitmap * work ){
+void Scene::drawBack(int x, const Graphics::Bitmap & work){
     if (background){
         int y = 0;
-        background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, *work );
-        background->Blit( (int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, *work );
+        if (background->getWidth() != 0){
+            background->Blit((int)(x/getBackgroundParallax()) % background->getWidth() - background->getWidth(), 0, 0, y, work);
+            background->Blit((int)(x/getBackgroundParallax()) % background->getWidth(), 0, 0, y, work);
+        }
     }
 
     int fx = 0;
@@ -403,7 +410,7 @@ void Scene::drawBack( int x, Graphics::Bitmap * work ){
             continue;
         }
         Graphics::Bitmap * normal = cur->pic;
-        normal->draw( fx-x, 0, *work );
+        normal->draw( fx-x, 0, work);
         fx += normal->getWidth();
     }
 
@@ -416,7 +423,7 @@ void Scene::drawBack( int x, Graphics::Bitmap * work ){
 }
 
 /* draw the foreground */
-void Scene::drawFront( int x, Graphics::Bitmap * work ){
+void Scene::drawFront(int x, const Graphics::Bitmap & work){
 
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
@@ -427,29 +434,29 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
      * to be drawn on.
      */
     if (frontBuffer == NULL){
-        frontBuffer = new Graphics::Bitmap(work->getWidth(), work->getHeight());
+        frontBuffer = new Graphics::Bitmap(work.getWidth(), work.getHeight());
     }
 
     frontBuffer->clearToMask();
 
     double fx = 0;
-    if ( front_panels.size() > 0 ){
-        while ( fx < scene_length * getForegroundParallax() ){
-            for ( vector< Graphics::Bitmap * >::iterator it = front_panels.begin(); it != front_panels.end(); it++ ){
-                Graphics::Bitmap * b = *it;
-                b->draw( (int)(fx - x * getForegroundParallax()), 0, *frontBuffer);
+    if (front_panels.size() > 0){
+        while (fx < scene_length * getForegroundParallax()){
+            for (Graphics::Bitmap* b: front_panels){
+                b->draw((int)(fx - x * getForegroundParallax()), 0, *frontBuffer);
                 fx += b->getWidth();
             }
         }
     }
 
+
     /* just draw on the foreground */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
         Atmosphere * atmosphere = *it;
-        atmosphere->drawFront(frontBuffer, x);
+        atmosphere->drawFront(*frontBuffer, x);
     }
 
-    frontBuffer->draw(0, 0, *work);
+    frontBuffer->draw(0, 0, work);
     
     /* draw anything on the entire screen */
     for (vector<Atmosphere*>::iterator it = atmospheres.begin(); it != atmospheres.end(); it++){
@@ -459,7 +466,7 @@ void Scene::drawFront( int x, Graphics::Bitmap * work ){
 
     if (numberOfEnemies() == 0 && !passedBoundary(x)){
         if (arrow_blink > 5){
-            arrow->draw(work->getWidth() - ( arrow->getWidth() + 10 ), 50, *work);
+            arrow->draw(work.getWidth() - ( arrow->getWidth() + 10 ), 50, work);
         }
     }
 

@@ -2,6 +2,7 @@
 #define _paintown_mugen_search_h
 
 #include <vector>
+#include <thread>
 
 #include "r-tech1/thread.h"
 #include "r-tech1/file-system.h"
@@ -52,14 +53,13 @@ protected:
         virtual ~CharacterSearch();
 
         Searcher & owner;
-        PaintownUtil::Thread::Id thread;
         std::vector<Filesystem::AbsolutePath> paths;
         volatile bool searching;
+        std::thread thread;
         /* Searching lock *must be* initialized before searchingCheck */
         PaintownUtil::Thread::LockObject searchingLock;
         PaintownUtil::ThreadBoolean searchingCheck;
 
-        static void * runSearch(void * self_);
         void search();
     };
 
@@ -73,7 +73,7 @@ protected:
         virtual ~StageSearch();
 
         Searcher & owner;
-        PaintownUtil::Thread::Id thread;
+        std::thread thread;
         std::vector<Filesystem::AbsolutePath> paths;
         volatile bool searching;
         /* Searching lock *must be* initialized before searchingCheck */
@@ -81,7 +81,6 @@ protected:
         PaintownUtil::ThreadBoolean searchingCheck;
         bool isDone;
 
-        static void * runSearch(void * self_);
         void search();
     };
 

@@ -428,7 +428,7 @@ changedAttacks(false){
                 Filesystem::RelativePath full = Filesystem::RelativePath(basedir).join(Filesystem::RelativePath(path));
                 // Filesystem::AbsolutePath full = Filesystem::find(Filesystem::RelativePath(basedir + path));
                 if (frames.find(full.path()) == frames.end()){
-                    Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full);
+                    Graphics::Bitmap * pic = Paintown::Mod::getCurrentMod()->createBitmap(full, true);
                     if (owner != NULL && owner->getSpriteScale() != 1){
                         *pic = pic->scaleBy(owner->getSpriteScale(), owner->getSpriteScale());
                     }
@@ -950,34 +950,49 @@ const string Animation::getCurrentFramePath() const {
     return current_frame->getPath();
 }
 
-void Animation::DrawLit( int x, int y, Remap * remap, Graphics::Bitmap * work ){
-    doDraw(x, y, Graphics::LitBitmap(*current_frame), remap, work);
+void Animation::DrawLit(int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work){
+    doDraw(x, y, current_frame->lit(Graphics::getRed(color), Graphics::getGreen(color), Graphics::getBlue(color)), remap, work);
 }
 
-void Animation::DrawLitFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
-    doDrawFlipped(x, y, Graphics::LitBitmap(*current_frame), remap, work);
+void Animation::DrawLitFlipped( int x, int y, Remap * remap, const Graphics::Color & color, const Graphics::Bitmap & work ){
+    doDrawFlipped(x, y, current_frame->lit(Graphics::getRed(color), Graphics::getGreen(color), Graphics::getBlue(color)), remap, work);
 }
 
-void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
+void Animation::doDraw( int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work ){
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
-    frame.draw(x - w, y - h, remap, *work);
+    /*
+    Graphics::Bitmap x1(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("players/akuma/idle/18279.png"))));
+    x1.draw(x - w, y - h, *work);
+    */
+
+    frame.draw(x - w, y - h, remap, work);
+
+    // work.rectangle(x - w, y - h, x + w, y, Graphics::makeColor(255, 255, 255));
 }
 
-void Animation::Draw( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+void Animation::Draw( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
     doDraw(x, y, *current_frame, remap, work);
+
+    // For debugging the collision boxes
+    /*
+    if (current_collide != nullptr){
+        current_collide->draw(*work, x - current_frame->getWidth() / 2, y - current_frame->getHeight(), Graphics::makeColor(255, 0, 0));
+    }
+    */
+
 }
 
-void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, Graphics::Bitmap * work ){
+void Animation::doDrawFlipped( int x, int y, const Graphics::Bitmap & frame, Remap * remap, const Graphics::Bitmap & work ){
 
     int w = frame.getWidth() / 2;
     int h = frame.getHeight();
 
-    frame.drawHFlip( x-w, y-h, remap, *work);
+    frame.drawHFlip( x-w, y-h, remap, work);
 }
 
-void Animation::DrawFlipped( int x, int y, Remap * remap, Graphics::Bitmap * work ){
+void Animation::DrawFlipped( int x, int y, Remap * remap, const Graphics::Bitmap & work ){
     doDrawFlipped(x, y, *current_frame, remap, work);
 }
 	

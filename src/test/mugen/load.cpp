@@ -1,14 +1,14 @@
 #include <iostream>
-#include "util/init.h"
-#include "util/thread.h"
-#include "util/message-queue.h"
-#include "util/file-system.h"
+#include "r-tech1/init.h"
+#include "r-tech1/thread.h"
+#include "r-tech1/message-queue.h"
+#include "r-tech1/file-system.h"
 #include "mugen/character.h"
 #include "mugen/exception.h"
 #include "mugen/parse-cache.h"
-#include "util/timedifference.h"
-#include "util/graphics/bitmap.h"
-#include "util/debug.h"
+#include "r-tech1/timedifference.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/debug.h"
 
 /*
 #include <sstream>
@@ -32,6 +32,26 @@ static void showMemory(){
     runPmap(getPid());
 }
 */
+
+#ifndef WINDOWS
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+#endif
 
 static void mount(const char * path){
     Filesystem::AbsolutePath container(path);
@@ -66,6 +86,14 @@ static int load(const char * path){
     // showMemory();
 }
 
+static void loadCmd(const char* path){
+    Filesystem::AbsolutePath full(path);
+    AstRef parsed(Mugen::Util::parseCmd(full));
+    Token* token = parsed->serialize();
+    DebugLog << "Parsed output: " << token->toString() << endl;
+    delete token;
+}
+
 int main(int argc, char ** argv){
     Global::InitConditions conditions;
     conditions.graphics = Global::InitConditions::Disabled;
@@ -74,6 +102,14 @@ int main(int argc, char ** argv){
     Global::setDebug(1);
     Mugen::ParseCache cache;
     Util::Thread::initializeLock(&MessageQueue::messageLock);
+
+    /*
+    for (int i = 0; i < 1; i++){
+        // DebugLog1 << "Load " << i << endl;
+        loadCmd("x.cns");
+    }
+    return 0;
+    */
 
     int die = 0;
     if (argc < 2){

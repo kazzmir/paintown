@@ -513,13 +513,13 @@ void Mugen::Stage::load(){
 	filesdir += "/";
     }
     
-    Global::debug(1) << "Got subdir: " << filesdir << endl;
+    DebugLog1 << "Got subdir: " << filesdir << endl;
 
     TimeDifference diff;
     diff.startTime();
     AstRef parsed(Mugen::Util::parseDef(ourDefFile));
     diff.endTime();
-    Global::debug(1) << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
+    DebugLog1 << "Parsed mugen file " + ourDefFile.path() + " in" + diff.printTime("") << endl;
     // list<Ast::Section*> * sections = (list<Ast::Section*>*) Mugen::Def::main(ourDefFile);
 
     struct cymk_holder shadow;
@@ -1652,8 +1652,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     /* darken the background */
     if (getStateData().superPause.time > 0){
         /* FIXME: this should be faded I think */
-        Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        work->translucent().rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
+        // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+        work->translucent(128).rectangleFill(0, 0, work->getWidth(), work->getHeight(), Graphics::makeColor(0, 0, 0));
     }
 
     //! Render layer 0 HUD
@@ -1724,20 +1724,20 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
 
     // Player debug
     for (vector<Mugen::Character*>::iterator it = objects.begin(); it != objects.end(); it++){
-	if (isaPlayer(*it)){
+        if (isaPlayer(*it)){
             Mugen::Character *character = *it;
-	    // Player debug crap
-	    if (debugMode){
-		// Players x positioning
-		work->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::makeColor( 255, 0, 0));
-	    }
-	}
+            // Player debug crap
+            if (debugMode){
+                // Players x positioning
+                work->vLine( 150, (int)character->getX(), (int)character->getZ(), Graphics::makeColor( 255, 0, 0));
+            }
+        }
     }
     
     // Debug crap for board coordinates
     if (debugMode){
-	work->hLine( 0, abs(boundhigh) + currentZOffset(), work->getWidth(), Graphics::makeColor( 0,255,0 ));
-	work->vLine( 0, xaxis, work->getHeight(), Graphics::makeColor(255,0,0));
+        work->hLine( 0, abs(boundhigh) + currentZOffset(), work->getWidth(), Graphics::makeColor( 0,255,0 ));
+        work->vLine( 0, xaxis, work->getHeight(), Graphics::makeColor(255,0,0));
     }
     
     // board->Blit( (int)(abs(boundleft) + camerax) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), (int)(yaxis + cameray) + ( quake_time > 0 ? Util::rnd( 9 ) - 4 : 0 ), DEFAULT_WIDTH, DEFAULT_HEIGHT, 0,0, *work);
@@ -1747,8 +1747,8 @@ void Mugen::Stage::render(Graphics::Bitmap *work){
     
     // Debug crap for screen coordinates
     if (debugMode){
-	work->vLine( 0, tension, 240, Graphics::makeColor( 0,255,0 ));
-	work->vLine( 0, 320 - tension, 240, Graphics::makeColor( 0,255,0 ));
+        work->vLine( 0, tension, 240, Graphics::makeColor( 0,255,0 ));
+        work->vLine( 0, 320 - tension, 240, Graphics::makeColor( 0,255,0 ));
     }
     
     /*
@@ -1983,7 +1983,7 @@ void Mugen::Stage::begin(){
 const std::string Mugen::Stage::getStageName(const std::string &filename){
     // Lets look for our def since some people think that all file systems are case insensitive
     Filesystem::AbsolutePath dir = Storage::instance().find(Filesystem::RelativePath("mugen/stages/"));
-    Global::debug(1) << dir.path() << endl;
+    DebugLog1 << dir.path() << endl;
     string fullname = filename;
     if ( fullname.find(".def") == std::string::npos){
 	fullname += ".def";
@@ -2002,7 +2002,7 @@ const std::string Mugen::Stage::getStageName(const std::string &filename){
 	filesdir += "/";
     }
     
-    Global::debug(1) << "Got subdir: " << filesdir << endl;
+    DebugLog1 << "Got subdir: " << filesdir << endl;
     
     AstRef parsed(Mugen::Util::parseDef(defFile));
     return parsed->findSection("info")->findAttribute("name")->valueAsString();
@@ -2444,8 +2444,8 @@ bool Mugen::Stage::doContinue(const Mugen::PlayerType & type, InputMap<Mugen::Ke
         
             // do darkened background
             // Bitmap::drawingMode(Bitmap::MODE_TRANS);
-            Graphics::Bitmap::transBlender(0,0,0,150);
-	    board.translucent().rectangleFill(0, 0, board.getWidth(), board.getHeight(), Graphics::makeColor(0,0,0));
+            // Graphics::Bitmap::transBlender(0,0,0,150);
+            board.translucent(150).rectangleFill(0, 0, board.getWidth(), board.getHeight(), Graphics::makeColor(0,0,0));
 	    // Bitmap::drawingMode(Bitmap::MODE_SOLID);
             
             // Render character

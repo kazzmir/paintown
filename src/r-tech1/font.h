@@ -35,9 +35,9 @@ public:
 	virtual int getHeight( const std::string & str ) const = 0;
 	virtual int getHeight() const = 0;
 
-	virtual void printf( int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const = 0;
-	virtual void printf( int x, int y, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ... ) const = 0;
-	virtual void printfWrap( int x, int y, Graphics::Color color, const Graphics::Bitmap & work, int maxWidth, const std::string & str, int marker, ... ) const;
+	virtual void printf(int x, int y, int xSize, int ySize, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ...) const = 0;
+	virtual void printf(int x, int y, Graphics::Color color, const Graphics::Bitmap & work, const std::string & str, int marker, ...) const = 0;
+	virtual void printfWrap(int x, int y, Graphics::Color color, const Graphics::Bitmap & work, int maxWidth, const std::string & str, int marker, ...) const;
 
         static const Path::RelativePath & getDefaultFontPath();
 	static const Font & getDefaultFont();

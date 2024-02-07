@@ -214,7 +214,8 @@ int OptionCredits::Block::print(int x, int y, Graphics::Color defaultTitleColor,
         const Graphics::Bitmap temp(topWidth, topHeight);
         //topAnimation->draw(x - xmod, y, topWidth, topHeight, work);
         topAnimation->draw(0, 0, topWidth, topHeight, temp);
-        temp.translucent().draw(x-xmod, y, work);
+        /* FIXME: what should alpha be here? */
+        temp.translucent(128).draw(x-xmod, y, work);
         currentY += topHeight;
     }
     
@@ -274,7 +275,8 @@ int OptionCredits::Block::print(int x, int y, Graphics::Color defaultTitleColor,
         const Graphics::Bitmap temp(topWidth, topHeight);
         //bottomAnimation->draw(x - xmod, y, bottomWidth, bottomHeight, work);
         bottomAnimation->draw(0, 0, bottomWidth, bottomHeight, temp);
-        temp.translucent().draw(x-xmod, y, work);
+        /* FIXME: what should alpha be here? */
+        temp.translucent(128).draw(x-xmod, y, work);
         currentY += bottomHeight;
     }
     
@@ -283,7 +285,7 @@ int OptionCredits::Block::print(int x, int y, Graphics::Color defaultTitleColor,
     return currentY;
 }
 
-const int OptionCredits::Block::size(const Font & font) const{
+int OptionCredits::Block::size(const Font & font) const {
     // Counts title and space in between
     int total = 0;
     if (topAnimation != NULL){
@@ -495,8 +497,8 @@ void OptionCredits::Sequence::draw(Graphics::Color title, Graphics::Color color,
                 rollY = block.print(x, rollY, title, color, Menu::menuFontParameter.current()->get(), work, justification);
             }
         } else if (type == Primary){
-            Graphics::Bitmap::transBlender(0, 0, 0, alpha);
-            credits[current].print(x, y, title, color, Menu::menuFontParameter.current()->get(), work.translucent(), justification);
+            // Graphics::Bitmap::transBlender(0, 0, 0, alpha);
+            credits[current].print(x, y, title, color, Menu::menuFontParameter.current()->get(), work.translucent(alpha), justification);
         }
     }
 }
@@ -703,7 +705,7 @@ public:
     }
 
     double ticks(double system){
-        return system * Global::ticksPerSecond(90);
+        return Global::ticksPerSecond(system) * 30;
     }
     
     void draw(const Graphics::Bitmap & buffer){
@@ -778,11 +780,13 @@ void OptionDummy::run(const Menu::Context & context){
 }
 
 OptionFullscreen::OptionFullscreen(const Gui::ContextBox & parent, const Token *token):
-MenuOption(parent, token),
+MenuOption(parent, token)
+    /*
 lblue(255),
 lgreen(255),
 rblue(255),
-rgreen(255){
+rgreen(255)
+*/{
 	setRunnable(false);
 	
 	if ( *token != "fullscreen" )
@@ -1458,7 +1462,7 @@ void OptionKey::run(const Menu::Context & context){
         }
     
         virtual double ticks(double system){
-            return system * Global::ticksPerSecond(speed);
+            return Global::ticksPerSecond(system) * speed;
         }
 
         virtual void showTimeLeft(const Graphics::Bitmap & screen){
@@ -1604,7 +1608,7 @@ void OptionMenu::run(const Menu::Context & context){
     // Do our new menu
     try{
         menu->run(context);
-    } catch (const Exception::Return ignore){
+    } catch (const Exception::Return & ignore){
         throw Menu::Reload(__FILE__, __LINE__);
     }
 }
@@ -2183,11 +2187,13 @@ void OptionSelectFont::nextIndex(bool forward){
 
 OptionSpeed::OptionSpeed(const Gui::ContextBox & parent, const Token *token):
 MenuOption(parent, token),
-name(""),
+name("")
+    /*
 lblue(255),
 lgreen(255),
 rblue(255),
-rgreen(255){
+rgreen(255)
+*/{
     setRunnable(false);
 
     if ( *token != "speed" )
@@ -2229,7 +2235,7 @@ bool OptionSpeed::leftKey(){
 }
 bool OptionSpeed::rightKey(){
     Configuration::setGameSpeed(Configuration::getGameSpeed() + 0.05);
-    rblue = rgreen = 0;
+    // rblue = rgreen = 0;
     return false;
 }
 
@@ -2274,7 +2280,7 @@ void OptionTabMenu::run(const Menu::Context & context){
     // menu->run(context);
     try{
         menu->run(context);
-    } catch (const Exception::Return ignore){
+    } catch (const Exception::Return & ignore){
         throw Menu::Reload(__FILE__, __LINE__);
     }
 }
@@ -2336,11 +2342,15 @@ bool OptionSound::rightKey(){
 }
 
 OptionMusic::OptionMusic(const Gui::ContextBox & parent, const Token *token):
-MenuOption(parent, token),
+MenuOption(parent, token)
+    /*
+    ,
 lblue(255),
 lgreen(255),
 rblue(255),
-rgreen(255){
+rgreen(255)
+*/
+{
     setRunnable(false);
 
     if (*token != "music" ){
@@ -2378,14 +2388,14 @@ void OptionMusic::changeMusic(int much){
 bool OptionMusic::leftKey(){
     changeMusic(-1);
     
-    lblue = lgreen = 0;
+    // lblue = lgreen = 0;
     return true;
 }
 
 bool OptionMusic::rightKey(){
     changeMusic(+1);
     
-    lblue = lgreen = 0;
+    // lblue = lgreen = 0;
     return true;
 }
 
@@ -2516,7 +2526,7 @@ public:
     }
 
     double ticks(double system){
-        return system * Global::ticksPerSecond(60);
+        return Global::ticksPerSecond(system) * 30;
     }
 
     void drawButtons(const Font & font, const Graphics::Bitmap & buffer, int y){
@@ -2922,7 +2932,7 @@ static void runJoystickMenu(int joystickId, const Util::ReferenceCount<Joystick>
                 }
 
                 double ticks(double system){
-                    return system * Global::ticksPerSecond(60);
+                    return system * Global::ticksPerSecond(30);
                 }
 
                 bool done(){

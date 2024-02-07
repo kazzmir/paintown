@@ -19,6 +19,7 @@ static const int DEFAULT_DEBUG = 0;
 #endif
 
 #include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/graphics/texture-cache.h"
 
 #include "factory/collector.h"
 #include "r-tech1/network/network.h"
@@ -49,6 +50,7 @@ static const int DEFAULT_DEBUG = 0;
 #include "r-tech1/init.h"
 #include "r-tech1/main.h"
 #include "r-tech1/argument.h"
+#include "r-tech1/context.h"
 
 #include "paintown-engine/game/argument.h"
 
@@ -62,6 +64,7 @@ using std::endl;
 using std::string;
 using std::istringstream;
 
+#if !defined(WINDOWS) || !defined(_WIN32)
 Filesystem::AbsolutePath Filesystem::configFile(){
     std::ostringstream str;
     /* what if HOME isn't set? */
@@ -79,6 +82,7 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
     }
     return Filesystem::AbsolutePath(str.str());
 }
+#endif
 
 static void showOptions(const vector<Util::ReferenceCount<Argument::Parameter> > & arguments){
     Global::debug(0) << "Paintown by Jon Rafkind" << endl;
@@ -119,6 +123,31 @@ public:
     }
 };
 
+class SoftwareRendererArgument: public Argument::Parameter {
+public:
+    SoftwareRendererArgument(Global::InitConditions * conditions):
+    conditions(conditions){
+    }
+
+    Global::InitConditions * conditions;
+
+    vector<string> keywords() const {
+        vector<string> out;
+        out.push_back("--software");
+        out.push_back("software");
+        return out;
+    }
+
+    string description() const {
+        return " : Use a software renderer instead of opengl/hardware";
+    }
+
+    vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
+        conditions->softwareRenderer = true;
+        return current;
+    }
+};
+
 class SoundArgument: public Argument::Parameter {
 public:
     SoundArgument(Global::InitConditions * conditions):
@@ -155,6 +184,7 @@ public:
     vector<string> keywords() const {
         vector<string> out;
         out.push_back("help");
+        out.push_back("-h");
         out.push_back("--help");
         return out;
     }
@@ -601,14 +631,16 @@ static int startMain(const vector<Util::ReferenceCount<Argument::Action> > & act
             Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
         } catch (const Exception::Base & base){
             // Global::debug(0) << "Freetype exception caught. Error was:\n" << ex.getReason() << endl;
-            Global::debug(0) << "Base exception: " << base.getTrace() << endl;
+            DebugLog << "Base exception: " << base.getTrace() << endl;
 /* android doesn't have bad_alloc for some reason */
 // #ifndef ANDROID
+#ifndef WINDOWS
         } catch (const std::bad_alloc & fail){
             Global::debug(0) << "Failed to allocate memory. Usage is " << System::memoryUsage() << endl;
 // #endif
+#endif
         } catch (...){
-            Global::debug(0) << "Uncaught exception!" << endl;
+            DebugLog << "Uncaught exception!" << endl;
         }
 
         if (allow_quit && normal_quit){
@@ -818,6 +850,14 @@ int rtech_main(int argc, char ** argv){
     }
 #endif
 
+    std::shared_ptr<Util::Context> mainContext = std::make_shared<Util::Context>();
+
+    // scope for collector
+    {
+
+
+        Util::AutoCancel cancel(mainContext->autoCancel());
+
     bool music_on = true;
     // bool joystick_on = true;
     // bool mugen = false;
@@ -829,7 +869,9 @@ int rtech_main(int argc, char ** argv){
 
     Version::setVersion(3, 6, 1);
 
+#ifndef WINDOWS
     System::startMemoryUsage();
+#endif
 
     Global::setDebug(DEFAULT_DEBUG);
     Global::setDefaultDebugContext("paintown");
@@ -863,6 +905,7 @@ int rtech_main(int argc, char ** argv){
 
     vector<Util::ReferenceCount<Argument::Parameter> > arguments;
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new WindowedArgument(&conditions)));
+    arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new SoftwareRendererArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new DataPathArgument()));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new SoundArgument(&conditions)));
     arguments.push_back(Util::ReferenceCount<Argument::Parameter>(new MusicArgument(&music_on)));
@@ -968,11 +1011,16 @@ int rtech_main(int argc, char ** argv){
 
     Util::Parameter<Util::ReferenceCount<Menu::FontInfo> > defaultMenuFont(Menu::menuFontParameter, Util::ReferenceCount<Menu::FontInfo>(new Menu::RelativeFontInfo(*defaultFont.current(), Configuration::getMenuFontWidth(), Configuration::getMenuFontHeight())));
 
+    Graphics::LocalTextureCache defaultTextureCache;
+
     startMain(actions, allow_quit);
 
     Configuration::saveConfiguration();
 
-    Global::debug(0) << "Bye!" << endl;
+    }
+
+    System::shutdown();
+    DebugLog << "Bye!" << endl;
     Global::closeLog();
 
     return 0;

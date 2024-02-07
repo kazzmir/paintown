@@ -6,6 +6,7 @@
 #endif
 #include <vector>
 #include <map>
+#include <iostream>
 #include "r-tech1/graphics/bitmap.h"
 #include "r-tech1/events.h"
 #include "r-tech1/exceptions/shutdown_exception.h"
@@ -197,6 +198,103 @@ void EventManager::runSDL(Keyboard & keyboard, map<int, ReferenceCount<Joystick>
 }
 #endif
 
+#ifdef USE_SDL2
+static void handleKeyDown(Keyboard & keyboard, const SDL_Event & event){
+    // keyboard.press(event.key.keysym.sym, event.key.keysym.unicode);
+    keyboard.press(event.key.keysym.sym, event.key.keysym.sym);
+}
+
+static void handleKeyUp(Keyboard & keyboard, const SDL_Event & event){
+    keyboard.release(event.key.keysym.sym);
+}
+
+void EventManager::runSDL2(Keyboard & keyboard, map<int, ReferenceCount<Joystick> > joysticks){
+    // DebugLog << "EventManager::runSDL2" << std::endl;
+
+    keyboard.poll();
+    for (map<int, ReferenceCount<Joystick> >::iterator it = joysticks.begin(); it != joysticks.end(); it++){
+        ReferenceCount<Joystick> joystick = it->second;
+        if (joystick != NULL){
+            joystick->poll();
+        }
+    }
+    SDL_Event event;
+    /* FIXME: android gets into an infinite loop while reading events */
+#ifdef ANDROID
+    // int good = SDL_PollEvent(&event);
+    // for (int check = 0; check < 10 && good; check++, good = SDL_PollEvent(&event)){
+    // if (SDL_PollEvent(&event) == 1){
+    while (SDL_PollEvent(&event) == 1){
+#else
+    while (SDL_PollEvent(&event) == 1){
+#endif
+        // DebugLog << "sdl event type: " << event.type << std::endl;
+        switch (event.type){
+            case SDL_QUIT : {
+                dispatch(CloseWindow);
+                break;
+            }
+            case SDL_KEYDOWN : {
+                handleKeyDown(keyboard, event);
+                 // dispatch(Key, event.key.keysym.sym);
+                 break;
+            }
+            case SDL_KEYUP : {
+                handleKeyUp(keyboard, event);
+                break;
+            }
+                            /*
+            case SDL_JOYBUTTONDOWN: {
+                handleJoystickButtonDown(joysticks, event);
+                break;
+            }
+            case SDL_JOYHATMOTION : {
+                handleJoystickHat(joysticks, event);
+                break;
+            }
+            case SDL_JOYBUTTONUP: {
+                handleJoystickButtonUp(joysticks, event);
+                break;
+            }
+            case SDL_JOYAXISMOTION: {
+                handleJoystickAxis(joysticks, event);
+                break;
+            }
+            */
+            case SDL_WINDOWEVENT: {
+                switch (event.window.event){
+                    case SDL_WINDOWEVENT_RESIZED: {
+                        int width = event.window.data1;
+                        int height = event.window.data2;
+                        /* to keep the perspective correct
+                         * 640/480 = 1.33333
+                         */
+                        /*
+                        double ratio = (double) 640 / (double) 480;
+                        if (width > height){
+                            height = (int)((double) width / ratio);
+                        } else {
+                            width = (int)((double) height * ratio);
+                        }
+                        */
+                        dispatch(ResizeScreen, width, height);
+                        break;
+                    }
+                    default : {
+                        break;
+                    }
+                }
+                break;
+            }
+            default : {
+                break;
+            }
+        }
+    }
+}
+#endif
+
+
 #ifdef USE_ALLEGRO
 void EventManager::runAllegro(Keyboard & keyboard, map<int, ReferenceCount<Joystick> > joystick){
     keyboard.poll();
@@ -374,6 +472,8 @@ void EventManager::runAllegro5(Keyboard & keyboard, const map<int, ReferenceCoun
 void EventManager::run(Keyboard & keyboard, std::map<int, ReferenceCount<Joystick> > joysticks){
 #ifdef USE_SDL
     runSDL(keyboard, joysticks);
+#elif USE_SDL2
+    runSDL2(keyboard, joysticks);
 #elif USE_ALLEGRO
     runAllegro(keyboard, joysticks);
 #elif USE_ALLEGRO5
@@ -434,8 +534,8 @@ void EventManager::dispatch(Event type, int arg1, int arg2){
                 resize.height = arg2;
                 resize.enable = true;
             } else {
-                Global::debug(1) << "Resizing screen to " << arg1 << ", " << arg2 << std::endl;
-                if (Graphics::setGraphicsMode(0, arg1, arg2) == 0){
+                DebugLog1 << "Resizing screen to " << arg1 << ", " << arg2 << std::endl;
+                if (Graphics::changeGraphicsMode(0, arg1, arg2) == 0){
                     Configuration::setScreenWidth(arg1);
                     Configuration::setScreenHeight(arg2);
                 }
@@ -544,11 +644,11 @@ static bool useTouchOverlay(){
 
 static void doStandardLoop(Logic & logic, Draw & draw){
     if (Graphics::screenParameter.current() == NULL){
-        throw Exception::Base(__FILE__, __LINE__);
+        throw Exception::Base(__FILE__, __LINE__, "no screen parameter set");
     }
     const Graphics::Bitmap & screen = *Graphics::screenParameter.current();
     screen.clear();
-    draw.drawFirst(screen.aspectRatio(640, 480));
+    draw.drawFirst(screen);
     screen.BlitToScreen();
     Global::speed_counter4 = 0;
     double runCounter = 0;
@@ -564,6 +664,7 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                 runCounter += logic.ticks(Global::speed_counter4);
                 Global::speed_counter4 = 0;
                 bool need_draw = false;
+                // Global::debug(0) << "Run counter: " << runCounter << std::endl;
                 while (runCounter >= 1.0){
                     need_draw = true;
                     InputManager::poll();
@@ -596,7 +697,8 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                     draw.updateFrames();
                     uint64_t now = System::currentMilliseconds();
                     screen.clear();
-                    draw.draw(screen.aspectRatio(640, 480));
+                    // draw.draw(screen.aspectRatio(640, 480));
+                    draw.draw(screen);
                     if (useTouchOverlay()){
                         InputManager::getTouch()->drawTouchOverlay(screen);
                     }
@@ -605,7 +707,7 @@ static void doStandardLoop(Logic & logic, Draw & draw){
                     frameTime += (later - now);
 
                     if (frameCount >= maxCount){
-                        Global::debug(0) << "Draw average " << (frameTime / frameCount) << "ms" << std::endl;
+                        DebugLog2 << "Draw average " << (frameTime / frameCount) << "ms" << std::endl;
                         frameCount = 0;
                         frameTime = 0;
                     }
@@ -613,13 +715,18 @@ static void doStandardLoop(Logic & logic, Draw & draw){
             }
 
             while (Global::speed_counter4 == 0){
+                if (shutdown()){
+                    throw ShutdownException();
+                }
+
                 /* if the fps is limited then don't keep redrawing */
                 if (Global::rateLimit){
                     rest(1);
                 } else {
                     draw.updateFrames();
                     screen.clear();
-                    draw.draw(screen.aspectRatio(640, 480));
+                    // draw.draw(screen.aspectRatio(640, 480));
+                    draw.draw(screen);
                     if (useTouchOverlay()){
                         InputManager::getTouch()->drawTouchOverlay(screen);
                     }
@@ -643,6 +750,56 @@ void standardLoop(Logic & logic, Draw & draw){
     }
     */
     doStandardLoop(logic, draw);
+}
+
+void standardLoop(std::function<bool()> logic, std::function<double(double)> ticks, std::function<void(const Graphics::Bitmap &)> draw){
+    class LocalLogic: public Logic {
+    public:
+        std::function<bool()> logic;
+        std::function<double(double)> ticks_;
+        bool is_done;
+
+        LocalLogic(std::function<bool()> logic, std::function<double(double)> ticks):
+        logic(logic),
+        ticks_(ticks),
+        is_done(false){
+        }
+
+        virtual bool done(){
+            return is_done;
+        }
+
+        virtual void run(){
+            is_done = logic() || is_done;
+        }
+
+        virtual double ticks(double systemTicks){
+            return ticks_(systemTicks);
+        }
+
+    };
+
+    class LocalDraw: public Draw {
+    public:
+        std::function<void(const Graphics::Bitmap &)> draw_;
+
+        LocalDraw(std::function<void(const Graphics::Bitmap &)> draw):
+        draw_(draw){
+        }
+
+        virtual void drawFirst(const Graphics::Bitmap & screen){
+            draw_(screen);
+        }
+
+        virtual void draw(const Graphics::Bitmap & screen){
+            draw_(screen);
+        }
+    };
+
+    LocalLogic logicObject(logic, ticks);
+    LocalDraw drawObject(draw);
+
+    standardLoop(logicObject, drawObject);
 }
 
 }

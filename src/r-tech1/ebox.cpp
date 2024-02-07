@@ -136,6 +136,7 @@ parent( _parent ){
     } else {
         // printf("Size X:%d Y:%d\n", width, height );
         int total = 0;
+        int minimum_threshold = 70;
         int denom = who->getWidth() * who->getHeight();
 
                 /* empty sprite? */
@@ -152,7 +153,7 @@ parent( _parent ){
                         if (pixel != mask_pixel){
                             ++total;
                         }
-                        if ( total * 100 / denom > 50 ){
+                        if ( total * 100 / denom > minimum_threshold ){
                             /* we're done already,
                              * stop counting pixels
                              */
@@ -164,7 +165,7 @@ parent( _parent ){
         /* johnny 5 alive! */
         short_circuit:
 
-        if ( total * 100 / denom > 50 ){
+        if ( total * 100 / denom > minimum_threshold ){
             full = true;
         }
     }

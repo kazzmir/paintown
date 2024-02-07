@@ -94,6 +94,8 @@ public:
         system.getc = getc;
         system.getnc = getnc;
         system.close = close;
+        system.seek = seek;
+        system.get_size = get_size;
     }
 
     int doSkip(long n){
@@ -101,7 +103,7 @@ public:
         return 0;
     }
 
-    static int skip(void *f, long n){
+    static int skip(void *f, dumb_off_t n){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doSkip(n);
     }
@@ -117,11 +119,11 @@ public:
         return self->doGetc();
     }
 
-    int doGetnc(unsigned char * ptr, long n){
+    int doGetnc(char * ptr, long n){
         return file->readLine((char*) ptr, n);
     }
 
-    static long getnc(unsigned char *ptr, long n, void *f){
+    static dumb_ssize_t getnc(char *ptr, size_t n, void *f){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doGetnc(ptr, n);
     }
@@ -132,6 +134,17 @@ public:
     static void close(void *f){
         StreamingSystem * self = (StreamingSystem*) f;
         return self->doClose();
+    }
+
+    static int seek(void *f, dumb_off_t n){
+        StreamingSystem * self = (StreamingSystem*) f;
+        self->file->seek(n, 0);
+        return 0;
+    }
+
+    static dumb_off_t get_size(void *f){
+        StreamingSystem * self = (StreamingSystem*) f;
+        return self->file->getSize();
     }
 
     void closeDumb(){
@@ -151,6 +164,13 @@ public:
         reset();
         dumb = dumbfile_open_ex(this, &system);
         return reader(dumb);
+    }
+
+    DUH * loadMod(DUH * (*reader)(DUMBFILE *,int)){
+        closeDumb();
+        reset();
+        dumb = dumbfile_open_ex(this, &system);
+        return reader(dumb, DUMB_MOD_RESTRICT_OLD_PATTERN_COUNT);
     }
 
     virtual ~StreamingSystem(){
@@ -183,7 +203,7 @@ public:
                     break;
                 }
                 case 3: {
-                    what = load(dumb_read_mod_quick);
+                    what = loadMod(dumb_read_mod_quick);
                     break;
                 }
             }
@@ -217,6 +237,8 @@ public:
         system.getc = getc;
         system.getnc = getnc;
         system.close = close;
+        system.seek = seek;
+        system.get_size = get_size;
     }
 
     virtual ~MemorySystem(){
@@ -242,7 +264,7 @@ public:
         return 0;
     }
 
-    static int skip(void *f, long n){
+    static int skip(void *f, dumb_off_t n){
         MemorySystem * self = (MemorySystem*) f;
         return self->doSkip(n);
     }
@@ -261,7 +283,7 @@ public:
         return self->doGetc();
     }
 
-    int doGetnc(unsigned char * ptr, long n){
+    int doGetnc(char * ptr, long n){
         int actual = n;
         if (actual + position >= length){
             actual = length - position;
@@ -271,7 +293,7 @@ public:
         return actual;
     }
 
-    static long getnc(unsigned char *ptr, long n, void *f){
+    static dumb_ssize_t getnc(char *ptr, size_t n, void *f){
         MemorySystem * self = (MemorySystem*) f;
         return self->doGetnc(ptr, n);
     }
@@ -295,11 +317,29 @@ public:
         position = 0;
     }
 
+    static int seek(void *f, dumb_off_t n){
+        return 0;
+    }
+
+    static dumb_off_t get_size(void *f){
+        // Not sure just returning 0 for now
+        /*MemorySystem * self = (MemorySystem*) f;
+        return self-> ? */
+        return 0;
+    }
+
     DUH * load(DUH * (*reader)(DUMBFILE *)){
         closeDumb();
         reset();
         dumb = dumbfile_open_ex(this, &system);
         return reader(dumb);
+    }
+
+    DUH * loadMod(DUH * (*reader)(DUMBFILE *,int)){
+        closeDumb();
+        reset();
+        dumb = dumbfile_open_ex(this, &system);
+        return reader(dumb,DUMB_MOD_RESTRICT_OLD_PATTERN_COUNT);
     }
 
     DUH * loadDumbFile(){
@@ -322,7 +362,7 @@ public:
                     break;
                 }
                 case 3: {
-                    what = load(dumb_read_mod_quick);
+                    what = loadMod(dumb_read_mod_quick);
                     break;
                 }
             }
@@ -369,7 +409,16 @@ DumbPlayer::DumbPlayer(const Filesystem::AbsolutePath & path){
 void DumbPlayer::render(void * data, int samples){
     double delta = 65536.0 / Sound::Info.frequency;
     /* FIXME: use global music volume to scale the output here */
+#ifdef __GNUC__
+// Ignore deprecated warning because documentation for duh_render_float (or _int)
+// which is designed to replace this is not clear
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
     int n = duh_render(renderer, 16, 0, volume, delta, samples, data);
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 }
 
 void DumbPlayer::setVolume(double volume){
@@ -602,9 +651,9 @@ static void initializeMpg123(mpg123_handle ** mp3, const Filesystem::AbsolutePat
         /* FIXME workaround for libmpg issues with "generic" decoder frequency not being set */
         error = mpg123_open(*mp3, (char*) path.path().c_str());
         if (error == -1){
-            std::ostringstream error;
-            error << "Could not open mpg123 file " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not open mpg123 file " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
         
         /* reading a frame is the only surefire way to get mpg123 to set the
@@ -614,18 +663,18 @@ static void initializeMpg123(mpg123_handle ** mp3, const Filesystem::AbsolutePat
         unsigned char tempBuffer[4096];
         error = mpg123_read(*mp3, tempBuffer, sizeof(tempBuffer), &dont_care);
 	if (!(error == MPG123_OK || error == MPG123_NEW_FORMAT)){
-            std::ostringstream error;
-            error << "Could not read mpg123 file " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not read mpg123 file " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
 	mpg123_close(*mp3);
 	
         /* stream has progressed a little bit so reset it by opening it again */
 	error = mpg123_open(*mp3, (char*) path.path().c_str());
         if (error == -1){
-            std::ostringstream error;
-            error << "Could not open mpg123 file " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not open mpg123 file " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
         /* FIXME end */
 
@@ -634,9 +683,9 @@ static void initializeMpg123(mpg123_handle ** mp3, const Filesystem::AbsolutePat
          */
         error = mpg123_decoder(*mp3, "generic");
         if (error != MPG123_OK){
-            std::ostringstream error;
-            error << "Could not use 'generic' mpg123 decoder for " << path.path() << " error code " << error;
-            throw MusicException(__FILE__,__LINE__, error.str());
+            std::ostringstream fail;
+            fail << "Could not use 'generic' mpg123 decoder for " << path.path() << " error code " << error;
+            throw MusicException(__FILE__,__LINE__, fail.str());
         }
         // Global::debug(0) << "mpg support " << mpg123_format_support(mp3, Sound::FREQUENCY, MPG123_ENC_SIGNED_16) << std::endl;
 

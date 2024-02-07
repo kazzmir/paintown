@@ -933,7 +933,7 @@ public:
 
     Graphics::Bitmap readBitmap(const string & path){
         PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(mount.join(Filesystem::RelativePath(path)));
-        return Graphics::Bitmap(*file);
+        return Graphics::Bitmap(*file, false);
     }
 
     virtual PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){
@@ -1001,7 +1001,7 @@ public:
 
     Graphics::Bitmap readBitmap(const string & path){
         PaintownUtil::ReferenceCount<Storage::File> file = Storage::instance().open(root.join(Filesystem::RelativePath(path)));
-        return Graphics::Bitmap(*file);
+        return Graphics::Bitmap(*file, false);
     }
 
     virtual PaintownUtil::ReferenceCount<Mugen::Sprite> readSprite(bool mask){

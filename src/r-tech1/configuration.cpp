@@ -20,6 +20,11 @@ static const std::string INPUT_TYPE = "SDL1.3";
 static const std::string INPUT_TYPE = "SDL";
 #endif
 #endif
+
+#ifdef USE_SDL2
+static const std::string INPUT_TYPE = "SDL2";
+#endif
+
 #ifdef USE_ALLEGRO
 static const std::string INPUT_TYPE = "Allegro";
 #endif
@@ -715,11 +720,15 @@ static Token * removeDuplicates(Token * token){
 }
 
 Token * Configuration::getRawData(){
-    if (data == NULL){
+    if (data == nullptr){
         loadConfigurations();
         // data = new Token();
     }
     return data.raw();
+}
+
+void Configuration::cleanup(){
+    data = nullptr;
 }
 
 void Configuration::loadConfigurations(){

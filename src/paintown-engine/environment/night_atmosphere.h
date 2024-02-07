@@ -31,17 +31,17 @@ public:
     NightAtmosphere();	
     virtual ~NightAtmosphere();
 
-    virtual void drawBackground(Graphics::Bitmap * work, int x);
-    virtual void drawForeground(Graphics::Bitmap * work, int x);
-    virtual void drawFront(Graphics::Bitmap * work, int x);
-    virtual void drawScreen(Graphics::Bitmap * work, int x);
+    virtual void drawBackground(const Graphics::Bitmap & work, int x);
+    virtual void drawForeground(const Graphics::Bitmap & work, int x);
+    virtual void drawFront(const Graphics::Bitmap & work, int x);
+    virtual void drawScreen(const Graphics::Bitmap & work, int x);
     virtual void act(const Scene & level, const std::vector<Paintown::Object*>*);
     virtual void addLight(const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color color, const int alpha);
     virtual void interpret(const Token * message);
 
 protected:
 
-    void drawLight(Graphics::Bitmap * original, Graphics::Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int black_alpha, const Graphics::Color light, const int light_alpha, bool draw_light);
+    void drawLight(Graphics::Bitmap * original, const Graphics::Bitmap & work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int black_alpha, const Graphics::Color light, const int light_alpha, bool draw_light);
     void processLight(const Token * token);
     Graphics::Color getSkyColor() const;
     int getSkyDarkness() const;

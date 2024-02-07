@@ -19,9 +19,8 @@ Argument::Action::~Action(){
 }
 
 bool Argument::Parameter::isArg(const string & what) const {
-    std::vector<std::string> match = keywords();
-    for (std::vector<std::string>::iterator it = match.begin(); it != match.end(); it++){
-        if (strcasecmp(it->c_str(), what.c_str()) == 0){
+    for (string check: keywords()){
+        if (strcasecmp(check.c_str(), what.c_str()) == 0){
             return true;
         }
     }

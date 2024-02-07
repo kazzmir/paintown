@@ -11,6 +11,7 @@
 #include "r-tech1/timedifference.h"
 #include "r-tech1/exceptions/load_exception.h"
 #include "r-tech1/gui/select-list.h"
+#include "r-tech1/file-system.h"
 
 #include "../object/player.h"
 #include "globals.h"
@@ -444,10 +445,10 @@ void CellData::act(){
 
 void CellData::draw(int x, int y, int width, int height, const Graphics::Bitmap & work) const {
     if (cell != NULL){
-        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
-        cell->draw(x,y,width,height,work);
+        // Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        cell->draw(x, y, width, height, work);
     } else {
-        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        // Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
         if (fill){
             switch (shape){
                 case ROUND:
@@ -534,33 +535,55 @@ void CharacterItem::draw(int x, int y, int width, int height, const Graphics::Bi
         int displayWidth = smaller.getWidth();
         int displayHeight = smaller.getHeight();
 
-        Graphics::Bitmap area(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
+        // Graphics::Bitmap area(bmp, x, y, width, height);
+        Graphics::Bitmap area(displayWidth, displayHeight);
 
-#ifdef USE_SDL
+#ifdef USE_SDL2
         /* Shadows are messed up in sdl for some reason. They look like a purple blotch. Allegro5 looks ok though. */
         smaller.setDrawShadow(false);
 #endif
 
+        /*
         Graphics::StretchedBitmap temp(displayWidth, displayHeight, area, Graphics::StretchedBitmap::Mask);
         temp.start();
+        */
         smaller.setX(displayWidth / 2);
         smaller.setY(0);
         smaller.setZ(displayHeight);
-        smaller.draw(&temp, 0, 0);
-        temp.finish();
+
+        area.fill(Graphics::makeColor(0, 0, 0));
+
+        /*
+        Graphics::Bitmap x1(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath("players/akuma/idle/18273.png"))));
+        x1.draw(0, 0, area);
+        */
+        smaller.draw(area, 0, 0);
+        Graphics::Bitmap sub(Graphics::Bitmap(bmp, x, y, width, height).aspectRatio(displayWidth, displayHeight));
+        area.drawStretched(sub);
+
+        // area.drawStretched(0, 0, sub.getWidth(), sub.getHeight(), sub);
+        // area.drawStretched(x, y, width, height, bmp);
+
+        // temp.finish();
     } else {
         const int length = font.textLength(displayed->getName().c_str());
         const int middle = font.getHeight()/4;
         Graphics::Bitmap area(bmp, x, y, width, height);
+
+        font.printf(0, middle, Graphics::makeColor(255, 255, 255), area, player->guy->getName(), 0);
+
+        /*
         Graphics::StretchedBitmap temp(length, font.getHeight(), area, Graphics::StretchedBitmap::Mask);
         temp.start();
         // temp.clearToMask();
         font.printf(0, middle, Graphics::makeColor(255, 255, 255), temp, player->guy->getName(), 0);
         temp.finish();
+
         // temp.draw(x, y, bmp);
         double widthRatio = (double) width / (double) temp.getWidth();
         double heightRatio = (double) temp.getHeight() / (double) height;
         double use = (double) height / (2.5 * temp.getHeight());
+        */
         // temp.drawStretched(1, 0, temp.getWidth() * use, temp.getHeight() * use, area);
     }
     
@@ -610,8 +633,10 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         Paintown::Character copy(*character);
         Graphics::Bitmap window2 = window1.aspectRatio(copy.getAverageWidth(), copy.getAverageHeight() * 2);
         // window2.border(0, 2, Graphics::makeColor(255, 255, 255));
+
         Graphics::StretchedBitmap temp(copy.getAverageWidth(), copy.getAverageHeight() * 2, window2, Graphics::StretchedBitmap::Mask);
         temp.start();
+        // Graphics::Bitmap temp(window2);
 
         copy.setDrawShadow(false);
         copy.setX(temp.getWidth()/2);
@@ -619,9 +644,9 @@ void CharacterItem::drawProfile(const Profile & profile, const Graphics::Bitmap 
         copy.setZ(copy.getAverageHeight());
 
         /* FIXME: the y parameter actually isn't used in the outline and reflection. */
-        copy.drawOutline(&temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
-        copy.drawReflection(&temp, 0, temp.getHeight() - stand - stand, 128);
-        copy.draw(&temp, 0, temp.getHeight()/2);
+        copy.drawOutline(temp, 0, temp.getHeight() - stand - stand, 0, 0, 0, 255);
+        copy.drawReflection(temp, 0, temp.getHeight() - stand - stand, 150);
+        copy.draw(temp, 0, temp.getHeight()/2);
 
         temp.finish();
 
@@ -863,6 +888,10 @@ currentMessages(0){
 }
 
 CharacterSelect::~CharacterSelect(){
+    /* avoid circular references by clearing the list in case any list item has a reference to the list itself */
+    if (list != nullptr){
+        list->clearItems();
+    }
 }
 
 void CharacterSelect::initializeDefaults(){
@@ -1128,6 +1157,8 @@ void CharacterSelect::load(const Token * token){
     
     loader = Util::ReferenceCount<Paintown::DisplayCharacterLoader>(new Paintown::DisplayCharacterLoader(getCharacters(players)));
 
+    // FIXME: replace this with a thread + lambda
+#if 0
     class DisplayThread: public Util::Thread::ThreadObject {
     public:
         DisplayThread(Util::ReferenceCount<Paintown::DisplayCharacterLoader> loader):
@@ -1148,12 +1179,17 @@ void CharacterSelect::load(const Token * token){
             loader->stop();
         }
     };
+#endif
 
+    /*
     loadingThread = Util::ReferenceCount<Util::Thread::ThreadObject>(new DisplayThread(loader));
     
     if (!loadingThread->start()){
         throw LoadException(__FILE__, __LINE__, "Could not create loading thread");
     }
+    */
+
+    loader->load();
     
     for (PlayerVector::iterator i = players.begin(); i != players.end(); ++i){
         items.push_back(Util::ReferenceCount<Gui::SelectItem>(new CharacterItem(items.size(), list, *i, cells)));

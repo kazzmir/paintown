@@ -44,7 +44,7 @@ public:
     virtual double getX() const;
     virtual double getY() const;
 
-    virtual const int getId() const;
+    virtual int getId() const;
 
     /* Ticks since this projectile hit something */
     virtual unsigned long int getLastHitTicks() const;

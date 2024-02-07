@@ -13,7 +13,7 @@ class AnimationTrail{
 public:
     AnimationTrail(const int x, const int y, const int facing, const int life, const Graphics::Bitmap & sprite);
 
-    virtual void draw(const int rel_x, Remap * remap, Graphics::Bitmap * work) const;
+    virtual void draw(const int rel_x, Remap * remap, const Graphics::Bitmap & work) const;
     virtual bool act();
 
     virtual ~AnimationTrail();

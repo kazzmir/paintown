@@ -12,6 +12,10 @@
 #include "sdl/sound.h"
 #endif
 
+#ifdef USE_SDL2
+#include "sdl2/sound.h"
+#endif
+
 struct SAMPLE;
 
 namespace Storage{
@@ -35,7 +39,7 @@ public:
     /* cleanup */
     static void uninitialize();
 
-    Sound & operator=( const Sound & rhs );
+    Sound & operator=(const Sound & rhs);
 
     void play();
     void play(double volume, int pan);
@@ -49,11 +53,8 @@ public:
     /* global frequency to use */
     // static const int FREQUENCY = 22050;
     struct SoundInfo{
-        SoundInfo():
-            frequency(44100),
-            channels(2),
-            format(0){
-            }
+        /* implemented in <backend>/sound.cpp */
+        SoundInfo();
 
         int frequency;
         int channels;
@@ -65,6 +66,7 @@ public:
 
 protected:
 
+    void loadFromFile(const std::string & path);
     void loadFromMemory(const char * data, int length);
 
     /* scale to the configuration sound level */

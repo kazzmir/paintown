@@ -409,6 +409,12 @@ public:
         column(copy.column){
         }
 
+        LineInfo & operator=(const LineInfo & copy){
+            this->line = copy.line;
+            this->column = copy.column;
+            return *this;
+        }
+
         LineInfo():
         line(-1),
         column(-1){
@@ -908,7 +914,7 @@ public:
 std::string * toString(const Value & input){
   std::ostringstream out;
   for (Value::iterator it = input.getValues().begin(); it != input.getValues().end(); it++){
-    out << (char) (long) (*it).getValue();
+    out << (char) (int64_t) (*it).getValue();
   }
   std::string * object = new std::string(out.str());
   GC::save(object);
@@ -1079,7 +1085,7 @@ Ast::Value * negateExpression(const Value & exp){
 Ast::Value * makeUnaryExpression(const Value & unaries, const Value & exp){
     Ast::Value * expression = as<Ast::Value*>(exp);
     for (Value::iterator it = unaries.getValues().begin(); it != unaries.getValues().end(); it++){
-        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (long) (*it).getValue();
+        Ast::ExpressionUnary::UnaryType unary = (Ast::ExpressionUnary::UnaryType) (int64_t) (*it).getValue();
         /* FIXME: fix line numbers here */
         expression = new Ast::ExpressionUnary(-1, -1, unary, expression);
         GC::save(expression);
@@ -6364,7 +6370,7 @@ Result rule_name(Stream & stream, const int position){
             
             {
                     Value value((void*) 0);
-                    value = toString((char)(long)result_peg_4.getValues().getValue(),result_peg_10.getValues());
+                    value = toString((char)(int64_t)result_peg_4.getValues().getValue(),result_peg_10.getValues());
                     result_peg_3.setValue(value);
                 }
             
@@ -18173,6 +18179,50 @@ Result rule_resource__s(Stream & stream, const int position){
         
         return result_peg_134;
         out_peg_135:
+        Result result_peg_136(myposition);
+        
+        
+        result_peg_136.setValue(Value((void*) "st"));
+        for (int i = 0; i < 2; i++){
+            if (compareCharCase("st"[i], stream.get(result_peg_136.getPosition()))){
+                result_peg_136.nextPosition();
+            } else {
+                goto out_peg_137;
+            }
+        }
+        
+        
+        if (column_peg_2.chunk11 == 0){
+            column_peg_2.chunk11 = new Chunk11();
+        }
+        column_peg_2.chunk11->chunk_resource__s = result_peg_136;
+        stream.update(result_peg_136.getPosition());
+        
+        
+        return result_peg_136;
+        out_peg_137:
+        Result result_peg_138(myposition);
+        
+        
+        result_peg_138.setValue(Value((void*) "square"));
+        for (int i = 0; i < 6; i++){
+            if (compareChar("square"[i], stream.get(result_peg_138.getPosition()))){
+                result_peg_138.nextPosition();
+            } else {
+                goto out_peg_139;
+            }
+        }
+        
+        
+        if (column_peg_2.chunk11 == 0){
+            column_peg_2.chunk11 = new Chunk11();
+        }
+        column_peg_2.chunk11->chunk_resource__s = result_peg_138;
+        stream.update(result_peg_138.getPosition());
+        
+        
+        return result_peg_138;
+        out_peg_139:
     
         if (column_peg_2.chunk11 == 0){
             column_peg_2.chunk11 = new Chunk11();

@@ -5,14 +5,16 @@
 
 namespace Exception{
 
-Base::Base(const std::string & file, int line):
+Base::Base(const std::string & file, int line, const std::string & reason):
 file(file),
+reason(reason),
 line(line),
 nested(NULL){
 }
 
 Base::Base(const std::string & file, int line, const Base & nested):
 file(file),
+reason("no reason given"),
 line(line),
 nested(nested.copy()){
 }
@@ -24,7 +26,7 @@ Base::~Base() throw (){
 }
     
 const std::string Base::getReason() const { 
-    return "reason not given";
+    return this->reason;
 }
     
 const std::string Base::getTrace() const {

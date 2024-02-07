@@ -1,9 +1,9 @@
+#include <vector>
+#include <set>
+#include "keyboard.h"
+
 #ifdef USE_ALLEGRO5
 #include "allegro5/keyboard.cpp"
-#endif
-
-#ifdef USE_SDL
-#include "sdl/keyboard.cpp"
 #endif
 
 std::vector<bool> Keyboard::repeatState;

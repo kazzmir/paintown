@@ -129,21 +129,21 @@ ContextItem::~ContextItem(){
 void ContextItem::draw(int x, int y, const Graphics::Bitmap & where, const Font & font, int distance) const {
     if (distance == 0){
         if (parent.getListValues().getInterpolate()){
-            Graphics::Bitmap::transBlender(0, 0, 0, parent.getFadeAlpha());
-            font.printf(x, y, parent.getSelectedColor(), where.translucent(), getText(), 0);
+            // Graphics::Bitmap::transBlender(0, 0, 0, parent.getFadeAlpha());
+            font.printf(x, y, parent.getSelectedColor().updateAlpha(parent.getFadeAlpha()), where, getText(), 0);
         } else {
-            Graphics::Bitmap::transBlender(0, 0, 0, parent.getListValues().getSelectedAlpha());
-            font.printf(x, y, parent.getListValues().getSelectedColor(), where.translucent(), getText(), 0);
+            // Graphics::Bitmap::transBlender(0, 0, 0, parent.getListValues().getSelectedAlpha());
+            font.printf(x, y, parent.getListValues().getSelectedColor().updateAlpha(parent.getListValues().getSelectedAlpha()), where, getText(), 0);
         }
     } else {
         if (parent.getListValues().getDistanceFade()){
             int alpha = parent.getListValues().getOtherAlpha() - fabs((double) distance) * parent.getListValues().getDistanceFadeMultiplier();
             alpha = clamp(alpha);
-            Graphics::Bitmap::transBlender(0, 0, 0, alpha);
-            font.printf(x, y, parent.getListValues().getOtherColor(), where.translucent(), getText(), 0);
+            // Graphics::Bitmap::transBlender(0, 0, 0, alpha);
+            font.printf(x, y, parent.getListValues().getOtherColor().updateAlpha(alpha), where, getText(), 0);
         } else {
-            Graphics::Bitmap::transBlender(0, 0, 0, parent.getListValues().getOtherAlpha());
-            font.printf(x, y, parent.getListValues().getOtherColor(), where.translucent(), getText(), 0);
+            // Graphics::Bitmap::transBlender(0, 0, 0, parent.getListValues().getOtherAlpha());
+            font.printf(x, y, parent.getListValues().getOtherColor().updateAlpha(parent.getListValues().getOtherAlpha()), where, getText(), 0);
         }
     }
 }
@@ -169,6 +169,7 @@ renderOnlyText(false){
 }
 
 ContextBox::ContextBox( const ContextBox & copy ):
+Widget(),
 fadeState(NotActive),
 list(new ScrollList()),
 selectedGradient(standardGradient(GradientMax)),

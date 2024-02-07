@@ -378,7 +378,7 @@ public:
     
     const std::vector<int> getIdList();
     
-    virtual inline const bool empty() const{
+    virtual inline bool empty() const{
         return this->animations.empty();
     }
 

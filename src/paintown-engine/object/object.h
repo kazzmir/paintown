@@ -59,16 +59,16 @@ public:
 	/* draw:
 	 * Draws the object onto the specified Bitmap
 	 */
-	virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y) = 0;
-	virtual void drawFront(Graphics::Bitmap * work, int rel_x);
-        /* draw reflection. default behavior is to do nothing */
-        virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
+	virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) = 0;
+	virtual void drawFront(const Graphics::Bitmap & work, int rel_x);
+    /* draw reflection. default behavior is to do nothing */
+    virtual void drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity);
 
-	/* FIXME: remove this method once mugen characters no longer extend
-         * the paintown object heirarchy.
-         * draw mugen style shadow. default behavior is to do nothing
-         */
-        virtual void drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
+    /* FIXME: remove this method once mugen characters no longer extend
+     * the paintown object heirarchy.
+     * draw mugen style shadow. default behavior is to do nothing
+     */
+    virtual void drawMugenShade(const Graphics::Bitmap & work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh);
 	
 	/* print:
 	 * Print some debugging information

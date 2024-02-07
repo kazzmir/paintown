@@ -28,7 +28,7 @@ public:
 	virtual bool isGettable();
 
 	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
+	virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y );
 	virtual Object * copy();
 	
 	virtual Network::Message getCreateMessage();

@@ -87,7 +87,7 @@ public:
         };
         class Exit : public BaseMenuItem {
         public:
-            Exit(OptionMenu * menu):
+            Exit(PaintownUtil::ReferenceCount<OptionMenu> menu):
             menu(menu){
                 optionName = "Exit Match";
                 currentValue = "(Enter)";
@@ -111,7 +111,7 @@ public:
                 }
             }
             
-            OptionMenu * menu;
+            PaintownUtil::ReferenceCount<OptionMenu> menu;
         };
         std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > list;
     
@@ -120,18 +120,23 @@ public:
         
         // Create list
         list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Resume()));
+
+        /* warning: passing in menu to the other options here causes a circular reference, so it
+         * is important to call menu->clearList() in the destructor.
+         */
         if (options.getPlayer1Behavior() != NULL){
+            // avoid circular reference
             list.push_back(OptionMenu::getPlayerKeys(0, "Player 1", menu));
         }
         if (options.getPlayer2Behavior() != NULL){
+            // avoid circular reference
             list.push_back(OptionMenu::getPlayerKeys(1, "Player 2", menu));
         }
 
-        /* There is a circular reference here if we use just `menu'.
+        /* for reference: circular reference here
          *   menu -> options -> scroll item -> Exit -> menu
-         * So to break the circularity we use a raw pointer to the original menu.
          */
-        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit(menu.raw())));
+        list.push_back(PaintownUtil::ReferenceCount<Gui::ScrollItem>(new Exit(menu)));
         
         // Now update it
         menu->updateList(list);
@@ -142,6 +147,8 @@ public:
     }
 
     ~EscapeMenu(){
+        /* clear the list to remove the circular references to the menu */
+        menu->clearList();
     }
 
     void act(){
@@ -621,6 +628,9 @@ class LogicDraw: public PaintownUtil::Logic, public PaintownUtil::Draw {
             console.act();
 
             endMatch = stage->isMatchOver();
+            if (endMatch){
+                DebugLog << "match ended" << std::endl;
+            }
 
             if (showGameSpeed > 0){
                 showGameSpeed -= 1;

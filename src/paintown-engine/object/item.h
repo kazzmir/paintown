@@ -28,24 +28,24 @@ public:
     Item(const Filesystem::AbsolutePath & filename, const Util::ReferenceCount<Stimulation> & stimulation, const std::string & checkName = "item");
     Item(const Item & item);
 
-    virtual void act(std::vector< Object * > * others, World * world, std::vector< Object * > * add);
-    virtual void draw(Graphics::Bitmap * work, int rel_x, int rel_y);
-    virtual bool isCollidable(Object * obj);
-    virtual std::vector<ECollide*> getCollide() const;
-    virtual bool collision( ObjectAttack * obj );
-    virtual bool isGettable();
-    virtual void touch(Object * obj);
-    virtual int getWidth() const;
-    virtual int getHeight() const;
-    virtual Network::Message getCreateMessage();
+    virtual void act(std::vector< Object * > * others, World * world, std::vector< Object * > * add) override;
+    virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) override;
+    virtual bool isCollidable(Object * obj) override;
+    virtual std::vector<ECollide*> getCollide() const override;
+    virtual bool collision( ObjectAttack * obj ) override;
+    virtual bool isGettable() override;
+    virtual void touch(Object * obj) override;
+    virtual int getWidth() const override;
+    virtual int getHeight() const override;
+    virtual Network::Message getCreateMessage() override;
     virtual void setStimulation(const Util::ReferenceCount<Stimulation> & stimulation);
 
-    virtual Object * copy();
+    virtual Object * copy() override;
 
     virtual ~Item();
 
 protected:
-    void drawShadow(Graphics::Bitmap * work, int cameraX, int cameraY, double scale);
+    void drawShadow(const Graphics::Bitmap & work, int cameraX, int cameraY, double scale);
 
     inline const Filesystem::AbsolutePath & getPath() const {
         return path;

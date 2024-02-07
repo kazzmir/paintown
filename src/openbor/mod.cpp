@@ -48,10 +48,10 @@ std::vector<Level::LevelInfo> OpenborMod::getLevels(){
     return levels;
 }
     
-Graphics::Bitmap * OpenborMod::createBitmap(const Filesystem::RelativePath & path){
+Graphics::Bitmap * OpenborMod::createBitmap(const Filesystem::RelativePath & path, bool keepInMemory){
     try{
         char * data = reader.readFile(reader.getFile(path.path()));
-        Graphics::Bitmap * bitmap = new Graphics::Bitmap(data, reader.getFileLength(path.path()));
+        Graphics::Bitmap * bitmap = new Graphics::Bitmap((uint8_t*) data, reader.getFileLength(path.path()));
         delete[] data;
         return bitmap;
     } catch (const Bor::PackError & error){

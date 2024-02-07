@@ -79,21 +79,20 @@ FogAtmosphere::~FogAtmosphere(){
     }
 }
 
-void FogAtmosphere::drawForeground(Graphics::Bitmap * work, int x){
+void FogAtmosphere::drawForeground(const Graphics::Bitmap & work, int x){
 }
 
-void FogAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
+void FogAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
 }
 
-void FogAtmosphere::drawFront(Graphics::Bitmap * work, int x){
+void FogAtmosphere::drawFront(const Graphics::Bitmap & work, int x){
 }
 
-void FogAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
-    Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
-    for ( vector< Fog * >::iterator it = fogs.begin(); it != fogs.end(); it++ ){
-        Fog * f = *it;
+void FogAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
+    // Graphics::Bitmap::transBlender( 0, 0, 0, 64 );
+    for (Fog* f: fogs){
         int y = (int)(f->y + sin( f->ang * 3.14159 / 180.0 ) * 2);
-        fog->translucent().draw( f->x, y, *work );
+        fog->translucent(64).draw( f->x, y, work);
     }
     /*
        screenX();
@@ -125,7 +124,7 @@ static int screenY(){
 
 NightAtmosphere::NightAtmosphere():
 Atmosphere(),
-darkness(128),
+darkness(150),
 thunder(NULL),
 lightning(false),
 thunderPause(-1){
@@ -147,7 +146,7 @@ NightAtmosphere::~NightAtmosphere(){
 
 /* lights should not overlap! the effect completely messes up if they do
  */
-void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int dark_alpha, const Graphics::Color light, const int light_alpha, bool draw_light){
+void NightAtmosphere::drawLight(Graphics::Bitmap * original, const Graphics::Bitmap & work, const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color black, const int dark_alpha, const Graphics::Color light, const int light_alpha, bool draw_light){
     int center_x = x;
     // int center_x = screenX();
     
@@ -184,7 +183,7 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * 
     int top = y;
 
     if (draw_light){
-        Graphics::Bitmap::transBlender(0, 0, 0, dark_alpha);
+        // Graphics::Bitmap::transBlender(0, 0, 0, dark_alpha);
         // Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_TRANS);
         /*
         int top = -save.getHeight() / 3;
@@ -196,12 +195,12 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * 
         int lamp_top = (int)(((double)lower_width * 2.0 / (double)lamp_height) * (double)upper_width);
 
         // int top = 0;
-        save.translucent().triangle(left, top, middle, top, left, save.getHeight(), black);
-        save.translucent().triangle(right, top, middle, top, right, save.getHeight(), black);
+        save.translucent(dark_alpha).triangle(left, top, middle, top, left, save.getHeight(), black);
+        save.translucent(dark_alpha).triangle(right, top, middle, top, right, save.getHeight(), black);
         int nwidth = (int)((double) lamp_top / ((double) lamp_height / (double) lower_width));
-        save.translucent().triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
+        save.translucent(dark_alpha).triangle(middle, top, middle - nwidth, top + lamp_top, middle + nwidth, top + lamp_top, black);
 
-        save.translucent().rectangleFill(0, 0, right, top, black);
+        save.translucent(dark_alpha).rectangleFill(0, 0, right, top, black);
         // Graphics::Bitmap::drawingMode(Graphics::Bitmap::MODE_SOLID);
         int xwidth = (int)((double) lamp_height / ((double)(save.getHeight() - top) / (double) lower_width));
         save.light(middle, top, xwidth, lamp_height, lamp_top, light_alpha, dark_alpha, light, black);
@@ -209,7 +208,7 @@ void NightAtmosphere::drawLight(Graphics::Bitmap * original, Graphics::Bitmap * 
     } else {
         lamp->draw(middle - 8, top, save);
     }
-    save.draw(where_x, 0, *work);
+    save.draw(where_x, 0, work);
 }
 
 Graphics::Color NightAtmosphere::getSkyColor() const {
@@ -228,25 +227,25 @@ int NightAtmosphere::getSkyDarkness() const {
     }
 }
 
-void NightAtmosphere::drawFront(Graphics::Bitmap * work, int x){
-    Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
-    work->applyTrans(getSkyColor());
+void NightAtmosphere::drawFront(const Graphics::Bitmap & work, int x){
+    // Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
+    work.translucent(getSkyDarkness()).fill(getSkyColor());
 }
 
-void NightAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
+void NightAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
 }
 	
-void NightAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
+void NightAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
 }
 
 void NightAtmosphere::addLight(const int x, const int y, const int lower_width, const int upper_width, const Graphics::Color color, const int alpha){
     lights.push_back(new Light(x, y, lower_width, upper_width, color, alpha));
 }
 
-void NightAtmosphere::drawForeground(Graphics::Bitmap * work, int x){
-    const Graphics::Color sky = getSkyColor();
-    Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
-    work->applyTrans(sky);
+void NightAtmosphere::drawForeground(const Graphics::Bitmap & work, int x){
+    work.translucent(getSkyDarkness()).fill(getSkyColor());
+    // Graphics::Bitmap::transBlender(0, 0, 0, getSkyDarkness());
+    // work.applyTrans(sky);
 
     /* FIXME: lights are broken in sdl, valgrind spits out some error:
      * == Invalid read of size 2
@@ -334,7 +333,7 @@ playing(false){
                                 "sprites/rain-drop/drop4.png",
                                 "sprites/rain-drop/drop5.png"};
         for (unsigned int i = 0; i < sizeof(files) / sizeof(const char*); i++){
-            splashes.push_back(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(files[i]))))));
+            splashes.push_back(Util::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(files[i]))), false)));
         }
     } catch (const Filesystem::NotFound & ignore){
     }
@@ -343,9 +342,9 @@ playing(false){
 RainAtmosphere::~RainAtmosphere(){
 }
 
-void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
+void RainAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
     // const Graphics::Color bluish = Graphics::makeColor(106, 184, 225);
-    Graphics::Bitmap::transBlender(0, 0, 0, 64);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Util::ReferenceCount<Puddle> >::iterator it = puddles.begin(); it != puddles.end(); it++){
         Util::ReferenceCount<Puddle> puddle = *it;
         if (puddle->x == -1000){
@@ -357,25 +356,25 @@ void RainAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
         int use = puddle->size;
         if (use >= 0 && use < (int) splashes.size()){
             Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
-            splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
+            splash->translucent(64).draw(puddle->x - x - splash->getWidth() / 2,
                                        puddle->y - splash->getHeight(),
-                                       *work);
+                                       work);
         }
         // work->translucent().ellipse(puddle->x - x, puddle->y, rx, ry < 1 ? 1 : ry, bluish);
     }
 }
 
-void RainAtmosphere::drawForeground(Graphics::Bitmap * work, int x){
+void RainAtmosphere::drawForeground(const Graphics::Bitmap & work, int x){
 }
 
-void RainAtmosphere::drawFront(Graphics::Bitmap * work, int x){
+void RainAtmosphere::drawFront(const Graphics::Bitmap & work, int x){
 }
 
 void RainAtmosphere::interpret(const Token * message){
 }
 
-void RainAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
-    Graphics::Bitmap::transBlender(0, 0, 0, 64);
+void RainAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
+    // Graphics::Bitmap::transBlender(0, 0, 0, 64);
     for (vector<Util::ReferenceCount<Puddle> >::iterator it = objectPuddles.begin(); it != objectPuddles.end(); it++){
         Util::ReferenceCount<Puddle> puddle = *it;
         int rx = (int) puddle->current;
@@ -384,15 +383,15 @@ void RainAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
         int use = puddle->size;
         if (use >= 0 && use < (int) splashes.size()){
             Util::ReferenceCount<Graphics::Bitmap> splash = splashes[use];
-            splash->translucent().draw(puddle->x - x - splash->getWidth() / 2,
+            splash->translucent(64).draw(puddle->x - x - splash->getWidth() / 2,
                                        puddle->y - splash->getHeight(),
-                                       *work);
+                                       work);
         }
     }
 
     for (vector<Util::ReferenceCount<Drop> >::iterator it = rain_drops.begin(); it != rain_drops.end(); it++){
         Util::ReferenceCount<Drop> d = *it;
-        work->line(d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color);
+        work.line(d->x, d->y, d->x + d->length * 2 / 3, d->y + d->length, d->color);
     }
 }
 
@@ -475,16 +474,16 @@ SnowAtmosphere::~SnowAtmosphere(){
     }
 }
 
-static void drawFlakeSmall(Flake * flake, Graphics::Bitmap * work){
+static void drawFlakeSmall(Flake * flake, const Graphics::Bitmap & work){
     int c = (int)(200 + 3 * log((double)(flake->y < 1 ? 1 : 2 * flake->y)));
     if (c > 255){
         c = 255;
     }
     Graphics::Color color = Graphics::makeColor(c, c, c);
-    work->putPixel(flake->x, flake->y, color);
+    work.putPixel(flake->x, flake->y, color);
 }
 
-static void drawFlake0( Flake * f, Graphics::Bitmap * work ){
+static void drawFlake0(Flake * f, const Graphics::Bitmap & work ){
     int c = (int)(200 + 3 * log((double)(f->y < 1 ? 1 : 2 * f->y)));
     if (c > 255){
         c = 255;
@@ -500,13 +499,13 @@ static void drawFlake0( Flake * f, Graphics::Bitmap * work ){
     int y1 = (int)(f->y + length * sin(rads));
     int x2 = (int)(f->x + length * cos(rads));
     int y2 = (int)(f->y - length * sin(rads));
-    work->line(x1, y1, x2, y2, color);
+    work.line(x1, y1, x2, y2, color);
 
     x1 = (int)(f->x - length * cos(rads2));
     y1 = (int)(f->y + length * sin(rads2));
     x2 = (int)(f->x + length * cos(rads2));
     y2 = (int)(f->y - length * sin(rads2));
-    work->line(x1, y1, x2, y2, color);
+    work.line(x1, y1, x2, y2, color);
 
     /*
        work->line( f->x - 1, f->y - 1, f->x + 1, f->y + 1, color );
@@ -514,18 +513,17 @@ static void drawFlake0( Flake * f, Graphics::Bitmap * work ){
        */
 }
 
-void SnowAtmosphere::drawBackground(Graphics::Bitmap * work, int x){
+void SnowAtmosphere::drawBackground(const Graphics::Bitmap & work, int x){
 }
 
-void SnowAtmosphere::drawForeground(Graphics::Bitmap * work, int x){
+void SnowAtmosphere::drawForeground(const Graphics::Bitmap & work, int x){
 }
 
-void SnowAtmosphere::drawFront(Graphics::Bitmap * work, int x){
+void SnowAtmosphere::drawFront(const Graphics::Bitmap & work, int x){
 }
 
-void SnowAtmosphere::drawScreen(Graphics::Bitmap * work, int x){
-    for ( vector< Flake * >::iterator it = flakes.begin(); it != flakes.end(); it++ ){
-        Flake * f = *it;
+void SnowAtmosphere::drawScreen(const Graphics::Bitmap & work, int x){
+    for (Flake* f: flakes){
         switch (f->type){
             case Small: {
                 drawFlakeSmall(f, work);

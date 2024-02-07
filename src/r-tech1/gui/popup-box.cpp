@@ -10,6 +10,7 @@ fadeSpeed(12){
 }
 
 PopupBox::PopupBox( const PopupBox & copy ):
+Widget(),
 fadeState(Closed){
     this->fadeSpeed = copy.fadeSpeed;
 }

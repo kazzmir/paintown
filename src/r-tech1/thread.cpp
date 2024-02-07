@@ -1,4 +1,4 @@
-#include "r-tech1/thread.h"
+#include "thread.h"
 
 #ifdef WII
 /* So we can call ogc's create thread directly */
@@ -73,10 +73,13 @@ ScopedLock::~ScopedLock(){
     lock.release();
 }
     
+/*
 bool isUninitialized(Id thread){
     return thread == uninitializedValue;
 }
+*/
 
+/*
 ThreadObject::ThreadObject(void * data, void * (function)(void * arg)):
 data(data),
 function(function),
@@ -97,9 +100,10 @@ ThreadObject::~ThreadObject(){
         thread = uninitializedValue;
     }
 }
+*/
 
 #if defined(USE_SDL) && !defined(USE_NACL)
-Id uninitializedValue = NULL;
+// Id uninitializedValue = NULL;
     
 bool initializeLock(Lock * lock){
     *lock = SDL_CreateMutex();
@@ -193,6 +197,7 @@ void wiiJoinThread(Id thread){
 }
 #endif
 
+#if 0
 bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg){
 #ifdef WII
     return wiiCreateThread(thread, attributes, function, arg);
@@ -217,87 +222,50 @@ void cancelThread(Id thread){
     SDL_KillThread(thread);
 #endif
 }
-
-#elif USE_ALLEGRO5
-Id uninitializedValue = 0;
-
-bool initializeLock(Lock * lock){
-    *lock = al_create_mutex();
-    return *lock != NULL;
-}
-
-int acquireLock(Lock * lock){
-    al_lock_mutex(*lock);
-    return 0;
-}
-
-int releaseLock(Lock * lock){
-    al_unlock_mutex(*lock);
-    return 0;
-}
-
-#if 0
-void initializeCondition(Condition * condition){
-    *condition = al_create_cond();
-}
-
-void destroyCondition(Condition * condition){
-    al_destroy_cond(*condition);
-}
-
-int conditionWait(Condition * condition, Lock * lock){
-    al_wait_cond(*condition, *lock);
-    return 0;
-}
-
-int conditionSignal(Condition * condition){
-    al_broadcast_cond(*condition);
-    return 0;
-}
 #endif
 
-struct AllegroThreadStuff{
-    AllegroThreadStuff(const ThreadFunction & function, void * arg):
-    function(function),
-    arg(arg){
-    }
+#elif USE_SDL2
 
-    ThreadFunction function;
-    void * arg;
-};
-
-static void * allegro_start_thread(ALLEGRO_THREAD * self, void * _stuff){
-    AllegroThreadStuff * stuff = (AllegroThreadStuff*) _stuff;
-    ThreadFunction function = stuff->function;
-    void * arg = stuff->arg;
-    delete stuff;
-    return function(arg);
+#if 0
+bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg){
+    // FIXME: name
+    *thread = SDL_CreateThread(function, "thread", arg);
+    return *thread != NULL;
 }
 
-bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg){
-    AllegroThreadStuff * stuff = new AllegroThreadStuff(function, arg);
-    *thread = al_create_thread(allegro_start_thread, stuff);
-    if (*thread != NULL){
-        al_start_thread(*thread);
-        return true;
-    } else {
-        delete stuff;
-        return false;
-    }
+void cancelThread(Id thread){
+    // FIXME
+    // SDL_KillThread(thread);
 }
 
 void joinThread(Id thread){
     if (!isUninitialized(thread)){
-        al_join_thread(thread, NULL);
+#ifdef WII
+        wiiJoinThread(thread);
+#else
+        SDL_WaitThread(thread, NULL);
+#endif
     }
 }
+
+Id uninitializedValue = NULL;
+#endif
     
-void cancelThread(Id thread){
-    al_destroy_thread(thread);
+bool initializeLock(Lock * lock){
+    *lock = SDL_CreateMutex();
+    return *lock != NULL;
 }
-    
+
+int acquireLock(Lock * lock){
+    return SDL_LockMutex(*lock);
+}
+
+int releaseLock(Lock * lock){
+    return SDL_UnlockMutex(*lock);
+}
+
 void destroyLock(Lock * lock){
-    al_destroy_mutex(*lock);
+    SDL_DestroyMutex(*lock);
 }
 
 #else
@@ -388,6 +356,7 @@ WaitThread::WaitThread(Thread::ThreadFunction thread, void * arg){
     start(thread, arg);
 }
 
+/*
 static void * do_thread(void * arg){
     WaitThread * thread = (WaitThread *) arg;
     thread->doRun();
@@ -401,12 +370,19 @@ void WaitThread::doRun(){
     this->done = true;
     Thread::releaseLock(&doneLock);
 }
+*/
 
 void WaitThread::start(Thread::ThreadFunction thread, void * arg){
     done = false;
     this->arg = arg;
     this->function = thread;
-    Thread::createThread(&this->thread, NULL, (Thread::ThreadFunction) do_thread, this);
+    this->thread = std::thread([this](){
+        this->function(this->arg);
+
+        Thread::acquireLock(&doneLock);
+        this->done = true;
+        Thread::releaseLock(&doneLock);
+    });
 }
 
 bool WaitThread::isRunning(){
@@ -417,14 +393,17 @@ bool WaitThread::isRunning(){
 }
 
 void WaitThread::kill(){
-    Thread::cancelThread(thread);
-    Thread::joinThread(thread);
+    // FIXME: handle kill somehow
+    // Thread::cancelThread(thread);
+    thread.join();
 }
 
 WaitThread::~WaitThread(){
     /* FIXME: Should we join the thread? */
     /* pthread_join(thread); */
-    Thread::joinThread(thread);
+    thread.join();
+    // Thread::joinThread(thread);
+    Thread::destroyLock(&doneLock);
 }
 
 ThreadBoolean::ThreadBoolean(volatile bool & what, Thread::Lock & lock):

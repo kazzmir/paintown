@@ -1,8 +1,13 @@
-build
+build*
+mingw-bin
 paintown
 .scon*
+.tmp
 peg_*.py
 *.a
 *.pyc
 *.log
 *.swp
+# mac
+.DS_Store
+.vscode

@@ -411,7 +411,7 @@ static void loadingScreenSimpleX1(LoadingContext & context, const Info & levelIn
             colors[1] = Graphics::makeColor(0x00, 0x99, 0xff);
             colors[2] = Graphics::makeColor(0xff, 0x22, 0x33);
             colors[3] = Graphics::makeColor(0x44, 0x77, 0x33);
-            Graphics::Bitmap::transBlender(0, 0, 0, 64);
+            // Graphics::Bitmap::transBlender(0, 0, 0, 64);
         }
 
         Graphics::Bitmap background;
@@ -464,6 +464,7 @@ finished(false){
 }
 
 LoadingContext::~LoadingContext(){
+    Util::Thread::destroyLock(&lock);
 }
 
 void LoadingContext::doLoad(){
@@ -495,30 +496,26 @@ static void showLoadMessage(){
     Graphics::Bitmap top(110, 50);
     top.fill(Graphics::makeColor(0, 0, 0));
     Font::getDefaultFont(25, 25).printf(10, 5, Graphics::makeColor(192, 192, 192), top, "Loading", 0);
-    Graphics::Bitmap::transBlender(0, 0, 0, 200);
-    top.translucent().draw(0, 0, work);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 200);
+    top.translucent(200).draw(0, 0, work);
     work.BlitAreaToScreen(screenX, screenY);
 }
 
 void loadScreen(LoadingContext & context, const Info & info, Kind kind){
-    Util::Thread::Id loadingThread;
-    bool created = Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) LoadingContext::load_it, &context);
-    if (!created){
-        Global::debug(0) << "Could not create loading thread. Loading will occur in the main thread" << endl;
-        showLoadMessage();
-        LoadingContext::load_it(&context);
-        // throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
-    } else {
-        InputManager::deferResizeEvents(true);
-        switch (kind){
-            case Default: loadingScreen1(context, info); break;
-            case SimpleCircle: loadingScreenSimpleX1(context, info); break;
-            default: loadingScreen1(context, info); break;
-        }
+    std::thread loadingThread;
+    loadingThread = std::thread([&](){
+        context.doLoad();
+    });
 
-        Util::Thread::joinThread(loadingThread);
-        InputManager::deferResizeEvents(false);
+    InputManager::deferResizeEvents(true);
+    switch (kind){
+        case Default: loadingScreen1(context, info); break;
+        case SimpleCircle: loadingScreenSimpleX1(context, info); break;
+        default: loadingScreen1(context, info); break;
     }
+
+    loadingThread.join();
+    InputManager::deferResizeEvents(false);
 }
 
 }

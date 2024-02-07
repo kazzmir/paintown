@@ -159,6 +159,10 @@ std::vector<DeviceInput::Touch::Event> InputManager::getTouchEvents(){
         return touch->getEvents();
     }
 
+    vector<DeviceInput::Touch::Event> empty;
+    return empty;
+
+    /* we used to just throw here, not sure why really */
     throw 1;
 }
 
@@ -166,6 +170,8 @@ void InputManager::_poll(){
 #ifdef PS3
     checkJoysticks();
 #endif
-    touch->poll();
+    if (touch != nullptr){
+        touch->poll();
+    }
     eventManager.run(keyboard, joysticks);
 }

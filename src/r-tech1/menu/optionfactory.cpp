@@ -71,8 +71,16 @@ MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Toke
     } else if ( *tok == "dummy" ){
         // Dummy Option
         return new OptionDummy(parent, tok);
+    } else if (*tok == "network-join"){
+        DebugLog << "Warning: ignoring 'network-join' option" << endl;
+        // return new OptionDummy(parent, tok);
+        return nullptr;
+    } else if (*tok == "network-host"){
+        DebugLog << "Warning: ignoring 'network-host' option" << endl;
+        // return new OptionDummy(parent, tok);
+        return nullptr;
     } else {
-        Global::debug(0) <<"Unhandled menu attribute: "<<endl;
+        Global::debug(0) << "Unhandled menu option: "<<endl;
         tok->print(" ");
     }
     return NULL;

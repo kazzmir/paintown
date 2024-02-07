@@ -16,32 +16,32 @@ public:
 	Projectile( Token * token );
 	Projectile( const Projectile * projectile );
 	
-	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add );
-	virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
-	virtual void drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity);
-	virtual void grabbed( Object * obj );
-	virtual void unGrab();
-	virtual bool isGrabbed();
-    virtual bool isGrabbable(Object * obj);
-	virtual Object * copy();
-	virtual const std::string getAttackName();
-	virtual bool isAttacking();
-	virtual bool collision( ObjectAttack * obj );
-	virtual int getDamage() const;
-        virtual double getForceX() const;
-        virtual double getForceY() const;
-	virtual std::vector<ECollide*> getCollide() const;
-	virtual bool isCollidable( Object * obj );
-	virtual bool isGettable();
-	virtual int getWidth() const;
-	virtual int getHeight() const;
+	virtual void act( std::vector< Object * > * others, World * world, std::vector< Object * > * add ) override;
+	virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y) override;
+	virtual void drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity) override;
+	virtual void grabbed(Object * obj) override;
+	virtual void unGrab() override;
+	virtual bool isGrabbed() override;
+    virtual bool isGrabbable(Object * obj) override;
+	virtual Object * copy() override;
+	virtual const std::string getAttackName() override;
+	virtual bool isAttacking() override;
+	virtual bool collision(ObjectAttack * obj) override;
+	virtual int getDamage() const override;
+    virtual double getForceX() const override;
+    virtual double getForceY() const override;
+	virtual std::vector<ECollide*> getCollide() const override;
+	virtual bool isCollidable(Object * obj) override;
+	virtual bool isGettable() override;
+	virtual int getWidth() const override;
+	virtual int getHeight() const override;
 	// virtual void getAttackCoords( int & x, int & y);
-	virtual double minZDistance() const;
-	virtual void attacked(World * world, Object * something, std::vector< Object * > & objects );
-	virtual Network::Message getCreateMessage();
+	virtual double minZDistance() const override;
+	virtual void attacked(World * world, Object * something, std::vector< Object * > & objects ) override;
+	virtual Network::Message getCreateMessage() override;
 
-	virtual int getRY() const;
-	virtual int getRX() const;
+	virtual int getRY() const override;
+	virtual int getRX() const override;
 
 	virtual ~Projectile();
 
@@ -73,7 +73,7 @@ public:
 		life -= 1;
 	}
 	
-	virtual int getHealth() const;
+	virtual int getHealth() const override;
 
 protected:
 	Animation * mainAnimation;

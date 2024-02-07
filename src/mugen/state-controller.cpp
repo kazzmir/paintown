@@ -236,11 +236,11 @@ bool StateController::canTrigger(const Compiler::Value * expression, const Envir
         */
         RuntimeValue result = expression->evaluate(environment);
         return result.toBool();
-    } catch (const MugenNormalRuntimeException e){
+    } catch (const MugenNormalRuntimeException & e){
         ostringstream out;
         out << "Expression `" << expression->toString() << "' " << e.getFullReason();
         throw MugenNormalRuntimeException(out.str(), __FILE__, __LINE__);
-    } catch (const MugenFatalRuntimeException e){
+    } catch (const MugenFatalRuntimeException & e){
         ostringstream out;
         out << "Expression `" << expression->toString() << "' " << e.getFullReason();
         throw MugenFatalRuntimeException(out.str(), __FILE__, __LINE__);

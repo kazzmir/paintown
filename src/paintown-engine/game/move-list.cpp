@@ -559,7 +559,7 @@ public:
             playerCopy->setX(show.getWidth() / 2);
             playerCopy->setY(0);
             playerCopy->setZ(show.getHeight() - 10);
-            playerCopy->draw(&show, 0, 0);
+            playerCopy->draw(show, 0, 0);
             show.finish();
 
             list.render(Graphics::Bitmap(space, 2, 0, space.getWidth(), space.getHeight()), font);
@@ -624,7 +624,7 @@ class Runner: public Util::Logic, public Util::Draw {
         }
 
         double ticks(double system){
-            return system * Global::ticksPerSecond(90);
+            return Global::ticksPerSecond(system) * 30;
         }
 };
 

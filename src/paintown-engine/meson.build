@@ -65,5 +65,5 @@ sources = [
 includes = include_directories('..')
 paintown_library = static_library('paintown', sources,
   include_directories: [includes],
-  dependencies: [sdl_dependency, freetype_dependency, zlib_dependency],
+  dependencies: [sdl_dependency, zlib_dependency],
   )

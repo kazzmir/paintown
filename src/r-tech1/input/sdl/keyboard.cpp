@@ -1,3 +1,5 @@
+#ifdef USE_SDL
+
 #include <SDL/SDL_keyboard.h>
 #include "r-tech1/input/keyboard.h"
 
@@ -168,3 +170,5 @@ void Keyboard::clear(){
     buffer.clear();
     keyState.clear();
 }
+
+#endif

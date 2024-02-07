@@ -20,15 +20,15 @@ using namespace Gui;
 // Temporary solution
 static void renderSprite(const Graphics::Bitmap & bmp, const int x, const int y, const int alpha, const bool hflip, const bool vflip, const Graphics::Bitmap & work){
     if (alpha != 255){
-        Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
+        // Graphics::Bitmap::transBlender( 0, 0, 0, alpha );
         if (hflip && !vflip){
-            bmp.translucent().drawHFlip(x,y, work);
+            bmp.translucent(alpha).drawHFlip(x,y, work);
         } else if (!hflip && vflip){
-            bmp.translucent().drawVFlip(x,y, work);
+            bmp.translucent(alpha).drawVFlip(x,y, work);
         } else if (hflip && vflip){
-            bmp.translucent().drawHVFlip(x,y, work);
+            bmp.translucent(alpha).drawHVFlip(x,y, work);
         } else if (!hflip && !vflip){
-            bmp.translucent().draw(x,y, work);
+            bmp.translucent(alpha).draw(x,y, work);
         }
     } else {
         if (hflip && !vflip){
@@ -874,7 +874,7 @@ sequence(0){
                     localScaleSet = true;
                 } catch (const TokenException & fail){
                 }
-                Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(basedir + "/" + temp)))));
+                Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(basedir + "/" + temp))), false));
                 if (!bmp->getError()){
                     if (scaleSet || localScaleSet){
                         if (localScaleSet){
@@ -964,7 +964,7 @@ depth(BackgroundBottom),
 allowReset(true),
 sequence(0){
     // add bitmap
-    Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(background)))));
+    Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(*Storage::instance().open(Storage::instance().find(Filesystem::RelativePath(background))), false));
     if (bmp->getError()){
         throw LoadException(__FILE__,__LINE__, "Problem loading file: " + background);
     } else {
@@ -980,7 +980,7 @@ depth(BackgroundBottom),
 allowReset(true),
 sequence(0){
     // add bitmap
-    Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(*Storage::instance().open(path)));
+    Util::ReferenceCount<Graphics::Bitmap> bmp(new Graphics::Bitmap(*Storage::instance().open(path), false));
     if (bmp->getError()){
         throw LoadException(__FILE__,__LINE__, "Problem loading file: " + path.path());
     } else {

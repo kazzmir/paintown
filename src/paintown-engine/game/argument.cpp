@@ -20,12 +20,12 @@ class ArcadeArgument: public Argument::Parameter {
 public:
     vector<string> keywords() const {
         vector<string> out;
-        out.push_back("paintown:arcade player=<name>");
+        out.push_back("paintown:arcade");
         return out;
     }
 
     string description() const {
-        return " : Start an arcade game in the Paintown engine";
+        return " player=<name>: Start an arcade game in the Paintown engine";
     }
 
     struct Data{
@@ -47,9 +47,23 @@ public:
                 return;
             }
             int remap = 0;
+
+            /*
             PlayerFuture future(data.player, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0))));
             vector<Util::Future<Object *> *> players;
             players.push_back(&future);
+            */
+
+            Util::ReferenceCount<InputSource> source = Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0)));
+
+            Player * player = new Player(data.player, source);
+            player->setInvincible(Configuration::getInvincible());
+            player->setMap(remap);
+            player->setObjectId(-1);
+            player->setLives(Configuration::getLives());
+            vector<Util::ReferenceCount<Object>> players;
+            players.push_back(Util::ReferenceCount<Object>(player));
+
             Game::realGame(players, levels[0]);
         }
     };
@@ -76,19 +90,16 @@ public:
 
     Data parse(string input){
         Data out;
-        vector<string> args = split(input, ',');
+        vector<string> args = split(input, '=');
 
-        for (vector<string>::iterator it = args.begin(); it != args.end(); it++){
-            string arg = *it;
-            if (Util::matchRegex(arg, Util::Regex("player=.*"))){
-                string name = Util::captureRegex(arg, Util::Regex("player=(.*)"), 0);
-                out.player = findPlayer(name);
-            }
+        if (args.size() == 2 && args[0] == "player"){
+            out.player = findPlayer(args[1]);
         }
 
         return out;
     }
 
+    /* given the rest of the arguments, try to read player=x from the next argument */
     vector<string>::iterator parse(vector<string>::iterator current, vector<string>::iterator end, Argument::ActionRefs & actions){
         current++;
         if (current != end){

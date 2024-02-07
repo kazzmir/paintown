@@ -220,13 +220,14 @@ void Cat::act( vector< Object * > * others, World * world, vector< Object * > * 
 	}
 }
 
-void Cat::draw( Graphics::Bitmap * work, int rel_x, int rel_y ){
+void Cat::draw(const Graphics::Bitmap & work, int rel_x, int rel_y){
     if ( getFacing() == Object::FACING_RIGHT ){
         current_animation->Draw(getRX() - rel_x, getRY(), NULL, work);
     } else {
         current_animation->DrawFlipped(getRX() - rel_x, getRY(), NULL, work); 
     }
 
+    /* FIXME: playing a sound should not be in the animation code */
     if (Util::rnd(2000) == 0){
         int distance = 1000 - fabs((double)getRX() - rel_x) / 2;
         double volume = distance < 0 ? 0.1 : (double) distance / 1000.0;

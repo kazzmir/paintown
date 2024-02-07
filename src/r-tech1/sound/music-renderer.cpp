@@ -26,11 +26,16 @@
 
 #endif
 
-#include "r-tech1/sound/music-renderer.h"
-#include "r-tech1/sound/music-player.h"
-#include "r-tech1/sound/music-exception.h"
-#include "r-tech1/sound/sound.h"
+#ifdef USE_SDL2
+#include <SDL2/SDL_audio.h>
+#endif
+
+#include "music-renderer.h"
+#include "music-player.h"
+#include "music-exception.h"
+#include "sound.h"
 #include <sstream>
+#include "audio.h"
 
 namespace Util{
 
@@ -239,6 +244,10 @@ MusicRenderer::~MusicRenderer(){
     // Mix_HookMusic(NULL, NULL);
     delete[] data;
 }
+#elif USE_SDL2
+
+// Moved to sdl2/music-renderer.cpp
+
 #elif USE_ALLEGRO
 int BUFFER_SIZE = 1 << 11;
 static int ALLEGRO_MONO = 0;

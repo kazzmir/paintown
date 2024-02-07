@@ -8,9 +8,12 @@
 #define GFX_Y 480
 */
 
+#include <atomic>
+#include <thread>
+
 namespace Global{
-    extern volatile int speed_counter4;
-    extern volatile unsigned int second_counter;
+    extern std::atomic<uint64_t> speed_counter4;
+    extern std::atomic<uint64_t> second_counter;
 
     // extern const double LOGIC_MULTIPLIER;
     extern int TICS_PER_SECOND;
@@ -31,10 +34,15 @@ namespace Global{
             Fullscreen
         };
 
+        bool useSoftwareRenderer() const {
+            return softwareRenderer;
+        }
+
         WindowMode graphics;
         bool sound;
         bool fullscreen;
         bool networking;
+        bool softwareRenderer;
     };
 
     bool init(const InitConditions & conditions);
@@ -51,6 +59,10 @@ namespace Global{
 
     /* Updates TICS_PER_SECOND */
     void setTicksPerSecond(int ticks);
+
+    extern std::thread::id mainThreadId;
+
+    bool isMainThread();
 }
 
 /*

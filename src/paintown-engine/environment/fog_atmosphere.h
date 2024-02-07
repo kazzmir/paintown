@@ -22,10 +22,10 @@ public:
 	FogAtmosphere();	
 	virtual ~FogAtmosphere();
 
-	virtual void drawBackground(Graphics::Bitmap * work, int x);
-	virtual void drawForeground(Graphics::Bitmap * work, int x);
-	virtual void drawFront(Graphics::Bitmap * work, int x);
-	virtual void drawScreen(Graphics::Bitmap * work, int x);
+	virtual void drawBackground(const Graphics::Bitmap & work, int x);
+	virtual void drawForeground(const Graphics::Bitmap & work, int x);
+	virtual void drawFront(const Graphics::Bitmap & work, int x);
+	virtual void drawScreen(const Graphics::Bitmap & work, int x);
 	virtual void act(const Scene & level, const std::vector<Paintown::Object*>*);
     virtual void interpret(const Token * message);
 

@@ -93,7 +93,6 @@ public:
     }
 
     void run(const Menu::Context & context){
-        Object * player = NULL;
         try{
             //string level = Game::selectLevelSet( Util::getDataPath() + "/levels" );
             Level::LevelInfo info = doLevelMenu("/levels", context);
@@ -102,9 +101,15 @@ public:
             int remap = 0;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, InputSource(false).addKeyboard(0).addJoystick(0));
 
-            PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0))));
-            vector<Util::Future<Object *> *> players;
-            players.push_back(&future);
+            // PlayerFuture future(path, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0))));
+            Util::ReferenceCount<InputSource> source(new InputSource(InputSource(false).addKeyboard(0).addJoystick(0)));
+            Paintown::Player* playerObject = new Paintown::Player(path, source);
+            playerObject->setInvincible(Configuration::getInvincible());
+            playerObject->setMap(remap);
+            playerObject->setLives(Configuration::getLives());
+
+            vector<Util::ReferenceCount<Object>> players;
+            players.push_back(Util::ReferenceCount<Object>(playerObject));
             Game::realGame(players, info);
         } catch ( const LoadException & le ){
             Global::debug(0) << "Error while loading: " << le.getTrace() << endl;
@@ -239,20 +244,29 @@ public:
         return sources;
     }
 
-    vector<Util::Future<Object*>* > selectPlayers(const Menu::Context & context, int players, const vector<Util::ReferenceCount<InputSource> > & sources){
-        vector<Util::Future<Object*>* > futures;
+    vector<Util::ReferenceCount<Object>> selectPlayers(const Menu::Context & context, int playersCount, const vector<Util::ReferenceCount<InputSource> > & sources){
+        vector<Util::ReferenceCount<Object>> players;
 
-        for (int player = 0; player < players; player++){
+        for (int player = 0; player < playersCount; player++){
             int remap = 0;
             ostringstream out;
             out << "Pick player " << (player + 1);
             Level::LevelInfo info;
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, *sources[player]);
+
+            Paintown::Player* playerObject = new Paintown::Player(path, sources[player]);
+            playerObject->setInvincible(Configuration::getInvincible());
+            playerObject->setMap(remap);
+            playerObject->setLives(Configuration::getLives());
+            players.push_back(Util::ReferenceCount<Object>(playerObject));
+
+            /*
             Util::Future<Object*> * selection = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, sources[player]);
             futures.push_back(selection);
+            */
         }
 
-        return futures;
+        return players;
     }
 
     void run(const Menu::Context & context){
@@ -265,11 +279,12 @@ public:
              * 5. run game as normal
              */
 
-            int players = howManyPlayers(context);
-            vector<Util::ReferenceCount<InputSource> > sources = getInputSources(context, players);
+            int playerCount = howManyPlayers(context);
+            vector<Util::ReferenceCount<InputSource> > sources = getInputSources(context, playerCount);
             Level::LevelInfo info = doLevelMenu("/levels", context);
-            vector<Util::Future<Object*>* > futures = selectPlayers(context, players, sources);
-            Game::realGameLocal(futures, info);
+
+            vector<Util::ReferenceCount<Object>> players = selectPlayers(context, playerCount, sources);
+            Game::realGameLocal(players, info);
 
         } catch (const Exception::Return & fail){
             /* nothing */
@@ -318,36 +333,52 @@ public:
         int max_buddies = Configuration::getNpcBuddies();
 
         Object * player = NULL;
-        vector<Util::Future<Object*>* > futures;
-        vector<Object *> buddies;
+        vector<Util::ReferenceCount<Object>> players;
+        // vector<Object *> buddies;
         try{
             Level::LevelInfo info = doLevelMenu("/levels", context);
 
             int remap;
             InputSource source = InputSource(false).addKeyboard(0).addJoystick(0);
             Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer("Pick a player", info, remap, source);
-            Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(source)));
-            futures.push_back(player);
+            // Util::Future<Object*> * player = new PlayerFuture(path, Configuration::getInvincible(), Configuration::getLives(), remap, Util::ReferenceCount<InputSource>(new InputSource(source)));
+            // futures.push_back(player);
+            Paintown::Player* player = new Paintown::Player(path, Util::ReferenceCount<InputSource>(new InputSource(source)));
+            player->setInvincible(Configuration::getInvincible());
+            player->setMap(remap);
+            player->setLives(Configuration::getLives());
+            players.push_back(Util::ReferenceCount<Object>(player));
+
+            vector<Util::ReferenceCount<Paintown::Object>> buddies;
 
             for ( int i = 0; i < max_buddies; i++ ){
                 ostringstream out;
                 out << "Pick buddy " << nthWord(i+1);
                 int remap;
                 Filesystem::AbsolutePath path = Mod::getCurrentMod()->selectPlayer(out.str(), info, remap, source);
+                /*
                 Util::Future<Object*> * buddy = new BuddyFuture(path, player, remap, -(i+2));
                 futures.push_back(buddy);
+                */
+                Paintown::Player base(path, Util::ReferenceCount<InputSource>(NULL));
+                base.setMap(remap);
+                Paintown::Object * buddy = new BuddyPlayer(player, base);
+                buddy->setObjectId(-(i+2));
+                players.push_back(Util::ReferenceCount<Paintown::Object>(buddy));
             }
 
-            Game::realGame(futures, info);
+            Game::realGame(players, info);
         } catch ( const LoadException & le ){
             Global::debug( 0 ) << "Could not load player: " << le.getTrace() << endl;
         } catch (const Exception::Return & ignore){
             throw Menu::Reload(__FILE__, __LINE__);
         }
 
+        /*
         for (vector<Util::Future<Object*>*>::iterator it = futures.begin(); it != futures.end(); it++){
             delete *it;
         }
+        */
     }
 };
 
@@ -816,11 +847,15 @@ private:
 class OptionNpcBuddies: public MenuOption {
 public:
     OptionNpcBuddies(const Gui::ContextBox & parent, const Token *token):
-        MenuOption(parent, token),
+        MenuOption(parent, token)
+        /*
+        ,
         lblue(255),
         lgreen(255),
         rblue(255),
-        rgreen(255){
+        rgreen(255)
+        */
+        {
             setRunnable(false);
 
             if ( *token != "npc" ){
@@ -857,24 +892,30 @@ public:
 
     bool rightKey(){
         Configuration::setNpcBuddies( Configuration::getNpcBuddies() + 1 );
-        rblue = rgreen = 0;
+        // rblue = rgreen = 0;
         return false;
     }
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 class OptionInvincible: public MenuOption {
 public:
 
     OptionInvincible(const Gui::ContextBox & parent, const Token *token):
-        MenuOption(parent, token),
+        MenuOption(parent, token)
+        /*
+        ,
         lblue(255),
         lgreen(255),
         rblue(255),
-        rgreen(255){
+        rgreen(255)
+        */
+        {
             setRunnable(false);
 
             if ( *token != "invincible" )
@@ -909,19 +950,25 @@ public:
     }
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 class OptionLives: public MenuOption {
 public:
 
     OptionLives(const Gui::ContextBox & parent, const Token * token):
-        MenuOption(parent, token),
+        MenuOption(parent, token)
+        /*
+        ,
         lblue(255),
         lgreen(255),
         rblue(255),
-        rgreen(255){
+        rgreen(255)
+        */
+        {
             setRunnable(false);
 
             if ( *token != "lives" ){
@@ -961,8 +1008,10 @@ public:
     }
 
 private:
+    /*
     int lblue, lgreen;
     int rblue, rgreen;
+    */
 };
 
 MenuOption * OptionFactory::getOption(const Gui::ContextBox & parent, const Token *token) const {

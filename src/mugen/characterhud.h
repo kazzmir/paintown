@@ -31,120 +31,120 @@ class Stage;
 
 /*! *TODO implement display time and ticker */
 class FightElement: public Element {
-    public:
-	FightElement();
-	virtual ~FightElement();
-	
-	virtual void act();
-        virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
-	virtual void render(const Element::Layer & layer, int x, int y, const Graphics::Bitmap &, int width);
-	virtual void play();
-	
-	enum ElementType{
-	    IS_NOTSET =0,
-	    IS_ACTION,
-	    IS_SPRITE,
-	    IS_FONT,
-	    IS_SOUND,
-	};
-	
-	enum DisplayState{
-	    NoDisplayTimer,
-	    DisplayNotStarted,
-	    DisplayStarted,
-	    DisplayEnded,
-	};
-	
-	enum SoundState{
-	    NoSoundTimer,
-	    SoundNotStarted,
-	    Waiting,
-	    Played,
-	};
-	
-	virtual inline void setType(ElementType t){ type = t; }
-	virtual inline bool isSet() const {
-	    return (type != IS_NOTSET);
-	}
+public:
+    FightElement();
+    virtual ~FightElement();
 
-	virtual void setAction(PaintownUtil::ReferenceCount<Animation> );
-        virtual inline void setSpriteData(int g, int s){
-            this->spriteData.x = g;
-            this->spriteData.y = s;
+    virtual void act();
+    virtual void render(int x, int y, const Graphics::Bitmap &, Graphics::Bitmap::Filter * filter = NULL);
+    virtual void render(const Element::Layer & layer, int x, int y, const Graphics::Bitmap &, int width);
+    virtual void play();
+
+    enum ElementType{
+        IS_NOTSET =0,
+        IS_ACTION,
+        IS_SPRITE,
+        IS_FONT,
+        IS_SOUND,
+    };
+
+    enum DisplayState{
+        NoDisplayTimer,
+        DisplayNotStarted,
+        DisplayStarted,
+        DisplayEnded,
+    };
+
+    enum SoundState{
+        NoSoundTimer,
+        SoundNotStarted,
+        Waiting,
+        Played,
+    };
+
+    virtual inline void setType(ElementType t){ type = t; }
+    virtual inline bool isSet() const {
+        return (type != IS_NOTSET);
+    }
+
+    virtual void setAction(PaintownUtil::ReferenceCount<Animation> );
+    virtual inline void setSpriteData(int g, int s){
+        this->spriteData.x = g;
+        this->spriteData.y = s;
+    }
+
+    virtual inline const Mugen::Point & getSpriteData() const {
+        return this->spriteData;
+    }
+
+    virtual void setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite);
+    virtual void setFont(Font *, int bank, int position);
+    virtual inline void setPosition(int position){
+        this->position = position;
+    }
+    virtual void setSound(PaintownUtil::ReferenceCount<Mugen::Sound> sound);
+    virtual int getWidth();
+    virtual int getHeight();
+    virtual inline void setOffset(int x, int y){ 
+        offset = Mugen::Point(x,y); 
+    }
+
+    virtual inline void setDisplayTime(int time){ 
+        this->displaytime = time;
+        this->displayState = DisplayNotStarted;
+    }
+
+    virtual bool notStarted();
+
+    virtual bool isDone();
+
+    virtual void reset();
+
+    virtual inline void setSoundTime(int time){
+        if (time == 0){
+            return;
         }
+        this->soundtime = time;
+        this->soundState = SoundNotStarted;
+    }
 
-        virtual inline const Mugen::Point & getSpriteData() const {
-            return this->spriteData;
-        }
+    virtual inline void setFacing(bool f){ 
+        effects.facing = f; 
+    }
 
-	virtual void setSprite(PaintownUtil::ReferenceCount<Mugen::Sprite> sprite);
-	virtual void setFont(Font *, int bank, int position);
-        virtual inline void setPosition(int position){
-            this->position = position;
-        }
-        virtual void setSound(PaintownUtil::ReferenceCount<Mugen::Sound> sound);
-	virtual int getWidth();
-	virtual int getHeight();
-	virtual inline void setOffset(int x, int y){ 
-            offset = Mugen::Point(x,y); 
-        }
+    virtual inline void setVFacing(bool f){ 
+        effects.vfacing = f; 
+    }
 
-	virtual inline void setDisplayTime(int time){ 
-            this->displaytime = time;
-	    this->displayState = DisplayNotStarted;
-        }
-	
-	virtual bool notStarted();
-	
-	virtual bool isDone();
+    virtual inline void setScale(double x, double y){ 
+        effects.scalex = x, effects.scaley = y; 
+    }
 
-        virtual void reset();
+    virtual inline void setText(const std::string &t){ 
+        text = t; 
+    }
 
-	virtual inline void setSoundTime(int time){
-	    if (time == 0){
-		return;
-	    }
-	    this->soundtime = time;
-	    this->soundState = SoundNotStarted;
-	}
+    virtual Token * serialize();
+    virtual void deserialize(const Token * token);
 
-	virtual inline void setFacing(bool f){ 
-            effects.facing = f; 
-        }
-
-	virtual inline void setVFacing(bool f){ 
-            effects.vfacing = f; 
-        }
-
-	virtual inline void setScale(double x, double y){ 
-            effects.scalex = x, effects.scaley = y; 
-        }
-
-	virtual inline void setText(const std::string &t){ 
-            text = t; 
-        }
-
-        virtual Token * serialize();
-        virtual void deserialize(const Token * token);
-	
-    private:
-	ElementType type;
-        PaintownUtil::ReferenceCount<Animation> action;
-        Mugen::Point spriteData;
-	PaintownUtil::ReferenceCount<Mugen::Sprite> sprite;
-	Font *font;
-        PaintownUtil::ReferenceCount<Mugen::Sound> sound;
-	Mugen::Point offset;
-	int displaytime;
-	int soundtime;
-	Effects effects;
-	std::string text;
-	int bank;
-	int position;
-	DisplayState displayState;
-	SoundState soundState;
-	int ticker;
-	int soundTicker;
+private:
+    ElementType type;
+    PaintownUtil::ReferenceCount<Animation> action;
+    Mugen::Point spriteData;
+    PaintownUtil::ReferenceCount<Mugen::Sprite> sprite;
+    Font *font;
+    PaintownUtil::ReferenceCount<Mugen::Sound> sound;
+    Mugen::Point offset;
+    int displaytime;
+    int soundtime;
+    Effects effects;
+    std::string text;
+    int bank;
+    int position;
+    DisplayState displayState;
+    SoundState soundState;
+    int ticker;
+    int soundTicker;
 };
 
 //! Base Bar made up of different components
@@ -157,12 +157,12 @@ class Bar{
 	virtual void act(Character &);
 	virtual void render(Element::Layer layer, const Graphics::Bitmap &);
 
-        enum Type{
-            None,
-            Health,
-            Power,
-        };
-	
+    enum Type{
+        None,
+        Health,
+        Power,
+    };
+
 	enum PowerState{
 	    Level0,
 	    Level1,
@@ -170,10 +170,10 @@ class Bar{
 	    Level3,
 	};
 
-        virtual inline void setType(Type type){
-            this->type = type;
-        }
-	
+    virtual inline void setType(Type type){
+        this->type = type;
+    }
+
 	virtual inline void setPosition(int x, int y){
 	    this->position.x = x;
 	    this->position.y = y;
@@ -184,25 +184,25 @@ class Bar{
 	    this->range.y = y;
 	}
 	
-        virtual inline FightElement & getBack0(){
-            return this->back0;
-        }
+    virtual inline FightElement & getBack0(){
+        return this->back0;
+    }
 
-        virtual inline FightElement & getBack1(){
-            return this->back1;
-        }
+    virtual inline FightElement & getBack1(){
+        return this->back1;
+    }
 
-        virtual inline FightElement & getMiddle(){
-            return this->middle;
-        }
+    virtual inline FightElement & getMiddle(){
+        return this->middle;
+    }
 
-        virtual inline FightElement & getFront(){
-            return this->front;
-        }
+    virtual inline FightElement & getFront(){
+        return this->front;
+    }
 
-        virtual inline FightElement & getCounter(){
-            return this->counter;
-        }
+    virtual inline FightElement & getCounter(){
+        return this->counter;
+    }
 	
 	virtual inline FightElement & getLevel1Sound(){
 	    return this->level1Sound;
@@ -217,50 +217,50 @@ class Bar{
 	}
 	
     private:
-        //! Position of this Bar
+    //! Position of this Bar
 	Mugen::Point position;
 	
-        //! Background 0 of the Bar background behind mid and front
-        FightElement back0;
+    //! Background 0 of the Bar background behind mid and front
+    FightElement back0;
 	
-        //! Second Background of the Bar usually a container around the bars
+    //! Second Background of the Bar usually a container around the bars
 	FightElement back1;
 	
-        //! Third Background of the Bar which is the second bar that decreases by tick
+    //! Third Background of the Bar which is the second bar that decreases by tick
 	FightElement middle;
 
-        //! Fourth Background of the Bar 
-        FightElement front;
-	
-        //! Range of the actual bar (range.x * range.y / hitPoints)
-	Mugen::Point range;
+    //! Fourth Background of the Bar 
+    FightElement front;
 
-        //! Counter for Powerbars
-        FightElement counter;
-	
-	//! Level 1 Sound
-	FightElement level1Sound;
-	
-	//! Level 2 Sound
-	FightElement level2Sound;
-	
-	//! Level 3 Sound
-	FightElement level3Sound;
+    //! Range of the actual bar (range.x * range.y / hitPoints)
+    Mugen::Point range;
 
-        //! Type of bar defaults to health
-        Type type;
+    //! Counter for Powerbars
+    FightElement counter;
 
-        //! Max Health
-        int maxHealth;
+    //! Level 1 Sound
+    FightElement level1Sound;
 
-        //! Current Set Health
-        int currentHealth;
-        
-        //! Damage that has been done, will be reduced to 0 and subtract from current hit points
-        int damage;
-        /* time to wait before adjusting damage */
-        int wait;
-	
+    //! Level 2 Sound
+    FightElement level2Sound;
+
+    //! Level 3 Sound
+    FightElement level3Sound;
+
+    //! Type of bar defaults to health
+    Type type;
+
+    //! Max Health
+    int maxHealth;
+
+    //! Current Set Health
+    int currentHealth;
+
+    //! Damage that has been done, will be reduced to 0 and subtract from current hit points
+    int damage;
+    /* time to wait before adjusting damage */
+    int wait;
+
 	//! Power Level
 	PowerState powerLevel;
 };
@@ -843,13 +843,13 @@ class GameInfo{
 	
 	//! Player Data
 	Bar player1LifeBar;
-        Bar player2LifeBar;
-	Bar player1PowerBar;
-        Bar player2PowerBar;
-	Face player1Face;
-        Face player2Face;
-	Name player1Name;
-        Name player2Name;
+    Bar player2LifeBar;
+    Bar player1PowerBar;
+    Bar player2PowerBar;
+    Face player1Face;
+    Face player2Face;
+    Name player1Name;
+    Name player2Name;
 	
 	//! Game Timer
 	GameTime timer;

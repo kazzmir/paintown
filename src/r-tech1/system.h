@@ -20,6 +20,8 @@ namespace System{
 
     /* call startMemoryUsage once at the very beginning of the program */
     void startMemoryUsage();
+
+    void shutdown();
 }
 
 #endif

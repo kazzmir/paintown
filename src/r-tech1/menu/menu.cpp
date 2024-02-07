@@ -1,4 +1,5 @@
 #include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/graphics/texture-cache.h"
 #include "r-tech1/menu/menu.h"
 #include "r-tech1/menu/menu_option.h"
 #include "r-tech1/version.h"
@@ -128,24 +129,25 @@ void Menu::InfoBox::render(const Graphics::Bitmap & bmp, const Font & vFont){
     const int y1 = popup.getArea().getY()+2;
     const int x2 = popup.getArea().getX2()-(int)(popup.getTransforms().getRadius()/2);
     const int y2 = popup.getArea().getY2()-2;
-    bmp.setClipRect(x1, y1, x2, y2);
+
+    // bmp.setClipRect(x1, y1, x2, y2);
+    Graphics::Bitmap subBmp(bmp, x1, y1, x2, y2);
     
     // FIXME height is proportionally wrong in a majority of the cases, this is perhaps due to ftalleg.
-    int sy = location.getY() - vFont.getHeight()/6;// - location.getHeight()/2 - vFont.getHeight()/2;
+    int sy = location.getY() - vFont.getHeight()/6 - y1;// - location.getHeight()/2 - vFont.getHeight()/2;
     static Graphics::Color white = Graphics::makeColor(255,255,255);
     unsigned int padding_index = 0;
-    for (vector<string>::iterator it = text.begin(); it != text.end(); it++){
-        string & str = *it;
+    for (const string & str: text){
         if (fadeAlpha < 255){
-            Graphics::Bitmap::transBlender(0, 0, 0, fadeAlpha);
-            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp.translucent(), str, 0 );
+            // Graphics::Bitmap::transBlender(0, 0, 0, fadeAlpha);
+            vFont.printf(location.getX() + padding[padding_index]/2 - x1, sy, white, subBmp.translucent(fadeAlpha), str, 0);
         } else {
-            vFont.printf(location.getX() + padding[padding_index]/2, sy, white, bmp, str, 0 );
+            vFont.printf(location.getX() + padding[padding_index]/2 - x1, sy, white, subBmp, str, 0);
         }
         sy += vFont.getHeight();
         padding_index++;
     }
-    bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
+    // bmp.setClipRect(0, 0, bmp.getWidth(), bmp.getHeight());
 }
 
 void Menu::InfoBox::open(){
@@ -498,7 +500,7 @@ bool Menu::DefaultRenderer::readToken(const Token * token, const OptionFactory &
                 }
             }
         } catch (const LoadException & le){
-            Global::debug(0) << "Could not read option: " << le.getTrace() << endl;
+            DebugLog3 << "Could not read option: " << le.getTrace() << endl;
             token->print(" ");
         }
     } else if ( *token == "position" ) {
@@ -1212,7 +1214,7 @@ Menu::Menu::Menu(const Filesystem::AbsolutePath & filename, const Renderer::Type
 type(type){
     // Load up tokenizer
     try{
-        Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
+        DebugLog1 << "Loading menu " << filename.path() << endl;
         TokenReader tr;
         Token * token = tr.readTokenFromFile(*Storage::instance().open(filename));
         OptionFactory defaultFactory;
@@ -1227,7 +1229,7 @@ renderer(0),
 type(type){
     // Load up tokenizer
     try{
-        Global::debug(1,"menu") << "Loading menu " << filename.path() << endl;
+        DebugLog1 << "Loading menu " << filename.path() << endl;
         TokenReader tr;
         Token * token = tr.readTokenFromFile(*Storage::instance().open(filename));
         load(token, factory);
@@ -1299,7 +1301,7 @@ void Menu::Menu::load(const Token * token, const OptionFactory & factory){
             } catch (const TokenException & ex){
             }
         } else {
-            Global::debug(0, "menu") << "No version indicated, assuming 3.3.1 or below." << endl;
+            DebugLog << "No version indicated, assuming 3.3.1 or below." << endl;
             major = 3;
             minor = 3;
             micro = 1;
@@ -1409,6 +1411,8 @@ void Menu::Menu::run(const Context & parentContext){
         // Setup context from parent and this menu and initialize
         Context localContext(parentContext, context);
         Util::Parameter<Util::ReferenceCount<FontInfo> > currentFont(menuFontParameter);
+        /* create a local texture cache for this menu */
+        Graphics::LocalTextureCache textureCache;
         if (context.hasFont()){
             currentFont.push(context.getFontInfo());
         }
@@ -1508,7 +1512,7 @@ void Menu::Menu::run(const Context & parentContext){
             }
 
             double ticks(double system){
-                return system * Global::ticksPerSecond(90);
+                return Global::ticksPerSecond(system) * 90;
             }
 
             bool done(){
@@ -1635,8 +1639,8 @@ void Menu::Menu::addData(ValueHolder * item){
     std::pair<std::map<std::string,ValueHolder *>::iterator,bool> check;
     check = data.insert( std::pair<std::string,ValueHolder *>(item->getName(),item) );
     if (check.second == false){
-        Global::debug(0,"menu") << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
-        Global::debug(0,"menu") << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
+        DebugLog << "Value \"" << check.first->second->getName() << "\" already exists - (" << check.first->second->getValues() << ")." << endl;        
+        DebugLog << "Replacing with value \"" << item->getName() << "\" -  (" << item->getValues() << ")." << endl;
         data[item->getName()] = item;
     }
 }
@@ -1663,7 +1667,7 @@ void Menu::Menu::handleCurrentVersion(const Token * token){
             } else if (*tok == "context"){
                 context.parseToken(tok);
             } else {
-                Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                DebugLog3 <<"Unhandled menu attribute: "<<endl;
                 if (Global::getDebug() >= 3){
                     tok->print(" ");
                 }
@@ -1679,7 +1683,7 @@ void Menu::Menu::handleCurrentVersion(const Token * token){
 }
 
 void Menu::Menu::handleCompatibility(const Token * token, int version, const OptionFactory & factory){
-    Global::debug(1,"menu") << "Trying version: " << version << endl;
+    DebugLog1 << "Trying version: " << version << endl;
     if (version <= Version::getVersion(3, 3, 1)){
 
         const Token * languages = token->findToken("_/languages");
@@ -1816,7 +1820,7 @@ void Menu::Menu::handleCompatibility(const Token * token, int version, const Opt
                     } catch (const MenuException & ex){
                     } 
                 } else {
-                    Global::debug(3,"menu") <<"Unhandled menu attribute: "<<endl;
+                    DebugLog3 <<"Unhandled menu attribute: "<<endl;
                     if (Global::getDebug() >= 3){
                         tok->print(" ");
                     }
@@ -1829,6 +1833,8 @@ void Menu::Menu::handleCompatibility(const Token * token, int version, const Opt
                 throw LoadException(__FILE__, __LINE__, ex, "Menu parse error");
             }
         }
+    } else {
+        DebugLog << "Unknown menu version " << version << endl;
     }
 }
         

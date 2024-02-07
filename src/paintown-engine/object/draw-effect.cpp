@@ -31,7 +31,7 @@ effect(effect),
 countdown(countdown){
 }
 
-void DrawCountdownEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawCountdownEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     effect->draw(x, remap, work);
 }
 
@@ -65,7 +65,7 @@ startColor(startColor),
 endColor(endColor){
 }
 
-void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawGlowEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     double f = fabs(sin(Util::radians(180) * angle / period));
     int alpha = 50;
 
@@ -73,15 +73,15 @@ void DrawGlowEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
     int color_g = (int)((Graphics::getGreen(endColor) - Graphics::getGreen(startColor)) * f + Graphics::getGreen(startColor));
     int color_b = (int)((Graphics::getBlue(endColor) - Graphics::getBlue(startColor)) * f + Graphics::getBlue(startColor));
 
-    Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
+    // Graphics::Bitmap::transBlender(color_r, color_g, color_b, alpha);
 
     Util::ReferenceCount<Animation> animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
     if (owner->getFacing() == Object::FACING_RIGHT ){
-        animation->DrawLit(rx, ry, remap, work);
+        animation->DrawLit(rx, ry, remap, Graphics::makeColor(color_r, color_g, color_b, alpha), work);
     } else {
-        animation->DrawLitFlipped(rx, ry, remap, work); 
+        animation->DrawLitFlipped(rx, ry, remap, Graphics::makeColor(color_r, color_g, color_b, alpha), work);
     }
 }
 
@@ -106,7 +106,7 @@ DrawNormalEffect::DrawNormalEffect(const Character * owner):
 DrawEffect(owner, 0){
 }
     
-void DrawNormalEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawNormalEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     Util::ReferenceCount<Animation> animation = owner->getCurrentMovement();
     int rx = owner->getRX() - x;
     int ry = owner->getRY();
@@ -134,7 +134,7 @@ effect(effect),
 end(end){
 }
 
-void DrawUntilEffect::draw(int x, Remap * remap, Graphics::Bitmap * work){
+void DrawUntilEffect::draw(int x, Remap * remap, const Graphics::Bitmap & work){
     effect->draw(x, remap,work);
 }
 

@@ -113,21 +113,32 @@ static vector<Background> readBackgrounds( const Filesystem::AbsolutePath & path
     return backgrounds;
 }
 
+/* given a name like 'xyz.txt', return 'xyz1.txt' if that file doesn't exist, or find
+ * the lowest number N such that 'xyzN.txt' doesn't exist, and return 'xyzN.txt'
+ */
 static string findNextFile( const char * name ){
+#ifdef __GNUC__
+// Ignore truncation
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
     char buf[ 128 ];
     const char * extension = strchr( name, '.' );
     char first[ 128 ];
     strncpy( first, name, extension - name );
     first[ extension - name ] = '\0';
     unsigned int num = 0;
-    sprintf( buf, "%s%u%s", first, num, extension );
+    snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
     do{
         num += 1;
-        sprintf( buf, "%s%u%s", first, num, extension );
+        snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
         /* num != 0 prevents an infinite loop in the extremely
          * remote case that the user has 2^32 files in the directory
          */
     } while (num != 0 && Util::exists(buf));
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
     return string(buf);
 }
 
@@ -299,18 +310,24 @@ public:
         Graphics::RestoreState graphicsState;
         /* FIXME: replace these constants */
         Graphics::StretchedBitmap work(320, 240, screen_buffer, Graphics::StretchedBitmap::NoClear, Graphics::qualityFilterName(Configuration::getQualityFilter()));
-        Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
+        // Graphics::TranslatedBitmap screen(world.getX(), world.getY(), screen_buffer);
         // updateFrames();
+        /* FIXME: use the stretched bitmap */
+        // Graphics::Bitmap work(320, 240);
 
         work.start();
-        work.clear();
-        world.draw(&work);
+        // work.clear();
+
+        world.draw(work);
 
         work.finish();
+        // work.draw(0, 0, screen_buffer);
         // work.Stretch(screen_buffer);
+
         FontRender * render = FontRender::getInstance();
         render->render(&screen_buffer, work.getScaleWidth() / 2, work.getScaleHeight() / 2);
 
+        /* FIXME
         const Font & font = Font::getDefaultFont((int) (20 * work.getScaleWidth() / 2), (int)(20 * work.getScaleHeight() / 2));
 
         if (state.helpTime > 0){
@@ -325,6 +342,7 @@ public:
             font.printf((int)(screen_buffer.getWidth() - 120 * work.getScaleWidth() / 2), (int)(10 * work.getScaleHeight() / 2), Graphics::makeColor(255,255,255), screen_buffer, "FPS: %0.2f", 0, getFps());
         }
         console.draw(screen_buffer);
+        */
 
         /* getX/Y move when the world is quaking */
         // screen_buffer.BlitToScreen(world.getX(), world.getY());
@@ -624,7 +642,7 @@ bool playLevel(World & world, const vector<Paintown::Object *> & players){
         }
 
         double ticks(double system){
-            return system * gameSpeed * Global::ticksPerSecond(Ticks);
+            return gameSpeed * Global::ticksPerSecond(system) * Ticks;
         }
 
         void doInput(GameState & state, bool & force_quit){
@@ -872,7 +890,7 @@ static void showCutscene(const Filesystem::RelativePath & path){
     }
 }
 
-static void showEnding(Paintown::Player * player){
+static void showEnding(Paintown::Player* player){
     showCutscene(player->getEndingFile());
 }
 
@@ -889,21 +907,19 @@ static void showIntros(const vector<Paintown::Object*> & players){
     }
 }
 
-static void showEndings(const vector<Util::Future<Paintown::Object*> * > & futurePlayers){
-    for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
-        Util::Future<Paintown::Object*> * future = *fit;
-        Paintown::Object * player = future->get();
+static void showEndings(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers){
+    for (Util::ReferenceCount<Paintown::Object> player: futurePlayers){
         if (player != NULL){
-            showEnding((Paintown::Player*) player);
+            showEnding((Paintown::Player*) player.raw());
         }
     }
 }
 
-static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, const string & level, void (*setup_players)(const vector<Paintown::Object*> & players), bool firstLevel){
+static void realGame(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo, const string & level, void (*setup_players)(const vector<Paintown::Object*> & players), bool firstLevel){
 
     class GameContext: public Loader::LoadingContext {
     public:
-        GameContext(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Filesystem::RelativePath & path, void (*setup_players)(const vector<Paintown::Object*> & players)):
+        GameContext(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Filesystem::RelativePath & path, void (*setup_players)(const vector<Paintown::Object*> & players)):
             data(NULL),
             futurePlayers(futurePlayers),
             path(path),
@@ -926,6 +942,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         virtual void load(){
             try{
                 vector<Paintown::Object*> players;
+#if 0
                 /* start the futures so they can run in parallel */
                 for (vector<Util::Future<Paintown::Object*>*>::const_iterator fit = futurePlayers.begin(); fit != futurePlayers.end(); fit++){
                     Util::Future<Paintown::Object*> * future = *fit;
@@ -936,6 +953,11 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
                     Util::Future<Paintown::Object*> * future = *fit;
                     players.push_back(future->get());
                 }
+#endif
+                for (Util::ReferenceCount<Paintown::Object> player: futurePlayers){
+                    players.push_back(player.raw());
+                }
+
                 setup_players(players);
                 data = new GameData(players, Storage::instance().find(path));
             } catch (const LoadException & exception){
@@ -960,7 +982,7 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         }
 
         Util::ReferenceCount<GameData> data;
-        vector<Util::Future<Paintown::Object*> * > futurePlayers;
+        vector<Util::ReferenceCount<Paintown::Object>> futurePlayers;
         Filesystem::RelativePath path;
         Util::ReferenceCount<LoadException> failed;
         void (*setup_players)(const vector<Paintown::Object*> & players);
@@ -986,7 +1008,8 @@ static void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePl
         MessageQueue::clearInfo();
         MessageQueue::info("Setting up world");
         GameContext context(futurePlayers, Filesystem::RelativePath(level), setup_players);
-        Loader::loadScreen(context, Level::convert(levelInfo));
+        // Loader::loadScreen(context, Level::convert(levelInfo));
+        context.load();
         context.failure();
         MessageQueue::info("World setup");
         MessageQueue::info(funnyGo());
@@ -1034,7 +1057,7 @@ static void setupLocalPlayers(const vector<Paintown::Object*> & objects){
     }
 }
 
-static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo, void (*setup_players)(const vector<Paintown::Object*> & players)){
+static void doRealGame(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo, void (*setup_players)(const vector<Paintown::Object*> & players)){
 
     levelInfo.playIntro();
 
@@ -1066,17 +1089,19 @@ static void doRealGame(const vector<Util::Future<Paintown::Object*> * > & future
     levelInfo.playEnding();
 }
 
-void realGame(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+void realGame(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo){
     doRealGame(futurePlayers, levelInfo, doNothingSpecial);
 }
 
-void realGameLocal(const vector<Util::Future<Paintown::Object*> * > & futurePlayers, const Level::LevelInfo & levelInfo){
+void realGameLocal(const vector<Util::ReferenceCount<Paintown::Object>> & futurePlayers, const Level::LevelInfo & levelInfo){
     doRealGame(futurePlayers, levelInfo, setupLocalPlayers);
 }
 
-void fadeOut( const Graphics::Bitmap & work, const string & message ){
-    Graphics::Bitmap::transBlender(0, 0, 0, 128);
-    work.applyTrans(Graphics::makeColor(0, 0, 0));
+void fadeOut(const Graphics::Bitmap & work, const string & message){
+    // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+    // work.applyTrans(Graphics::makeColor(0, 0, 0));
+
+    work.translucent(128).fill(Graphics::makeColor(0, 0, 0));
 
     const Font & f = Font::getDefaultFont(50, 50 );
     f.printf(200, 200, Graphics::makeColor(255, 0, 0), work, message, 0);

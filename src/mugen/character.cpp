@@ -105,6 +105,11 @@ CharacterId::CharacterId(const CharacterId & copy):
 id(copy.id){
 }
 
+CharacterId& CharacterId::operator=(const CharacterId & copy){
+    id = copy.id;
+    return *this;
+}
+
 bool CharacterId::operator<(const CharacterId & him) const {
     return id < him.id;
 }
@@ -352,6 +357,7 @@ State::~State(){
     delete juggle;
     delete velocity_x;
     delete velocity_y;
+    delete spritePriority;
 }
 
 /* Called when the player was hit */
@@ -743,6 +749,10 @@ void Character::loadCmdFile(const Filesystem::RelativePath & path){
                     string name;
                     Ast::Key * key;
                     const Filesystem::AbsolutePath & path;
+
+                    virtual ~CommandWalker(){
+                        delete key;
+                    }
 
                     virtual void onAttributeSimple(const Ast::AttributeSimple & simple){
                         if (simple == "name"){
@@ -1732,6 +1742,9 @@ void Character::loadStateFile(const Filesystem::AbsolutePath & base, const strin
     PaintownUtil::Parameter<Filesystem::RelativePath> currentFile(stateFileParameter, Storage::instance().cleanse(full));
     // string full = Filesystem::find(base + "/" + PaintownUtil::trim(path));
     /* st can use the Cmd parser */
+
+    DebugLog1 << "Loading state file " << full.path() << endl;
+
     AstRef parsed(Util::parseCmd(full));
     map<int, PaintownUtil::ReferenceCount<State> > out;
     PaintownUtil::ReferenceCount<State> currentState;
@@ -1841,7 +1854,7 @@ void Character::load(int useAct){
     }
 #endif
 
-    MessageQueue::info("Loading " + getLocalData().location.getFilename().path());
+    MessageQueue::info("Loading character '" + getLocalData().location.getFilename().path() + "'");
     
     // baseDir = Filesystem::cleanse(Mugen::Util::getFileDir(location));
     getLocalData().baseDir = getLocalData().location.getDirectory();
@@ -2359,7 +2372,9 @@ void Character::fixAssumptions(){
             vector<Ast::Key*> keys;
             keys.push_back(new Ast::KeyModifier(-1, -1, Ast::KeyModifier::Release, new Ast::KeySingle(-1, -1, "U")));
             keys.push_back(new Ast::KeySingle(-1, -1, "U"));
-            Command2 * doubleJumpCommand = new Command2(jumpCommand, new Ast::KeyList(-1, -1, keys), 5, 0);
+            Ast::KeyList* doubleJumpKeyList = new Ast::KeyList(-1, -1, keys);
+            Command2 * doubleJumpCommand = new Command2(jumpCommand, doubleJumpKeyList, 5, 0);
+            delete doubleJumpKeyList;
             addCommand(doubleJumpCommand);
 
             setSystemVariable(JumpIndex, RuntimeValue(0));
@@ -3987,9 +4002,9 @@ void Character::draw(Graphics::Bitmap * work, int cameraX, int cameraY){
         if (getAlliance() == Mugen::Stage::Player2Side){
             wx = work->getWidth() - width - 1;
         }
-        Graphics::Bitmap::transBlender(0, 0, 0, 128);
-        work->translucent().rectangleFill(wx, wy, wx+width, wy+height, Graphics::makeColor(0, 0, 0));
-        work->translucent().line(0, wy+height, wx+width, wy+height, Graphics::makeColor(64, 64, 64));
+        // Graphics::Bitmap::transBlender(0, 0, 0, 128);
+        work->translucent(128).rectangleFill(wx, wy, wx+width, wy+height, Graphics::makeColor(0, 0, 0));
+        work->translucent(128).line(0, wy+height, wx+width, wy+height, Graphics::makeColor(64, 64, 64));
     }
 }
 

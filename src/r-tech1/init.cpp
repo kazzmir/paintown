@@ -75,11 +75,11 @@
 
 using namespace std;
 
-volatile int Global::speed_counter4 = 0;
+atomic<uint64_t> Global::speed_counter4(0);
 bool Global::rateLimit = true;
 
-/* enough seconds for 136 years */
-volatile unsigned int Global::second_counter = 0;
+/* enough seconds for 5.8 * 10^11 years */
+atomic<uint64_t> Global::second_counter(0);
 
 /* the original engine was running at 90 ticks per second, but we dont
  * need to render that fast, so TICS_PER_SECOND is really fps and
@@ -135,6 +135,11 @@ static void handleSigSegV(int i, siginfo_t * sig, void * data){
      */
     exit(1);
 }
+#elif defined(WINDOWS)
+// Define an empty struct for siginfo_t on windows since the functions don't use the context anyways
+struct siginfo_t {
+  void * nothing;  
+};
 #else
 #endif
 
@@ -150,16 +155,24 @@ static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
 */
 #endif
 
+static void handleSigInt(int signal, siginfo_t* info, void* context){
+    DebugLog << "Shut down due to ctrl-c" << endl;
+    Util::do_shutdown += 1;
+}
+
 static void registerSignals(){
 #if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
     struct sigaction action;
-    memset( &action, 0, sizeof(struct sigaction) );
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_sigaction = handleSigPipe;
     sigaction( SIGPIPE, &action, NULL );
 
-    memset( &action, 0, sizeof(struct sigaction) );
+    memset(&action, 0, sizeof(struct sigaction));
     action.sa_sigaction = handleSigSegV;
     sigaction( SIGSEGV, &action, NULL );
+
+    action.sa_sigaction = handleSigInt;
+    sigaction(SIGINT, &action, NULL);
 
     /*
     action.sa_sigaction = handleSigUsr1;
@@ -273,10 +286,19 @@ Global::InitConditions::InitConditions():
 graphics(Default),
 sound(true),
 fullscreen(false),
-networking(true){
+networking(true),
+softwareRenderer(false){
+}
+
+std::thread::id Global::mainThreadId;
+bool Global::isMainThread(){
+    return mainThreadId == std::this_thread::get_id();
 }
 
 bool Global::init(const InitConditions & conditions){
+
+    mainThreadId = std::this_thread::get_id();
+
     /* Can xenon_init be moved lower? Probably.. */
 #ifdef XENON
     xenon_init();

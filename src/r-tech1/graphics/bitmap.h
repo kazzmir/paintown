@@ -8,12 +8,16 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include <memory>
 
 #ifdef USE_ALLEGRO
 #include "allegro/bitmap.h"
 #endif
 #ifdef USE_SDL
 #include "sdl/bitmap.h"
+#endif
+#ifdef USE_SDL2
+#include "sdl2/bitmap.h"
 #endif
 #ifdef USE_ALLEGRO5
 #include "allegro5/bitmap.h"
@@ -22,8 +26,8 @@ struct ALLEGRO_SHADER;
 
 #include "color.h"
 
-#if !defined(USE_ALLEGRO) && !defined(USE_SDL) && !defined(USE_ALLEGRO5)
-#error No backend specified. Define one of USE_ALLEGRO, USE_SDL, or USE_ALLEGRO5
+#if !defined(USE_ALLEGRO) && !defined(USE_SDL) && !defined(USE_ALLEGRO5) && !defined(USE_SDL2)
+#error No backend specified. Define one of USE_ALLEGRO, USE_SDL, USE_SDL2, or USE_ALLEGRO5
 #endif
 
 namespace Storage{
@@ -38,6 +42,10 @@ class Color{
 public:
     explicit Color(const INTERNAL_COLOR & color):
     color(color){
+    }
+
+    Color(const Color & him):
+    color(him.color){
     }
 
     static INTERNAL_COLOR defaultColor();
@@ -62,6 +70,12 @@ public:
     bool operator<(const Color & him) const {
         return this->color < him.color;
     }
+
+    const INTERNAL_COLOR getInternalColor() const {
+        return this->color;
+    }
+
+    Color updateAlpha(int alpha) const;
 
     INTERNAL_COLOR color;
 };
@@ -128,6 +142,7 @@ protected:
 
 /* create a color from components */
 Color makeColor(int r, int g, int b);
+Color makeColor(int r, int g, int b, int a);
 Color darken(Color color, double factor);
 void hsvToRGB( float h, float s, float v, int * r, int * g, int * b );
 
@@ -140,10 +155,12 @@ int changeGraphicsMode(int mode, int width, int height);
 void initializeExtraStuff();
 
 /* get color components */
-int getRed(Color x);
-int getBlue(Color x);
-int getGreen(Color x);
-int getAlpha(Color x);
+int getRed(const Color & x);
+int getBlue(const Color & x);
+int getGreen(const Color & x);
+int getAlpha(const Color & x);
+
+Bitmap makeRoundedRect(int width, int height, int radius, const Color & fillColor, const Color & borderColor);
 
 Color MaskColor();
 
@@ -194,43 +211,49 @@ std::string defaultPixelShader();
 
 class Bitmap{
 private:
-	
-        /* these constructors don't really matter, get rid of them at some point */
-        Bitmap( const Bitmap & copy, int sx, int sy, double accuracy );
+
+    /* these constructors don't really matter, get rid of them at some point */
+    Bitmap( const Bitmap & copy, int sx, int sy, double accuracy );
 	Bitmap( const char * load_file, int sx, int sy, double accuracy );
 public:
 
-        /* equivalent to a GPU shader */
-        class Filter{
-        public:
-            virtual Color filter(Color pixel) const = 0;
+    /* equivalent to a GPU shader */
+    class Filter{
+    public:
+        virtual Color filter(Color pixel) const = 0;
 
-            /* getShader should only return the Shader object and not set any uniforms/attributes */
-            virtual Util::ReferenceCount<Shader> getShader() = 0;
+        /* getShader should only return the Shader object and not set any uniforms/attributes */
+        virtual Util::ReferenceCount<Shader> getShader() = 0;
 
-            /* set the uniforms/attributes */
-            virtual void setupShader(const Util::ReferenceCount<Shader> &) = 0;
-            virtual ~Filter(){
-            }
-        };
-        	
+        /* set the uniforms/attributes */
+        virtual void setupShader(const Util::ReferenceCount<Shader> &) = 0;
+        virtual ~Filter(){
+        }
+    };
+
 	/* default constructor makes 10x10 bitmap */
 	Bitmap();
-	Bitmap( int x, int y );
-	Bitmap( const char * load_file );
-    Bitmap(const char * data, int length);
-	Bitmap( const std::string & load_file );
-	Bitmap( const char * load_file, int sx, int sy );
+	Bitmap(int width, int height);
+	// Bitmap(const char * load_file);
+    Bitmap(const uint8_t* data, int length);
+	Bitmap(const std::string & load_file);
+	// Bitmap(const char * load_file, int sx, int sy);
 
-        /* Load a bitmap from an abstract file */
-        Bitmap(Storage::File & file);
+    /* Load a bitmap from an abstract file */
+    Bitmap(Storage::File & file, bool keepInMemory);
 
-        /* 4/24/2010: remove this at some point */
+    virtual void doLoad(Storage::File & file, bool keepInMemory);
+
+    /* 4/24/2010: remove this at some point */
 #ifdef USE_ALLEGRO
 	explicit Bitmap( BITMAP * who, bool deep_copy = false );
 #endif
 #ifdef USE_SDL
 	explicit Bitmap(SDL_Surface * who, bool deep_copy = false );
+#endif
+#ifdef USE_SDL2
+    explicit Bitmap(SDL_Surface* texture);
+    explicit Bitmap(SDL_Texture* texture, bool deep_copy=false);
 #endif
 #ifdef USE_ALLEGRO5
 	explicit Bitmap(ALLEGRO_BITMAP * who, bool deep_copy = false );
@@ -245,13 +268,13 @@ public:
          */
         static Bitmap createMemoryBitmap(int width, int height);
 
-        virtual TranslucentBitmap translucent() const;
+        virtual TranslucentBitmap translucent(uint8_t alpha) const;
         /* will call transBlender() with the supplied values for you */
         virtual TranslucentBitmap translucent(int red, int green, int blue, int alpha) const;
 
         virtual Bitmap subBitmap(int x, int y, int width, int height);
 
-        virtual LitBitmap lit() const;
+        virtual LitBitmap lit(uint8_t red, uint8_t green, uint8_t blue) const;
 
 	virtual void save( const std::string & str ) const;
 
@@ -286,6 +309,11 @@ public:
 	}
 	*/
 
+#ifdef USE_SDL2
+        // make this bitmap the active target for rendering
+        void activate() const;
+#endif
+
 	void detach();
 
         /* replace all pixels that have value `original' with `replaced' */
@@ -299,7 +327,7 @@ public:
          * pixel = source_pixel * source / 255 + dest_pixel * dest / 255
          */
 	static void alphaBlender(int source, int dest);
-	static void transBlender( int r, int g, int b, int a );
+	// static void transBlender( int r, int g, int b, int a );
 	static void multiplyBlender( int r, int g, int b, int a );
 	static void dissolveBlender( int r, int g, int b, int a );
 	static void addBlender( int r, int g, int b, int a );
@@ -356,8 +384,8 @@ public:
 	virtual void ellipse( int x, int y, int rx, int ry, Color color ) const;
 	virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const;
 
-        virtual void light(int x, int y, int width, int height, int start_y, int focus_alpha, int edge_alpha, Color focus_color, Color edge_color) const;
-        virtual void applyTrans(const Color color) const;
+    virtual void light(int x, int y, int width, int height, int start_y, int focus_alpha, int edge_alpha, Color focus_color, Color edge_color) const;
+    // virtual void applyTrans(const Color color) const;
 
 	virtual void border( int min, int max, Color color ) const;
 	virtual void rectangle( int x1, int y1, int x2, int y2, Color color ) const;
@@ -411,7 +439,7 @@ public:
         /* middle of the bitmap is at x, y */
 	virtual void drawRotateCenter(const int x, const int y, const int angle, const Bitmap & where);
         /* upper left hand corner is at x, y*/
-	virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where);
+	virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where) const;
 	virtual void drawPivot( const int centerX, const int centerY, const int x, const int y, const int angle, const Bitmap & where );
 	virtual void drawPivot( const int centerX, const int centerY, const int x, const int y, const int angle, const double scale, const Bitmap & where );
 
@@ -445,7 +473,7 @@ public:
         virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const;
         virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const;
 
-        virtual void drawShadow(Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const;
+        virtual void drawShadow(const Bitmap & where, int x, int y, int intensity, Color color, double scale, bool facingRight) const;
 
         /* Return a bitmap that has an aspect ratio the same as the given numbers */
         virtual Bitmap aspectRatio(int aspectWidth, int aspectHeight) const;
@@ -466,23 +494,25 @@ public:
 
 	virtual void clear() const;
 	
-        inline void clearToMask() const{
+    inline void clearToMask() const{
 		this->fill(MaskColor());
 	}
 
+    friend int setGraphicsMode(int mode, int width, int height);
+
 	bool getError();
 
-	inline const Util::ReferenceCount<BitmapData> & getData() const {
-            return data;
+	inline const std::shared_ptr<BitmapData> & getData() const {
+        return data;
 	}
 	
-        inline Util::ReferenceCount<BitmapData> getData(){
-            return data;
-	}
+    inline std::shared_ptr<BitmapData> getData(){
+        return data;
+    }
 
-        void setData(Util::ReferenceCount<BitmapData> data){
-            this->data = data;
-        }
+    void setData(std::shared_ptr<BitmapData> data){
+        this->data = data;
+    }
 	
 	virtual void readLine( std::vector<Color> & vec, int y );
 	Color getPixel( const int x, const int y ) const;
@@ -512,9 +542,12 @@ public:
 			_putpixel16( my_bitmap, x, y, col );
 	}
 	*/
+
+    void enableClip() const;
+    void disableClip() const;
 	
-	void setClipRect( int x1, int y1, int x2, int y2 ) const;
-	void getClipRect( int & x1, int & y1, int & x2, int & y2 ) const;
+	void setClipRect(int x1, int y1, int x2, int y2) const;
+	void getClipRect(int & x1, int & y1, int & x2, int & y2) const;
 
 	inline const std::string & getPath() const{
 		return path;
@@ -589,20 +622,27 @@ protected:
         }
         */
 
-        void loadFromMemory(const char * data, int length);
+        void loadFromMemory(const uint8_t* data, int length, bool keepInMemory);
+        void loadFromMemory(const uint8_t* data, int length, const Color & maskColor, bool keepInMemory);
 
         void internalLoadFile( const char * load_file );
 
+#ifdef USE_SDL2
+        SDL_Texture* getTexture(bool keepInMemory) const;
+#endif
+
         /* implementation specific data */
-        Util::ReferenceCount<BitmapData> data;
+        std::shared_ptr<BitmapData> data;
         // int * own;
         bool mustResize;
         // bool own;
-        bool error;
+        bool error = false;
         std::string path;
         static Bitmap * temporary_bitmap;
         static Bitmap * temporary_bitmap2;
         Color bit8MaskColor;
+
+        int clip_x1 = -1, clip_y1 = -1, clip_x2 = -1, clip_y2 = -1;
 
         /* only used by allegro5 for now */
         int width, height;
@@ -619,7 +659,10 @@ protected:
     Color palette[256];
 };
 
-Bitmap memoryPCX(unsigned char * const data, const int length, const bool mask = true);
+/* load but don't convert mask pixels to transparent */
+Bitmap memoryPCX(unsigned char * const data, const int length);
+/* convert mask color pixels to transparent */
+Bitmap memoryPCX(unsigned char * const data, const int length, const Color & maskColor);
 
 /* creates a bitmap that can be used as a buffer for the screen.
  * on opengl/allegro5 systems this will return the current backbuffer
@@ -639,7 +682,7 @@ std::vector<Color> blend_palette(const std::vector<BlendPoint> & in);
 
 class LitBitmap: public Bitmap {
 public:
-    LitBitmap( const Bitmap & b );
+    LitBitmap(const Bitmap & b, uint8_t red, uint8_t green, uint8_t blue);
     LitBitmap();
     virtual ~LitBitmap();
 
@@ -661,6 +704,8 @@ protected:
 #ifdef USE_ALLEGRO5
     virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where, int flags) const;
 #endif
+
+    uint8_t red, green, blue;
 };
 
 class StretchedBitmap: public Bitmap {
@@ -710,50 +755,57 @@ public:
 
 class TranslucentBitmap: public Bitmap {
 public:
-    TranslucentBitmap(const Bitmap & b);
+    TranslucentBitmap(const Bitmap & b, uint8_t alpha);
     TranslucentBitmap();
     virtual ~TranslucentBitmap();
 
     using Bitmap::operator=;
-    virtual Color blendColor(const Color & color) const;
-    virtual void startDrawing() const;
-    virtual void endDrawing() const;
+    virtual Color blendColor(const Color & color) const override;
+    virtual void startDrawing() const override;
+    virtual void endDrawing() const override;
 
-    virtual void putPixelNormal(int x, int y, Color col) const;
-    virtual void rectangleFill(int x1, int y1, int x2, int y2, Color color) const;
-    virtual void rectangle(int x1, int y1, int x2, int y2, Color color) const;
-    virtual void fill(Color color) const;
-    virtual void line( const int x1, const int y1, const int x2, const int y2, const Color color ) const;
-    virtual void hLine( const int x1, const int y, const int x2, const Color color ) const;
-    virtual void arc(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color) const;
-    virtual void arcFilled(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color ) const;
-    virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const;
-    virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const;
-    virtual void circleFill( int x, int y, int radius, Color color ) const;
-    virtual void ellipse( int x, int y, int rx, int ry, Color color ) const;
-    virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const;
+    virtual void putPixelNormal(int x, int y, Color col) const override;
+    virtual void rectangleFill(int x1, int y1, int x2, int y2, Color color) const override;
+    virtual void rectangle(int x1, int y1, int x2, int y2, Color color) const override;
+    virtual void fill(Color color) const override;
+    virtual void line( const int x1, const int y1, const int x2, const int y2, const Color color ) const override;
+    virtual void hLine( const int x1, const int y, const int x2, const Color color ) const override;
+    virtual void arc(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color) const override;
+    virtual void arcFilled(const int x, const int y, const double ang1, const double ang2, const int radius, const Color color ) const override;
+    virtual void roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const override;
+    virtual void roundRectFill(int radius, int x1, int y1, int x2, int y2, Graphics::Color color) const override;
+    virtual void circleFill( int x, int y, int radius, Color color ) const override;
+    virtual void ellipse( int x, int y, int rx, int ry, Color color ) const override;
+    virtual void ellipseFill( int x, int y, int rx, int ry, Color color ) const override;
+	
+    using Bitmap::drawRotate;
+    virtual void drawRotate(const int x, const int y, const int angle, const Bitmap & where) const override;
 
     using Bitmap::draw;
-    virtual void draw(const int x, const int y, const Bitmap & where) const;
-    virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where) const;
+    virtual void draw(const int x, const int y, const Bitmap & where) const override;
+    virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where) const override;
 
     // virtual void draw(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, const Bitmap & where) const;
     // virtual void draw(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, Filter * filter, const Bitmap & where) const;
 
     using Bitmap::drawHFlip;
-    virtual void drawHFlip(const int x, const int y, const Bitmap & where) const;
-    virtual void drawHFlip(const int x, const int y, Filter * filter, const Bitmap & where) const;
+    virtual void drawHFlip(const int x, const int y, const Bitmap & where) const override;
+    virtual void drawHFlip(const int x, const int y, Filter * filter, const Bitmap & where) const override;
     // virtual void drawHFlip(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, const Bitmap & where) const;
     // virtual void drawHFlip(const int x, const int y, const int startWidth, const int startHeight, const int width, const int height, Filter * filter, const Bitmap & where) const;
-    virtual void drawVFlip( const int x, const int y, const Bitmap & where ) const;
-    virtual void drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const;
-    virtual void drawHVFlip( const int x, const int y, const Bitmap & where ) const;
-    virtual void drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const;
+    virtual void drawVFlip( const int x, const int y, const Bitmap & where ) const override;
+    virtual void drawVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const override;
+    virtual void drawHVFlip( const int x, const int y, const Bitmap & where ) const override;
+    virtual void drawHVFlip( const int x, const int y, Filter * filter, const Bitmap & where ) const override;
+
+    void setAlpha(uint8_t alpha);
 
 protected:
 #ifdef USE_ALLEGRO5
     virtual void draw(const int x, const int y, Filter * filter, const Bitmap & where, int flags) const;
 #endif
+
+    uint8_t alpha;
 };
 
 /* Normal drawing operations but ultimately is drawn translucently onto the parent */
@@ -795,6 +847,8 @@ public:
     ~RestoreState();
 protected:
 };
+
+static Bitmap * Screen = NULL;
 
 }
 

@@ -25,8 +25,7 @@ SOFTWARE BE LIABLE FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT
 ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef FT_FONT_H
-#define FT_FONT_H
+#pragma once
 
 // #include <allegro.h>
 #include <map>
@@ -34,10 +33,14 @@ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEAL
 #include <math.h>
 #include <exception>
 #include "file-system.h"
-#include <ft2build.h>
-#include FT_FREETYPE_H
+// #include <ft2build.h>
+// #include FT_FREETYPE_H
 #include "thread.h"
 #include "graphics/color.h"
+
+#ifdef USE_SDL2
+#include <SDL2/SDL_ttf.h>
+#endif
 
 #ifdef USE_ALLEGRO5
 struct ALLEGRO_FONT;
@@ -123,8 +126,10 @@ namespace ftalleg {
             fontSize();
             fontSize(int width, int height);
             ~fontSize();
-            FT_UInt width;
-            FT_UInt height;
+            // FT_UInt width;
+            // FT_UInt height;
+            int width;
+            int height;
             int italics;
             int angle;
 
@@ -174,6 +179,47 @@ namespace ftalleg {
             int original_size;
             Util::Thread::LockObject lock;
             std::map<int, FontUse> fonts;
+        };
+#elif USE_SDL2
+        class freetype{
+        private:
+            TTF_Font* font;
+            int _height;
+
+        public:
+            freetype(const Filesystem::AbsolutePath & str, const int x, const int y);
+            ~freetype();
+
+            enum ftAlign{
+                ftLeft = 0,
+                ftCenter = 1,
+                ftRight = 2
+            };
+
+            void setSize( unsigned int w, unsigned int h);
+            int getHeight(const std::string & str) const;
+            int getLength(const std::string & text) const;
+            void getSize(int * w, int * h) const;
+            void render(int x, int y, const Graphics::Color & color, const Graphics::Bitmap & bmp, ftAlign alignment, const std::string & text, int marker, ...);
+            void createIndex();
+            character * extractGlyph(signed long unicode);
+
+            //! Load font from memory
+            bool load(const unsigned char *memoryFont, unsigned int length, int index, unsigned int width, unsigned int height);
+
+            //! Load font from file
+            bool load(const Filesystem::AbsolutePath & filename, int index, unsigned int width, unsigned int height);
+            void drawCharacter(signed long unicode, int &x1, int &y1, const Graphics::Bitmap & bitmap, const Graphics::Color & color);
+            void destroyGlyphIndex();
+
+            int height( long code ) const;
+            int getLength(const std::string & text);
+
+            int getItalics();
+            void setItalics(int i);
+            int getWidth() const;
+            int calculateMaximumHeight();
+            int calculateHeight( const std::string & str ) const;
         };
 #else
 	//!  Freetype based font system
@@ -284,5 +330,3 @@ namespace ftalleg {
         };
 #endif
 }
-
-#endif /* FT_FONT_H */

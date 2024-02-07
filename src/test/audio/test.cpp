@@ -1,16 +1,20 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
-#include "util/sound/music-player.h"
-#include "util/file-system.h"
-#include "util/debug.h"
+#include "r-tech1/sound/sound.h"
+#include "r-tech1/sound/music-player.h"
+#include "r-tech1/file-system.h"
+#include "r-tech1/debug.h"
 
 #ifdef USE_SDL
 #include "util/sound/sdl/mixer/SDL_mixer.h"
+#elif USE_SDL2
+#include <SDL2/SDL_mixer.h>
 #endif
 
 using std::string;
 
+#if 0
 namespace Util{
 
 Filesystem::AbsolutePath getDataPath2(){
@@ -39,7 +43,32 @@ std::string lowerCaseAll(std::string str){
 }
 
 }
+#endif
 
+
+#ifndef WINDOWS
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+
+#endif
+
+#if 0
 class Sound{
 public:
     struct SoundInfo{
@@ -59,17 +88,22 @@ public:
 };
 
 Sound::SoundInfo Sound::Info;
+#endif
 
 using namespace std;
 
 void play(const string & path){
     Filesystem::AbsolutePath absolute(path);
     if (path.find(".mp3") != string::npos){
+#if defined (HAVE_MP3_MPG123) || defined (HAVE_MP3_MAD)
         Util::Mp3Player player(absolute);
         player.play();
         while (true){
             SDL_Delay(1);
         }
+#else
+    Global::debug(0) << "MP3 Support not added to build." << endl;
+#endif
     } else if (path.find(".s3m") != string::npos ||
                path.find(".mod") != string::npos ||
                path.find(".xm") != string::npos ||
@@ -80,11 +114,15 @@ void play(const string & path){
             SDL_Delay(1);
         }
     } else if (path.find(".ogg") != string::npos){
+#ifdef HAVE_OGG
         Util::OggPlayer player(absolute);
         player.play();
         while (true){
             SDL_Delay(1);
         }
+#else 
+    Global::debug(0) << "OGG Support not added to build." << endl;
+#endif
     }
 
     // SDL_Delay(8000 * 3);
@@ -121,7 +159,7 @@ static void playZip(const string & path, const string & what = ""){
 }
 
 void initialize(int rate){
-#ifdef USE_SDL
+#if  defined(USE_SDL) || defined(USE_SDL2)
     SDL_Init(SDL_INIT_AUDIO);
     atexit(SDL_Quit);
 
@@ -169,4 +207,6 @@ int main(int argc, char ** argv){
     } catch (...){
         Global::debug(0) << "Failed" << std::endl;
     }
+
+    return 0;
 }

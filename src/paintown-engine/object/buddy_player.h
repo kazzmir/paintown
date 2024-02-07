@@ -20,10 +20,10 @@ public:
     BuddyPlayer( const Character * leader, const Character & chr );
 
     /* drawing */
-    virtual void draw( Graphics::Bitmap * work, int rel_x, int rel_y );
+    virtual void draw(const Graphics::Bitmap & work, int rel_x, int rel_y );
 
     using Character::drawLifeBar;
-    virtual void drawLifeBar( int x, int y, Graphics::Bitmap * work );
+    virtual void drawLifeBar( int x, int y, const Graphics::Bitmap & work );
 
     virtual Object * copy();
 

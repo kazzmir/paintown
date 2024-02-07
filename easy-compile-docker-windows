@@ -1,0 +1,13 @@
+#!/bin/bash
+
+docker build -t paintown-mingw-build -f docker/WindowsDockerfile .
+mkdir -p ${PWD}/mingw-bin
+docker run --rm -iv${PWD}:/paintown-bin paintown-mingw-build sh -s <<EOF
+chown $(id -u):$(id -g) /build/build-mingw/paintown.exe 
+cp -a /build/build-mingw/paintown.exe /paintown-bin/mingw-bin
+find build/build-mingw/src/test -type f -name \*.exe -exec sh -c "chown $(id -u):$(id -g) {}; cp -a {} /paintown-bin/mingw-bin" \;
+EOF
+echo "
+To run with wine do:
+WINEDEBUG=-msvcrt wine start /unix mingw-bin/paintown.exe -d data
+"

@@ -1,16 +1,24 @@
 #include <iostream>
 #include <vector>
 
-#include "util/init.h"
 #include "paintown-engine/game/character-select.h"
-#include "util/debug.h"
-#include "util/exceptions/load_exception.h"
-#include "util/token_exception.h"
-#include "util/graphics/bitmap.h"
-#include "util/input/input.h"
-#include "util/input/input-manager.h"
 #include "paintown-engine/game/mod.h"
+//#include "mugen/random.h"
 
+#include "r-tech1/init.h"
+#include "r-tech1/debug.h"
+#include "r-tech1/exceptions/load_exception.h"
+#include "r-tech1/token_exception.h"
+#include "r-tech1/graphics/bitmap.h"
+#include "r-tech1/input/input.h"
+#include "r-tech1/input/input-manager.h"
+#include "r-tech1/font.h"
+
+#include "factory/collector.h"
+
+#include "r-tech1/libs/filesystem/fs-wrapper.h"
+
+//using namespace Mugen;
 
 enum Keys{
     Up=0,
@@ -69,6 +77,7 @@ public:
         select.act();
        
         //! Update a message in a collection programmatically
+        /*
         if (ticker++ >= 50){
             Util::ReferenceCount<MessageCollection> message = select.getMessages("player1");
             if (message != NULL){
@@ -78,11 +87,12 @@ public:
             }
             ticker = 0;
         }
+        */
     
     }
 
     double ticks(double system){
-        return system;
+        return system / 4;
     }
 };
 
@@ -101,12 +111,48 @@ public:
     }
 };
 
-int main(int argc, char ** argv){
+#ifndef WINDOWS
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+#endif
+
+// Use other directories
+std::string getDataPath(){
+    std::vector<std::string> locations = { "paintown-data", "data-new", "data-other" };
+    for (std::vector<std::string>::iterator it = locations.begin(); it != locations.end(); it++){
+        if (fs::is_directory(*it)){
+            return *it;
+        }
+    }
+    return "";
+}
+
+int test_main(int argc, char** argv){
     if (argc > 1){
+        Collector janitor;
+        Util::setDataPath(getDataPath());
+
+        Util::Parameter<Util::ReferenceCount<Path::RelativePath> > defaultFont(Font::defaultFont, Util::ReferenceCount<Path::RelativePath>(new Path::RelativePath("fonts/LiberationSans-Regular.ttf")));
+
         Global::InitConditions conditions;
         Global::init(conditions);
         
-        Global::setDebug(0);
+        Global::setDebug(3);
         std::string file = argv[1];
 
         Paintown::Mod::loadDefaultMod();
@@ -144,4 +190,8 @@ int main(int argc, char ** argv){
         std::cout << "Usage: ./" << argv[0] << " select-screen.txt" << std::endl;
     }
     return 0;
+}
+
+int main(int argc, char ** argv){
+    return test_main(argc, argv);
 }

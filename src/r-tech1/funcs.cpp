@@ -21,10 +21,13 @@
 #include "r-tech1/file-system.h"
 #include <math.h>
 
+#include "libs/filesystem/fs-wrapper.h"
+//#include "libs/filesystem/glob.h"
+
 #ifndef USE_ALLEGRO
 /* FIXME: move this to the filesystem module */
-#include "libs/sfl/sfl.h"
-#include "libs/sfl/sflfile.h"
+//#include "libs/sfl/sfl.h"
+//#include "libs/sfl/sflfile.h"
 #endif
 
 #ifndef WINDOWS
@@ -123,6 +126,9 @@ void Util::rest( int x ){
 #ifdef USE_ALLEGRO5
     al_rest((double) x / 1000.0);
 #endif
+#ifdef USE_SDL2
+    SDL_Delay(x);
+#endif
 }
 
 void Util::restSeconds(double x){
@@ -160,7 +166,12 @@ Filesystem::AbsolutePath Util::getDataPath2(){
 
 /* FIXME: remove this method */
 bool Util::exists( const string & file ){
+#ifndef WINDOWS
     return Storage::instance().exists(Filesystem::AbsolutePath(file));
+#else
+    return fs::exists(fs::path(Filesystem::AbsolutePath(file).path()));
+#endif
+
 /*
 #ifdef USE_ALLEGRO
     return ::exists(file.c_str()) != 0;
@@ -321,8 +332,8 @@ void Util::showError(const Graphics::Bitmap & screen, const Exception::Base & ex
     Global::debug(0) << out.str() << std::endl;
     font.printfWrap(10, 10, Graphics::makeColor(240, 240, 240), error, error.getWidth() - 20, out.str(), 0);
 
-    Graphics::Bitmap::transBlender(0, 0, 0, 220);
-    error.translucent().draw(50, 50, screen);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 220);
+    error.translucent(220).draw(50, 50, screen);
     screen.BlitToScreen();
 }
 

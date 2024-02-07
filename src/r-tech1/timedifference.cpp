@@ -25,8 +25,8 @@ const string TimeDifference::printTime(){
     return this->printTime("Function took");
 }
 
-unsigned long long int TimeDifference::getTime(){
-    unsigned long long int g = end - start;
+uint64_t TimeDifference::getTime(){
+    uint64_t g = end - start;
     return g;
 }
 

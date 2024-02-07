@@ -284,13 +284,13 @@ void Object::takeDamage(World & world, ObjectAttack * obj, int x, double forceX,
     }
 }
 	
-void Object::drawFront(Graphics::Bitmap * work, int rel_x){
+void Object::drawFront(const Graphics::Bitmap & work, int rel_x){
 }
         
-void Object::drawReflection(Graphics::Bitmap * work, int rel_x, int rel_y, int intensity){
+void Object::drawReflection(const Graphics::Bitmap & work, int rel_x, int rel_y, int intensity){
 }
 
-void Object::drawMugenShade(Graphics::Bitmap * work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
+void Object::drawMugenShade(const Graphics::Bitmap & work, int rel_x, int intensity, Graphics::Color color, double scale, int fademid, int fadehigh){
 }
 	
 void Object::touch( Object * obj ){

@@ -39,6 +39,7 @@ std::string MessageQueue::get(){
 }
 
 MessageQueue::~MessageQueue(){
+    Util::Thread::destroyLock(&lock);
 }
 
 static vector<string> messageBuffer;

@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <map>
+#include <functional>
 #include "pointer.h"
 
 #ifdef USE_ALLEGRO5
@@ -73,6 +74,9 @@ private:
 #ifdef USE_SDL
     virtual void runSDL(Keyboard &, std::map<int, ReferenceCount<Joystick> >);
 #endif
+#ifdef USE_SDL2
+    virtual void runSDL2(Keyboard &, std::map<int, ReferenceCount<Joystick> >);
+#endif
 #ifdef USE_ALLEGRO
     virtual void runAllegro(Keyboard & keyboard, std::map<int, ReferenceCount<Joystick> >);
 #endif
@@ -124,6 +128,7 @@ protected:
 };
 
 void standardLoop(Logic & logic, Draw & draw);
+void standardLoop(std::function<bool()> logic, std::function<double(double)> ticks, std::function<void(const Graphics::Bitmap &)> draw);
 /* true if the game should shutdown immediately */
 bool shutdown();
 extern int do_shutdown;

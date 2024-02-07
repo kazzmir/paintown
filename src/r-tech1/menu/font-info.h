@@ -55,7 +55,7 @@ class FontInfo {
     }
         */
 
-    virtual const int getWidth(const FontInfo & next) const = 0;
+    virtual int getWidth(const FontInfo & next) const = 0;
     
         /*
     inline void setHeight(int height){
@@ -63,10 +63,10 @@ class FontInfo {
     }
         */
 
-    virtual const int getHeight(const FontInfo & next) const = 0;
+    virtual int getHeight(const FontInfo & next) const = 0;
     
-    virtual const bool empty() const = 0;
-    };
+    virtual bool empty() const = 0;
+};
 
 template <class Type>
 class PathFontInfo: public FontInfo {
@@ -93,15 +93,15 @@ public:
         return path.getFilename().path();
     }
     
-    virtual const int getWidth(const FontInfo & next) const {
+    virtual int getWidth(const FontInfo & next) const {
         return width;
     }
     
-    virtual const int getHeight(const FontInfo & next) const {
+    virtual int getHeight(const FontInfo & next) const {
         return height;
     }
     
-    virtual const bool empty() const {
+    virtual bool empty() const {
         return path.path().empty();
     }
 

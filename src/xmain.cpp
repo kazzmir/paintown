@@ -39,3 +39,17 @@ int main( int argc, char ** argv ){
 #endif
 #endif
 #endif
+
+#ifdef USE_SDL2
+#ifndef WINDOWS
+int main( int argc, char ** argv ){
+    return rtech_main(argc, argv);
+}
+#else
+// https://wiki.libsdl.org/SDL2/FAQWindows#i_get_undefined_reference_to_sdl_main_...
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+    return rtech_main(argv, args);
+}
+#endif
+#endif

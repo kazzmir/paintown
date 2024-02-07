@@ -7,7 +7,6 @@
 
 namespace Graphics{
 
-static Bitmap * Screen = NULL;
 /* bitmaps that should always be resized to the dimensions of the screen */
 static std::vector<Bitmap*> needResize;
 
@@ -60,10 +59,15 @@ INTERNAL_COLOR Color::defaultColor(){
     
 void initializeExtraStuff();
         
-Bitmap::Bitmap(Storage::File & file):
+Bitmap::Bitmap(Storage::File & file, bool keepInMemory):
 mustResize(false),
 error(false),
 bit8MaskColor(makeColor(0, 0, 0)){
+    doLoad(file, keepInMemory);
+}
+
+#ifndef USE_SDL2
+void Bitmap::doLoad(Storage::File& file){
     int length = file.getSize();
     if (length == -1){
         throw BitmapException(__FILE__, __LINE__, std::string("Could not read from file"));
@@ -81,6 +85,7 @@ bit8MaskColor(makeColor(0, 0, 0)){
         throw;
     }
 }
+#endif
 
 QualityFilter qualityFilterName(const std::string & type){
     if (type == "xbr"){
@@ -454,8 +459,11 @@ Color darken(Color color, double factor ){
     return makeColor(r, g, b);
 }
 
-LitBitmap::LitBitmap(const Bitmap & b):
-Bitmap(b){
+LitBitmap::LitBitmap(const Bitmap & b, uint8_t red, uint8_t green, uint8_t blue):
+Bitmap(b),
+red(red),
+green(green),
+blue(blue){
     int x1, y1, x2, y2;
     b.getClipRect(x1, y1, x2, y2);
     setClipRect(x1, y1, x2, y2);
@@ -468,36 +476,46 @@ Bitmap(){
 LitBitmap::~LitBitmap(){
 }
 
-LitBitmap Bitmap::lit() const {
-    return LitBitmap(*this);
+LitBitmap Bitmap::lit(uint8_t red, uint8_t green, uint8_t blue) const {
+    return LitBitmap(*this, red, green, blue);
 }
 
-TranslucentBitmap Bitmap::translucent() const {
-    return TranslucentBitmap(*this);
+TranslucentBitmap Bitmap::translucent(uint8_t alpha) const {
+    return TranslucentBitmap(*this, alpha);
 }
         
 TranslucentBitmap Bitmap::translucent(int red, int green, int blue, int alpha) const {
-    transBlender(red, green, blue, alpha);
-    return TranslucentBitmap(*this);
+    // transBlender(red, green, blue, alpha);
+    return TranslucentBitmap(*this, alpha);
 }
 
-TranslucentBitmap::TranslucentBitmap(const Bitmap & b):
-Bitmap(b){
+TranslucentBitmap::TranslucentBitmap(const Bitmap & b, uint8_t alpha):
+Bitmap(b),
+alpha(alpha){
+    /*
     int x1, y1, x2, y2;
     b.getClipRect(x1, y1, x2, y2);
     setClipRect(x1, y1, x2, y2);
+    */
 }
 
 TranslucentBitmap::TranslucentBitmap():
-Bitmap(){
+Bitmap(),
+alpha(255){
 }
 
 TranslucentBitmap::~TranslucentBitmap(){
 }
 
+void TranslucentBitmap::setAlpha(uint8_t alpha){
+    this->alpha = alpha;
+}
+
+/*
 void TranslucentBitmap::fill(Color color) const {
     Bitmap::applyTrans(color);
 }
+*/
 
 int StretchedBitmap::getWidth() const {
     return width;

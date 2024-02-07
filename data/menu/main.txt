@@ -112,6 +112,7 @@
         (language "Français" "Switcher entre différents Mods")
         (language "Español" "Cambia a differente mod")
         (language "日本語" "アドオンチェンジ"))))
+  ;@
   (option
     (network-host
       (name
@@ -122,6 +123,7 @@
         (language "English" "Host a game that can be\nplayed over the internet")
         (language "Portuguese" "Hospede um jogo para \nser jogado na internet")
         (language "Français" "Etre l' hôte pour une partie réseaux"))))
+  ;@
   (option
     (network-join
       (name

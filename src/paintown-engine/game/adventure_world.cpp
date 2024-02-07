@@ -97,26 +97,26 @@ camera(_screen_size / 2, 0){
 	bang = NULL;
 	screen_size = _screen_size;
 
-        /* we add players to the player tracker here because the world wants to set
-         * some attributes (x/y coordinates).
-         * then we load the world and afterwards set up the script object
-         */
+    /* we add players to the player tracker here because the world wants to set
+     * some attributes (x/y coordinates).
+     * then we load the world and afterwards set up the script object
+     */
 	for ( vector<Paintown::Object *>::const_iterator it = players.begin(); it != players.end(); it++ ){
 		PlayerTracker t;
 		t.min_x = 0;
 		t.player = *it;
 		// this->players.push_back( (PlayerTracker) { .min_x = 0, .player = *it } );
-		this->players.push_back( t );
+		this->players.push_back(t);
 	}
 
 	threadedLoadLevel(path);
 
-        for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
-            PlayerTracker & tracker = *it;
-            void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
-            tracker.player->setScriptObject(handle);
-            tracker.script = handle;
-        }
+    for ( vector<PlayerTracker>::iterator it = this->players.begin(); it != this->players.end(); it++ ){
+        PlayerTracker & tracker = *it;
+        void * handle = Script::Engine::getEngine()->createPlayer(tracker.player);
+        tracker.player->setScriptObject(handle);
+        tracker.script = handle;
+    }
 
 	/*
 	if ( player != NULL ){
@@ -222,10 +222,14 @@ void AdventureWorld::threadedLoadLevel(const Filesystem::AbsolutePath & path){
      * the temporary should live past the end of the thread life
      * so the memory will stick around.
      */
+    /*
     LoadLevelInfo * info = new LoadLevelInfo(this, path);
     Util::WaitThread thread((Util::Thread::ThreadFunction) do_load_level, info);
     Util::EventManager manager;
     manager.waitForThread(thread);
+    */
+
+    loadLevel(path);
 }
 
 bool AdventureWorld::randomLevel() const {
@@ -301,18 +305,18 @@ void AdventureWorld::loadLevel( const Filesystem::AbsolutePath & path ){
     }
     scene = Util::ReferenceCount<Scene>(s);
 
-        Filesystem::AbsolutePath bang_path(Storage::instance().find(Filesystem::RelativePath("misc/flash/flash.txt")));
-        Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
+    Filesystem::AbsolutePath bang_path(Storage::instance().find(Filesystem::RelativePath("misc/flash/flash.txt")));
+    Paintown::Object * effect = new Paintown::Effect(bang_path.path().c_str());
 	if ( bang != NULL ){
 		delete bang;
 	}
 	bang = effect;
 		
-	for ( vector< PlayerTracker >::iterator it = players.begin(); it != players.end(); it++ ){
-            Paintown::Object * const player = it->player;	
-            player->setX(100 + Util::rnd( 75 ));
-            player->setZ(getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
-            player->setY(0);
+	for ( vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
+        Paintown::Object * const player = it->player;
+        player->setX(100 + Util::rnd( 75 ));
+        player->setZ(getMinimumZ() + Util::rnd( (getMaximumZ() - getMinimumZ()) / 2 ) );
+        player->setY(0);
 	}
 
 	deleteObjects( &objects );
@@ -686,7 +690,8 @@ void AdventureWorld::addObject( Paintown::Object * o ){
     objects.push_back(o);
 }
 
-void AdventureWorld::drawWorld(const PlayerTracker & tracker, Graphics::Bitmap * where, const map< int, vector< Paintown::Object * > > & object_z, double cameraX){
+void AdventureWorld::drawWorld(const PlayerTracker & tracker, const Graphics::Bitmap & where, const map< int, vector< Paintown::Object * > > & object_z, double cameraX){
+
     scene->drawBack((int) cameraX, where);
 
     for (map<int, vector<Paintown::Object *> >::const_iterator it = object_z.begin(); it != object_z.end(); it++ ){
@@ -723,10 +728,10 @@ const deque<Graphics::Bitmap*> & AdventureWorld::getScreenshots(){
     return screenshots;
 }
 
-void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
+void AdventureWorld::doTakeScreenshot(const Graphics::Bitmap & work){
     takeAScreenshot = false;
     Global::debug(2) << "Take a screenshot" << endl;
-    screenshots.push_back(new Graphics::Bitmap(*work, true));
+    screenshots.push_back(new Graphics::Bitmap(work, true));
 
     /* don't store more than 4 screenshots, so if we go above this number
      * start throwing random ones out
@@ -755,36 +760,37 @@ void AdventureWorld::doTakeScreenshot(Graphics::Bitmap * work){
     */
 }
 
-void AdventureWorld::drawMiniMap(Graphics::Bitmap * work, const PlayerTracker & player, const map<int, vector<Paintown::Object*> > & object_z, int x, int y, int width, int height){
+void AdventureWorld::drawMiniMap(const Graphics::Bitmap & work, const PlayerTracker & player, const map<int, vector<Paintown::Object*> > & object_z, int x, int y, int width, int height){
     if (mini_map == NULL){
         /* 1.3333 is the aspect ratio of screen_width/screen_height when the res is any standard of
          * 640,480 800,600, 1024,768
          * but it should use the actual values instead of guessing since the screen size
          * could theoretically change
          */
-	mini_map = new Graphics::Bitmap(screen_size, (int)((double) screen_size / 1.3333));
+        mini_map = new Graphics::Bitmap(screen_size, (int)((double) screen_size / 1.3333));
     }
 
-    drawWorld(player, mini_map.raw(), object_z, player.min_x);
+    drawWorld(player, *mini_map, object_z, player.min_x);
     Graphics::Bitmap mini(width, height);
     mini_map->Stretch(mini);
-    Graphics::Bitmap::transBlender(0, 0, 0, 160);
+    // Graphics::Bitmap::transBlender(0, 0, 0, 160);
     mini.border(0, 1, Graphics::makeColor(255, 255, 255));
-    mini.translucent().draw(x, y, *work);
+    mini.translucent(160).draw(x, y, work);
 }
 
-void AdventureWorld::showDescription(Graphics::Bitmap * work, int time, const string & description){
+void AdventureWorld::showDescription(const Graphics::Bitmap & work, int time, const string & description){
     const Font & font = Font::getDefaultFont(30, 30);
     FontRender * render = FontRender::getInstance();
     int trans = (DESCRIPTION_TIME - time) / 2;
     if (trans >= 255){
-        render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), description);
+        render->addMessage(font, work.getWidth() - font.textLength(description.c_str()) / 2, work.getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), description);
     } else {
-        render->addMessage(font, work->getWidth() - font.textLength(description.c_str()) / 2, work->getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), trans, description);
+        render->addMessage(font, work.getWidth() - font.textLength(description.c_str()) / 2, work.getHeight() / 2, descriptionGradient->current(), Graphics::MaskColor(), trans, description);
     }
 }
 
-void AdventureWorld::draw(Graphics::Bitmap * work){
+void AdventureWorld::draw(const Graphics::Bitmap & work){
+
     map<int, vector<Paintown::Object*> > object_z;
 
     for (vector< Paintown::Object * >::iterator it = objects.begin(); it != objects.end(); it++){
@@ -798,10 +804,10 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
 
     // min_x = (int)min_x_virtual;
     int mini_width = screen_size / 5;
-    int mini_height = (int)(screen_size / 5.0 / ((double)work->getWidth() / (double) work->getHeight()));
+    int mini_height = (int)(screen_size / 5.0 / ((double)work.getWidth() / (double) work.getHeight()));
 
-    int mini_position_x = work->getWidth() - mini_width - 1;
-    int mini_position_y = work->getHeight() - mini_height - 1;
+    int mini_position_x = work.getWidth() - mini_width - 1;
+    int mini_position_y = work.getHeight() - mini_height - 1;
 
     for (vector<PlayerTracker>::iterator it = players.begin(); it != players.end(); it++ ){
         /* this logic is a bit whacky. we assume the first element in the player tracker
@@ -824,12 +830,12 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
         }
 
         /* draw the minimaps where the camera is always centered on the guy */
-        drawMiniMap(work, *it, object_z, mini_position_x, mini_position_y, mini_width, mini_height);
+        // drawMiniMap(work, *it, object_z, mini_position_x, mini_position_y, mini_width, mini_height);
 
         mini_position_x -= mini_width - 2;
         if (mini_position_x <= 0){
             mini_position_y -= mini_width - 2;
-            mini_position_x = work->getWidth() - mini_width - 1;
+            mini_position_x = work.getWidth() - mini_width - 1;
         }
     }
 
@@ -840,10 +846,10 @@ void AdventureWorld::draw(Graphics::Bitmap * work){
     }
 
     if (is_paused){
-        work->transBlender( 0, 0, 0, 128 );
-        work->translucent().fill(Graphics::makeColor(0, 0, 0));
+        // work.transBlender( 0, 0, 0, 128 );
+        work.translucent(128).fill(Graphics::makeColor(0, 0, 0));
         const Font & font = Font::getDefaultFont(15, 15);
-        font.printf( work->getWidth() / 2 - font.textLength("Paused") / 2, work->getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), *work, "Paused", 0 );
+        font.printf(work.getWidth() / 2 - font.textLength("Paused") / 2, work.getHeight() / 2, Graphics::makeColor( 255, 255, 255 ), work, "Paused", 0 );
     }
 }
         

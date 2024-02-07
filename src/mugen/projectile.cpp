@@ -64,7 +64,7 @@ int Projectile::getLastCancelTicks() const {
     return lastCanceled;
 }
     
-const int Projectile::getId() const {
+int Projectile::getId() const {
     return id;
 }
 

@@ -62,22 +62,22 @@ class SpriteV1: public Sprite {
 	//void render(int facing, int vfacing, const int xaxis, const int yaxis, Bitmap &, const double scalex=1, const double scaley=1);
 	void render(const int xaxis, const int yaxis, const Graphics::Bitmap &where, const Mugen::Effects &effects = Mugen::Effects());
 
-        /* for parallax support */
-        void drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work);
+    /* for parallax support */
+    void drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work);
 	
 	// load/reload sprite
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> load(bool mask);
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> load(bool mask);
 	void reload(bool mask=true);
 
-        /* just copies the bitmap */
-        void copyImage(const PaintownUtil::ReferenceCount<Mugen::SpriteV1> copy);
+    /* just copies the bitmap */
+    void copyImage(const PaintownUtil::ReferenceCount<Mugen::SpriteV1> copy);
 
 	int getWidth() const;
 	int getHeight() const;
 
-        bool isLoaded() const;
+    bool isLoaded() const;
 	
-        /* FIXME: replace types with uintX_t */
+    /* FIXME: replace types with uintX_t */
 	// Setters getters
 	inline void setNext(const long n) { next = n; }
 	inline void setLocation(const long l) { location = l; }
@@ -106,17 +106,17 @@ class SpriteV1: public Sprite {
 	inline bool getSamePalette() const { return samePalette; }
 	inline const char *getComments() const { return comments; }
 	
-        // static void draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects);
+    // static void draw(const Graphics::Bitmap &bmp, const int xaxis, const int yaxis, const int x, const int y, const Graphics::Bitmap &where, const Mugen::Effects &effects);
 
     protected:
-        /* destroy allocated things */
-        void cleanup();
-	
-	/* get the internal bitmap */
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> getBitmap(bool mask);
+    /* destroy allocated things */
+    void cleanup();
 
-        /* get the properly scaled sprite */
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> getFinalBitmap(const Mugen::Effects & effects);
+    /* get the internal bitmap */
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> getBitmap(bool mask);
+
+    /* get the properly scaled sprite */
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> getFinalBitmap(const Mugen::Effects & effects);
 	
     private:
 	uint32_t next;
@@ -131,20 +131,20 @@ class SpriteV1: public Sprite {
 	uint16_t prev;
 	bool samePalette;
 	char comments[12];
-	char * pcx;
-        int maskColor;
+	uint8_t* pcx;
+    Graphics::Color maskColor;
 
-        /* come straight from the pcx */
-        int width, height;
-        bool loaded;
+    /* come straight from the pcx */
+    int width, height;
+    bool loaded;
 
-        bool defaultMask;
-	
-        /* Loaded with a palette that may not be our own */
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> unmaskedBitmap;
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> maskedBitmap;
-        
-        void draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
+    bool defaultMask;
+
+    /* Loaded with a palette that may not be our own */
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> unmaskedBitmap;
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> maskedBitmap;
+
+    void draw(const PaintownUtil::ReferenceCount<Graphics::Bitmap> &, const int xaxis, const int yaxis, const Graphics::Bitmap &, const Mugen::Effects &);
 };
 
 class SpriteV2{

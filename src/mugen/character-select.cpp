@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <exception>
+#include <thread>
+#include <functional>
 
 #include "ast/all.h"
 #include "sound.h"
@@ -150,8 +152,8 @@ void Cell::draw(int x, int y, int width, int height, const Graphics::Bitmap & wo
     // Flash
     if (flash){
         // FIXME hot pink shows up after white
-        Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
-        work.translucent().rectangleFill(x-1, y-1, x-1+width, y-1+height, Graphics::makeColor(255,255,255));
+        // Graphics::Bitmap::transBlender( 0, 0, 0, int(25.5 * flash) );
+        work.translucent(int(25.5 * flash)).rectangleFill(x-1, y-1, x-1+width, y-1+height, Graphics::makeColor(255,255,255));
     }
 }
 
@@ -3580,19 +3582,15 @@ public:
         Subscriber(SelectLogic & owner):
         owner(owner),
         going(true),
-        check(going, lock.getLock()),
-        thread(PaintownUtil::Thread::uninitializedValue){
-            if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) doProcess, this)){
-                Global::debug(0) << "Could not create processing thread" << std::endl;
-            }
+        check(going, lock.getLock()){
+            thread = std::thread([this](){
+                this->process();
+            });
         }
 
         void stop(){
             check.set(false);
-            if (!PaintownUtil::Thread::isUninitialized(thread)){
-                PaintownUtil::Thread::joinThread(thread);
-                thread = PaintownUtil::Thread::uninitializedValue;
-            }
+            thread.join();
         }
 
         virtual ~Subscriber(){
@@ -3676,7 +3674,7 @@ public:
         PaintownUtil::Thread::LockObject lock;
         PaintownUtil::ThreadBoolean check;
 
-        PaintownUtil::Thread::Id thread;
+        std::thread thread;
         std::vector<Filesystem::AbsolutePath> characters;
         std::vector<Filesystem::AbsolutePath> stages;
     };
@@ -3686,19 +3684,18 @@ public:
     class WithSubscription{
     public:
         WithSubscription(Searcher & search, Searcher::Subscriber & subscription, const std::vector<CharacterSelect::SelectInfo> & infos, CharacterSelect & select):
-        subscribeThread(PaintownUtil::Thread::uninitializedValue),
         search(search),
         subscription(subscription),
         stop(false),
         check(stop, lock.getLock()),
         infos(infos),
         select(select){
-            if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
+            subscribeThread = std::thread([this](){
                 doSubscribe();
-            }
+            });
         }
 
-        PaintownUtil::Thread::Id subscribeThread;
+        std::thread subscribeThread;
         Searcher & search;
         Searcher::Subscriber & subscription;
         volatile bool stop;
@@ -3707,15 +3704,6 @@ public:
 
         std::vector<CharacterSelect::SelectInfo> infos;
         CharacterSelect & select;
-
-        /* Start the subscription in a thread so that characters that are already found
-         * will be added in a separate thread instead of the main one
-         */
-        static void * subscribe(void * me){
-            WithSubscription * self = (WithSubscription*) me;
-            self->doSubscribe();
-            return NULL;
-        }
 
         void addInfo(const CharacterSelect::SelectInfo & info){
             try{
@@ -3758,20 +3746,12 @@ public:
             }
         }
 
-
         virtual ~WithSubscription(){
             check.set(true);
 
             /* Make sure we wait for the initial join to finish before trying to unsubscribe.
-             * Is it a race condition if the subscribeThread was never started before we get here?
-             * I don't think so because the constructor will ensure that subscribeThread is either
-             * the uninitialized value or is some thread value, possibly not started. If the thread
-             * is uninitialized then joining is a no-op, which means the subscription must have been
-             * started in the constructor (by virtue of the thread not being created), or if the
-             * thread was created, even if not started, then it will eventually start and joinThread
-             * will wait for it to finish.
              */
-            PaintownUtil::Thread::joinThread(subscribeThread);
+            subscribeThread.join();
             search.unsubscribe(&subscription);
         }
     };

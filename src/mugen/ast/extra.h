@@ -95,9 +95,9 @@ public:
     }
 
     virtual ~AstParse(){
-        if (sections != NULL){
-            for (std::list<Section*>::iterator section_it = sections->begin(); section_it != sections->end(); section_it++){
-                delete (*section_it);
+        if (sections != nullptr){
+            for (Section* section: *sections){
+                delete section;
             }
         }
         delete sections;

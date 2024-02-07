@@ -337,6 +337,7 @@ public:
      */ 
     virtual void drawInfoWithBackground(const std::string &, int x, int y, const std::string &, const Graphics::Bitmap &);
     
+    virtual void clearList();
     virtual void updateList(const std::vector<PaintownUtil::ReferenceCount<Gui::ScrollItem> > &);
     virtual void addItem(PaintownUtil::ReferenceCount<Gui::ScrollItem> item);
     virtual void updateItem(unsigned int index, PaintownUtil::ReferenceCount<Gui::ScrollItem> item);

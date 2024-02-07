@@ -48,6 +48,13 @@ using std::vector;
 using std::string;
 using std::ostringstream;
 
+#ifdef __GNUC__
+#define FALL_THROUGH __attribute__ ((fallthrough))
+#else
+#define FALL_THROUGH
+#endif
+
+
 Game::Game(const PlayerType & playerType, const GameType & gameType, const Filesystem::AbsolutePath & systemFile):
 playerType(playerType),
 gameType(gameType),
@@ -118,7 +125,7 @@ void Game::run(Searcher & searcher){
         }
     } catch (const CanceledException & cancel){
         /* its ok */
-    } catch (const MugenException e){
+    } catch (const MugenException & e){
         std::ostringstream out;
         out << "Press ENTER to continue\n";
         out << "\n";
@@ -328,11 +335,15 @@ public:
         switch (collection.getType()){
             case Mugen::ArcadeData::CharacterCollection::Turns4:
                 fourth = PaintownUtil::ReferenceCount<Character>(new Character(collection.getFourth().getDef(), side));
+                FALL_THROUGH;
             case Mugen::ArcadeData::CharacterCollection::Turns3:
                 third = PaintownUtil::ReferenceCount<Character>(new Character(collection.getThird().getDef(), side));
+                FALL_THROUGH;
             case Mugen::ArcadeData::CharacterCollection::Turns2:
+                FALL_THROUGH;
             case Mugen::ArcadeData::CharacterCollection::Simultaneous:
                 second = PaintownUtil::ReferenceCount<Character>(new Character(collection.getSecond().getDef(), side));
+                FALL_THROUGH;
             default:
             case Mugen::ArcadeData::CharacterCollection::Single:
                 first = PaintownUtil::ReferenceCount<Character>(new Character(collection.getFirst().getDef(), side));
@@ -347,17 +358,21 @@ public:
                     fourth->load(collection.getFourth().getAct());
                     loaded[3] = true;
                 }
+                FALL_THROUGH;
             case Mugen::ArcadeData::CharacterCollection::Turns3:
                 if (!loaded[2]){
                     third->load(collection.getThird().getAct());
                     loaded[2] = true;
                 }
+                FALL_THROUGH;
             case Mugen::ArcadeData::CharacterCollection::Turns2:
+                FALL_THROUGH;
             case Mugen::ArcadeData::CharacterCollection::Simultaneous:
                 if (!loaded[1]){
                     second->load(collection.getSecond().getAct());
                     loaded[1] = true;
                 }
+                FALL_THROUGH;
             default:
             case Mugen::ArcadeData::CharacterCollection::Single:
                 if (!loaded[0]){
@@ -528,7 +543,9 @@ void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen
 #ifdef WII
         context.load();
 #else
-        Loader::loadScreen(context, info);
+        /* FIXME: threads */
+        // Loader::loadScreen(context, info);
+        context.load();
 #endif
         context.maybeFail();
     } catch (const MugenException & e){
@@ -1652,24 +1669,14 @@ void Game::startDemo(Searcher & searcher){
         class WithSubscription{
         public:
             WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
-            subscribeThread(PaintownUtil::Thread::uninitializedValue),
             search(search),
             subscription(subscription){
-                if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
-                    doSubscribe();
-                }
+                subscribeThread = std::thread([this](){
+                    this->doSubscribe();
+                });
             }
 
-            PaintownUtil::Thread::Id subscribeThread;
-
-            /* Start the subscription in a thread so that characters that are already found
-            * will be added in a separate thread instead of the main one
-            */
-            static void * subscribe(void * me){
-                WithSubscription * self = (WithSubscription*) me;
-                self->doSubscribe();
-                return NULL;
-            }
+            std::thread subscribeThread;
 
             void doSubscribe(){
                 // Only subscribe if auto search is enabled
@@ -1683,7 +1690,7 @@ void Game::startDemo(Searcher & searcher){
 
             virtual ~WithSubscription(){
                 /* Make sure we wait for the initial join to finish before trying to unsubscribe */
-                PaintownUtil::Thread::joinThread(subscribeThread);
+                subscribeThread.join();
                 search.unsubscribe(&subscription);
             }
         } withSubscription(searcher, subscription);
@@ -1815,12 +1822,17 @@ void Game::doSurvival(Searcher & searcher){
             switch (player2Collection.getType()){
                 case Mugen::ArcadeData::CharacterCollection::Turns4:
                     player2Collection.setFourth(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Turns3:
                     player2Collection.setThird(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Turns2:
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Simultaneous:
                     player2Collection.setSecond(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Single:
+                    FALL_THROUGH;
                 default:
                     player2Collection.setFirst(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
                     break;
@@ -1829,12 +1841,17 @@ void Game::doSurvival(Searcher & searcher){
             switch (player1Collection.getType()){
                 case Mugen::ArcadeData::CharacterCollection::Turns4:
                     player1Collection.setFourth(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Turns3:
                     player1Collection.setThird(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Turns2:
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Simultaneous:
                     player1Collection.setSecond(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
+                    FALL_THROUGH;
                 case Mugen::ArcadeData::CharacterCollection::Single:
+                    FALL_THROUGH;
                 default:
                     player1Collection.setFirst(getRandom<Mugen::ArcadeData::CharacterInfo>(characters));
                     break;

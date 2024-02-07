@@ -200,7 +200,7 @@ void SimpleSelect::setCurrentState(unsigned int cursor, const SelectListInterfac
     cursors[cursor].setState(state);
 }
 
-const SelectListInterface::CursorState SimpleSelect::getCurrentState(unsigned int cursor) const{
+SelectListInterface::CursorState SimpleSelect::getCurrentState(unsigned int cursor) const{
     if (checkCursor(cursor)){
         return Invalid;
     }
@@ -602,7 +602,7 @@ void GridSelect::setCurrentState(unsigned int cursor, const SelectListInterface:
     cursors[cursor].setState(state);
 }
 
-const SelectListInterface::CursorState GridSelect::getCurrentState(unsigned int cursor) const{
+SelectListInterface::CursorState GridSelect::getCurrentState(unsigned int cursor) const{
     if (checkCursor(cursor)){
         return Invalid;
     }

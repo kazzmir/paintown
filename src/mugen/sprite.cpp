@@ -36,6 +36,7 @@ width(0),
 height(0),
 loaded(false),
 defaultMask(mask){
+    memset(comments, 0, sizeof(comments));
 }
 
 SpriteV1::SpriteV1(const SpriteV1 &copy){
@@ -54,15 +55,16 @@ SpriteV1::SpriteV1(const SpriteV1 &copy){
     this->height = copy.height;
     this->loaded = copy.loaded;
     this->defaultMask = copy.defaultMask;
+    this->maskColor = copy.maskColor;
 
-    if (copy.comments != 0){
+    if (strlen(copy.comments) != 0){
         /* this line is right */
         memcpy(this->comments, copy.comments, sizeof(SpriteV1::comments));
     }
 
     /* why do we need to copy the pcx data if we already have the bitmap? */
     if (copy.pcx != NULL){
-        this->pcx = new char[this->reallength];
+        this->pcx = new uint8_t[this->reallength];
         /* this line is right */
         memcpy(this->pcx, copy.pcx, this->reallength);
     } else {
@@ -91,8 +93,9 @@ SpriteV1 & SpriteV1::operator=(const SpriteV1 &copy){
     this->height = copy.height;
     this->loaded = copy.loaded;
     this->defaultMask = copy.defaultMask;
-    if (copy.comments){
-        memcpy( this->comments, copy.comments, sizeof(SpriteV1::comments) );
+    this->maskColor = copy.maskColor;
+    if (strlen(copy.comments) != 0){
+        memcpy(this->comments, copy.comments, sizeof(SpriteV1::comments) );
     }
 
     if (copy.pcx){
@@ -100,7 +103,7 @@ SpriteV1 & SpriteV1::operator=(const SpriteV1 &copy){
             delete[] this->pcx;
             this->pcx = NULL;
         }
-        this->pcx = new char[this->reallength];
+        this->pcx = new uint8_t[this->reallength];
         memcpy(this->pcx, copy.pcx, this->reallength);
     }
 
@@ -120,7 +123,7 @@ void SpriteV1::copyImage(const PaintownUtil::ReferenceCount<Mugen::SpriteV1> cop
     }
 
     if (copy->pcx != NULL){
-        this->pcx = new char[this->newlength];
+        this->pcx = new uint8_t[this->newlength];
         memcpy(this->pcx, copy->pcx, this->newlength);
     }
 
@@ -130,6 +133,7 @@ void SpriteV1::copyImage(const PaintownUtil::ReferenceCount<Mugen::SpriteV1> cop
     this->maskedBitmap = copy->maskedBitmap;
     this->loaded = copy->loaded;
     this->defaultMask = copy->defaultMask;
+    this->maskColor = copy->maskColor;
 }
 
 bool SpriteV1::isLoaded() const {
@@ -180,7 +184,7 @@ void SpriteV1::read(const PaintownUtil::ReferenceCount<Storage::File> & ifile, c
      
     // Last sprite
     if (next == 0){
-	if (samePalette){
+        if (samePalette){
             newlength = reallength = length - 768;
         } else {
             newlength = reallength = length;
@@ -249,12 +253,16 @@ void SpriteV1::render(const int xaxis, const int yaxis, const Graphics::Bitmap &
 
 PaintownUtil::ReferenceCount<Graphics::Bitmap> SpriteV1::load(bool mask){
     if (pcx){
-        PaintownUtil::ReferenceCount<Graphics::Bitmap> bitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, newlength), mask));
+        if (mask){
+            return PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, newlength, this->maskColor)));
+        }
+
+        return PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(Graphics::memoryPCX((unsigned char*) pcx, newlength)));
+        /*
         if (mask){
             bitmap->replaceColor(bitmap->get8BitMaskColor(), Graphics::MaskColor());
         }
-
-        return bitmap;
+        */
     }
 
     return PaintownUtil::ReferenceCount<Graphics::Bitmap>(NULL);
@@ -276,11 +284,14 @@ PaintownUtil::ReferenceCount<Graphics::Bitmap> SpriteV1::getBitmap(bool mask){
         if (maskedBitmap != NULL){
             return maskedBitmap;
         }
+#if 0
         if (unmaskedBitmap != NULL){
             maskedBitmap = PaintownUtil::ReferenceCount<Graphics::Bitmap>(new Graphics::Bitmap(*unmaskedBitmap, true));
+            /* FIXME: instead of get8BitMaskColor, this should pull out RGB values from the palette index 0 */
             maskedBitmap->replaceColor(maskedBitmap->get8BitMaskColor(), Graphics::MaskColor());
             return maskedBitmap;
         }
+#endif
 
         maskedBitmap = load(true);
         return maskedBitmap;
@@ -302,7 +313,7 @@ int SpriteV1::getHeight() const {
     return height;
 }
 
-static int littleEndian16(const char * input){
+static int littleEndian16(const uint8_t* input){
     int byte1 = input[0];
     int byte2 = input[1];
     return (((unsigned char) byte2) << 8) | (unsigned char) byte1;
@@ -316,10 +327,10 @@ void SpriteV1::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile
         // Lets give it space for the palette
         Global::debug(2) << "This sprite is less that 768 or has a shared palette - Group: " << getGroupNumber() << " | Image: " << getImageNumber() << endl;
         newlength += 768;
-        pcx = new char[newlength];
+        pcx = new uint8_t[newlength];
         memset(pcx, 0, newlength);
     } else {
-        pcx = new char[reallength];
+        pcx = new uint8_t[reallength];
         if (!pcx){
             printf("out of memory!!\n");
             return;
@@ -387,6 +398,15 @@ void SpriteV1::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile
     }
 #endif
 
+    /*
+    uint8_t * palette = (uint8_t *) pcx + newlength - 768;
+    DebugLog << "Palette color 255 R:" << (uint16_t) palette[0] << " G: " << (uint16_t) palette[1] << " B: " << (uint16_t) palette[2] << endl;
+    */
+
+    uint8_t* palette = pcx + newlength - 768;
+    /* create mask color from rgb values at index 0 */
+    this->maskColor = Graphics::makeColor(palette[0], palette[1], palette[2]);
+
     /* read values directly from the pcx header */
     int xmin = littleEndian16(&pcx[4]);
     int ymin = littleEndian16(&pcx[6]);
@@ -398,14 +418,12 @@ void SpriteV1::loadPCX(const PaintownUtil::ReferenceCount<Storage::File> & ifile
 
     loaded = true;
 
-    /*
-    PaintownUtil::ReferenceCount<Graphics::Bitmap> sprite = load(mask, false);
+    PaintownUtil::ReferenceCount<Graphics::Bitmap> sprite = load(mask);
     if (mask){
         maskedBitmap = sprite;
     } else {
         unmaskedBitmap = sprite;
     }
-    */
 }
 
 void SpriteV1::drawPartStretched(int sourceX1, int sourceY, int sourceWidth, int sourceHeight, int destX, int destY, int destWidth, int destHeight, const Mugen::Effects & effects, const Graphics::Bitmap & work){
@@ -460,7 +478,7 @@ static void drawReal(Graphics::Bitmap * bmp, const int xaxis, const int yaxis, c
 	    break;
 	}
         case Translucent: {
-            Graphics::Bitmap::transBlender(0, 0, 0, effects.alphaSource);
+            // Graphics::Bitmap::transBlender(0, 0, 0, effects.alphaSource);
             break;
         }
 	case Add1 : {
@@ -488,27 +506,27 @@ static void drawReal(Graphics::Bitmap * bmp, const int xaxis, const int yaxis, c
     } else {
         if (effects.facing && !effects.vfacing){
             if (effects.trans != None){
-                bmp->translucent().drawHFlip(flippedX, normalY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).drawHFlip(flippedX, normalY, effects.filter, where);
             } else {
                 // bmp.drawHFlip(placex + bmp.getWidth() / 2, placey, where);
                 bmp->drawHFlip(flippedX, normalY, startWidth, startHeight, width, height, effects.filter, where);
             }
         } else if (effects.vfacing && !effects.facing){ 
             if (effects.trans != None){
-                bmp->translucent().drawVFlip(normalX, flippedY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).drawVFlip(normalX, flippedY, effects.filter, where);
             } else {
                 bmp->drawVFlip(normalX, flippedY, effects.filter, where);
             }
         } else if (effects.vfacing && effects.facing){
             if (effects.trans != None){
-                bmp->translucent().drawHVFlip(flippedX, flippedY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).drawHVFlip(flippedX, flippedY, effects.filter, where);
             } else {
                 bmp->drawHVFlip(flippedX, flippedY, effects.filter, where);
             }
         } else {
             //if( effects.mask ){
             if (effects.trans != None){
-                bmp->translucent().draw(normalX, normalY, effects.filter, where);
+                bmp->translucent(effects.alphaSource).draw(normalX, normalY, effects.filter, where);
             } else {
                 bmp->draw(normalX, normalY, startWidth, startHeight, width, height, effects.filter, where);
             }
