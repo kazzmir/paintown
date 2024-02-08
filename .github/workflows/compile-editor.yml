@@ -26,8 +26,7 @@ jobs:
       - name: Build
         run: |
             ls -lha
-            cd editor
-            ./gradlew build
+            cd editor && ./gradlew build
 
       - name: Archive Folder
         uses: actions/upload-artifact@v2
