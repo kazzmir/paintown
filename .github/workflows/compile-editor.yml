@@ -9,6 +9,9 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: editor
 
     steps:
       - name: Checkout code
@@ -26,7 +29,8 @@ jobs:
       - name: Build
         run: |
             ls -lha
-            cd editor && ./gradlew build
+            chmod +x gradlew
+            ./gradlew build
 
       - name: Archive Folder
         uses: actions/upload-artifact@v2
