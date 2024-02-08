@@ -21,8 +21,8 @@ dependencies {
     implementation "org.scala-lang:scala-library:${scalaVersion}"
     // https://mvnrepository.com/artifact/org.scala-lang/scala-reflect
     implementation "org.scala-lang:scala-reflect:${scalaVersion}"
-    // https://mvnrepository.com/artifact/org.scala-lang/scala-compiler
-    implementation "org.scala-lang:scala-compiler:${scalaVersion}"
+    // // https://mvnrepository.com/artifact/org.scala-lang/scala-compiler
+    // implementation "org.scala-lang:scala-compiler:${scalaVersion}"
 
     // https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms
     implementation 'com.jgoodies:jgoodies-forms:1.7.1'
