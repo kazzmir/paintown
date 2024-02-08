@@ -38,7 +38,6 @@ dependencies {
 }
 
 
-
 test {
     // Use junit platform for unit tests
     useJUnitPlatform()
@@ -81,15 +80,6 @@ sourceSets {
             srcDirs = ['test/main/scala']
         }
     }
-}
-
-// Define compilation tasks
-compileScala {
-    scalaCompileOptions.additionalParameters = [
-            '-target:jvm-1.8', // Adjust target JVM version as needed
-            '-deprecation',    // Enable deprecation warnings
-            '-feature'         // Enable language feature warnings
-    ]
 }
 
 compileJava {
