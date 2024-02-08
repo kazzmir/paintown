@@ -24,7 +24,7 @@ jobs:
           architecture: x64
 
       - name: Build
-        run: ./gradlew build
+        run: gradle build
 
       - name: Archive Folder
         uses: actions/upload-artifact@v2
