@@ -128,8 +128,10 @@ public:
     data(NULL),
     position(0),
     size(input.getSize()){
-        if (input.getSize() == 0){
-            throw TokenException(__FILE__, __LINE__, "File has size 0");
+        if (input.getSize() <= 0){
+            ostringstream error;
+            error << "File had invalid size " << input.getSize();
+            throw TokenException(__FILE__, __LINE__, error.str());
         }
         data = new unsigned char[size];
         input.readLine((char*) data, size);
