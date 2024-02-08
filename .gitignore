@@ -1,4 +1,4 @@
-build*
+build
 mingw-bin
 paintown
 .scon*

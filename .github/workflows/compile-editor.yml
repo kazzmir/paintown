@@ -25,6 +25,7 @@ jobs:
 
       - name: Build
         run: |
+            ls -lha
             cd editor
             ./gradlew build
 

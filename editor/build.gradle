@@ -1,0 +1,98 @@
+plugins {
+    // Apply the java plugin to add support for Java
+    id 'java'
+
+    id 'scala'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+def scalaVersion = '2.10.7'
+
+dependencies {
+
+    // Scala
+    implementation "org.scala-lang:scala-library:${scalaVersion}"
+    // https://mvnrepository.com/artifact/org.scala-lang/scala-reflect
+    implementation "org.scala-lang:scala-reflect:${scalaVersion}"
+//    // https://mvnrepository.com/artifact/org.scala-lang/scala-compiler
+//    implementation "org.scala-lang:scala-compiler:${scalaVersion}"
+
+    // https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms
+    implementation 'com.jgoodies:jgoodies-forms:1.7.1'
+
+    // legacy compatibility java 11+
+    runtimeOnly 'javax.activation:javax.activation-api:1.2.0'
+
+    // Use JUnit Jupiter API for testing.
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.2'
+
+    // Use JUnit Jupiter Engine for testing.
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+}
+
+
+
+test {
+    // Use junit platform for unit tests
+    useJUnitPlatform()
+}
+
+mainClassName = 'com.rafkind.paintown.level.Editor2'
+jar {
+    manifest {
+        attributes(
+                'Main-Class': mainClassName, // Specify the main class
+                'SplashScreen-Image': 'splash.png'
+        )
+    }
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = mainClassName
+}
+
+shadowJar {
+    archiveBaseName = "editor"
+    archiveVersion = ''
+    archiveClassifier = ''
+    mainClassName = mainClassName
+}
+
+// Define source directories
+sourceSets {
+    main {
+        scala {
+            srcDirs = ['src/main/scala', 'src/main/java']
+        }
+        java {
+            srcDirs = []
+        }
+    }
+    test {
+        scala {
+            srcDirs = ['test/main/scala']
+        }
+    }
+}
+
+// Define compilation tasks
+compileScala {
+    scalaCompileOptions.additionalParameters = [
+            '-target:jvm-1.8', // Adjust target JVM version as needed
+            '-deprecation',    // Enable deprecation warnings
+            '-feature'         // Enable language feature warnings
+    ]
+}
+
+compileJava {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
