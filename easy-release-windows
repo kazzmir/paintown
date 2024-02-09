@@ -8,8 +8,8 @@ cd `mktemp -d`
 
 # copy executable
 cp $EXEDIR/mingw-bin/$EXE .
-# deps
-cp $EXEDIR/misc/dlls/zlib1.dll .
+# copy dependencies
+docker run --rm -iv `pwd`:/paintown-bin -w /paintown-bin paintown-mingw-build bash -c "cp /usr/x86_64-w64-mingw32/lib/zlib1.dll ."
 
 # launcher
 echo '
