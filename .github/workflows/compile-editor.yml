@@ -42,11 +42,6 @@ jobs:
           name: artifact
           path: ${{github.workspace}}
 
-      - name: List files
-        run: |
-          cd ${{github.workspace}}
-          find . -name "*.jar"
-
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
