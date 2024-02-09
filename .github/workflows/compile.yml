@@ -17,7 +17,7 @@ jobs:
           ./easy-release-ubuntu
           
       - name: Archive Folder
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v2
         with:
           name: artifact
           path: ${{github.workspace}}/*.tar.gz
