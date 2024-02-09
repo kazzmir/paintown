@@ -10,7 +10,7 @@ cd `mktemp -d`
 cp $EXEDIR/$EXE .
 
 # grab all shared libraries
-ALL_EXE_SHARED_LIBRARIES=`otool -L $EXE | awk '{print $1}' | grep homebrew | grep -v ':' | sed 's/^[[:space:]]*//'`
+ALL_EXE_SHARED_LIBRARIES=`otool -L $EXE | awk '{print $1}' | grep opt | grep -v ':' | sed 's/^[[:space:]]*//'`
 
 while IFS= read -r dylibpath; do
 
