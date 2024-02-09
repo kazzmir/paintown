@@ -16,7 +16,7 @@ jobs:
           ./easy-release-mac-arm
 
       - name: Archive Folder
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: ${{github.workspace}}/*.tar.gz

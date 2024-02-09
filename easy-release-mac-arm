@@ -9,31 +9,31 @@ cd `mktemp -d`
 # copy executable
 cp $EXEDIR/$EXE .
 
+echo "Before"
+otool -L $EXE
+
 # grab all shared libraries
 ALL_EXE_SHARED_LIBRARIES=`otool -L $EXE | awk '{print $1}' | grep opt | grep -v ':' | sed 's/^[[:space:]]*//'`
 
+# for each dep change from rpath to executable_path
 while IFS= read -r dylibpath; do
 
     dylibpath_no_rpath=`echo $dylibpath | sed 's/@rpath\///'`
     dylibname=`basename $dylibpath_no_rpath`
 
-    echo "copying $dylibname"
+    # copying $dylibname
     cp $dylibpath_no_rpath .
 
-    echo "changing dylib to @executable_path/$dylibname inside $EXE"
+    # changing $dylibname
     install_name_tool -change $dylibpath @executable_path/$dylibname $EXE
 
 done <<< "$ALL_EXE_SHARED_LIBRARIES"
 
-echo "after dylib change"
-file $EXE
+echo "After"
 otool -L $EXE
+file $EXE
 
-# packaging 
-ARCH=`uname -m`
-OS=`uname -s`
-
-# launcher to get data
+# launcher
 echo '
 #!/bin/bash
 
@@ -42,11 +42,13 @@ if [ ! -d data ]; then
     curl -sSL $DATA_URL -o data.zip
     unzip -q data.zip
     rm data.zip
-    mv data-3.6.0 data
+    mv data* data
 fi
 
 ./paintown' > run.sh
-
 chmod +x run.sh
 
-tar -czvf $EXEDIR/$EXE-$OS-$ARCH.tar.gz .
+# packaging 
+ARCH=`uname -m`
+OS=`uname -s | tr '[:upper:]' '[:lower:]'`
+tar -czf $EXEDIR/$EXE-$OS-$ARCH.tar.gz .
