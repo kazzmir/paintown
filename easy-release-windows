@@ -25,6 +25,8 @@ echo '
 powershell.exe -ExecutionPolicy Bypass -File paintown.ps1
 ' > run.bat
 
+file $EXE
+
 # packaging 
 ARCH=`file paintown.exe | grep -o -E 'x86[_-]64|i[[:digit:]]86|ARM'`
 OS=windows
