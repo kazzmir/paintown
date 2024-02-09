@@ -1,0 +1,54 @@
+#!/bin/bash
+
+EXEDIR=`pwd`
+EXE=paintown
+
+# inside tmp
+cd `mktemp -d`
+
+# copy executable
+cp $EXEDIR/$EXE .
+
+echo "Before"
+ldd $EXE
+
+# grab all shared libraries
+ALL_EXE_SHARED_LIBRARIES=`ldd $EXE | awk '/=>/ {print $3}' | grep '^/' | uniq | grep SDL`
+
+# for each dep change from rpath to executable_path
+while IFS= read -r dylibpath; do
+
+    dylibpath_no_rpath=`echo $dylibpath | sed 's/@rpath\///'`
+    dylibname=`basename $dylibpath_no_rpath`
+
+    # copying $dylibname
+    cp $dylibpath_no_rpath .
+
+    # changing $dylibname
+    install_name_tool -change $dylibpath @executable_path/$dylibname $EXE
+
+done <<< "$ALL_EXE_SHARED_LIBRARIES"
+
+echo "After"
+ldd $EXE
+file $EXE
+
+# launcher
+echo '
+#!/bin/bash
+
+if [ ! -d data ]; then
+    DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
+    curl -sSL $DATA_URL -o data.zip
+    unzip -q data.zip
+    rm data.zip
+    mv data* data
+fi
+
+./paintown' > run.sh
+chmod +x run.sh
+
+# packaging 
+ARCH=`uname -m`
+OS=`uname -s | tr '[:upper:]' '[:lower:]'`
+tar -czf $EXEDIR/$EXE-$OS-$ARCH.tar.gz .
