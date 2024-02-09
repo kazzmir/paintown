@@ -25,7 +25,7 @@ while IFS= read -r dylibpath; do
     cp $dylibpath_no_rpath .
 
     # changing $dylibname
-    install_name_tool -change $dylibpath @executable_path/$dylibname $EXE
+    patchelf --replace-needed $dylibname "./$dylibname" $EXE
 
 done <<< "$ALL_EXE_SHARED_LIBRARIES"
 
