@@ -13,12 +13,13 @@ jobs:
       - name: Run build
         run: |
           ./easy-compile-mac-arm
+          ./easy-release-mac-arm
 
       - name: Archive Folder
         uses: actions/upload-artifact@v2
         with:
           name: artifact
-          path: ${{github.workspace}}/paintown
+          path: ${{github.workspace}}/*.tar.gz
 
   publish-release:
     needs: build
@@ -30,15 +31,6 @@ jobs:
         with:
           name: artifact
           path: ${{github.workspace}}
-
-      - name: Run release
-        run: |
-          ./easy-release-mac-arm
-  
-      - name: List files
-        run: |
-          cd ${{github.workspace}}
-          find . -name "*.tar.gz"
 
       - name: Create Release
         id: create_release
