@@ -13,4 +13,29 @@ jobs:
 
       - name: Run build
         run: |
-          docker build -f docker/WindowsDockerfile .
+          ./easy-compile-docker-windows
+          ./easy-release-windows
+          
+      - name: Archive Folder
+        uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: ${{github.workspace}}/*.zip
+
+  publish-release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: ${{github.workspace}}
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ github.workspace }}/*.zip
