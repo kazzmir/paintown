@@ -31,7 +31,7 @@ otool -L $EXE
 
 # packaging 
 ARCH=`uname -m`
-OS=`uname -o`
+OS=`uname -s`
 
 # launcher to get data
 echo '
