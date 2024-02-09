@@ -15,7 +15,7 @@ ALL_EXE_SHARED_LIBRARIES=`otool -L $EXE | awk '{print $1}' | grep homebrew | gre
 while IFS= read -r dylibpath; do
 
     dylibpath_no_rpath=`echo $dylibpath | sed 's/@rpath\///'`
-    dylibname=`basename -- $dylibpath_no_rpath`
+    dylibname=`basename $dylibpath_no_rpath`
 
     echo "copying $dylibname"
     cp $dylibpath_no_rpath .
