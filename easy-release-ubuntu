@@ -34,8 +34,7 @@ ldd $EXE
 file $EXE
 
 # launcher
-echo '
-#!/bin/bash
+echo '#!/bin/bash
 
 if [ ! -d data ]; then
     DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
@@ -47,6 +46,13 @@ fi
 
 ./paintown' > run.sh
 chmod +x run.sh
+
+echo '[Desktop Entry]
+Type=Application
+Terminal=true
+Name=Paintown
+Exec=run.sh
+' > paintown.desktop
 
 # packaging 
 ARCH=`uname -m`
