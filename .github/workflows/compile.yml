@@ -45,6 +45,7 @@ jobs:
       - name: Create release and upload artifacts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_CONTINUOUS_RELEASE_TAG: 'easy-release-ubuntu'
         run: |
             sudo apt update -y && sudo apt install -y fuse
             tar xvfz ${{ github.workspace }}/*.tar.gz -C .
