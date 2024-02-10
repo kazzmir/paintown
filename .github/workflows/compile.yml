@@ -20,7 +20,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: artifact
-          path: ${{github.workspace}}/*.tar.gz
+          path: |
+            ${{github.workspace}}/*.tar.gz
+            ${{github.workspace}}/*.AppImage
 
   publish-release:
     needs: build
