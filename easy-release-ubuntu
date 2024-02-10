@@ -63,7 +63,7 @@ echo your priveleges so that new packages can be installed on your system.
 echo When prompted for a password type the password you use to login.
 
 # Dep
-sudo apt update -y && apt install fuse -y
+sudo apt update -y && sudo apt install fuse -y
 
 APPDIR=paintown.AppDir
 mkdir -p $APPDIR/usr/bin $APPDIR/usr/lib
@@ -82,7 +82,6 @@ Categories=Game;
 Icon=paintown
 ' > $APPDIR/paintown.desktop
 
-ARCH=x86_64
 #ARCH=aarch64
 wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$ARCH.AppImage"
 chmod a+x appimagetool-$ARCH.AppImage
