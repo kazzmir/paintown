@@ -89,7 +89,6 @@ echo "<?xml version="1.0" encoding="UTF-8"?>
     <string>Paintown</string>
 </dict>
 </plist>" > $APPDIR/Contents/Info.plist
-tree $APPDIR
 
 # DMG
 DMG_DIR=dmg
