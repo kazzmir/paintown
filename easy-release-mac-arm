@@ -34,8 +34,8 @@ otool -L $EXE
 file $EXE
 
 # launcher
-echo '
-#!/bin/bash
+echo '#!/bin/bash
+cd `dirname "$0"`
 
 if [ ! -d data ]; then
     DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
@@ -45,8 +45,8 @@ if [ ! -d data ]; then
     mv data* data
 fi
 
-./paintown' > run.sh
-chmod +x run.sh
+./paintown' > run.command
+chmod +x run.command
 
 # packaging 
 ARCH=`uname -m`
