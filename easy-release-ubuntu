@@ -25,7 +25,8 @@ while IFS= read -r dylibpath; do
     cp $dylibpath_no_rpath .
 
     # changing $dylibname
-    patchelf --replace-needed $dylibname "./$dylibname" $EXE
+    patchelf --set-rpath '$ORIGIN/../lib' $EXE
+
 
 done <<< "$ALL_EXE_SHARED_LIBRARIES"
 
@@ -33,25 +34,8 @@ echo "After"
 ldd $EXE
 file $EXE
 
-# launcher
-echo '#!/bin/bash
-
-if [ ! -d data ]; then
-    DATA_VERSION=3.6.0
-    DATA_URL="https://github.com/kazzmir/paintown/releases/download/v$DATA_VERSION/data-$DATA_VERSION.zip"
-    curl -sSL $DATA_URL -o data.zip
-    unzip -q data.zip
-    rm data.zip
-    mv data-$DATA_VERSION data
-fi
-
-./paintown' > run.sh
-chmod +x run.sh
-
 # packaging 
 ARCH=`uname -m`
-OS=`uname -s | tr '[:upper:]' '[:lower:]'`
-tar -czf $EXEDIR/$EXE-$OS-$ARCH.tar.gz .
 
 # appimage
 echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
@@ -64,17 +48,17 @@ sudo apt update -y && sudo apt install tree fuse -y
 # Setup
 APPDIR=paintown.AppDir
 mkdir -p $APPDIR/usr/bin $APPDIR/usr/lib
-cp paintown run.sh $APPDIR/usr/bin
+cp paintown $APPDIR/usr/bin
 cp lib* $APPDIR/usr/lib
 cp $EXEDIR/misc/icon.png $APPDIR/paintown.png
 cd $APPDIR
-ln -s usr/bin/run.sh AppRun
+ln -s usr/bin/paintown AppRun
 cd ..
 echo '[Desktop Entry]
 Type=Application
 Terminal=true
 Name=Paintown
-Exec=run.sh
+Exec=paintown
 Categories=Game;
 Icon=paintown
 ' > $APPDIR/paintown.desktop

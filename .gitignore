@@ -11,4 +11,4 @@ peg_*.py
 # mac
 .DS_Store
 .vscode
-paintown.AppImage
+paintown*.AppImage
