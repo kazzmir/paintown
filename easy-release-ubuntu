@@ -58,7 +58,7 @@ echo '[Desktop Entry]
 Type=Application
 Terminal=true
 Name=Paintown
-Exec=paintown
+Exec=paintown %U
 Categories=Game;
 Icon=paintown
 ' > $APPDIR/paintown.desktop
