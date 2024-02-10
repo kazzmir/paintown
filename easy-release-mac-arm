@@ -2,6 +2,7 @@
 
 EXEDIR=`pwd`
 EXE=paintown
+APPVERSION=`git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7`
 
 # inside tmp
 cd `mktemp -d`
@@ -25,7 +26,7 @@ while IFS= read -r dylibpath; do
     cp $dylibpath_no_rpath .
 
     # changing $dylibname
-    install_name_tool -change $dylibpath @executable_path/$dylibname $EXE
+    install_name_tool -change $dylibpath "@executable_path/../Frameworks/$dylibname" $EXE
 
 done <<< "$ALL_EXE_SHARED_LIBRARIES"
 
@@ -35,20 +36,75 @@ file $EXE
 
 # launcher
 echo '#!/bin/bash
-cd `dirname "$0"`
-
-if [ ! -d data ]; then
-    DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
-    curl -sSL $DATA_URL -o data.zip
-    unzip -q data.zip
-    rm data.zip
-    mv data* data
-fi
-
-./paintown' > run.command
+cd "`dirname "$0"`"
+open Paintown.app --args -d "`pwd`/data"
+' > run.command
 chmod +x run.command
 
-# packaging 
+
+# .app
+# Setup
+APPDIR=Paintown.app
+mkdir -p $APPDIR/Contents/MacOS $APPDIR/Contents/Resources $APPDIR/Contents/Frameworks
+cp paintown $APPDIR/Contents/MacOS/paintown-$APPVERSION
+cp lib* $APPDIR/Contents/Frameworks
+cp $EXEDIR/misc/icon.png $APPDIR/Contents/Resources/AppIcon.png
+
+echo "<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>paintown-$APPVERSION</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>$APPVERSION</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeExtensions</key>
+            <array>
+                <string>*</string>
+            </array>
+            <key>CFBundleTypeName</key>
+            <string>NSStringPboardType</string>
+            <key>CFBundleTypeOSTypes</key>
+            <array>
+                <string>****</string>
+            </array>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+        </dict>
+    </array>
+    <key>CFBundleGetInfoString</key>
+    <string>Paintown $APPVERSION</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
+    <key>CFBundleName</key>
+    <string>Paintown</string>
+</dict>
+</plist>" > $APPDIR/Contents/Info.plist
+tree $APPDIR
+
+# DMG
+DMG_DIR=dmg
+mkdir $DMG_DIR
+mv $APPDIR run.command $DMG_DIR
+
+# download data
+DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
+curl -sSL $DATA_URL -o data.zip
+unzip -q data.zip
+rm data.zip
+mv data* "$DMG_DIR/data"
+
 ARCH=`uname -m`
-OS=`uname -s | tr '[:upper:]' '[:lower:]'`
-tar -czf $EXEDIR/$EXE-$OS-$ARCH.tar.gz .
+hdiutil create -volname "Paintown $APPVERSION" -srcfolder $DMG_DIR -ov -format UDZO "paintown-$APPVERSION-$ARCH.dmg"
+pwd
+# executable
+cp paintown-$APPVERSION-$ARCH.dmg $EXEDIR
