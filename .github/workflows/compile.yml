@@ -46,7 +46,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-            sudo apt update -y && apt install -y fuse
+            sudo apt update -y && sudo apt install -y fuse
             tar xvfz ${{ github.workspace }}/*.tar.gz -C .
             wget -q https://github.com/TheAssassin/pyuploadtool/releases/download/continuous/pyuploadtool-x86_64.AppImage
             chmod +x pyuploadtool-x86_64.AppImage
