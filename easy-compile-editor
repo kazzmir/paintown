@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# If you are trying to compile Paintown from source but have no idea what to do
+# try running this script. It will attempt to install all the dependencies you
+# need and compile Paintown.
+
+java -version
+cd editor && ./gradlew clean build && cp build/libs/editor.jar .
+
+ls -l *.jar
+echo "Here is the executable. To run it type: cd editor && ./run.sh"
