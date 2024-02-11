@@ -1,10 +1,12 @@
 #!/bin/bash
 
-EXEDIR=`pwd`
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+EXEDIR="$SCRIPT_DIR/.." 
 EXE=paintown.exe
 
 # inside tmp
-cd `mktemp -d`
+cd $SCRIPT_DIR
+rm -rf tmp && mkdir tmp && cd tmp
 
 # copy executable
 cp $EXEDIR/mingw-bin/$EXE .
