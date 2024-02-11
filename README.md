@@ -1,8 +1,6 @@
-# [Paintown](http://paintown.org)
-by [Jon Rafkind](https://github.com/kazzmir)
-```
-Updated on 04/11/2018
-```
+## [<img src="https://paintown.org/assets/logo.png" alt="Paintown">](https://paintown.org)
+> by **[Jon Rafkind](https://github.com/kazzmir)**
+> *(Updated on 02/07/2023)*
 
 ## Table of Contents
 
@@ -10,21 +8,19 @@ Updated on 04/11/2018
 * [Get Source](#get-source)
 * [Requirements to build](#requirements-to-build)
 * [Compilation](#compilation)
-* [Install](#install)
-  * Linux
 * [Scripting](#scripting)
-* [OS Specific Instructions](#os-specific-instructions)
 * [Thanks](#thanks)
-* [IRC](#irc)
+* [Chat](#chat)
 
+## Builds
+![Linux Ubuntu Build](https://github.com/kazzmir/paintown/actions/workflows/compile.yml/badge.svg)
+![Mac Arm Build](https://github.com/kazzmir/paintown/actions/workflows/compile-mac-arm.yml/badge.svg)
+![Mingw Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/mingw-cross.yml/badge.svg)
 
 ## Releases
 
-#### Current 
-**[3.6.0](https://github.com/kazzmir/paintown/releases/tag/v3.6.0)**
-
-#### All Releases
-**[Click Here](https://github.com/kazzmir/paintown/releases)**
+- **[Latest](https://github.com/kazzmir/paintown/releases/latest)**
+- **[All](https://github.com/kazzmir/paintown/releases)**
 
 ## Get Source
 
@@ -41,170 +37,73 @@ The included data in the Paintown Repository should be sufficient for running th
 
 You need the following things to compile Paintown:
 * [GNU build utils (gcc and g++)](http://www.gnu.org/software/gcc/)
-* Software construction tools (either or)
-	* [Scons](http://www.scons.org)
-	* [Cmake](http://www.cmake.org)
+	* *Note that you will need to have c++11 support*
+* Software construction tools
+	* [Meson](https://mesonbuild.com/)
 * [zlib](http://www.zlib.net/)
 * [libpng](http://www.libpng.org/pub/png/libpng.html)
-* pthreads - If you are on Unix you should have this or you can install glibc and you will get it. (On Windows get it [here](http://sources.redhat.com/pthreads-win32/))
-* freetype - Installed on most Unix systems along with X11. (On windows get it [here](http://gnuwin32.sourceforge.net/packages/freetype.htm))
+* [SDL2](https://github.com/libsdl-org/SDL/tree/SDL2)
+	* SDL2_image
+	* SDL2_ttf
+	* SDL2_mixer
+	* SDL2_gfx
+* Optional Libs
+	* OGG / Vorbis / Vorbis File
+	* MPG123
 * Scripting
 	* [python](http://www.python.org) and its headers (usually this comes with python)
-* [Allegro 5.x](https://github.com/liballeg/allegro5)
-* [R-Tech1](http://github.com/kazzmir/r-tech1)
-	* You can clone it directly in the paintown directory and it will be built automatically if using Scons otherwise you will need to install it separately
 
 ## Compilation
-You can build paintown with either Scons or Cmake.
+You can build paintown with [Meson](https://mesonbuild.com) using the Makefile.
 
-#### Build Environment Flags
-* **DEBUG** - set to 0/1 (on/off in cmake) to enable or disable debugging
-* **LLVM** - set to 0/1 (on/off in cmake) to build with clang
-* **DATA_PATH** - set this to the desired data path
-	* With Scons it will default to data
-	* With Cmake it will default to `${CMAKE_SOURCE_DIR}/data`
-	* _*Note: if planning on installing recommend setting it to something like /usr/local/games/paintown_
-
-#### Linux
-
-##### Using Scons to build Paintown
-`$ make` or `$ scons`
-
-##### Using Cmake to build Paintown
+### Linux
+##### Build Debug
 ```
-$ mkdir b
-$ cd b
-$ cmake ..
 $ make
+# To build tests do:
+$ make test
 ```
 
-  
-##### Ubuntu users
+##### Cross-compile for windows with mingw
 ```
-Note, this script hasn't been updated so it may be invalid.
+$ make mingw
+# To build tests do:
+$ make testmingw
 ```
-There is a script that will install the necessary packages and then invoke the compilation scripts.
-Type this: 
+> *Note this build depends on x86_64-w64-mingw32 and hasn't been tested on any other distro than debian based ones*
+
+### Ubuntu
+There are several scripts that will install the necessary packages and then invoke the compilation
+#### Basic build
 `
 $ ./easy-compile-ubuntu
 `
-
-## Install
-
-### Linux
-
-##### Scons
-After building with Scons use the install script below
+#### Mingw build (cross compilation for windows)
 `
-$ ./install.sh -d <data> -b <bin>
+$ ./easy-compile-mingw
+`
+> Binaries are dumped into the mingw-bin directory. Make sure you copy zlib1.dll with your binary.
+
+### Fedora
+`
+$ ./easy-compile-fedora
 `
 
-The script will prompt you to input these directories if you do not
-give -d and/or -b.
-
-After running install.sh (assuming default values for <data> and <bin>) you can run
+### Mac Arm
 `
-$ /usr/games/paintown
+$ ./easy-compile-mac-arm
 `
-##### Cmake
-After building with Cmake run `sudo make install` see notes in [Compilation](#compilation) about the data directory
-
-### Anything other than Linux
-Copy the binary and data somewhere. Otherwise use the prepackaged installers.
 
 ## Scripting
 
 A python engine has been added to paintown so you can script a level. 
 See [scripting.txt](scripting.txt) for more details.
 
-## OS Specific Instructions
-
-```
-Note, that these are old instructions and may be invalid.
-```
-### OSX
-
-`$ scons`
-
-How to build a .dmg file of paintown:
-```
-$ scons static
-$ misc/make-osx-bundle
-```
-
-This will create paintown-x-y.app/ and paintown-x-y.dmg.
-
-You need [buildDmg.pl](http://www.objectpark.org/buildDMG.html)
-I have placed the perl script in the [misc directory](misc/buildDMG.pl), so just put
-that in a directory that is part of your path.
-
-### Windows
-
-##### Mingw
-Type
-`
-$ scons env=mingw
-`
-
-##### Scons
-`
-c:\> cd path-to-paintown
-c:\path-to-paintown> scons
-`
-
-To build a statically linked binary give the 'static' target
-$ scons static
-
-##### Cmake
-```
-c:\> cd path-to-paintown
-c:\path-to-paintown> mkdir b
-c:\path-to-paintown> cd b
-c:\path-to-paintown> cmakesetup ..
-c:\path-to-paintown> make
-```
-
-The executable will end up in bin/paintown.exe
-
-##### Cygwin
-
-Don't use cygwin's tools. Install python/scons/mingw for regular windows and use that.
-```
-$ export CYGWIN=1
-$ c:\progra~1\Python24\Scripts\scons
-```
-
-
-_Note_ it may be easier to get the gcc4.5 environment from svn:
-http://svn.code.sourceforge.net/p/paintown/code/build-environments/gcc4.5
-Get unxutils for things like mv, rm, cp - http://www.sf.net/projects/unxutils
-Find the .zip. It unzips as usr\local\wbin, so put that in your path or just
-copy all the files in usr\local\wbin to your c:\mingw\bin directory.
-For libpng/zlib see here: http://tjaden.strangesoft.net/loadpng/mingw.html
-Python 2.4.4 (yes this is old but the game is hardcoded to use it):
-http://www.python.org/download/releases/2.4.4/
-Add c:\python24 to your PATH
-Copy libs\libpython24.a to c:\mingw\lib
-Scons - http://www.scons.org
-Then add c:\python24\scripts to your PATH
-pthreads - http://sources.redhat.com/pthreads-win32/
-get pthreads-win32-2-8-0-release.exe, let it unzip somewhere, then copy
-the stuff in prebuilt\include to your mingw\include directory. copy the
-.a files to c:\mingw\lib
-allegro - http://alleg.sf.net
-get the 4.2.3 package and dx70_mgw.zip
-Get freetype from http://gnuwin32.sourceforge.net/packages/freetype.htm. Copy
-the resulting headers into your include path. Dont copy in freetype2, just the
-path underneath it, freetype2\freetype.
-Gnu regex: http://gnuwin32.sourceforge.net/packages/regex.htm
-Use the dependancy walker: http://www.dependencywalker.com/ to check that
-all required dlls are around.
-
 ## Thanks
 * [Rain sound - by inchadney.](http://freesound.iua.upf.edu/usersViewSingle.php?id=28867)
 * [DUMB](http://dumb.sf.net)
 * [loadpng](http://tjaden.strangesoft.net/loadpng/)
 
-
-## IRC
-Join the chat at [libera](https://web.libera.chat/#paintown)
+## Chat
+* Join us on [Discord](https://discord.com/invite/4SRhCE2Gch)
+* Join us on [IRC](https://web.libera.chat/#paintown)
