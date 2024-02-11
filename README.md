@@ -108,3 +108,4 @@ See [scripting.txt](scripting.txt) for more details.
 ## Chat
 * Join us on [Discord](https://discord.com/invite/4SRhCE2Gch)
 * Join us on [IRC](https://web.libera.chat/#paintown)
+
