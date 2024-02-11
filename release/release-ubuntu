@@ -13,7 +13,6 @@ APPDIR=paintown.AppDir
 mkdir -p $APPDIR/usr/bin $APPDIR/usr/lib
 cp $EXEDIR/paintown $APPDIR/usr/bin
 cp $EXEDIR/misc/icon.png $APPDIR/paintown.png
-#cp $EXEDIR/lib* $APPDIR/usr/lib
 cd $APPDIR
 ln -s usr/bin/paintown AppRun
 cd ..
@@ -42,9 +41,10 @@ while IFS= read -r dylibpath; do
     cp $dylibpath_no_rpath $APPDIR/usr/lib
 
     # changing $dylibname
-    patchelf --replace-needed $dylibpath "\$ORIGIN/../lib/$dylibname"  $APPDIR/usr/bin/$EXE
+    patchelf --replace-needed $dylibname "\$ORIGIN/../lib/$dylibname" $APPDIR/usr/bin/$EXE
 
 done <<< "$ALL_EXE_SHARED_LIBRARIES"
+chrpath -l $APPDIR/usr/bin/$EXE
 
 echo "After"
 ldd $APPDIR/usr/bin/$EXE
