@@ -2,6 +2,8 @@
 > by **[Jon Rafkind](https://github.com/kazzmir)**
 > *(Updated on 02/07/2023)*
 
+Paintown is a 2-d fighting game that is similar in style to Streets of Rage. Paintown also comes with a MUGEN engine.
+
 ## Table of Contents
 
 * [Releases](#releases)
