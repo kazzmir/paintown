@@ -102,7 +102,6 @@ See [scripting.txt](scripting.txt) for more details.
 ## Thanks
 * [Rain sound - by inchadney.](http://freesound.iua.upf.edu/usersViewSingle.php?id=28867)
 * [DUMB](http://dumb.sf.net)
-* [loadpng](http://tjaden.strangesoft.net/loadpng/)
 
 ## Chat
 * Join us on [Discord](https://discord.com/invite/4SRhCE2Gch)
