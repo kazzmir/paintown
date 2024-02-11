@@ -1,0 +1,33 @@
+#!/bin/bash
+
+EXEDIR=`pwd`
+EXE=paintown.exe
+
+# inside tmp
+cd `mktemp -d`
+
+# copy executable
+cp $EXEDIR/mingw-bin/$EXE .
+# copy dependencies
+docker run --rm -iv `pwd`:/paintown-bin -w /paintown-bin paintown-mingw-build bash -c "cp /usr/x86_64-w64-mingw32/lib/zlib1.dll ."
+
+# launcher
+echo '
+if (-not (Test-Path -Path data)) {
+    Invoke-WebRequest -Uri "https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip" -OutFile "data.zip"
+    Expand-Archive -Path "data.zip" -DestinationPath .
+    Remove-Item -Path data.zip
+    Rename-Item -Path data-3.6.0 -NewName data
+}
+Start-Process -FilePath paintown.exe
+' > paintown.ps1
+echo '
+powershell.exe -ExecutionPolicy Bypass -File paintown.ps1
+' > run.bat
+
+file $EXE
+
+# packaging 
+ARCH=`file paintown.exe | grep -o -E 'x86[_-]64|i[[:digit:]]86|ARM'`
+OS=windows
+zip -r $EXEDIR/$EXE-$OS-$ARCH.zip .
