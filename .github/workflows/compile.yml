@@ -16,7 +16,7 @@ jobs:
 
       - name: Run Release
         if: startsWith(github.ref, 'refs/tags/')
-        run: ./easy-release-ubuntu
+        run: ./release/release-ubuntu
           
       - name: Archive Folder
         uses: actions/upload-artifact@v2
