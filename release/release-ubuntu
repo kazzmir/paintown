@@ -51,6 +51,13 @@ ldd $APPDIR/usr/bin/$EXE
 file $APPDIR/usr/bin/$EXE
 
 # builder
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+
+# Dep fuse required
+sudo apt update -yqq && sudo apt install tree fuse -yqq
+
 ARCH=`uname -m`
 wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$ARCH.AppImage"
 chmod a+x appimagetool-$ARCH.AppImage
@@ -63,10 +70,4 @@ chmod a+x paintown-$ARCH.AppImage
 cp paintown-$ARCH.AppImage $EXEDIR
 
 # Tree
-echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
-echo your priveleges so that new packages can be installed on your system.
-echo When prompted for a password type the password you use to login.
-
-# Dep
-sudo apt update -yqq && sudo apt install tree fuse -yqq
 tree $APPDIR
