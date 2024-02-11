@@ -1,11 +1,13 @@
 #!/bin/bash
 
-EXEDIR=`pwd`
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+EXEDIR="$SCRIPT_DIR/.." 
 EXE=paintown
 APPVERSION=`git tag --sort=committerdate | grep -E '[0-9]' | tail -1 | cut -b 2-7`
 
 # inside tmp
-cd `mktemp -d`
+cd $SCRIPT_DIR
+rm -rf tmp && mkdir tmp && cd tmp
 
 # copy executable
 cp $EXEDIR/$EXE .
