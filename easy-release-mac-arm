@@ -37,6 +37,13 @@ file $EXE
 # launcher
 echo '#!/bin/bash
 cd "`dirname "$0"`"
+
+if [ ! -d data ]; then
+    DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
+    curl -sSL $DATA_URL | bsdtar -xvf -
+    mv data* data
+fi
+
 open Paintown.app --args -d "`pwd`/data"
 ' > run.command
 chmod +x run.command
@@ -95,15 +102,9 @@ DMG_DIR=dmg
 mkdir $DMG_DIR
 mv $APPDIR run.command $DMG_DIR
 
-# download data
-DATA_URL="https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip"
-curl -sSL $DATA_URL -o data.zip
-unzip -q data.zip
-rm data.zip
-mv data* "$DMG_DIR/data"
-
 ARCH=`uname -m`
-hdiutil create -volname "Paintown $APPVERSION" -srcfolder $DMG_DIR -ov -format UDZO "paintown-$APPVERSION-$ARCH.dmg"
+hdiutil create -size 500m -fs HFS+ -volname "Paintown $APPVERSION" -srcfolder $DMG_DIR -ov -format SPARSE "paintown-$APPVERSION-$ARCH.dmg"
+
 pwd
 # executable
-cp paintown-$APPVERSION-$ARCH.dmg $EXEDIR
+cp paintown-$APPVERSION-$ARCH.dmg* $EXEDIR

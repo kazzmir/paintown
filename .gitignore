@@ -12,3 +12,4 @@ peg_*.py
 .DS_Store
 .vscode
 *.dmg
+*.dmg.sparseimage
