@@ -17,12 +17,13 @@ cd $APPDIR
 ln -s usr/bin/paintown AppRun
 cd ..
 echo '[Desktop Entry]
-Type=Application
-Terminal=true
 Name=Paintown
+Comment=Paintown is an open source fighting game in the same genre as Streets of Rage and Teenage Mutant Ninja Turtles.
 Exec=paintown %U
-Categories=Game;
 Icon=paintown
+Terminal=false
+Type=Application
+Categories=Application;Game;
 ' > $APPDIR/paintown.desktop
 
 echo "Before"
