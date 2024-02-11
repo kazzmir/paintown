@@ -1,6 +1,6 @@
 #!/bin/sh
-
-classpath="target/scala-2.10/classes:lib/scala-library-2.10.3.jar:resources"
+scalalibjar=`find ~  -name "scala-library-2*.jar" -print -quit`
+classpath="build/classes/scala/main:$scalalibjar:build/resources/main"
 
 case "$1" in
  animator)

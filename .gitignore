@@ -1,6 +1,6 @@
-build*
+build
 mingw-bin
-paintown
+/paintown
 .scon*
 .tmp
 peg_*.py
