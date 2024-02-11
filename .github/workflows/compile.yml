@@ -19,7 +19,7 @@ jobs:
         run: ./release/release-ubuntu
           
       - name: Archive Folder
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: artifact
           path: ${{github.workspace}}/*.AppImage
