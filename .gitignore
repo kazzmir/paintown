@@ -11,3 +11,5 @@ peg_*.py
 # mac
 .DS_Store
 .vscode
+*.dmg
+*.dmg.sparseimage
