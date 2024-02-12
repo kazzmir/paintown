@@ -20,7 +20,7 @@ jobs:
         run: ./release/release-windows
 
       - name: Archive Folder
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: ${{github.workspace}}/*.zip
@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: Download Artifact
         if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
           name: artifact
           path: ${{github.workspace}}
