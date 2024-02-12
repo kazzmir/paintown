@@ -11,6 +11,6 @@ peg_*.py
 # mac
 .DS_Store
 .vscode
-paintown*.AppImage
+*.AppImage
 *.dmg
 *.dmg.sparseimage
