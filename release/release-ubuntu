@@ -1,0 +1,43 @@
+#!/bin/bash
+
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+
+# Dep fuse required
+sudo apt update -yqq && sudo apt install tree fuse chrpath -yqq
+
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+EXEDIR="$SCRIPT_DIR/.." 
+EXE=paintown
+
+# inside tmp
+cd $SCRIPT_DIR
+rm -rf tmp && mkdir tmp && cd tmp
+
+# Setup
+APPDIR=paintown.AppDir
+cp $EXEDIR/paintown .
+cp $EXEDIR/misc/paintown.desktop .
+cp $EXEDIR/misc/icon.png paintown.png
+
+echo "Before"
+ldd $EXE
+
+# builder
+ARCH=`uname -m`
+wget -q "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20240109-1/linuxdeploy-$ARCH.AppImage"
+chmod a+x linuxdeploy-$ARCH.AppImage
+# build AppImage
+./linuxdeploy-$ARCH.AppImage --executable $EXE --appdir $APPDIR --output appimage --desktop-file paintown.desktop --icon-file paintown.png 
+
+echo "After"
+ldd $APPDIR/usr/bin/$EXE
+file $APPDIR/usr/bin/$EXE
+
+# executable
+mv `pwd`/Paintown-$ARCH.AppImage $EXEDIR
+
+# Tree
+tree $APPDIR
