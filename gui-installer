@@ -147,7 +147,7 @@ def doBackground(func):
     # signal = QtCore.pyqtSignal()
     # signal = SLOT(process)
     n = Runner(signal)
-    QtCore.QObject.connect(n, SIGNAL(signal), process)
+    # QtCore.QObject.connect(n, SIGNAL(signal), process)
     # n.connect(SIGNAL(signal), process)
     # widget.connect(n, SIGNAL(signal), process)
 
@@ -160,7 +160,7 @@ def doBackground(func):
 
     # Runner().start()
 
-def updateFileList():
+def updateFileList(widget):
     # Set data info
     widget.textBrowser.clear()
     def doit(location):
@@ -259,13 +259,13 @@ def selectBinDirectory():
         checkDirs()
 
 #Select Data Directory
-def selectDataDirectory():
+def selectDataDirectory(widget):
     tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Data Directory', dataLocation[0], QFileDialog.ShowDirsOnly)
     if not tempstr == '':
         dataLocation[0] = tempstr
         widget.dataDir.setText(tempstr)
         # FIXME!!! Redo this thread
-        updateFileList()
+        updateFileList(widget)
         # setDataFileInfo(widget.textBrowser)
         checkDirs()
 
@@ -281,29 +281,29 @@ def main():
 
     # Set About info
     menuAbout = QtGui.QAction('About Paintown', widget)
-    widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
+    # widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
     widget.about.addAction(menuAbout)
 
     menuAboutQt = QtGui.QAction('About Qt', widget)
-    widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
+    # widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
     widget.about.addAction(menuAboutQt)
 
     # Set Exit installer
     exit = QtGui.QAction('Exit', widget)
     exit.setShortcut('Ctrl+Q')
     exit.setStatusTip('Quit Installer')
-    widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
+    # widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
     widget.file.addAction(exit)
 
     # Update the widgets with the needed Info
-    widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
-    widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-    widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
-    widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
+    # widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
+    # widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
+    # widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
+    # widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
     widget.back.setShortcut('Alt+B')
     widget.next.setShortcut('Alt+N')
 
-    updateFileList()
+    updateFileList(widget)
 
     updatePageNumber()
 
@@ -339,7 +339,7 @@ def main():
     widget.show()
 
     # Run
-    app.exec_()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
     main()
