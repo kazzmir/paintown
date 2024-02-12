@@ -19,7 +19,7 @@ export HOMEBREW_NO_UPGRADE=1
 
 # Deps
 brew install sdl2 sdl2_ttf sdl2_image sdl2_gfx sdl2_mixer libpng libogg zlib meson ninja make
-make
+make release
 
 ls -l paintown
 echo "Here is the executable. To run it type: ./paintown"
