@@ -19,6 +19,7 @@ release: build-release
 	(cd build-release; meson configure -Dbuild_tests=false -Drelease=true -Doptimization=2)
 	meson compile -C build-release
 	cp build-release/paintown .
+	strip paintown
 
 build-release:
 	mkdir build-release
