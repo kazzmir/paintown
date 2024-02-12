@@ -1,5 +1,13 @@
 #!/bin/bash
 
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+
+# Dep fuse required
+sudo apt update -yqq && sudo apt install tree fuse chrpath -yqq
+
+
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 EXEDIR="$SCRIPT_DIR/.." 
 EXE=paintown
@@ -30,7 +38,7 @@ echo "Before"
 ldd $APPDIR/usr/bin/$EXE
 
 # grab all shared libraries
-ALL_EXE_SHARED_LIBRARIES=`ldd $APPDIR/usr/bin/$EXE | awk '/=>/ {print $3}' | grep '^/' | uniq | grep SDL`
+ALL_EXE_SHARED_LIBRARIES=`ldd $APPDIR/usr/bin/$EXE | awk '/=>/ {print $3}' | grep '^/' | uniq | grep -e SDL -e libz`
 
 # for each dep change from rpath to executable_path
 while IFS= read -r dylibpath; do
@@ -52,13 +60,6 @@ ldd $APPDIR/usr/bin/$EXE
 file $APPDIR/usr/bin/$EXE
 
 # builder
-echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
-echo your priveleges so that new packages can be installed on your system.
-echo When prompted for a password type the password you use to login.
-
-# Dep fuse required
-sudo apt update -yqq && sudo apt install tree fuse -yqq
-
 ARCH=`uname -m`
 wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$ARCH.AppImage"
 chmod a+x appimagetool-$ARCH.AppImage
