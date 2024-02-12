@@ -15,6 +15,16 @@ build-debug:
 	mkdir build-debug
 	meson setup build-debug
 
+release: build-release
+	(cd build-release; meson configure -Dbuild_tests=false -Drelease=true -Doptimization=2)
+	meson compile -C build-release
+	cp build-release/paintown .
+	strip paintown
+
+build-release:
+	mkdir build-release
+	meson setup build-release
+
 test: build-debug
 	(cd build-debug; meson configure -Dbuild_tests=true)
 	meson compile -C build-debug
@@ -36,5 +46,4 @@ testmingw: build-mingw
 	find build-mingw/src/test -type f -name \*.exe -exec sh -c "cp {} mingw-bin" \;
 
 clean:
-	rm -rf build-debug
-	rm -rf build-mingw
+	rm -rf build-debug build-release build-mingw
