@@ -12,3 +12,5 @@ peg_*.py
 .DS_Store
 .vscode
 paintown*.AppImage
+*.dmg
+*.dmg.sparseimage
