@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# pip install pip>=24.0
+# pip install PyQt6
+# sudo apt install libxcb-cursor0
+
 # GTK or QT based installer
 
 # Copy files to some directory, symlink the binary.
@@ -14,14 +18,9 @@ Signals.Triggered = "triggered()"
 Signals.Close = "close()"
 Signals.Clicked = "clicked()"
 
-from PyQt4 import QtCore, QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-app = QtGui.QApplication(sys.argv)
-
-# Set the look and feel
-QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
+from PyQt6 import QtCore, QtGui, QtWidgets, uic
+from PyQt6.QtCore import *
+from PyQt6.QtGui import *
 
 # Globals
 paintownVersion = ["3.6.1"]
@@ -126,10 +125,6 @@ def copyData(currentRoot, binDirectory, widget, emitter):
    
     updateGui('Done!')
 
-# Load Interface
-widget = uic.loadUi("installer/installer.ui")
-widget.back.setEnabled(False)
-
 threads = []
 def doBackground(func):
     class Runner(QThread):
@@ -173,8 +168,6 @@ def updateFileList():
     doit(dataLocation[0])
     # setDataFileInfo(widget.textBrowser)
 
-updateFileList()
-
 # Exit override
 def exitOverride(self, event):
     if allowExit[0]:
@@ -184,9 +177,6 @@ def exitOverride(self, event):
     # Here we will prompt user "Are they sure?"
     # If yes stop current copy and remove files and exit program
 
-# override exit
-widget.__class__.closeEvent = exitOverride
-
 # About
 def about():
     QMessageBox.about(widget, 'Paintown ', 'A simple installer built with PyQt')
@@ -194,22 +184,6 @@ def about():
 # About Qt
 def aboutQt():
     QMessageBox.aboutQt(widget, 'About Qt')
-
-# Set About info
-menuAbout = QtGui.QAction('About Paintown', widget)
-widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
-widget.about.addAction(menuAbout)
-
-menuAboutQt = QtGui.QAction('About Qt', widget)
-widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
-widget.about.addAction(menuAboutQt)
-
-# Set Exit installer
-exit = QtGui.QAction('Exit', widget)
-exit.setShortcut('Ctrl+Q')
-exit.setStatusTip('Quit Installer')
-widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
-widget.file.addAction(exit)
 
 # Check permissions on directories
 def checkDirs():
@@ -295,42 +269,77 @@ def selectDataDirectory():
         # setDataFileInfo(widget.textBrowser)
         checkDirs()
 
-# Update the widgets with the needed Info
-widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
-widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
-widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
-widget.back.setShortcut('Alt+B')
-widget.next.setShortcut('Alt+N')
-updatePageNumber()
+def main():
+    app = QtWidgets.QApplication(sys.argv)
 
-# Page 1 - Intro and graphic
-scene = QGraphicsScene()
-scene.addPixmap(QPixmap('data/menu/paintown.png'))
-widget.WelcomePage.setScene(scene)
-#widget.WelcomePage.scale(1,1)
-widget.WelcomePage.fitInView(0, 0, 94,29)
-widget.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-widget.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+    # Set the look and feel
+    # QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
-# Page 2 - Install Locations
-widget.binDir.setText(binLocation[0])
-widget.dataDir.setText(dataLocation[0])
+    # Load Interface
+    widget = uic.loadUi("installer/installer.ui")
+    widget.back.setEnabled(False)
 
-# Page 3 - Install information
+    # Set About info
+    menuAbout = QtGui.QAction('About Paintown', widget)
+    widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
+    widget.about.addAction(menuAbout)
 
-# Page 4 - Console Output
-# ****FIXME**** Add file copy info and renable next button after complete
+    menuAboutQt = QtGui.QAction('About Qt', widget)
+    widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
+    widget.about.addAction(menuAboutQt)
 
-# Page 5 - Finished - Nothing to do
+    # Set Exit installer
+    exit = QtGui.QAction('Exit', widget)
+    exit.setShortcut('Ctrl+Q')
+    exit.setStatusTip('Quit Installer')
+    widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
+    widget.file.addAction(exit)
 
-# Center on screen
-screen = QtGui.QDesktopWidget().screenGeometry()
-size = widget.geometry()
-widget.move((screen.width()-size.width())/2, (screen.height()-size.height())/2)
+    # Update the widgets with the needed Info
+    widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
+    widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
+    widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
+    widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
+    widget.back.setShortcut('Alt+B')
+    widget.next.setShortcut('Alt+N')
 
-# show widget
-widget.show()
+    updateFileList()
 
-# Run
-app.exec_()
+    updatePageNumber()
+
+    # override exit
+    widget.__class__.closeEvent = exitOverride
+
+    # Page 1 - Intro and graphic
+    scene = QGraphicsScene()
+    scene.addPixmap(QPixmap('data/menu/paintown.png'))
+    widget.WelcomePage.setScene(scene)
+    #widget.WelcomePage.scale(1,1)
+    widget.WelcomePage.fitInView(0, 0, 94,29)
+    widget.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+    widget.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+    # Page 2 - Install Locations
+    widget.binDir.setText(binLocation[0])
+    widget.dataDir.setText(dataLocation[0])
+
+    # Page 3 - Install information
+
+    # Page 4 - Console Output
+    # ****FIXME**** Add file copy info and renable next button after complete
+
+    # Page 5 - Finished - Nothing to do
+
+    # Center on screen
+    screen = QtGui.QDesktopWidget().screenGeometry()
+    size = widget.geometry()
+    widget.move((screen.width()-size.width())/2, (screen.height()-size.height())/2)
+
+    # show widget
+    widget.show()
+
+    # Run
+    app.exec_()
+
+if __name__ == "__main__":
+    main()
