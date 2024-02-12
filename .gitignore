@@ -1,4 +1,5 @@
 build
+build-debug
 mingw-bin
 /paintown
 .scon*
