@@ -39,6 +39,7 @@ file $APPDIR/usr/bin/$EXE
 
 # build .deb
 appimage2deb `pwd`/Paintown-$ARCH.AppImage
+dpkg-deb -I $EXE-$ARCH.deb 
 mv `pwd`/*.deb $EXEDIR
 
 # executable
