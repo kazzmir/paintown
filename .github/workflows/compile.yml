@@ -22,7 +22,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifact
-          path: ${{github.workspace}}/*.AppImage
+          path: |
+            ${{github.workspace}}/*.AppImage
+            ${{github.workspace}}/*.deb
 
   publish-release:
     needs: build
@@ -43,3 +45,4 @@ jobs:
         with:
           files: |
             ${{ github.workspace }}/*.AppImage
+            ${{ github.workspace }}/*.deb
