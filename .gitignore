@@ -14,3 +14,4 @@ peg_*.py
 *.AppImage
 *.dmg
 *.dmg.sparseimage
+*.deb
