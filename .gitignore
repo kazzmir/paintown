@@ -14,3 +14,4 @@ peg_*.py
 paintown*.AppImage
 *.dmg
 *.dmg.sparseimage
+.idea
