@@ -1,6 +1,7 @@
-build*
+build
+build-debug
 mingw-bin
-paintown
+/paintown
 .scon*
 .tmp
 peg_*.py
@@ -11,7 +12,8 @@ peg_*.py
 # mac
 .DS_Store
 .vscode
-paintown*.AppImage
+*.AppImage
 *.dmg
 *.dmg.sparseimage
+*.deb
 .idea

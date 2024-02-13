@@ -1,5 +1,14 @@
 #!/bin/bash
 
+echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
+echo your priveleges so that new packages can be installed on your system.
+echo When prompted for a password type the password you use to login.
+
+# Dep fuse required
+sudo apt update -yqq && sudo apt install tree fuse chrpath -yqq
+sudo snap install appimage2deb
+
+
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 EXEDIR="$SCRIPT_DIR/.." 
 EXE=paintown
@@ -10,65 +19,43 @@ rm -rf tmp && mkdir tmp && cd tmp
 
 # Setup
 APPDIR=paintown.AppDir
-mkdir -p $APPDIR/usr/bin $APPDIR/usr/lib
-cp $EXEDIR/paintown $APPDIR/usr/bin
-cp $EXEDIR/misc/icon.png $APPDIR/paintown.png
-cd $APPDIR
-ln -s usr/bin/paintown AppRun
-cd ..
-echo '[Desktop Entry]
-Name=Paintown
-Comment=Paintown is an open source fighting game in the same genre as Streets of Rage and Teenage Mutant Ninja Turtles.
-Exec=paintown %U
-Icon=paintown
-Terminal=false
-Type=Application
-Categories=Application;Game;
-' > $APPDIR/paintown.desktop
+cp $EXEDIR/paintown .
+cp $EXEDIR/misc/paintown.desktop .
+cp $EXEDIR/misc/icon.png paintown.png
 
 echo "Before"
-ldd $APPDIR/usr/bin/$EXE
+ldd $EXE
 
-# grab all shared libraries
-ALL_EXE_SHARED_LIBRARIES=`ldd $APPDIR/usr/bin/$EXE | awk '/=>/ {print $3}' | grep '^/' | uniq | grep SDL`
-
-# for each dep change from rpath to executable_path
-while IFS= read -r dylibpath; do
-
-    dylibpath_no_rpath=`echo $dylibpath | sed 's/@rpath\///'`
-    dylibname=`basename $dylibpath_no_rpath`
-
-    # copying $dylibname
-    cp $dylibpath_no_rpath $APPDIR/usr/lib
-
-    # changing $dylibname
-    patchelf --replace-needed $dylibname "\$ORIGIN/../lib/$dylibname" $APPDIR/usr/bin/$EXE
-
-done <<< "$ALL_EXE_SHARED_LIBRARIES"
-chrpath -l $APPDIR/usr/bin/$EXE
+# builder
+ARCH=`uname -m`
+wget -q "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20240109-1/linuxdeploy-$ARCH.AppImage"
+chmod a+x linuxdeploy-$ARCH.AppImage
+# build AppImage
+./linuxdeploy-$ARCH.AppImage --executable $EXE --appdir $APPDIR --output appimage --desktop-file paintown.desktop --icon-file paintown.png 
 
 echo "After"
 ldd $APPDIR/usr/bin/$EXE
 file $APPDIR/usr/bin/$EXE
 
-# builder
-echo This script uses 'sudo' to install packages. 'sudo' temporarily elevates
-echo your priveleges so that new packages can be installed on your system.
-echo When prompted for a password type the password you use to login.
+# build .deb
+appimage2deb `pwd`/Paintown-$ARCH.AppImage
 
-# Dep fuse required
-sudo apt update -yqq && sudo apt install tree fuse -yqq
+TMPDEB=deb
+mkdir -p $TMPDEB
+dpkg-deb -x `pwd`/$EXE-$ARCH.deb $TMPDEB
+dpkg-deb -e `pwd`/$EXE-$ARCH.deb $TMPDEB/DEBIAN
+echo 'Depends: libfuse2' >> $TMPDEB/DEBIAN/control
+# remove old
+rm `pwd`/$EXE-$ARCH.deb
+# repackage new
+dpkg-deb -b $TMPDEB `pwd`/$EXE-$ARCH.deb
+# info
+dpkg-deb -I `pwd`/$EXE-$ARCH.deb
 
-ARCH=`uname -m`
-wget -q "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$ARCH.AppImage"
-chmod a+x appimagetool-$ARCH.AppImage
-
-# build AppImage
-./appimagetool-$ARCH.AppImage $APPDIR paintown-$ARCH.AppImage
+mv `pwd`/$EXE-$ARCH.deb $EXEDIR
 
 # executable
-chmod a+x paintown-$ARCH.AppImage
-cp paintown-$ARCH.AppImage $EXEDIR
+mv `pwd`/Paintown-$ARCH.AppImage $EXEDIR
 
 # Tree
 tree $APPDIR

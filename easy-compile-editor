@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# This script compiles the editor/ directory into a .jar file
+
+java -version
+cd editor && ./gradlew clean build && cp build/libs/editor.jar .
+
+ls -l *.jar
+echo "Here is the executable. To run it type: cd editor && ./run.sh"
