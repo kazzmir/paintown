@@ -39,8 +39,20 @@ file $APPDIR/usr/bin/$EXE
 
 # build .deb
 appimage2deb `pwd`/Paintown-$ARCH.AppImage
-dpkg-deb -I $EXE-$ARCH.deb 
-mv `pwd`/*.deb $EXEDIR
+
+TMPDEB=deb
+mkdir -p $TMPDEB
+dpkg-deb -x `pwd`/$EXE-$ARCH.deb $TMPDEB
+dpkg-deb -e `pwd`/$EXE-$ARCH.deb $TMPDEB/DEBIAN
+echo 'Depends: libfuse2' >> $TMPDEB/DEBIAN/control
+# remove old
+rm `pwd`/$EXE-$ARCH.deb
+# repackage new
+dpkg-deb -b $TMPDEB `pwd`/$EXE-$ARCH.deb
+# info
+dpkg-deb -I `pwd`/$EXE-$ARCH.deb
+
+mv `pwd`/$EXE-$ARCH.deb $EXEDIR
 
 # executable
 mv `pwd`/Paintown-$ARCH.AppImage $EXEDIR
