@@ -6,6 +6,7 @@ echo When prompted for a password type the password you use to login.
 
 # Dep fuse required
 sudo apt update -yqq && sudo apt install tree fuse chrpath -yqq
+sudo snap install appimage2deb
 
 
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
@@ -35,6 +36,23 @@ chmod a+x linuxdeploy-$ARCH.AppImage
 echo "After"
 ldd $APPDIR/usr/bin/$EXE
 file $APPDIR/usr/bin/$EXE
+
+# build .deb
+appimage2deb `pwd`/Paintown-$ARCH.AppImage
+
+TMPDEB=deb
+mkdir -p $TMPDEB
+dpkg-deb -x `pwd`/$EXE-$ARCH.deb $TMPDEB
+dpkg-deb -e `pwd`/$EXE-$ARCH.deb $TMPDEB/DEBIAN
+echo 'Depends: libfuse2' >> $TMPDEB/DEBIAN/control
+# remove old
+rm `pwd`/$EXE-$ARCH.deb
+# repackage new
+dpkg-deb -b $TMPDEB `pwd`/$EXE-$ARCH.deb
+# info
+dpkg-deb -I `pwd`/$EXE-$ARCH.deb
+
+mv `pwd`/$EXE-$ARCH.deb $EXEDIR
 
 # executable
 mv `pwd`/Paintown-$ARCH.AppImage $EXEDIR
