@@ -1,27 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# pip install pip>=24.0
+# pip install PyQt6
+# sudo apt install libxcb-cursor0
+
 # GTK or QT based installer
 
 # Copy files to some directory, symlink the binary.
 
-import sys, os, shutil, stat
-from stat import *
+import os
+import shutil
+import stat
+import sys
 
-class Signals:
-    pass
-Signals.Triggered = "triggered()"
-Signals.Close = "close()"
-Signals.Clicked = "clicked()"
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QThread
+from PyQt6.QtGui import QGuiApplication, QPixmap, QTextCursor
+from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow, QStyleFactory, QApplication
+from PyQt6 import QtGui
+from PyQt6.uic import loadUi
 
-from PyQt4 import QtCore, QtGui, uic
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-
-app = QtGui.QApplication(sys.argv)
-
-# Set the look and feel
-QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
 
 # Globals
 paintownVersion = ["3.6.1"]
@@ -33,24 +31,26 @@ currentPage = [0]
 # Higher numbers of verbose will print more stuff (and slow the program down)
 verbose = 0
 
+widget: QMainWindow
+
+
 def debug(s):
     if verbose > 0:
         print(s)
 
-#Create Directory
+
+# Create Directory
 def createDirectory(path):
     debug("Creating directory '%s'" % path)
     if not os.path.exists(path):
         os.makedirs(path)
 
-signals = [0]
-def generateSignal():
-    signals[0] += 1
-    return "signal%s" % signals[0]
 
 # Update page
 def updatePageNumber():
-    widget.positionLabel.setText('Page ' + str(widget.stackedWidget.currentIndex() + 1) + ' of ' + str(widget.stackedWidget.count()))
+    widget.positionLabel.setText(
+        'Page ' + str(widget.stackedWidget.currentIndex() + 1) + ' of ' + str(widget.stackedWidget.count()))
+
 
 # Set Info on Data that will be copied
 def setDataFileInfo(location, widget, emitter):
@@ -60,20 +60,23 @@ def setDataFileInfo(location, widget, emitter):
             tmpFile = os.path.join(root, file)
             if '.svn' in tmpFile:
                 continue
+
             # widget.emit(SIGNAL(signal), lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
 
             # scoping is broken in python so we have to create a new function that
             # will ensure `path' stores its value correctly
             def doit(path):
                 emitter(lambda: widget.append(path))
+
             # This string is ugly, use something that looks nicer
             doit(tmpFile + '      >>      ' + location + '/' + root)
             # emitter(lambda: widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root))
             # widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
-    #widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
+    # widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
     emitter(lambda: widget.append('paintown' + '      >>      ' + location + '/paintown-bin'))
-    #widget.moveCursor(QTextCursor.Start)
-    emitter(lambda: widget.moveCursor(QTextCursor.Start))
+    # Move the cursor to the start of the document
+    emitter(lambda: widget.moveCursor(QTextCursor.MoveOperation.Start))
+
 
 # Copy Data
 def copyData(currentRoot, binDirectory, widget, emitter):
@@ -84,8 +87,6 @@ def copyData(currentRoot, binDirectory, widget, emitter):
         for root, dirs, files in os.walk(datadir):
             for file in files:
                 tmpFile = os.path.join(root, file)
-                if '.svn' in tmpFile:
-                    continue
                 yield (root, tmpFile)
 
     def copyAllFiles():
@@ -123,38 +124,37 @@ def copyData(currentRoot, binDirectory, widget, emitter):
     updateGui('Creating run script in %s/%s' % (str(binDirectory), 'paintown'))
     createRunScript('%s/paintown' % str(binDirectory), '%s/paintown-bin' % str(currentRoot))
     copyAllFiles()
-   
+
     updateGui('Done!')
 
-# Load Interface
-widget = uic.loadUi("installer/installer.ui")
-widget.back.setEnabled(False)
 
 threads = []
-def doBackground(func):
-    class Runner(QThread):
-        def __init__(self, signal):
-            QThread.__init__(self)
-            self.signal = signal
 
-        def run(self):
-            # print "Start thread.."
-            func(lambda arg: self.emit(SIGNAL(signal), arg))
-            # print "Ok done"
 
-    def process(arg):
+class LambdaEvent(QObject):
+    # Define a custom signal
+    signal: pyqtSignal = pyqtSignal(object)
+
+    # Define a slot function
+    @pyqtSlot(object)
+    def process(self, arg):
         arg()
 
-    # I'm not sure we even need to generate a signal..
-    signal = generateSignal()
 
-    # I guess pyqtSignal is only in pyqt 4.5+
-    # signal = QtCore.pyqtSignal()
-    # signal = SLOT(process)
-    n = Runner(signal)
-    QtCore.QObject.connect(n, SIGNAL(signal), process)
-    # n.connect(SIGNAL(signal), process)
-    # widget.connect(n, SIGNAL(signal), process)
+def doBackground(func):
+    class Runner(QThread):
+        def __init__(self, event):
+            QThread.__init__(self)
+            self.event = event
+
+        def run(self):
+            print("Start thread..")
+            func(lambda arg: self.event.signal.emit(arg))
+            print("Ok done")
+
+    event = LambdaEvent()
+    event.signal.connect(lambda arg: event.process(arg))
+    n = Runner(event)
 
     # Have to save threads from being GC'd, so just put it in a variable that no one will use
     global threads
@@ -163,53 +163,27 @@ def doBackground(func):
     n.start()
     return n
 
-    # Runner().start()
 
 def updateFileList():
     # Set data info
     widget.textBrowser.clear()
+
     def doit(location):
         doBackground(lambda emitter: setDataFileInfo(location, widget.textBrowser, emitter))
+
     doit(dataLocation[0])
     # setDataFileInfo(widget.textBrowser)
 
-updateFileList()
-
-# Exit override
-def exitOverride(self, event):
-    if allowExit[0]:
-        event.accept()
-    else:
-        event.ignore()
-    # Here we will prompt user "Are they sure?"
-    # If yes stop current copy and remove files and exit program
-
-# override exit
-widget.__class__.closeEvent = exitOverride
 
 # About
 def about():
     QMessageBox.about(widget, 'Paintown ', 'A simple installer built with PyQt')
 
+
 # About Qt
 def aboutQt():
     QMessageBox.aboutQt(widget, 'About Qt')
 
-# Set About info
-menuAbout = QtGui.QAction('About Paintown', widget)
-widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
-widget.about.addAction(menuAbout)
-
-menuAboutQt = QtGui.QAction('About Qt', widget)
-widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
-widget.about.addAction(menuAboutQt)
-
-# Set Exit installer
-exit = QtGui.QAction('Exit', widget)
-exit.setShortcut('Ctrl+Q')
-exit.setStatusTip('Quit Installer')
-widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
-widget.file.addAction(exit)
 
 # Check permissions on directories
 def checkDirs():
@@ -233,7 +207,8 @@ def checkDirs():
         widget.next.setEnabled(False)
     return
 
-#Back function
+
+# Back function
 def backButton():
     currentPage[0] -= 1
     if currentPage[0] <= 0:
@@ -251,7 +226,8 @@ def backButton():
     widget.stackedWidget.setCurrentIndex(currentPage[0])
     updatePageNumber()
 
-#Forward function
+
+# Forward function
 def forwardButton():
     currentPage[0] += 1
     if currentPage[0] == 1:
@@ -269,24 +245,29 @@ def forwardButton():
         allowExit[0] = True
     elif currentPage[0] == 4:
         allowExit[0] = True
-        widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-        widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
+        widget.next.clicked.disconnect(forwardButton)
+        widget.next.clicked.connect(widget.close)
         widget.next.setText('&Exit')
         widget.next.setShortcut('Alt+E')
     widget.stackedWidget.setCurrentIndex(currentPage[0])
     updatePageNumber()
 
-#Select Binary Directory
+
+# Select Binary Directory
 def selectBinDirectory():
-    tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Binary Directory', binLocation[0], QFileDialog.ShowDirsOnly)
+    tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Binary Directory', binLocation[0],
+                                               options=QFileDialog.Option.ShowDirsOnly)
     if not tempstr == '':
         binLocation[0] = tempstr
         widget.binDir.setText(tempstr)
         checkDirs()
 
-#Select Data Directory
+
+# Select Data Directory
 def selectDataDirectory():
-    tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Data Directory', dataLocation[0], QFileDialog.ShowDirsOnly)
+    tempstr = QFileDialog.getExistingDirectory(widget, 'Please Select Data Directory', dataLocation[0],
+                                               options=QFileDialog.Option.ShowDirsOnly)
+
     if not tempstr == '':
         dataLocation[0] = tempstr
         widget.dataDir.setText(tempstr)
@@ -295,42 +276,122 @@ def selectDataDirectory():
         # setDataFileInfo(widget.textBrowser)
         checkDirs()
 
-# Update the widgets with the needed Info
-widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
-widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
-widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
-widget.back.setShortcut('Alt+B')
-widget.next.setShortcut('Alt+N')
-updatePageNumber()
 
-# Page 1 - Intro and graphic
-scene = QGraphicsScene()
-scene.addPixmap(QPixmap('data/menu/paintown.png'))
-widget.WelcomePage.setScene(scene)
-#widget.WelcomePage.scale(1,1)
-widget.WelcomePage.fitInView(0, 0, 94,29)
-widget.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-widget.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+class InstallerWindow(QMainWindow):
+    def __init__(self, ui_file):
+        super().__init__()
+        self.load_interface(ui_file)
 
-# Page 2 - Install Locations
-widget.binDir.setText(binLocation[0])
-widget.dataDir.setText(dataLocation[0])
+    def closeEvent(self, event):
+        # Intercept the close event
+        reply = QMessageBox.question(self, 'Exit Confirmation',
+                                     "Are you sure you want to exit?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            event.accept()  # Allow the close event to proceed
+        else:
+            event.ignore()  # Ignore the close event
 
-# Page 3 - Install information
+    def load_interface(self, ui_file):
+        loadUi(ui_file, self)
+        self.back.setEnabled(False)
 
-# Page 4 - Console Output
-# ****FIXME**** Add file copy info and renable next button after complete
+    def setUpLookAndFeel(self):
+        self.setStyle(QStyleFactory.create("Cleanlooks"))
 
-# Page 5 - Finished - Nothing to do
+    def show(self):
+        self.setUpLookAndFeel()
+        self.updateWidgetsWithNeededInfo()
+        self.pageIntroAndGraphic()
+        self.pageInstallLocations()
+        self.pageInstallInformation()
+        self.pageConsoleOutput()
+        self.pageFinished()
+        self.setupActions()
+        self.centerOnScreen()
+        super().show()
 
-# Center on screen
-screen = QtGui.QDesktopWidget().screenGeometry()
-size = widget.geometry()
-widget.move((screen.width()-size.width())/2, (screen.height()-size.height())/2)
+    def updateWidgetsWithNeededInfo(self):
+        self.back.clicked.connect(backButton)
+        self.changeBinDir.clicked.connect(selectBinDirectory)
+        self.changeDataDir.clicked.connect(selectDataDirectory)
+        self.next.clicked.connect(forwardButton)
+        self.back.setShortcut('Alt+B')
+        self.next.setShortcut('Alt+N')
+        updateFileList()
+        updatePageNumber()
 
-# show widget
-widget.show()
+    def pageIntroAndGraphic(self):
+        """
+        Page 1 - Intro and graphic
+        """
+        scene = QGraphicsScene()
+        scene.addPixmap(QPixmap('data/menu/paintown.png'))
+        self.WelcomePage.setScene(scene)
+        # widget.WelcomePage.scale(1,1)
+        self.WelcomePage.fitInView(0, 0, 94, 29)
+        self.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-# Run
-app.exec_()
+    def pageInstallLocations(self):
+        """
+        Page 2 - Install Locations
+        """
+        self.binDir.setText(binLocation[0])
+        self.dataDir.setText(dataLocation[0])
+
+    def pageInstallInformation(self):
+        """
+        Page 3 - Install information
+        """
+        pass
+
+    def pageConsoleOutput(self):
+        """
+        Page 4 - Console Output
+        ****FIXME**** Add file copy info and renable next button after complete
+        """
+        pass
+
+    def pageFinished(self):
+        """"
+        Page 5 - Finished - Nothing to do
+        """
+        pass
+
+    def confirm_exit(self):
+        self.close()
+
+    def setupActions(self):
+        # Set About info
+        menuAbout = QtGui.QAction('About Paintown', widget)
+        menuAbout.triggered.connect(about)
+        self.about.addAction(menuAbout)
+
+        menuAboutQt = QtGui.QAction('About Qt', widget)
+        menuAboutQt.triggered.connect(aboutQt)
+        self.about.addAction(menuAboutQt)
+
+        # Set Exit installer
+        exitAction = QtGui.QAction('Exit', widget)
+        exitAction.setShortcut('Alt+Q')
+        exitAction.setStatusTip('Quit Installer')
+        exitAction.triggered.connect(self.confirm_exit)
+        self.file.addAction(exitAction)
+
+    def centerOnScreen(self):
+        screen = QGuiApplication.primaryScreen().geometry()
+        size = widget.geometry()
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+
+def main():
+    app = QApplication(sys.argv)
+    global widget
+    widget = InstallerWindow("installer/installer.ui")
+    widget.show()
+    sys.exit(app.exec())
+
+
+if __name__ == "__main__":
+    main()
