@@ -1,6 +1,6 @@
-#include "../../util/token.h"
-#include "../../util/tokenreader.h"
-#include "../../util/file-system.h"
+#include "r-tech1/token.h"
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/file-system.h"
 #include <exception>
 #include <iostream>
 #include <sstream>
@@ -10,6 +10,31 @@
 #include <math.h>
 
 using namespace std;
+
+
+#ifndef WINDOWS
+
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+
+#endif
+
 
 class Failure: public exception{
 public:
@@ -163,7 +188,45 @@ static void test8(){
     }
 }
 
+static void test9(){
+    const char *test9 =
+    "foo: \n"
+    "    bar: {\n"
+    "       bag: true \n"
+    "    } \n"
+    "bag: \n"
+    "    foo: bar \n"
+    "    foo: { \n"
+    "       foo: bar,\n"
+    "       bar: bag\n"
+    "    }";
+    TokenReader reader;
+    Token * head = reader.readTokenFromString(test9);
+
+    head->print(" ");
+
+    vector<const Token*> tokens = head->findTokens("foo");
+    DebugLog << tokens.size() << endl;
+    if (tokens.size() != 1){
+        throw Failure(9);
+    }
+}
+
+static void test10(){
+    std::string path = "src/test/token/test.yaml";
+    TokenReader reader;
+    Token * head = reader.readTokenFromFile(path);
+
+    head->print(" ");
+
+    vector<const Token *> tokens = head->findTokens("menu");
+    if (tokens.size() != 1){
+        throw Failure(10);
+    }
+}
+
 int main(){
+    Global::setDebug(2);
     try{
         test1();
         test2();
@@ -173,6 +236,8 @@ int main(){
         test6();
         test7();
         test8();
+        test9();
+        test10();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){
