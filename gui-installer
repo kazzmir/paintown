@@ -14,20 +14,12 @@ import shutil
 import stat
 import sys
 
-from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QThread, QFile
-from PyQt6.QtGui import QGuiApplication, QPixmap
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QThread
+from PyQt6.QtGui import QGuiApplication, QPixmap, QTextCursor
 from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow, QStyleFactory, QApplication
-from PyQt6 import uic, QtGui
+from PyQt6 import QtGui
 from PyQt6.uic import loadUi
 
-
-class Signals:
-    pass
-
-
-Signals.Triggered = "triggered()"
-Signals.Close = "close()"
-Signals.Clicked = "clicked()"
 
 # Globals
 paintownVersion = ["3.6.1"]
@@ -52,14 +44,6 @@ def createDirectory(path):
     debug("Creating directory '%s'" % path)
     if not os.path.exists(path):
         os.makedirs(path)
-
-
-signals = [0]
-
-
-def generateSignal():
-    signals[0] += 1
-    return "signal%s" % signals[0]
 
 
 # Update page
