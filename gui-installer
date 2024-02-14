@@ -90,9 +90,8 @@ def setDataFileInfo(location, widget, emitter):
             # widget.append(tmpFile + '      >>      ' + dataLocation[0] + '/' + root)
     # widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
     emitter(lambda: widget.append('paintown' + '      >>      ' + location + '/paintown-bin'))
-    # widget.moveCursor(QTextCursor.Start)
-    # TODO - review
-    # emitter(lambda: widget.moveCursor(QTextCursor.Start))
+    # Move the cursor to the start of the document
+    emitter(lambda: widget.moveCursor(QTextCursor.MoveOperation.Start))
 
 
 # Copy Data
