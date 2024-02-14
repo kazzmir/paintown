@@ -11,7 +11,12 @@
 #include "r-tech1/tokenreader.h"
 #include "r-tech1/pointer.h"
 
+#if defined(WIN32) || defined(WINDOWS)
+#define YAML_CPP_STATIC_DEFINE
+#endif
+#ifdef HAVE_YAML_CPP
 #include <yaml-cpp/yaml.h>
+#endif
 
 using namespace std;
 
@@ -417,6 +422,7 @@ void yamlTokens(Token * parent, YAML::Node & head){
 }
 
 void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
+#ifdef HAVE_YAML_CPP
     DebugLog2 << "Reading tokens from yaml or file: " << yaml << std::endl;
     YAML::Node head = isFile ? YAML::LoadFile(yaml) : YAML::Load(yaml);
     switch (head.Type()) {
@@ -445,5 +451,7 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         default:
             break;
     }
-    
+#else
+    DebugLog2 << "No support for yaml in this build." << std::endl;
+#endif
 }

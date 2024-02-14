@@ -52,9 +52,22 @@ static void test1_write(const string & name){
 }
 
 static string randomFile(){
+#ifndef WINDOWS
     static char temp[64];
     sprintf(temp, "/tmp/tokenXXXXXX");
     return string(mktemp(temp));
+#else 
+/*
+    #include <iostream>
+    #include <windows.h>
+    char tempPath[MAX_PATH];
+    char temp[MAX_PATH];
+    sprintf(temp, "tokenXXXXXX");
+    DWORD result = GetTempPathA(MAX_PATH, tempPath);
+    return string(GetTempFileNameA(tempPath, "tokenXXXXXX", 0, temp));
+*/
+    return string();
+#endif
 }
 
 static void test1(){
@@ -225,7 +238,12 @@ static void test10(){
     }
 }
 
+#ifndef WINDOWS
 int main(){
+#else
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+#endif
     Global::setDebug(2);
     try{
         test1();
