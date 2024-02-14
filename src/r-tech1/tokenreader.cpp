@@ -71,7 +71,7 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
         readTokens(*file.raw());
         // file.close();
     } else {
-        readTokensFromYaml(realPath.path());
+        readTokensFromYaml(realPath.path(), true);
     }
 
     if (my_tokens.size() > 0){
@@ -374,85 +374,89 @@ void TokenReader::readTokens(Storage::File & input){
     */
 }
 
-void yamlTokens(Token * parent, YAML::Node & head){
-    // DebugLog2 << "Total in current node: " << head.size() << std::endl;
-    switch (head.Type()) {
-        case YAML::NodeType::Scalar:
-            {
-                const std::string name = head.as<std::string>();
-                DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
-                parent->addToken(new Token(name, false));
-                break;
-            }
-        case YAML::NodeType::Sequence:
-            {
-                // const std::string & name = head.as<std::string>();
-                Token * token = new Token();
-                DebugLog2 << "Found sequence.. aka an array" << std::endl;
-                for (YAML::const_iterator item = head.begin(); item != head.end(); ++item) {
-                    token->addToken(new Token(item->as<std::string>()));
-                }
-                parent->addToken(token);
-            }
-            break;
-        case YAML::NodeType::Map:            
-            {
-                DebugLog2 << "Map content of size: " << head.size() << std::endl;
-                for (YAML::const_iterator it = head.begin(); it != head.end(); ++it){
-                    const std::string key = it->first.as<std::string>();
-                    YAML::Node value = it->second;
-                    DebugLog2 << "Found node name: " << key << std::endl;
-                    // if (value.Type() != YAML::NodeType::Null){
-                        // DebugLog2 << "Next set..." << std::endl;
-                        Token * token = new Token(key, false);
-                        yamlTokens(token, value);
-                        parent->addToken(token);
-                    /*
-                    } else {
-                        DebugLog2 << "No more nodes found, storing Token." << std::endl;
-                        token->addToken(new Token(key));
-                    }
-                    */
-                }
-            }
-            break;
-        case YAML::NodeType::Null:
-        case YAML::NodeType::Undefined: 
-        default:
-            break;
-    }
-}
-
 void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
 #ifdef HAVE_YAML_CPP
-    DebugLog2 << "Reading tokens from yaml or file: " << yaml << std::endl;
-    YAML::Node head = isFile ? YAML::LoadFile(yaml) : YAML::Load(yaml);
-    switch (head.Type()) {
-        /*
-        not needed handled in case above
-        case YAML::NodeType::Scalar:
-            {
-                const std::string & name = head.as<std::string>();
-                DebugLog2 << "Found scalar: " << name << std::endl;
-                my_tokens.emplace_back(new Token(head.as<std::string>()));
+
+    class YamlReader {
+    public:
+        YamlReader(const std::string & yaml, bool isFile):
+        origin(yaml),
+        tokenHead(NULL){
+            DebugLog2 << "Reading tokens from yaml or file: " << yaml << std::endl;
+            if (isFile){
+                head = YAML::LoadFile(yaml);
+            } else {
+                head = YAML::Load(yaml);
             }
-            break;
-        */
-        case YAML::NodeType::Sequence:
-            break;
-        case YAML::NodeType::Map:
-            {
-                //Token * headToken = new Token(head.as<std::string>());
-                Token * headToken = new Token();
-                yamlTokens(headToken, head);
-                my_tokens.emplace_back(headToken);
+            DebugLog2 << "Loaded content: " << std::endl;
+            DebugLog2 << "\n" << head << std::endl;
+            load();
+        }
+        ~YamlReader(){
+
+        }
+        Token * getTokens(){
+            return tokenHead;
+        }
+    private:
+        void scalar(Token * parent, const YAML::Node & node){
+            const std::string name = node.as<std::string>();
+            DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
+            parent->addToken(new Token(name, false));
+        }
+        void sequence(Token * parent, const YAML::Node & node){
+            // const std::string & name = node.as<std::string>();
+            Token * token = new Token();
+            DebugLog2 << "Found sequence.. aka an array" << std::endl;
+            for (YAML::const_iterator item = node.begin(); item != node.end(); ++item) {
+                token->addToken(new Token(item->as<std::string>()));
             }
-            break;
-        case YAML::NodeType::Null:
-        case YAML::NodeType::Undefined: 
-        default:
-            break;
-    }
+            parent->addToken(token);
+        }
+        void map(Token * parent, const YAML::Node & node){
+            DebugLog2 << "Map content of size: " << node.size() << std::endl;
+            
+            for (YAML::const_iterator it = node.begin(); it != node.end(); ++it){
+                const std::string key = it->first.as<std::string>();
+                YAML::Node value = it->second;
+                DebugLog2 << "Found node name: " << key << std::endl;
+                Token * token = new Token(key, false);
+                token->setParent(parent);
+                parent->addToken(token);
+                // Token * sub = new Token(key, false);
+                parseNode(parent, value);
+                // token->addToken(sub);
+                //parent->addToken(token);
+            }
+        }
+        void parseNode(Token * parent, const YAML::Node & node){
+            switch (node.Type()){
+                case YAML::NodeType::Scalar:
+                    scalar(parent, node);
+                    break;
+                case YAML::NodeType::Sequence:
+                    sequence(parent, node);
+                    break;
+                case YAML::NodeType::Map:
+                    map(parent, node);
+                    break;
+                case YAML::NodeType::Null:
+                case YAML::NodeType::Undefined:
+                default:
+                    break;
+            }
+        }
+        void load(){
+            tokenHead = new Token();
+            parseNode(tokenHead, head);
+        }
+
+        const std::string origin;
+        YAML::Node head;
+        Token * tokenHead;
+    };
+    YamlReader reader(yaml, isFile);
+    my_tokens.emplace_back(reader.getTokens());
 #else
     DebugLog2 << "No support for yaml in this build." << std::endl;
 #endif

@@ -32,7 +32,8 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
 
 void read(const char * path){
     TokenReader reader;
-    reader.readTokenFromFile(path);
+    Token * token = reader.readTokenFromFile(path);
+    token->print(" ");
 }
 
 int main(int argc, char ** argv){
