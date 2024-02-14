@@ -16,3 +16,4 @@ peg_*.py
 *.dmg
 *.dmg.sparseimage
 *.deb
+.idea
