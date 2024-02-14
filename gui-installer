@@ -14,8 +14,10 @@ import shutil
 import stat
 import sys
 
-from PyQt6.QtCore import Qt
-from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow, QStyleFactory
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QThread
+from PyQt6.QtGui import QGuiApplication, QPixmap
+from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow
+from PyQt6 import uic, QtWidgets, QtGui
 
 
 class Signals:
@@ -26,9 +28,7 @@ Signals.Triggered = "triggered()"
 Signals.Close = "close()"
 Signals.Clicked = "clicked()"
 
-from PyQt6 import QtGui, QtWidgets, uic
-from PyQt6.QtCore import *
-from PyQt6.QtGui import *
+
 
 # Globals
 paintownVersion = ["3.6.1"]
