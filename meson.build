@@ -26,7 +26,6 @@ if not meson.is_cross_build()
   endif
   is_static = false
   sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
-  yaml_cpp_dependency = dependency('yaml-cpp', required: true, static: is_static)
 endif
 
 includes = include_directories('src')
@@ -38,6 +37,7 @@ all_code = [
   'src/globals.cpp',
 ]
 
+yaml_cpp_dependency = dependency('yaml-cpp', required: true, static: is_static)
 sdl_dependency = dependency('sdl2', required: true, static: is_static)
 sdl_image_dependency = dependency('SDL2_image', required: true, static: is_static)
 sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18', static: is_static)
