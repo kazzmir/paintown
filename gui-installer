@@ -405,8 +405,8 @@ class InstallerWindow(QMainWindow):
 
 
 def main():
-    global widget
     app = QApplication(sys.argv)
+    global widget
     widget = InstallerWindow("installer/installer.ui")
     widget.show()
     sys.exit(app.exec())
