@@ -264,8 +264,6 @@ def forwardButton():
         allowExit[0] = True
     elif currentPage[0] == 4:
         allowExit[0] = True
-        # widget.disconnect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
-        # widget.connect(widget.next, SIGNAL(Signals.Clicked), SLOT(Signals.Close))
         widget.next.clicked.disconnect(forwardButton)
         widget.next.clicked.connect(widget.close)
         widget.next.setText('&Exit')
@@ -342,8 +340,10 @@ class InstallerWindow(QMainWindow):
         updateFileList()
         updatePageNumber()
 
-    # Page 1 - Intro and graphic
     def pageIntroAndGraphic(self):
+        """
+        Page 1 - Intro and graphic
+        """
         scene = QGraphicsScene()
         scene.addPixmap(QPixmap('data/menu/paintown.png'))
         self.WelcomePage.setScene(scene)
@@ -352,22 +352,30 @@ class InstallerWindow(QMainWindow):
         self.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
-    # Page 2 - Install Locations
     def pageInstallLocations(self):
+        """
+        Page 2 - Install Locations
+        """
         self.binDir.setText(binLocation[0])
         self.dataDir.setText(dataLocation[0])
 
-    # Page 3 - Install information
     def pageInstallInformation(self):
+        """
+        Page 3 - Install information
+        """
         pass
 
-    # Page 4 - Console Output
     def pageConsoleOutput(self):
-        # ****FIXME**** Add file copy info and renable next button after complete
+        """
+        Page 4 - Console Output
+        ****FIXME**** Add file copy info and renable next button after complete
+        """
         pass
 
-    # Page 5 - Finished - Nothing to do
     def pageFinished(self):
+        """"
+        Page 5 - Finished - Nothing to do
+        """
         pass
 
     def confirm_exit(self):
