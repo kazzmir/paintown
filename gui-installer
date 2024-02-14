@@ -87,8 +87,6 @@ def copyData(currentRoot, binDirectory, widget, emitter):
         for root, dirs, files in os.walk(datadir):
             for file in files:
                 tmpFile = os.path.join(root, file)
-                if '.svn' in tmpFile:
-                    continue
                 yield (root, tmpFile)
 
     def copyAllFiles():
