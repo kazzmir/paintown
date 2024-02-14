@@ -14,8 +14,8 @@ import shutil
 import stat
 import sys
 
-from PyQt6.QtCore import Qt  # Import Qt module
-from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow, QStyleFactory
 
 
 class Signals:
@@ -92,7 +92,8 @@ def setDataFileInfo(location, widget, emitter):
     # widget.append('paintown' + '      >>      ' + dataLocation[0] + '/paintown-bin')
     emitter(lambda: widget.append('paintown' + '      >>      ' + location + '/paintown-bin'))
     # widget.moveCursor(QTextCursor.Start)
-    emitter(lambda: widget.moveCursor(QTextCursor.Start))
+    # TODO - review
+    # emitter(lambda: widget.moveCursor(QTextCursor.Start))
 
 
 # Copy Data
@@ -150,34 +151,30 @@ def copyData(currentRoot, binDirectory, widget, emitter):
 threads = []
 
 
+class LambdaEvent(QObject):
+    # Define a custom signal
+    signal: pyqtSignal = pyqtSignal(object)
+
+    # Define a slot function
+    @pyqtSlot(object)
+    def process(self, arg):
+        arg()
+
+
 def doBackground(func):
     class Runner(QThread):
-        def __init__(self, signal):
+        def __init__(self, event):
             QThread.__init__(self)
-            self.signal = signal
+            self.event = event
 
         def run(self):
             print("Start thread..")
-            # TODO
-            # func(lambda arg: self.emit(SIGNAL(signal), arg))
-            # func(lambda arg: self.signal.emit(arg))
+            func(lambda arg: self.event.signal.emit(arg))
             print("Ok done")
 
-    def process(arg):
-        arg()
-
-    # I'm not sure we even need to generate a signal..
-    signal = generateSignal()
-
-    # I guess pyqtSignal is only in pyqt 4.5+
-    # signal = QtCore.pyqtSignal()
-    # signal = SLOT(process)
-    n = Runner(signal)
-    # QtCore.QObject.connect(n, SIGNAL(signal), process)
-    # n.signal.connect(process)
-
-    # n.connect(SIGNAL(signal), process)
-    # widget.connect(n, SIGNAL(signal), process)
+    event = LambdaEvent()
+    event.signal.connect(lambda arg: event.process(arg))
+    n = Runner(event)
 
     # Have to save threads from being GC'd, so just put it in a variable that no one will use
     global threads
@@ -185,8 +182,6 @@ def doBackground(func):
 
     n.start()
     return n
-
-    # Runner().start()
 
 
 def updateFileList():
@@ -319,6 +314,7 @@ def main():
 
     # Set the look and feel
     # QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
+    # app.setStyle(QStyleFactory.create("Cleanlooks"))
 
     # Load Interface
     global widget
@@ -327,31 +323,25 @@ def main():
 
     # Set About info
     menuAbout = QtGui.QAction('About Paintown', widget)
-    # widget.connect(menuAbout,SIGNAL(Signals.Triggered), about)
     menuAbout.triggered.connect(about)
     widget.about.addAction(menuAbout)
 
     menuAboutQt = QtGui.QAction('About Qt', widget)
-    # widget.connect(menuAboutQt,SIGNAL(Signals.Triggered), aboutQt)
     menuAboutQt.triggered.connect(aboutQt)
     widget.about.addAction(menuAboutQt)
 
     # Set Exit installer
-    exit = QtGui.QAction('Exit', widget)
-    exit.setShortcut('Ctrl+Q')
-    exit.setStatusTip('Quit Installer')
-    # widget.connect(exit, SIGNAL(Signals.Triggered), SLOT(Signals.Close))
-    widget.file.addAction(exit)
+    exitAction = QtGui.QAction('Exit', widget)
+    exitAction.setShortcut('Alt+Q')
+    exitAction.setStatusTip('Quit Installer')
+    exitAction.triggered.connect(exitOverride)
+    widget.file.addAction(exitAction)
 
     # Update the widgets with the needed Info
-    # widget.connect(widget.back, SIGNAL(Signals.Clicked), backButton)
-    # widget.connect(widget.changeBinDir, SIGNAL(Signals.Clicked), selectBinDirectory)
-    # widget.connect(widget.changeDataDir, SIGNAL(Signals.Clicked), selectDataDirectory)
-    # widget.connect(widget.next, SIGNAL(Signals.Clicked), forwardButton)
     widget.back.clicked.connect(backButton)
-    widget.next.clicked.connect(forwardButton)
     widget.changeBinDir.clicked.connect(selectBinDirectory)
     widget.changeDataDir.clicked.connect(selectDataDirectory)
+    widget.next.clicked.connect(forwardButton)
     widget.back.setShortcut('Alt+B')
     widget.next.setShortcut('Alt+N')
 
