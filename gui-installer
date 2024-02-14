@@ -14,10 +14,11 @@ import shutil
 import stat
 import sys
 
-from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QThread
+from PyQt6.QtCore import Qt, pyqtSlot, pyqtSignal, QObject, QThread, QFile
 from PyQt6.QtGui import QGuiApplication, QPixmap
-from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow
-from PyQt6 import uic, QtWidgets, QtGui
+from PyQt6.QtWidgets import QGraphicsScene, QFileDialog, QMessageBox, QMainWindow, QStyleFactory, QApplication
+from PyQt6 import uic, QtGui
+from PyQt6.uic import loadUi
 
 
 class Signals:
@@ -27,8 +28,6 @@ class Signals:
 Signals.Triggered = "triggered()"
 Signals.Close = "close()"
 Signals.Clicked = "clicked()"
-
-
 
 # Globals
 paintownVersion = ["3.6.1"]
@@ -195,16 +194,6 @@ def updateFileList():
     # setDataFileInfo(widget.textBrowser)
 
 
-# Exit override
-def exitOverride(self, event):
-    if allowExit[0]:
-        event.accept()
-    else:
-        event.ignore()
-    # Here we will prompt user "Are they sure?"
-    # If yes stop current copy and remove files and exit program
-
-
 # About
 def about():
     QMessageBox.about(widget, 'Paintown ', 'A simple installer built with PyQt')
@@ -309,78 +298,109 @@ def selectDataDirectory():
         checkDirs()
 
 
-def main():
-    app = QtWidgets.QApplication(sys.argv)
+class InstallerWindow(QMainWindow):
+    def __init__(self, ui_file):
+        super().__init__()
+        self.load_interface(ui_file)
 
-    # Set the look and feel
-    # QtGui.QApplication.setStyle(QtGui.QStyleFactory.create("Cleanlooks"))
-    # app.setStyle(QStyleFactory.create("Cleanlooks"))
+    def closeEvent(self, event):
+        # Intercept the close event
+        reply = QMessageBox.question(self, 'Exit Confirmation',
+                                     "Are you sure you want to exit?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            event.accept()  # Allow the close event to proceed
+        else:
+            event.ignore()  # Ignore the close event
 
-    # Load Interface
-    global widget
-    widget = uic.loadUi("installer/installer.ui")
-    widget.back.setEnabled(False)
+    def load_interface(self, ui_file):
+        loadUi(ui_file, self)
+        self.back.setEnabled(False)
 
-    # Set About info
-    menuAbout = QtGui.QAction('About Paintown', widget)
-    menuAbout.triggered.connect(about)
-    widget.about.addAction(menuAbout)
+    def setUpLookAndFeel(self):
+        self.setStyle(QStyleFactory.create("Cleanlooks"))
 
-    menuAboutQt = QtGui.QAction('About Qt', widget)
-    menuAboutQt.triggered.connect(aboutQt)
-    widget.about.addAction(menuAboutQt)
+    def show(self):
+        self.setUpLookAndFeel()
+        self.updateWidgetsWithNeededInfo()
+        self.pageIntroAndGraphic()
+        self.pageInstallLocations()
+        self.pageInstallInformation()
+        self.pageConsoleOutput()
+        self.pageFinished()
+        self.setupActions()
+        self.centerOnScreen()
+        super().show()
 
-    # Set Exit installer
-    exitAction = QtGui.QAction('Exit', widget)
-    exitAction.setShortcut('Alt+Q')
-    exitAction.setStatusTip('Quit Installer')
-    exitAction.triggered.connect(exitOverride)
-    widget.file.addAction(exitAction)
-
-    # Update the widgets with the needed Info
-    widget.back.clicked.connect(backButton)
-    widget.changeBinDir.clicked.connect(selectBinDirectory)
-    widget.changeDataDir.clicked.connect(selectDataDirectory)
-    widget.next.clicked.connect(forwardButton)
-    widget.back.setShortcut('Alt+B')
-    widget.next.setShortcut('Alt+N')
-
-    updateFileList()
-
-    updatePageNumber()
-
-    # override exit
-    widget.__class__.closeEvent = exitOverride
+    def updateWidgetsWithNeededInfo(self):
+        self.back.clicked.connect(backButton)
+        self.changeBinDir.clicked.connect(selectBinDirectory)
+        self.changeDataDir.clicked.connect(selectDataDirectory)
+        self.next.clicked.connect(forwardButton)
+        self.back.setShortcut('Alt+B')
+        self.next.setShortcut('Alt+N')
+        updateFileList()
+        updatePageNumber()
 
     # Page 1 - Intro and graphic
-    scene = QGraphicsScene()
-    scene.addPixmap(QPixmap('data/menu/paintown.png'))
-    widget.WelcomePage.setScene(scene)
-    # widget.WelcomePage.scale(1,1)
-    widget.WelcomePage.fitInView(0, 0, 94, 29)
-    widget.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-    widget.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    def pageIntroAndGraphic(self):
+        scene = QGraphicsScene()
+        scene.addPixmap(QPixmap('data/menu/paintown.png'))
+        self.WelcomePage.setScene(scene)
+        # widget.WelcomePage.scale(1,1)
+        self.WelcomePage.fitInView(0, 0, 94, 29)
+        self.WelcomePage.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.WelcomePage.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
 
     # Page 2 - Install Locations
-    widget.binDir.setText(binLocation[0])
-    widget.dataDir.setText(dataLocation[0])
+    def pageInstallLocations(self):
+        self.binDir.setText(binLocation[0])
+        self.dataDir.setText(dataLocation[0])
 
     # Page 3 - Install information
+    def pageInstallInformation(self):
+        pass
 
     # Page 4 - Console Output
-    # ****FIXME**** Add file copy info and renable next button after complete
+    def pageConsoleOutput(self):
+        # ****FIXME**** Add file copy info and renable next button after complete
+        pass
 
     # Page 5 - Finished - Nothing to do
+    def pageFinished(self):
+        pass
 
-    # Center on screen
-    screen = QGuiApplication.primaryScreen().geometry()
-    size = widget.geometry()
-    widget.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+    def confirm_exit(self):
+        self.close()
 
-    # show widget
+    def setupActions(self):
+        # Set About info
+        menuAbout = QtGui.QAction('About Paintown', widget)
+        menuAbout.triggered.connect(about)
+        self.about.addAction(menuAbout)
+
+        menuAboutQt = QtGui.QAction('About Qt', widget)
+        menuAboutQt.triggered.connect(aboutQt)
+        self.about.addAction(menuAboutQt)
+
+        # Set Exit installer
+        exitAction = QtGui.QAction('Exit', widget)
+        exitAction.setShortcut('Alt+Q')
+        exitAction.setStatusTip('Quit Installer')
+        exitAction.triggered.connect(self.confirm_exit)
+        self.file.addAction(exitAction)
+
+    def centerOnScreen(self):
+        screen = QGuiApplication.primaryScreen().geometry()
+        size = widget.geometry()
+        self.move((screen.width() - size.width()) // 2, (screen.height() - size.height()) // 2)
+
+
+def main():
+    global widget
+    app = QApplication(sys.argv)
+    widget = InstallerWindow("installer/installer.ui")
     widget.show()
-
-    # Run
     sys.exit(app.exec())
 
 
