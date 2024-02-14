@@ -11,10 +11,10 @@
 #include "r-tech1/tokenreader.h"
 #include "r-tech1/pointer.h"
 
+#ifdef HAVE_YAML_CPP
 #if defined(WIN32) || defined(WINDOWS)
 #define YAML_CPP_STATIC_DEFINE
 #endif
-#ifdef HAVE_YAML_CPP
 #include <yaml-cpp/yaml.h>
 #endif
 
@@ -30,11 +30,13 @@ using namespace std;
 
 
 bool isYaml(const std::string & path, bool isFile){
+#ifdef HAVE_YAML_CPP
     try {
         return (isFile ? YAML::LoadFile(path).size() > 0 : YAML::Load(path).size() > 0);
     } catch (YAML::Exception & ex){
         DebugLog2 << "Not a valid yaml source..." << std::endl;
     }
+#endif
     return false;
 }
     
