@@ -1,6 +1,7 @@
-build*
+build
+build-debug
 mingw-bin
-paintown
+/paintown
 .scon*
 .tmp
 peg_*.py
@@ -14,3 +15,4 @@ peg_*.py
 *.AppImage
 *.dmg
 *.dmg.sparseimage
+*.deb

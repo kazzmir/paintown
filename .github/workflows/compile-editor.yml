@@ -1,30 +1,35 @@
-name: linux ubuntu build
+name: java editor build
 
 on:
   push
 
+permissions:
+  contents: write
+
 jobs:
   build:
-    name: Compile
     runs-on: ubuntu-latest
+
     steps:
-      - name: Check out code
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run build
-        run: ./easy-compile-ubuntu
+      - name: Set up JDK 8 for x64
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'zulu'
+          architecture: x64
 
-      - name: Run Release
-        if: startsWith(github.ref, 'refs/tags/')
-        run: ./release/release-ubuntu
-          
+      - name: Build
+        run: |
+          ./easy-compile-editor
+
       - name: Archive Folder
         uses: actions/upload-artifact@v4
         with:
           name: artifact
-          path: |
-            ${{github.workspace}}/*.AppImage
-            ${{github.workspace}}/*.deb
+          path: ${{github.workspace}}/editor/build/libs/*.jar
 
   publish-release:
     needs: build
@@ -33,7 +38,6 @@ jobs:
     steps:
       - name: Download Artifact
         uses: actions/download-artifact@v4
-        if: startsWith(github.ref, 'refs/tags/')
         with:
           name: artifact
           path: ${{github.workspace}}
@@ -43,6 +47,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            ${{ github.workspace }}/*.AppImage
-            ${{ github.workspace }}/*.deb
+          files: ${{ github.workspace }}/*.jar
+          token: ${{ secrets.GITHUB_TOKEN }}
