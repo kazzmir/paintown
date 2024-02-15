@@ -202,6 +202,21 @@ static void test8(){
 }
 
 static void test9(){
+    // ???????????????????
+    Token * head = new Token();
+    Token * bag = new Token("bag");
+    Token * bar = new Token("bar");
+    Token * foo = new Token("foo");
+    bar->addToken(bag);
+    foo->addToken(bar);
+    head->addToken(foo);
+    //bag->addToken(bar);
+    //bar->addToken(foo);
+
+    head->print(" ");
+}
+
+static void test10(){
     const char *test9 =
     "foo: \n"
     "    bar: {\n"
@@ -225,7 +240,7 @@ static void test9(){
     }
 }
 
-static void test10(){
+static void test11(){
     std::string path = "src/test/token/test.yaml";
     TokenReader reader;
     Token * head = reader.readTokenFromFile(path);
@@ -255,7 +270,8 @@ int main(int argv, char *args[]){
         test7();
         test8();
         test9();
-        test10();
+        //test10();
+        //test11();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){

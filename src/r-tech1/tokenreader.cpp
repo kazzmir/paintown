@@ -381,13 +381,9 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
     public:
         YamlReader(const std::string & yaml, bool isFile):
         origin(yaml),
+        head(isFile ? YAML::LoadFile(yaml) : YAML::Load(yaml)),
         tokenHead(NULL){
             DebugLog2 << "Reading tokens from yaml or file: " << yaml << std::endl;
-            if (isFile){
-                head = YAML::LoadFile(yaml);
-            } else {
-                head = YAML::Load(yaml);
-            }
             DebugLog2 << "Loaded content: " << std::endl;
             DebugLog2 << "\n" << head << std::endl;
             load();
@@ -402,7 +398,8 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         void scalar(Token * parent, const YAML::Node & node){
             const std::string name = node.as<std::string>();
             DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
-            parent->addToken(new Token(name, false));
+            Token * token = new Token(name, false);
+            parent->addToken(token);
         }
         void sequence(Token * parent, const YAML::Node & node){
             // const std::string & name = node.as<std::string>();
@@ -415,18 +412,14 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         }
         void map(Token * parent, const YAML::Node & node){
             DebugLog2 << "Map content of size: " << node.size() << std::endl;
-            
-            for (YAML::const_iterator it = node.begin(); it != node.end(); ++it){
-                const std::string key = it->first.as<std::string>();
-                YAML::Node value = it->second;
+
+            for (const std::pair<YAML::Node, YAML::Node>& keyValue : node) {
+                std::string key = keyValue.first.as<std::string>();
+                // YAML::Node value = keyValue.second;
                 DebugLog2 << "Found node name: " << key << std::endl;
                 Token * token = new Token(key, false);
-                token->setParent(parent);
                 parent->addToken(token);
-                // Token * sub = new Token(key, false);
-                parseNode(parent, value);
-                // token->addToken(sub);
-                //parent->addToken(token);
+                parseNode(token, keyValue.second);
             }
         }
         void parseNode(Token * parent, const YAML::Node & node){
