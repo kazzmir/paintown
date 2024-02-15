@@ -1,0 +1,14 @@
+#!/bin/bash -e
+
+# Define the name and of docker image
+PS3_IMAGE_NAME="mlafeldt/ps3dev"
+
+mkdir -p ${PWD}/ps3-bin
+docker run --rm -iv${PWD}:/paintown-bin $PS3_IMAGE_NAME sh -s <<EOF
+# chown $(id -u):$(id -g) /build/build-ps3/paintown.pkg 
+# cp -a /build/build-ps3/paintown.pkg /paintown-bin/ps3-bin
+# find build/build-ps3/src/test -type f -name \*.pkg -exec sh -c "chown $(id -u):$(id -g) {}; cp -a {} /paintown-bin/ps3-bin" \;
+EOF
+echo "
+To run you will need a CFW [custom firmware] or system that can boot unsigned applications
+"
