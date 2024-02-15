@@ -1,7 +1,11 @@
 # build for the xbox 360 with libxenon
+from SCons.Util import Split
+
+from utils import safeParseConfig
+
 
 def xbox360(env):
-    print "Environment is xbox 360"
+    print("Environment is xbox 360")
     path = ps3devPath()
     bin_path = path + '/ppu/bin/'
     prefix = 'ppu-'

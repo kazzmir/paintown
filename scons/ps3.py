@@ -1,5 +1,8 @@
+from utils import safeParseConfig
+
+
 def ps3(env):
-        print "Environment is ps3 (ps3 development)"
+        print("Environment is ps3 (ps3 development)")
         # symlink the ps3dev to /opt/ps3dev, or just put it there
         # Needs these environment variables
         # export PS3DEV=/opt/ps3dev

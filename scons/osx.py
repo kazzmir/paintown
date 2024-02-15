@@ -128,8 +128,8 @@ def checkStaticFreetype(context):
             context.sconf.env = tmp
             context.Result(utils.colorResult(0))
             return 0
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(e)
             context.sconf.env = tmp
             context.Result(utils.colorResult(0))
             return 0
@@ -163,8 +163,8 @@ def checkStaticPng(context):
         context.sconf.env = tmp
         context.Result(utils.colorResult(0))
         return 0
-    except Exception, e:
-        print e
+    except Exception as e:
+        print(e)
         context.sconf.env = tmp
         context.Result(utils.colorResult(0))
         return 0

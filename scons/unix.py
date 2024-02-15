@@ -17,9 +17,9 @@ def checkPython(context):
     lib_path = distutils.sysconfig.get_config_var('LIBP')
 
     # hacks for windows because distutils is broken
-    if libs == None and isWindows():
+    if libs == None and utils.isWindows():
         libs = ['python26']
-    if lib_path == None and isWindows():
+    if lib_path == None and utils.isWindows():
         import os
         lib_path = os.path.join(os.path.dirname(include_path),'libs')
 
@@ -198,7 +198,7 @@ def checkSDL(context):
                 return True
             else:
                 raise Exception("Couldn't build it")
-        except Exception, e:
+        except Exception as e:
             # print "Moving libraries failed! because '%s'" % e
             context.sconf.env = tmp
             return False
