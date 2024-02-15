@@ -203,17 +203,23 @@ static void test8(){
 
 static void test9(){
     // ???????????????????
+    // (foo (bar bag))
     Token * head = new Token();
-    Token * bag = new Token("bag");
-    Token * bar = new Token("bar");
-    Token * foo = new Token("foo");
-    bar->addToken(bag);
-    foo->addToken(bar);
+    Token * bag = new Token("bag", false);
+    Token * bar = new Token("bar", false);
+    Token * foo = new Token("foo", false);
     head->addToken(foo);
-    //bag->addToken(bar);
-    //bar->addToken(foo);
+    head->addToken(bar);
+    head->addToken(bag);
+    head->print("");
+    delete head;
 
-    head->print(" ");
+    const std::string sxpr = "(foo (bar bag))";
+
+    TokenReader tr;
+    Token * token = tr.readTokenFromString(sxpr);
+    token->print("");
+
 }
 
 static void test10(){
