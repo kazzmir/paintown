@@ -467,6 +467,15 @@ Token* Token::makeSExpression(std::vector<Token *> & tokens){
     return out;
 }
 
+Token* Token::makeSExpression(Token* t1, std::vector<Token *> & tokens){
+    Token* out = new Token();
+    out->addToken(t1);
+    for (Token * token : tokens){
+        out->addToken(token);
+    }
+    return out;
+}
+
 void Token::addToken(Token * t){
     /*
     if (!own){

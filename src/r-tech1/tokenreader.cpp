@@ -396,59 +396,70 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
     private:
         Token * scalar(const YAML::Node & node){
             const std::string name = node.as<std::string>();
-            DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
-            return Token::makeDatum(name);
+            //DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
+            return Token::makeSExpression(Token::makeDatum(name));
         }
-        Token * sequence(const YAML::Node & node){
-            // const std::string & name = node.as<std::string>();
-            Token * out = new Token();
-            DebugLog2 << "Found sequence.. aka an array" << std::endl;
+        std::vector<Token *> sequence(const YAML::Node & node){
+            std::vector<Token *> tokens;
+            //DebugLog2 << "Found sequence.. aka an array" << std::endl;
             for (YAML::const_iterator item = node.begin(); item != node.end(); ++item) {
-                out->addToken(Token::makeSExpression(Token::makeDatum(item->as<std::string>())));
+                tokens.emplace_back(Token::makeSExpression(Token::makeDatum(item->as<std::string>())));
             }
-            return out;
+            //return out;
+            return tokens;
         }
-        Token * map(const YAML::Node & node){
-            DebugLog2 << "Map content of size: " << node.size() << std::endl;
-            //std::vector<Token *> output;
-            Token * out = new Token();
+        std::vector<Token *> map(const YAML::Node & node){
+            //DebugLog3 << "Map content of size: " << node.size() << std::endl;
+            std::vector<Token *> output;
             for (const std::pair<YAML::Node, YAML::Node>& keyValue : node) {
                 const std::string & key = keyValue.first.as<std::string>();
-                DebugLog2 << "Found node name: " << key << std::endl;
-                //output.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
-                //output.emplace_back(Token::makeDatum(key));
-                //output.emplace_back(Token::makeSExpression(parseNode(keyValue.second)));
-                out->addToken(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
+                const YAML::Node & node = keyValue.second;
+                //DebugLog3 << "Found node name: " << key << std::endl;
+
+                if (node.Type() == YAML::NodeType::Scalar){
+                    //DebugLog2 << "Found Scalar type." << std::endl;
+                    Token * token = Token::makeSExpression(Token::makeDatum(key), 
+                                                           scalar(node));
+                    //token->print("");
+                    output.emplace_back(token);
+                } else if (node.Type() == YAML::NodeType::Sequence){
+                    //DebugLog2 << "Found Sequence type." << std::endl;
+                    std::vector<Token *> sequenceOut = sequence(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), sequenceOut);
+                    //out->print(" ");
+                    output.emplace_back(out);
+                } else if (node.Type() == YAML::NodeType::Map){
+                    //DebugLog2 << "Found Map type." << std::endl;
+                    std::vector<Token *> mapOut = map(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), mapOut);
+                    //out->print(" ");
+                    output.emplace_back(out);
+
+                }
             }
-            /*for (Token * token : tokens){
-                token->print("");
-            }*/
-            //return Token::makeSExpression(output);
-            return out;
-        }
-        Token * parseNode(const YAML::Node & node){
-            switch (node.Type()){
-                case YAML::NodeType::Scalar:
-                    return scalar(node);
-                    break;
-                case YAML::NodeType::Sequence:
-                    return sequence(node);
-                    break;
-                case YAML::NodeType::Map:
-                    return map(node);
-                    break;
-                case YAML::NodeType::Null:
-                case YAML::NodeType::Undefined:
-                default:
-                    break;
-            }
-            return NULL;
+            return output;
         }
         void load(){
             // Start with map at head of yaml
             for (const std::pair<YAML::Node, YAML::Node>& keyValue : head) {
                 const std::string & key = keyValue.first.as<std::string>();
-                tokens.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
+                const YAML::Node & node = keyValue.second;
+
+                if (node.Type() == YAML::NodeType::Scalar){
+                    Token * token = Token::makeSExpression(Token::makeDatum(key), 
+                                                           scalar(node));
+                    tokens.emplace_back(token);
+                } else if (node.Type() == YAML::NodeType::Sequence){
+                    std::vector<Token *> sequenceOut = sequence(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), sequenceOut);
+                    //out->print(" ");
+                    tokens.emplace_back(out);
+                } else if (node.Type() == YAML::NodeType::Map){
+                    std::vector<Token *> mapOut = map(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), mapOut);
+                    //out->print(" ");
+                    tokens.emplace_back(out);
+                }
             }
         }
 

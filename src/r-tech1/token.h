@@ -89,6 +89,7 @@ public:
     static Token* makeSExpression(Token* t1, Token* t2);
     static Token* makeSExpression(Token* t1, Token* t2, Token* t3);
     static Token* makeSExpression(std::vector<Token *> & tokens);
+    static Token* makeSExpression(Token* t1, std::vector<Token *> & tokens);
     // add more makeSExpression functions as needed
 
     /*
