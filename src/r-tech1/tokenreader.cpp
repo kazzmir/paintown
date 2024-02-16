@@ -410,18 +410,21 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         }
         Token * map(const YAML::Node & node){
             DebugLog2 << "Map content of size: " << node.size() << std::endl;
-            std::vector<Token *> output;
+            //std::vector<Token *> output;
+            Token * out = new Token();
             for (const std::pair<YAML::Node, YAML::Node>& keyValue : node) {
                 const std::string & key = keyValue.first.as<std::string>();
                 DebugLog2 << "Found node name: " << key << std::endl;
-                output.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
+                //output.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
                 //output.emplace_back(Token::makeDatum(key));
                 //output.emplace_back(Token::makeSExpression(parseNode(keyValue.second)));
+                out.addToken(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
             }
             /*for (Token * token : tokens){
                 token->print("");
             }*/
-            return Token::makeSExpression(output);
+            //return Token::makeSExpression(output);
+            return out;
         }
         Token * parseNode(const YAML::Node & node){
             switch (node.Type()){
