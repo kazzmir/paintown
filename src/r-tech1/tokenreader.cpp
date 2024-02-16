@@ -382,9 +382,9 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         YamlReader(const std::string & yaml, bool isFile):
         origin(yaml),
         head(isFile ? YAML::LoadFile(yaml) : YAML::Load(yaml)){
-            DebugLog2 << "Reading tokens from yaml or file: " << yaml << std::endl;
-            DebugLog2 << "Loaded content: " << std::endl;
-            DebugLog2 << "\n" << head << std::endl;
+            DebugLog3 << "Reading tokens from yaml or file: " << yaml << std::endl;
+            //DebugLog2 << "Loaded content: " << std::endl;
+            //DebugLog2 << "\n" << head << std::endl;
             load();
         }
         ~YamlReader(){

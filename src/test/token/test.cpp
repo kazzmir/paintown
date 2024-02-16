@@ -214,30 +214,29 @@ static void test9(){
     TokenReader tr;
     Token * token = tr.readTokenFromString(sxpr);
     token->print("");
-
 }
 
 static void test10(){
     const char *test9 =
     "foo: \n"
-    "    bar: {\n"
-    "       bag: true \n"
+    "    bar1: {\n"
+    "       bag1: true \n"
     "    } \n"
-    "bag: \n"
-    "    foo: bar \n"
-    "    foo: { \n"
-    "       foo: bar,\n"
-    "       bar: bag\n"
-    "    }";
+    "    bag2: \n"
+    "       foo: bar \n"
+    "       foo: { \n"
+    "           foo3: bar2,\n"
+    "           bar3: bag3\n"
+    "       }";
     TokenReader reader;
     Token * head = reader.readTokenFromString(test9);
 
     head->print(" ");
 
-    vector<const Token*> tokens = head->findTokens("foo");
+    vector<const Token*> tokens = head->findTokens("foo/bag2/foo");
     DebugLog << tokens.size() << endl;
-    if (tokens.size() != 1){
-        throw Failure(9);
+    if (tokens.size() != 2){
+        throw Failure(10);
     }
 }
 
@@ -248,9 +247,9 @@ static void test11(){
 
     head->print(" ");
 
-    vector<const Token *> tokens = head->findTokens("menu");
+    vector<const Token *> tokens = head->findTokens("system/menu/values");
     if (tokens.size() != 1){
-        throw Failure(10);
+        throw Failure(11);
     }
 }
 
@@ -272,7 +271,7 @@ int main(int argv, char *args[]){
         test8();
         test9();
         test10();
-        //test11();
+        test11();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){
