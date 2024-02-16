@@ -418,7 +418,7 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
                 //output.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
                 //output.emplace_back(Token::makeDatum(key));
                 //output.emplace_back(Token::makeSExpression(parseNode(keyValue.second)));
-                out.addToken(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
+                out->addToken(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
             }
             /*for (Token * token : tokens){
                 token->print("");
