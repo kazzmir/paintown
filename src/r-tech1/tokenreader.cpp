@@ -408,20 +408,22 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
             }
             return out;
         }
-        Token * map(const std::string & section, const YAML::Node & node){
+        Token * map(const YAML::Node & node){
             DebugLog2 << "Map content of size: " << node.size() << std::endl;
             std::vector<Token *> output;
             for (const std::pair<YAML::Node, YAML::Node>& keyValue : node) {
                 const std::string & key = keyValue.first.as<std::string>();
                 DebugLog2 << "Found node name: " << key << std::endl;
-                output.emplace_back(Token::makeSExpression(parseNode(key, keyValue.second)));
+                output.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
+                //output.emplace_back(Token::makeDatum(key));
+                //output.emplace_back(Token::makeSExpression(parseNode(keyValue.second)));
             }
             /*for (Token * token : tokens){
                 token->print("");
             }*/
-            return Token::makeSExpression(Token::makeDatum(section), Token::makeSExpression(output));
+            return Token::makeSExpression(output);
         }
-        Token * parseNode(const std::string & section, const YAML::Node & node){
+        Token * parseNode(const YAML::Node & node){
             switch (node.Type()){
                 case YAML::NodeType::Scalar:
                     return scalar(node);
@@ -430,7 +432,7 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
                     return sequence(node);
                     break;
                 case YAML::NodeType::Map:
-                    return map(section, node);
+                    return map(node);
                     break;
                 case YAML::NodeType::Null:
                 case YAML::NodeType::Undefined:
@@ -443,7 +445,7 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
             // Start with map at head of yaml
             for (const std::pair<YAML::Node, YAML::Node>& keyValue : head) {
                 const std::string & key = keyValue.first.as<std::string>();
-                tokens.emplace_back(parseNode(key, keyValue.second));
+                tokens.emplace_back(Token::makeSExpression(Token::makeDatum(key), parseNode(keyValue.second)));
             }
         }
 
