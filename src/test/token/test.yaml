@@ -1,6 +1,7 @@
 # Default mod
 system:
   default-mod: mods/default/default.txt
+#  second-mod: mods/default/default2.txt
 #menu:
 #  name: test
 #  values: [

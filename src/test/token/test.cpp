@@ -202,17 +202,6 @@ static void test8(){
 }
 
 static void test9(){
-    // ???????????????????
-    // (foo (bar bag))
-    Token * head = new Token();
-    Token * bag = new Token("bag", false);
-    Token * bar = new Token("bar", false);
-    Token * foo = new Token("foo", false);
-    head->addToken(foo);
-    head->addToken(bar);
-    head->addToken(bag);
-    head->print("");
-    delete head;
 
     Token* foo2 = Token::makeSExpression(Token::makeDatum("foo"),
             Token::makeSExpression(Token::makeDatum("bar"), Token::makeDatum("bag")));
@@ -220,7 +209,7 @@ static void test9(){
     foo2->print("");
     delete foo2;
 
-    const std::string sxpr = "(foo (bar bag))";
+    const std::string sxpr = "(foo (bar (bag bad) (dad bod)))";
 
     TokenReader tr;
     Token * token = tr.readTokenFromString(sxpr);
@@ -282,7 +271,7 @@ int main(int argv, char *args[]){
         test7();
         test8();
         test9();
-        //test10();
+        test10();
         //test11();
         cout << "All tests passed!" << endl;
         return 0;
