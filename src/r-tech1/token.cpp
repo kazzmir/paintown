@@ -459,7 +459,7 @@ Token* Token::makeSExpression(Token* t1, Token* t2, Token* t3){
     return out;
 }
 
-Token* Token::makeSExpression(std::vector<Token *> & tokens){
+Token* Token::makeSExpression(const std::vector<Token *> & tokens){
     Token* out = new Token();
     for (Token * token : tokens){
         out->addToken(token);
@@ -467,7 +467,7 @@ Token* Token::makeSExpression(std::vector<Token *> & tokens){
     return out;
 }
 
-Token* Token::makeSExpression(Token* t1, std::vector<Token *> & tokens){
+Token* Token::makeSExpression(Token* t1, const std::vector<Token *> & tokens){
     Token* out = new Token();
     out->addToken(t1);
     for (Token * token : tokens){
