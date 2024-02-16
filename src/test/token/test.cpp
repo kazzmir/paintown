@@ -214,6 +214,12 @@ static void test9(){
     head->print("");
     delete head;
 
+    Token* foo2 = Token::makeSExpression(Token::makeDatum("foo"),
+            Token::makeSExpression(Token::makeDatum("bar"), Token::makeDatum("bag")));
+
+    foo2->print("");
+    delete foo2;
+
     const std::string sxpr = "(foo (bar bag))";
 
     TokenReader tr;
