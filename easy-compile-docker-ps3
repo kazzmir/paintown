@@ -2,7 +2,7 @@
 
 docker build -t paintown-ps3-build -f docker/Dockerfile.ps3 .
 mkdir -p ${PWD}/ps3-bin
-docker run --rm -iv${PWD}:/paintown-bin paintown-ps3-build sh -s <<EOF
+docker run --rm -iv${PWD}:/paintown-bin -w /workspace paintown-ps3-build sh -s <<EOF
 export ps3=1
 make clean release
 # chown $(id -u):$(id -g) /build/build-ps3/paintown.pkg 
