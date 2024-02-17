@@ -1,7 +1,10 @@
 #!/bin/python3
+
+## REQUIRES sexpdata https://github.com/jd-boyd/sexpdata/
+## Ubuntu - apt install python3-sexpdata
 import sys, io, yaml, collections.abc
 from os.path import exists
-from sexpdata import load
+from sexpdata import load, Symbol
 
 if len(sys.argv) == 1:
     print("Usage: {0} s-expression.file [output.yaml]".format(sys.argv[0]))
@@ -26,6 +29,8 @@ def ExtractToken(node):
             values[name].append(ExtractToken(expr))
         return values
     else:
+        if isinstance(node, Symbol):
+            return str(node)
         return node
 
 tokens = ExtractToken(values)
