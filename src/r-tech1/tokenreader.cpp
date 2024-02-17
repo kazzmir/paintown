@@ -402,8 +402,23 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         std::vector<Token *> sequence(const YAML::Node & node){
             std::vector<Token *> tokens;
             //DebugLog2 << "Found sequence.. aka an array" << std::endl;
-            for (YAML::const_iterator item = node.begin(); item != node.end(); ++item) {
-                tokens.emplace_back(Token::makeSExpression(Token::makeDatum(item->as<std::string>())));
+            for (YAML::Node item : node) {
+                if (item.Type() == YAML::NodeType::Scalar){
+                    //DebugLog2 << "Found Scalar type." << std::endl;
+                    Token * token = scalar(item);
+                    //token->print("");
+                    tokens.emplace_back(token);
+                } else if (item.Type() == YAML::NodeType::Sequence){
+                    //DebugLog2 << "Found Sequence type." << std::endl;
+                    std::vector<Token *> sequenceOut = sequence(item);
+                    Token * out = Token::makeSExpression(sequenceOut);
+                    //out->print(" ");
+                    tokens.emplace_back(out);
+                } else if (item.Type() == YAML::NodeType::Map){
+                    //DebugLog2 << "Found Map type." << std::endl;
+                    std::vector<Token *> mapOut = map(item);
+                    tokens.insert(tokens.end(), mapOut.begin(), mapOut.end());
+                }
             }
             //return out;
             return tokens;
