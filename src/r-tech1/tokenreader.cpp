@@ -34,7 +34,7 @@ bool isYaml(const std::string & path, bool isFile){
     try {
         return (isFile ? YAML::LoadFile(path).size() > 0 : YAML::Load(path).size() > 0);
     } catch (YAML::Exception & ex){
-        DebugLog2 << "Not a valid yaml source..." << std::endl;
+        DebugLog3 << "Not a valid yaml source..." << std::endl;
     }
 #endif
     return false;
