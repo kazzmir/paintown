@@ -77,13 +77,16 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
     }
     // FIXME use file instead of absolutePath
     //if (!isYaml(realPath.path(), true)){
-    if (!isYaml(*file.raw())){
-        (*file.raw()).reset();
-        readTokens(*file.raw());
+    if (isYaml(*file.raw())){
+        file->reset();
+        // (*file.raw()).reset();
+        readTokensFromYaml(*file.raw());
+        // readTokens(*file.raw());
         // file.close();
     } else {
         //readTokensFromYaml(realPath.path(), true);
-        (*file.raw()).reset();
+        // (*file.raw()).reset();
+        file->reset();
         readTokens(*file.raw());
     }
 
@@ -148,11 +151,11 @@ Token * TokenReader::readTokenFromString(const string & stuff){
     //if (!isYaml(stuff, false)){
     
     Storage::StringFile input(stuff);
-    if (!isYaml(input)){
+    if (isYaml(input)){
         input.reset();
-        readTokens(input);
+        readTokensFromYaml(input);
+        // readTokens(input);
     } else {
-        //readTokensFromYaml(stuff);
         input.reset();
         readTokens(input);
     }
