@@ -1,0 +1,17 @@
+# Default mod
+system:
+  default-mod: mods/default/default.txt
+  second-mod: mods/default/default2.txt
+  menu:
+    name: test
+    values: [
+      1,
+      2,
+      3,
+      4
+    ]
+  other: {
+      key1: value1,
+      key2: value2,
+      key3: value3
+    }

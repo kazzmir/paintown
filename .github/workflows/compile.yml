@@ -12,7 +12,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run build
-        run: ./easy-compile-ubuntu
+        run: |
+            sudo apt update
+            ./easy-compile-ubuntu
 
       - name: Run Release
         if: startsWith(github.ref, 'refs/tags/')

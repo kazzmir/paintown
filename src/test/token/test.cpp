@@ -1,6 +1,6 @@
-#include "../../util/token.h"
-#include "../../util/tokenreader.h"
-#include "../../util/file-system.h"
+#include "r-tech1/token.h"
+#include "r-tech1/tokenreader.h"
+#include "r-tech1/file-system.h"
 #include <exception>
 #include <iostream>
 #include <sstream>
@@ -10,6 +10,31 @@
 #include <math.h>
 
 using namespace std;
+
+
+#ifndef WINDOWS
+
+/* FIXME: dont put these methods in this test file */
+Filesystem::AbsolutePath Filesystem::configFile(){
+    std::ostringstream str;
+    /* what if HOME isn't set? */
+    str << getenv("HOME") << "/.paintownrc";
+    return Filesystem::AbsolutePath(str.str());
+}
+
+Filesystem::AbsolutePath Filesystem::userDirectory(){
+    std::ostringstream str;
+    char * home = getenv("HOME");
+    if (home == NULL){
+        str << "/tmp/paintown";
+    } else {
+        str << home << "/.paintown/";
+    }
+    return Filesystem::AbsolutePath(str.str());
+}
+
+#endif
+
 
 class Failure: public exception{
 public:
@@ -27,9 +52,22 @@ static void test1_write(const string & name){
 }
 
 static string randomFile(){
+#ifndef WINDOWS
     static char temp[64];
     sprintf(temp, "/tmp/tokenXXXXXX");
     return string(mktemp(temp));
+#else 
+/*
+    #include <iostream>
+    #include <windows.h>
+    char tempPath[MAX_PATH];
+    char temp[MAX_PATH];
+    sprintf(temp, "tokenXXXXXX");
+    DWORD result = GetTempPathA(MAX_PATH, tempPath);
+    return string(GetTempFileNameA(tempPath, "tokenXXXXXX", 0, temp));
+*/
+    return string();
+#endif
 }
 
 static void test1(){
@@ -163,7 +201,65 @@ static void test8(){
     }
 }
 
+static void test9(){
+
+    Token* foo2 = Token::makeSExpression(Token::makeDatum("foo"),
+            Token::makeSExpression(Token::makeDatum("bar"), Token::makeDatum("bag")));
+
+    foo2->print("");
+    delete foo2;
+
+    const std::string sxpr = "(foo (bar (bag bad) (dad bod)))";
+
+    TokenReader tr;
+    Token * token = tr.readTokenFromString(sxpr);
+    token->print("");
+}
+
+static void test10(){
+    const char *test9 =
+    "foo: \n"
+    "    bar1: {\n"
+    "       bag1: true \n"
+    "    } \n"
+    "    bag2: \n"
+    "       foo: bar \n"
+    "       foo: { \n"
+    "           foo3: bar2,\n"
+    "           bar3: bag3\n"
+    "       }\n";
+    TokenReader reader;
+    Token * head = reader.readTokenFromString(test9);
+
+    head->print(" ");
+
+    vector<const Token*> tokens = head->findTokens("foo/bag2/foo");
+    DebugLog << tokens.size() << endl;
+    if (tokens.size() != 2){
+        throw Failure(10);
+    }
+}
+
+static void test11(){
+    std::string path = "src/test/token/test.yaml";
+    TokenReader reader;
+    Token * head = reader.readTokenFromFile(path);
+
+    head->print(" ");
+
+    vector<const Token *> tokens = head->findTokens("system/menu/values");
+    if (tokens.size() != 1){
+        throw Failure(11);
+    }
+}
+
+#ifndef WINDOWS
 int main(){
+#else
+#include <SDL2/SDL.h>
+int main(int argv, char *args[]){
+#endif
+    Global::setDebug(2);
     try{
         test1();
         test2();
@@ -173,6 +269,9 @@ int main(){
         test6();
         test7();
         test8();
+        test9();
+        test10();
+        test11();
         cout << "All tests passed!" << endl;
         return 0;
     } catch (const Failure & f){

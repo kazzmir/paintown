@@ -13,6 +13,8 @@ link_args = []
 is_static = true
 sdl_graphics_dependency = []
 sdl_graphics_library = []
+yaml_cpp_dependency = []
+yaml_cpp_library = []
 
 # Not supported in mingw
 if not meson.is_cross_build()
@@ -24,6 +26,12 @@ if not meson.is_cross_build()
   endif
   is_static = false
   sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
+  yaml_cpp_dependency = dependency('yaml-cpp', required: false, static: is_static)
+
+  if yaml_cpp_dependency.found()
+    add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
+  endif
+
 endif
 
 includes = include_directories('src')
@@ -57,7 +65,9 @@ if mpg123_dependency.found()
 endif
 
 if meson.is_cross_build()
+  add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
   subdir('.tmp/SDL_gfx')
+  subdir('.tmp/yaml-cpp')
 endif
 
 subdir('src/r-tech1')
@@ -65,14 +75,14 @@ subdir('src/mugen')
 subdir('src/paintown-engine')
 subdir('src/openbor')
 
-test_dependencies = [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
-test_linkages = [sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library]
+test_dependencies = [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
+test_linkages = [yaml_cpp_library, sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library]
 test_link_args = link_args
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
-  dependencies: [sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
-  link_with: [sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library],
+  dependencies: [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
+  link_with: [yaml_cpp_library, sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: link_args,
   )
 
@@ -84,4 +94,5 @@ if build_tests == true
   subdir('src/test/timing')
   subdir('src/test/util')
   subdir('src/test/thread')
+  subdir('src/test/token')
 endif

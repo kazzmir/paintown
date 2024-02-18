@@ -55,3 +55,7 @@ werror = false
 [zlib:built-in options]
 default_library = 'static'
 werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false
