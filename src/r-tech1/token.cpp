@@ -434,6 +434,48 @@ Token & Token::operator>>( bool & rhs ) throw( TokenException ){
 }
 */
 
+Token* Token::makeDatum(const std::string & s){
+    return new Token(s, false);
+}
+
+Token* Token::makeSExpression(Token* t1){
+    Token* out = new Token();
+    out->addToken(t1);
+    return out;
+}
+
+Token* Token::makeSExpression(Token* t1, Token* t2){
+    Token* out = new Token();
+    out->addToken(t1);
+    out->addToken(t2);
+    return out;
+}
+
+Token* Token::makeSExpression(Token* t1, Token* t2, Token* t3){
+    Token* out = new Token();
+    out->addToken(t1);
+    out->addToken(t2);
+    out->addToken(t3);
+    return out;
+}
+
+Token* Token::makeSExpression(const std::vector<Token *> & tokens){
+    Token* out = new Token();
+    for (Token * token : tokens){
+        out->addToken(token);
+    }
+    return out;
+}
+
+Token* Token::makeSExpression(Token* t1, const std::vector<Token *> & tokens){
+    Token* out = new Token();
+    out->addToken(t1);
+    for (Token * token : tokens){
+        out->addToken(token);
+    }
+    return out;
+}
+
 void Token::addToken(Token * t){
     /*
     if (!own){

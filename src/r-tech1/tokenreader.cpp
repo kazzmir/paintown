@@ -11,6 +11,13 @@
 #include "r-tech1/tokenreader.h"
 #include "r-tech1/pointer.h"
 
+#ifdef HAVE_YAML_CPP
+#if defined(WIN32) || defined(WINDOWS)
+#define YAML_CPP_STATIC_DEFINE
+#endif
+#include <yaml-cpp/yaml.h>
+#endif
+
 using namespace std;
 
 /* tokenreader reads a file formatted with s-expressions. examples:
@@ -20,6 +27,27 @@ using namespace std;
  * (hello (world))
  * (hello (world hi))
  */
+
+//bool isYaml(const std::string & path, bool isFile){
+bool isYaml(Storage::File & file){
+#ifdef HAVE_YAML_CPP
+    std::string content = file.readAsString();
+    // DebugLog1 << "Got content: " << content << std::endl;
+
+    // Check if we got data, ignore any node that starts with ( and treat it like the start of an s-expression otherwise try to load the yaml
+    if (content[0] == '('){
+        // DebugLog1 << "Starts like an s-expression..." << std::endl;
+        return false;
+    }
+    try {
+        // return (isFile ? YAML::LoadFile(path).size() > 0 : YAML::Load(path).size() > 0);
+        return YAML::Load(content).size() > 0;
+    } catch (YAML::Exception & ex){
+        DebugLog1 << "Not a valid yaml source..." << std::endl;
+    }
+#endif
+    return false;
+}
     
 TokenReader::TokenReader(){
 }
@@ -47,8 +75,21 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
     if (file == NULL || !file->good()){
         throw TokenException(__FILE__, __LINE__, string("Could not read ") + realPath.path());
     }
-    readTokens(*file.raw());
-    // file.close();
+    // FIXME use file instead of absolutePath
+    //if (!isYaml(realPath.path(), true)){
+    if (isYaml(*file.raw())){
+        file->reset();
+        // (*file.raw()).reset();
+        readTokensFromYaml(*file.raw());
+        // readTokens(*file.raw());
+        // file.close();
+    } else {
+        //readTokensFromYaml(realPath.path(), true);
+        // (*file.raw()).reset();
+        file->reset();
+        readTokens(*file.raw());
+    }
+
     if (my_tokens.size() > 0){
         my_tokens[0]->setFile(path);
         return my_tokens[0];
@@ -59,7 +100,22 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
 }
     
 Token * TokenReader::readTokenFromFile(Storage::File & file){
-    readTokens(file);
+    //readTokens(file);
+    // const std::string & filePath = file.location()->findToken("file")->getToken(0)->getName();
+    // DebugLog1 << "Location: " << file.location()->findToken("file")->getToken(0)->getName() << std::endl;
+    
+    // FIXME use file instead of absolutePath
+    //if (!isYaml(filePath, true)){
+    if(!isYaml(file)){
+        file.reset();
+        readTokens(file);
+        // file.close();
+    } else {
+        //readTokensFromYaml(filePath, true);
+        file.reset();
+        readTokensFromYaml(file);
+    }
+
     // file.close();
     if (my_tokens.size() > 0){
         my_tokens[0]->setFile("");
@@ -91,8 +147,18 @@ Token * TokenReader::readTokenFromString(const string & stuff){
     istringstream input(stuff);
     input >> noskipws;
     */
+    
+    //if (!isYaml(stuff, false)){
+    
     Storage::StringFile input(stuff);
-    readTokens(input);
+    if (isYaml(input)){
+        input.reset();
+        readTokensFromYaml(input);
+        // readTokens(input);
+    } else {
+        input.reset();
+        readTokens(input);
+    }
     if (my_tokens.size() > 0){
         return my_tokens[0];
     }
@@ -342,4 +408,123 @@ void TokenReader::readTokens(Storage::File & input){
         token->finalize();
     }
     */
+}
+
+void TokenReader::readTokensFromYaml(Storage::File & file){
+#ifdef HAVE_YAML_CPP
+
+    class YamlReader {
+    public:
+        YamlReader(Storage::File & file){
+            origin = file.readAsString();
+            head = YAML::Load(origin);
+            DebugLog3 << "Reading tokens from yaml or file: " << origin << std::endl;
+            //DebugLog2 << "Loaded content: " << std::endl;
+            //DebugLog2 << "\n" << head << std::endl;
+            load();
+        }
+        ~YamlReader(){
+
+        }
+        std::vector<Token *> getTokens(){
+            return tokens;
+        }
+    private:
+        Token * scalar(const YAML::Node & node){
+            const std::string name = node.as<std::string>();
+            //DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
+            // Do not enclose in an sexpression
+            //Token::makeSExpression(Token::makeDatum(name));
+            return Token::makeDatum(name); 
+        }
+        std::vector<Token *> sequence(const YAML::Node & node){
+            std::vector<Token *> tokens;
+            //DebugLog2 << "Found sequence.. aka an array" << std::endl;
+            for (YAML::Node item : node) {
+                if (item.Type() == YAML::NodeType::Scalar){
+                    //DebugLog2 << "Found Scalar type." << std::endl;
+                    Token * token = scalar(item);
+                    //token->print("");
+                    tokens.emplace_back(token);
+                } else if (item.Type() == YAML::NodeType::Sequence){
+                    //DebugLog2 << "Found Sequence type." << std::endl;
+                    std::vector<Token *> sequenceOut = sequence(item);
+                    Token * out = Token::makeSExpression(sequenceOut);
+                    //out->print(" ");
+                    tokens.emplace_back(out);
+                } else if (item.Type() == YAML::NodeType::Map){
+                    //DebugLog2 << "Found Map type." << std::endl;
+                    std::vector<Token *> mapOut = map(item);
+                    tokens.insert(tokens.end(), mapOut.begin(), mapOut.end());
+                }
+            }
+            //return out;
+            return tokens;
+        }
+        std::vector<Token *> map(const YAML::Node & node){
+            //DebugLog3 << "Map content of size: " << node.size() << std::endl;
+            std::vector<Token *> output;
+            for (const std::pair<YAML::Node, YAML::Node>& keyValue : node) {
+                const std::string & key = keyValue.first.as<std::string>();
+                const YAML::Node & node = keyValue.second;
+                //DebugLog3 << "Found node name: " << key << std::endl;
+
+                if (node.Type() == YAML::NodeType::Scalar){
+                    //DebugLog2 << "Found Scalar type." << std::endl;
+                    Token * token = Token::makeSExpression(Token::makeDatum(key), 
+                                                           scalar(node));
+                    //token->print("");
+                    output.emplace_back(token);
+                } else if (node.Type() == YAML::NodeType::Sequence){
+                    //DebugLog2 << "Found Sequence type." << std::endl;
+                    std::vector<Token *> sequenceOut = sequence(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), sequenceOut);
+                    //out->print(" ");
+                    output.emplace_back(out);
+                } else if (node.Type() == YAML::NodeType::Map){
+                    //DebugLog2 << "Found Map type." << std::endl;
+                    std::vector<Token *> mapOut = map(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), mapOut);
+                    //out->print(" ");
+                    output.emplace_back(out);
+
+                }
+            }
+            return output;
+        }
+        void load(){
+            // Start with map at head of yaml
+            for (const std::pair<YAML::Node, YAML::Node>& keyValue : head) {
+                const std::string & key = keyValue.first.as<std::string>();
+                const YAML::Node & node = keyValue.second;
+
+                if (node.Type() == YAML::NodeType::Scalar){
+                    Token * token = Token::makeSExpression(Token::makeDatum(key), 
+                                                           scalar(node));
+                    tokens.emplace_back(token);
+                } else if (node.Type() == YAML::NodeType::Sequence){
+                    std::vector<Token *> sequenceOut = sequence(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), sequenceOut);
+                    //out->print(" ");
+                    tokens.emplace_back(out);
+                } else if (node.Type() == YAML::NodeType::Map){
+                    std::vector<Token *> mapOut = map(node);
+                    Token * out = Token::makeSExpression(Token::makeDatum(key), mapOut);
+                    //out->print(" ");
+                    tokens.emplace_back(out);
+                }
+            }
+        }
+
+        std::string origin;
+        YAML::Node head;
+        std::vector<Token *> tokens;
+    };
+    YamlReader reader(file);
+    for (Token * token : reader.getTokens()){
+        my_tokens.emplace_back(token);
+    }
+#else
+    DebugLog2 << "No support for yaml in this build." << std::endl;
+#endif
 }

@@ -558,6 +558,28 @@ File::File(){
         
 File::~File(){
 }
+
+std::string File::readAsString(){
+    std::vector<int8_t> bytes = readAsBytes();
+    std::string out(bytes.begin(), bytes.end());
+    return out;
+}
+
+std::vector<int8_t> File::readAsBytes(){
+    vector<int8_t> out;
+
+    char buffer[4096];
+    int read = readLine(buffer, 4096);
+    while (read > 0){
+        for (int i = 0; i < read; i++){
+            out.push_back(buffer[i]);
+        }
+
+        read = readLine(buffer, 4096);
+    }
+
+    return out;
+}
         
 class NormalFile: public File {
 public:
@@ -606,6 +628,8 @@ public:
 
     void reset(){
         in.clear();
+        // Need to seek back to beginning
+        in.seekg(0, std::ios::beg);
     }
 
     off_t seek(off_t position, int whence){
@@ -670,7 +694,9 @@ long StringFile::getModificationTime(){
 }
 
 void StringFile::reset(){
-    /* TODO or nothing..? */
+    /* need to reset the stream */
+    stream = std::istringstream(data);
+    stream.clear();
 }
 
 int StringFile::readLine(char * output, int size){
@@ -1129,6 +1155,10 @@ public:
 
     void reset(){
         /* TODO or nothing..? */
+        zip->close();
+        position = 0;
+        atEof = false;
+        zip->open(path);
     }
 
     bool canStream(){

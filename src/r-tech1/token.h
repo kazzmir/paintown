@@ -83,6 +83,15 @@ public:
     /* creates a new empty token and returns it */
     Token * newToken();
 
+    /* helper functions to create tokens */
+    static Token* makeDatum(const std::string & s);
+    static Token* makeSExpression(Token* t1);
+    static Token* makeSExpression(Token* t1, Token* t2);
+    static Token* makeSExpression(Token* t1, Token* t2, Token* t3);
+    static Token* makeSExpression(const std::vector<Token *> & tokens);
+    static Token* makeSExpression(Token* t1, const std::vector<Token *> & tokens);
+    // add more makeSExpression functions as needed
+
     /*
        inline const string & getName(){
        return name;
