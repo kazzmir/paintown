@@ -30,7 +30,7 @@ protected:
     virtual Token * readToken();
 
     virtual void readTokens(Storage::File & stream);
-    virtual void readTokensFromYaml(const std::string & yaml, bool isFile = false);
+    virtual void readTokensFromYaml(Storage::File & file);
     /*
     std::ifstream ifile;
     std::string myfile;

@@ -227,7 +227,7 @@ static void test10(){
     "       foo: { \n"
     "           foo3: bar2,\n"
     "           bar3: bag3\n"
-    "       }";
+    "       }\n";
     TokenReader reader;
     Token * head = reader.readTokenFromString(test9);
 

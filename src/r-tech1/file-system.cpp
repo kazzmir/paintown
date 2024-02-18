@@ -606,6 +606,8 @@ public:
 
     void reset(){
         in.clear();
+        // Need to seek back to beginning
+        in.seekg(0, std::ios::beg);
     }
 
     off_t seek(off_t position, int whence){
@@ -670,7 +672,9 @@ long StringFile::getModificationTime(){
 }
 
 void StringFile::reset(){
-    /* TODO or nothing..? */
+    /* need to reset the stream */
+    stream = std::istringstream(data);
+    stream.clear();
 }
 
 int StringFile::readLine(char * output, int size){
@@ -1129,6 +1133,10 @@ public:
 
     void reset(){
         /* TODO or nothing..? */
+        zip->close();
+        position = 0;
+        atEof = false;
+        zip->open(path);
     }
 
     bool canStream(){

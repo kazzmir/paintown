@@ -28,13 +28,30 @@ using namespace std;
  * (hello (world hi))
  */
 
-
-bool isYaml(const std::string & path, bool isFile){
+//bool isYaml(const std::string & path, bool isFile){
+bool isYaml(Storage::File & file){
 #ifdef HAVE_YAML_CPP
+    //unsigned char * buffer = new unsigned char(file.getSize());
+    //file.readLine((char*) buffer, file.getSize());
+    // std::string content = std::string(buffer);
+    std::string content;
+    while (!file.eof()){
+        unsigned char next;
+        file >> next;
+        content += next;
+    }
+    // DebugLog1 << "Got content: " << content << std::endl;
+
+    // Check if we got data, ignore any node that starts with ( and treat it like the start of an s-expression otherwise try to load the yaml
+    if (content[0] == '('){
+        // DebugLog1 << "Starts like an s-expression..." << std::endl;
+        return false;
+    }
     try {
-        return (isFile ? YAML::LoadFile(path).size() > 0 : YAML::Load(path).size() > 0);
+        // return (isFile ? YAML::LoadFile(path).size() > 0 : YAML::Load(path).size() > 0);
+        return YAML::Load(content).size() > 0;
     } catch (YAML::Exception & ex){
-        DebugLog3 << "Not a valid yaml source..." << std::endl;
+        DebugLog1 << "Not a valid yaml source..." << std::endl;
     }
 #endif
     return false;
@@ -67,11 +84,15 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
         throw TokenException(__FILE__, __LINE__, string("Could not read ") + realPath.path());
     }
     // FIXME use file instead of absolutePath
-    if (!isYaml(realPath.path(), true)){
+    //if (!isYaml(realPath.path(), true)){
+    if (!isYaml(*file.raw())){
+        (*file.raw()).reset();
         readTokens(*file.raw());
         // file.close();
     } else {
-        readTokensFromYaml(realPath.path(), true);
+        //readTokensFromYaml(realPath.path(), true);
+        (*file.raw()).reset();
+        readTokens(*file.raw());
     }
 
     if (my_tokens.size() > 0){
@@ -85,15 +106,19 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
     
 Token * TokenReader::readTokenFromFile(Storage::File & file){
     //readTokens(file);
-    const std::string & filePath = file.location()->findToken("file")->getToken(0)->getName();
+    // const std::string & filePath = file.location()->findToken("file")->getToken(0)->getName();
     // DebugLog1 << "Location: " << file.location()->findToken("file")->getToken(0)->getName() << std::endl;
     
     // FIXME use file instead of absolutePath
-    if (!isYaml(filePath, true)){
+    //if (!isYaml(filePath, true)){
+    if(!isYaml(file)){
+        file.reset();
         readTokens(file);
         // file.close();
     } else {
-        readTokensFromYaml(filePath, true);
+        //readTokensFromYaml(filePath, true);
+        file.reset();
+        readTokensFromYaml(file);
     }
 
     // file.close();
@@ -128,11 +153,16 @@ Token * TokenReader::readTokenFromString(const string & stuff){
     input >> noskipws;
     */
     
-    if (!isYaml(stuff, false)){
-        Storage::StringFile input(stuff);
+    //if (!isYaml(stuff, false)){
+    
+    Storage::StringFile input(stuff);
+    if (!isYaml(input)){
+        input.reset();
         readTokens(input);
     } else {
-        readTokensFromYaml(stuff);
+        //readTokensFromYaml(stuff);
+        input.reset();
+        readTokens(input);
     }
     if (my_tokens.size() > 0){
         return my_tokens[0];
@@ -385,15 +415,19 @@ void TokenReader::readTokens(Storage::File & input){
     */
 }
 
-void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
+void TokenReader::readTokensFromYaml(Storage::File & file){
 #ifdef HAVE_YAML_CPP
 
     class YamlReader {
     public:
-        YamlReader(const std::string & yaml, bool isFile):
-        origin(yaml),
-        head(isFile ? YAML::LoadFile(yaml) : YAML::Load(yaml)){
-            DebugLog3 << "Reading tokens from yaml or file: " << yaml << std::endl;
+        YamlReader(Storage::File & file){
+            while (!file.eof()){
+                unsigned char next;
+                file >> next;
+                origin += next;
+            }
+            head = YAML::Load(origin);
+            DebugLog3 << "Reading tokens from yaml or file: " << origin << std::endl;
             //DebugLog2 << "Loaded content: " << std::endl;
             //DebugLog2 << "\n" << head << std::endl;
             load();
@@ -491,11 +525,11 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
             }
         }
 
-        const std::string origin;
+        std::string origin;
         YAML::Node head;
         std::vector<Token *> tokens;
     };
-    YamlReader reader(yaml, isFile);
+    YamlReader reader(file);
     for (Token * token : reader.getTokens()){
         my_tokens.emplace_back(token);
     }
