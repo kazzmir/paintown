@@ -31,15 +31,7 @@ using namespace std;
 //bool isYaml(const std::string & path, bool isFile){
 bool isYaml(Storage::File & file){
 #ifdef HAVE_YAML_CPP
-    //unsigned char * buffer = new unsigned char(file.getSize());
-    //file.readLine((char*) buffer, file.getSize());
-    // std::string content = std::string(buffer);
-    std::string content;
-    while (!file.eof()){
-        unsigned char next;
-        file >> next;
-        content += next;
-    }
+    std::string content = file.readAsString();
     // DebugLog1 << "Got content: " << content << std::endl;
 
     // Check if we got data, ignore any node that starts with ( and treat it like the start of an s-expression otherwise try to load the yaml
@@ -421,11 +413,7 @@ void TokenReader::readTokensFromYaml(Storage::File & file){
     class YamlReader {
     public:
         YamlReader(Storage::File & file){
-            while (!file.eof()){
-                unsigned char next;
-                file >> next;
-                origin += next;
-            }
+            origin = file.readAsString();
             head = YAML::Load(origin);
             DebugLog3 << "Reading tokens from yaml or file: " << origin << std::endl;
             //DebugLog2 << "Loaded content: " << std::endl;

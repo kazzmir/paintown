@@ -558,6 +558,28 @@ File::File(){
         
 File::~File(){
 }
+
+std::string File::readAsString(){
+    std::vector<int8_t> bytes = readAsBytes();
+    std::string out(bytes.begin(), bytes.end());
+    return out;
+}
+
+std::vector<int8_t> File::readAsBytes(){
+    vector<int8_t> out;
+
+    char buffer[4096];
+    int read = readLine(buffer, 4096);
+    while (read > 0){
+        for (int i = 0; i < read; i++){
+            out.push_back(buffer[i]);
+        }
+
+        read = readLine(buffer, 4096);
+    }
+
+    return out;
+}
         
 class NormalFile: public File {
 public:

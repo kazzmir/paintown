@@ -220,6 +220,10 @@ namespace Storage{
 
         virtual long getModificationTime() = 0;
 
+        /* read the entire file into memory, either as a string or a vector of bytes */
+        virtual std::string readAsString();
+        virtual std::vector<int8_t> readAsBytes();
+
         /* seek to an absolute position */
         virtual off_t seek(off_t position, int whence) = 0;
 
