@@ -408,7 +408,9 @@ void TokenReader::readTokensFromYaml(const std::string & yaml, bool isFile){
         Token * scalar(const YAML::Node & node){
             const std::string name = node.as<std::string>();
             //DebugLog2 << "Storing Scalar as Token with value: " << name << std::endl;
-            return Token::makeSExpression(Token::makeDatum(name));
+            // Do not enclose in an sexpression
+            //Token::makeSExpression(Token::makeDatum(name));
+            return Token::makeDatum(name); 
         }
         std::vector<Token *> sequence(const YAML::Node & node){
             std::vector<Token *> tokens;
