@@ -84,7 +84,18 @@ Token * TokenReader::readTokenFromFile(const std::string & path){
 }
     
 Token * TokenReader::readTokenFromFile(Storage::File & file){
-    readTokens(file);
+    //readTokens(file);
+    const std::string & filePath = file.location()->findToken("file")->getToken(0)->getName();
+    // DebugLog1 << "Location: " << file.location()->findToken("file")->getToken(0)->getName() << std::endl;
+    
+    // FIXME use file instead of absolutePath
+    if (!isYaml(filePath, true)){
+        readTokens(file);
+        // file.close();
+    } else {
+        readTokensFromYaml(filePath, true);
+    }
+
     // file.close();
     if (my_tokens.size() > 0){
         my_tokens[0]->setFile("");
