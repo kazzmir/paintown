@@ -77,7 +77,7 @@ def checkAllegro5(debug):
                 env.Append(CPPDEFINES = ['USE_ALLEGRO5'])
                 context.Message('found version %s ' % version)
                 return True
-            except Exception as e:
+            except Exception, e:
                 print e
                 return False
 
@@ -110,7 +110,7 @@ int main(int argc, char ** argv){
             context.sconf.env = tmp
         context.Result(utils.colorResult(ok))
         if failure != None:
-            print(failure)
+            print failure
         return ok
 
     return make
@@ -160,7 +160,7 @@ def checkSDL(context):
                 return True
             else:
                 raise Exception("Couldn't build it")
-        except Exception as e:
+        except Exception, e:
             # print "Moving libraries failed! because '%s'" % e
             context.sconf.env = tmp
             return False

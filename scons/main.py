@@ -11,7 +11,7 @@ def getEnvironment():
         import unix
         return unix.getEnvironment()
     
-    print("Could not determine environment. Defaulting to unix")
+    print "Could not determine environment. Defaulting to unix"
     import unix
     return unix.getEnvironment()
 
@@ -36,8 +36,8 @@ try:
     for good in shared:
         safe = environment.Install('.', good)
         environment.Default(safe)
-except Exception as e:
-    print(e)
+except Exception, e:
+    print e
 
 try:
     environment = getStaticEnvironment()
@@ -48,5 +48,5 @@ try:
     for good in static:
         safe = environment.InstallAs(good[0].name + '-static', good)
         environment.Alias('static', safe)
-except Exception as e:
-    print(e)
+except Exception, e:
+    print e

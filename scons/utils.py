@@ -1,7 +1,6 @@
 from SCons.Script import ARGUMENTS
 import os
 
-
 def noColors():
     try:
         return int(ARGUMENTS['colors']) == 0
@@ -104,7 +103,7 @@ def safeParseConfig(environment, config):
             environment.ParseConfig(config)
             out.close()
             sys.stderr = old_stderr
-        except Exception as e:
+        except Exception, e:
             out.close()
             sys.stderr = old_stderr
             raise e
@@ -115,7 +114,7 @@ def safeParseConfig(environment, config):
         import subprocess
         process = subprocess.Popen(config.split(' '), stdout = subprocess.PIPE)
         # p = subprocess.Popen(["ruby", "-e", code], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-        out = process.stdout.readline().strip()
+        out = p.stdout.readline().strip()
         environment.MergeFlags(out)
 
     version1()
