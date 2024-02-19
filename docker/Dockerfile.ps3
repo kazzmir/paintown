@@ -31,6 +31,7 @@ RUN apt update && apt install -y \
     wget \
     xz-utils \
     zlib1g-dev \
+    tree \
     # pass toolchain's check for gmp
    && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
    && apt -y clean autoclean autoremove \
@@ -54,7 +55,19 @@ RUN mkdir -p ${PS3DEV} \
     && ./toolchain.sh \
     && rm -rf ${PS3DEV}/toolchain* /var/lib/apt/lists/*
 
-# Optionally, you can add additional tools or libraries for PS3 development
+# Install SDL2 Libraries for the PS3
+RUN cd ${PS3DEV} \
+    && git clone https://github.com/humbertodias/PS3-SDL2 sdl2_pslight \
+    && cd sdl2_pslight \
+    && chmod +x configure && ./configure --host=powerpc64-ps3-elf --enable-static --disable-shared \
+    && make \
+    && make install \
+    && rm -rf ${PS3DEV}/sdl2_pslight
+
+# RUN cd ${PS3DEV} \
+#     && git clone https://github.com/ps3dev/ps3libraries \
+#     && cd ps3libraries \
+#     && ./libraries.sh
 
 # Set the working directory
 WORKDIR /workspace

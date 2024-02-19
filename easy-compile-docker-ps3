@@ -1,25 +1,18 @@
 #!/bin/bash -e
 
 docker build -t paintown-ps3-build -f docker/Dockerfile.ps3 .
-mkdir -p ${PWD}/ps3-bin
 docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build sh -s <<EOF
-export ps3=1
-make clean release
-# chown $(id -u):$(id -g) /build/build-ps3/paintown.pkg 
-# cp -a /build/build-ps3/paintown.pkg /paintown-bin/ps3-bin
-# find build/build-ps3/src/test -type f -name \*.pkg -exec sh -c "chown $(id -u):$(id -g) {}; cp -a {} /paintown-bin/ps3-bin" \;
+
+# FIXME - Replace it for meson build
+ppu-g++ -Wall -O2 -mcpu=cell -o paintown.ps3 /paintown-bin/misc/ps3/sdl2-example.cpp -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections -maltivec -mminimal-toc \
+-I/usr/local/include/SDL2 \
+-L/usr/local/lib -lSDL2 -lm -lgcm_sys -lrsx -lsysutil -lio -laudio -lrt -llv2 -lio -laudio
+
 EOF
 echo "
 To run you will need a CFW [custom firmware] or system that can boot unsigned applications
 "
-echo "[ok] - docker ps3toolchain
-[nok] sdl2
-[nok] SDL2_image
-[nok] SDL2_ttf
-[nok] SDL2_mixer
-[nok] SDL2_gfx
-[nok] zlib
-[nok] vorbis - optional
-[nok] ogg - optional
-[nok] libmpg123 - optional
-"
+
+ls -l paintown.ps3
+file paintown.ps3
+echo "Here is the executable. To run you need to package as a pkg file"

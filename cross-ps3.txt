@@ -1,0 +1,60 @@
+[constants]
+cross_root = 'build-ps3' / 'cross-env'
+common_args = ['-I/usr/local/ps3dev/portlibs/ppu/include','-DPS3']
+
+[binaries]
+c = 'ppu-gcc'
+cpp = 'ppu-g++'
+ar = 'ppu-ar'
+strip = 'ppu-strip'
+pkg-config = 'pkg-config'
+sdl2-config = cross_root / 'bin/sdl2-config'
+
+[properties]
+# Customize compiler flags as needed
+c_args = ['-I/usr/local/ps3dev/ppu/powerpc64-ps3-elf/include', '-mcpu=cell', '-m64', '-fno-builtin', '-nostdlib', '-DPS3']
+cpp_args = ['-I/usr/local/ps3dev/ppu/powerpc64-ps3-elf/include', '-mcpu=cell', '-m64', '-fno-builtin', '-nostdlib', '-DPS3']
+ld_args = ['-L/usr/local/ps3dev/ppu/powerpc64-ps3-elf/lib', '-m64', '-L/ps3/sdk/usr/lib', '-lrsx', '-lnet', '-lsysmodule', '-lsysutil']
+pkg_config_libdir = ['/usr/local/ps3dev/portlibs/ppu/lib/pkgconfig', cross_root / 'lib/pkgconfig']
+
+[host_machine]
+system = 'ps3'
+cpu_family = 'cell'
+cpu = 'cell'
+endian = 'big'
+
+[built-in options]
+pkg_config_path = cross_root / 'lib/pkg-config'
+c_include_path = cross_root / 'include'
+cpp_include_path = cross_root / 'include'
+c_args = common_args + ['-I../build-mingw/cross-env/include',]
+cpp_args = common_args + ['-I../build-mingw/cross-env/include',]
+c_link_args = ['-L../' + cross_root / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s',]
+cpp_link_args = ['-L../' + cross_root / 'lib', '-static', '-static-libgcc', '-static-libstdc++',]
+includedir = cross_root / 'include'
+libdir = cross_root / 'lib'
+default_library='static'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false
