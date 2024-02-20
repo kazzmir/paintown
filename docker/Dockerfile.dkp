@@ -1,0 +1,29 @@
+# Build:        docker build -t paintown-dkp-build -f docker/Dockerfile.dkp .
+# Access shell: docker run --rm -it --entrypoint /bin/bash  paintown-dkp-build 
+FROM ubuntu:23.10
+
+RUN mkdir /build
+
+COPY src /build/src
+COPY meson.build /build
+#COPY easy-compile-mingw /build
+COPY misc/powerpc-eabi.txt /build
+#COPY misc/mingw-environment.sh /build/misc/
+COPY meson.options /build
+COPY Makefile /build
+
+RUN apt update && apt install -y sudo wget git
+RUN wget https://apt.devkitpro.org/install-devkitpro-pacman
+RUN chmod +x ./install-devkitpro-pacman
+RUN sed -i 's/apt-get install/apt-get install -y/g' ./install-devkitpro-pacman
+RUN ./install-devkitpro-pacman
+RUN ln -s /proc/self/mounts /etc/mtab
+RUN dkp-pacman -Sy
+RUN yes '' | dkp-pacman -Sy wii-dev
+RUN dkp-pacman -Sy wii-sdl2 wii-sdl2_gfx wii-sdl2_image wii-dl2_mixer wii-sdl2_ttf
+#RUN dkp-pacman -S wiiu-dev
+#RUN dkp-pacman -S switch-dev
+
+#RUN cd /build && ./easy-compile-mingw
+
+CMD [ "/bin/bash" ]
