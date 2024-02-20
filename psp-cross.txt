@@ -1,0 +1,25 @@
+[binaries]
+c = 'psp-gcc'
+cpp = 'psp-g++'
+ar = 'psp-ar'
+strip = 'psp-strip'
+pkgconfig = 'psp-pkgconf'
+sdl2-config = '/pspdev/psp/bin/sdl2-config'
+
+[built-in options]
+c_args = ['-I/pspdev/psp/include', '-DPSP', '-I/pspdev/psp/sdk/include']
+cpp_args = ['-I/pspdev/psp/include', '-DPSP', '-I/pspdev/psp/sdk/include', '-D_PSP_FW_VERSION=500']
+c_link_args = ['-L/pspdev/psp/sdk/lib/']
+cpp_link_args = ['-L/pspdev/psp/sdk/lib/']
+
+[target_machine]
+system = 'psp'
+cpu_family = 'mips'
+cpu = 'mipsel'
+endian = 'little'
+
+[host_machine]
+system = 'psp'
+cpu_family = 'mips'
+cpu = 'mipsel'
+endian = 'little'

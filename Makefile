@@ -45,5 +45,15 @@ testmingw: build-mingw
 	cp build-mingw/paintown.exe mingw-bin
 	find build-mingw/src/test -type f -name \*.exe -exec sh -c "cp {} mingw-bin" \;
 
+build-psp:
+	mkdir build-psp
+	misc/psp-environment.sh
+	meson setup --cross-file psp-cross.txt misc/psp build-psp
+	#meson setup --cross-file psp-cross.txt build-psp
+
+psp: build-psp
+	(cd build-psp; meson configure -Dbuild_tests=false)
+	meson compile  -C build-psp
+
 clean:
-	rm -rf build-debug build-release build-mingw
+	rm -rf build-debug build-release build-mingw build-psp

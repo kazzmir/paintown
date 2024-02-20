@@ -1,0 +1,37 @@
+FROM --platform=linux/amd64 ubuntu:24.04
+
+# docker build -t paintown-psp-build -f Dockerfile.psp .
+# docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build bash
+
+ENV PSPDEV /pspdev
+ENV PSPSDK $PSPDEV/psp
+ENV PATH   $PATH:$PSPDEV/bin:$PSPSDK/bin
+
+WORKDIR /
+
+RUN apt update \
+    && apt install -y build-essential cmake pkgconf libreadline8 libusb-1.0-0 libgpgme11 libarchive-tools fakeroot wget meson git \
+    && apt clean \
+    && wget https://github.com/pspdev/pspdev/releases/download/latest/pspdev-ubuntu-latest.tar.gz \
+    && tar xfv pspdev-ubuntu-latest.tar.gz \
+    && rm pspdev-ubuntu-latest.tar.gz
+
+RUN wget https://www.mpg123.de/download/mpg123-1.32.5.tar.bz2 \
+    && tar -xvjf mpg123-1.32.5.tar.bz2 \
+    && cd mpg123-1.32.5 \
+    # Cross-compile for PSP MIPS
+    && ./configure --host=mipsel --build=x86_64-pc-linux-gnu \
+                --prefix=$PSPDEV/psp \
+                --disable-shared \
+    && make && make install \                
+    && rm -rf mpg123-1.32.5 mpg123-1.32.5.tar.bz2
+
+# RUN git clone https://github.com/jbeder/yaml-cpp.git \
+#     && cd yaml-cpp \
+#     # Cross-compile for PSP MIPS
+#     && ./configure --host=mipsel --build=x86_64-pc-linux-gnu \
+#                 --prefix=$PSPDEV/psp \
+#                 --disable-shared \
+
+WORKDIR /src
+CMD ["/bin/bash"]

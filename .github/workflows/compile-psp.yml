@@ -1,0 +1,45 @@
+name: psp build
+
+on:
+  push
+
+jobs:
+  build:
+    name: Compile
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Run build
+        run: ./easy-compile-docker-psp
+
+      - name: Run Release
+        if: startsWith(github.ref, 'refs/tags/')
+        run: ./release/release-psp
+
+      - name: Archive Folder
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact
+          path: |
+            ${{github.workspace}}/*.pbp
+  publish-release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: artifact
+          path: ${{github.workspace}}
+
+      - name: Create Release
+        id: create_release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ github.workspace }}/*.pbp

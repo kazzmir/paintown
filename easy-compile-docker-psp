@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+docker build -t paintown-psp-build -f docker/Dockerfile.psp .
+docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build sh -s <<EOF
+make clean psp
+cp build-psp/main.elf paintown-psp.elf
+EOF
+
+echo "
+To run you will need a CFW [custom firmware] or system that can boot unsigned applications
+"
+
+ls -l paintown-psp.elf
+file paintown-psp.elf
+echo "Here is the executable paintown-psp.elf. To run you need to package as a pkg file"
+
