@@ -5,7 +5,7 @@ docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build sh -
 
 # FIXME - Replace it for meson build
 ppu-g++ -Wall -O2 -mcpu=cell -o paintown.ps3 /paintown-bin/misc/ps3/sdl2-example.cpp -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections -maltivec -mminimal-toc \
--I/usr/local/include/SDL2 \
+-I/usr/local/include \
 -L/usr/local/lib -lSDL2 -lm -lgcm_sys -lrsx -lsysutil -lio -laudio -lrt -llv2 -lio -laudio
 
 EOF

@@ -13,7 +13,7 @@ GAME_TITLE="Paintown"
 GAME_ID="PAINTOWN"
 PKG_DIR="paintown.ps3"
 AUTHOR="paintown"
-app='UP0000-Paintown_00-0000000000000000'
+CONTENT_ID='UP0000-Paintown_00-0000000000000000'
 
 APPVERSION_TAG=`git tag --sort=-committerdate | head -n 1`
 APPVERSION_COMMIT=`git log --format=%h -n 1`
@@ -30,6 +30,8 @@ fi
 
 # Copy compiled ps3 file
 cp $EXEDIR/paintown.ps3 main
+cp $EXEDIR/misc/ps3/sfo.xml .
+sed -i "s/01\.00/$APPVERSION/g" sfo.xml
 
 # Create directory structure
 mkdir -p "$PKG_DIR/USRDIR"
@@ -53,12 +55,12 @@ fself main.elf main.fself
 make_self main.elf main.self
 
 # Eboot
-make_self_npdrm main.elf $PKG_DIR/USRDIR/EBOOT.BIN $app
+make_self_npdrm main.elf $PKG_DIR/USRDIR/EBOOT.BIN $CONTENT_ID
 
 # PARAM.SFO
-python $PS3DEV/bin/sfo.py --title "$GAME_TITLE" --appid "$GAME_ID" -f $PS3DEV/bin/sfo.xml $PKG_DIR/PARAM.SFO
+sfo.py --title "$GAME_TITLE" --appid "$GAME_ID" -f sfo.xml $PKG_DIR/PARAM.SFO
 # PKG dev
-python $PS3DEV/bin/pkg.py --contentid $app $PKG_DIR/ main.pkg
+pkg.py --contentid $CONTENT_ID $PKG_DIR/ main.pkg
 echo "PS3 game folder created: $PKG_DIR"
 
 EOF
@@ -67,4 +69,4 @@ EOF
 tree
 
 ARCH=ps3
-mv `pwd`/main.pkg $EXEDIR/paintown-$ARCH.pkg
+mv `pwd`/main.pkg $EXEDIR/paintown-$ARCH-$APPVERSION.pkg
