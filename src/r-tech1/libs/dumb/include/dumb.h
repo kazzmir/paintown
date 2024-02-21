@@ -93,6 +93,10 @@ int dumb_atexit(void (*proc)(void));
 
 void dumb_exit(void);
 
+#if defined(__PSP__)
+#define DUMB_OFF_T_CUSTOM long long int
+#endif
+
 /* File Input Functions */
 #ifdef DUMB_OFF_T_CUSTOM
 typedef DUMB_OFF_T_CUSTOM dumb_off_t;
