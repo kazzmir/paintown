@@ -10,9 +10,37 @@ COPY meson.build /build
 COPY misc/powerpc-eabi.txt /build
 #COPY misc/mingw-environment.sh /build/misc/
 COPY meson.options /build
-COPY Makefile /build
+#COPY Makefile /build
+RUN cat <<EOF > Makefile 
+dkp: build-dkp
+	(cd build-dkp; meson configure -Dbuild_tests=false)
+	meson compile -C build-dkp
 
-RUN apt update && apt install -y sudo wget git
+build-dkp:
+	mkdir build-dkp
+#	misc/mingw-environment.sh
+	meson setup --cross-file powerpc-eabi.txt build-dkp
+EOF
+
+RUN mkdir .tmp
+RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- .tmp/SDL_gfx"
+#COPY .tmp/SDL_gfx/*.h ${BUILD_DIR}/cross-env/include/SDL2
+RUN cat <<EOF > .tmp/SDL_gfx/meson.build
+sources = [
+  'SDL2_framerate.c',
+  'SDL2_gfxPrimitives.c',  
+  'SDL2_imageFilter.c',  
+  'SDL2_rotozoom.c',
+]
+
+includes = include_directories('.')
+
+sdl_graphics_library = static_library('SDL2_gfx', sources,
+  include_directories: [includes],
+  dependencies: [sdl_dependency, zlib_dependency],
+  )
+EOF
+RUN apt update && apt install -y sudo wget git meson ninja-build make
 RUN wget https://apt.devkitpro.org/install-devkitpro-pacman
 RUN chmod +x ./install-devkitpro-pacman
 RUN sed -i 's/apt-get install/apt-get install -y/g' ./install-devkitpro-pacman
@@ -20,7 +48,7 @@ RUN ./install-devkitpro-pacman
 RUN ln -s /proc/self/mounts /etc/mtab
 RUN dkp-pacman -Sy
 RUN yes '' | dkp-pacman -Sy wii-dev
-RUN dkp-pacman -Sy wii-sdl2 wii-sdl2_gfx wii-sdl2_image wii-dl2_mixer wii-sdl2_ttf
+RUN yes '' | dkp-pacman -Sy wii-sdl2 wii-sdl2_gfx wii-sdl2_image wii-sdl2_mixer wii-sdl2_ttf
 #RUN dkp-pacman -S wiiu-dev
 #RUN dkp-pacman -S switch-dev
 

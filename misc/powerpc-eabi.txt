@@ -1,21 +1,22 @@
 [constants]
-dkp_root = / 'opt' / 'devkitpro'
-dkp_ppc = / 'opt' / 'devkitPPC'
+dkp_root = '/opt' / 'devkitpro'
+dkp_ppc = dkp_root / 'devkitPPC'
+powerpc_eabi = dkp_ppc / 'powerpc-eabi'
 cross_root = 'build-dkp' / 'cross-env'
 # Figure out a way to get these or append to c_args/c++_args without overwritting
 # x86_64-w64-mingw32-g++  -xc   /dev/null -E -Wp,-v 2>&1 | sed -n 's,^ ,,p'
-common_args = ['-I' dkp_ppc / 'include', '-DDEVKITPRO']
+common_args = ['-I' + dkp_ppc / 'include', '-I' + powerpc_eabi / 'include', '-DDEVKITPRO']
 #common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']
 
 [binaries]
-c = 'powerpc-eabi-gcc'
-cpp = 'powerpc-eabi-g++'
-ar = 'powerpc-eabi-ar'
-strip = 'powerpc-eabi-strip'
-exe_wrapper = 'wine64'
+c = dkp_ppc / 'bin' / 'powerpc-eabi-gcc'
+cpp = dkp_ppc / 'bin' / 'powerpc-eabi-g++'
+ar = dkp_ppc / 'bin' / 'powerpc-eabi-ar'
+strip = dkp_ppc / 'bin' / 'powerpc-eabi-strip'
+#exe_wrapper = 'wine64'
 pkg-config = dkp_root / 'portlibs' / 'wii' / 'bin' / 'powerpc-eabi-pkg-config'
 sdl2-config = dkp_root / 'portlibs' / 'wii' / 'bin' / 'powerpc-eabi-sdl2-config'
-cmake = dkp_root / 'portlibs' / 'wii' / 'bin' / 'powerpc-eabi-pkg-cmake'
+cmake = dkp_root / 'portlibs' / 'wii' / 'bin' / 'powerpc-eabi-cmake'
 
 [properties]
 #pkg_config_libdir = [dkp_root / 'portlibs' / 'wii' / 'lib' / 'pkgconfig', cross_root / 'lib/pkgconfig']
