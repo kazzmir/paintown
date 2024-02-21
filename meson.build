@@ -65,7 +65,7 @@ if mpg123_dependency.found()
 endif
 
 if meson.is_cross_build()
-  if meson.get_external_property('wii_build')
+  if meson.has_external_property('wii_build') and meson.get_external_property('wii_build')
     # Need to add harfbuzz for wii
     harfbuzz_dependency = dependency('harfbuzz', required: true, static: is_static)
     # Use included SDL_gfx
