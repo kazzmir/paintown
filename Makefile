@@ -48,12 +48,12 @@ testmingw: build-mingw
 build-psp:
 	mkdir build-psp
 	misc/psp-environment.sh
-	meson setup --cross-file psp-cross.txt misc/psp build-psp
-	#meson setup --cross-file psp-cross.txt build-psp
+	#meson setup --cross-file psp-cross.txt misc/psp build-psp
+	meson setup --cross-file psp-cross.txt build-psp
 
 psp: build-psp
 	(cd build-psp; meson configure -Dbuild_tests=false)
 	meson compile  -C build-psp
 
 clean:
-	rm -rf build-debug build-release build-mingw build-psp
+	rm -rf .tmp build build-debug build-release build-mingw build-psp
