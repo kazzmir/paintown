@@ -9,7 +9,7 @@
 #include <string>
 #include <fcntl.h>
 
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
 #include <spawn.h>
 #include <sys/wait.h>
 #endif
@@ -29,7 +29,7 @@ public:
 
 static bool hasGlxInfo(){
     /* FIXME: on windows just return true */
-#ifdef WINDOWS
+#if defined(WINDOWS) || defined(WII) || defined(MINPSPW) || defined(PS3) || defined(NDS) || defined(NACL) || defined(XENON) || defined(UCLIBC)
     return true;
 #else
 

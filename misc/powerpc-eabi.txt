@@ -25,6 +25,7 @@ sdl2-config = dkp_root / 'portlibs' / 'wii' / 'bin' / 'powerpc-eabi-sdl2-config'
 cmake = dkp_root / 'portlibs' / 'wii' / 'bin' / 'powerpc-eabi-cmake'
 
 [properties]
+wii_build = true
 #pkg_config_libdir = [dkp_root / 'portlibs' / 'wii' / 'lib' / 'pkgconfig', cross_root / 'lib/pkgconfig']
 pkg_config_libdir = [dkp_root / 'portlibs' / 'wii' / 'lib' / 'pkgconfig']
 
@@ -40,8 +41,8 @@ c_include_path = dkp_root / 'portlibs' / 'wii'  / 'include'
 cpp_include_path = dkp_root / 'portlibs' / 'wii' / 'include'
 c_args = common_args + ['-I../build-dkp/cross-env/include',]
 cpp_args = common_args + ['-I../build-dkp/cross-env/include',]
-c_link_args = ['-L../' + dkp_root / 'portlibs' / 'wii' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s',]
-cpp_link_args = ['-L../' + dkp_root / 'portlibs' / 'wii' / 'lib', '-static', '-static-libgcc', '-static-libstdc++',]
+c_link_args = ['-L' + dkp_root / 'portlibs' / 'wii' / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s']
+cpp_link_args = ['-L' + dkp_root / 'portlibs' / 'wii' / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-static-libgcc', '-static-libstdc++']
 includedir = cross_root / 'include'
 libdir = cross_root / 'lib'
 default_library='static'

@@ -32,21 +32,21 @@ RUN apt install -y sudo wget git ninja-build make pip
 RUN pip install meson
 
 # SDL_gfx
-RUN mkdir /build/.tmp
-RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
-RUN echo "sources = [\n\
-    'SDL2_framerate.c',\n\
-    'SDL2_gfxPrimitives.c',\n\
-    'SDL2_imageFilter.c',\n\  
-    'SDL2_rotozoom.c',\n\
-]\n\
-\n\
-includes = include_directories('.')\n\
-\n\
-sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
-    include_directories: [includes],\n\
-    dependencies: [sdl_dependency, zlib_dependency],\n\
-)\n" > /build/.tmp/SDL_gfx/meson.build
+#RUN mkdir /build/.tmp
+#RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
+#RUN echo "sources = [\n\
+#    'SDL2_framerate.c',\n\
+#    'SDL2_gfxPrimitives.c',\n\
+#    'SDL2_imageFilter.c',\n\  
+#    'SDL2_rotozoom.c',\n\
+#]\n\
+#\n\
+#includes = include_directories('.')\n\
+#\n\
+#sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
+#    include_directories: [includes],\n\
+#    dependencies: [sdl_dependency, zlib_dependency],\n\
+#)\n" > /build/.tmp/SDL_gfx/meson.build
 
 #RUN wget https://apt.devkitpro.org/install-devkitpro-pacman
 #RUN chmod +x ./install-devkitpro-pacman
@@ -62,6 +62,6 @@ sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
 #RUN dkp-pacman -S wiiu-dev
 #RUN dkp-pacman -S switch-dev
 
-#RUN cd /build && ./easy-compile-mingw
+RUN cd /build && make
 
 CMD [ "/bin/bash" ]
