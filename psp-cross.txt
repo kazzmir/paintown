@@ -7,10 +7,8 @@ pkgconfig = 'psp-pkgconf'
 sdl2-config = '/pspdev/psp/bin/sdl2-config'
 
 [built-in options]
-c_args = ['-I/pspdev/psp/include', '-DMINPSPW=1', '-I/pspdev/psp/sdk/include']
-cpp_args = ['-I/pspdev/psp/include', '-DMINPSPW=1', '-I/pspdev/psp/sdk/include', '-D_PSP_FW_VERSION=500']
-c_link_args = ['-L/pspdev/psp/sdk/lib/']
-cpp_link_args = ['-L/pspdev/psp/sdk/lib/']
+cpp_args = ['-I/pspdev/psp/include', '-DMINPSPW=1', '-I/pspdev/psp/sdk/include', '-I/psp/include', '-I/pspdev/psp/include/freetype2', '-I/pspdev/psp/include/SDL', '-D_PSP_FW_VERSION=500']
+cpp_link_args = ['-L/pspdev/psp/sdk/lib/', '-L/pspdev/lib/', , '-L/pspdev/psp/lib/']
 
 [target_machine]
 system = 'psp'
