@@ -22,6 +22,7 @@
 #include <string>
 #include <fstream>
 #include <ostream>
+#include <regex>
 #include "r-tech1/token.h"
 
 #include "libs/zip/unzip.h"
