@@ -3,7 +3,7 @@ c = 'psp-gcc'
 cpp = 'psp-g++'
 ar = 'psp-ar'
 strip = 'psp-strip'
-pkgconfig = 'psp-pkgconf'
+pkg-config = 'psp-pkgconf'
 sdl2-config = '/pspdev/psp/bin/sdl2-config'
 
 [built-in options]
