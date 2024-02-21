@@ -1,59 +1,4 @@
-FROM ubuntu:24.04
-
-ARG TOOLCHAIN_VERSION=0359891a9e65785a12fab0b0f9479d81f0d146b0
-ENV DEBIAN_FRONTEND noninteractive
-
-# Install required packages
-RUN apt update && apt install -y \
-    autoconf \
-    automake \
-    bison \
-    bzip2 \
-    ca-certificates \
-    clang \
-    flex \
-    g++ \
-    gcc \
-    git \
-    libelf-dev \
-    libgmp3-dev \
-    libncurses5-dev \
-    libssl-dev \
-    libtool \
-    libtool-bin \
-    make \
-    meson \
-    patch \
-    pkg-config \
-    python-dev-is-python3 \
-    texinfo \
-    vim \
-    wget \
-    xz-utils \
-    zlib1g-dev \
-    tree \
-    # pass toolchain's check for gmp
-   && ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h \
-   && apt -y clean autoclean autoremove \
-   && rm -rf /var/lib/{apt,dpkg,cache,log}/
-
-# Fixes certificate errors with letsencrypt in ARMv7
-RUN echo "ca_certificate=/etc/ssl/certs/ca-certificates.crt" >> /etc/wgetrc
-RUN echo "check_certificate = off" > ~/.wgetrc
-
-# Set environment variables
-ENV PS3DEV /usr/local/ps3dev
-ENV PSL1GHT ${PS3DEV}
-ENV PATH ${PATH}:${PS3DEV}/bin:${PS3DEV}/ppu/bin:${PS3DEV}/spu/bin:${PS3DEV}/portlibs/ppu/bin
-
-# Install PS3 toolchain
-RUN mkdir -p ${PS3DEV} \
-    && cd ${PS3DEV} \
-    && git clone https://github.com/ps3dev/ps3toolchain.git toolchain \
-    && cd toolchain \
-    && git checkout -qf $TOOLCHAIN_VERSION \
-    && ./toolchain.sh \
-    && rm -rf ${PS3DEV}/toolchain* /var/lib/apt/lists/*
+FROM hldtux/ps3dev
 
 # Install SDL2 Libraries for the PS3
 RUN cd ${PS3DEV} \
@@ -63,11 +8,6 @@ RUN cd ${PS3DEV} \
     && make \
     && make install \
     && rm -rf ${PS3DEV}/sdl2_pslight
-
-# RUN cd ${PS3DEV} \
-#     && git clone https://github.com/ps3dev/ps3libraries \
-#     && cd ps3libraries \
-#     && ./libraries.sh
 
 # Set the working directory
 WORKDIR /workspace

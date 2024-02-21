@@ -1,7 +1,10 @@
 #!/bin/bash -e
 
-docker build -t paintown-ps3-build -f docker/Dockerfile.ps3 .
+DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t paintown-ps3-build -f docker/Dockerfile.ps3 .
 docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build sh -s <<EOF
+
+# make clean ps3
+# cp build-ps3/main.elf paintown-ps3.elf
 
 # FIXME - Replace it for meson build
 ppu-g++ -Wall -O2 -mcpu=cell -o paintown.ps3 /paintown-bin/misc/ps3/sdl2-example.cpp -mhard-float -fmodulo-sched -ffunction-sections -fdata-sections -maltivec -mminimal-toc \
