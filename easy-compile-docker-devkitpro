@@ -1,0 +1,14 @@
+#!/bin/bash -e
+# Build bins for GC, WII, WIIU and/or SWITCH
+
+BUILD_DIR=/build/build-dkp
+
+docker build -t paintown-dkp-build -f docker/Dockerfile.dkp .
+mkdir -p ${PWD}/dkp-bin
+docker run --rm -iv${PWD}:/paintown-bin paintown-dkp-build sh -s <<EOF
+#chown $(id -u):$(id -g) ${BUILD_DIR}/paintown.elf
+#cp -a ${BUILD_DIR}/paintown.elf /paintown-bin/dkp-bin
+EOF
+echo "
+Complete.
+"
