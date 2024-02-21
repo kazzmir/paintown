@@ -65,9 +65,12 @@ if mpg123_dependency.found()
 endif
 
 if meson.is_cross_build()
-  add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
+  fs = import('fs')
+  if fs.is_dir('.tmp/yaml-cpp')
+    add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
+    subdir('.tmp/yaml-cpp')
+  endif
   subdir('.tmp/SDL_gfx')
-  subdir('.tmp/yaml-cpp')
 endif
 
 subdir('src/r-tech1')
