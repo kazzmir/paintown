@@ -21,8 +21,11 @@
 #include "r-tech1/file-system.h"
 #include <math.h>
 
+#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+#define FS_WRAPPER
 #include "libs/filesystem/fs-wrapper.h"
 //#include "libs/filesystem/glob.h"
+#endif
 
 #ifndef USE_ALLEGRO
 /* FIXME: move this to the filesystem module */
@@ -166,10 +169,12 @@ Filesystem::AbsolutePath Util::getDataPath2(){
 
 /* FIXME: remove this method */
 bool Util::exists( const string & file ){
-#ifndef WINDOWS
+#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
     return Storage::instance().exists(Filesystem::AbsolutePath(file));
-#else
+#elif defined(FS_WRAPPER)
     return fs::exists(fs::path(Filesystem::AbsolutePath(file).path()));
+#else
+    return false;
 #endif
 
 /*

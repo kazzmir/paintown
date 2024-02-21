@@ -5,8 +5,11 @@
 #include <vector>
 #include <map>
 
+#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+#define FS_WRAPPER
 #include "libs/filesystem/fs-wrapper.h"
 #include "libs/filesystem/glob.h"
+#endif
 
 using std::string;
 using std::vector;
@@ -83,7 +86,7 @@ vector<Path::AbsolutePath> Directory::findDirectories(const Path::AbsolutePath &
 
     Global::debug(1) << "Search in " << dataPath.path() << " for " << find << std::endl;
     vector<string> names = lastDirectory.last->directoryNames();
-#ifndef USE_ALLEGRO
+#ifdef FS_WRAPPER
     for (vector<string>::iterator it = names.begin(); it != names.end(); it++){
         Global::debug(1) << "Check if " << *it << " matches " << find << std::endl;
         //if (file_matches(it->c_str(), find.c_str())){
@@ -142,7 +145,7 @@ vector<Path::AbsolutePath> Directory::findFiles(const Path::AbsolutePath & dataP
 
     Global::debug(1) << "Search in " << dataPath.path() << " for " << find << std::endl;
     vector<string> names = lastDirectory.last->filenames();
-#ifndef USE_ALLEGRO
+#ifdef FS_WRAPPER
     for (vector<string>::iterator it = names.begin(); it != names.end(); it++){
         Global::debug(1) << "Check if " << *it << " matches " << find << std::endl;
         //if (file_matches(it->c_str(), find.c_str())){

@@ -1,6 +1,7 @@
 # Build:        docker build -t paintown-dkp-build -f docker/Dockerfile.dkp .
 # Access shell: docker run --rm -it --entrypoint /bin/bash  paintown-dkp-build 
-FROM ubuntu:23.10
+#FROM ubuntu:23.10
+FROM devkitpro/devkitppc:latest
 
 RUN mkdir /build
 
@@ -11,21 +12,29 @@ COPY misc/powerpc-eabi.txt /build
 #COPY misc/mingw-environment.sh /build/misc/
 COPY meson.options /build
 # Makefile
-RUN echo $"dkp: build-dkp\n\
+RUN echo ".PHONY: dkp clean\n\
+\n\
+dkp: build-dkp\n\
 \t(cd build-dkp; meson configure -Dbuild_tests=false)\n\
 \tmeson compile -C build-dkp\n\
 \n\
 build-dkp:\n\
 \tmkdir build-dkp\n\
 #\tmisc/mingw-environment.sh\n\
-\tmeson setup --cross-file powerpc-eabi.txt build-dkp\n" > /build/Makefile
+\tmeson setup --cross-file powerpc-eabi.txt build-dkp\n\
+\n\
+clean:\n\
+\trm -fr build-dkp" > /build/Makefile
 
-RUN apt update && apt install -y sudo wget git meson ninja-build make
+#RUN apt update && apt install -y sudo wget git meson ninja-build make
+RUN apt install -y sudo wget git ninja-build make pip
+# Get latest meson
+RUN pip install meson
 
 # SDL_gfx
 RUN mkdir /build/.tmp
 RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
-RUN echo $"sources = [\n\
+RUN echo "sources = [\n\
     'SDL2_framerate.c',\n\
     'SDL2_gfxPrimitives.c',\n\
     'SDL2_imageFilter.c',\n\  
@@ -39,16 +48,16 @@ sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
     dependencies: [sdl_dependency, zlib_dependency],\n\
 )\n" > /build/.tmp/SDL_gfx/meson.build
 
-RUN wget https://apt.devkitpro.org/install-devkitpro-pacman
-RUN chmod +x ./install-devkitpro-pacman
-RUN sed -i 's/apt-get install/apt-get install -y/g' ./install-devkitpro-pacman
-RUN ./install-devkitpro-pacman
-RUN ln -s /proc/self/mounts /etc/mtab
-RUN dkp-pacman -Sy
-RUN yes '' | dkp-pacman -Sy wii-dev
+#RUN wget https://apt.devkitpro.org/install-devkitpro-pacman
+#RUN chmod +x ./install-devkitpro-pacman
+#RUN sed -i 's/apt-get install/apt-get install -y/g' ./install-devkitpro-pacman
+#RUN ./install-devkitpro-pacman
+#RUN ln -s /proc/self/mounts /etc/mtab
+#RUN dkp-pacman -Sy
+#RUN yes '' | dkp-pacman -Sy wii-dev
 #RUN yes '' | dkp-pacman -Sy wii-sdl2 wii-sdl2_gfx wii-sdl2_image wii-sdl2_mixer wii-sdl2_ttf || true
 # SDL2_gfx is provided, but it was already downloaded and included in the project with default build
-RUN yes '' | dkp-pacman -Sy wii-sdl2 wii-sdl2_image wii-sdl2_mixer wii-sdl2_ttf
+#RUN yes '' | dkp-pacman -Sy wii-sdl2 wii-sdl2_image wii-sdl2_mixer wii-sdl2_ttf
 
 #RUN dkp-pacman -S wiiu-dev
 #RUN dkp-pacman -S switch-dev
