@@ -117,5 +117,6 @@ subdir('libs/dumb')
 rtech1_library = static_library('r-tech1', sources,
   include_directories: [includes],
   dependencies: [sdl_dependency, zlib_dependency],
-  link_with: [gme_library, dumb_library]
+  link_with: [gme_library, dumb_library],
+  pic: have_pic
   )
