@@ -153,12 +153,12 @@ static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
     pthread_exit( NULL );
 }
 */
-#endif
-
 static void handleSigInt(int signal, siginfo_t* info, void* context){
     DebugLog << "Shut down due to ctrl-c" << endl;
     Util::do_shutdown += 1;
 }
+#endif
+
 
 static void registerSignals(){
 #if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
