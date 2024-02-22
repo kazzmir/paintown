@@ -43,6 +43,7 @@ You need the following things to compile Paintown:
 	* *Note that you will need to have c++11 support*
 * Software construction tools
 	* [Meson](https://mesonbuild.com/)
+    * [Docker](http://docker.com)
 * [zlib](http://www.zlib.net/)
 * [libpng](http://www.libpng.org/pub/png/libpng.html)
 * [SDL2](https://github.com/libsdl-org/SDL/tree/SDL2)
@@ -91,11 +92,14 @@ $ ./easy-compile-mingw
 `
 $ ./easy-compile-fedora
 `
-
 ### Mac Arm
 `
 $ ./easy-compile-mac-arm
 `
+### PSP
+```shell
+./easy-compile-docker-psp
+```
 
 ## Scripting
 
