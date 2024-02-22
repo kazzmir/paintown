@@ -93,7 +93,7 @@ int dumb_atexit(void (*proc)(void));
 
 void dumb_exit(void);
 
-#if defined(__PSP__)
+#if defined (__mips__)
 #define DUMB_OFF_T_CUSTOM long long int
 #endif
 
