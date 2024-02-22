@@ -4,7 +4,7 @@
 Xvfb :1 -screen 0 800x600x24 &
 
 # Test
-timeout 3s ./paintown --data `pwd`/data | tee paintown.log 
+timeout 3s ./paintown -s nosound -m nomusic --data `pwd`/data | tee paintown.log 
 
 # Check if the application started and terminated successfully based on the log
 if grep -q "Set graphics mode: Ok" paintown.log && grep -q "Bye" paintown.log ; then
