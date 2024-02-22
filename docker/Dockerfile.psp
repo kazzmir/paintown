@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 ubuntu:24.04
+FROM ubuntu:24.04
 
 # build : docker build -t paintown-psp-build -f Dockerfile.psp .
 # shell : docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build bash
@@ -6,8 +6,6 @@ FROM --platform=linux/amd64 ubuntu:24.04
 ENV PSPDEV /pspdev
 ENV PSPSDK $PSPDEV/psp
 ENV PATH   $PATH:$PSPDEV/bin:$PSPSDK/bin
-
-WORKDIR /
 
 RUN apt update \
     && apt install -y build-essential cmake pkgconf libreadline8 libusb-1.0-0 libgpgme11 libarchive-tools fakeroot wget meson git \
