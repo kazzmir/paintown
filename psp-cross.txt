@@ -8,7 +8,7 @@ sdl2-config = '/usr/local/pspdev/psp/bin/sdl2-config'
 
 [built-in options]
 cpp_args = ['-I/usr/local/pspdev/psp/include', '-DMINPSPW=1', '-I/usr/local/pspdev/psp/sdk/include', '-I/psp/include', '-I/usr/local/pspdev/psp/include/freetype2', '-I/usr/local/pspdev/psp/include/SDL', '-D_PSP_FW_VERSION=500']
-cpp_link_args = ['-L/usr/local/pspdev/psp/sdk/lib/', '-L/usr/local/pspdev/lib/', '-L/usr/local/pspdev/psp/lib/']
+cpp_link_args = ['-L/usr/local/pspdev/psp/sdk/lib/', '-L/usr/local/pspdev/lib/', '-L/usr/local/pspdev/psp/lib/', '-lSDL2_gfx']
 
 [target_machine]
 system = 'psp'
