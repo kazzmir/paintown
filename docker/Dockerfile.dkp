@@ -3,36 +3,98 @@
 #FROM ubuntu:23.10
 FROM devkitpro/devkitppc:latest
 
-RUN mkdir /build
+RUN mkdir -p /build/build-dkp/include/SDL2
 
 COPY src /build/src
 COPY meson.build /build
-#COPY easy-compile-mingw /build
-COPY misc/powerpc-eabi.txt /build
-#COPY misc/mingw-environment.sh /build/misc/
+COPY misc/powerpc-eabi.txt /build/powerpc-eabi-gamecube.txt
+RUN sed -i 's/SET_SYSTEM_TYPE/gamecube/' /build/powerpc-eabi-gamecube.txt
+COPY misc/powerpc-eabi.txt /build/powerpc-eabi-wii.txt
+RUN sed -i 's/SET_SYSTEM_TYPE/wii/' /build/powerpc-eabi-wii.txt
+COPY misc/powerpc-eabi.txt /build/powerpc-eabi-wiiu.txt
+RUN sed -i 's/SET_SYSTEM_TYPE/wiiu/' /build/powerpc-eabi-wiiu.txt
+
 COPY meson.options /build
 # Makefile
-RUN echo ".PHONY: dkp clean\n\
+RUN echo ".PHONY: all clean\n\
 \n\
-dkp: build-dkp\n\
-\t(cd build-dkp; meson configure -Dbuild_tests=false)\n\
-\tmeson compile -C build-dkp\n\
+gamecube: build-gamecube\n\
+\t(cd build-gamecube; meson configure -Dbuild_tests=false)\n\
+\tmeson compile -C build-gamecube\n\
 \n\
-build-dkp:\n\
-\tmkdir build-dkp\n\
-#\tmisc/mingw-environment.sh\n\
-\tmeson setup --cross-file powerpc-eabi.txt build-dkp\n\
+build-gamecube:\n\
+\tmkdir build-gamecube\n\
+\tmeson setup --cross-file powerpc-eabi-gamecube.txt build-gamecube\n\
+\n\
+wii: build-wii\n\
+\t(cd build-wii; meson configure -Dbuild_tests=false)\n\
+\tmeson compile -C build-wii\n\
+\n\
+build-wii:\n\
+\tmkdir build-wii\n\
+\tmeson setup --cross-file powerpc-eabi-wii.txt build-wii\n\
+\n\
+wiiu: build-wiiu\n\
+\t(cd build-wiiu; meson configure -Dbuild_tests=false)\n\
+\tmeson compile -C build-wiiu\n\
+\n\
+build-wiiu:\n\
+\tmkdir build-wiiu\n\
+\tmeson setup --cross-file powerpc-eabi-wiiu.txt build-wiiu\n\
 \n\
 clean:\n\
-\trm -fr build-dkp" > /build/Makefile
+\trm -fr build-gamecube build-wii build-wiiu" > /build/Makefile
 
 #RUN apt update && apt install -y sudo wget git meson ninja-build make
 RUN apt install -y sudo wget git ninja-build make pip
 # Get latest meson
 RUN pip install meson
 
+# Temp directory
+RUN mkdir -p /build/.tmp
+
+# SDL_image for gamecube
+RUN git clone -b SDL2 https://github.com/libsdl-org/SDL_image.git -- /build/.tmp/SDL_image
+RUN echo "#project('sdl2-image', 'c')\n\
+\n\
+feature_args = ['-DLOAD_BMP', '-DLOAD_PNG', '-DLOAD_JPG']\n\
+\n\
+sdl2_dep = dependency('sdl2', required: true, static: true)\n\
+other_dependencies += [dependency('libpng', required: true, static: true),\n\
+                       dependency('libjpeg', required: true, static: true),]\n\
+\n\
+sdl_image_library = static_library('sdl2image',\n\
+  'src/IMG_avif.c',\n\
+  'src/IMG_bmp.c',\n\
+  'src/IMG.c',\n\
+  'src/IMG_gif.c',\n\
+  'src/IMG_jpg.c',\n\
+  'src/IMG_jxl.c',\n\
+  'src/IMG_lbm.c',\n\
+  'src/IMG_pcx.c',\n\
+  'src/IMG_png.c',\n\
+  'src/IMG_pnm.c',\n\
+  'src/IMG_qoi.c',\n\
+  'src/IMG_stb.c',\n\
+  'src/IMG_svg.c',\n\
+  'src/IMG_tga.c',\n\
+  'src/IMG_tif.c',\n\
+  'src/IMG_webp.c',\n\
+  'src/IMG_WIC.c',\n\
+  'src/IMG_xcf.c',\n\
+  'src/IMG_xpm.c',\n\
+  'src/IMG_xv.c',\n\
+  'src/IMG_xxx.c',\n\
+  c_args: feature_args,\n\
+  include_directories: ['.','src','include'],\n\
+  dependencies: [other_dependencies, sdl2_dep])\n\
+\n\
+sdl_image_dependency = declare_dependency(include_directories: ['.','src','include'],\n\
+  link_with: sdl_image_library)" > /build/.tmp/SDL_image/meson.build
+
+RUN cp /build/.tmp/SDL_image/include/SDL_image.h /build/build-dkp/include/SDL2/SDL_image.h
+
 # SDL_gfx
-#RUN mkdir /build/.tmp
 #RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
 #RUN echo "sources = [\n\
 #    'SDL2_framerate.c',\n\
@@ -62,6 +124,8 @@ RUN pip install meson
 #RUN dkp-pacman -S wiiu-dev
 #RUN dkp-pacman -S switch-dev
 
-RUN cd /build && make
+#RUN cd /build && make gamecube
+#RUN cd /build && make wii
+#RUN cd /build && make wiiu
 
 CMD [ "/bin/bash" ]
