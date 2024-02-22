@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Install xvfb 
-sudo apt install -y xvfb
-
 # Setup xvfb for screen 0
 Xvfb :1 -screen 0 800x600x24 &
 

@@ -17,7 +17,9 @@ jobs:
             ./easy-compile-ubuntu
 
       - name: XTest - Set up xvfb
-        run: ./xtest.sh
+        run: |
+          sudo apt install -y xvfb pulseaudio
+          ./x-test-linux
         env:
             DISPLAY: :1
       
