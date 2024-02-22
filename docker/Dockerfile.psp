@@ -1,18 +1,9 @@
-FROM ubuntu:24.04
+FROM pspdev/pspdev
 
 # build : docker build -t paintown-psp-build -f Dockerfile.psp .
 # shell : docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build bash
 
-ENV PSPDEV /pspdev
 ENV PSPSDK $PSPDEV/psp
 ENV PATH   $PATH:$PSPDEV/bin:$PSPSDK/bin
 
-RUN apt update \
-    && apt install -y build-essential cmake pkgconf libreadline8 libusb-1.0-0 libgpgme11 libarchive-tools fakeroot wget meson git \
-    && apt clean \
-    && wget https://github.com/pspdev/pspdev/releases/download/latest/pspdev-ubuntu-latest.tar.gz \
-    && tar xfv pspdev-ubuntu-latest.tar.gz \
-    && rm pspdev-ubuntu-latest.tar.gz
-
-WORKDIR /src
-CMD ["/bin/bash"]
+RUN apk add meson

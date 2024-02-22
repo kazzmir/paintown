@@ -4,11 +4,11 @@ cpp = 'psp-g++'
 ar = 'psp-ar'
 strip = 'psp-strip'
 pkg-config = 'psp-pkgconf'
-sdl2-config = '/pspdev/psp/bin/sdl2-config'
+sdl2-config = '/usr/local/pspdev/psp/bin/sdl2-config'
 
 [built-in options]
-cpp_args = ['-I/pspdev/psp/include', '-DMINPSPW=1', '-I/pspdev/psp/sdk/include', '-I/psp/include', '-I/pspdev/psp/include/freetype2', '-I/pspdev/psp/include/SDL', '-D_PSP_FW_VERSION=500']
-cpp_link_args = ['-L/pspdev/psp/sdk/lib/', '-L/pspdev/lib/', '-L/pspdev/psp/lib/']
+cpp_args = ['-I/usr/local/pspdev/psp/include', '-DMINPSPW=1', '-I/usr/local/pspdev/psp/sdk/include', '-I/psp/include', '-I/usr/local/pspdev/psp/include/freetype2', '-I/usr/local/pspdev/psp/include/SDL', '-D_PSP_FW_VERSION=500']
+cpp_link_args = ['-L/usr/local/pspdev/psp/sdk/lib/', '-L/usr/local/pspdev/lib/', '-L/usr/local/pspdev/psp/lib/']
 
 [target_machine]
 system = 'psp'
