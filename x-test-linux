@@ -1,7 +1,10 @@
 #!/bin/bash
 
+# Another display
+export DISPLAY=:1
+
 # Setup xvfb for screen 0
-Xvfb :1 -screen 0 800x600x24 &
+Xvfb $DISPLAY -screen 0 800x600x24 &
 
 # Test
 timeout 3s ./paintown -s nosound -m nomusic --data `pwd`/data | tee paintown.log 
