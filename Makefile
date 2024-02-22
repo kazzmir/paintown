@@ -55,5 +55,8 @@ psp: build-psp
 	(cd build-psp; meson configure -Dbuild_tests=false)
 	meson compile  -C build-psp
 
-clean:
-	rm -rf .tmp build build-debug build-release build-mingw build-psp
+clean:	clean-psp
+	rm -rf .tmp build build-debug build-release build-mingw
+
+clean-psp:
+	rm -rf build-psp paintown-psp*
