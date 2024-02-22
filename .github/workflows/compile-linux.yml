@@ -18,7 +18,8 @@ jobs:
 
       - name: XTest - Set up xvfb
         run: |
-          sudo apt install -y xvfb alsa-tools alsa-utils
+          apt search linux-modules-extra
+          sudo apt install -y xvfb alsa-tools alsa-utils linux-modules-extra-`uname -r`
           sudo modprobe snd-aloop
           ./x-test-linux
       
