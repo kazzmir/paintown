@@ -16,6 +16,28 @@ jobs:
             sudo apt update
             ./easy-compile-ubuntu
 
+      - name: XTest - Set up xvfb
+        run: |
+          # Install xvfb 
+          sudo apt install -y xvfb
+          # Setup xvfb for screen 0
+          Xvfb :1 -screen 0 800x600x24 &
+          # Test
+          timeout 3s ./paintown --data `pwd`/data > paintown.log 2>&1 
+          # Check if the return code is 0
+          if grep -q "Set graphics mode: Ok" paintown.log && grep -q "Bye" paintown.log ; then
+            echo "Test passed"
+          else
+            echo "Test failed"
+            cat paintown.log
+            exit 1
+          fi
+        env:
+            DISPLAY: :1
+      
+      - name: XTest - Tear down xvfb
+        run: killall Xvfb
+    
       - name: Run Release
         if: startsWith(github.ref, 'refs/tags/')
         run: ./release/release-ubuntu
