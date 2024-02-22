@@ -20,11 +20,12 @@ SDL_TimerID timer;
 
 /* lame wrapper class for a malloc'd string that free's in the destructor */
 class CString {
-public:
-    CString(const char* str) : str(strdup(str)) {}
-    ~CString() { free(str); }
-    char* get(){ return str; }
-    char* str;
+    public:
+        CString(const char* str) : str(str) {}
+        const char* get() const { return str.c_str(); }
+
+    private:
+        std::string str;
 };
 
 static bool hasGlxInfo(){
