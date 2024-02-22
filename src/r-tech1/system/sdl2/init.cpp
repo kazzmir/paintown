@@ -38,7 +38,8 @@ static bool hasGlxInfo(){
 
     CString displayString(display.c_str());
 
-    char* const envp[] = {displayString.get(), NULL};
+    std::string displayStringCopy = displayString.get();
+    char* const envp[] = {const_cast<char*>(displayStringCopy.c_str()), NULL};
 
     char glxinfo[] = "glxinfo";
     char* const argv[] = {glxinfo, NULL};
