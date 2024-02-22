@@ -1,0 +1,83 @@
+[constants]
+system_type = 'switch'
+a64 = 'aarch64-none-elf'
+dkp_root = '/opt' / 'devkitpro'
+dkp_a64 = dkp_root / 'devkitA64'
+aarch64_dir = dkp_a64 / a64
+cross_root = '/build/build-dkp'
+# Figure out a way to get these or append to c_args/c++_args without overwritting
+# x86_64-w64-mingw32-g++  -xc   /dev/null -E -Wp,-v 2>&1 | sed -n 's,^ ,,p'
+common_args = ['-I' + dkp_a64 / 'include', 
+               '-I' + aarch64_dir / 'include', 
+               '-I' + cross_root / 'include',
+               '-isystem ' + dkp_root / 'libnx' / 'include',
+               '-DDEVKITPRO=1', 
+               '-DWII=1',
+               '-D__SWITCH__',
+               '-march=armv8-a+crc+crypto',
+               '-mtune=cortex-a57', 
+               '-mtp=soft', 
+               '-fPIC',
+               '-ftls-model=local-exec',
+               '-ffunction-sections',
+               '-fdata-sections',
+               ]
+
+[binaries]
+c = dkp_a64 / 'bin' / a64 + '-gcc'
+cpp = dkp_a64 / 'bin' / a64 +'-g++'
+ar = dkp_a64 / 'bin' / a64 + '-ar'
+strip = dkp_a64 / 'bin' / a64 + '-strip'
+ld = dkp_a64 / 'bin' / a64 + '-ld'
+#exe_wrapper = 'wine64'
+pkg-config = dkp_root / 'portlibs' / system_type / 'bin' / a64 + '-pkg-config'
+sdl2-config = dkp_root / 'portlibs' / system_type / 'bin' / 'sdl2-config'
+cmake = dkp_root / 'portlibs' / system_type / 'bin' / a64 + '-cmake'
+
+[properties]
+dkp_build = true
+dkp_build_type = system_type
+#pkg_config_libdir = [dkp_root / 'portlibs' / system_type / 'lib' / 'pkgconfig', cross_root / 'lib/pkgconfig']
+pkg_config_libdir = [dkp_root / 'portlibs' / system_type / 'lib' / 'pkgconfig']
+
+[host_machine]
+system = 'nintendo'
+cpu_family = 'armv8'
+cpu = 'armv8'
+endian = 'little'
+
+[built-in options]
+pkg_config_path = dkp_root / 'portlibs' / system_type / 'lib/pkg-config'
+c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
+cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
+c_args = common_args
+cpp_args = common_args
+c_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s', '-lnx']
+cpp_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-static-libgcc', '-static-libstdc++', '-lnx']
+includedir = cross_root / 'include'
+libdir = cross_root / 'lib'
+default_library='static'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false

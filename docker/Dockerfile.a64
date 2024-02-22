@@ -1,0 +1,110 @@
+# Build:        docker build -t paintown-a64-build -f docker/Dockerfile.a64 .
+# Access shell: docker run --rm -it --entrypoint /bin/bash  paintown-a64-build 
+#FROM ubuntu:23.10
+FROM devkitpro/devkita64:latest
+
+RUN mkdir -p /build/build-dkp/include/SDL2
+
+COPY src /build/src
+COPY meson.build /build
+COPY misc/aarch64-none-elf.txt /build/aarch64-none-elf.txt
+
+COPY meson.options /build
+# Makefile
+RUN echo ".PHONY: all clean\n\
+\n\
+switch: build-switch\n\
+\t(cd build-switch; meson configure -Dbuild_tests=false)\n\
+\tmeson compile -C build-switch\n\
+\n\
+build-switch:\n\
+\tmkdir build-switch\n\
+\tmeson setup --cross-file aarch64-none-elf.txt build-switch\n\
+\n\
+clean:\n\
+\trm -fr build-switch" > /build/Makefile
+
+#RUN apt update && apt install -y sudo wget git meson ninja-build make
+RUN apt install -y sudo wget git ninja-build make pip
+# Get latest meson
+RUN pip install meson
+
+# Temp directory
+RUN mkdir -p /build/.tmp
+
+# SDL_image for gamecube
+#RUN git clone -b SDL2 https://github.com/libsdl-org/SDL_image.git -- /build/.tmp/SDL_image
+#RUN echo "#project('sdl2-image', 'c')\n\
+#\n\
+#feature_args = ['-DLOAD_BMP', '-DLOAD_PNG', '-DLOAD_JPG']\n\
+#\n\
+#sdl2_dep = dependency('sdl2', required: true, static: true)\n\
+#other_dependencies += [dependency('libpng', required: true, static: true),\n\
+#                       dependency('libjpeg', required: true, static: true),]\n\
+#\n\
+#sdl_image_library = static_library('sdl2image',\n\
+#  'src/IMG_avif.c',\n\
+#  'src/IMG_bmp.c',\n\
+#  'src/IMG.c',\n\
+#  'src/IMG_gif.c',\n\
+#  'src/IMG_jpg.c',\n\
+#  'src/IMG_jxl.c',\n\
+#  'src/IMG_lbm.c',\n\
+#  'src/IMG_pcx.c',\n\
+#  'src/IMG_png.c',\n\
+#  'src/IMG_pnm.c',\n\
+#  'src/IMG_qoi.c',\n\
+#  'src/IMG_stb.c',\n\
+#  'src/IMG_svg.c',\n\
+#  'src/IMG_tga.c',\n\
+#  'src/IMG_tif.c',\n\
+#  'src/IMG_webp.c',\n\
+#  'src/IMG_WIC.c',\n\
+#  'src/IMG_xcf.c',\n\
+#  'src/IMG_xpm.c',\n\
+#  'src/IMG_xv.c',\n\
+#  'src/IMG_xxx.c',\n\
+#  c_args: feature_args,\n\
+#  include_directories: ['.','src','include'],\n\
+#  dependencies: [other_dependencies, sdl2_dep])\n\
+#\n\
+#sdl_image_dependency = declare_dependency(include_directories: ['.','src','include'],\n\
+#  link_with: sdl_image_library)" > /build/.tmp/SDL_image/meson.build
+#
+#RUN cp /build/.tmp/SDL_image/include/SDL_image.h /build/build-dkp/include/SDL2/SDL_image.h
+
+# SDL_gfx
+#RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
+#RUN echo "sources = [\n\
+#    'SDL2_framerate.c',\n\
+#    'SDL2_gfxPrimitives.c',\n\
+#    'SDL2_imageFilter.c',\n\  
+#    'SDL2_rotozoom.c',\n\
+#]\n\
+#\n\
+#includes = include_directories('.')\n\
+#\n\
+#sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
+#    include_directories: [includes],\n\
+#    dependencies: [sdl_dependency, zlib_dependency],\n\
+#)\n" > /build/.tmp/SDL_gfx/meson.build
+
+#RUN wget https://apt.devkitpro.org/install-devkitpro-pacman
+#RUN chmod +x ./install-devkitpro-pacman
+#RUN sed -i 's/apt-get install/apt-get install -y/g' ./install-devkitpro-pacman
+#RUN ./install-devkitpro-pacman
+#RUN ln -s /proc/self/mounts /etc/mtab
+#RUN dkp-pacman -Sy
+#RUN yes '' | dkp-pacman -Sy wii-dev
+#RUN yes '' | dkp-pacman -Sy wii-sdl2 wii-sdl2_gfx wii-sdl2_image wii-sdl2_mixer wii-sdl2_ttf || true
+# SDL2_gfx is provided, but it was already downloaded and included in the project with default build
+#RUN yes '' | dkp-pacman -Sy wii-sdl2 wii-sdl2_image wii-sdl2_mixer wii-sdl2_ttf
+
+#RUN dkp-pacman -S wiiu-dev
+#RUN dkp-pacman -S switch-dev
+
+#RUN cd /build && make gamecube
+#RUN cd /build && make wii
+#RUN cd /build && make wiiu
+
+CMD [ "/bin/bash" ]

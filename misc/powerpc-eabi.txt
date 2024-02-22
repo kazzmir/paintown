@@ -14,7 +14,8 @@ common_args = ['-I' + dkp_ppc / 'include',
                '-I' + cross_root / 'include',
                '-DDEVKITPRO=1', 
                '-DWII=1'
-               ]
+               ] + [SET_SYSTEM_COMMON_ARGS]
+common_link_args = [SET_SYSTEM_COMMON_LINK_ARGS]
 #common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']
 
 [binaries]
@@ -22,6 +23,7 @@ c = dkp_ppc / 'bin' / 'powerpc-eabi-gcc'
 cpp = dkp_ppc / 'bin' / 'powerpc-eabi-g++'
 ar = dkp_ppc / 'bin' / 'powerpc-eabi-ar'
 strip = dkp_ppc / 'bin' / 'powerpc-eabi-strip'
+ld = dkp_ppc / 'bin' / 'powerpc-eabi-ld'
 #exe_wrapper = 'wine64'
 pkg-config = dkp_root / 'portlibs' / system_type / 'bin' / 'powerpc-eabi-pkg-config'
 sdl2-config = dkp_root / 'portlibs' / system_type / 'bin' / 'powerpc-eabi-sdl2-config'
@@ -45,8 +47,8 @@ c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
 cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
 c_args = common_args
 cpp_args = common_args
-c_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s']
-cpp_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-static-libgcc', '-static-libstdc++']
+c_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s'] + common_link_args
+cpp_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-static-libgcc', '-static-libstdc++'] + common_link_args
 includedir = cross_root / 'include'
 libdir = cross_root / 'lib'
 default_library='static'
