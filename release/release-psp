@@ -60,4 +60,3 @@ tree
 
 # Move to root
 mv EBOOT.PBP $EXEDIR/paintown-psp-$APPVERSION.pbp
-cp -r $EXEDIR/misc/psp/*.ttf $EXEDIR

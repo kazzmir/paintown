@@ -4,7 +4,7 @@ export DOCKER_DEFAULT_PLATFORM=linux/amd64
 docker build -t paintown-psp-build -f docker/Dockerfile.psp .
 docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build sh -s <<EOF
 make clean psp
-cp build-psp/main.elf paintown-psp.elf
+cp build-psp/paintown paintown-psp.elf
 EOF
 
 echo "
