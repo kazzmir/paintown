@@ -18,8 +18,8 @@ jobs:
 
       - name: XTest - Set up xvfb
         run: |
-          sudo apt install -y xvfb alsa-utils 
-          sudo modprobe snd-dummy fake_buffer=0
+          sudo apt install -y xvfb alsa-tools alsa-utils
+          sudo modprobe snd-aloop
           ./x-test-linux
       
       - name: XTest - Tear down xvfb
