@@ -233,9 +233,7 @@ public:
     Token & operator<<(const uint64_t rhs);
     Token & operator<<(Token * token);
     Token & operator<<(const double rhs);
-    Token & operator<<(const bool rhs);
-    Token & operator<<(const int rhs);
-        
+    
 protected:
     friend class TokenReader;
 
