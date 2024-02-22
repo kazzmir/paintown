@@ -18,10 +18,9 @@ jobs:
 
       - name: XTest - Set up xvfb
         run: |
-          sudo apt install -y xvfb alsa-utils
+          sudo apt install -y xvfb alsa-utils 
+          sudo modprobe snd-aloop
           ./x-test-linux
-        env:
-            DISPLAY: :1
       
       - name: XTest - Tear down xvfb
         run: killall Xvfb
