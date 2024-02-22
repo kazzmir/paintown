@@ -10,7 +10,7 @@ add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wextra', '-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter'], language: ['cpp', 'c'])
 
 is_static = true
-executable_name = 'main.elf'
+executable_name = 'paintown'
 
 sdl_dependency = dependency('sdl2', required: true, static: is_static)
 sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18', static: is_static)

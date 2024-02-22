@@ -26,7 +26,7 @@ cp $EXEDIR/misc/psp/ICON0.PNG $EXEDIR/misc/psp/ICON1.PNG .
 cp $EXEDIR/misc/psp/PIC0.PNG $EXEDIR/misc/psp/PIC1.PNG .
 cp $EXEDIR/misc/psp/SND0.AT3 .
 cp $EXEDIR/paintown-psp.elf .
-cp -r $EXEDIR/data DATA.PSAR
+cp -r $EXEDIR/data .
 
 # builder
 docker run --rm -iv `pwd`:/paintown-bin -w /paintown-bin paintown-psp-build bash -s <<EOF
@@ -52,7 +52,7 @@ psp-prxgen paintown-psp.elf paintown-psp.prx
 # <data.psar> : An optional data file in PSAR format.
 
 # PBP
-pack-pbp EBOOT.PBP PARAM.SFO ICON0.PNG ICON1.PNG PIC0.PNG PIC1.PNG SND0.AT3 paintown-psp.elf DATA.PSAR
+pack-pbp EBOOT.PBP PARAM.SFO ICON0.PNG ICON1.PNG PIC0.PNG PIC1.PNG SND0.AT3 paintown-psp.elf data
 
 EOF
 

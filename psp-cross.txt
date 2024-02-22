@@ -1,14 +1,18 @@
+[constants]
+psp_root = '/usr/local/pspdev'
+psp_sdk_root = psp_root / 'psp/sdk'
+
 [binaries]
 c = 'psp-gcc'
 cpp = 'psp-g++'
 ar = 'psp-ar'
 strip = 'psp-strip'
 pkg-config = 'psp-pkgconf'
-sdl2-config = '/usr/local/pspdev/psp/bin/sdl2-config'
+sdl2-config = psp_root / 'psp/bin/sdl2-config'
 
 [built-in options]
-cpp_args = ['-I/usr/local/pspdev/psp/include', '-DMINPSPW=1', '-I/usr/local/pspdev/psp/sdk/include', '-I/psp/include', '-I/usr/local/pspdev/psp/include/freetype2', '-I/usr/local/pspdev/psp/include/SDL', '-D_PSP_FW_VERSION=500']
-cpp_link_args = ['-L/usr/local/pspdev/psp/sdk/lib/', '-L/usr/local/pspdev/lib/', '-L/usr/local/pspdev/psp/lib/', '-lSDL2_gfx', '-latomic']
+cpp_args = ['-I' + psp_root / 'include', '-I' + psp_sdk_root / '/include', '-I' + psp_root / 'psp/include', '-I' + psp_root / 'include/freetype2', '-I' + psp_root / 'include/SDL', '-I' + psp_sdk_root / 'include',  '-DMINPSPW=1', '-D_PSP_FW_VERSION=500', '-DINCLUDE_SCE_MODULE_INFO']
+cpp_link_args = ['-L' + psp_root / 'sdk/lib', '-L' + psp_root / 'lib', '-L' + psp_sdk_root / 'lib', '-lSDL2_gfx', '-latomic', '-lpspdebug', '-fno-exceptions']
 
 [target_machine]
 system = 'psp'
