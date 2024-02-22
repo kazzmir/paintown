@@ -37,9 +37,10 @@ docker run --rm -iv `pwd`:/paintown-bin -w /paintown-bin paintown-psp-build bash
 echo 1. Creating PARAM.SFO files.
 mksfo "Paintown $APPVERSION" PARAM.SFO && echo "OK" || echo "Error"
 
+echo 2. Fixing up import tables post-linking to remove unused functions from the executable.
+psp-fixup-imports paintown-psp.elf && echo "OK" || echo "Error"
+
 if [[ '$PRX' == 'true' ]]; then
-    echo 2. Fixing up import tables post-linking to remove unused functions from the executable.
-    psp-fixup-imports paintown-psp.elf && echo "OK" || echo "Error"
 
     echo 3. Converting specially made ELFs to PRX files.
     psp-prxgen paintown-psp.elf paintown-psp.prx && echo "OK" || echo "Error"
@@ -62,13 +63,12 @@ else
 
     echo 2. Generating EBOOT.PBP
     pack-pbp EBOOT.PBP PARAM.SFO ICON0.PNG ICON1.PNG PIC0.PNG PIC1.PNG SND0.AT3 paintown-psp.elf data && echo "OK" || echo "Error"
-    # pack-pbp EBOOT.PBP PARAM.SFO NULL NULL NULL NULL NULL paintown-psp.elf NULL && echo "OK" || echo "Error"
-
-    ls -lh EBOOT.PBP
-    # echo 3. Compress
-    # psp-packer EBOOT.PBP && echo "OK" || echo "Error"
 
 fi
+
+ls -lh EBOOT.PBP
+echo X. Compress
+psp-packer EBOOT.PBP && echo "OK" || echo "Error"
 
 EOF
 
