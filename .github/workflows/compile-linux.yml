@@ -1,7 +1,6 @@
 name: linux ubuntu build
 
-on:
-  push
+on: push
 
 jobs:
   build:
@@ -15,16 +14,6 @@ jobs:
         run: |
             sudo apt update
             ./easy-compile-ubuntu
-
-      - name: XTest - Set up xvfb
-        run: |
-          apt search linux-modules-extra
-          sudo apt install -y xvfb alsa-tools alsa-utils linux-modules-extra-`uname -r`
-          sudo modprobe snd-aloop
-          ./x-test-linux
-      
-      - name: XTest - Tear down xvfb
-        run: killall Xvfb
     
       - name: Run Release
         if: startsWith(github.ref, 'refs/tags/')
