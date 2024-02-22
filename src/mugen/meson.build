@@ -55,4 +55,5 @@ includes = include_directories('..')
 mugen_library = static_library('mugen', sources,
   include_directories: [includes],
   dependencies: [sdl_dependency, zlib_dependency],
+  pic: have_pic
   )

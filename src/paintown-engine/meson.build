@@ -66,4 +66,5 @@ includes = include_directories('..')
 paintown_library = static_library('paintown', sources,
   include_directories: [includes],
   dependencies: [sdl_dependency, zlib_dependency],
+  pic: have_pic
   )
