@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Check if running on macOS
+if [[ "$(uname)" == "Darwin" ]]; then
+    # Check if gtimeout is available
+    if command -v gtimeout &> /dev/null; then
+        alias timeout="gtimeout"
+    else
+        echo "brew install coreutils"
+    fi
+fi
+
 # Another display
 export DISPLAY=:1
 
@@ -7,7 +17,7 @@ export DISPLAY=:1
 Xvfb $DISPLAY -screen 0 800x600x24 &
 
 # Test
-timeout 3s ./paintown -s nosound -m nomusic --data `pwd`/data | tee paintown.log 
+timeout 3s ./paintown -s nosound -m nomusic --data `pwd`/data | tee paintown.log
 
 # Check if the application started and terminated successfully based on the log
 if grep -q "Set graphics mode: Ok" paintown.log && grep -q "Bye" paintown.log ; then
