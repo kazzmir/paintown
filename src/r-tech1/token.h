@@ -223,7 +223,7 @@ public:
     */
 
     Token & operator<<(const std::string & rhs);
-#ifdef XENON
+#if defined(XENON) || defined(MINPSPW)
     Token & operator<<(const int rhs);
 #else
     Token & operator<<(const int32_t rhs);
@@ -233,7 +233,8 @@ public:
     Token & operator<<(const uint64_t rhs);
     Token & operator<<(Token * token);
     Token & operator<<(const double rhs);
-    
+    Token & operator<<(const bool rhs);
+
 protected:
     friend class TokenReader;
 

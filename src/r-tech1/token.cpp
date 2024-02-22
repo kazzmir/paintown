@@ -517,7 +517,7 @@ Token & Token::operator<<(const string & rhs){
     return *this;
 }
 
-#ifdef XENON
+#if defined(XENON) || defined(MINPSPW)
 Token & Token::operator<<(const int rhs){
     if (!own){
         throw TokenException(__FILE__, __LINE__, "Cannot add raw integers to a token you don't own");
@@ -578,6 +578,14 @@ Token & Token::operator<<( const double rhs ){
     ostringstream o;
     o << setprecision(6) << fixed << rhs;
     return *this << o.str();
+}
+
+Token & Token::operator<<( const bool rhs ){
+    if (!own){
+        throw TokenException(__FILE__, __LINE__, "Cannot add raw bool to a token you don't own");
+    }
+
+    return *this << (rhs ? "true" : "false");
 }
 
 Token * Token::copy() const {
