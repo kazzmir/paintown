@@ -104,7 +104,7 @@ void initSystem(const Global::InitConditions & conditions, Global::stream_type &
     }
 }
 
-static unsigned int timerCallback(unsigned int, void * param){
+static Uint32 timerCallback(Uint32, void * param){
     Global::speed_counter4 += 1;
     /* zero callback means the timer should cancel. non-zero return value means that the timer should be restarted */
     return 1000 / Global::TICS_PER_SECOND;
