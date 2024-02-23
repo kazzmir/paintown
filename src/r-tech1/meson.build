@@ -116,6 +116,9 @@ sources = [
   'dkp/file-system.cpp',
   'ps3/init.cpp',
   'ps3/system.cpp',
+  'psp/init.cpp',
+  'psp/system.cpp',
+  'psp/file-system.cpp',
   
 ]
 

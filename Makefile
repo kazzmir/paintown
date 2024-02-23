@@ -48,7 +48,7 @@ testmingw: build-mingw
 build-psp:
 	mkdir build-psp
 	misc/psp-environment.sh
-	#meson setup --cross-file misc/psp/psp-cross.txt misc/psp build-psp
+	# meson setup --cross-file misc/psp/psp-cross.txt misc/psp build-psp
 	meson setup --cross-file misc/psp/psp-cross.txt build-psp
 
 psp: build-psp
