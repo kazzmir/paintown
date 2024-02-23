@@ -107,6 +107,16 @@ sources = [
   'libs/zip/ioapi.c',
   'libs/zip/unzip.c',
   'libs/zip/zip.c',
+
+  'windows/file-system.cpp',
+  'windows/system.cpp',
+  'dkp/file-system.cpp',
+  'dkp/init.cpp',
+  'dkp/system.cpp',
+  'dkp/file-system.cpp',
+  'ps3/init.cpp',
+  'ps3/system.cpp',
+  
 ]
 
 includes = include_directories('..')

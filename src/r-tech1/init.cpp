@@ -102,7 +102,7 @@ const int Global::WINDOWED = 0;
 const int Global::FULLSCREEN = 1;
 #endif
 
-#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+#ifndef CROSS_BUILD
 #ifdef LINUX
 static void print_stack_trace(){
     /* use addr2line on these addresses to get a filename and line number */
@@ -144,7 +144,7 @@ struct siginfo_t {
 #endif
 
 /* catch a socket being closed prematurely on unix */
-#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+#ifndef CROSS_BUILD
 static void handleSigPipe( int i, siginfo_t * sig, void * data ){
 }
 
@@ -161,7 +161,7 @@ static void handleSigInt(int signal, siginfo_t* info, void* context){
 
 
 static void registerSignals(){
-#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+#ifndef CROSS_BUILD
     struct sigaction action;
     memset(&action, 0, sizeof(struct sigaction));
     action.sa_sigaction = handleSigPipe;
@@ -248,17 +248,6 @@ bool Global::initNoGraphics(){
     out << "-- END init --" << endl;
 
     return true;
-}
-#endif
-
-#ifdef PS3
-extern "C" int SDL_JoystickInit();
-static void ps3JoystickHack(){
-    /* FIXME: hack for the ps3. at the start of the program only 1 joystick is enabled
-     * even if more than 1 is connected, so we force another call to JoystickInit
-     * to pick up all joysticks.
-     */
-    SDL_JoystickInit();
 }
 #endif
 
