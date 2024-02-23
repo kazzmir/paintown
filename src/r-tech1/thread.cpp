@@ -1,6 +1,6 @@
 #include "thread.h"
 
-#ifdef __WII__
+#ifdef WII
 /* So we can call ogc's create thread directly */
 #include <ogc/lwp.h>
 #endif
