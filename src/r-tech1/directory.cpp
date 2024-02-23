@@ -5,7 +5,8 @@
 #include <vector>
 #include <map>
 
-#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+
+#ifndef CROSS_BUILD
 #define FS_WRAPPER
 #include "libs/filesystem/fs-wrapper.h"
 #include "libs/filesystem/glob.h"

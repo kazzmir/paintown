@@ -9,7 +9,7 @@
 #include <string>
 #include <fcntl.h>
 
-#if !defined(WINDOWS) && !defined(WII) && !defined(MINPSPW) && !defined(PS3) && !defined(NDS) && !defined(NACL) && !defined(XENON) && !defined(UCLIBC)
+#ifndef CROSS_BUILD
 #include <spawn.h>
 #include <sys/wait.h>
 #endif
