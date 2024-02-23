@@ -1,4 +1,4 @@
-#ifdef WII
+#ifdef DEVKITPRO
 
 #include "r-tech1/funcs.h"
 #include "r-tech1/file-system.h"

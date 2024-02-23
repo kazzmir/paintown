@@ -11,7 +11,7 @@
 #include "r-tech1/thread.h"
 
 #ifdef HAVE_NETWORKING
-#ifdef WII
+#ifdef DEVKITPRO
 #include <network.h>
 #elif defined(WINDOWS)
 #include <winsock.h>

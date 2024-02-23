@@ -106,7 +106,7 @@ android_ostream & operator<<(android_ostream & stream, std::ostream & (*f)(std::
 
 android_ostream android_ostream::stream;
 static android_ostream nullcout(false);
-#elif defined(WII) && defined(DEBUG)
+#elif defined(DEVKITPRO) && defined(DEBUG)
 wii_ostream::wii_ostream(bool enabled):
 enabled(enabled){
 }
@@ -321,7 +321,7 @@ void logToFile(){
 
 void closeLog(){
 }
-#elif defined(WII) && defined(DEBUG)
+#elif defined(DEVKITPRO) && defined(DEBUG)
 static stream_type & defaultStream(){
     return wii_ostream::stream;
 }

@@ -1,4 +1,4 @@
-#include <atomic>
+#include "r-tech1/atomic.h"
 #include <functional>
 
 #include "r-tech1/file-system.h"
@@ -36,7 +36,7 @@ bool epsilon(double a, double small){
 
 void test1(){
 
-    std::atomic<uint32_t> counter(0);
+    Atomic::atomic<uint32_t> counter(0);
 
     std::function<bool()> logic = [&](){
         counter += 1;

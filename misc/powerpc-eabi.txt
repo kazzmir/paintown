@@ -12,8 +12,7 @@ common_args = ['-I' + dkp_ppc / 'include',
                '-I' + dkp_root / 'wut' / 'include',
                '-I' + powerpc_eabi / 'include', 
                '-I' + cross_root / 'include',
-               '-DDEVKITPRO=1', 
-               '-DWII=1'
+               '-DDEVKITPRO', 
                ] + [SET_SYSTEM_COMMON_ARGS]
 common_link_args = [SET_SYSTEM_COMMON_LINK_ARGS]
 #common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']

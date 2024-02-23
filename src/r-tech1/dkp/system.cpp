@@ -1,4 +1,4 @@
-#if defined(WII)
+#if defined(DEVKITPRO)
 
 #include <string>
 #include "r-tech1/system.h"

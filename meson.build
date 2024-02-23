@@ -36,7 +36,7 @@ if not meson.is_cross_build()
     add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
   endif
 else
-  add_global_arguments('-DCROSS_BUILD=1', language: ['c', 'cpp'])
+  add_global_arguments('-DCROSS_BUILD', language: ['c', 'cpp'])
 endif
 
 includes = include_directories('src')

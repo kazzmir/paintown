@@ -24,7 +24,7 @@ Joystick * Joystick::create(int i){
     return new AllegroJoystick();
 #endif
 #ifdef USE_SDL
-#ifdef WII
+#ifdef DEVKITPRO
     return new SDLJoystick(i);
     // return new WiiJoystick();
 #elif MINPSPW

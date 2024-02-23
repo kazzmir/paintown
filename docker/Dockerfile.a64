@@ -3,6 +3,12 @@
 #FROM ubuntu:23.10
 FROM devkitpro/devkita64:latest
 
+#RUN apt update && apt install -y sudo wget git meson ninja-build make
+RUN apt install -y sudo wget git ninja-build make pip
+# Get latest meson
+RUN pip install meson
+
+# Copy source
 RUN mkdir -p /build/build-dkp/include/SDL2
 
 COPY src /build/src
@@ -24,14 +30,9 @@ build-switch:\n\
 clean:\n\
 \trm -fr build-switch" > /build/Makefile
 
-#RUN apt update && apt install -y sudo wget git meson ninja-build make
-RUN apt install -y sudo wget git ninja-build make pip
-# Get latest meson
-RUN pip install meson
-
 # Temp directory
 RUN mkdir -p /build/.tmp
 
-#RUN cd /build && make switch
+RUN cd /build && make switch
 
 CMD [ "/bin/bash" ]

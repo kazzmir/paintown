@@ -18,6 +18,7 @@ namespace System{
 
 SDL_TimerID timer;
 
+#ifndef CROSS_BUILD
 /* lame wrapper class for a malloc'd string that free's in the destructor */
 class CString {
 public:
@@ -26,6 +27,7 @@ public:
     char* get(){ return str; }
     char* str;
 };
+#endif
 
 static bool hasGlxInfo(){
     /* FIXME: on windows just return true */

@@ -3,6 +3,12 @@
 #FROM ubuntu:23.10
 FROM devkitpro/devkitppc:latest
 
+#RUN apt update && apt install -y sudo wget git meson ninja-build make
+RUN apt install -y sudo wget git ninja-build make pip
+# Get latest meson
+RUN pip install meson
+
+# Copy source
 RUN mkdir -p /build/build-dkp/include/SDL2
 
 COPY src /build/src
@@ -13,7 +19,7 @@ RUN sed -i "s/SET_SYSTEM_COMMON_ARGS/'-O2', '-mogc', '-mcpu=750', '-meabi', '-mh
 RUN sed -i "s/SET_SYSTEM_COMMON_LINK_ARGS//" /build/powerpc-eabi-gamecube.txt
 COPY misc/powerpc-eabi.txt /build/powerpc-eabi-wii.txt
 RUN sed -i 's/SET_SYSTEM_TYPE/wii/' /build/powerpc-eabi-wii.txt
-RUN sed -i "s/SET_SYSTEM_COMMON_ARGS/'-O2', '-mrvl', '-mcpu=750', '-meabi', '-mhard-float', '-ffunction-sections', '-fdata-sections', '-D__WII__'/" /build/powerpc-eabi-wii.txt
+RUN sed -i "s/SET_SYSTEM_COMMON_ARGS/'-O2', '-mrvl', '-mcpu=750', '-meabi', '-mhard-float', '-ffunction-sections', '-fdata-sections','-DWII', '-D__WII__'/" /build/powerpc-eabi-wii.txt
 RUN sed -i "s/SET_SYSTEM_COMMON_LINK_ARGS//" /build/powerpc-eabi-wii.txt
 COPY misc/powerpc-eabi.txt /build/powerpc-eabi-wiiu.txt
 RUN sed -i 's/SET_SYSTEM_TYPE/wiiu/' /build/powerpc-eabi-wiiu.txt
@@ -50,11 +56,6 @@ build-wiiu:\n\
 \n\
 clean:\n\
 \trm -fr build-gamecube build-wii build-wiiu" > /build/Makefile
-
-#RUN apt update && apt install -y sudo wget git meson ninja-build make
-RUN apt install -y sudo wget git ninja-build make pip
-# Get latest meson
-RUN pip install meson
 
 # Temp directory
 RUN mkdir -p /build/.tmp
@@ -130,8 +131,8 @@ RUN cp /build/.tmp/SDL_image/include/SDL_image.h /build/build-dkp/include/SDL2/S
 #RUN dkp-pacman -S wiiu-dev
 #RUN dkp-pacman -S switch-dev
 
-#RUN cd /build && make gamecube
-#RUN cd /build && make wii
-#RUN cd /build && make wiiu
+RUN cd /build && make gamecube
+RUN cd /build && make wii
+RUN cd /build && make wiiu
 
 CMD [ "/bin/bash" ]

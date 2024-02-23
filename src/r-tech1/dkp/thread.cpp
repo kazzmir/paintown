@@ -1,13 +1,14 @@
-#ifdef WII
+#ifdef DEVKITPRO
 #include "thread.h"
-
-/* So we can call ogc's create thread directly */
-#include <ogc/lwp.h>
-
 
 namespace Util{
 
 namespace Thread{
+
+/* So we can call ogc's create thread directly */
+#if defined(GAMECUBE) || defined(WII)
+#include <ogc/lwp.h>
+
 
 struct LwpThread{
     lwp_t thread;
@@ -55,8 +56,14 @@ void joinThread(Id thread){
 }
 #endif
 
+#elif defined(WIIU)
+// Do something for WIIU
+#endif
+
+
 }
 
 }
+
 
 #endif

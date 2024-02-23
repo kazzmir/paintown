@@ -11,9 +11,9 @@ common_args = ['-I' + dkp_a64 / 'include',
                '-I' + aarch64_dir / 'include', 
                '-I' + cross_root / 'include',
                '-isystem ' + dkp_root / 'libnx' / 'include',
-               '-DDEVKITPRO=1', 
-               '-DWII=1',
+               '-DDEVKITPRO', 
                '-D__SWITCH__',
+               '-DSWITCH',
                '-march=armv8-a+crc+crypto',
                '-mtune=cortex-a57', 
                '-mtp=soft', 
@@ -22,6 +22,7 @@ common_args = ['-I' + dkp_a64 / 'include',
                '-ffunction-sections',
                '-fdata-sections',
                ]
+common_link_args = ['-specs=' + dkp_root / 'libnx/switch.specs']
 
 [binaries]
 c = dkp_a64 / 'bin' / a64 + '-gcc'
@@ -52,8 +53,8 @@ c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
 cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
 c_args = common_args
 cpp_args = common_args
-c_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s', '-lnx']
-cpp_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-static-libgcc', '-static-libstdc++', '-lnx']
+c_link_args = ['-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-lnx'] + common_link_args
+cpp_link_args = ['-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-static-libgcc', '-static-libstdc++','-lnx'] + common_link_args
 includedir = cross_root / 'include'
 libdir = cross_root / 'lib'
 default_library='static'
