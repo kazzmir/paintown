@@ -53,7 +53,10 @@ build-psp:
 
 psp: build-psp
 	(cd build-psp; meson configure -Dbuild_tests=false)
-	meson compile  -C build-psp
+	meson compile -C build-psp
+
+psp-docker:
+	./easy-compile-docker-psp && ./release/release-psp
 
 clean:	clean-psp
 	rm -rf .tmp build build-debug build-release build-mingw
