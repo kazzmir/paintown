@@ -1,0 +1,88 @@
+[constants]
+system_type = '3ds'
+arm = 'arm-none-eabi'
+dkp_root = '/opt' / 'devkitpro'
+dkp_portlibs = dkp_root / 'portlibs'
+dkp_arm = dkp_root / 'devkitARM'
+arm_none_dir = dkp_arm / arm
+cross_root = '/build/build-dkp'
+# Figure out a way to get these or append to c_args/c++_args without overwritting
+# x86_64-w64-mingw32-g++  -xc   /dev/null -E -Wp,-v 2>&1 | sed -n 's,^ ,,p'
+common_args = ['-I' + dkp_arm / 'include', 
+               '-I' + arm_none_dir / 'include', 
+               '-I' + dkp_root / 'libctru' / 'include',
+               '-I' + dkp_portlibs / system_type / 'include', 
+               '-I' + cross_root / 'include',
+               '-DDEVKITPRO', 
+               '-D_3DS',
+               '-D__3DS__',
+               '-DTHREE_DS',
+               '-march=armv6k',
+               '-mtune=mpcore', 
+               '-mfloat-abi=hard',
+               '-mtp=soft',
+               '-O2',
+               '-mword-relocations',
+               '-ffunction-sections',
+               '-fdata-sections',
+               ]
+common_link_args = ['-L' + dkp_portlibs / system_type / 'libs', '-L' + dkp_root / 'libctru' / 'lib' , '-lctru']
+
+[binaries]
+c = dkp_arm / 'bin' / arm + '-gcc'
+cpp = dkp_arm / 'bin' / arm +'-g++'
+ar = dkp_arm / 'bin' / arm + '-ar'
+strip = dkp_arm / 'bin' / arm + '-strip'
+ld = dkp_arm / 'bin' / arm + '-ld'
+#exe_wrapper = 'wine64'
+pkg-config = dkp_root / 'portlibs' / system_type / 'bin' / arm + '-pkg-config'
+sdl2-config = dkp_root / 'portlibs' / system_type / 'bin' / 'sdl2-config'
+cmake = dkp_root / 'portlibs' / system_type / 'bin' / arm + '-cmake'
+
+[properties]
+dkp_build = true
+dkp_build_type = system_type
+#pkg_config_libdir = [dkp_root / 'portlibs' / system_type / 'lib' / 'pkgconfig', cross_root / 'lib/pkgconfig']
+pkg_config_libdir = [dkp_root / 'portlibs' / system_type / 'lib' / 'pkgconfig']
+
+[host_machine]
+system = 'nintendo'
+cpu_family = 'armv6k'
+cpu = 'armv6k'
+endian = 'little'
+
+[built-in options]
+pkg_config_path = dkp_root / 'portlibs' / system_type / 'lib/pkg-config'
+c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
+cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
+c_args = common_args
+cpp_args = common_args
+c_link_args = ['-static', '-static-libgcc'] + common_link_args
+cpp_link_args = ['-static', '-static-libgcc', '-static-libstdc++'] + common_link_args
+includedir = cross_root / 'include'
+libdir = cross_root / 'lib'
+default_library='static'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false

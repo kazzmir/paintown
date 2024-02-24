@@ -13,7 +13,7 @@ RUN mkdir -p /build/build-dkp/include/SDL2
 
 COPY src /build/src
 COPY meson.build /build
-COPY misc/aarch64-none-elf.txt /build/aarch64-none-elf.txt
+COPY misc/devkitpro/aarch64-none-elf.txt /build/aarch64-none-elf.txt
 
 COPY meson.options /build
 # Makefile
