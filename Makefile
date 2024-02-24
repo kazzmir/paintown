@@ -49,11 +49,11 @@ build-psp:
 	mkdir build-psp
 	misc/psp-environment.sh
 	# meson setup --cross-file misc/psp/psp-cross.txt misc/psp build-psp
-	meson setup --cross-file misc/psp/psp-cross.txt build-psp
+	meson setup --buildtype=plain --cross-file misc/psp/psp-cross.txt build-psp
 
 psp: build-psp
 	(cd build-psp; meson configure -Dbuild_tests=false)
-	meson compile -C build-psp
+	meson compile --jobs=`nproc` -C build-psp
 
 psp-docker:
 	./easy-compile-docker-psp && ./release/release-psp

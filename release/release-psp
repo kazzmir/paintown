@@ -67,8 +67,8 @@ else
 fi
 
 ls -lh EBOOT.PBP
-echo X. Compress
-psp-packer EBOOT.PBP && echo "OK" || echo "Error"
+#echo X. Compress
+#psp-packer EBOOT.PBP && echo "OK" || echo "Error"
 
 EOF
 
