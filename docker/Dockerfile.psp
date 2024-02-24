@@ -6,13 +6,5 @@ FROM pspdev/pspdev
 ENV PSPSDK $PSPDEV/psp
 ENV PATH   $PATH:$PSPDEV/bin:$PSPSDK/bin
 
-# install deps + psp-packer
-RUN apk add meson git gcc g++ zlib-dev \
-    && DTMP=`mktemp -d` \
-    && cd $DTMP && git clone https://github.com/humbertodias/psp-packer . \
-    && mkdir build  \
-    && cd build \
-    && cmake -DDCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++ .. \
-    && make \
-    && cp psp-packer ${PSPDEV}/bin \
-    && rm -rf $DTMP
+# deps
+RUN apk add meson

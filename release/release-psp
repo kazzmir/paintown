@@ -26,7 +26,6 @@ cp $EXEDIR/misc/psp/ICON0.PNG $EXEDIR/misc/psp/ICON1.PNG .
 cp $EXEDIR/misc/psp/PIC0.PNG $EXEDIR/misc/psp/PIC1.PNG .
 cp $EXEDIR/misc/psp/SND0.AT3 .
 cp $EXEDIR/paintown-psp.elf .
-cp -r $EXEDIR/data .
 
 PRX=false
 echo PRX=$PRX
@@ -62,14 +61,11 @@ else
     # <data.psar> : An optional data file in PSAR format.
 
     echo 2. Generating EBOOT.PBP
-    pack-pbp EBOOT.PBP PARAM.SFO ICON0.PNG ICON1.PNG PIC0.PNG PIC1.PNG SND0.AT3 paintown-psp.elf data && echo "OK" || echo "Error"
+    pack-pbp EBOOT.PBP PARAM.SFO ICON0.PNG ICON1.PNG PIC0.PNG PIC1.PNG SND0.AT3 paintown-psp.elf NULL && echo "OK" || echo "Error"
 
 fi
 
 ls -lh EBOOT.PBP
-#echo X. Compress
-#psp-packer EBOOT.PBP && echo "OK" || echo "Error"
-
 EOF
 
 tree
