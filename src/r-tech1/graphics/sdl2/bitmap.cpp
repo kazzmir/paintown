@@ -9,6 +9,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <GL/gl.h>
 #include <memory>
 
 using namespace std;
@@ -18,10 +19,12 @@ class SDLGlobalHandler{
 public:
     SDL_Window* window;
     SDL_Renderer* renderer;
+    SDL_GLContext context;
 
-    SDLGlobalHandler(SDL_Window* window, SDL_Renderer* renderer):
+    SDLGlobalHandler(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context):
     window(window),
-    renderer(renderer){
+    renderer(renderer),
+    context(context){
     }
 
     ~SDLGlobalHandler(){
@@ -30,6 +33,9 @@ public:
         }
         if (window != nullptr){
             SDL_DestroyWindow(window);
+        }
+        if (context != nullptr){
+            SDL_GL_DeleteContext(context);
         }
 
         renderer = nullptr;
@@ -988,7 +994,7 @@ int Graphics::setGfxModeText(){
 }
 
 int Graphics::setGraphicsMode(int mode, int width, int height){
-    SDL_Window* window = SDL_CreateWindow("paintown", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("paintown", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     if (window == nullptr){
         DebugLog << "Could not create a window: " << SDL_GetError() << endl;
         return 1;
@@ -1012,6 +1018,8 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
         DebugLog << "Unable to get renderer info: " << SDL_GetError() << endl;
     }
 
+    SDL_GLContext glContext = SDL_GL_CreateContext(window);
+
     /*
     double ratio = 640 / (double) 480;
     if (width / ratio > height){
@@ -1024,7 +1032,7 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
     /* always render at 640x480 resolution */
     SDL_RenderSetLogicalSize(renderer, 640, 480);
 
-    global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));
+    global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer, glContext));
 
     Screen = new Bitmap();
     Screen->clip_x1 = 0;
