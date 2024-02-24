@@ -33,6 +33,6 @@ clean:\n\
 # Temp directory
 RUN mkdir -p /build/.tmp
 
-RUN cd /build && make switch
+RUN cd /build && make switch && elf2nso build-switch/paintown ./paintown-switch.nso
 
 CMD [ "/bin/bash" ]

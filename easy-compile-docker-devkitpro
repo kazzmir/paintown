@@ -1,28 +1,25 @@
 #!/bin/bash -e
 # Build bins for GC, WII, WIIU and/or SWITCH
 
-GAMECUBE_BUILD_DIR=/build/build-gamecube
-WII_BUILD_DIR=/build/build-wii
-WIIU_BUILD_DIR=/build/build-wiiu
-SWITCH_BUILD_DIR=/build/build-switch
+BUILD_DIR=/build
+GAMECUBE_BUILD_DIR=${BUILD_DIR}/build-gamecube
+WII_BUILD_DIR=${BUILD_DIR}/build-wii
+WIIU_BUILD_DIR=${BUILD_DIR}/build-wiiu
+SWITCH_BUILD_DIR=${BUILD_DIR}/build-switch
 mkdir -p ${PWD}/dkp-bin
 
 echo "Building GameCube, WII and WII-U..."
 docker build -t paintown-dkp-build -f docker/Dockerfile.dkp .
 docker run --rm -iv${PWD}:/paintown-bin paintown-dkp-build sh -s <<EOF
-#chown $(id -u):$(id -g) ${GAMECUBE_BUILD_DIR}/paintown.elf
-#chown $(id -u):$(id -g) ${WII_BUILD_DIR}/paintown.elf
-#chown $(id -u):$(id -g) ${WIIU_BUILD_DIR}/paintown.elf
-#cp -a ${GAMECUBE_BUILD_DIR}/paintown.elf /paintown-bin/dkp-bin
-#cp -a ${WII_BUILD_DIR}/paintown.elf /paintown-bin/dkp-bin
-#cp -a ${WIIU_BUILD_DIR}/paintown.elf /paintown-bin/dkp-bin
+chown $(id -u):$(id -g) ${BUILD_DIR}/*.dol
+cp -a ${BUILD_DIR}/*.dol /paintown-bin/dkp-bin
 EOF
 
 echo "Building Switch..."
 docker build -t paintown-a64-build -f docker/Dockerfile.a64 .
-docker run --rm -iv${PWD}:/paintown-bin paintown-dkp-build sh -s <<EOF
-#chown $(id -u):$(id -g) ${SWITCH_BUILD_DIR}/paintown.elf
-#cp -a ${SWITCH_BUILD_DIR}/paintown.elf /paintown-bin/dkp-bin
+docker run --rm -iv${PWD}:/paintown-bin paintown-a64-build sh -s <<EOF
+#chown $(id -u):$(id -g) ${BUILD_DIR}/paintown-switch.nso
+#cp -a ${BUILD_DIR}/paintown-switch.nso /paintown-bin/dkp-bin
 EOF
 
 echo "

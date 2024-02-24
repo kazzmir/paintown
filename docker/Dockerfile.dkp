@@ -131,8 +131,8 @@ RUN cp /build/.tmp/SDL_image/include/SDL_image.h /build/build-dkp/include/SDL2/S
 #RUN dkp-pacman -S wiiu-dev
 #RUN dkp-pacman -S switch-dev
 
-RUN cd /build && make gamecube
-RUN cd /build && make wii
-RUN cd /build && make wiiu
+RUN cd /build && make gamecube && elf2dol build-gamecube/paintown ./paintown-gc.dol
+RUN cd /build && make wii && elf2dol build-wii/paintown ./paintown-wii.dol
+RUN cd /build && make wiiu && elf2dol build-wiiu/paintown ./paintown-wii-u.dol
 
 CMD [ "/bin/bash" ]
