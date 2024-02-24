@@ -8,6 +8,7 @@
 #include "r-tech1/debug.h"
 
 #include <unistd.h>
+#include <dirent.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 
@@ -46,14 +47,71 @@ int access(const char * path, int mode){
     }
 }
 
+bool System::readableFile(const std::string & path){
+    return !isDirectory(path) && readable(path);
+}
 
+/* GAMECUBE AND WII */
+#if defined(GAMECUBE) || defined(WII)
+#include <fat.h>
+
+bool System::isDirectory(const std::string & path){
+    DIR *pdir;
+	struct dirent *pent = NULL;
+	struct stat statbuf;
+    pdir = opendir(path.c_str());
+    if (!pdir){
+        return false;
+    }
+    stat(pent->d_name, &statbuf);
+    bool isDir = S_ISDIR(statbuf.st_mode);
+    closedir(pdir);
+    return isDir;
+}
+    
+bool System::readable(const std::string & path){
+    struct stat statbuf;
+    if (stat(path.c_str(), &statbuf) == -1){
+        return false;
+    }
+    return (S_ISREG(statbuf.st_mode) && access(path.c_str(), R_OK) == 0);
+}
+
+void System::makeDirectory(const std::string & path){    
+    mkdir(path.c_str(), 0777);
+}
+
+uint64_t System::currentMilliseconds(){
+#ifdef USE_SDL
+    return SDL_GetTicks();
+#elif USE_SDL2
+    return SDL_GetTicks();
+#else
+    // FIXME
+    return 0;
+#endif
+}
+    
+uint64_t System::getModificationTime(const std::string & path){
+    // TODO
+    return 0;
+}
+
+unsigned long System::memoryUsage(){
+    // TODO ?
+    return 0; 
+}
+
+/* call startMemoryUsage once at the very beginning of the program */
+void System::startMemoryUsage(){
+    /* FIXME */
+}
+
+/* WII-U */
+#elif defined(WIIU)
 bool System::isDirectory(const std::string & path){
     // TODO
     return false;
-}
-
-bool System::readableFile(const std::string & path){
-    return !isDirectory(path) && readable(path);
 }
     
 bool System::readable(const std::string & path){
@@ -90,5 +148,51 @@ unsigned long System::memoryUsage(){
 void System::startMemoryUsage(){
     /* FIXME */
 }
+
+/* SWITCH */
+#elif defined(SWITCH)
+
+
+bool System::isDirectory(const std::string & path){
+    // TODO
+    return false;
+}
+    
+bool System::readable(const std::string & path){
+    // TODO
+    return false;
+}
+
+void System::makeDirectory(const std::string & path){    
+    // TODO
+}
+
+uint64_t System::currentMilliseconds(){
+#ifdef USE_SDL
+    return SDL_GetTicks();
+#elif USE_SDL2
+    return SDL_GetTicks();
+#else
+    // FIXME
+    return 0;
+#endif
+}
+    
+uint64_t System::getModificationTime(const std::string & path){
+    // TODO
+    return 0;
+}
+
+unsigned long System::memoryUsage(){
+    // TODO ?
+    return 0; 
+}
+
+/* call startMemoryUsage once at the very beginning of the program */
+void System::startMemoryUsage(){
+    /* FIXME */
+}
+
+#endif
 
 #endif
