@@ -31,11 +31,11 @@ public:
         if (renderer != nullptr){
             SDL_DestroyRenderer(renderer);
         }
-        if (window != nullptr){
-            SDL_DestroyWindow(window);
-        }
         if (context != nullptr){
             SDL_GL_DeleteContext(context);
+        }
+        if (window != nullptr){
+            SDL_DestroyWindow(window);
         }
 
         renderer = nullptr;
@@ -832,7 +832,8 @@ void Graphics::Bitmap::BlitAreaToScreen(const int upper_left_x, const int upper_
 
 void Graphics::Bitmap::BlitToScreen(const int upper_left_x, const int upper_left_y) const {
     SDL_SetRenderTarget(global_handler->renderer, nullptr);
-    SDL_RenderPresent(global_handler->renderer);
+    // SDL_RenderPresent(global_handler->renderer);
+    SDL_GL_SwapWindow(global_handler->window);
 }
 
 void Graphics::Bitmap::roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const {
