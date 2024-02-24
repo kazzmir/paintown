@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "r-tech1/system.h"
+#include "r-tech1/funcs.h"
 
 #ifdef USE_SDL
 #include <SDL/SDL.h>
@@ -15,22 +16,23 @@
 
 #include <cstring>
 #include <cstdlib>
+
+
+
 /**
  * ref
  * https://pspdev.github.io/pspsdk/
 */
 #include <psptypes.h>
 #include <pspkernel.h>
-#include <pspdisplay.h> // For PSP display functions
 #include <pspctrl.h> // For PSP control functions
 #include <pspdebug.h> // For PSP debug functions
-#include <pspctrl.h>
 
 bool System::isDirectory(const std::string & path){
     SceIoStat stat;
     int result = sceIoGetstat(path.c_str(), &stat);
     if (result < 0) {
-        pspDebugScreenPrintf("Error getting file stat: %d\n", result);
+        DebugLog2 << "Error getting file stat: " <<  result << std::endl;
         return false; // Error getting file stat
     }
 
@@ -41,7 +43,7 @@ void System::makeDirectory(const std::string & path){
     int result = sceIoMkdir(path.c_str(), 0777); // Create directory with full permissions
     if (result < 0) {
         // Handle error if mkdir fails
-        pspDebugScreenPrintf("Error creating directory: %d\n", result);
+        DebugLog2 << "Error creating directory: " << result << std::endl;
     }
 }
 
@@ -61,6 +63,8 @@ uint64_t System::getModificationTime(const std::string & path){
     SceIoStat stat;
     int result = sceIoGetstat(path.c_str(), &stat);
     if (result < 0) {
+        DebugLog2 << "Error creating directory: " << result << std::endl;
+
         return 0; // Return 0 if there's an error
     }
 
@@ -73,13 +77,8 @@ uint64_t System::currentMilliseconds(){
 #elif USE_SDL2
     return SDL_GetTicks();
 #else
-
-    // Get the current system time in 64-bit ticks
-    SceKernelWideTime currentTime;
-    sceKernelGetSystemTimeWide(&currentTime);
-
-    // Convert ticks to milliseconds (1 tick = 1000000 nanoseconds)
-    return (currentTime.low / 1000) + (currentTime.hi * 1000000ull);
+    // TODO - FIXME
+    return 0;
 #endif
 }
 
