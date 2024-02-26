@@ -1,0 +1,76 @@
+[constants]
+cross_root = '/ps3dev'
+common_args = ['-mhard-float'
+             , '-fmodulo-sched'
+             , '-ffunction-sections'
+             , '-fdata-sections'
+             , '-maltivec'
+             , '-mminimal-toc'
+             , '-DPS3'
+            ]
+
+[binaries]
+c = 'ppu-gcc'
+cpp = 'ppu-g++'
+ar = 'ppu-ar'
+strip = 'ppu-strip'
+pkg-config = 'pkg-config'
+sdl2-config = '/usr/local/bin/sdl2-config'
+cmake = 'cmake'
+
+[built-in options]
+cpp_args = common_args + ['-I/usr/local/include'
+                        , '-mcpu=cell'
+#                        , '-m64'
+                        , '-fno-builtin'
+                        , '-nostdlib'
+                        , '-I/ps3dev/ppu/include'
+                        , '-I/ps3dev/portlibs/ppu/include'
+                        , '-I/ps3dev/portlibs/ppu/include/SDL'
+                        , '-DSDL_DISABLE_IMMINTRIN_H=ON'
+                        ]
+cpp_link_args = [ '-L/usr/local/lib'
+                , '-L/ps3dev/ppu/lib'
+                , '-L/ps3dev/portlibs/ppu/lib'
+                , '-lSDL2'
+                , '-lm'
+                , '-lgcm_sys'
+                , '-lrsx'
+                , '-lsysutil'
+                , '-lio'
+                , '-laudio'
+                , '-lrt'
+                , '-llv2'
+                , '-lio'
+                , '-laudio']
+default_library='static'
+
+[host_machine]
+system = 'ps3'
+cpu_family = 'cell'
+cpu = 'cell'
+endian = 'big'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false

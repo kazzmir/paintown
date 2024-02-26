@@ -29,7 +29,7 @@ else
 fi
 
 # Copy compiled ps3 file
-cp $EXEDIR/paintown.ps3 main
+cp $EXEDIR/paintown-ps3.elf main
 cp $EXEDIR/misc/ps3/sfo.xml .
 sed -i "s/01\.00/$APPVERSION/g" sfo.xml
 

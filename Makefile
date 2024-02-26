@@ -47,12 +47,16 @@ testmingw: build-mingw
 
 build-ps3:
 	mkdir build-ps3
-	misc/ps3-environment.sh
-	meson setup --cross-file cross-ps3.txt build-ps3
+	# misc/ps3/ps3-environment.sh
+	meson setup --cross-file misc/ps3/cell-eabi.txt misc/ps3 build-ps3
+	# meson setup --cross-file misc/ps3/cell-eabi.txt build-ps3
 
 ps3: build-ps3
 	(cd build-ps3; meson configure -Dbuild_tests=false)
-	meson compile -C build-ps3
+	meson compile --jobs=`nproc` -C build-ps3
+
+ps3-docker:
+	./easy-compile-docker-ps3 && ./release/release-ps3
 
 clean:
-	rm -rf build-debug build-release build-mingw build-ps3
+	rm -rf build-debug build-release build-mingw build-ps3 misc/ps3/build-ps3

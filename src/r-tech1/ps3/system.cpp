@@ -1,4 +1,4 @@
-#if defined(PS3)
+#ifdef PS3
 
 #include <unistd.h>
 #include <sys/stat.h>

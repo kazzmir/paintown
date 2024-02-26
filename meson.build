@@ -11,6 +11,7 @@ add_global_arguments(['-Wextra', '-Wno-unused-variable', '-Wno-unused-function',
 
 link_args = []
 is_static = true
+sdl_image_dependency = []
 sdl_graphics_dependency = []
 sdl_graphics_library = []
 yaml_cpp_dependency = []
@@ -26,13 +27,14 @@ if not meson.is_cross_build()
   endif
   is_static = false
   sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
+  sdl_image_dependency = dependency('SDL2_image', required: true, static: is_static)
   yaml_cpp_dependency = dependency('yaml-cpp', required: false, static: is_static)
 
   if yaml_cpp_dependency.found()
     add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
   endif
 else
-  add_global_arguments('-DCROSS_BUILD=1', language: ['c', 'cpp'])
+  add_global_arguments('-DCROSS_BUILD', language: ['c', 'cpp'])
 endif
 
 includes = include_directories('src')
@@ -66,12 +68,17 @@ if mpg123_dependency.found()
 endif
 
 if meson.is_cross_build()
- fs = import('fs')
+  fs = import('fs')
   if fs.is_dir('.tmp/yaml-cpp')
     add_global_arguments('-DHAVE_YAML_CPP', language: 'cpp')
     subdir('.tmp/yaml-cpp')
   endif
-  subdir('.tmp/SDL_gfx')
+  if fs.is_file('.tmp/SDL_gfx/meson.build')
+    subdir('.tmp/SDL_gfx')
+  endif
+  if fs.is_file('.tmp/SDL_image/meson.build')
+      subdir('.tmp/SDL_image')
+  endif
 endif
 
 subdir('src/r-tech1')

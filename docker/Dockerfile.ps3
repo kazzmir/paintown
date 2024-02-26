@@ -1,16 +1,5 @@
 FROM hldtux/ps3dev
+# https://github.com/humbertodias/docker-ps3dev
 
-# Install SDL2 Libraries for the PS3
-RUN cd ${PS3DEV} \
-    && git clone https://github.com/humbertodias/PS3-SDL2 sdl2_pslight \
-    && cd sdl2_pslight \
-    && chmod +x configure && ./configure --host=powerpc64-ps3-elf --enable-static --disable-shared \
-    && make \
-    && make install \
-    && rm -rf ${PS3DEV}/sdl2_pslight
-
-# Set the working directory
-WORKDIR /workspace
-
-# Set the entry point to start a shell in the working directory
-CMD ["/bin/bash"]
+# build : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t paintown-ps3-build -f Dockerfile.ps3 .
+# shell : docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build bash
