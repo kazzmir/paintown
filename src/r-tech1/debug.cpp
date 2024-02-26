@@ -11,6 +11,10 @@
 #define ANDROID_LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "r-tech1", __VA_ARGS__)
 #endif
 
+#if defined(GAMECUBE) || defined(WII)
+#include <ogc/system.h>
+#endif
+
 #ifdef NETWORK_DEBUG
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -166,10 +170,12 @@ wii_ostream & operator<<(wii_ostream & stream, const long int input){
     return stream;
 }
 
+#ifndef SWITCH
 wii_ostream & operator<<(wii_ostream & stream, const unsigned long int input){
     stream.buffer << input;
     return stream;
 }
+#endif
 
 wii_ostream & operator<<(wii_ostream & stream, const void * input){
     stream.buffer << input;
@@ -179,6 +185,9 @@ wii_ostream & operator<<(wii_ostream & stream, const void * input){
 wii_ostream & operator<<(wii_ostream & stream, std::ostream & (*f)(std::ostream &)){
     if (stream.enabled){
         printf("%s\n", stream.buffer.str().c_str());
+#if defined(GAMECUBE) || defined(WII)
+        SYS_Report("%s\n", stream.buffer.str().c_str());
+#endif
     }
     stream.buffer.str("");
     stream.buffer.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);

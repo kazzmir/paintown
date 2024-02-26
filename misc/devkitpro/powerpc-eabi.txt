@@ -9,6 +9,7 @@ cross_root = '/build/build-dkp'
 common_args = ['-I' + dkp_ppc / 'include', 
                '-I' + powerpc_eabi / 'include', 
                '-I' + cross_root / 'include',
+               '-DDEBUG',
                '-DDEVKITPRO', 
                ] + [SET_SYSTEM_COMMON_ARGS]
 common_link_args = ['-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-L' + dkp_root / 'portlibs' / system_type / 'lib'] + [SET_SYSTEM_COMMON_LINK_ARGS]
