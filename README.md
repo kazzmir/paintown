@@ -96,6 +96,10 @@ $ ./easy-compile-fedora
 `
 $ ./easy-compile-mac-arm
 `
+### PS3
+```shell
+./easy-compile-docker-ps3
+```
 
 ## Scripting
 
