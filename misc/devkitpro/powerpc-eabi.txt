@@ -10,7 +10,8 @@ common_args = ['-I' + dkp_ppc / 'include',
                '-I' + powerpc_eabi / 'include', 
                '-I' + cross_root / 'include',
                '-DDEBUG',
-               '-DDEVKITPRO', 
+               '-DDEVKITPRO',
+               '-DDATA_PATH="/apps/paintown/data"',
                ] + [SET_SYSTEM_COMMON_ARGS]
 common_link_args = ['-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-L' + dkp_root / 'portlibs' / system_type / 'lib'] + [SET_SYSTEM_COMMON_LINK_ARGS]
 #common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']

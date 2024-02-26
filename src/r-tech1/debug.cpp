@@ -187,6 +187,8 @@ wii_ostream & operator<<(wii_ostream & stream, std::ostream & (*f)(std::ostream 
         printf("%s\n", stream.buffer.str().c_str());
 #if defined(GAMECUBE) || defined(WII)
         SYS_Report("%s\n", stream.buffer.str().c_str());
+        fprintf(stdout, "%s\n", stream.buffer.str().c_str());
+        fprintf(stderr, "%s\n", stream.buffer.str().c_str());
 #endif
     }
     stream.buffer.str("");
@@ -409,6 +411,11 @@ Global::stream_type & Global::debug(int i, const string & context){
 
 void Global::setDebug(int i){
     global_debug_level = i;
+
+#if defined(GAMECUBE) || defined(WII)
+    // Redirects stderr and stdio to Dolphin OSReport uart
+    SYS_STDIO_Report(true);
+#endif
 }
 
 int Global::getDebug(){
