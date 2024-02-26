@@ -4,13 +4,13 @@
 
 
 template<typename T>
-Atomic::atomic<T>::atomic(T arg):
+Atomic::atomic<T>::atomic(const T & arg):
 value(arg){
 
 }
 
 template<typename T>
-Atomic::atomic<T>::atomic(atomic<T> & copy):
+Atomic::atomic<T>::atomic(const atomic<T> & copy):
 value(copy.arg){
 
 }
@@ -22,11 +22,11 @@ Atomic::atomic<T>::~atomic(){
 
 template<typename T>
 T Atomic::atomic<T>::load() const noexcept {
-    return value;
+    return this->value;
 }
 
 template<typename T>
-void Atomic::atomic<T>::store(T arg) noexcept {
+void Atomic::atomic<T>::store(const T & arg) noexcept {
     value = arg;
 }
 
@@ -36,42 +36,79 @@ Atomic::atomic<T>::operator T() noexcept {
 }
 
 template<typename T>
-T Atomic::atomic<T>::operator=( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator=(const T & arg) noexcept {
+    value = arg;
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator=( atomic & copy) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator=( atomic<T> & copy) noexcept {
+    this->value = copy.value;
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator+( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator+(const T & arg) noexcept {
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator-( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator-(const T & arg) noexcept {
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator+=( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator+=(const T & arg) noexcept {
+    this->value += arg;
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator-=( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator-=(const T & arg) noexcept {
+    this->value -= arg;
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator&=( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator&=(const T & arg) noexcept {
+    this->value &= arg;
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator|=( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator|=(const T & arg) noexcept {
+    this->value |= arg;
+    return *this;
+}
 
 template<typename T>
-T Atomic::atomic<T>::operator^=( T arg ) noexcept {}
+atomic<T> & Atomic::atomic<T>::operator^=(const T & arg) noexcept {
+    this->value ^= arg;
+    return *this;
+}
 
 template<typename T>
-bool Atomic::atomic<T>::operator!=( T arg ) noexcept { return value != arg; }
+bool Atomic::atomic<T>::operator!=( const atomic<T> & rhs ) noexcept { return value != rhs.value; }
 
 template<typename T>
-bool Atomic::atomic<T>::operator==( T arg ) noexcept { return value == arg; }
+bool Atomic::atomic<T>::operator==( const atomic<T> & rhs ) noexcept { return value == rhs.value; }
 
 template<typename T>
-bool Atomic::atomic<T>::operator>( T arg ) noexcept { return value > arg; }
+bool Atomic::atomic<T>::operator>( const atomic<T> & rhs ) noexcept { return value > rhs.value; }
 
 template<typename T>
-bool Atomic::atomic<T>::operator<( T arg ) noexcept { return value < arg; }
+bool Atomic::atomic<T>::operator<( const atomic<T> & rhs ) noexcept { return value < rhs.value; }
+
+template<typename T>
+bool Atomic::atomic<T>::operator!=(const T & arg) noexcept { return value != arg; }
+
+template<typename T>
+bool Atomic::atomic<T>::operator==(const T & arg) noexcept { return value == arg; }
+
+template<typename T>
+bool Atomic::atomic<T>::operator>(const T & arg) noexcept { return value > arg; }
+
+template<typename T>
+bool Atomic::atomic<T>::operator<(const T & arg) noexcept { return value < arg; }
 
 #endif

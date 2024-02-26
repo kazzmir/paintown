@@ -14,25 +14,29 @@ namespace Atomic {
     template<typename T>
     class atomic{
     public:
-        atomic(T arg);
-        atomic(atomic<T> & copy);
+        atomic(const T & );
+        atomic(const atomic<T> & );
         ~atomic();
         T load() const noexcept;
-        void store(T arg) noexcept;
+        void store(const T & ) noexcept;
         operator T() noexcept;
-        T operator=( T arg ) noexcept;
-        T operator=( atomic & copy) noexcept;
-        T operator+( T arg ) noexcept;
-        T operator-( T arg ) noexcept;
-        T operator+=( T arg ) noexcept;
-        T operator-=( T arg ) noexcept;
-        T operator&=( T arg ) noexcept;
-        T operator|=( T arg ) noexcept;
-        T operator^=( T arg ) noexcept;
-        bool operator!=( T arg ) noexcept;
-        bool operator==( T arg ) noexcept;
-        bool operator>( T arg ) noexcept;
-        bool operator<( T arg ) noexcept;
+        atomic<T> & operator=(const T & ) noexcept;
+        atomic<T> & operator=( atomic<T> & ) noexcept;
+        atomic<T> & operator+(const T & ) noexcept;
+        atomic<T> & operator-(const T & ) noexcept;
+        atomic<T> & operator+=(const T & ) noexcept;
+        atomic<T> & operator-=(const T & ) noexcept;
+        atomic<T> & operator&=(const T & ) noexcept;
+        atomic<T> & operator|=(const T & ) noexcept;
+        atomic<T> & operator^=(const T & ) noexcept;
+        bool operator!=( const atomic<T> & ) noexcept;
+        bool operator==( const atomic<T> & ) noexcept;
+        bool operator>( const atomic<T> & ) noexcept;
+        bool operator<( const atomic<T> & ) noexcept;
+        bool operator!=(const T & ) noexcept;
+        bool operator==(const T & ) noexcept;
+        bool operator>(const T & ) noexcept;
+        bool operator<(const T & ) noexcept;
     protected:
         T value;
     };

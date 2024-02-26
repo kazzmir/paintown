@@ -70,6 +70,7 @@ if mpg123_dependency.found()
   add_global_arguments('-DHAVE_MP3_MPG123=1', language: 'cpp')
 endif
 
+build_paintown_test = false
 if meson.is_cross_build()
   build_sdl2_image = false
   if meson.has_external_property('dkp_build') and meson.get_external_property('dkp_build')
@@ -77,6 +78,7 @@ if meson.is_cross_build()
     other_dependencies += [dependency('harfbuzz', required: true, static: is_static)]
     # Use included SDL_gfx
     sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
+    build_paintown_test = true
   endif
 
   if meson.has_external_property('dkp_build_type') and meson.get_external_property('dkp_build_type') == 'gamecube'
@@ -125,4 +127,6 @@ if build_tests == true
   subdir('src/test/util')
   subdir('src/test/thread')
   subdir('src/test/token')
+elif build_paintown_test == true
+  subdir('src/test/paintown')
 endif

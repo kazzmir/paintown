@@ -13,10 +13,9 @@
 #include "r-tech1/input/input.h"
 #include "r-tech1/input/input-manager.h"
 #include "r-tech1/font.h"
+#include "r-tech1/system.h"
 
 #include "factory/collector.h"
-
-#include "r-tech1/libs/filesystem/fs-wrapper.h"
 
 //using namespace Mugen;
 
@@ -133,9 +132,13 @@ Filesystem::AbsolutePath Filesystem::userDirectory(){
 
 // Use other directories
 std::string getDataPath(){
-    std::vector<std::string> locations = { "paintown-data", "data-new", "data-other" };
+    std::vector<std::string> locations = { "paintown-data",
+                                           "data-new",
+                                           "data-other",
+                                           "/apps/paintown/data",
+                                         };
     for (std::vector<std::string>::iterator it = locations.begin(); it != locations.end(); it++){
-        if (fs::is_directory(*it)){
+        if (System::isDirectory(*it)){
             return *it;
         }
     }
@@ -143,7 +146,11 @@ std::string getDataPath(){
 }
 
 int test_main(int argc, char** argv){
+#ifndef DEVKITPRO
     if (argc > 1){
+#else
+    if (true) {
+#endif
         Collector janitor;
         Util::setDataPath(getDataPath());
 
@@ -153,7 +160,11 @@ int test_main(int argc, char** argv){
         Global::init(conditions);
         
         Global::setDebug(3);
+#ifndef DEVKITPRO
         std::string file = argv[1];
+#else
+        std::string file = "/apps/paintown/data/paintown/select.txt";
+#endif
 
         Paintown::Mod::loadDefaultMod();
         
@@ -185,7 +196,6 @@ int test_main(int argc, char** argv){
         } catch (const TokenException & ex){
             Global::debug(0) << "Problem parsing file [" << file << "]. Reason: " << ex.getTrace() << std::endl;
         }
-        
     } else {
         std::cout << "Usage: ./" << argv[0] << " select-screen.txt" << std::endl;
     }

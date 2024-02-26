@@ -13,6 +13,7 @@
 #include "r-tech1/graphics/bitmap.h"
 #include "r-tech1/sound/sound.h"
 #include "r-tech1/funcs.h"
+#include "r-tech1/system.h"
 #include "paintown-engine/game/mod.h"
 #include "paintown-engine/level/scene.h"
 #include "paintown-engine/object/player.h"
@@ -352,8 +353,23 @@ void showAnimation(Paintown::Character & player){
     }
 }
 
+// Use other directories
+std::string getDataPath(){
+    std::vector<std::string> locations = { "paintown-data",
+                                           "data-new",
+                                           "data-other",
+                                           "/apps/paintown/data",
+                                         };
+    for (std::vector<std::string>::iterator it = locations.begin(); it != locations.end(); it++){
+        if (System::isDirectory(*it)){
+            return *it;
+        }
+    }
+    return "";
+}
+
 int test_main(int argc, char ** argv){
-    Util::setDataPath("paintown-data");
+    Util::setDataPath(getDataPath());
     Global::InitConditions conditions;
     // conditions.graphics = Global::InitConditions::Disabled;
     Global::init(conditions);
