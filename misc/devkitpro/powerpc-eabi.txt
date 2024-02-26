@@ -7,14 +7,11 @@ cross_root = '/build/build-dkp'
 # Figure out a way to get these or append to c_args/c++_args without overwritting
 # x86_64-w64-mingw32-g++  -xc   /dev/null -E -Wp,-v 2>&1 | sed -n 's,^ ,,p'
 common_args = ['-I' + dkp_ppc / 'include', 
-               '-I' + dkp_root / 'libogc' / 'include', 
-               '-I' + dkp_root / 'libogc' / 'include' / 'ogc', 
-               '-I' + dkp_root / 'wut' / 'include',
                '-I' + powerpc_eabi / 'include', 
                '-I' + cross_root / 'include',
                '-DDEVKITPRO', 
                ] + [SET_SYSTEM_COMMON_ARGS]
-common_link_args = [SET_SYSTEM_COMMON_LINK_ARGS]
+common_link_args = ['-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-L' + dkp_root / 'portlibs' / system_type / 'lib'] + [SET_SYSTEM_COMMON_LINK_ARGS]
 #common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']
 
 [binaries]
@@ -46,8 +43,8 @@ c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
 cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
 c_args = common_args
 cpp_args = common_args
-c_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-lsfml-window-s', '-lsfml-system-s'] + common_link_args
-cpp_link_args = ['-L' + dkp_root / 'wut' / 'lib','-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-static', '-static-libgcc', '-static-libstdc++'] + common_link_args
+c_link_args = ['-static', '-lsfml-window-s', '-lsfml-system-s'] + common_link_args
+cpp_link_args = ['-static', '-static-libgcc', '-static-libstdc++'] + common_link_args
 includedir = cross_root / 'include'
 libdir = cross_root / 'lib'
 default_library='static'
