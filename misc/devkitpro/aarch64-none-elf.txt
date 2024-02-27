@@ -18,10 +18,11 @@ common_args = ['-I' + dkp_a64 / 'include',
                '-march=armv8-a+crc+crypto',
                '-mtune=cortex-a57', 
                '-mtp=soft', 
-               '-fPIC',
+               '-fPIE',
                '-ftls-model=local-exec',
                '-ffunction-sections',
                '-fdata-sections',
+               '-fno-rtti'
                ]
 common_link_args = ['-specs=' + dkp_root / 'libnx/switch.specs']
 

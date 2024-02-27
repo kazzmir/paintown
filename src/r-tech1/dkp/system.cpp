@@ -21,6 +21,11 @@
 #include <SDL2/SDL.h>
 #endif
 
+/* GAMECUBE AND WII */
+#if defined(GAMECUBE) || defined(WII)
+#include <fat.h>
+#endif
+
 /* devkitpro doesn't have an implementation of access() yet. if it gets one this function
  * can be removed.
  */
@@ -52,8 +57,8 @@ bool System::readableFile(const std::string & path){
 }
 
 /* GAMECUBE AND WII */
-#if defined(GAMECUBE) || defined(WII)
-#include <fat.h>
+//#if defined(GAMECUBE) || defined(WII)
+//#include <fat.h>
 
 bool System::isDirectory(const std::string & path){
     DIR *pdir;
@@ -107,92 +112,5 @@ void System::startMemoryUsage(){
     /* FIXME */
 }
 
-/* WII-U */
-#elif defined(WIIU)
-bool System::isDirectory(const std::string & path){
-    // TODO
-    return false;
-}
-    
-bool System::readable(const std::string & path){
-    // TODO
-    return false;
-}
-
-void System::makeDirectory(const std::string & path){    
-    // TODO
-}
-
-uint64_t System::currentMilliseconds(){
-#ifdef USE_SDL
-    return SDL_GetTicks();
-#elif USE_SDL2
-    return SDL_GetTicks();
-#else
-    // FIXME
-    return 0;
-#endif
-}
-    
-uint64_t System::getModificationTime(const std::string & path){
-    // TODO
-    return 0;
-}
-
-unsigned long System::memoryUsage(){
-    // TODO ?
-    return 0; 
-}
-
-/* call startMemoryUsage once at the very beginning of the program */
-void System::startMemoryUsage(){
-    /* FIXME */
-}
-
-/* SWITCH */
-#elif defined(SWITCH)
-
-
-bool System::isDirectory(const std::string & path){
-    // TODO
-    return false;
-}
-    
-bool System::readable(const std::string & path){
-    // TODO
-    return false;
-}
-
-void System::makeDirectory(const std::string & path){    
-    // TODO
-}
-
-uint64_t System::currentMilliseconds(){
-#ifdef USE_SDL
-    return SDL_GetTicks();
-#elif USE_SDL2
-    return SDL_GetTicks();
-#else
-    // FIXME
-    return 0;
-#endif
-}
-    
-uint64_t System::getModificationTime(const std::string & path){
-    // TODO
-    return 0;
-}
-
-unsigned long System::memoryUsage(){
-    // TODO ?
-    return 0; 
-}
-
-/* call startMemoryUsage once at the very beginning of the program */
-void System::startMemoryUsage(){
-    /* FIXME */
-}
-
-#endif
 
 #endif

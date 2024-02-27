@@ -31,8 +31,8 @@ EOF
 echo "Building Switch..."
 docker build -t ${A64_IMAGE} -f docker/Dockerfile.dkp.a64 .
 docker run --rm -iv${PWD}:/paintown-bin ${A64_IMAGE} sh -s <<EOF
-#chown $(id -u):$(id -g) ${BUILD_DIR}/paintown-switch.nso
-#cp -a ${BUILD_DIR}/paintown-switch.nso /paintown-bin/dkp-bin
+chown $(id -u):$(id -g) ${BUILD_DIR}/paintown-switch.*
+cp -a ${BUILD_DIR}/paintown-switch.* /paintown-bin/dkp-bin
 EOF
 
 echo "

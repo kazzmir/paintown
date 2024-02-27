@@ -42,9 +42,9 @@ namespace Atomic {
     };
 
     // Implementations
-    #ifdef DEVKITPRO
+#ifdef DEVKITPRO
         #include "dkp/atomic.hpp"
-    #endif
+#endif
 #endif
 }
 

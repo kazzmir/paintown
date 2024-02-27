@@ -69,6 +69,8 @@
 
 #if defined(GAMECUBE) || defined(WII)
 #include <fat.h>
+#elif defined(SWITCH)
+#include <switch.h>
 #endif
 
 #include "r-tech1/xenon/xenon.h"
@@ -196,6 +198,12 @@ bool Global::initNoGraphics(){
      * or root of first device mounted
      */
     out << "Fat init " << (fatInitDefault() == true ? "Ok" : "Failed") << endl;
+#elif defined(SWITCH)
+    // Init text console on switch (don't use for now)
+    // consoleInit(NULL);
+    // consoleUpdate(NULL) <- need to call this to update the console
+    // (Should call consoleExit(NULL)) on exit
+    //DebugLog1 << "Switch console init..." << std::endl;
 #endif
     /*
     char buffer[512];

@@ -70,7 +70,7 @@ private:
         //DebugLog << "Starting get files from path: " << path << std::endl;
         std::vector<File> files;
 
-#if defined(GAMECUBE) || defined(WII)
+
         DIR *pdir;
         struct dirent *pent = NULL;
         struct stat statbuf;
@@ -95,7 +95,7 @@ private:
         } else {
             DebugLog2 << "Error opening directory: " << path << std::endl;
         }
-#endif
+
         return files;
     }
 
