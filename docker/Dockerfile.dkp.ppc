@@ -135,16 +135,22 @@ RUN cd /build && make gamecube && \
     elf2dol build-gamecube/paintown ./paintown-gc.dol && \
     cd /build/build-gamecube/src/test/paintown && \
     elf2dol test-animation /build/test-animation-gc.dol && \
-    elf2dol test-paintown-select /build/test-paintown-select-gc.dol
+    elf2dol test-paintown-select /build/test-paintown-select-gc.dol && \
+    cd /build/build-gamecube/src/test/util && \
+    elf2dol test-fs /build/test-fs-gamecube.dol
 RUN cd /build && make wii && \
     elf2dol build-wii/paintown ./paintown-wii.dol && \
     cd /build/build-wii/src/test/paintown && \
     elf2dol test-animation /build/test-animation-wii.dol && \
-    elf2dol test-paintown-select /build/test-paintown-select-wii.dol
+    elf2dol test-paintown-select /build/test-paintown-select-wii.dol && \
+    cd /build/build-wii/src/test/util && \
+    elf2dol test-fs /build/test-fs-wii-u.dol
 RUN cd /build && make wiiu && \
     elf2dol build-wiiu/paintown ./paintown-wii-u.dol && \
     cd /build/build-wiiu/src/test/paintown && \
     elf2dol test-animation /build/test-animation-wii-u.dol && \
-    elf2dol test-paintown-select /build/test-paintown-select-wii-u.dol
+    elf2dol test-paintown-select /build/test-paintown-select-wii-u.dol && \
+    cd /build/build-wiiu/src/test/util && \
+    elf2dol test-fs /build/test-fs-wii-u.dol
 
 CMD [ "/bin/bash" ]
