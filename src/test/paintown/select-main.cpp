@@ -163,7 +163,7 @@ int test_main(int argc, char** argv){
 #ifndef DEVKITPRO
         std::string file = argv[1];
 #else
-        std::string file = "/apps/paintown/data/paintown/select.txt";
+        std::string file = "/apps/paintown/select.txt";
 #endif
 
         Paintown::Mod::loadDefaultMod();

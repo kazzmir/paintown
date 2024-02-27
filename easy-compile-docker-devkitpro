@@ -12,12 +12,12 @@ DS_BUILD_DIR=${BUILD_DIR}/build-3ds
 SWITCH_BUILD_DIR=${BUILD_DIR}/build-switch
 mkdir -p ${PWD}/dkp-bin
 
-#echo "Building GameCube, WII and WII-U..."
-#docker build -t ${PPC_IMAGE} -f docker/Dockerfile.dkp.ppc .
-#docker run --rm -iv${PWD}:/paintown-bin ${PPC_IMAGE} sh -s <<EOF
-#chown $(id -u):$(id -g) ${BUILD_DIR}/*.dol
-#cp -a ${BUILD_DIR}/*.dol /paintown-bin/dkp-bin
-#EOF
+echo "Building GameCube, WII and WII-U..."
+docker build -t ${PPC_IMAGE} -f docker/Dockerfile.dkp.ppc .
+docker run --rm -iv${PWD}:/paintown-bin ${PPC_IMAGE} sh -s <<EOF
+chown $(id -u):$(id -g) ${BUILD_DIR}/*.dol
+cp -a ${BUILD_DIR}/*.dol /paintown-bin/dkp-bin
+EOF
 
 ################## NO SDL2 libs #########################
 

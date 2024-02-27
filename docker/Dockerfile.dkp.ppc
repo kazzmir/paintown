@@ -20,7 +20,7 @@ RUN sed -i "s/SET_SYSTEM_COMMON_LINK_ARGS/'-L\/opt\/devkitpro\/libogc\/lib\/cube
 COPY misc/devkitpro/powerpc-eabi.txt /build/powerpc-eabi-wii.txt
 RUN sed -i 's/SET_SYSTEM_TYPE/wii/' /build/powerpc-eabi-wii.txt
 RUN sed -i "s/SET_SYSTEM_COMMON_ARGS/'-O2', '-mrvl', '-mcpu=750', '-meabi', '-mhard-float', '-ffunction-sections', '-fdata-sections','-DWII', '-D__WII__', '-I\/opt\/devkitpro\/libogc\/include'/" /build/powerpc-eabi-wii.txt
-RUN sed -i "s/SET_SYSTEM_COMMON_LINK_ARGS/'-L\/opt\/devkitpro\/libogc\/lib\/wii'/" /build/powerpc-eabi-wii.txt
+RUN sed -i "s/SET_SYSTEM_COMMON_LINK_ARGS/'-L\/opt\/devkitpro\/libogc\/lib\/wii', '-lwiiuse', '-lbte'/" /build/powerpc-eabi-wii.txt
 COPY misc/devkitpro/powerpc-eabi.txt /build/powerpc-eabi-wiiu.txt
 RUN sed -i 's/SET_SYSTEM_TYPE/wiiu/' /build/powerpc-eabi-wiiu.txt
 RUN sed -i "s/SET_SYSTEM_COMMON_ARGS/'-O2', '-mcpu=750', '-meabi', '-mhard-float', '-ffunction-sections', '-fdata-sections','-DWIIU', '-D__WIIU__', '-D__WUT__', '-I\/opt\/devkitpro\/wut\/include'/" /build/powerpc-eabi-wiiu.txt
@@ -144,7 +144,7 @@ RUN cd /build && make wii && \
     elf2dol test-animation /build/test-animation-wii.dol && \
     elf2dol test-paintown-select /build/test-paintown-select-wii.dol && \
     cd /build/build-wii/src/test/util && \
-    elf2dol test-fs /build/test-fs-wii-u.dol
+    elf2dol test-fs /build/test-fs-wii.dol
 RUN cd /build && make wiiu && \
     elf2dol build-wiiu/paintown ./paintown-wii-u.dol && \
     cd /build/build-wiiu/src/test/paintown && \

@@ -8,7 +8,11 @@
 #include "r-tech1/file-system.h"
 #include "r-tech1/system.h"
 
-#ifdef SWITCH
+#if defined(WII)
+#include <gccore.h>
+#include <wiiuse/wpad.h>
+#include <fat.h>
+#elif defined(SWITCH)
 #include <switch.h>
 #endif
 
@@ -60,7 +64,39 @@ public:
     ConsoleWrapper():
     count(0),
     done(false){
-#ifdef SWITCH
+#if defined(WII)
+         // Initialise the video system
+        VIDEO_Init();
+
+        // This function initialises the attached controllers
+        WPAD_Init();
+
+        // Obtain the preferred video mode from the system
+        // This will correspond to the settings in the Wii menu
+        rmode = VIDEO_GetPreferredMode(NULL);
+
+        // Allocate memory for the display in the uncached region
+        xfb = MEM_K0_TO_K1(SYS_AllocateFramebuffer(rmode));
+
+        // Initialise the console, required for printf
+        console_init(xfb,20,20,rmode->fbWidth,rmode->xfbHeight,rmode->fbWidth*VI_DISPLAY_PIX_SZ);
+
+        // Set up the video registers with the chosen mode
+        VIDEO_Configure(rmode);
+
+        // Tell the video hardware where our display memory is
+        VIDEO_SetNextFramebuffer(xfb);
+
+        // Make the display visible
+        VIDEO_SetBlack(true);
+
+        // Flush the video register changes to the hardware
+        VIDEO_Flush();
+        VIDEO_WaitVSync();
+        if(rmode->viTVMode&VI_NON_INTERLACE) VIDEO_WaitVSync();
+        fatInitDefault();
+
+#elif defined(SWITCH)
         consoleInit(NULL);
         // Configure our supported input layout: a single player with standard controller styles
         padConfigureInput(1, HidNpadStyleSet_NpadStandard);
@@ -73,7 +109,24 @@ public:
 #endif
     }
     bool doLoop(){
-#ifdef SWITCH
+#if defined(WII)
+        // Call WPAD_ScanPads each loop, this reads the latest controller states
+        WPAD_ScanPads();
+
+        // WPAD_ButtonsDown tells us which buttons were pressed in this loop
+        // this is a "one shot" state which will not fire again until the button has been released
+        u32 pressed = WPAD_ButtonsDown(0);
+
+        // We return to the launcher application via exit
+        if ( pressed & WPAD_BUTTON_HOME ) 
+            done = true;
+
+        // Wait for the next frame
+        VIDEO_WaitVSync();
+
+        return !done;
+
+#elif defined(SWITCH)
         // Updade stuff
         appletMainLoop();
         // Scan the gamepad. This should be done once for each frame
@@ -96,12 +149,15 @@ public:
 #endif
     }
     void update(){
-#if SWITCH
+#ifdef SWITCH
         consoleUpdate(NULL);
 #endif
     }
 protected:
-#ifdef SWITCH
+#if defined(WII)
+    void *xfb = NULL;
+    GXRModeObj *rmode = NULL;
+#elif defined(SWITCH)
     // Initialize the default gamepad (which reads handheld mode inputs as well as the first connected controller)
     PadState pad;
 #endif
