@@ -1,3 +1,15 @@
 #!/bin/bash -e
 
-#TODO
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+ROOT_DIR="${SCRIPT_DIR}/../"
+GAMECUBE_BIN=paintown-gc.dol
+WII_BIN=paintown-wii.dol
+WII_U_BIN=paintown-wii-u.dol
+SWITCH_BIN=paintown-switch.nro
+EXTRAS="${ROOT_DIR}/README.md ${ROOT_DIR}/LICENSE"
+
+# zip executables
+zip -FSj ${ROOT_DIR}/paintown-gamecube.zip ${ROOT_DIR}/dkp-bin/${GAMECUBE_BIN} ${EXTRAS}
+zip -FSj ${ROOT_DIR}/paintown-wii.zip ${ROOT_DIR}/dkp-bin/${WII_BIN} ${EXTRAS} ${ROOT_DIR}/doc/wii
+zip -FSj ${ROOT_DIR}/paintown-wii-u.zip ${ROOT_DIR}/dkp-bin/${WII_U_BIN} ${EXTRAS}
+zip -FSj ${ROOT_DIR}/paintown-switch.zip ${ROOT_DIR}/dkp-bin/${SWITCH_BIN} ${EXTRAS}
