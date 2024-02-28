@@ -22,7 +22,6 @@ common_args = ['-I' + dkp_a64 / 'include',
                '-ftls-model=local-exec',
                '-ffunction-sections',
                '-fdata-sections',
-               '-fno-rtti'
                ]
 common_link_args = ['-specs=' + dkp_root / 'libnx/switch.specs']
 
@@ -54,7 +53,7 @@ pkg_config_path = dkp_root / 'portlibs' / system_type / 'lib/pkg-config'
 c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
 cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
 c_args = common_args
-cpp_args = common_args
+cpp_args = common_args + ['-fno-rtti']
 c_link_args = ['-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-lnx'] + common_link_args
 cpp_link_args = ['-L' + dkp_root / 'portlibs' / system_type / 'lib', '-L' + dkp_root / 'libnx' / 'lib', '-static', '-static-libgcc', '-static-libstdc++','-lnx'] + common_link_args
 includedir = cross_root / 'include'
