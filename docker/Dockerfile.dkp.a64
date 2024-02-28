@@ -41,10 +41,9 @@ RUN mkdir -p /build/.tmp
 # just need the nro to build and run, nso seems to crash
 RUN cd /build && make switch && \ 
     elf2nro build-switch/paintown ./paintown-switch.nro && \
-    cd /build/build-switch/src/test/paintown && \
+    cd /build/build-switch/src/test/devkitpro && \
     elf2nro test-animation /build/test-animation-switch.nro && \
     elf2nro test-paintown-select /build/test-paintown-select-switch.nro && \
-    cd /build/build-switch/src/test/util && \
     elf2nro test-fs /build/test-fs-switch.nro
 
 CMD [ "/bin/bash" ]

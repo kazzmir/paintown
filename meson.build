@@ -128,6 +128,5 @@ if build_tests == true
   subdir('src/test/thread')
   subdir('src/test/token')
 elif build_paintown_test == true
-  subdir('src/test/paintown')
-  subdir('src/test/util')
+  subdir('src/test/devkitpro')
 endif
