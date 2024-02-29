@@ -59,7 +59,7 @@ android_ostream & operator<<(android_ostream & stream, const uint64_t);
 android_ostream & operator<<(android_ostream & stream, const void *);
 android_ostream & operator<<(android_ostream & stream, const double);
 android_ostream & operator<<(android_ostream & stream, std::ostream & (*f)(std::ostream &));
-#elif defined(WII) && defined(DEBUG)
+#elif defined(DEVKITPRO) && defined(DEBUG)
 class wii_ostream: public std::ostream {
 public:
     wii_ostream(bool enabled = true);
@@ -81,7 +81,9 @@ wii_ostream & operator<<(wii_ostream & stream, const short unsigned int);
 wii_ostream & operator<<(wii_ostream & stream, const unsigned int);
 wii_ostream & operator<<(wii_ostream & stream, const bool);
 wii_ostream & operator<<(wii_ostream & stream, const long int);
+#ifndef SWITCH
 wii_ostream & operator<<(wii_ostream & stream, const unsigned long int);
+#endif
 wii_ostream & operator<<(wii_ostream & stream, const void *);
 wii_ostream & operator<<(wii_ostream & stream, uint64_t); 
 wii_ostream & operator<<(wii_ostream & stream, std::ostream & (*f)(std::ostream &));

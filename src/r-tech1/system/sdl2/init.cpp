@@ -18,6 +18,7 @@ namespace System{
 
 SDL_TimerID timer;
 
+#ifndef CROSS_BUILD
 /* lame wrapper class for a malloc'd string that free's in the destructor */
 class CString {
     public:
@@ -27,10 +28,11 @@ class CString {
     private:
         std::string str;
 };
+#endif
 
 static bool hasGlxInfo(){
     /* FIXME: on windows just return true */
-#if defined(WINDOWS) || defined(WII) || defined(MINPSPW) || defined(PS3) || defined(NDS) || defined(NACL) || defined(XENON) || defined(UCLIBC)
+#ifdef CROSS_BUILD
     return true;
 #else
 

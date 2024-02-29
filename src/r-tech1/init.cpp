@@ -67,19 +67,21 @@
 #include "r-tech1/input/keyboard.h"
 #include "r-tech1/message-queue.h"
 
-#ifdef WII
+#if defined(GAMECUBE) || defined(WII)
 #include <fat.h>
+#elif defined(SWITCH)
+#include <switch.h>
 #endif
 
 #include "r-tech1/xenon/xenon.h"
 
 using namespace std;
 
-atomic<uint64_t> Global::speed_counter4(0);
+Atomic::atomic<uint64_t> Global::speed_counter4(0);
 bool Global::rateLimit = true;
 
 /* enough seconds for 5.8 * 10^11 years */
-atomic<uint64_t> Global::second_counter(0);
+Atomic::atomic<uint64_t> Global::second_counter(0);
 
 /* the original engine was running at 90 ticks per second, but we dont
  * need to render that fast, so TICS_PER_SECOND is really fps and
@@ -153,12 +155,14 @@ static void handleSigUsr1( int i, siginfo_t * sig, void * data ){
     pthread_exit( NULL );
 }
 */
+
 static void handleSigInt(int signal, siginfo_t* info, void* context){
     DebugLog << "Shut down due to ctrl-c" << endl;
     Util::do_shutdown += 1;
 }
 #endif
 
+#endif
 
 static void registerSignals(){
 #ifndef CROSS_BUILD
@@ -190,11 +194,17 @@ bool Global::initNoGraphics(){
     out << "Data path is " << Util::getDataPath2().path() << endl;
     out << "Build date " << __DATE__ << " " << __TIME__ << endl;
 
-#ifdef WII
+#if defined(GAMECUBE) || defined(WII)
     /* <WinterMute> fatInitDefault will set working dir to argv[0] passed by launcher,
      * or root of first device mounted
      */
     out << "Fat init " << (fatInitDefault() == true ? "Ok" : "Failed") << endl;
+#elif defined(SWITCH)
+    // Init text console on switch (don't use for now)
+    // consoleInit(NULL);
+    // consoleUpdate(NULL) <- need to call this to update the console
+    // (Should call consoleExit(NULL)) on exit
+    //DebugLog1 << "Switch console init..." << std::endl;
 #endif
     /*
     char buffer[512];
@@ -301,7 +311,7 @@ bool Global::init(const InitConditions & conditions){
     maybeSetWorkingDirectory();
 
 
-#ifdef WII
+#if defined(GAMECUBE) || defined(WII)
     /* <WinterMute> fatInitDefault will set working dir to argv[0] passed by launcher,
      * or root of first device mounted
      */

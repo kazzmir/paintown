@@ -1,0 +1,49 @@
+# Build:        docker build -t paintown-a64-build -f docker/Dockerfile.a64 .
+# Access shell: docker run --rm -it --entrypoint /bin/bash  paintown-a64-build 
+#FROM ubuntu:23.10
+FROM devkitpro/devkita64:latest
+
+#RUN apt update && apt install -y sudo wget git meson ninja-build make
+RUN apt install -y sudo wget git ninja-build make pip
+# Get latest meson
+RUN pip install meson
+
+# Copy source
+RUN mkdir -p /build/build-dkp/include/SDL2
+
+COPY src /build/src
+COPY meson.build /build
+COPY misc/devkitpro/aarch64-none-elf.txt /build/aarch64-none-elf.txt
+
+COPY meson.options /build
+# Makefile
+RUN echo ".PHONY: all clean\n\
+\n\
+switch: build-switch\n\
+\t(cd build-switch; meson configure -Dbuild_tests=false)\n\
+\tmeson compile -C build-switch\n\
+\n\
+build-switch:\n\
+\tmkdir build-switch\n\
+\tmeson setup --cross-file aarch64-none-elf.txt build-switch\n\
+\n\
+clean:\n\
+\trm -fr build-switch" > /build/Makefile
+
+# Temp directory
+RUN mkdir -p /build/.tmp
+
+#APP_TITLE=paintown
+#APP_AUTHOR=kazzmir
+#APP_VERSION=4.0
+#APP_ICON=/opt/devkitpro/libnx/default_icon.jpg
+# elf2nso build-switch/paintown ./paintown-switch.nso && \
+# just need the nro to build and run, nso seems to crash
+RUN cd /build && make switch && \ 
+    elf2nro build-switch/paintown ./paintown-switch.nro && \
+    cd /build/build-switch/src/test/devkitpro && \
+    elf2nro test-animation /build/test-animation-switch.nro && \
+    elf2nro test-paintown-select /build/test-paintown-select-switch.nro && \
+    elf2nro test-fs /build/test-fs-switch.nro
+
+CMD [ "/bin/bash" ]
