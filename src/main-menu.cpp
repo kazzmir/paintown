@@ -12,8 +12,9 @@
  * On consoles set it to -1 to disable all text output.
  * If you are debugging then higher values like 1 or 2 are ok.
  */
-#if defined(XENON) || defined(WII)
-static const int DEFAULT_DEBUG = -1;
+#if defined(XENON) || defined(DEVKITPRO)
+//static const int DEFAULT_DEBUG = -1;
+static const int DEFAULT_DEBUG = 3;
 #else
 static const int DEFAULT_DEBUG = 0;
 #endif

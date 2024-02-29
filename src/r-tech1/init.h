@@ -8,12 +8,12 @@
 #define GFX_Y 480
 */
 
-#include <atomic>
+#include "atomic.h"
 #include <thread>
 
 namespace Global{
-    extern std::atomic<uint64_t> speed_counter4;
-    extern std::atomic<uint64_t> second_counter;
+    extern Atomic::atomic<uint64_t> speed_counter4;
+    extern Atomic::atomic<uint64_t> second_counter;
 
     // extern const double LOGIC_MULTIPLIER;
     extern int TICS_PER_SECOND;

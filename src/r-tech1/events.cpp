@@ -79,7 +79,7 @@ static void handleJoystickHat(map<int, ReferenceCount<Joystick> > joysticks, con
 
 #if 0
     /* should up/down control left/right -- flip these values? */
-#if WII
+#if DEVKITPRO
     const int axis_up_down = 0;
     const int axis_left_right = 1;
     const int up = 1;

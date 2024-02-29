@@ -449,7 +449,7 @@ public:
         // Load player 2
         player2.load();
         // NOTE is this needed anymore?
-#ifdef WII
+#ifdef DEVKITPRO
         /* FIXME: this is a hack, im not sure why its even required but fopen() will hang on sfp_lock_acquire
             * in another thread without locking and unlocking the sfp lock.
             * related things
@@ -540,7 +540,7 @@ void prepareStage(PaintownUtil::ReferenceCount<PlayerLoader> playerLoader, Mugen
         /* FIXME: the wii has problems loading stuff in a background thread
          * while the load screen is going on.
          */
-#ifdef WII
+#ifdef DEVKITPRO
         context.load();
 #else
         /* FIXME: threads */
