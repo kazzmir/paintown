@@ -2,4 +2,4 @@ FROM hldtux/ps3dev
 # https://github.com/humbertodias/docker-ps3dev
 
 # build : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t paintown-ps3-build -f Dockerfile.ps3 .
-# shell : docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build bash
+# shell : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build bash
