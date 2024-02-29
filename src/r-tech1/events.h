@@ -123,7 +123,7 @@ public:
     virtual double getFps() const;
 protected:
     int frames;
-    unsigned int second_counter;
+    uint64_t second_counter;
     double fps;
 };
 

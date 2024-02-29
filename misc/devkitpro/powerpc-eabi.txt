@@ -1,0 +1,76 @@
+[constants]
+system_type = 'SET_SYSTEM_TYPE'
+dkp_root = '/opt' / 'devkitpro'
+dkp_ppc = dkp_root / 'devkitPPC'
+powerpc_eabi = dkp_ppc / 'powerpc-eabi'
+cross_root = '/build/build-dkp'
+# Figure out a way to get these or append to c_args/c++_args without overwritting
+# x86_64-w64-mingw32-g++  -xc   /dev/null -E -Wp,-v 2>&1 | sed -n 's,^ ,,p'
+common_args = ['-I' + dkp_ppc / 'include', 
+               '-I' + powerpc_eabi / 'include', 
+               '-I' + cross_root / 'include',
+               '-DDEBUG',
+               '-DDEVKITPRO',
+               '-DDATA_PATH="/apps/paintown/data"',
+               ] + [SET_SYSTEM_COMMON_ARGS]
+common_link_args = ['-L' + dkp_root / 'portlibs' / 'ppc' / 'lib', '-L' + dkp_root / 'portlibs' / system_type / 'lib'] + [SET_SYSTEM_COMMON_LINK_ARGS]
+#common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']
+
+[binaries]
+c = dkp_ppc / 'bin' / 'powerpc-eabi-gcc'
+cpp = dkp_ppc / 'bin' / 'powerpc-eabi-g++'
+ar = dkp_ppc / 'bin' / 'powerpc-eabi-ar'
+strip = dkp_ppc / 'bin' / 'powerpc-eabi-strip'
+ld = dkp_ppc / 'bin' / 'powerpc-eabi-ld'
+#exe_wrapper = 'wine64'
+pkg-config = dkp_root / 'portlibs' / system_type / 'bin' / 'powerpc-eabi-pkg-config'
+sdl2-config = dkp_root / 'portlibs' / system_type / 'bin' / 'powerpc-eabi-sdl2-config'
+cmake = dkp_root / 'portlibs' / system_type / 'bin' / 'powerpc-eabi-cmake'
+
+[properties]
+dkp_build = true
+dkp_build_type = system_type
+#pkg_config_libdir = [dkp_root / 'portlibs' / system_type / 'lib' / 'pkgconfig', cross_root / 'lib/pkgconfig']
+pkg_config_libdir = [dkp_root / 'portlibs' / system_type / 'lib' / 'pkgconfig']
+
+[host_machine]
+system = 'nintendo'
+cpu_family = 'ppc'
+cpu = 'ppc'
+endian = 'little'
+
+[built-in options]
+pkg_config_path = dkp_root / 'portlibs' / system_type / 'lib/pkg-config'
+c_include_path = dkp_root / 'portlibs' / system_type  / 'include'
+cpp_include_path = dkp_root / 'portlibs' / system_type / 'include'
+c_args = common_args
+cpp_args = common_args
+c_link_args = ['-static', '-lsfml-window-s', '-lsfml-system-s'] + common_link_args
+cpp_link_args = ['-static', '-static-libgcc', '-static-libstdc++'] + common_link_args
+includedir = cross_root / 'include'
+libdir = cross_root / 'lib'
+default_library='static'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false

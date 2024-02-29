@@ -1,6 +1,6 @@
 #pragma once
 
-#include <atomic>
+#include "atomic.h"
 
 namespace Util {
 
@@ -26,7 +26,7 @@ public:
     AutoCancel autoCancel();
 
     const Context* parent;
-    std::atomic<bool> done;
+    Atomic::atomic<bool> done;
 };
 
 }

@@ -6,7 +6,7 @@
 
 /* FIXME: these things should come from util/network/network.h */
 #ifdef HAVE_NETWORKING
-#ifdef WII
+#ifdef DEVKITPRO
 #include <network.h>
 #elif defined(WINDOWS)
 #include <winsock.h>
