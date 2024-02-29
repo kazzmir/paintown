@@ -162,8 +162,6 @@ static void handleSigInt(int signal, siginfo_t* info, void* context){
 }
 #endif
 
-#endif
-
 static void registerSignals(){
 #ifndef CROSS_BUILD
     struct sigaction action;
