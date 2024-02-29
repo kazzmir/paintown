@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: artifact
-          path: ${{github.workspace}}/*.zip
+          path: ./*.zip
 
   publish-release:
     needs: build
@@ -35,11 +35,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact
-          path: ${{github.workspace}}
+          path: ./
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ${{ github.workspace }}/*.zip
+          files: ./*.zip
