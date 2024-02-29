@@ -47,7 +47,7 @@ testmingw: build-mingw
 
 build-ps3:
 	mkdir build-ps3
-	misc/ps3/ps3-environment.sh
+	# misc/ps3/ps3-environment.sh
 	meson setup --cross-file misc/ps3/powerpc-eabi-ps3.txt misc/ps3 build-ps3
 	# meson setup --cross-file misc/ps3/powerpc-eabi-ps3.txt build-ps3
 
