@@ -20,10 +20,11 @@ jobs:
         run: ./release/release-dkp
 
       - name: Archive Folder
+        if: startsWith(github.ref, 'refs/tags/')
         uses: actions/upload-artifact@v4
         with:
           name: artifact
-          path: ./*.zip
+          path: ${{github.workspace}}/*.zip
 
   publish-release:
     needs: build
@@ -35,11 +36,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact
-          path: ./
+          path: ${{github.workspace}}
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: ./*.zip
+          files: ${{ github.workspace }}/*.zip
