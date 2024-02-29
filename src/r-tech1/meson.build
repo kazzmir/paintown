@@ -113,7 +113,8 @@ sources = [
   'dkp/file-system.cpp',
   'dkp/init.cpp',
   'dkp/system.cpp',
-  'dkp/file-system.cpp',
+  'dkp/thread.cpp',
+  'ps3/file-system.cpp',
   'ps3/init.cpp',
   'ps3/system.cpp',
   

@@ -11,6 +11,10 @@
 #define ANDROID_LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, "r-tech1", __VA_ARGS__)
 #endif
 
+#if defined(GAMECUBE) || defined(WII)
+#include <ogc/system.h>
+#endif
+
 #ifdef NETWORK_DEBUG
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -106,7 +110,7 @@ android_ostream & operator<<(android_ostream & stream, std::ostream & (*f)(std::
 
 android_ostream android_ostream::stream;
 static android_ostream nullcout(false);
-#elif defined(WII) && defined(DEBUG)
+#elif defined(DEVKITPRO) && defined(DEBUG)
 wii_ostream::wii_ostream(bool enabled):
 enabled(enabled){
 }
@@ -166,10 +170,12 @@ wii_ostream & operator<<(wii_ostream & stream, const long int input){
     return stream;
 }
 
+#ifndef SWITCH
 wii_ostream & operator<<(wii_ostream & stream, const unsigned long int input){
     stream.buffer << input;
     return stream;
 }
+#endif
 
 wii_ostream & operator<<(wii_ostream & stream, const void * input){
     stream.buffer << input;
@@ -179,6 +185,11 @@ wii_ostream & operator<<(wii_ostream & stream, const void * input){
 wii_ostream & operator<<(wii_ostream & stream, std::ostream & (*f)(std::ostream &)){
     if (stream.enabled){
         printf("%s\n", stream.buffer.str().c_str());
+#if defined(GAMECUBE) || defined(WII)
+        SYS_Report("%s\n", stream.buffer.str().c_str());
+        fprintf(stdout, "%s\n", stream.buffer.str().c_str());
+        fprintf(stderr, "%s\n", stream.buffer.str().c_str());
+#endif
     }
     stream.buffer.str("");
     stream.buffer.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
@@ -321,7 +332,7 @@ void logToFile(){
 
 void closeLog(){
 }
-#elif defined(WII) && defined(DEBUG)
+#elif defined(DEVKITPRO) && defined(DEBUG)
 static stream_type & defaultStream(){
     return wii_ostream::stream;
 }
@@ -400,6 +411,11 @@ Global::stream_type & Global::debug(int i, const string & context){
 
 void Global::setDebug(int i){
     global_debug_level = i;
+
+#if defined(GAMECUBE) || defined(WII)
+    // Redirects stderr and stdio to Dolphin OSReport uart
+    SYS_STDIO_Report(true);
+#endif
 }
 
 int Global::getDebug(){
