@@ -48,8 +48,8 @@ testmingw: build-mingw
 build-psp:
 	mkdir build-psp
 	misc/psp-environment.sh
-	# meson setup --cross-file misc/psp/mips-eabi.txt misc/psp build-psp
-	meson setup --buildtype=plain --cross-file misc/psp/mips-eabi.txt build-psp
+	# meson setup --cross-file misc/psp/mips32-eabi-psp.txt misc/psp build-psp
+	meson setup --buildtype=plain --cross-file misc/psp/mips32-eabi-psp.txt build-psp
 
 psp: build-psp
 	(cd build-psp; meson configure -Dbuild_tests=false)

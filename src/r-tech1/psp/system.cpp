@@ -28,6 +28,32 @@
 #include <pspctrl.h> // For PSP control functions
 #include <pspdebug.h> // For PSP debug functions
 
+/* psp doesn't have an implementation of access() yet. if it gets one this function
+ * can be removed.
+ */
+int access(const char * path, int mode){
+    struct stat information;
+    int ok = stat(path, &information);
+    // printf("stat of '%s' is %d\n", path.c_str(), ok);
+    if (ok == 0){
+        if (mode == R_OK){
+            if (((information.st_mode & S_IRUSR) == S_IRUSR) ||
+                ((information.st_mode & S_IRGRP) == S_IRGRP) ||
+                ((information.st_mode & S_IROTH) == S_IROTH)){
+                return 0;
+            } else {
+            /* handle other modes if they become useful to us */
+                return -1;
+            }
+       } else {
+           return -1;
+       }
+    } else {
+        // perror("stat");
+        return -1;
+    }
+}
+
 bool System::isDirectory(const std::string & path){
     SceIoStat stat;
     int result = sceIoGetstat(path.c_str(), &stat);
@@ -84,14 +110,13 @@ uint64_t System::currentMilliseconds(){
 
 static void * start_memory = 0;
 unsigned long System::memoryUsage(){
-    void * here = malloc(0);
-    /* hopefully the heap is growing up */
-    return (char*) here - (char*) start_memory;
+    // TODO - FIXME
+    return 0;
  }
 
 /* call startMemoryUsage once at the very beginning of the program */
 void System::startMemoryUsage(){
-    start_memory = malloc(0);
+    // TODO - FIXME
 }
 
 #endif

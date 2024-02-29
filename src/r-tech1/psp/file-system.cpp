@@ -14,7 +14,6 @@
 
 #include <pspiofilemgr.h>
 
-// TODO
 using namespace std;
 
 class Globber

@@ -1,5 +1,5 @@
 # Warning: changing the default_options requires a new build directory and doing 'meson setup ...' again
-project('sdl2_ttf', ['c', 'cpp'], default_options: ['cpp_std=c++11'], version: '4.0')
+project('sdl2_sample', ['c', 'cpp'], default_options: ['cpp_std=c++11'], version: '4.0')
 
 build_tests = get_option('build_tests')
 release = get_option('release')
@@ -13,15 +13,14 @@ is_static = true
 executable_name = 'paintown'
 
 sdl_dependency = dependency('sdl2', required: true, static: is_static)
-sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18', static: is_static)
 
-src_files = ['sdl2-ttf.cpp']
+src_files = ['sdl2-sample.cpp']
 includes = []
 
 # Add PSP-specific compiler and linker flags
 eboot_bin = executable(executable_name, src_files,
   include_directories: [includes],
-  dependencies: [ sdl_dependency, sdl_ttf_dependency ],
+  dependencies: [ sdl_dependency ],
   link_with: [],
   link_args: []
   )
