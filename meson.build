@@ -5,6 +5,7 @@ build_tests = get_option('build_tests')
 release = get_option('release')
 
 add_global_arguments('-DUSE_SDL2=1', language: 'cpp')
+add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
 add_global_arguments('-g3', language: ['cpp', 'c'])
 add_global_arguments(['-Wextra', '-Wno-unused-variable', '-Wno-unused-function', '-Wno-unused-parameter'], language: ['cpp', 'c'])
 
@@ -27,8 +28,6 @@ if not meson.is_cross_build()
   else
     link_args = ['-pthread']
   endif
-  # Avoid redefinition
-  add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
   
   is_static = false
   sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
