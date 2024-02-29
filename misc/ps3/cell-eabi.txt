@@ -28,6 +28,7 @@ cpp_args = common_args + ['-I/usr/local/include'
                         , '-I/ps3dev/portlibs/ppu/include'
                         , '-I/ps3dev/portlibs/ppu/include/SDL'
                         , '-DSDL_DISABLE_IMMINTRIN_H=ON'
+                        , '-DDATA_PATH="/dev_hdd0/game/paintown/data"'
                         ]
 cpp_link_args = [ '-L/usr/local/lib'
                 , '-L/ps3dev/ppu/lib'
