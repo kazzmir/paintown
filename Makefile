@@ -33,7 +33,7 @@ mingw: build-mingw
 	(cd build-mingw; meson configure -Dbuild_tests=false)
 	meson compile -C build-mingw
 
-build-mingw:
+build-mingw: ensure-mingw
 	mkdir build-mingw
 	misc/mingw-environment.sh
 	meson setup --cross-file mingw_x86_64.txt build-mingw
@@ -44,6 +44,12 @@ testmingw: build-mingw
 	mkdir -p mingw-bin
 	cp build-mingw/paintown.exe mingw-bin
 	find build-mingw/src/test -type f -name \*.exe -exec sh -c "cp {} mingw-bin" \;
+
+ensure-mingw:
+	@echo "Testing for mingw cross compilers...."
+	@x86_64-w64-mingw32-gcc-posix --version > /dev/null || { echo "No x86_64-w64-mingw32-gcc-posix compiler available"; exit 1; }
+	@x86_64-w64-mingw32-g++-posix --version > /dev/null || { echo "No x86_64-w64-mingw32-g++-posix compiler available"; exit 1; }
+	@echo "Ok"
 
 build-psp:
 	mkdir build-psp

@@ -7,7 +7,7 @@ RUN mkdir /build
 COPY src /build/src
 COPY meson.build /build
 COPY easy-compile-mingw /build
-COPY mingw_x86_64.txt /build
+COPY misc/windows/mingw_x86_64.txt /build
 COPY misc/mingw-environment.sh /build/misc/
 COPY meson.options /build
 COPY Makefile /build
