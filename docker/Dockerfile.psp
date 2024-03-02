@@ -1,10 +1,10 @@
 FROM pspdev/pspdev
 
-# build : docker build -t paintown-psp-build -f Dockerfile.psp .
-# shell : docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build bash
+# build : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t paintown-psp-build -f Dockerfile.psp .
+# shell : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build bash
 
 ENV PSPSDK $PSPDEV/psp
 ENV PATH   $PATH:$PSPDEV/bin:$PSPSDK/bin
 
-# deps
-RUN apk add meson
+RUN apk add meson build-base bash git autoconf automake python3 py3-pip cmake pkgconfig libarchive-dev openssl-dev gpgme-dev libtool curl-dev
+RUN psp-pacman -Sy && echo y | psp-pacman -Syu yaml-cpp
