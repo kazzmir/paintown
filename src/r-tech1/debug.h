@@ -87,6 +87,33 @@ wii_ostream & operator<<(wii_ostream & stream, const unsigned long int);
 wii_ostream & operator<<(wii_ostream & stream, const void *);
 wii_ostream & operator<<(wii_ostream & stream, uint64_t); 
 wii_ostream & operator<<(wii_ostream & stream, std::ostream & (*f)(std::ostream &));
+#elif defined(MINPSPW) && defined(DEBUG)
+class psp_ostream: public std::ostream {
+public:
+    psp_ostream(bool enabled = true);
+    static psp_ostream stream;
+    /* make these private at some point */
+public:
+    bool enabled;
+    std::ostringstream buffer;
+};
+
+typedef psp_ostream stream_type;
+psp_ostream & operator<<(psp_ostream & stream, const std::string & input);
+psp_ostream & operator<<(psp_ostream & stream, const char * input);
+psp_ostream & operator<<(psp_ostream & stream, const char);
+psp_ostream & operator<<(psp_ostream & stream, const double);
+psp_ostream & operator<<(psp_ostream & stream, const int);
+psp_ostream & operator<<(psp_ostream & stream, const short int);
+psp_ostream & operator<<(psp_ostream & stream, const short unsigned int);
+psp_ostream & operator<<(psp_ostream & stream, const unsigned int);
+psp_ostream & operator<<(psp_ostream & stream, const bool);
+psp_ostream & operator<<(psp_ostream & stream, const long int);
+psp_ostream & operator<<(psp_ostream & stream, const unsigned long int);
+psp_ostream & operator<<(psp_ostream & stream, const void *);
+psp_ostream & operator<<(psp_ostream & stream, uint64_t); 
+psp_ostream & operator<<(psp_ostream & stream, uint32_t);
+psp_ostream & operator<<(psp_ostream & stream, std::ostream & (*f)(std::ostream &));
 #elif defined(NETWORK_DEBUG)
 class network_ostream: public std::ostream {
 public:
