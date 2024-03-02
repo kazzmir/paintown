@@ -605,6 +605,7 @@ public:
         if (!instance().systemExists(path)){
             ostringstream out;
             out << "Could not find '" << path.path() << "'";
+            DebugLog3 << "NotFound " << __FILE__ << ":" << __LINE__ << out.str() << endl;
             throw NotFound(__FILE__, __LINE__, out.str());
         }
     }
