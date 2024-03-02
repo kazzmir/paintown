@@ -51,8 +51,11 @@ ensure-mingw:
 	@x86_64-w64-mingw32-g++-posix --version > /dev/null || { exit 1; }
 	@echo "Ok."
 
+# Default values
+PRX := false
 psp:
-	./easy-compile-docker-psp && ./release/release-psp
+	./easy-compile-docker-psp -prx $(PRX) && \
+	./release/release-psp -prx $(PRX)
 
 clean:
 	rm -rf .tmp build build-*
