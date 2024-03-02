@@ -1,9 +1,7 @@
 #!/bin/bash -e
 
 EXE=paintown-psp.elf
-BUILD_DIR=build-psp
-mkdir -p ${PWD}/${BUILD_DIR}
-
+BUILD_DIR=/tmp
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 docker build -t paintown-psp-build -f docker/Dockerfile.psp .
 docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build sh -s <<EOF
@@ -14,18 +12,18 @@ meson setup --cross-file misc/psp/mips32-eabi-psp.txt ${BUILD_DIR}
 
 # compile
 (cd ${BUILD_DIR}; meson configure -Dbuild_tests=false)
-meson compile --jobs=`nproc` -C ${BUILD_DIR} && echo "Compilation OK" || { echo "Compilation ERROR"; exit 1; }
+meson compile -C ${BUILD_DIR} || { echo "Compilation ERROR"; exit 1; }
 
 # copy
 chown $(id -u):$(id -g) ${BUILD_DIR}/paintown
-cp ${BUILD_DIR}/paintown $EXE
-psp-readelf -S $EXE
+cp ${BUILD_DIR}/paintown ${EXE}
+psp-readelf -S ${EXE}
 EOF
 
 echo "
 To run you will need a CFW [custom firmware] or system that can boot unsigned applications
 "
-ls -l $EXE
-file $EXE
-echo "Here is the executable $EXE. To run you need to package as a pbp file"
+ls -l ${EXE}
+file ${EXE}
+echo "Here is the executable ${EXE}. To run you need to package as a pbp file"
 
