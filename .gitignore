@@ -21,4 +21,5 @@ peg_*.py
 
 
 *.pbp
+*.prx
 *.elf

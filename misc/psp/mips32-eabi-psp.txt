@@ -20,6 +20,9 @@ common_args = ['-I' + psp_root / 'include'
              , '-lpspdebug'
              , '-fno-rtti'
             ]
+link_flags = ['-specs=' + psp_root + '/psp/sdk/lib/prxspecs' 
+            , '-Wl,-q,-T' + psp_root  + '/psp/sdk/lib/linkfile.prx' 
+            ]
 
 [binaries]
 c = 'psp-gcc'
@@ -31,7 +34,7 @@ sdl2-config = psp_root / 'psp/bin/sdl2-config'
 
 [built-in options]
 cpp_args = common_args
-cpp_link_args = common_args
+cpp_link_args = common_args + link_flags
 
 [host_machine]
 system = 'psp'
