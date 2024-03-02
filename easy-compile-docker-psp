@@ -1,11 +1,24 @@
 #!/bin/bash -e
 
 EXE=paintown-psp.elf
+BUILD_DIR=build-psp
+mkdir -p ${PWD}/${BUILD_DIR}
+
 export DOCKER_DEFAULT_PLATFORM=linux/amd64
 docker build -t paintown-psp-build -f docker/Dockerfile.psp .
 docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build sh -s <<EOF
-make psp && echo "Compilation OK" || { echo "Compilation ERROR"; exit 1; }
-cp build-psp/paintown $EXE
+
+# setup
+misc/psp-environment.sh
+meson setup --cross-file misc/psp/mips32-eabi-psp.txt ${BUILD_DIR}
+
+# compile
+(cd ${BUILD_DIR}; meson configure -Dbuild_tests=false)
+meson compile --jobs=`nproc` -C ${BUILD_DIR} && echo "Compilation OK" || { echo "Compilation ERROR"; exit 1; }
+
+# copy
+chown $(id -u):$(id -g) ${BUILD_DIR}/paintown
+cp ${BUILD_DIR}/paintown $EXE
 psp-readelf -S $EXE
 EOF
 

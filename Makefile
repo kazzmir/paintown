@@ -45,21 +45,8 @@ testmingw: build-mingw
 	cp build-mingw/paintown.exe mingw-bin
 	find build-mingw/src/test -type f -name \*.exe -exec sh -c "cp {} mingw-bin" \;
 
-build-psp:
-	mkdir build-psp
-	misc/psp-environment.sh
-	# meson setup --cross-file misc/psp/mips32-eabi-psp.txt misc/psp build-psp
-	meson setup --buildtype=plain --cross-file misc/psp/mips32-eabi-psp.txt build-psp
-
-psp: build-psp
-	(cd build-psp; meson configure -Dbuild_tests=false)
-	meson compile --jobs=`nproc` -C build-psp
-
-psp-docker:
+psp:
 	./easy-compile-docker-psp && ./release/release-psp
 
-clean:	clean-psp
-	rm -rf .tmp build build-debug build-release build-mingw
-
-clean-psp:
-	rm -rf build-psp paintown-psp*
+clean:
+	rm -rf .tmp build build-*
