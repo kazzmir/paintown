@@ -45,18 +45,8 @@ testmingw: build-mingw
 	cp build-mingw/paintown.exe mingw-bin
 	find build-mingw/src/test -type f -name \*.exe -exec sh -c "cp {} mingw-bin" \;
 
-build-ps3:
-	mkdir build-ps3
-	# misc/ps3/ps3-environment.sh
-	meson setup --cross-file misc/ps3/powerpc-eabi-ps3.txt misc/ps3 build-ps3
-	# meson setup --cross-file misc/ps3/powerpc-eabi-ps3.txt build-ps3
-
-ps3: build-ps3
-	(cd build-ps3; meson configure -Dbuild_tests=false)
-	meson compile --jobs=`nproc` -C build-ps3
-
-ps3-docker:
+ps3:
 	./easy-compile-docker-ps3 && ./release/release-ps3
 
 clean:
-	rm -rf build-debug build-release build-mingw build-ps3 misc/ps3/build-ps3
+	rm -rf build-debug build-release build-mingw
