@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
         0
     );
 
-    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 
     SDL_Rect square = {216, 96, 34, 64};
 
