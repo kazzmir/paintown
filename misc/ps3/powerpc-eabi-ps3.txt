@@ -33,7 +33,7 @@ cpp_link_args = [ '-L/usr/local/ps3dev/portlibs/ppu/lib'
                 , '-lSDL2_image'
                 , '-lSDL2_ttf'
                 , '-lSDL2_mixer'
-#                , '-lSDL2_gfx'
+                , '-lSDL2_gfx'
                 , '-lpthread']
 default_library='static'
 
