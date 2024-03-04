@@ -10,7 +10,7 @@ docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin ${DOCKER_PS3_BUILD_IMAG
 
 # setup
 misc/ps3/ps3-environment.sh
-meson setup --cross-file misc/ps3/powerpc-eabi-ps3.txt misc/ps3 ${BUILD_DIR}
+meson setup --cross-file misc/ps3/powerpc-eabi-ps3.txt ${BUILD_DIR}
 
 # compile
 (cd ${BUILD_DIR}; meson configure -Dbuild_tests=false)
