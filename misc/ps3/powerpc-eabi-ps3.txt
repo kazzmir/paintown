@@ -1,5 +1,5 @@
 [constants]
-cross_root = '/ps3dev'
+cross_root = '/usr/local/ps3dev'
 common_args = ['-mhard-float'
              , '-fmodulo-sched'
              , '-ffunction-sections'
@@ -7,6 +7,7 @@ common_args = ['-mhard-float'
              , '-maltivec'
              , '-mminimal-toc'
              , '-DPS3'
+             , '-DHAVE_YAML_CPP'
             ]
 
 [binaries]
@@ -15,7 +16,7 @@ cpp = 'ppu-g++'
 ar = 'ppu-ar'
 strip = 'ppu-strip'
 pkg-config = 'pkg-config'
-sdl2-config = '/ps3dev/portlibs/ppu/bin/sdl2-config'
+sdl2-config = '/usr/local/ps3dev/portlibs/ppu/bin/sdl2-config'
 cmake = 'cmake'
 
 [built-in options]
@@ -34,7 +35,8 @@ cpp_link_args = [ '-L/usr/local/ps3dev/portlibs/ppu/lib'
                 , '-lSDL2_ttf'
                 , '-lSDL2_mixer'
                 , '-lSDL2_gfx'
-                , '-lpthread']
+                , '-lpthread'
+                , '-lyaml-cpp']
 default_library='static'
 
 [host_machine]
