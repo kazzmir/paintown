@@ -4,7 +4,7 @@
 FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
 
 RUN apt update && \ 
-    apt install -y sudo wget git ninja-build make python3-pip libsdl2-gfx-dev && \
+    apt install -y sudo wget git ninja-build make python3-pip && \
     apt remove -y meson
 
 # Get latest meson
@@ -16,6 +16,10 @@ RUN mkdir -p /build/cross/include/SDL2
 
 COPY src /build/src
 COPY meson.build /build
+RUN sed -i 's/is_static = true/is_static=false/' /build/meson.build && \
+    sed -i '24 s/-fsanitize=address/-I\.\.\/cross\/include/' /build/meson.build && \
+    sed -i '33 s/^/#/' /build/meson.build && \
+    sed -i '25 s/fsanitize=address/lpthread/' /build/meson.build
 COPY misc/steam/steam.txt /build/steam.txt
 COPY meson.options /build
 COPY Makefile /build/Makefile
@@ -38,21 +42,22 @@ clean:\n\
 RUN mkdir -p /build/.tmp
 
 # SDL_gfx is not installed by default, we may need to statically link it if it doesn't work on steam deck or with steam natively
-#RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
-#RUN echo "sources = [\n\
-#    'SDL2_framerate.c',\n\
-#    'SDL2_gfxPrimitives.c',\n\
-#    'SDL2_imageFilter.c',\n\  
-#    'SDL2_rotozoom.c',\n\
-#]\n\
-#\n\
-#includes = include_directories('.')\n\
-#\n\
-#sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
-#    include_directories: [includes],\n\
-#    dependencies: [sdl_dependency, zlib_dependency],\n\
-#)\n" > /build/.tmp/SDL_gfx/meson.build
-#RUN cp /build/.tmp/SDL_gfx/*.h /build/cross/include/SDL2
+RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
+RUN echo "sources = [\n\
+    'SDL2_framerate.c',\n\
+    'SDL2_gfxPrimitives.c',\n\
+    'SDL2_imageFilter.c',\n\  
+    'SDL2_rotozoom.c',\n\
+]\n\
+\n\
+includes = include_directories('.', '../../src')\n\
+\n\
+sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
+    include_directories: [includes],\n\
+    dependencies: [sdl_dependency, zlib_dependency],\n\
+)\n" > /build/.tmp/SDL_gfx/meson.build
+RUN cp /build/.tmp/SDL_gfx/*.h /build/cross/include/SDL2 && \
+    sed -i "109i subdir('.tmp\/SDL_gfx')" /build/meson.build
 
 RUN cd /build && make
 

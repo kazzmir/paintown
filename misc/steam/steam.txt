@@ -4,7 +4,6 @@ common_args = ['-I..' / cross_root / 'include',
                '-DDATA_PATH="data"',
                '-DSTEAM'
               ]
-#common_link_args = ['-L/usr/x86_64-w64-mingw32/lib', '-lz']
 
 [binaries]
 c = 'clang'
@@ -17,7 +16,6 @@ sdl2-config = 'sdl2-config'
 cmake = 'cmake'
 
 [properties]
-#pkg_config_libdir = ['/usr/x86_64-w64-mingw32/lib/pkgconfig', cross_root / 'lib/pkgconfig']
 pkg_config_libdir = []
 
 [host_machine]
@@ -27,37 +25,32 @@ cpu = 'x86_64'
 endian = 'little'
 
 [built-in options]
-#pkg_config_path = cross_root / 'lib/pkg-config'
-#c_include_path = cross_root / 'include'
-#cpp_include_path = cross_root / 'include'
 c_args = common_args
 cpp_args = common_args
-c_link_args = ['-static', '-lsfml-window-s', '-lsfml-system-s',]
-cpp_link_args = ['-static', '-static-libgcc', '-static-libstdc++',]
-#includedir = cross_root / 'include'
-#libdir = cross_root / 'lib'
-default_library='static'
+c_link_args = ['-lsfml-window-s', '-lsfml-system-s',]
+#cpp_link_args = ['-static-libgcc', '-static-libstdc++',]
+#default_library='static'
 
 [sdl2:built-in options]
-default_library = 'static'
+#default_library = 'static'
 werror = false
 
 [SDL2_image:built-in options]
-default_library = 'static'
+#default_library = 'static'
 werror = false
 
 [SDL2_ttf:built-in options]
-default_library = 'static'
+#default_library = 'static'
 werror = false
 
 [SDL2_mixer:built-in options]
-default_library = 'static'
+#default_library = 'static'
 werror = false
 
 [zlib:built-in options]
-default_library = 'static'
+#default_library = 'static'
 werror = false
 
 [yaml-cpp:built-in options]
-default_library = 'static'
+#default_library = 'static'
 werror = false
