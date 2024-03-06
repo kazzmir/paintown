@@ -16,15 +16,10 @@ RUN mkdir -p /build/cross/include/SDL2
 
 COPY src /build/src
 COPY meson.build /build
-RUN sed -i 's/is_static = true/is_static=false/' /build/meson.build && \
-    sed -i '24 s/-fsanitize=address/-I\.\.\/cross\/include/' /build/meson.build && \
-    sed -i '33 s/^/#/' /build/meson.build && \
-    sed -i '25 s/fsanitize=address/lpthread/' /build/meson.build
 COPY misc/steam/steam.txt /build/steam.txt
 COPY meson.options /build
-COPY Makefile /build/Makefile
 
-# Makefile for cross in case we need to do something different
+# Create makefile for native build
 RUN echo ".PHONY: all clean\n\
 \n\
 steam: build-steam\n\
@@ -33,10 +28,10 @@ steam: build-steam\n\
 \n\
 build-steam:\n\
 \tmkdir build-steam\n\
-\tmeson setup --cross-file steam.txt build-steam\n\
+\tmeson setup --native-file steam.txt build-steam\n\
 \n\
 clean:\n\
-\trm -fr build-steam" > /build/Makefile-steam
+\trm -fr build-steam" > /build/Makefile
 
 # Temp directory
 RUN mkdir -p /build/.tmp
@@ -56,8 +51,7 @@ sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
     include_directories: [includes],\n\
     dependencies: [sdl_dependency, zlib_dependency],\n\
 )\n" > /build/.tmp/SDL_gfx/meson.build
-RUN cp /build/.tmp/SDL_gfx/*.h /build/cross/include/SDL2 && \
-    sed -i "109i subdir('.tmp\/SDL_gfx')" /build/meson.build
+RUN cp /build/.tmp/SDL_gfx/*.h /build/cross/include/SDL2
 
 RUN cd /build && make
 

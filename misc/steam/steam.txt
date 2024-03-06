@@ -17,6 +17,7 @@ cmake = 'cmake'
 
 [properties]
 pkg_config_libdir = []
+steam_build = true
 
 [host_machine]
 system = 'steamos'
@@ -27,8 +28,8 @@ endian = 'little'
 [built-in options]
 c_args = common_args
 cpp_args = common_args
-c_link_args = ['-lsfml-window-s', '-lsfml-system-s',]
-#cpp_link_args = ['-static-libgcc', '-static-libstdc++',]
+#c_link_args = ['-lsfml-window-s', '-lsfml-system-s',]
+cpp_link_args = ['-lpthread',]
 #default_library='static'
 
 [sdl2:built-in options]
