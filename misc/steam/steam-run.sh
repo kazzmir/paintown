@@ -25,7 +25,23 @@ if [ ! -d ${DATA_PATH} ]; then
     mv data-3.6.0 data
 fi
 
-${RUNTIME}/run \
--- \
-${PAINTOWN_HOME}/paintown \
-    -d ${PAINTOWN_HOME}/${DATA_PATH}
+if [ $# -eq 0 ]; then
+    ${RUNTIME}/run \
+    -- \
+    ${PAINTOWN_HOME}/paintown \
+        -d ${PAINTOWN_HOME}/${DATA_PATH}
+else
+    ${RUNTIME}/run \
+    -- \
+    ${PAINTOWN_HOME}/paintown \
+        $1 \
+        $2 \
+        $3 \
+        $4 \
+        $5 \
+        $6 \
+        $7 \
+        $8 \
+        $9 \
+        $10
+fi
