@@ -52,14 +52,14 @@ int access(const char * path, int mode){
 }
 
 bool System::isDirectory(const std::string & path){
-struct stat stat;
-    int result = stat(path.c_str(), &stat);
+    struct ::stat fileStat; // Use :: to refer to the global stat function
+    int result = ::stat(path.c_str(), &fileStat); // Use :: to refer to the global stat function
     if (result != 0) {
         DebugLog2 << "Error getting file stat: " <<  strerror(errno) << std::endl;
         return false; // Error getting file stat
     }
 
-    return S_ISDIR(stat.st_mode);
+    return S_ISDIR(fileStat.st_mode);
 }
 
 void System::makeDirectory(const std::string & path){
@@ -84,14 +84,14 @@ bool System::readable(const std::string & path){
 }
 
 uint64_t System::getModificationTime(const std::string & path){
-    struct stat stat;
-    int result = stat(path.c_str(), &stat);
+    struct ::stat fileStat; // Use :: to refer to the global stat function
+    int result = ::stat(path.c_str(), &fileStat); // Use :: to refer to the global stat function
     if (result != 0) {
         DebugLog2 << "Error getting file stat: " << strerror(errno) << std::endl;
         return 0; // Return 0 if there's an error
     }
 
-    return static_cast<uint64_t>(stat.st_mtime);
+    return static_cast<uint64_t>(fileStat.st_mtime);
 }
 
 uint64_t System::currentMilliseconds(){
