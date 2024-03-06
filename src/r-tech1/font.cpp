@@ -239,7 +239,7 @@ void FreeTypeFont::printf( int x, int y, int xSize, int ySize, Graphics::Color c
     va_list ap;
 
     va_start(ap, marker);
-    vsnprintf(buf, sizeof(buf), str.c_str(), ap);
+    Util::limitPrintf(buf, sizeof(buf), str.c_str(), ap);
     va_end(ap);
 
     int old_x = 0;
@@ -255,7 +255,7 @@ void FreeTypeFont::printf( int x, int y, Graphics::Color color, const Graphics::
     va_list ap;
 
     va_start(ap, marker);
-    vsnprintf(buf, sizeof(buf), str.c_str(), ap);
+    Util::limitPrintf(buf, sizeof(buf), str.c_str(), ap);
     va_end(ap);
 
     this->font->render(x, y, color, work, ftalleg::freetype::ftLeft, string(buf), 0);

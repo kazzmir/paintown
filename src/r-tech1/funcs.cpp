@@ -45,6 +45,44 @@
 #undef min
 #endif
 
+#include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h> // For size_t
+
+#ifndef __STDC_LIB_EXT1__
+// vsnprintf is available (C11 Annex K)
+// Generic implementation
+int vsnprintf(char *buffer, size_t bufsz, const char *format, va_list argptr) {
+    if (buffer == NULL || bufsz == 0) {
+        // Invalid arguments
+        return -1;
+    }
+
+    // Keep track of the number of characters written
+    int written = 0;
+
+    // Loop through the format string and write characters to the buffer
+    for (; *format != '\0'; ++format) {
+        if (written >= (int)bufsz - 1) {
+            // Buffer full, leave room for null-terminator
+            buffer[bufsz - 1] = '\0';
+            return -1;
+        }
+
+        // Write character to buffer
+        *buffer++ = *format;
+        ++written;
+    }
+
+    // Null-terminate the buffer
+    *buffer = '\0';
+
+    // Return the number of characters written
+    return written;
+}
+#endif
+
+
 using namespace std;
 
 /* remove this once cmake and scons properly set DATA_PATH */
