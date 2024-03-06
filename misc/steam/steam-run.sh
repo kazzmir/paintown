@@ -18,11 +18,14 @@ PAINTOWN_HOME="$PWD"
 
 #cd ${PAINTOWN_HOME}
 
-if [ ! -d data ]; then
+DATA_PATH=data
+
+if [ ! -d ${DATA_PATH} ]; then
     wget -qO- https://github.com/kazzmir/paintown/releases/download/v3.6.0/data-3.6.0.zip -O temp.zip && unzip -qo temp.zip && rm temp.zip
+    mv data-3.6.0 data
 fi
 
 ${RUNTIME}/run \
 -- \
 ${PAINTOWN_HOME}/paintown \
-    -d ${PAINTOWN_HOME}/data
+    -d ${PAINTOWN_HOME}/${DATA_PATH}
