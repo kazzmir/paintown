@@ -11,7 +11,9 @@ rm -rf tmp && mkdir tmp && cd tmp
 # copy executable
 cp $EXEDIR/steam-bin/$EXE .
 # Copy launcher
-cp $EXEDIR/misc/steam/steam-run.sh
+cp $EXEDIR/misc/steam/steam-run.sh .
+mkdir controller_config
+cp $EXEDIR/misc/steam/paintown\ keyboard\ layout_0.vdf controller_config
 
 # packaging 
 ARCH=x86-64
