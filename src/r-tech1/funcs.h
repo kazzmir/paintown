@@ -105,6 +105,8 @@ int levenshtein(const std::string & str1, const std::string & str2);
 
 void limitPrintf(char * buffer, int size, const char * format, va_list args);
 
+int snprintf(char * buffer, size_t size, const char * format, ...);
+
 void showError(const Graphics::Bitmap & screen, const Exception::Base & exception, const std::string & info);
 /* will create a screen of size GFX_X, GFX_Y */
 void showError(const Exception::Base & exception, const std::string & info);
