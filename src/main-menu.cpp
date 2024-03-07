@@ -879,7 +879,10 @@ int rtech_main(int argc, char ** argv){
     vector<const char *> all_args;
 
 
-#ifdef PS3
+// TODO: FIXME
+// #ifdef PS3
+#if 0
+
     /* find the directory that contains the binary and set the data path
      * to that directory + our data path
      */
