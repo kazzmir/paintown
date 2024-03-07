@@ -351,7 +351,10 @@ int vsnprintf_generic(char *buffer, size_t bufsz, const char *format, va_list ar
 
 int snprintf_generic(char * buffer, size_t size, const char * format, ...){
     va_list args;
-    return vsnprintf_generic(buffer, size, format, args);
+    va_start(args, format); // Initialize va_list
+    int ret = vsnprintf_generic(buffer, size, format, args);
+    va_end(args);
+    return ret;
 }
 
 
@@ -365,13 +368,16 @@ void Util::limitPrintf(char * buffer, int size, const char * format, va_list arg
 #endif
 }
 
-int	Util::snprintf(char * buffer, size_t size, const char * format, ...){
+int Util::snprintf(char * buffer, size_t size, const char * format, ...) {
     va_list args;
+    va_start(args, format); // Initialize va_list
 #ifndef __STDC_LIB_EXT1__
-    return snprintf_generic(buffer, size, format, args);
+    int result = snprintf_generic(buffer, size, format, args);
 #else
-    return snprintf(buffer, size, format, args);
+    int result = vsnprintf(buffer, size, format, args);
 #endif
+    va_end(args); // Clean up va_list
+    return result;
 }
 
 void Util::showError(const Graphics::Bitmap & screen, const Exception::Base & exception, const string & info){
