@@ -39,7 +39,7 @@
 	defined (__sparc__)     ||  BLARGG_CPU_POWERPC || \
 	(defined (BIG_ENDIAN) && BIG_ENDIAN+0 != 4321)
 	#define BLARGG_BIG_ENDIAN 1
-#elif !defined (__mips__)
+#else
 	// No endian specified; assume little-endian, since it's most common
 	#define BLARGG_LITTLE_ENDIAN 1
 #endif

@@ -21,11 +21,12 @@ SDL_TimerID timer;
 #ifndef CROSS_BUILD
 /* lame wrapper class for a malloc'd string that free's in the destructor */
 class CString {
-public:
-    CString(const char* str) : str(strdup(str)) {}
-    ~CString() { free(str); }
-    char* get(){ return str; }
-    char* str;
+    public:
+        CString(const char* str) : str(str) {}
+        const char* get() const { return str.c_str(); }
+
+    private:
+        std::string str;
 };
 #endif
 
@@ -39,7 +40,8 @@ static bool hasGlxInfo(){
 
     CString displayString(display.c_str());
 
-    char* const envp[] = {displayString.get(), NULL};
+    std::string displayStringCopy = displayString.get();
+    char* const envp[] = {const_cast<char*>(displayStringCopy.c_str()), NULL};
 
     char glxinfo[] = "glxinfo";
     char* const argv[] = {glxinfo, NULL};
@@ -104,7 +106,7 @@ void initSystem(const Global::InitConditions & conditions, Global::stream_type &
     }
 }
 
-static unsigned int timerCallback(unsigned int, void * param){
+static Uint32 timerCallback(Uint32, void * param){
     Global::speed_counter4 += 1;
     /* zero callback means the timer should cancel. non-zero return value means that the timer should be restarted */
     return 1000 / Global::TICS_PER_SECOND;

@@ -19,6 +19,7 @@ Paintown is a 2-d fighting game that is similar in style to Streets of Rage. Pai
 ![Mac Arm Build](https://github.com/kazzmir/paintown/actions/workflows/compile-mac-arm.yml/badge.svg)
 ![Mingw Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/mingw-cross.yml/badge.svg)
 ![Devkitpro Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/compile-dkp.yml/badge.svg)
+![PSP Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/compile-psp.yml/badge.svg)
 ![Steam Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/compile-steam.yml/badge.svg)
 
 ## Releases
@@ -44,6 +45,7 @@ You need the following things to compile Paintown:
 	* *Note that you will need to have c++11 support*
 * Software construction tools
 	* [Meson](https://mesonbuild.com/)
+    * [Docker](http://docker.com)
 * [zlib](http://www.zlib.net/)
 * [libpng](http://www.libpng.org/pub/png/libpng.html)
 * [SDL2](https://github.com/libsdl-org/SDL/tree/SDL2)
@@ -92,11 +94,14 @@ $ ./easy-compile-mingw
 `
 $ ./easy-compile-fedora
 `
-
 ### Mac Arm
 `
 $ ./easy-compile-mac-arm
 `
+### PSP
+```shell
+./easy-compile-docker-psp
+```
 
 ## Scripting
 

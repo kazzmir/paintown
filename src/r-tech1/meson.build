@@ -117,6 +117,9 @@ sources = [
   'ps3/file-system.cpp',
   'ps3/init.cpp',
   'ps3/system.cpp',
+  'psp/init.cpp',
+  'psp/system.cpp',
+  'psp/file-system.cpp',
   
 ]
 
@@ -128,5 +131,6 @@ subdir('libs/dumb')
 rtech1_library = static_library('r-tech1', sources,
   include_directories: [includes],
   dependencies: [sdl_dependency, zlib_dependency],
-  link_with: [gme_library, dumb_library]
+  link_with: [gme_library, dumb_library],
+  pic: have_pic
   )

@@ -110,13 +110,13 @@ uint64_t System::getModificationTime(const std::string & path){
 
 static void * start_memory = 0;
 unsigned long System::memoryUsage(){
-    void * here = sbrk(0);
+    void * here = malloc(0);
     /* hopefully the heap is growing up */
     return (char*) here - (char*) start_memory;
 }
 
 void System::startMemoryUsage(){
-    start_memory = sbrk(0);
+    start_memory = malloc(0);
 }
 
 #endif // CROSS_BUILD

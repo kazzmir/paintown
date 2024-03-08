@@ -1,0 +1,59 @@
+#!/bin/bash -e
+
+EXE=paintown-psp.elf
+BUILD_DIR=/tmp
+
+# usage: ./easy-compile-docker-psp -prx true
+
+# Default values
+PRX=false
+
+# Parse named arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -prx)
+            PRX="$2"
+            shift 2
+            ;;
+        *)
+            echo "Invalid option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+echo PRX=$PRX
+
+
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
+docker build -t paintown-psp-build -f docker/Dockerfile.psp .
+docker run --rm -iv${PWD}:/paintown-bin -w /paintown-bin paintown-psp-build sh -s <<EOF
+
+# copy for further modification
+cp misc/psp/mips32-eabi-psp.txt ${BUILD_DIR}/mips32-eabi-psp.txt
+
+if [[ '$PRX' == 'false' ]]; then
+    # Clean link_flags_prx
+    sed -i '/^link_flags_prx = /c\link_flags_prx = \[\]' ${BUILD_DIR}/mips32-eabi-psp.txt
+fi
+
+# setup
+misc/psp-environment.sh
+meson setup --cross-file ${BUILD_DIR}/mips32-eabi-psp.txt ${BUILD_DIR}
+
+# compile
+(cd ${BUILD_DIR}; meson configure -Dbuild_tests=false)
+meson compile -C ${BUILD_DIR} || { echo "Compilation ERROR"; exit 1; }
+
+# copy
+chown $(id -u):$(id -g) ${BUILD_DIR}/paintown
+cp ${BUILD_DIR}/paintown ${EXE}
+psp-readelf -S ${EXE}
+EOF
+
+echo "
+To run you will need a CFW [custom firmware] or system that can boot unsigned applications
+"
+ls -l ${EXE}
+file ${EXE}
+echo "Here is the executable ${EXE}. To run you need to package as a pbp file"
+

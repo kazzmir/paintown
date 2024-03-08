@@ -1,5 +1,6 @@
 build
 build-debug
+build-psp
 mingw-bin
 /paintown
 .scon*
@@ -17,3 +18,8 @@ peg_*.py
 *.dmg.sparseimage
 *.deb
 .idea
+
+
+*.pbp
+*.prx
+*.elf

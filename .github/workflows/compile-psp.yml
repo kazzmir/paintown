@@ -1,4 +1,4 @@
-name: linux ubuntu build
+name: psp build
 
 on:
   push
@@ -12,21 +12,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run build
-        run: |
-            sudo apt update
-            ./easy-compile-ubuntu
+        run: ./easy-compile-docker-psp
 
       - name: Run Release
         if: startsWith(github.ref, 'refs/tags/')
-        run: ./release/release-ubuntu
-          
+        run: ./release/release-psp
+
       - name: Archive Folder
         uses: actions/upload-artifact@v4
         with:
           name: artifact
           path: |
-            ${{github.workspace}}/*.AppImage
-            ${{github.workspace}}/*.deb
+            ${{github.workspace}}/*.pbp
+            ${{github.workspace}}/*.prx
 
   publish-release:
     needs: build
@@ -46,5 +44,5 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            ${{ github.workspace }}/*.AppImage
-            ${{ github.workspace }}/*.deb
+            ${{ github.workspace }}/*.pbp
+            ${{ github.workspace }}/*.prx

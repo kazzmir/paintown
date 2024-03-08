@@ -527,6 +527,16 @@ Token & Token::operator<<(const int rhs){
     o << rhs;
     return *this << o.str();
 }
+#elif defined (__mips__)
+Token & Token::operator<<(const int rhs){
+    if (!own){
+        throw TokenException(__FILE__, __LINE__, "Cannot add raw integers to a token you don't own");
+    }
+
+    ostringstream o;
+    o << rhs;
+    return *this << o.str();
+}
 #else
 Token & Token::operator<<(const int32_t rhs){
     if (!own){

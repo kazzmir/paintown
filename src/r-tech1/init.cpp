@@ -160,7 +160,6 @@ static void handleSigInt(int signal, siginfo_t* info, void* context){
     DebugLog << "Shut down due to ctrl-c" << endl;
     Util::do_shutdown += 1;
 }
-
 #endif
 
 static void registerSignals(){

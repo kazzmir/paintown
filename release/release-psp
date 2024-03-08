@@ -1,0 +1,96 @@
+#!/bin/bash -e
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+EXEDIR="$SCRIPT_DIR/.." 
+EXE=paintown.pbp
+
+APPVERSION_TAG=`git tag --sort=-committerdate | head -n 1`
+APPVERSION_COMMIT=`git log --format=%h -n 1`
+
+# Regular expression to match 'v' followed by a number version
+TAG_VERSION_REGEX='^v[0-9]+\.[0-9]+'
+
+# Check if the variable matches the regular expression
+if [[ $APPVERSION_TAG =~ $TAG_VERSION_REGEX ]]; then
+    APPVERSION=$APPVERSION_TAG
+else
+    APPVERSION=$APPVERSION_COMMIT
+fi
+
+# usage: ./release/release-psp -prx true
+
+# Default values
+PRX=false
+
+# Parse named arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        -prx)
+            PRX="$2"
+            shift 2
+            ;;
+        *)
+            echo "Invalid option: $1" >&2
+            exit 1
+            ;;
+    esac
+done
+echo PRX=$PRX
+
+# inside tmp
+cd $SCRIPT_DIR
+rm -rf tmp && mkdir tmp && cd tmp
+
+# copy resources
+cp $EXEDIR/misc/psp/ICON0.PNG $EXEDIR/misc/psp/ICON1.PNG .
+cp $EXEDIR/misc/psp/PIC0.PNG $EXEDIR/misc/psp/PIC1.PNG .
+cp $EXEDIR/misc/psp/SND0.AT3 .
+cp $EXEDIR/paintown-psp.elf EBOOT.ELF
+
+# builder
+docker run --rm -iv `pwd`:/paintown-bin -w /paintown-bin paintown-psp-build bash -s <<EOF
+
+echo 1. Creating PARAM.SFO files.
+mksfo "Paintown $APPVERSION" PARAM.SFO && echo "OK" || echo "Error"
+
+echo 2. Fixing up import tables post-linking to remove unused functions from the executable.
+psp-fixup-imports EBOOT.ELF && echo "OK" || echo "Error"
+
+if [[ '$PRX' == 'true' ]]; then
+
+    echo 3. Converting specially made ELFs to PRX files.
+    psp-prxgen EBOOT.ELF EBOOT.PRX && echo "OK" || echo "Error"
+
+    chown $(id -u):$(id -g) EBOOT.PRX
+    ls -lh EBOOT.PRX
+
+else 
+
+    # pack-pbp <output.pbp> <param.sfo> <icon0.png> <icon1.pmf> <pic0.png> <pic1.png> <snd0.at3> <data.psp> <data.psar>
+    # <output.pbp>: The desired name for your PBP file.
+    # <param.sfo> : The PARAM.SFO file containing metadata about your application.
+    # <icon0.png> : The icon image that represents your application on the PSP menu.
+    # <icon1.pmf> : The 44x44 pixel image file.
+    # <pic0.png>  : The background image for the PSP menu. (PSP menu background): 480x272 pixels
+    # <pic1.png>  : The background image for the settings screen.  (Settings screen background): 480x272 pixels
+    # <snd0.at3>  : The startup sound file.
+    # <data.psp>  : The main executable file (EBOOT.BIN).
+    # <data.psar> : An optional data file in PSAR format.
+
+    echo 3. Generating EBOOT.PBP
+    pack-pbp EBOOT.PBP PARAM.SFO ICON0.PNG ICON1.PNG PIC0.PNG PIC1.PNG SND0.AT3 EBOOT.ELF NULL && echo "OK" || echo "Error"
+
+    chown $(id -u):$(id -g) EBOOT.PBP
+    ls -lh EBOOT.PBP
+
+fi
+EOF
+
+tree
+
+# Move outside the contiainer
+if [[ "$PRX" == "true" ]]; then
+    mv EBOOT.PRX $EXEDIR/paintown-psp-$APPVERSION.prx
+else
+    mv EBOOT.PBP $EXEDIR/paintown-psp-$APPVERSION.pbp
+fi

@@ -110,6 +110,100 @@ android_ostream & operator<<(android_ostream & stream, std::ostream & (*f)(std::
 
 android_ostream android_ostream::stream;
 static android_ostream nullcout(false);
+
+#elif defined(MINPSPW) && defined(DEBUG)
+psp_ostream::psp_ostream(bool enabled):
+enabled(enabled){
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const std::string & input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const char * input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const char input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const double input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const int input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, uint64_t input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const uint32_t input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const short int input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const short unsigned int input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const unsigned int input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const bool input){
+    stream.buffer << input;
+    return stream;
+}
+
+psp_ostream & operator<<(psp_ostream & stream, const long int input){
+    stream.buffer << input;
+    return stream;
+}
+
+
+psp_ostream & operator<<(psp_ostream & stream, const void * input){
+    stream.buffer << input;
+    return stream;
+}
+
+static std::ofstream log;
+static bool logInit = false;
+
+psp_ostream & operator<<(psp_ostream & stream, std::ostream & (*f)(std::ostream &)){
+    if (stream.enabled){
+
+        if (!logInit){
+            log.open(Global::getLogFile().c_str());
+            logInit = true;
+        }
+
+        log << stream.buffer.str().c_str() << std::endl;
+        
+    }
+    stream.buffer.str("");
+    stream.buffer.rdbuf()->pubseekoff(0, ios_base::end, ios_base::out);
+    stream.buffer.clear();
+    return stream;
+}
+
+psp_ostream psp_ostream::stream;
+static psp_ostream nullcout(false);
 #elif defined(DEVKITPRO) && defined(DEBUG)
 wii_ostream::wii_ostream(bool enabled):
 enabled(enabled){
@@ -346,6 +440,21 @@ void logToFile(){
 
 void closeLog(){
 }
+#elif defined(MINPSPW) && defined(DEBUG)
+static stream_type & defaultStream(){
+    return psp_ostream::stream;
+}
+
+static stream_type & getStream(){
+    return defaultStream();
+}
+
+void logToFile(){
+}
+
+void closeLog(){
+}
+
 #elif defined(NETWORK_DEBUG)
 static stream_type & defaultStream(){
     return network_ostream::stream;

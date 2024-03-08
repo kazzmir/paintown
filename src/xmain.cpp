@@ -23,7 +23,8 @@ int main(int argc, char ** argv){
 PSP_MODULE_INFO("Paintown", 0, 1, 1);
 #endif 
 PSP_MAIN_THREAD_ATTR(THREAD_ATTR_USER);
-PSP_HEAP_SIZE_MAX();
+// TODO: Call it inside the main
+//PSP_HEAP_SIZE_MAX();
 #endif
 
 #ifndef NACL

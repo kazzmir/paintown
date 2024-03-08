@@ -213,6 +213,8 @@ public:
     Token & operator<<(const std::string & rhs);
 #ifdef XENON
     Token & operator<<(const int rhs);
+#elif defined (__mips__)
+    Token & operator<<(const int rhs);
 #else
     Token & operator<<(const int32_t rhs);
 #endif

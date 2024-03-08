@@ -52,5 +52,6 @@ gme_source = [
 gme_library = static_library('gme', gme_source,
   include_directories: [includes, '.'],
   dependencies: [zlib_dependency],
-  cpp_args: ['-w']
+  cpp_args: ['-w'],
+  pic: have_pic
   )

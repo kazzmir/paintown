@@ -16,6 +16,7 @@ sdl_graphics_dependency = []
 sdl_graphics_library = []
 yaml_cpp_dependency = []
 yaml_cpp_library = []
+have_pic = not meson.is_cross_build()
 other_dependencies = []
 
 # Not supported in mingw

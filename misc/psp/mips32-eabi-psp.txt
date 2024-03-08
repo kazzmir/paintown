@@ -1,0 +1,43 @@
+[constants]
+psp_root = '/usr/local/pspdev'
+psp_sdk_root = psp_root / 'psp/sdk'
+common_args = ['-I' + psp_root / 'include'
+             , '-I' + psp_sdk_root / '/include'
+             , '-I' + psp_root / 'psp/include'
+             , '-I' + psp_root / 'include/freetype2'
+             , '-I' + psp_root / 'include/SDL'
+             , '-I' + psp_sdk_root / 'include'
+             , '-DDEBUG'
+             , '-DMINPSPW'
+             , '-DHAVE_YAML_CPP'
+             , '-DDATA_PATH="ms0:/PSP/GAME/paintown/data"'
+             , '-D_PSP_FW_VERSION=500'
+             , '-DINCLUDE_SCE_MODULE_INFO'
+             , '-L' + psp_root / 'sdk/lib'
+             , '-L' + psp_root / 'lib'
+             , '-L' + psp_sdk_root / 'lib'
+             , '-lSDL2_gfx'
+             , '-latomic'
+             , '-lpspdebug'
+             , '-lyaml-cpp'
+             , '-fno-rtti'
+            ]
+link_flags_prx = ['-specs=' + psp_root + '/psp/sdk/lib/prxspecs' , '-Wl,-q,-T' + psp_root + '/psp/sdk/lib/linkfile.prx']
+
+[binaries]
+c = 'psp-gcc'
+cpp = 'psp-g++'
+ar = 'psp-ar'
+strip = 'psp-strip'
+pkg-config = 'psp-pkgconf'
+sdl2-config = psp_root / 'psp/bin/sdl2-config'
+
+[built-in options]
+cpp_args = common_args
+cpp_link_args = common_args + link_flags_prx
+
+[host_machine]
+system = 'psp'
+cpu_family = 'mips'
+cpu = 'mipsel'
+endian = 'little'

@@ -11,4 +11,5 @@ includes = include_directories('..')
 openbor_library = static_library('openbor', sources,
   include_directories: [includes],
   dependencies: [sdl_dependency, zlib_dependency],
+  pic: have_pic
   )
