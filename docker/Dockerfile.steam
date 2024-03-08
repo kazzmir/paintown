@@ -1,0 +1,59 @@
+# Build:        docker build -t paintown-steam-build -f docker/Dockerfile.steam .
+# Access shell: docker run --rm -it --entrypoint /bin/bash  paintown-steam-build 
+# Use sniper build (https://github.com/ValveSoftware/steam-runtime?tab=readme-ov-file#installation)
+FROM registry.gitlab.steamos.cloud/steamrt/sniper/sdk:latest
+
+RUN apt update && \ 
+    apt install -y sudo wget git ninja-build make python3-pip && \
+    apt remove -y meson
+
+# Get latest meson
+RUN pip install meson && \
+    ln -s /usr/local/bin/meson /usr/bin/meson
+
+# Build dirs
+RUN mkdir -p /build/cross/include/SDL2
+
+COPY src /build/src
+COPY meson.build /build
+COPY misc/steam/steam.txt /build/steam.txt
+COPY meson.options /build
+
+# Create makefile for native build
+RUN echo ".PHONY: all clean\n\
+\n\
+steam: build-steam\n\
+\t(cd build-steam; meson configure -Dbuild_tests=false)\n\
+\tmeson compile -C build-steam\n\
+\n\
+build-steam:\n\
+\tmkdir build-steam\n\
+\tmeson setup --native-file steam.txt build-steam\n\
+\n\
+clean:\n\
+\trm -fr build-steam" > /build/Makefile
+
+# Temp directory
+RUN mkdir -p /build/.tmp
+
+# SDL_gfx is not installed by default, we may need to statically link it if it doesn't work on steam deck or with steam natively
+RUN git clone https://github.com/ferzkopp/SDL2_gfx.git -- /build/.tmp/SDL_gfx
+RUN echo "sources = [\n\
+    'SDL2_framerate.c',\n\
+    'SDL2_gfxPrimitives.c',\n\
+    'SDL2_imageFilter.c',\n\  
+    'SDL2_rotozoom.c',\n\
+]\n\
+\n\
+includes = include_directories('.', '../../src')\n\
+\n\
+sdl_graphics_library = static_library('SDL2_gfx', sources,\n\
+    include_directories: [includes],\n\
+    dependencies: [sdl_dependency, zlib_dependency],\n\
+)\n" > /build/.tmp/SDL_gfx/meson.build
+RUN cp /build/.tmp/SDL_gfx/*.h /build/cross/include/SDL2
+
+RUN cd /build && make
+
+CMD [ "/bin/bash" ]
+ 

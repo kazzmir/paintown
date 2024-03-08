@@ -30,7 +30,9 @@ if not meson.is_cross_build()
   add_global_arguments('-DDATA_PATH="data"', language: 'cpp')
   
   is_static = false
-  sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
+  if not meson.has_external_property('steam_build')
+    sdl_graphics_dependency = dependency('SDL2_gfx', required: true, static: is_static)
+  endif
   sdl_image_dependency = dependency('SDL2_image', required: true, static: is_static)
   yaml_cpp_dependency = dependency('yaml-cpp', required: false, static: is_static)
 
@@ -106,6 +108,9 @@ subdir('src/r-tech1')
 subdir('src/mugen')
 subdir('src/paintown-engine')
 subdir('src/openbor')
+if meson.has_external_property('steam_build')
+  subdir('.tmp/SDL_gfx')
+endif
 
 test_dependencies = other_dependencies + [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
 test_linkages = [yaml_cpp_library, sdl_image_library, sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library]
