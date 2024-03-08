@@ -20,6 +20,7 @@ Paintown is a 2-d fighting game that is similar in style to Streets of Rage. Pai
 ![Mingw Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/mingw-cross.yml/badge.svg)
 ![Devkitpro Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/compile-dkp.yml/badge.svg)
 ![PS3 Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/compile-ps3.yml/badge.svg)
+![Steam Cross-Compile Build](https://github.com/kazzmir/paintown/actions/workflows/compile-steam.yml/badge.svg)
 
 ## Releases
 
