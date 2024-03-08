@@ -7,83 +7,83 @@ chown $(id -u):$(id -g) /build/build-steam/paintown
 cp -a /build/build-steam/paintown /paintown-bin/steam-bin
 EOF
 
-# https://raw.githubusercontent.com/sonic2kk/steamtinkerlaunch/master/steamtinkerlaunch
+if [ "$1" != "--no-install" ]; then
+    function Install {
+        PROMPT=$1
+        DEFAULT=$2
+        if [ "$DEFAULT" = true ]; then
+            OPTIONS="[Y/n]"
+            DEFAULT="y"
+        else
+            OPTIONS="[y/N]"
+            DEFAULT="n"
+        fi
+        read -p "$PROMPT $OPTIONS " -n 1 -s -r INPUT
+        INPUT=${INPUT:-${DEFAUT}}
+        echo ${INPUT}
+        if [[ "$INPUT" =~ ^[yY]$ ]]; then
+            INSTALL_ANSWER=true
+        else
+            INSTALL_ANSWER=false
+        fi
+    }
 
-function Install {
-    PROMPT=$1
-    DEFAULT=$2
-    if [ "$DEFAULT" = true ]; then
-        OPTIONS="[Y/n]"
-        DEFAULT="y"
-    else
-        OPTIONS="[y/N]"
-        DEFAULT="n"
+    Install "Would you like to install to steam?" false
+
+    if [ "$INSTALL_ANSWER" = true ]; then
+        echo "Attempting to installing paintown to steam..."
+        ROOT_DIR=$PWD
+        STL=steamtinkerlaunch
+        STEAM_APP_LOCATION=$HOME/.steam/steam/steamapps/common
+        STEAM_SNIPER_LOCATION=$HOME/.steam/root/ubuntu12_64/steam-runtime-sniper
+        INSTALL_LOCATION=$HOME/.paintown/Paintown
+
+        # check if steam app directory exists
+        if [ -d "$HOME/.steam" ] && [ ! -d "$STEAM_SNIPER_LOCATION" ]; then
+            echo "Cannot find sniper runtime. Are you sure steam is installed?"
+            exit -1
+        fi
+
+        echo "Checking dependencies"
+        if ! type "xdotool" &> /dev/null; then
+            echo "xdotool not found, please install before continuing"
+            exit
+        fi
+
+        if [ ! -d $INSTALL_LOCATION ]; then
+            mkdir -p $INSTALL_LOCATION
+        fi
+
+        mkdir -p $ROOT_DIR/steam-bin/installation
+        cd $ROOT_DIR/steam-bin/installation
+        wget -qO- https://github.com/sonic2kk/steamtinkerlaunch/archive/refs/tags/v12.12.tar.gz -O ${STL}.tar.gz
+        tar xzf ${STL}.tar.gz --strip=1
+        
+        chmod +x $STL
+
+        # Create the installation directory and copy relevant files
+        mkdir -p $INSTALL_LOCATION/controller_config
+        cp $ROOT_DIR/steam-bin/paintown $INSTALL_LOCATION
+        cp $ROOT_DIR/misc/steam/steam-run.sh $INSTALL_LOCATION
+        chmod +x $INSTALL_LOCATION/steam-run.sh
+        cp $ROOT_DIR/misc/steam/'paintown keyboard layout_0.vdf' $INSTALL_LOCATION/controller_config
+        #cp $ROOT_DIR/misc/steam/*.png $INSTALL_LOCATION
+
+        # set english and yad to ai appimage
+        ./${STL} yad ai lang=lang/english.txt
+        ./${STL} ansg \
+        --appname="Paintown" \
+        --exepath="$INSTALL_LOCATION/steam-run.sh" \
+        --startdir="$INSTALL_LOCATION" \
+        --iconpath="$ROOT_DIR/misc/icon.png" \
+        --compatibilitytool="default" \
+        --hero="$ROOT_DIR/misc/steam/library_hero.png" \
+        --logo="$ROOT_DIR/misc/steam/library_logo_transparent.png" \
+        --boxart="$ROOT_DIR/misc/steam/library_capsule.png" \
+        --tenfoot="$ROOT_DIR/misc/steam/tenfoot.png" \
+        --copy
+
+        # Done
+        echo "Done. Paintown installed to $INSTALL_LOCATION. Restart steam to view the changes."
     fi
-    read -p "$PROMPT $OPTIONS " -n 1 -s -r INPUT
-    INPUT=${INPUT:-${DEFAUT}}
-    echo ${INPUT}
-    if [[ "$INPUT" =~ ^[yY]$ ]]; then
-        INSTALL_ANSWER=true
-    else
-        INSTALL_ANSWER=false
-    fi
-}
-
-Install "Would you like to install to steam?" false
-
-if [ "$INSTALL_ANSWER" = true ]; then
-    echo "Attempting to installing paintown to steam..."
-    ROOT_DIR=$PWD
-    STL=steamtinkerlaunch
-    STEAM_APP_LOCATION=$HOME/.steam/steam/steamapps/common
-    STEAM_SNIPER_LOCATION=$HOME/.steam/root/ubuntu12_64/steam-runtime-sniper
-    INSTALL_LOCATION=$HOME/.paintown/Paintown
-
-    # check if steam app directory exists
-    if [ -d "$HOME/.steam" ] && [ ! -d "$STEAM_SNIPER_LOCATION" ]; then
-        echo "Cannot find sniper runtime. Are you sure steam is installed?"
-        exit -1
-    fi
-
-    echo "Checking dependencies"
-    if ! type "xdotool" &> /dev/null; then
-        echo "xdotool not found, please install before continuing"
-        exit
-    fi
-
-    if [ ! -d $INSTALL_LOCATION ]; then
-        mkdir -p $INSTALL_LOCATION
-    fi
-
-    mkdir -p $ROOT_DIR/steam-bin/installation
-    cd $ROOT_DIR/steam-bin/installation
-    wget -qO- https://github.com/sonic2kk/steamtinkerlaunch/archive/refs/tags/v12.12.tar.gz -O ${STL}.tar.gz
-    tar xzf ${STL}.tar.gz --strip=1
-    
-    chmod +x $STL
-
-    # Create the installation directory and copy relevant files
-    mkdir -p $INSTALL_LOCATION/controller_config
-    cp $ROOT_DIR/steam-bin/paintown $INSTALL_LOCATION
-    cp $ROOT_DIR/misc/steam/steam-run.sh $INSTALL_LOCATION
-    chmod +x $INSTALL_LOCATION/steam-run.sh
-    cp $ROOT_DIR/misc/steam/'paintown keyboard layout_0.vdf' $INSTALL_LOCATION/controller_config
-    #cp $ROOT_DIR/misc/steam/*.png $INSTALL_LOCATION
-
-    # set english and yad to ai appimage
-    ./${STL} yad ai lang=lang/english.txt
-    ./${STL} ansg \
-    --appname="Paintown" \
-    --exepath="$INSTALL_LOCATION/steam-run.sh" \
-    --startdir="$INSTALL_LOCATION" \
-    --iconpath="$ROOT_DIR/misc/icon.png" \
-    --compatibilitytool="default" \
-    --hero="$ROOT_DIR/misc/steam/library_hero.png" \
-    --logo="$ROOT_DIR/misc/steam/library_logo_transparent.png" \
-    --boxart="$ROOT_DIR/misc/steam/library_capsule.png" \
-    --tenfoot="$ROOT_DIR/misc/steam/tenfoot.png" \
-    --copy
-
-    # Done
-    echo "Done. Paintown installed to $INSTALL_LOCATION. Restart steam to view the changes."
 fi
