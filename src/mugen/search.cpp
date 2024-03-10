@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
-#include <thread>
 
 using std::endl;
 using std::vector;
@@ -145,6 +144,7 @@ static vector<Filesystem::AbsolutePath> findFiles(const Filesystem::RelativePath
         
 Searcher::CharacterSearch::CharacterSearch(Searcher & owner):
 owner(owner),
+thread(PaintownUtil::Thread::uninitializedValue),
 searching(false),
 searchingCheck(searching, searchingLock.getLock()){
     /* data/<motif>/chars */
@@ -181,18 +181,27 @@ void Searcher::CharacterSearch::search(){
     }
 }
 
+void * Searcher::CharacterSearch::runSearch(void * self_){
+    Searcher::CharacterSearch * self = (Searcher::CharacterSearch*) self_;
+    self->search();
+    return NULL;
+}
+
 void Searcher::CharacterSearch::start(){
     if (!searchingCheck.get()){
         searchingCheck.set(true);
-        thread = std::thread([this](){
-            this->search();
-        });
+        if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) runSearch, this)){
+            searchingCheck.set(false);
+        }
     }
 }
 
 void Searcher::CharacterSearch::pause(){
     searchingCheck.set(false);
-    thread.join();
+    if (thread != PaintownUtil::Thread::uninitializedValue){
+        PaintownUtil::Thread::joinThread(thread);
+        thread = PaintownUtil::Thread::uninitializedValue;
+    }
 }
         
 Searcher::CharacterSearch::~CharacterSearch(){
@@ -202,6 +211,7 @@ Searcher::CharacterSearch::~CharacterSearch(){
 Searcher::StageSearch::StageSearch(Searcher & owner):
 owner(owner),
 searching(false),
+thread(PaintownUtil::Thread::uninitializedValue),
 searchingCheck(searching, searchingLock.getLock()),
 isDone(false){
     try{
@@ -223,21 +233,30 @@ isDone(false){
 void Searcher::StageSearch::start(){
     if (!searchingCheck.get()){
         searchingCheck.set(true);
-        thread = std::thread([this](){
-            this->search();
-        });
+        if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) runSearch, this)){
+            searchingCheck.set(false);
+        }
     }
 }
 
 void Searcher::StageSearch::pause(){
     searchingCheck.set(false);
-    thread.join();
+    if (thread != PaintownUtil::Thread::uninitializedValue){
+        PaintownUtil::Thread::joinThread(thread);
+        thread = PaintownUtil::Thread::uninitializedValue;
+    }
 }
 
 Searcher::StageSearch::~StageSearch(){
     pause();
 }
-        
+
+void * Searcher::StageSearch::runSearch(void * self_){
+    Searcher::StageSearch * self = (Searcher::StageSearch*) self_;
+    self->search();
+    return NULL;
+}
+
 bool Searcher::StageSearch::done(){
     PaintownUtil::Thread::ScopedLock scoped1(searchingLock);
     return isDone;

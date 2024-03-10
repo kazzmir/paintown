@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <exception>
-#include <thread>
 #include <functional>
 
 #include "ast/all.h"
@@ -3582,15 +3581,19 @@ public:
         Subscriber(SelectLogic & owner):
         owner(owner),
         going(true),
-        check(going, lock.getLock()){
-            thread = std::thread([this](){
-                this->process();
-            });
+        check(going, lock.getLock()),
+        thread(PaintownUtil::Thread::uninitializedValue) {
+            if (!PaintownUtil::Thread::createThread(&thread, NULL, (PaintownUtil::Thread::ThreadFunction) doProcess,
+                                                    this)) {
+                Global::debug(0) << "Could not create processing thread" << std::endl;
+            }
         }
-
         void stop(){
             check.set(false);
-            thread.join();
+            if (!PaintownUtil::Thread::isUninitialized(thread)){
+                PaintownUtil::Thread::joinThread(thread);
+                thread = PaintownUtil::Thread::uninitializedValue;
+            }
         }
 
         virtual ~Subscriber(){
@@ -3674,7 +3677,7 @@ public:
         PaintownUtil::Thread::LockObject lock;
         PaintownUtil::ThreadBoolean check;
 
-        std::thread thread;
+        PaintownUtil::Thread::Id thread;
         std::vector<Filesystem::AbsolutePath> characters;
         std::vector<Filesystem::AbsolutePath> stages;
     };
@@ -3684,18 +3687,19 @@ public:
     class WithSubscription{
     public:
         WithSubscription(Searcher & search, Searcher::Subscriber & subscription, const std::vector<CharacterSelect::SelectInfo> & infos, CharacterSelect & select):
+        subscribeThread(PaintownUtil::Thread::uninitializedValue),
         search(search),
         subscription(subscription),
         stop(false),
         check(stop, lock.getLock()),
         infos(infos),
         select(select){
-            subscribeThread = std::thread([this](){
+            if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
                 doSubscribe();
-            });
+            }
         }
 
-        std::thread subscribeThread;
+        PaintownUtil::Thread::Id subscribeThread;
         Searcher & search;
         Searcher::Subscriber & subscription;
         volatile bool stop;
@@ -3704,6 +3708,15 @@ public:
 
         std::vector<CharacterSelect::SelectInfo> infos;
         CharacterSelect & select;
+
+        /* Start the subscription in a thread so that characters that are already found
+         * will be added in a separate thread instead of the main one
+         */
+        static void * subscribe(void * me){
+            WithSubscription * self = (WithSubscription*) me;
+            self->doSubscribe();
+            return NULL;
+        }
 
         void addInfo(const CharacterSelect::SelectInfo & info){
             try{
@@ -3751,7 +3764,7 @@ public:
 
             /* Make sure we wait for the initial join to finish before trying to unsubscribe.
              */
-            subscribeThread.join();
+            PaintownUtil::Thread::joinThread(subscribeThread);
             search.unsubscribe(&subscription);
         }
     };

@@ -20,7 +20,6 @@
 // #include <semaphore.h>
 #endif
 
-#include <thread>
 #include "exceptions/exception.h"
 /*
 #include "exceptions/load_exception.h"
@@ -68,9 +67,9 @@ namespace Thread{
     typedef void * (*ThreadFunction)(void*);
 #endif
 
-    // extern Id uninitializedValue;
-    // bool isUninitialized(Id thread);
-    bool initializeLock(Lock * lock);
+     extern Id uninitializedValue;
+     bool isUninitialized(Id thread);
+     bool initializeLock(Lock * lock);
 
     /*
     void initializeCondition(Condition * condition);
@@ -89,11 +88,10 @@ namespace Thread{
     int acquireLock(Lock * lock);
     int releaseLock(Lock * lock);
     void destroyLock(Lock * lock);
-    /*
+
     bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg);
     void joinThread(Id thread);
     void cancelThread(Id thread);
-    */
 
     /* wraps a Lock in a c++ class */
     class LockObject{
@@ -138,12 +136,12 @@ namespace Thread{
         const LockObject & lock;
     };
 
-    /*
+
     class ThreadObject{
     public:
         ThreadObject(void * data, void * (function)(void * arg));
 
-        / * true if the thread was started, false otherwise * /
+        /* true if the thread was started, false otherwise */
         virtual bool start();
         virtual ~ThreadObject();
 
@@ -152,7 +150,7 @@ namespace Thread{
         void * (*function)(void * arg);
         Id thread;
     };
-    */
+
 }
 
 class WaitThread{
@@ -173,11 +171,11 @@ public:
 
 public:
     /* actually runs the thread */
-    // void doRun();
+     void doRun();
 
 protected:
     Thread::Lock doneLock;
-    std::thread thread;
+    Thread::Id thread;
     volatile bool done;
     void * arg;
     Thread::ThreadFunction function;
@@ -211,19 +209,21 @@ template<class X> class Future{
 public:
     Future():
         thing(0),
+        thread(Thread::uninitializedValue),
         done(false),
         exception(NULL),
         ran(false){ }
 
     virtual ~Future(){
-        if (thread.joinable()){
-            thread.join();
-        }
+        Thread::joinThread(thread);
+        delete exception;
     }
 
     virtual X get(){
         /* make sure the future has been started */
-        start();
+        if (Thread::isUninitialized(thread)){
+            start();
+        }
 
         Exception::Base * failed = NULL;
         bool ok = false;
@@ -251,10 +251,10 @@ public:
         if (ran){
             return;
         }
-
-        thread = std::thread([this](){
-            this->doRun();
-        });
+        if (!Thread::createThread(&thread, NULL, (Thread::ThreadFunction) runit, this)){
+            Global::debug(0) << "Could not create future thread. Blocking until its done" << std::endl;
+            runit(this);
+        }
 
         ran = true;
     }
@@ -264,10 +264,10 @@ protected:
         Thread::ScopedLock scoped(future);
         return done;
     }
-
-    void doRun(){
+    static void * runit(void * arg){
+        Future<X> * me = (Future<X>*) arg;
         try{
-            this->compute();
+            me->compute();
         /*
         } catch (const LoadException & load){
             me->exception = new LoadException(load);
@@ -277,13 +277,15 @@ protected:
             me->exception = new MugenException(m);
         */
         } catch (const Exception::Base & base){
-            this->exception = base.copy();
+            me->exception = base.copy();
         } catch (...){
-            this->exception = new Exception::Base(__FILE__, __LINE__);
+            me->exception = new Exception::Base(__FILE__, __LINE__);
         }
-        this->future.acquire();
-        this->done = true;
-        this->future.release();
+
+        me->future.acquire();
+        me->done = true;
+        me->future.release();
+        return NULL;
     }
 
     virtual void set(X x){
@@ -293,7 +295,7 @@ protected:
     virtual void compute() = 0;
 
     X thing;
-    std::thread thread;
+    Thread::Id thread;
     Thread::LockObject future;
     volatile bool done;
     /* if any exceptions occur, throw them from `get' */
