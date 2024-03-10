@@ -20,14 +20,14 @@ sdl2-config = '/usr/local/ps3dev/portlibs/ppu/bin/sdl2-config'
 cmake = 'cmake'
 
 [built-in options]
-cpp_args = common_args + ['-I/usr/local/include'
-                        , '-mcpu=cell'
-#                        , '-m64'
+cpp_args = common_args + ['-mcpu=cell'
+                        , '-m64'
                         , '-fno-builtin'
                         , '-nostdlib'
                         , '-I/usr/local/ps3dev/ppu/include/'
                         , '-I/usr/local/ps3dev/portlibs/ppu/include/'
-                        , '-DDATA_PATH="/dev_hdd0/game/paintown/data"'
+#                        , '-DDATA_PATH="/dev_hdd0/game/paintown/data"'
+                        , '-DDATA_PATH="data"'
                         ]
 cpp_link_args = [ '-L/usr/local/ps3dev/portlibs/ppu/lib'
                 , '-lSDL2'
@@ -36,7 +36,8 @@ cpp_link_args = [ '-L/usr/local/ps3dev/portlibs/ppu/lib'
                 , '-lSDL2_mixer'
                 , '-lSDL2_gfx'
                 , '-lpthread'
-                , '-lyaml-cpp']
+                , '-lyaml-cpp'
+                ]
 default_library='static'
 
 [host_machine]
