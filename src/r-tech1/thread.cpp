@@ -1,4 +1,4 @@
-#include "thread.h"
+#include "r-tech1/thread.h"
 
 namespace Util{
 
@@ -68,13 +68,12 @@ ScopedLock::~ScopedLock(){
     lock.release();
 }
     
-/*
+
 bool isUninitialized(Id thread){
     return thread == uninitializedValue;
 }
-*/
 
-/*
+
 ThreadObject::ThreadObject(void * data, void * (function)(void * arg)):
 data(data),
 function(function),
@@ -95,10 +94,10 @@ ThreadObject::~ThreadObject(){
         thread = uninitializedValue;
     }
 }
-*/
+
 
 #if defined(USE_SDL) && !defined(USE_NACL)
-// Id uninitializedValue = NULL;
+Id uninitializedValue = NULL;
     
 bool initializeLock(Lock * lock){
     *lock = SDL_CreateMutex();
@@ -179,7 +178,7 @@ void cancelThread(Id thread){
 
 #elif USE_SDL2
 
-#if 0
+//#if 0
 bool createThread(Id * thread, void * attributes, ThreadFunction function, void * arg){
     // FIXME: name
     *thread = SDL_CreateThread(function, "thread", arg);
@@ -191,16 +190,16 @@ void cancelThread(Id thread){
     // SDL_KillThread(thread);
 }
 
-#ifndef CROSS_BUILD
+//#ifndef CROSS_BUILD
 void joinThread(Id thread){
     if (!isUninitialized(thread)){
         SDL_WaitThread(thread, NULL);
     }
 }
-#endif
+//#endif
 
 Id uninitializedValue = NULL;
-#endif
+//#endif
     
 bool initializeLock(Lock * lock){
     *lock = SDL_CreateMutex();
@@ -307,7 +306,6 @@ WaitThread::WaitThread(Thread::ThreadFunction thread, void * arg){
     start(thread, arg);
 }
 
-/*
 static void * do_thread(void * arg){
     WaitThread * thread = (WaitThread *) arg;
     thread->doRun();
@@ -321,19 +319,12 @@ void WaitThread::doRun(){
     this->done = true;
     Thread::releaseLock(&doneLock);
 }
-*/
 
 void WaitThread::start(Thread::ThreadFunction thread, void * arg){
     done = false;
     this->arg = arg;
     this->function = thread;
-    this->thread = std::thread([this](){
-        this->function(this->arg);
-
-        Thread::acquireLock(&doneLock);
-        this->done = true;
-        Thread::releaseLock(&doneLock);
-    });
+    Thread::createThread(&this->thread, NULL, (Thread::ThreadFunction) do_thread, this);
 }
 
 bool WaitThread::isRunning(){
@@ -345,15 +336,14 @@ bool WaitThread::isRunning(){
 
 void WaitThread::kill(){
     // FIXME: handle kill somehow
-    // Thread::cancelThread(thread);
-    thread.join();
+    Thread::cancelThread(thread);
+    Thread::joinThread(thread);
 }
 
 WaitThread::~WaitThread(){
     /* FIXME: Should we join the thread? */
     /* pthread_join(thread); */
-    thread.join();
-    // Thread::joinThread(thread);
+    Thread::joinThread(thread);
     Thread::destroyLock(&doneLock);
 }
 

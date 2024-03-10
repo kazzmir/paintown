@@ -1,5 +1,6 @@
 build
 build-debug
+build-ps3
 mingw-bin
 /paintown
 .scon*
@@ -17,3 +18,6 @@ peg_*.py
 *.dmg.sparseimage
 *.deb
 .idea
+
+*.pkg
+paintown-ps3*

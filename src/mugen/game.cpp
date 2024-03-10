@@ -1671,12 +1671,19 @@ void Game::startDemo(Searcher & searcher){
             WithSubscription(Searcher & search, Searcher::Subscriber & subscription):
             search(search),
             subscription(subscription){
-                subscribeThread = std::thread([this](){
-                    this->doSubscribe();
-                });
+                if (!PaintownUtil::Thread::createThread(&subscribeThread, NULL, (PaintownUtil::Thread::ThreadFunction) subscribe, this)){
+                    doSubscribe();
+                }
             }
-
-            std::thread subscribeThread;
+            /* Start the subscription in a thread so that characters that are already found
+            * will be added in a separate thread instead of the main one
+            */
+            static void * subscribe(void * me){
+                WithSubscription * self = (WithSubscription*) me;
+                self->doSubscribe();
+                return NULL;
+            }
+            PaintownUtil::Thread::Id subscribeThread;
 
             void doSubscribe(){
                 // Only subscribe if auto search is enabled
@@ -1690,7 +1697,7 @@ void Game::startDemo(Searcher & searcher){
 
             virtual ~WithSubscription(){
                 /* Make sure we wait for the initial join to finish before trying to unsubscribe */
-                subscribeThread.join();
+                PaintownUtil::Thread::joinThread(subscribeThread);
                 search.unsubscribe(&subscription);
             }
         } withSubscription(searcher, subscription);

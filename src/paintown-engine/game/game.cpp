@@ -128,10 +128,10 @@ static string findNextFile( const char * name ){
     strncpy( first, name, extension - name );
     first[ extension - name ] = '\0';
     unsigned int num = 0;
-    snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
+    Util::snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
     do{
         num += 1;
-        snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
+        Util::snprintf( buf, sizeof(buf), "%s%u%s", first, num, extension );
         /* num != 0 prevents an infinite loop in the extremely
          * remote case that the user has 2^32 files in the directory
          */

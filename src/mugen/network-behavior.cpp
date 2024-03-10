@@ -153,15 +153,18 @@ void NetworkRemoteBehavior::pollCommands(){
     }
 }
 
+static void * launch_thread(void * arg){
+    NetworkRemoteBehavior * behavior = (NetworkRemoteBehavior*) arg;
+    behavior->pollCommands();
+    return NULL;
+}
 NetworkRemoteBehavior::NetworkRemoteBehavior(Network::Socket socket):
 socket(socket),
 polling(true){
 }
 
 void NetworkRemoteBehavior::begin(){
-    thread = std::thread([this](){
-        this->pollCommands();
-    });
+    ::Util::Thread::createThread(&thread, NULL, (::Util::Thread::ThreadFunction) launch_thread, this);
 }
     
 vector<string> NetworkRemoteBehavior::nextCommand(){
@@ -196,7 +199,7 @@ void NetworkRemoteBehavior::hit(Object * enemy){
 
 NetworkRemoteBehavior::~NetworkRemoteBehavior(){
     polling = false;
-    thread.join();
+    ::Util::Thread::joinThread(thread);
 }
 
 }

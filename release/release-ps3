@@ -1,0 +1,76 @@
+#!/bin/bash -e
+
+SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+EXEDIR="$SCRIPT_DIR/.." 
+EXE=paintown.pkg
+
+# inside tmp
+cd $SCRIPT_DIR
+rm -rf tmp && mkdir tmp && cd tmp
+
+# Define variables
+GAME_TITLE="Paintown"
+GAME_ID="PAINTOWN"
+PKG_DIR="paintown.ps3"
+AUTHOR="paintown"
+CONTENT_ID='UP0000-Paintown_00-0000000000000000'
+
+APPVERSION_TAG=`git tag --sort=-committerdate | head -n 1`
+APPVERSION_COMMIT=`git log --format=%h -n 1`
+
+# Regular expression to match 'v' followed by a number version
+TAG_VERSION_REGEX='^v[0-9]+\.[0-9]+'
+
+# Check if the variable matches the regular expression
+if [[ $APPVERSION_TAG =~ $TAG_VERSION_REGEX ]]; then
+    APPVERSION=$APPVERSION_TAG
+else
+    APPVERSION=$APPVERSION_COMMIT
+fi
+
+# Copy compiled ps3 file
+cp $EXEDIR/paintown-ps3.elf main
+cp $EXEDIR/misc/ps3/sfo.xml .
+sed -i "s/01\.00/$APPVERSION/g" sfo.xml
+
+# Create directory structure
+mkdir -p "$PKG_DIR/USRDIR"
+
+# Copy game icon to ICON0
+cp $EXEDIR/misc/ps3/ICON0.PNG $PKG_DIR/ICON0.PNG
+cp $EXEDIR/misc/ps3/SND0.AT3 $PKG_DIR/SND0.AT3
+cp $EXEDIR/misc/ps3/PIC1.PNG $PKG_DIR/PIC1.PNG
+
+# data
+if [ -z "$1" ]; then
+    cp -r $EXEDIR/data $PKG_DIR/USRDIR
+else
+    cp -r $EXEDIR/${1} $PKG_DIR/USRDIR/data
+fi
+
+# builder
+docker run --rm -iv `pwd`:/paintown-bin -w /paintown-bin paintown-ps3-build bash -s <<EOF
+
+# PKG
+echo "Creating PKG"
+ppu-strip main -o main.elf
+sprxlinker main.elf
+fself main.elf main.fself
+make_self main.elf main.self
+
+# Eboot
+make_self_npdrm main.elf $PKG_DIR/USRDIR/EBOOT.BIN $CONTENT_ID
+
+# PARAM.SFO
+sfo.py --title "$GAME_TITLE" --appid "$GAME_ID" -f sfo.xml $PKG_DIR/PARAM.SFO
+# PKG dev
+pkg.py --contentid $CONTENT_ID $PKG_DIR/ main.pkg
+echo "PS3 game folder created: $PKG_DIR"
+
+EOF
+
+# tree
+tree
+
+ARCH=ps3
+mv `pwd`/main.pkg $EXEDIR/paintown-$ARCH-$APPVERSION.pkg

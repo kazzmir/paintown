@@ -183,7 +183,7 @@ void Font::printf(int x, int y, int bank, const Graphics::Bitmap & work, const s
     va_list ap;
 
     va_start(ap, marker);
-    vsnprintf(buf, sizeof(buf), str.c_str(), ap);
+    ::Util::limitPrintf(buf, sizeof(buf), str.c_str(), ap);
     va_end(ap);
 
     const std::string newstr(buf);

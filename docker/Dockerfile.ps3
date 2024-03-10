@@ -1,0 +1,7 @@
+FROM hldtux/ps3dev-sdl2
+# https://github.com/humbertodias/ps3dev-sdl2
+
+ENV PKG_CONFIG_PATH=${PS3DEV}/portlibs/ppu/lib/pkgconfig
+
+# build : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker build -t paintown-ps3-build -f docker/Dockerfile.ps3 .
+# shell : DOCKER_DEFAULT_PLATFORM=linux/amd64 docker run --rm -itv${PWD}:/paintown-bin -w /paintown-bin paintown-ps3-build bash

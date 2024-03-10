@@ -1,0 +1,71 @@
+[constants]
+cross_root = '/usr/local/ps3dev'
+common_args = ['-mhard-float'
+             , '-fmodulo-sched'
+             , '-ffunction-sections'
+             , '-fdata-sections'
+             , '-maltivec'
+             , '-mminimal-toc'
+             , '-DPS3'
+             , '-DHAVE_YAML_CPP'
+            ]
+
+[binaries]
+c = 'ppu-gcc'
+cpp = 'ppu-g++'
+ar = 'ppu-ar'
+strip = 'ppu-strip'
+pkg-config = 'pkg-config'
+sdl2-config = '/usr/local/ps3dev/portlibs/ppu/bin/sdl2-config'
+cmake = 'cmake'
+
+[built-in options]
+cpp_args = common_args + ['-mcpu=cell'
+                        , '-m64'
+                        , '-fno-builtin'
+                        , '-nostdlib'
+                        , '-I/usr/local/ps3dev/ppu/include/'
+                        , '-I/usr/local/ps3dev/portlibs/ppu/include/'
+#                        , '-DDATA_PATH="/dev_hdd0/game/paintown/data"'
+                        , '-DDATA_PATH="data"'
+                        ]
+cpp_link_args = [ '-L/usr/local/ps3dev/portlibs/ppu/lib'
+                , '-lSDL2'
+                , '-lSDL2_image'
+                , '-lSDL2_ttf'
+                , '-lSDL2_mixer'
+                , '-lSDL2_gfx'
+                , '-lpthread'
+                , '-lyaml-cpp'
+                ]
+default_library='static'
+
+[host_machine]
+system = 'ps3'
+cpu_family = 'cell'
+cpu = 'cell'
+endian = 'big'
+
+[sdl2:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_image:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_ttf:built-in options]
+default_library = 'static'
+werror = false
+
+[SDL2_mixer:built-in options]
+default_library = 'static'
+werror = false
+
+[zlib:built-in options]
+default_library = 'static'
+werror = false
+
+[yaml-cpp:built-in options]
+default_library = 'static'
+werror = false

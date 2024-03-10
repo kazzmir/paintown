@@ -994,7 +994,16 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
         return 1;
     }
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    // Define default renderer flags
+    Uint32 renderer_flags = SDL_RENDERER_ACCELERATED;
+
+    // Conditionally set renderer flags for PS3
+    #ifdef PS3
+        // PS3-specific flag
+        renderer_flags |= SDL_RENDERER_SOFTWARE;
+    #endif
+
+    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, renderer_flags);
     if (renderer == nullptr){
         DebugLog << "Could not create renderer: " << SDL_GetError() << endl;
         return 1;

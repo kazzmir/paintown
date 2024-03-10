@@ -51,5 +51,8 @@ ensure-mingw:
 	@x86_64-w64-mingw32-g++-posix --version > /dev/null || { exit 1; }
 	@echo "Ok."
 
+ps3:
+	./easy-compile-docker-ps3 && ./release/release-ps3
+
 clean:
 	rm -rf build-debug build-release build-mingw

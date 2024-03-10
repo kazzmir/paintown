@@ -114,10 +114,12 @@ sources = [
   'dkp/init.cpp',
   'dkp/system.cpp',
   'dkp/thread.cpp',
-  'ps3/file-system.cpp',
+
   'ps3/init.cpp',
+  'ps3/file-system.cpp',
   'ps3/system.cpp',
-  
+  'ps3/thread.cpp',
+
 ]
 
 includes = include_directories('..')

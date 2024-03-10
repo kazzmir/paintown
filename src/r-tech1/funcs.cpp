@@ -45,6 +45,10 @@
 #undef min
 #endif
 
+#include <stdio.h>
+#include <stdarg.h>
+#include <stddef.h> // For size_t
+
 using namespace std;
 
 /* remove this once cmake and scons properly set DATA_PATH */
@@ -316,12 +320,64 @@ int Util::levenshtein(const std::string & str1, const std::string & str2){
     return levenshtein_distance(str1.c_str(), str2.c_str());
 }
 
+int vsnprintf_generic(char *buffer, size_t bufsz, const char *format, va_list argptr) {
+    if (buffer == NULL || bufsz == 0) {
+        // Invalid arguments
+        return -1;
+    }
+
+    // Keep track of the number of characters written
+    int written = 0;
+
+    // Loop through the format string and write characters to the buffer
+    for (; *format != '\0'; ++format) {
+        if (written >= (int)bufsz - 1) {
+            // Buffer full, leave room for null-terminator
+            buffer[bufsz - 1] = '\0';
+            return -1;
+        }
+
+        // Write character to buffer
+        *buffer++ = *format;
+        ++written;
+    }
+
+    // Null-terminate the buffer
+    *buffer = '\0';
+
+    // Return the number of characters written
+    return written;
+}
+
+int snprintf_generic(char * buffer, size_t size, const char * format, ...){
+    va_list args;
+    va_start(args, format); // Initialize va_list
+    int ret = vsnprintf_generic(buffer, size, format, args);
+    va_end(args);
+    return ret;
+}
+
+
 void Util::limitPrintf(char * buffer, int size, const char * format, va_list args){
 #ifdef USE_ALLEGRO
     uvszprintf(buffer, size, format, args);
+#elif !defined(__STDC_LIB_EXT1__)
+    vsnprintf_generic(buffer, size, format, args);
 #else
     vsnprintf(buffer, size, format, args);
 #endif
+}
+
+int Util::snprintf(char * buffer, size_t size, const char * format, ...) {
+    va_list args;
+    va_start(args, format); // Initialize va_list
+#ifndef __STDC_LIB_EXT1__
+    int result = snprintf_generic(buffer, size, format, args);
+#else
+    int result = vsnprintf(buffer, size, format, args);
+#endif
+    va_end(args); // Clean up va_list
+    return result;
 }
 
 void Util::showError(const Graphics::Bitmap & screen, const Exception::Base & exception, const string & info){

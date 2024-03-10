@@ -1,0 +1,2 @@
+option('build_tests', type: 'boolean', value: false, description: 'Build tests')
+option('release', type: 'boolean', value: false, description: 'Build release version')

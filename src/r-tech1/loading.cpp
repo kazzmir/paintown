@@ -502,20 +502,29 @@ static void showLoadMessage(){
 }
 
 void loadScreen(LoadingContext & context, const Info & info, Kind kind){
-    std::thread loadingThread;
-    loadingThread = std::thread([&](){
-        context.doLoad();
-    });
-
-    InputManager::deferResizeEvents(true);
-    switch (kind){
-        case Default: loadingScreen1(context, info); break;
-        case SimpleCircle: loadingScreenSimpleX1(context, info); break;
-        default: loadingScreen1(context, info); break;
+    Util::Thread::Id loadingThread;
+    bool created = Util::Thread::createThread(&loadingThread, NULL, (Util::Thread::ThreadFunction) LoadingContext::load_it, &context);
+    if (!created){
+        Global::debug(0) << "Could not create loading thread. Loading will occur in the main thread" << endl;
+        showLoadMessage();
+        LoadingContext::load_it(&context);
+        // throw LoadException(__FILE__, __LINE__, "Could not create loader thread");
+    } else {
+        InputManager::deferResizeEvents(true);
+        switch (kind) {
+            case Default:
+                loadingScreen1(context, info);
+                break;
+            case SimpleCircle:
+                loadingScreenSimpleX1(context, info);
+                break;
+            default:
+                loadingScreen1(context, info);
+                break;
+        }
     }
-
-    loadingThread.join();
+    Util::Thread::joinThread(loadingThread);
     InputManager::deferResizeEvents(false);
-}
+    }
 
 }
