@@ -58,11 +58,32 @@ public:
 class LitShader: public Shader {
 public:
     LitShader(){
+        GLuint programId = 0;
+        programId = glCreateProgram();
         GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         string fragmentPath = "shaders/lit-sprite.fragment.glsl";
         try {
             string data = Storage::readFile(Storage::instance().findInsensitive(Path::RelativePath(fragmentPath)));
             DebugLog << "Lit fragment: " << data << endl;
+
+            const char* data_c = data.c_str();
+            glShaderSource(fragmentShader, 1, &data_c, NULL);
+            glCompileShader(fragmentShader);
+            GLint shaderCompiled = GL_FALSE;
+            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &shaderCompiled);
+            if (shaderCompiled != GL_TRUE){
+                DebugLog << "Could not compile lit fragment shader" << endl;
+                GLint maxLength = 0;
+                glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+                vector<GLchar> errorLog(maxLength);
+                glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &errorLog[0]);
+                DebugLog << "Error: " << &errorLog[0] << endl;
+                // throw Filesystem::NotFound("Could not compile lit fragment shader");
+            } else {
+                DebugLog << "Compiled lit fragment shader" << endl;
+                glAttachShader(programId, fragmentShader);
+                glLinkProgram(programId);
+            }
         } catch (const Filesystem::NotFound & failure){
             DebugLog << "Could not create lit shader: " << failure.what() << endl;
         }
