@@ -52,6 +52,7 @@ all_code = [
   'src/globals.cpp',
 ]
 
+glew_dependency = dependency('glew', required: true)
 sdl_dependency = dependency('sdl2', required: true, static: is_static)
 sdl_ttf_dependency = dependency('SDL2_ttf', required: true, version: '>=2.0.18', static: is_static)
 sdl_mixer_dependency = dependency('SDL2_mixer', required: true, static: is_static)
@@ -112,13 +113,13 @@ if meson.has_external_property('steam_build')
   subdir('.tmp/SDL_gfx')
 endif
 
-test_dependencies = other_dependencies + [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency]
+test_dependencies = other_dependencies + [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency, glew_dependency]
 test_linkages = [yaml_cpp_library, sdl_image_library, sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library]
 test_link_args = link_args
 
 executable('paintown', all_code,
   include_directories: [includes, dumb_includes],
-  dependencies: other_dependencies + [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency],
+  dependencies: other_dependencies + [yaml_cpp_dependency, sdl_dependency, sdl_image_dependency, sdl_ttf_dependency, sdl_mixer_dependency, sdl_graphics_dependency, zlib_dependency, vorbis_dependency, vorbis_file_dependency, ogg_dependency, mpg123_dependency, glew_dependency],
   link_with: [yaml_cpp_library, sdl_image_library, sdl_graphics_library, rtech1_library, mugen_library, paintown_library, openbor_library],
   link_args: link_args,
   )
