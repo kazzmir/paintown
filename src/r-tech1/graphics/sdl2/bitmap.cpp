@@ -9,6 +9,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
+#include <GL/glew.h>
+// #include <GL/gl.h>
 #include <memory>
 
 using namespace std;
@@ -18,15 +20,20 @@ class SDLGlobalHandler{
 public:
     SDL_Window* window;
     SDL_Renderer* renderer;
+    SDL_GLContext context;
 
-    SDLGlobalHandler(SDL_Window* window, SDL_Renderer* renderer):
+    SDLGlobalHandler(SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext context):
     window(window),
-    renderer(renderer){
+    renderer(renderer),
+    context(context){
     }
 
     ~SDLGlobalHandler(){
         if (renderer != nullptr){
             SDL_DestroyRenderer(renderer);
+        }
+        if (context != nullptr){
+            SDL_GL_DeleteContext(context);
         }
         if (window != nullptr){
             SDL_DestroyWindow(window);
@@ -38,6 +45,57 @@ public:
 };
 
 unique_ptr<SDLGlobalHandler> global_handler;
+
+class Shader{
+public:
+    Shader(){
+    }
+
+    virtual ~Shader(){
+    }
+};
+
+class LitShader: public Shader {
+public:
+    LitShader(){
+        GLuint programId = 0;
+        programId = glCreateProgram();
+        GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        string fragmentPath = "shaders/lit-sprite.fragment.glsl";
+        try {
+            string data = Storage::readFile(Storage::instance().findInsensitive(Path::RelativePath(fragmentPath)));
+            DebugLog << "Lit fragment: " << data << endl;
+
+            const char* data_c = data.c_str();
+            glShaderSource(fragmentShader, 1, &data_c, NULL);
+            glCompileShader(fragmentShader);
+            GLint shaderCompiled = GL_FALSE;
+            glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &shaderCompiled);
+            if (shaderCompiled != GL_TRUE){
+                DebugLog << "Could not compile lit fragment shader" << endl;
+                GLint maxLength = 0;
+                glGetShaderiv(fragmentShader, GL_INFO_LOG_LENGTH, &maxLength);
+                vector<GLchar> errorLog(maxLength);
+                glGetShaderInfoLog(fragmentShader, maxLength, &maxLength, &errorLog[0]);
+                DebugLog << "Error: " << &errorLog[0] << endl;
+                // throw Filesystem::NotFound("Could not compile lit fragment shader");
+            } else {
+                DebugLog << "Compiled lit fragment shader" << endl;
+                glAttachShader(programId, fragmentShader);
+                glLinkProgram(programId);
+            }
+        } catch (const Filesystem::NotFound & failure){
+            DebugLog << "Could not create lit shader: " << failure.what() << endl;
+        }
+    }
+};
+
+map<string, Shader*> shaders;
+
+static void initializeShaders(){
+    Shader* litShader = new LitShader();
+    shaders["lit"] = litShader;
+}
 
 bool operator==(const INTERNAL_COLOR& left, const INTERNAL_COLOR& right){
     return left.r == right.r && left.g == right.g && left.b == right.b;
@@ -827,6 +885,7 @@ void Graphics::Bitmap::BlitAreaToScreen(const int upper_left_x, const int upper_
 void Graphics::Bitmap::BlitToScreen(const int upper_left_x, const int upper_left_y) const {
     SDL_SetRenderTarget(global_handler->renderer, nullptr);
     SDL_RenderPresent(global_handler->renderer);
+    // SDL_GL_SwapWindow(global_handler->window);
 }
 
 void Graphics::Bitmap::roundRect(int radius, int x1, int y1, int x2, int y2, Color color) const {
@@ -988,7 +1047,7 @@ int Graphics::setGfxModeText(){
 }
 
 int Graphics::setGraphicsMode(int mode, int width, int height){
-    SDL_Window* window = SDL_CreateWindow("paintown", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+    SDL_Window* window = SDL_CreateWindow("paintown", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     if (window == nullptr){
         DebugLog << "Could not create a window: " << SDL_GetError() << endl;
         return 1;
@@ -1012,6 +1071,24 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
         DebugLog << "Unable to get renderer info: " << SDL_GetError() << endl;
     }
 
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+    SDL_GLContext glContext = SDL_GL_CreateContext(window);
+    if (glContext == NULL){
+        DebugLog << "Could not create GL context: " << SDL_GetError() << endl;
+        return 1;
+    }
+
+    GLenum glewError = glewInit();
+    if (glewError != GLEW_OK){
+        DebugLog << "Error initializing GLEW! " << glewGetErrorString(glewError) << endl;
+        return 1;
+    }
+
+    initializeShaders();
+
     /*
     double ratio = 640 / (double) 480;
     if (width / ratio > height){
@@ -1024,7 +1101,7 @@ int Graphics::setGraphicsMode(int mode, int width, int height){
     /* always render at 640x480 resolution */
     SDL_RenderSetLogicalSize(renderer, 640, 480);
 
-    global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer));
+    global_handler = unique_ptr<SDLGlobalHandler>(new SDLGlobalHandler(window, renderer, glContext));
 
     Screen = new Bitmap();
     Screen->clip_x1 = 0;
