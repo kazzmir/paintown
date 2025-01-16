@@ -6,12 +6,19 @@ import (
     "image"
     "image/png"
 
+    "github.com/kazzmir/paintown/game/lib/coroutine"
+
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
+    "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+type PaintownLevel struct {
+}
+
 type Engine struct {
-    Background *ebiten.Image
+    Coroutine *coroutine.Coroutine
+    Drawer func(*ebiten.Image)
 }
 
 func dataPath(path string) string {
@@ -33,16 +40,39 @@ func loadPng(path string) (image.Image, error) {
     return img, nil
 }
 
-func MakeEngine() (*Engine, error) {
+func makeRunMenu() (func (yield coroutine.YieldFunc) error, func (*ebiten.Image), error) {
     backgroundPng, err := loadPng("menu/paintown.png")
     if err != nil {
-        return nil, err
+        return nil, nil, err
     }
 
     background := ebiten.NewImageFromImage(backgroundPng)
 
+    drawer := func(screen *ebiten.Image) {
+        var options ebiten.DrawImageOptions
+        screen.DrawImage(background, &options)
+        ebitenutil.DebugPrintAt(screen, "Start", 300, 240)
+    }
+
+    logic := func(yield coroutine.YieldFunc) error {
+        for {
+            yield()
+        }
+    }
+
+    return logic, drawer, nil
+}
+
+func MakeEngine() (*Engine, error) {
+    menuLogic, menuDraw, err := makeRunMenu()
+
+    if err != nil {
+        return nil, err
+    }
+
     engine := &Engine{
-        Background: background,
+        Coroutine: coroutine.MakeCoroutine(menuLogic),
+        Drawer: menuDraw,
     }
 
     return engine, nil
@@ -57,12 +87,11 @@ func (engine *Engine) Update() error {
         }
     }
 
-    return nil
+    return engine.Coroutine.Run()
 }
 
 func (engine *Engine) Draw(screen *ebiten.Image) {
-    var options ebiten.DrawImageOptions
-    screen.DrawImage(engine.Background, &options)
+    engine.Drawer(screen)
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
