@@ -13,6 +13,8 @@ import (
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+type DrawFunc func (*ebiten.Image)
+
 type PaintownLevel struct {
 }
 
@@ -40,10 +42,30 @@ func loadPng(path string) (image.Image, error) {
     return img, nil
 }
 
-func makeRunMenu() (func (yield coroutine.YieldFunc) error, func (*ebiten.Image), error) {
+func runGame(yield coroutine.YieldFunc, setDraw func(drawer DrawFunc) DrawFunc) error {
+
+    drawer := func (screen *ebiten.Image) {
+    }
+
+    oldDrawer := setDraw(drawer)
+    defer setDraw(oldDrawer)
+
+    for {
+        keys := inpututil.AppendJustPressedKeys(nil)
+        for _, key := range keys {
+            if key == ebiten.KeyTab {
+                return nil
+            }
+        }
+
+        yield()
+    }
+}
+
+func makeRunMenu(setDraw func(drawer DrawFunc) DrawFunc) (func (yield coroutine.YieldFunc) error, error) {
     backgroundPng, err := loadPng("menu/paintown.png")
     if err != nil {
-        return nil, nil, err
+        return nil, err
     }
 
     background := ebiten.NewImageFromImage(backgroundPng)
@@ -55,24 +77,46 @@ func makeRunMenu() (func (yield coroutine.YieldFunc) error, func (*ebiten.Image)
     }
 
     logic := func(yield coroutine.YieldFunc) error {
+        oldDrawer := setDraw(drawer)
+        defer setDraw(oldDrawer)
+
         for {
+            keys := inpututil.AppendJustPressedKeys(nil)
+            for _, key := range keys {
+                if key == ebiten.KeyEnter {
+                    err := runGame(yield, setDraw)
+                    if err != nil {
+                        return err
+                    }
+                }
+            }
+
             yield()
         }
     }
 
-    return logic, drawer, nil
+    return logic, nil
 }
 
 func MakeEngine() (*Engine, error) {
-    menuLogic, menuDraw, err := makeRunMenu()
+    var engine *Engine
+
+    setDraw := func(drawer DrawFunc) DrawFunc {
+        old := engine.Drawer
+        engine.Drawer = drawer
+        return old
+    }
+
+    menuLogic, err := makeRunMenu(setDraw)
 
     if err != nil {
         return nil, err
     }
 
-    engine := &Engine{
+    engine = &Engine{
         Coroutine: coroutine.MakeCoroutine(menuLogic),
-        Drawer: menuDraw,
+        Drawer: func(screen *ebiten.Image) {
+        },
     }
 
     return engine, nil
