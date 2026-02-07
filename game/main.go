@@ -4,13 +4,12 @@ import (
     "log"
     "os"
     "fmt"
-    "io"
     "image"
     "image/png"
-    "bufio"
     "path/filepath"
 
     "github.com/kazzmir/paintown/game/lib/coroutine"
+    "github.com/kazzmir/paintown/game/lib/sexp"
 
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -46,134 +45,98 @@ func loadPng(path string) (image.Image, error) {
     return img, nil
 }
 
-type PaintownCharacter struct {
-    Definition CharacterDefinition
+type Animation struct {
+    Frames []*ebiten.Image
+    Current int
 }
 
-type CharacterDefinition struct {
-    Name string
+func MakeAnimation(frames []*ebiten.Image) *Animation {
+    return &Animation{
+        Frames: frames,
+        Current: 0,
+    }
 }
 
-type SExpr struct {
-    Name string
-    // an sexpr with no children is just a value
-    Children []*SExpr
-}
-
-func (sexpr *SExpr) GetChild(name string) *SExpr {
-    for _, child := range sexpr.Children {
-        if child.Name == name {
-            return child
-        }
+func (animation *Animation) CurrentFrame() *ebiten.Image {
+    if animation.Current < len(animation.Frames) {
+        return animation.Frames[animation.Current]
     }
 
     return nil
 }
 
-func (sexpr *SExpr) IsValue() bool {
-    return len(sexpr.Children) == 0
+func (animation *Animation) NextFrame() {
+    animation.Current = (animation.Current + 1) % len(animation.Frames)
 }
 
-func (sexpr *SExpr) GetValue(index int) string {
-    if index < len(sexpr.Children) {
-        child := sexpr.Children[index]
-        if child.IsValue() {
-            return child.Name
-        }
-
-        return ""
-    } else {
-        return ""
-    }
+type PaintownCharacter struct {
+    Definition CharacterDefinition
 }
 
-func tokenize(reader io.Reader) []string {
-    byteReader, ok := reader.(io.ByteReader)
-    if !ok {
-        byteReader = bufio.NewReader(reader)
-    }
+func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, error) {
+    animations := character.Definition.FindAll("character", "anim")
 
-    var tokens []string
+    log.Printf("Found %v animations for character %v", len(animations), character.Definition.Name)
 
-    whitespace := func (char byte) bool {
-        return char == ' ' || char == '\t' || char == '\n' || char == '\r'
-    }
-
-    for {
-        char, err := byteReader.ReadByte()
-        if err != nil {
-            break
-        }
-
-        switch {
-            case char == '(':
-                tokens = append(tokens, "(")
-            case char == ')':
-                tokens = append(tokens, ")")
-            case whitespace(char):
-            default:
-                token := ""
-                for char != '(' && char != ')' && !whitespace(char) {
-                    token += string(char)
-                    char, err = byteReader.ReadByte()
+    for _, animation := range animations {
+        animationName := animation.GetChild("name")
+        if animationName != nil && animationName.GetValue(0) == name {
+            frames := animation.GetChild("frames")
+            if frames != nil {
+                var images []*ebiten.Image
+                for i := range len(frames.Children) {
+                    frame := frames.GetValue(i)
+                    img, err := loadPng(frame)
                     if err != nil {
-                        break
+                        return nil, err
                     }
+                    images = append(images, ebiten.NewImageFromImage(img))
                 }
-
-                tokens = append(tokens, token)
-
-                if char == '(' {
-                    tokens = append(tokens, "(")
-                } else if char == ')' {
-                    tokens = append(tokens, ")")
-                }
+                return MakeAnimation(images), nil
+            }
         }
     }
 
-    return tokens
+    return nil, fmt.Errorf("Animation %v not found for character %v", name, character.Definition.Name)
 }
 
-func parseSExpr(reader io.Reader) (*SExpr, error) {
-    tokens := tokenize(reader)
+type CharacterDefinition struct {
+    Name string
+    SExpr *sexp.SExpr
+}
 
-    var root *SExpr
-    var current *SExpr
-    var parents []*SExpr
+func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
+    var results []*sexp.SExpr
 
-    _ = current
+    current := definition.SExpr
 
-    for _, token := range tokens {
-        if token == "(" {
-            parents = append(parents, current)
+    if current.Name != names[0] {
+        return results
+    }
+
+    names = names[1:]
+
+    for check := range len(names) - 1 {
+        for _, child := range current.Children {
+            if current.Name == names[check] {
+                current = child
+            }
         }
     }
 
-    if len(parents) != 0 {
-        return nil, fmt.Errorf("Unbalanced open parentheses")
+    last := names[len(names) - 1]
+    for _, child := range current.Children {
+        if child.Name == last {
+            results = append(results, child)
+        }
     }
 
-    return root, nil
-}
-
-func readSExpression(path string) (*SExpr, error) {
-    file, err := os.Open(path)
-    if err != nil {
-        return nil, err
-    }
-    defer file.Close()
-
-    parsed, err := parseSExpr(file)
-    if err != nil {
-        return nil, fmt.Errorf("Unable to parse %v: %v", path, err)
-    }
-
-    return parsed, nil
+    return results
 }
 
 // a definition file is a parentheses delimited set of values
 func loadDefinition(path string) (CharacterDefinition, error) {
-    raw, err := readSExpression(path)
+    raw, err := sexp.ReadSExpression(path)
     if err != nil {
         return CharacterDefinition{}, err
     }
@@ -181,6 +144,7 @@ func loadDefinition(path string) (CharacterDefinition, error) {
     value := raw.GetChild("name")
     return CharacterDefinition{
         Name: value.GetValue(0),
+        SExpr: raw,
     }, nil
 }
 
@@ -200,9 +164,24 @@ func MakePaintownPlayer(name string) (*PaintownCharacter, error) {
     return player, nil
 }
 
-func runGame(yield coroutine.YieldFunc, setDraw func(drawer DrawFunc) DrawFunc) error {
+func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer DrawFunc) DrawFunc) error {
+
+    player, err := MakePaintownPlayer("akuma")
+    if err != nil {
+        return err
+    }
+
+    animation, err := player.LoadAnimation("idle")
+    if err != nil {
+        return err
+    }
 
     drawer := func (screen *ebiten.Image) {
+        var options ebiten.DrawImageOptions
+        screen.DrawImage(background, &options)
+
+        options.GeoM.Translate(10, 10)
+        screen.DrawImage(animation.CurrentFrame(), &options)
     }
 
     oldDrawer := setDraw(drawer)
@@ -242,7 +221,7 @@ func makeRunMenu(setDraw func(drawer DrawFunc) DrawFunc) (func (yield coroutine.
             keys := inpututil.AppendJustPressedKeys(nil)
             for _, key := range keys {
                 if key == ebiten.KeyEnter {
-                    err := runGame(yield, setDraw)
+                    err := chooseCharacter(yield, background, setDraw)
                     if err != nil {
                         return err
                     }
