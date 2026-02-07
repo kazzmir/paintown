@@ -86,3 +86,17 @@ world)`))
         test.Errorf("Expected child name 'world', got '%s'", sexpr.Children[0].Name)
     }
 }
+
+func TestSExprErrors(test *testing.T) {
+    // unclosed paren
+    _, err := parseSExpr(strings.NewReader("(hello world"))
+    if err == nil {
+        test.Fatal("Expected error for unclosed paren, got nil")
+    }
+
+    // too many parens at end
+    _, err = parseSExpr(strings.NewReader("(hello world))"))
+    if err == nil {
+        test.Fatal("Expected error for too many parens, got nil")
+    }
+}
