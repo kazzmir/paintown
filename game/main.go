@@ -371,8 +371,19 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         var options ebiten.DrawImageOptions
         screen.DrawImage(background, &options)
 
-        options.GeoM.Translate(20, 150)
+        x := 40.0
+        y := 130.0
+
+        options.GeoM.Translate(x, y)
         options.GeoM.Translate(0, float64(animation.CurrentFrame().Bounds().Dy() * -1))
+        options.GeoM.Scale(2, 2)
+        screen.DrawImage(animation.CurrentFrame(), &options)
+
+        options.GeoM.Reset()
+        options.GeoM.Translate(x, -y)
+        options.GeoM.Translate(0, float64(animation.CurrentFrame().Bounds().Dy() * -1))
+        options.GeoM.Scale(2, -2)
+        options.ColorScale.ScaleAlpha(0.5)
         screen.DrawImage(animation.CurrentFrame(), &options)
     }
 
