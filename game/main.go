@@ -4,6 +4,7 @@ import (
     "log"
     "os"
     "fmt"
+    "strconv"
     "strings"
     "image"
     "image/png"
@@ -66,27 +67,208 @@ func convertTransparency(img image.Image) image.Image {
 }
 
 type Animation struct {
-    Frames []*ebiten.Image
-    Current int
+    Frame *ebiten.Image
+    Events []AnimationEvent
+    CurrentEvent int
+
+    OffsetX int
+    OffsetY int
+
+    Delay int
+    CurrentDelay int
 }
 
-func MakeAnimation(frames []*ebiten.Image) *Animation {
+func MakeAnimation(events []AnimationEvent) *Animation {
     return &Animation{
-        Frames: frames,
-        Current: 0,
+        Events: events,
+        Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
     }
 }
 
 func (animation *Animation) CurrentFrame() *ebiten.Image {
-    if animation.Current < len(animation.Frames) {
-        return animation.Frames[animation.Current]
-    }
-
-    return nil
+    return animation.Frame
 }
 
-func (animation *Animation) NextFrame() {
-    animation.Current = (animation.Current + 1) % len(animation.Frames)
+func (animation *Animation) Update() {
+    if animation.CurrentDelay > 0 {
+        animation.CurrentDelay -= 1
+    } else {
+        if len(animation.Events) == 0 {
+            return
+        }
+        now := animation.CurrentEvent
+        for animation.CurrentDelay == 0 {
+            animation.Events[animation.CurrentEvent].Update(animation)
+            animation.CurrentEvent += 1
+            if animation.CurrentEvent >= len(animation.Events) {
+                animation.CurrentEvent = 0
+            }
+
+            // looped without setting delay, this would have been an infinite loop
+            if animation.CurrentEvent == now {
+                log.Printf("Warning: animation looped without setting delay (probably missing a frame)")
+                break
+            }
+        }
+    }
+}
+
+type AnimationEvent interface {
+    Update(*Animation)
+}
+
+type AnimationEventFrame struct {
+    Image *ebiten.Image
+}
+
+func (frameEvent *AnimationEventFrame) Update(animation *Animation) {
+    animation.Frame = frameEvent.Image
+    animation.CurrentDelay = animation.Delay
+}
+
+type AnimationEventDelay struct {
+    Delay float32
+}
+
+func (delayEvent *AnimationEventDelay) Update(animation *Animation) {
+    animation.Delay = int(delayEvent.Delay)
+}
+
+type AnimationEventOffset struct {
+    X int
+    Y int
+}
+
+func (offsetEvent *AnimationEventOffset) Update(animation *Animation) {
+    animation.OffsetX = offsetEvent.X
+    animation.OffsetY = offsetEvent.Y
+}
+
+type AnimationEventStatus struct {
+    Status string
+}
+
+func (statusEvent *AnimationEventStatus) Update(animation *Animation) {
+    // TODO
+}
+
+type AnimationEventType struct {
+    Type string
+}
+
+func (typeEvent *AnimationEventType) Update(animation *Animation) {
+    // TODO
+}
+
+type AnimationEventKeys struct {
+    Keys []string
+}
+
+func (keysEvent *AnimationEventKeys) Update(animation *Animation) {
+    // TODO
+}
+
+type AnimationEventRange struct {
+    Range int
+}
+
+func (rangeEvent *AnimationEventRange) Update(animation *Animation) {
+    // TODO
+}
+
+type AnimationEventAttack struct {
+    // TODO
+    /* (attack (box (x1 ...) (y1 ...) (x2 ...) (y2 ...) (force x y) (damage d)))
+     */
+}
+
+type AnimationEventSequence struct {
+    // TODO
+    /* (sequence previous next)
+     */
+}
+
+type AnimationEventRelativeOffset struct {
+    X int
+    Y int
+}
+
+func (relativeOffsetEvent *AnimationEventRelativeOffset) Update(animation *Animation) {
+    animation.OffsetX += relativeOffsetEvent.X
+    animation.OffsetY += relativeOffsetEvent.Y
+}
+
+func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
+    var events []AnimationEvent
+    for _, child := range definition.Children {
+        switch strings.ToLower(child.Name) {
+            case "name":
+                // skip the name
+            case "basedir":
+                if len(child.Children) > 0 {
+                    baseDirectory = child.GetValue(0)
+                }
+            case "delay":
+                if len(child.Children) > 0 {
+                    value := child.GetValue(0)
+                    delay, err := strconv.ParseFloat(value, 32)
+                    if err != nil {
+                        log.Printf("Error parsing delay value '%v': %v", value, err)
+                    } else {
+                        events = append(events, &AnimationEventDelay{Delay: float32(delay)})
+                    }
+                }
+            case "offset":
+                if len(child.Children) >= 2 {
+                    xValue := child.GetValue(0)
+                    yValue := child.GetValue(1)
+                    x, errX := strconv.Atoi(xValue)
+                    y, errY := strconv.Atoi(yValue)
+                    if errX != nil || errY != nil {
+                        log.Printf("Error parsing offset values '%v', '%v': %v, %v", xValue, yValue, errX, errY)
+                    } else {
+                        events = append(events, &AnimationEventOffset{X: x, Y: y})
+                    }
+                }
+            case "attack":
+                log.Printf("Handle 'attack'")
+            case "range":
+                log.Printf("Handle 'range'")
+            case "status":
+                log.Printf("Handle 'status'")
+            case "sequence":
+                log.Printf("Handle 'sequence'")
+            case "type":
+                log.Printf("Handle 'type'")
+            case "keys":
+                log.Printf("Handle 'keys'")
+            case "relative-offset":
+                if len(child.Children) >= 2 {
+                    xValue := child.GetValue(0)
+                    yValue := child.GetValue(1)
+                    x, errX := strconv.Atoi(xValue)
+                    y, errY := strconv.Atoi(yValue)
+                    if errX != nil || errY != nil {
+                        log.Printf("Error parsing relative offset values '%v', '%v': %v, %v", xValue, yValue, errX, errY)
+                    } else {
+                        events = append(events, &AnimationEventRelativeOffset{X: x, Y: y})
+                    }
+                }
+            case "frame":
+                frame := child.GetValue(0)
+                img, err := loadPng(filepath.Join(baseDirectory, frame))
+                if err != nil {
+                    return nil, err
+                }
+                events = append(events, &AnimationEventFrame{
+                    Image: ebiten.NewImageFromImage(convertTransparency(img)),
+                })
+            default:
+                log.Printf("Unknown animation event type '%v'", child.Name)
+        }
+    }
+
+    return MakeAnimation(events), nil
 }
 
 type PaintownCharacter struct {
@@ -101,18 +283,8 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         if animationName != nil && animationName.GetValue(0) == name {
-            var images []*ebiten.Image
-            for _, child := range animation.Children {
-                if child.Name == "frame" {
-                    frame := child.GetValue(0)
-                    img, err := loadPng(filepath.Join("players", strings.ToLower(character.Definition.Name), name, frame))
-                    if err != nil {
-                        return nil, err
-                    }
-                    images = append(images, ebiten.NewImageFromImage(convertTransparency(img)))
-                }
-            }
-            return MakeAnimation(images), nil
+            base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
+            return MakeAnimationFromDefinition(base, animation)
         }
     }
 
@@ -199,20 +371,26 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         var options ebiten.DrawImageOptions
         screen.DrawImage(background, &options)
 
-        options.GeoM.Translate(10, 10)
+        options.GeoM.Translate(20, 150)
+        options.GeoM.Translate(0, float64(animation.CurrentFrame().Bounds().Dy() * -1))
         screen.DrawImage(animation.CurrentFrame(), &options)
     }
 
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
+    counter := uint64(0)
+    var keys []ebiten.Key
     for {
-        keys := inpututil.AppendJustPressedKeys(nil)
+        counter += 1
+        keys = inpututil.AppendJustPressedKeys(keys[:0])
         for _, key := range keys {
             if key == ebiten.KeyTab {
                 return nil
             }
         }
+
+        animation.Update()
 
         yield()
     }
@@ -304,6 +482,7 @@ func main(){
     ebiten.SetWindowSize(1024, 768)
     ebiten.SetWindowTitle("Paintown")
     ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+    ebiten.SetTPS(90)
 
     engine, err := MakeEngine()
     if err != nil {
