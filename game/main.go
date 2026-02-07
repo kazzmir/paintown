@@ -46,6 +46,25 @@ func loadPng(path string) (image.Image, error) {
     return img, nil
 }
 
+// images use 255,0,255 as the transparent color
+func convertTransparency(img image.Image) image.Image {
+    bounds := img.Bounds()
+    newImg := image.NewNRGBA(bounds)
+
+    for x := bounds.Min.X; x < bounds.Max.X; x++ {
+        for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
+            r, g, b, _ := img.At(x, y).RGBA()
+            if r == 0xFFFF && g == 0 && b == 0xFFFF {
+                newImg.Set(x, y, image.Transparent)
+            } else {
+                newImg.Set(x, y, img.At(x, y))
+            }
+        }
+    }
+
+    return newImg
+}
+
 type Animation struct {
     Frames []*ebiten.Image
     Current int
@@ -90,7 +109,7 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
                     if err != nil {
                         return nil, err
                     }
-                    images = append(images, ebiten.NewImageFromImage(img))
+                    images = append(images, ebiten.NewImageFromImage(convertTransparency(img)))
                 }
             }
             return MakeAnimation(images), nil
