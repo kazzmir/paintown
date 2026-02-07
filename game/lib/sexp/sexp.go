@@ -56,6 +56,7 @@ func (sexpr *SExpr) GetValue(index int) string {
     }
 }
 
+// TODO: possibly store column/line position
 func tokenize(reader io.Reader) []string {
     byteReader, ok := reader.(io.ByteReader)
     if !ok {
@@ -79,6 +80,21 @@ func tokenize(reader io.Reader) []string {
                 tokens = append(tokens, "(")
             case char == ')':
                 tokens = append(tokens, ")")
+            case char == '"':
+                token := ""
+                char, err = byteReader.ReadByte()
+                if err != nil {
+                    break
+                }
+                for char != '"' {
+                    token += string(char)
+                    char, err = byteReader.ReadByte()
+                    if err != nil {
+                        break
+                    }
+                }
+                tokens = append(tokens, strings.Trim(token, `"`))
+
             case whitespace(char):
             default:
                 token := ""
