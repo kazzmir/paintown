@@ -1,7 +1,7 @@
 package sexp
 
 import (
-    "log"
+    // "log"
     "io"
     "os"
     "fmt"
@@ -40,8 +40,6 @@ func (sexpr *SExpr) GetValue(index int) string {
         return ""
     }
 }
-
-
 
 func tokenize(reader io.Reader) []string {
     byteReader, ok := reader.(io.ByteReader)
@@ -97,10 +95,10 @@ func parseSExpr(reader io.Reader) (*SExpr, error) {
     var current *SExpr
     var parents []*SExpr
 
-    _ = current
+    parents = append(parents, nil)
 
     for _, token := range tokens {
-        log.Printf("Token: %v", token)
+        // log.Printf("Token: %v. Parents=%v", token, parents)
         if token == "(" {
             if current != nil {
                 parents = append(parents, current)
@@ -121,6 +119,12 @@ func parseSExpr(reader io.Reader) (*SExpr, error) {
             }
             current = parents[len(parents) - 1]
             parents = parents[:len(parents) - 1]
+        } else {
+            if current.Name == "" {
+                current.Name = token
+            } else {
+                current.Children = append(current.Children, &SExpr{Name: token})
+            }
         }
     }
 
