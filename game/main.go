@@ -8,15 +8,20 @@ import (
     "strings"
     "image"
     "image/png"
+    "image/color"
     "path/filepath"
 
     "github.com/kazzmir/paintown/game/lib/coroutine"
     "github.com/kazzmir/paintown/game/lib/sexp"
 
     "github.com/hajimehoshi/ebiten/v2"
+    "github.com/hajimehoshi/ebiten/v2/vector"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
+
+const ScreenWidth = 640
+const ScreenHeight = 480
 
 type DrawFunc func (*ebiten.Image)
 
@@ -278,7 +283,7 @@ type PaintownCharacter struct {
 func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, error) {
     animations := character.Definition.FindAll("character", "anim")
 
-    log.Printf("Found %v animations for character %v", len(animations), character.Definition.Name)
+    // log.Printf("Found %v animations for character %v", len(animations), character.Definition.Name)
 
     for _, animation := range animations {
         animationName := animation.GetChild("name")
@@ -357,6 +362,31 @@ func MakePaintownPlayer(name string) (*PaintownCharacter, error) {
 
 func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer DrawFunc) DrawFunc) error {
 
+    animations := make(map[string]*Animation)
+    var allPlayers []*PaintownCharacter
+    choices, err := os.ReadDir(dataPath("players"))
+    if err == nil {
+        for _, choice := range choices {
+            if choice.IsDir() {
+                player, err := MakePaintownPlayer(choice.Name())
+                if err != nil {
+                    log.Printf("Error loading player '%v': %v", choice.Name(), err)
+                } else {
+                    log.Printf("Loaded player '%v'", choice.Name())
+                    allPlayers = append(allPlayers, player)
+
+                    idle, err := player.LoadAnimation("idle")
+                    if err != nil {
+                        log.Printf("Error loading idle animation for player '%v': %v", choice.Name(), err)
+                    } else {
+                        animations[player.Definition.Name] = idle
+                        idle.Update()
+                    }
+                }
+            }
+        }
+    }
+
     player, err := MakePaintownPlayer("akuma")
     if err != nil {
         return err
@@ -385,6 +415,42 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         options.GeoM.Scale(2, -2)
         options.ColorScale.ScaleAlpha(0.5)
         screen.DrawImage(animation.CurrentFrame(), &options)
+
+        gridStartX := 280
+        gridStartY := 50
+        gridX := gridStartX
+        gridY := gridStartY
+        gridSize := 70
+        gap := 18
+
+        options.ColorScale.Reset()
+
+        playerIndex := 0
+        for gridX < ScreenWidth && playerIndex < len(allPlayers) {
+            player := allPlayers[playerIndex]
+            anim, ok := animations[player.Definition.Name]
+            if ok && anim.CurrentFrame() != nil {
+                area := screen.SubImage(image.Rect(gridX, gridY, gridX + gridSize, gridY + gridSize)).(*ebiten.Image)
+
+                options.GeoM.Reset()
+                options.GeoM.Translate(-float64(anim.CurrentFrame().Bounds().Dx()) / 2, float64(anim.CurrentFrame().Bounds().Dy() * -1))
+                options.GeoM.Scale(0.6, 0.6)
+                options.GeoM.Translate(float64(gridX), float64(gridY))
+                options.GeoM.Translate(float64(gridSize) / 2, float64(gridSize))
+                vector.FillRect(area, float32(gridX), float32(gridY), float32(gridSize), float32(gridSize), color.RGBA{A:255}, false)
+                area.DrawImage(anim.CurrentFrame(), &options)
+                vector.StrokeRect(area, float32(gridX) + 1, float32(gridY) + 1, float32(gridSize) - 2, float32(gridSize) - 2, 2, color.RGBA{R:200, G:200, B: 200, A: 255}, false)
+
+                gridX += gridSize + gap
+                if gridX + gridSize > ScreenWidth {
+                    gridX = gridStartX
+                    gridY += gridSize + gap
+                }
+
+                playerIndex += 1
+            }
+        }
+
     }
 
     oldDrawer := setDraw(drawer)
@@ -484,7 +550,7 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-    return 640, 480
+    return ScreenWidth, ScreenHeight
 }
 
 func main(){
