@@ -65,3 +65,24 @@ func TestSexprString(test *testing.T) {
         test.Errorf("Expected child name 'another string', got '%s'", sexpr.Children[0].Name)
     }
 }
+
+func TestSExprComment(test *testing.T) {
+    sexpr, err := parseSExpr(strings.NewReader(`(hello ; this is a comment
+world)`))
+
+    if err != nil {
+        test.Fatalf("Error parsing sexpr: %s", err)
+    }
+
+    if sexpr.Name != "hello" {
+        test.Errorf("Expected name 'hello', got '%s'", sexpr.Name)
+    }
+
+    if len(sexpr.Children) != 1 {
+        test.Fatalf("Expected 1 children, got %d", len(sexpr.Children))
+    }
+
+    if sexpr.Children[0].Name != "world" {
+        test.Errorf("Expected child name 'world', got '%s'", sexpr.Children[0].Name)
+    }
+}
