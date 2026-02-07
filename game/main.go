@@ -4,6 +4,7 @@ import (
     "log"
     "os"
     "fmt"
+    "strings"
     "image"
     "image/png"
     "path/filepath"
@@ -81,19 +82,18 @@ func (character *PaintownCharacter) LoadAnimation(name string) (*Animation, erro
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         if animationName != nil && animationName.GetValue(0) == name {
-            frames := animation.GetChild("frames")
-            if frames != nil {
-                var images []*ebiten.Image
-                for i := range len(frames.Children) {
-                    frame := frames.GetValue(i)
-                    img, err := loadPng(frame)
+            var images []*ebiten.Image
+            for _, child := range animation.Children {
+                if child.Name == "frame" {
+                    frame := child.GetValue(0)
+                    img, err := loadPng(filepath.Join("players", strings.ToLower(character.Definition.Name), name, frame))
                     if err != nil {
                         return nil, err
                     }
                     images = append(images, ebiten.NewImageFromImage(img))
                 }
-                return MakeAnimation(images), nil
             }
+            return MakeAnimation(images), nil
         }
     }
 

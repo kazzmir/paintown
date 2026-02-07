@@ -6,6 +6,7 @@ import (
     "os"
     "fmt"
     "bufio"
+    "strings"
 )
 
 type SExpr struct {
@@ -22,6 +23,20 @@ func (sexpr *SExpr) GetChild(name string) *SExpr {
     }
 
     return nil
+}
+
+func (sexpr *SExpr) String() string {
+    if sexpr.IsValue() {
+        return sexpr.Name
+    }
+
+    result := "(" + sexpr.Name
+    for _, child := range sexpr.Children {
+        result += " " + child.String()
+    }
+    result += ")"
+
+    return result
 }
 
 func (sexpr *SExpr) IsValue() bool {
@@ -75,7 +90,7 @@ func tokenize(reader io.Reader) []string {
                     }
                 }
 
-                tokens = append(tokens, token)
+                tokens = append(tokens, strings.Trim(token, `"`))
 
                 if char == '(' {
                     tokens = append(tokens, "(")
