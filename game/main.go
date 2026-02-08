@@ -599,7 +599,7 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     cameraX := 0
 
-    drawer := func(screen *ebiten.Image) {
+    drawBackground := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
         options.GeoM.Scale(2, 2)
         options.GeoM.Translate(float64(-cameraX) * 1/float64(level.BackgroundParallax) * 2, 0)
@@ -613,7 +613,9 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
                 options.GeoM.Translate(float64(level.BackgroundImage.Bounds().Dx()) * 2, 0)
             }
         }
+    }
 
+    drawBackPanels := func(screen *ebiten.Image) {
         var orderOptions ebiten.DrawImageOptions
         orderOptions.GeoM.Scale(2, 2)
         orderOptions.GeoM.Translate(float64(-cameraX), 0)
@@ -629,7 +631,9 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
                 orderOptions.GeoM.Translate(float64(panel.Bounds().Dx()) * 2, 0)
             }
         }
+    }
 
+    drawFrontPanels := func(screen *ebiten.Image) {
         if len(level.FrontPanels) > 0 {
             var panelOptions ebiten.DrawImageOptions
             panelOptions.GeoM.Scale(2, 2)
@@ -648,6 +652,12 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
                 panelI = (panelI + 1) % len(level.FrontPanels)
             }
         }
+    }
+
+    drawer := func(screen *ebiten.Image) {
+        drawBackground(screen)
+        drawBackPanels(screen)
+        drawFrontPanels(screen)
     }
 
     oldDrawer := setDraw(drawer)
