@@ -6,6 +6,7 @@ import (
     "fmt"
     "strconv"
     "strings"
+    "math"
     "image"
     "image/png"
     "image/color"
@@ -360,6 +361,21 @@ func MakePaintownPlayer(name string) (*PaintownCharacter, error) {
     return player, nil
 }
 
+func interpolateColors(start, end color.RGBA, steps int) []color.RGBA {
+    var colors []color.RGBA
+
+    for i := 0; i < steps; i++ {
+        t := float64(i) / float64(steps-1)
+        r := uint8(float64(start.R)*(1-t) + float64(end.R)*t)
+        g := uint8(float64(start.G)*(1-t) + float64(end.G)*t)
+        b := uint8(float64(start.B)*(1-t) + float64(end.B)*t)
+        a := uint8(float64(start.A)*(1-t) + float64(end.A)*t)
+        colors = append(colors, color.RGBA{R: r, G: g, B: b, A: a})
+    }
+
+    return colors
+}
+
 func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer DrawFunc) DrawFunc) (*PaintownCharacter, error) {
 
     animations := make(map[string]*Animation)
@@ -391,7 +407,10 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         return nil, fmt.Errorf("No players found")
     }
 
+    counter := uint64(0)
     currentChoice := 0
+
+    selectedColors := append(interpolateColors(color.RGBA{R:255, A:255}, color.RGBA{A: 255}, 20), interpolateColors(color.RGBA{A:255}, color.RGBA{R:255, A:255}, 20)...)
 
     drawer := func (screen *ebiten.Image) {
         animation := animations[allPlayers[currentChoice].Definition.Name]
@@ -436,7 +455,18 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
                 options.GeoM.Translate(float64(gridSize) / 2, float64(gridSize))
                 vector.FillRect(area, float32(gridX), float32(gridY), float32(gridSize), float32(gridSize), color.RGBA{A:255}, false)
                 area.DrawImage(anim.CurrentFrame(), &options)
-                vector.StrokeRect(area, float32(gridX) + 1, float32(gridY) + 1, float32(gridSize) - 2, float32(gridSize) - 2, 2, color.RGBA{R:200, G:200, B: 200, A: 255}, false)
+
+                if currentChoice == playerIndex {
+                    N := float64(len(selectedColors))
+                    colorIndex := math.Sin(float64((counter / 3) % uint64(len(selectedColors))) * math.Pi * 2 / N) * N / 2 + N / 2
+                    v := int(colorIndex) % len(selectedColors)
+                    if v < 0 {
+                        v += len(selectedColors)
+                    }
+                    vector.StrokeRect(area, float32(gridX) + 1, float32(gridY) + 1, float32(gridSize) - 2, float32(gridSize) - 2, 2, selectedColors[v], false)
+                } else {
+                    vector.StrokeRect(area, float32(gridX) + 1, float32(gridY) + 1, float32(gridSize) - 2, float32(gridSize) - 2, 2, color.RGBA{R:200, G:200, B: 200, A: 255}, false)
+                }
 
                 gridX += gridSize + gap
                 if gridX + gridSize > ScreenWidth {
@@ -453,7 +483,8 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
-    counter := uint64(0)
+    perRow := 4
+
     var keys []ebiten.Key
     for {
         counter += 1
@@ -466,6 +497,10 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
                     currentChoice = (currentChoice + 1) % len(allPlayers)
                 case ebiten.KeyArrowLeft:
                     currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers)
+                case ebiten.KeyArrowDown:
+                    currentChoice = (currentChoice + perRow) % len(allPlayers)
+                case ebiten.KeyArrowUp:
+                    currentChoice = (currentChoice - perRow + len(allPlayers)) % len(allPlayers)
             }
         }
 
