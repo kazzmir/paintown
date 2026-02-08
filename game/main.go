@@ -602,9 +602,16 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     drawer := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
         options.GeoM.Scale(2, 2)
+        options.GeoM.Translate(float64(-cameraX) * 1/float64(level.BackgroundParallax) * 2, 0)
         if level.BackgroundImage != nil {
-            // FIXME: handle background parallax
-            screen.DrawImage(level.BackgroundImage, &options)
+            for {
+                x, _ := options.GeoM.Apply(0, 0)
+                if x > ScreenWidth {
+                    break
+                }
+                screen.DrawImage(level.BackgroundImage, &options)
+                options.GeoM.Translate(float64(level.BackgroundImage.Bounds().Dx()) * 2, 0)
+            }
         }
 
         var orderOptions ebiten.DrawImageOptions
