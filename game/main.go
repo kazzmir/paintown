@@ -92,6 +92,11 @@ func (animation *Animation) CurrentFrame() *ebiten.Image {
     return animation.Frame
 }
 
+func (animation *Animation) Reset() {
+    animation.CurrentEvent = 0
+    animation.CurrentDelay = 0
+}
+
 func (animation *Animation) Update() {
     if animation.CurrentDelay > 0 {
         animation.CurrentDelay -= 1
@@ -614,6 +619,7 @@ type PlayerStatus int
 const (
     PlayerIdle PlayerStatus = iota
     PlayerMove
+    PlayerJump
 )
 
 type Facing int
@@ -622,21 +628,127 @@ const (
     FacingLeft
 )
 
+type InputState struct {
+    Right bool
+    Left bool
+    Up bool
+    Down bool
+    Jump bool
+}
+
+type PlayerState struct {
+    X float64
+    Y float64
+    Z float64
+    Dy float64
+    Animations map[string]*Animation
+    Status PlayerStatus
+    Facing Facing
+}
+
+func (playerState *PlayerState) CurrentAnimation() *Animation {
+    switch playerState.Status {
+        case PlayerIdle:
+            idle, ok := playerState.Animations["idle"]
+            if ok {
+                return idle
+            }
+        case PlayerMove:
+            move, ok := playerState.Animations["walk"]
+            if ok {
+                return move
+            }
+        case PlayerJump:
+            jump, ok := playerState.Animations["jump"]
+            if ok {
+                return jump
+            }
+    }
+
+    return nil
+}
+
+func (playerState *PlayerState) Update(input InputState, level *Level) {
+    doJump := false
+    move := false
+
+    if input.Right {
+        if playerState.Status != PlayerJump {
+            playerState.X += 1
+            playerState.Facing = FacingRight
+            move = true
+        }
+    }
+
+    if input.Left {
+        if playerState.Status != PlayerJump {
+            playerState.X -= 1
+            playerState.Facing = FacingLeft
+            move = true
+        }
+    }
+
+    if input.Down {
+        if playerState.Status != PlayerJump {
+            playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
+            move = true
+        }
+    }
+
+    if input.Up {
+        if playerState.Status != PlayerJump {
+            playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
+            move = true
+        }
+    }
+
+    if input.Jump {
+        if playerState.Status != PlayerJump {
+            doJump = true
+        }
+    }
+
+    if doJump {
+        playerState.Status = PlayerJump
+        playerState.Dy = 6
+        playerState.Y = 0.001
+
+        jumpAnimation, ok := playerState.Animations["jump"]
+        if ok {
+            jumpAnimation.Reset()
+        }
+
+    } else if playerState.Status != PlayerJump {
+        if move {
+            playerState.Status = PlayerMove
+        } else {
+            playerState.Status = PlayerIdle
+        }
+    }
+
+    if playerState.Status == PlayerJump {
+        playerState.Dy -= 0.2
+        playerState.Y += playerState.Dy
+        if playerState.Y <= 0 {
+            playerState.Y = 0
+            playerState.Dy = 0
+            playerState.Status = PlayerIdle
+        }
+    }
+
+    animation := playerState.CurrentAnimation()
+
+    if animation != nil {
+        animation.Update()
+    }
+}
+
 func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer DrawFunc) DrawFunc) error {
     levelPath := "paintown/levels/1.txt"
 
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
-    }
-
-    type PlayerState struct {
-        X float64
-        Y float64
-        Z float64
-        Animations map[string]*Animation
-        Status PlayerStatus
-        Facing Facing
     }
 
     cameraX := 0
@@ -656,7 +768,6 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     drawBackground := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
-        // options.GeoM.Scale(2, 2)
         options.GeoM.Translate(float64(-cameraX) * 1/float64(level.BackgroundParallax), 0)
         if level.BackgroundImage != nil {
             for {
@@ -672,7 +783,6 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     drawBackPanels := func(screen *ebiten.Image) {
         var orderOptions ebiten.DrawImageOptions
-        // orderOptions.GeoM.Scale(2, 2)
         orderOptions.GeoM.Translate(float64(-cameraX), 0)
         for _, index := range level.PanelOrder {
             x, _ := orderOptions.GeoM.Apply(0, 0)
@@ -691,7 +801,6 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     drawFrontPanels := func(screen *ebiten.Image) {
         if len(level.FrontPanels) > 0 {
             var panelOptions ebiten.DrawImageOptions
-            // panelOptions.GeoM.Scale(2, 2)
             panelOptions.GeoM.Translate(float64(-cameraX) * float64(level.ForegroundParallax), ScreenHeight)
             panelI := 0
             for {
@@ -712,27 +821,14 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     drawPlayer := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
 
-        var animation *Animation
-        switch playerState.Status {
-            case PlayerIdle:
-                idle, ok := playerState.Animations["idle"]
-                if ok {
-                    animation = idle
-                }
-            case PlayerMove:
-                move, ok := playerState.Animations["walk"]
-                if ok {
-                    animation = move
-                }
-        }
+        animation := playerState.CurrentAnimation()
 
         if animation != nil && animation.CurrentFrame() != nil {
-            // options.GeoM.Scale(2, 2)
             if playerState.Facing == FacingLeft {
                 options.GeoM.Scale(-1, 1)
             }
 
-            options.GeoM.Translate(playerState.X - float64(cameraX), playerState.Z)
+            options.GeoM.Translate(playerState.X - float64(cameraX), playerState.Z - playerState.Y)
             bounds := animation.CurrentFrame().Bounds()
             if playerState.Facing == FacingLeft {
                 options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
@@ -765,49 +861,23 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
         counter += 1
 
         keys = inpututil.AppendPressedKeys(keys[:0])
-        move := false
+        var inputState InputState
         for _, key := range keys {
             switch key {
                 case ebiten.KeyArrowRight:
-                    playerState.X += 1
-                    playerState.Facing = FacingRight
-                    move = true
+                    inputState.Right = true
                 case ebiten.KeyArrowLeft:
-                    playerState.X -= 1
-                    playerState.Facing = FacingLeft
-                    move = true
+                    inputState.Left = true
                 case ebiten.KeyArrowDown:
-                    playerState.Z += 1
-                    move = true
+                    inputState.Down = true
                 case ebiten.KeyArrowUp:
-                    playerState.Z -= 1
-                    move = true
+                    inputState.Up = true
+                case ebiten.KeySpace:
+                    inputState.Jump = true
             }
         }
 
-        if move {
-            playerState.Status = PlayerMove
-        } else {
-            playerState.Status = PlayerIdle
-        }
-
-        var playerAnimation *Animation
-        switch playerState.Status {
-            case PlayerIdle:
-                idle, ok := playerState.Animations["idle"]
-                if ok {
-                    playerAnimation = idle
-                }
-            case PlayerMove:
-                move, ok := playerState.Animations["walk"]
-                if ok {
-                    playerAnimation = move
-                }
-        }
-
-        if playerAnimation != nil {
-            playerAnimation.Update()
-        }
+        playerState.Update(inputState, level)
 
         if int(playerState.X) - cameraX < (ScreenWidth/2) / 4 {
             cameraX = max(0, cameraX - 1)
