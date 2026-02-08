@@ -499,7 +499,7 @@ type Level struct {
 
     BackgroundImage *ebiten.Image
     FrontPanels []*ebiten.Image
-    Panels []Panel
+    Panels map[int]*ebiten.Image
 
     PanelOrder []int
     Description string
@@ -551,6 +551,32 @@ func LoadLevel(path string) (*Level, error) {
         }
     }
 
+    panels := make(map[int]*ebiten.Image)
+    panelElements := raw.FindAll("level", "panel")
+    for _, panelElement := range panelElements {
+        index, _ := panelElement.GetInt(0)
+        imagePath := panelElement.GetValue(1)
+        panelPng, err := loadPng(imagePath)
+        if err != nil {
+            log.Printf("Error loading panel image '%v': %v", imagePath, err)
+        } else {
+            panels[index] = ebiten.NewImageFromImage(convertTransparency(panelPng))
+        }
+    }
+
+    var order []int
+    orderElement := raw.GetChild("order")
+    if orderElement != nil {
+        for _, child := range orderElement.Children {
+            index, err := strconv.Atoi(child.Name)
+            if err != nil {
+                log.Printf("Error parsing panel order index '%v': %v", child.Name, err)
+            } else {
+                order = append(order, index)
+            }
+        }
+    }
+
     return &Level{
         ZMinimum: zMinimum,
         ZMaximum: zMaximum,
@@ -558,6 +584,8 @@ func LoadLevel(path string) (*Level, error) {
         ForegroundParallax: foregroundParallax,
         BackgroundImage: backgroundImage,
         FrontPanels: frontPanels,
+        Panels: panels,
+        PanelOrder: order,
     }, nil
 }
 
@@ -575,13 +603,30 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
         var options ebiten.DrawImageOptions
         options.GeoM.Scale(2, 2)
         if level.BackgroundImage != nil {
+            // FIXME: handle background parallax
             screen.DrawImage(level.BackgroundImage, &options)
+        }
+
+        var orderOptions ebiten.DrawImageOptions
+        orderOptions.GeoM.Scale(2, 2)
+        orderOptions.GeoM.Translate(float64(-cameraX), 0)
+        for _, index := range level.PanelOrder {
+            x, _ := orderOptions.GeoM.Apply(0, 0)
+            if x > ScreenWidth {
+                break
+            }
+
+            panel, ok := level.Panels[index]
+            if ok {
+                screen.DrawImage(panel, &orderOptions)
+                orderOptions.GeoM.Translate(float64(panel.Bounds().Dx()) * 2, 0)
+            }
         }
 
         if len(level.FrontPanels) > 0 {
             var panelOptions ebiten.DrawImageOptions
             panelOptions.GeoM.Scale(2, 2)
-            panelOptions.GeoM.Translate(float64(-cameraX) * float64(level.ForegroundParallax), ScreenHeight)
+            panelOptions.GeoM.Translate(float64(-cameraX) * float64(level.ForegroundParallax) * 2, ScreenHeight)
             panelI := 0
             for {
                 x, _ := panelOptions.GeoM.Apply(0, 0)
@@ -603,7 +648,8 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     counter := uint64(0)
     for {
-        if counter % 2 == 0 {
+        counter += 1
+        if counter % 3 == 0 {
             cameraX += 1
         }
 

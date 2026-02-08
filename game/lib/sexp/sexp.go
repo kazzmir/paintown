@@ -44,6 +44,20 @@ func (sexpr *SExpr) IsValue() bool {
     return len(sexpr.Children) == 0
 }
 
+func (sexpr *SExpr) GetInt(index int) (int, bool) {
+    valueStr := sexpr.GetValue(index)
+    if valueStr == "" {
+        return 0, false
+    }
+
+    i, err := strconv.Atoi(valueStr)
+    if err != nil {
+        return 0, false
+    }
+
+    return i, true
+}
+
 func (sexpr *SExpr) GetValue(index int) string {
     if index < len(sexpr.Children) {
         child := sexpr.Children[index]
