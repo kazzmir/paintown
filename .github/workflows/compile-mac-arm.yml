@@ -24,7 +24,7 @@ jobs:
         run: go vet ./...
 
       - name: Build
-        run: go build ./game
+        run: go build -o paintown ./game
 
       - name: Run Release
         if: startsWith(github.ref, 'refs/tags/')

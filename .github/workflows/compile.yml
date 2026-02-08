@@ -30,7 +30,7 @@ jobs:
         run: go vet ./...
 
       - name: Build
-        run: go build ./game
+        run: go build -o paintown ./game
 
       - name: Test
         run: xvfb-run go test ./game/...
