@@ -360,7 +360,7 @@ func MakePaintownPlayer(name string) (*PaintownCharacter, error) {
     return player, nil
 }
 
-func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer DrawFunc) DrawFunc) error {
+func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer DrawFunc) DrawFunc) (*PaintownCharacter, error) {
 
     animations := make(map[string]*Animation)
     var allPlayers []*PaintownCharacter
@@ -387,17 +387,14 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         }
     }
 
-    player, err := MakePaintownPlayer("akuma")
-    if err != nil {
-        return err
+    if len(allPlayers) == 0 {
+        return nil, fmt.Errorf("No players found")
     }
 
-    animation, err := player.LoadAnimation("idle")
-    if err != nil {
-        return err
-    }
+    currentChoice := 0
 
     drawer := func (screen *ebiten.Image) {
+        animation := animations[allPlayers[currentChoice].Definition.Name]
         var options ebiten.DrawImageOptions
         screen.DrawImage(background, &options)
 
@@ -462,15 +459,26 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         counter += 1
         keys = inpututil.AppendJustPressedKeys(keys[:0])
         for _, key := range keys {
-            if key == ebiten.KeyTab {
-                return nil
+            switch key {
+                case ebiten.KeyEnter:
+                    return allPlayers[currentChoice], nil
+                case ebiten.KeyArrowRight:
+                    currentChoice = (currentChoice + 1) % len(allPlayers)
+                case ebiten.KeyArrowLeft:
+                    currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers)
             }
         }
+
+        animation := animations[allPlayers[currentChoice].Definition.Name]
 
         animation.Update()
 
         yield()
     }
+}
+
+func runGame(player *PaintownCharacter, yield coroutine.YieldFunc) error {
+    return fmt.Errorf("Game not implemented yet")
 }
 
 func makeRunMenu(setDraw func(drawer DrawFunc) DrawFunc) (func (yield coroutine.YieldFunc) error, error) {
@@ -495,14 +503,24 @@ func makeRunMenu(setDraw func(drawer DrawFunc) DrawFunc) (func (yield coroutine.
             keys := inpututil.AppendJustPressedKeys(nil)
             for _, key := range keys {
                 if key == ebiten.KeyEnter {
-                    err := chooseCharacter(yield, background, setDraw)
+                    yield()
+
+                    choosePlayer, err := chooseCharacter(yield, background, setDraw)
+                    if err != nil {
+                        return err
+                    }
+
+                    err = runGame(choosePlayer, yield)
                     if err != nil {
                         return err
                     }
                 }
             }
 
-            yield()
+            err := yield()
+            if err != nil {
+                return err
+            }
         }
     }
 
