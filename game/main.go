@@ -641,6 +641,7 @@ type PlayerState struct {
     Y float64
     Z float64
     Dy float64
+    Dx float64
     Animations map[string]*Animation
     Status PlayerStatus
     Facing Facing
@@ -710,8 +711,15 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
 
     if doJump {
         playerState.Status = PlayerJump
-        playerState.Dy = 6
+        playerState.Dy = 6.5
         playerState.Y = 0.001
+
+        if input.Right {
+            playerState.Dx = 1
+        }
+        if input.Left {
+            playerState.Dx = -1
+        }
 
         jumpAnimation, ok := playerState.Animations["jump"]
         if ok {
@@ -729,9 +737,11 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
     if playerState.Status == PlayerJump {
         playerState.Dy -= 0.2
         playerState.Y += playerState.Dy
+        playerState.X += playerState.Dx
         if playerState.Y <= 0 {
             playerState.Y = 0
             playerState.Dy = 0
+            playerState.Dx = 0
             playerState.Status = PlayerIdle
         }
     }
