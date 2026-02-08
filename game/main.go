@@ -86,6 +86,7 @@ type Animation struct {
 func MakeAnimation(name string, events []AnimationEvent, keys []InputKey) *Animation {
     return &Animation{
         Name: name,
+        Keys: keys,
         Events: events,
         Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
     }
@@ -764,13 +765,32 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
             }
         }
 
+        /*
         if input.Attack1 {
             playerState.ShowAnimation = playerState.GetAnimation("strong-punch")
         }
+        */
 
         for _, animation := range playerState.Animations {
             if animation.Name == "idle" || animation.Name == "walk" {
                 continue
+            }
+
+            pressedAll := len(animation.Keys) > 0
+            for _, key := range animation.Keys {
+                switch key {
+                    case InputKeyJump: pressedAll = pressedAll && input.Jump
+                    case InputKeyAttack1: pressedAll = pressedAll && input.Attack1
+                    case InputKeyAttack2: pressedAll = pressedAll && input.Attack2
+                    case InputKeyForward: pressedAll = pressedAll && ((playerState.Facing == FacingRight && input.Right) || (playerState.Facing == FacingLeft && input.Left))
+                    case InputKeyDown: pressedAll = pressedAll && input.Down
+                    case InputKeyBack: pressedAll = pressedAll && ((playerState.Facing == FacingRight && input.Left) || (playerState.Facing == FacingLeft && input.Right))
+                }
+            }
+
+            if pressedAll {
+                playerState.ShowAnimation = animation
+                break
             }
         }
     }
