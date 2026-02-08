@@ -76,6 +76,9 @@ type Animation struct {
     CurrentEvent int
     Keys []InputKey
 
+    Sequence string
+    Status string
+
     OffsetX int
     OffsetY int
 
@@ -83,11 +86,13 @@ type Animation struct {
     CurrentDelay int
 }
 
-func MakeAnimation(name string, events []AnimationEvent, keys []InputKey) *Animation {
+func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequence string, status string) *Animation {
     return &Animation{
         Name: name,
         Keys: keys,
         Events: events,
+        Sequence: sequence,
+        Status: status,
         Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
     }
 }
@@ -200,12 +205,6 @@ type AnimationEventAttack struct {
      */
 }
 
-type AnimationEventSequence struct {
-    // TODO
-    /* (sequence previous next)
-     */
-}
-
 type AnimationEventRelativeOffset struct {
     X int
     Y int
@@ -243,6 +242,8 @@ func keyFromString(key string) InputKey {
 func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
     var events []AnimationEvent
     var name string
+    var sequence string
+    var status string
     var keys []InputKey
     for _, child := range definition.Children {
         switch strings.ToLower(child.Name) {
@@ -279,9 +280,9 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
             case "range":
                 log.Printf("Handle 'range'")
             case "status":
-                log.Printf("Handle 'status'")
+                status = child.GetValue(0)
             case "sequence":
-                log.Printf("Handle 'sequence'")
+                sequence = child.GetValue(0)
             case "type":
                 log.Printf("Handle 'type'")
             case "keys":
@@ -319,7 +320,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
         }
     }
 
-    return MakeAnimation(name, events, keys), nil
+    return MakeAnimation(name, events, keys, sequence, status), nil
 }
 
 type PaintownCharacter struct {
@@ -696,6 +697,9 @@ type PlayerState struct {
     ShowAnimation *Animation
     Status PlayerStatus
     Facing Facing
+
+    NextAnimation *Animation
+    NextAnimationTime uint64
 }
 
 func (playerState *PlayerState) GetAnimation(name string) *Animation {
@@ -732,36 +736,40 @@ func (playerState *PlayerState) CurrentAnimation() *Animation {
     return nil
 }
 
-func (playerState *PlayerState) Update(input InputState, level *Level) {
+func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
     doJump := false
     move := false
 
-    if playerState.Status != PlayerJump && playerState.ShowAnimation == nil {
-        if input.Right {
-            playerState.X += 1
-            playerState.Facing = FacingRight
-            move = true
-        }
+    var nextAnimation *Animation
 
-        if input.Left {
-            playerState.X -= 1
-            playerState.Facing = FacingLeft
-            move = true
-        }
+    if playerState.Status != PlayerJump {
+        if playerState.ShowAnimation == nil {
+            if input.Right {
+                playerState.X += 1
+                playerState.Facing = FacingRight
+                move = true
+            }
 
-        if input.Down {
-            playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
-            move = true
-        }
+            if input.Left {
+                playerState.X -= 1
+                playerState.Facing = FacingLeft
+                move = true
+            }
 
-        if input.Up {
-            playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
-            move = true
-        }
+            if input.Down {
+                playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
+                move = true
+            }
 
-        if input.Jump {
-            if playerState.Status != PlayerJump {
-                doJump = true
+            if input.Up {
+                playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
+                move = true
+            }
+
+            if input.Jump {
+                if playerState.Status != PlayerJump {
+                    doJump = true
+                }
             }
         }
 
@@ -772,7 +780,33 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
         */
 
         for _, animation := range playerState.Animations {
-            if animation.Name == "idle" || animation.Name == "walk" {
+            if animation.Name == "idle" || animation.Name == "walk" || animation.Name == "grab" || animation.Name == "get" {
+                continue
+            }
+
+            inSequence := false
+
+            if animation.Sequence != "" {
+                ok := true
+
+                /*
+                if playerState.ShowAnimation != nil {
+                    log.Printf("Check animation %v with sequence %v against %v", animation.Name, animation.Sequence, playerState.ShowAnimation.Name)
+                }
+                */
+
+                if playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name {
+                    // log.Printf("Animation %v is ok", animation.Name)
+                    inSequence = true
+                } else {
+                    ok = false
+                }
+                if !ok {
+                    continue
+                }
+            }
+
+            if animation.Status != "" && animation.Status != "ground" {
                 continue
             }
 
@@ -789,8 +823,13 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
             }
 
             if pressedAll {
-                playerState.ShowAnimation = animation
-                break
+                // prefer animation with a sequence
+                if nextAnimation == nil || inSequence {
+                    // log.Printf("Set next animation to '%v' at %v", animation.Name, counter)
+                    nextAnimation = animation
+                    playerState.NextAnimationTime = counter
+                }
+                // break
             }
         }
     }
@@ -832,6 +871,12 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
         }
     }
 
+    if playerState.Status == PlayerMove || playerState.Status == PlayerIdle {
+        if nextAnimation != nil && playerState.ShowAnimation == nil {
+            playerState.ShowAnimation = nextAnimation
+        }
+    }
+
     animation := playerState.CurrentAnimation()
 
     if animation != nil {
@@ -841,6 +886,14 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
                 if playerState.ShowAnimation != nil {
                     playerState.ShowAnimation.Reset()
                     playerState.ShowAnimation = nil
+
+                    if counter - playerState.NextAnimationTime < 180 {
+                        playerState.ShowAnimation = nextAnimation
+                        playerState.NextAnimation = nil
+                        if playerState.ShowAnimation != nil {
+                            playerState.ShowAnimation.Update()
+                        }
+                    }
                 }
             }
         }
@@ -985,7 +1038,7 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
             }
         }
 
-        playerState.Update(inputState, level)
+        playerState.Update(inputState, level, counter)
 
         if int(playerState.X) - cameraX < (ScreenWidth/2) / 4 {
             cameraX = max(0, cameraX - 1)
