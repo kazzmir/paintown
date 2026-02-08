@@ -70,9 +70,11 @@ func convertTransparency(img image.Image) image.Image {
 }
 
 type Animation struct {
+    Name string
     Frame *ebiten.Image
     Events []AnimationEvent
     CurrentEvent int
+    Keys []InputKey
 
     OffsetX int
     OffsetY int
@@ -81,8 +83,9 @@ type Animation struct {
     CurrentDelay int
 }
 
-func MakeAnimation(events []AnimationEvent) *Animation {
+func MakeAnimation(name string, events []AnimationEvent, keys []InputKey) *Animation {
     return &Animation{
+        Name: name,
         Events: events,
         Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
     }
@@ -92,24 +95,36 @@ func (animation *Animation) CurrentFrame() *ebiten.Image {
     return animation.Frame
 }
 
+func (animation *Animation) GetOffsetX() int {
+    return animation.OffsetX
+}
+
+func (animation *Animation) GetOffsetY() int {
+    return animation.OffsetY
+}
+
 func (animation *Animation) Reset() {
     animation.CurrentEvent = 0
     animation.CurrentDelay = 0
 }
 
-func (animation *Animation) Update() {
+// returns true if the animation reaches the end of its events and loops back to the beginning
+func (animation *Animation) Update() bool {
     if animation.CurrentDelay > 0 {
         animation.CurrentDelay -= 1
+        return false
     } else {
         if len(animation.Events) == 0 {
-            return
+            return true
         }
         now := animation.CurrentEvent
+        finished := false
         for animation.CurrentDelay == 0 {
             animation.Events[animation.CurrentEvent].Update(animation)
             animation.CurrentEvent += 1
             if animation.CurrentEvent >= len(animation.Events) {
                 animation.CurrentEvent = 0
+                finished = true
             }
 
             // looped without setting delay, this would have been an infinite loop
@@ -118,6 +133,8 @@ func (animation *Animation) Update() {
                 break
             }
         }
+
+        return finished
     }
 }
 
@@ -168,14 +185,6 @@ func (typeEvent *AnimationEventType) Update(animation *Animation) {
     // TODO
 }
 
-type AnimationEventKeys struct {
-    Keys []string
-}
-
-func (keysEvent *AnimationEventKeys) Update(animation *Animation) {
-    // TODO
-}
-
 type AnimationEventRange struct {
     Range int
 }
@@ -206,12 +215,38 @@ func (relativeOffsetEvent *AnimationEventRelativeOffset) Update(animation *Anima
     animation.OffsetY += relativeOffsetEvent.Y
 }
 
+type InputKey int
+const (
+    InputKeyNone InputKey = iota
+    InputKeyJump
+    InputKeyAttack1
+    InputKeyAttack2
+    InputKeyForward
+    InputKeyDown
+    InputKeyBack
+)
+
+func keyFromString(key string) InputKey {
+    switch strings.ToLower(key) {
+        case "key_attack1": return InputKeyAttack1
+        case "key_attack2": return InputKeyAttack2
+        case "key_jump": return InputKeyJump
+        case "key_forward": return InputKeyForward
+        case "key_down": return InputKeyDown
+        case "key_back": return InputKeyBack
+    }
+
+    return InputKeyNone
+}
+
 func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
     var events []AnimationEvent
+    var name string
+    var keys []InputKey
     for _, child := range definition.Children {
         switch strings.ToLower(child.Name) {
             case "name":
-                // skip the name
+                name = strings.ToLower(child.GetValue(0))
             case "basedir":
                 if len(child.Children) > 0 {
                     baseDirectory = child.GetValue(0)
@@ -249,7 +284,14 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
             case "type":
                 log.Printf("Handle 'type'")
             case "keys":
-                log.Printf("Handle 'keys'")
+                for _, key := range child.Children {
+                    input := keyFromString(key.Name)
+                    if input != InputKeyNone {
+                        keys = append(keys, input)
+                    } else {
+                        log.Printf("Unknown input key '%v'", key.Name)
+                    }
+                }
             case "relative-offset":
                 if len(child.Children) >= 2 {
                     xValue := child.GetValue(0)
@@ -276,7 +318,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
         }
     }
 
-    return MakeAnimation(events), nil
+    return MakeAnimation(name, events, keys), nil
 }
 
 type PaintownCharacter struct {
@@ -415,17 +457,19 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
         var options ebiten.DrawImageOptions
         screen.DrawImage(background, &options)
 
-        x := 40.0
+        x := 60.0
         y := 130.0
 
+        currentBounds := animation.CurrentFrame().Bounds()
+
         options.GeoM.Translate(x, y)
-        options.GeoM.Translate(0, float64(animation.CurrentFrame().Bounds().Dy() * -1))
+        options.GeoM.Translate(float64(-currentBounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(currentBounds.Dy() * -1))
         options.GeoM.Scale(2, 2)
         screen.DrawImage(animation.CurrentFrame(), &options)
 
         options.GeoM.Reset()
         options.GeoM.Translate(x, -y)
-        options.GeoM.Translate(0, float64(animation.CurrentFrame().Bounds().Dy() * -1))
+        options.GeoM.Translate(float64(-currentBounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(currentBounds.Dy() * -1))
         options.GeoM.Scale(2, -2)
         options.ColorScale.ScaleAlpha(0.5)
         screen.DrawImage(animation.CurrentFrame(), &options)
@@ -446,8 +490,10 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
             if ok && anim.CurrentFrame() != nil {
                 area := screen.SubImage(image.Rect(gridX, gridY, gridX + gridSize, gridY + gridSize)).(*ebiten.Image)
 
+                bounds := anim.CurrentFrame().Bounds()
+
                 options.GeoM.Reset()
-                options.GeoM.Translate(-float64(anim.CurrentFrame().Bounds().Dx()) / 2, float64(anim.CurrentFrame().Bounds().Dy() * -1))
+                options.GeoM.Translate(float64(anim.GetOffsetX()) + -float64(bounds.Dx()) / 2, float64(bounds.Dy() * -1))
                 options.GeoM.Scale(0.6, 0.6)
                 options.GeoM.Translate(float64(gridX), float64(gridY))
                 options.GeoM.Translate(float64(gridSize) / 2, float64(gridSize))
@@ -634,6 +680,8 @@ type InputState struct {
     Up bool
     Down bool
     Jump bool
+    Attack1 bool
+    Attack2 bool
 }
 
 type PlayerState struct {
@@ -643,11 +691,25 @@ type PlayerState struct {
     Dy float64
     Dx float64
     Animations map[string]*Animation
+    // if doing some kind of move
+    ShowAnimation *Animation
     Status PlayerStatus
     Facing Facing
 }
 
+func (playerState *PlayerState) GetAnimation(name string) *Animation {
+    animation, ok := playerState.Animations[name]
+    if ok {
+        return animation
+    }
+    return nil
+}
+
 func (playerState *PlayerState) CurrentAnimation() *Animation {
+    if playerState.ShowAnimation != nil {
+        return playerState.ShowAnimation
+    }
+
     switch playerState.Status {
         case PlayerIdle:
             idle, ok := playerState.Animations["idle"]
@@ -673,39 +735,43 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
     doJump := false
     move := false
 
-    if input.Right {
-        if playerState.Status != PlayerJump {
+    if playerState.Status != PlayerJump && playerState.ShowAnimation == nil {
+        if input.Right {
             playerState.X += 1
             playerState.Facing = FacingRight
             move = true
         }
-    }
 
-    if input.Left {
-        if playerState.Status != PlayerJump {
+        if input.Left {
             playerState.X -= 1
             playerState.Facing = FacingLeft
             move = true
         }
-    }
 
-    if input.Down {
-        if playerState.Status != PlayerJump {
+        if input.Down {
             playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
             move = true
         }
-    }
 
-    if input.Up {
-        if playerState.Status != PlayerJump {
+        if input.Up {
             playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
             move = true
         }
-    }
 
-    if input.Jump {
-        if playerState.Status != PlayerJump {
-            doJump = true
+        if input.Jump {
+            if playerState.Status != PlayerJump {
+                doJump = true
+            }
+        }
+
+        if input.Attack1 {
+            playerState.ShowAnimation = playerState.GetAnimation("strong-punch")
+        }
+
+        for _, animation := range playerState.Animations {
+            if animation.Name == "idle" || animation.Name == "walk" {
+                continue
+            }
         }
     }
 
@@ -749,7 +815,15 @@ func (playerState *PlayerState) Update(input InputState, level *Level) {
     animation := playerState.CurrentAnimation()
 
     if animation != nil {
-        animation.Update()
+        if animation.Update() {
+            if playerState.Status != PlayerJump && playerState.Status != PlayerMove {
+                playerState.Status = PlayerIdle
+                if playerState.ShowAnimation != nil {
+                    playerState.ShowAnimation.Reset()
+                    playerState.ShowAnimation = nil
+                }
+            }
+        }
     }
 }
 
@@ -841,9 +915,9 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
             options.GeoM.Translate(playerState.X - float64(cameraX), playerState.Z - playerState.Y)
             bounds := animation.CurrentFrame().Bounds()
             if playerState.Facing == FacingLeft {
-                options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
             } else {
-                options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
             }
             screen.DrawImage(animation.CurrentFrame(), &options)
         }
@@ -884,6 +958,10 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
                     inputState.Up = true
                 case ebiten.KeySpace:
                     inputState.Jump = true
+                case ebiten.KeyA:
+                    inputState.Attack1 = true
+                case ebiten.KeyS:
+                    inputState.Attack2 = true
             }
         }
 
