@@ -57,6 +57,35 @@ func (sexpr *SExpr) GetValue(index int) string {
     }
 }
 
+func (sexpr *SExpr) FindAll(names... string) []*SExpr {
+    var results []*SExpr
+
+    current := sexpr
+
+    if current.Name != names[0] {
+        return results
+    }
+
+    names = names[1:]
+
+    for check := range len(names) - 1 {
+        for _, child := range current.Children {
+            if current.Name == names[check] {
+                current = child
+            }
+        }
+    }
+
+    last := names[len(names) - 1]
+    for _, child := range current.Children {
+        if child.Name == last {
+            results = append(results, child)
+        }
+    }
+
+    return results
+}
+
 func ReadValue[T any](sexpr *SExpr, path string, index int) (T, bool) {
     parts := strings.Split(path, "/")
 

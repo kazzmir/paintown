@@ -26,9 +26,6 @@ const ScreenHeight = 480
 
 type DrawFunc func (*ebiten.Image)
 
-type PaintownLevel struct {
-}
-
 type Engine struct {
     Coroutine *coroutine.Coroutine
     Drawer func(*ebiten.Image)
@@ -303,32 +300,7 @@ type CharacterDefinition struct {
 }
 
 func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
-    var results []*sexp.SExpr
-
-    current := definition.SExpr
-
-    if current.Name != names[0] {
-        return results
-    }
-
-    names = names[1:]
-
-    for check := range len(names) - 1 {
-        for _, child := range current.Children {
-            if current.Name == names[check] {
-                current = child
-            }
-        }
-    }
-
-    last := names[len(names) - 1]
-    for _, child := range current.Children {
-        if child.Name == last {
-            results = append(results, child)
-        }
-    }
-
-    return results
+    return definition.SExpr.FindAll(names...)
 }
 
 // a definition file is a parentheses delimited set of values
@@ -546,14 +518,46 @@ func LoadLevel(path string) (*Level, error) {
     zMinimum, _ := sexp.ReadValue[int](raw, "z/minimum", 0)
     zMaximum, _ := sexp.ReadValue[int](raw, "z/maximum", 0)
 
-    backgroundParallax, _ := sexp.ReadValue[float32](raw, "background/parallax", 0)
-    foregroundParallax, _ := sexp.ReadValue[float32](raw, "foreground/parallax", 0)
+    backgroundParallax, _ := sexp.ReadValue[float32](raw, "background-parallax", 0)
+    foregroundParallax, _ := sexp.ReadValue[float32](raw, "foreground-parallax", 0)
+
+    if backgroundParallax <= 0 {
+        backgroundParallax = 1
+    }
+
+    if foregroundParallax <= 0 {
+        foregroundParallax = 1
+    }
+
+    var backgroundImage *ebiten.Image
+    backgroundPath, _ := sexp.ReadValue[string](raw, "background", 0)
+    if backgroundPath != "" {
+        backgroundImagePng, err := loadPng(backgroundPath)
+        if err != nil {
+            log.Printf("Error loading background image '%v': %v", backgroundPath, err)
+        } else {
+            backgroundImage = ebiten.NewImageFromImage(convertTransparency(backgroundImagePng))
+        }
+    }
+
+    var frontPanels []*ebiten.Image
+    frontPanelsElements := raw.FindAll("level", "frontpanel")
+    for _, panel := range frontPanelsElements {
+        frontPanelPng, err := loadPng(panel.GetValue(0))
+        if err != nil {
+            log.Printf("Error loading front panel image '%v': %v", panel.GetValue(0), err)
+        } else {
+            frontPanels = append(frontPanels, ebiten.NewImageFromImage(convertTransparency(frontPanelPng)))
+        }
+    }
 
     return &Level{
         ZMinimum: zMinimum,
         ZMaximum: zMaximum,
         BackgroundParallax: backgroundParallax,
         ForegroundParallax: foregroundParallax,
+        BackgroundImage: backgroundImage,
+        FrontPanels: frontPanels,
     }, nil
 }
 
@@ -565,22 +569,49 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
         return err
     }
 
+    cameraX := 0
+
     drawer := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
-        screen.DrawImage(level.BackgroundImage, &options)
+        options.GeoM.Scale(2, 2)
+        if level.BackgroundImage != nil {
+            screen.DrawImage(level.BackgroundImage, &options)
+        }
+
+        if len(level.FrontPanels) > 0 {
+            var panelOptions ebiten.DrawImageOptions
+            panelOptions.GeoM.Scale(2, 2)
+            panelOptions.GeoM.Translate(float64(-cameraX) * float64(level.ForegroundParallax), ScreenHeight)
+            panelI := 0
+            for {
+                x, _ := panelOptions.GeoM.Apply(0, 0)
+                if x > ScreenWidth {
+                    break
+                }
+
+                panel := level.FrontPanels[panelI]
+                panelOptions.GeoM.Translate(0, float64(-panel.Bounds().Dy()) * 2)
+                screen.DrawImage(panel, &panelOptions)
+                panelOptions.GeoM.Translate(float64(panel.Bounds().Dx()) * 2, float64(panel.Bounds().Dy()) * 2)
+                panelI = (panelI + 1) % len(level.FrontPanels)
+            }
+        }
     }
 
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
+    counter := uint64(0)
     for {
+        if counter % 2 == 0 {
+            cameraX += 1
+        }
+
         err := yield()
         if err != nil {
             return err
         }
     }
-
-    return fmt.Errorf("Game not implemented yet")
 }
 
 func makeRunMenu(setDraw func(drawer DrawFunc) DrawFunc) (func (yield coroutine.YieldFunc) error, error) {
