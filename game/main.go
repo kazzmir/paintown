@@ -512,7 +512,69 @@ func chooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
     }
 }
 
-func runGame(player *PaintownCharacter, yield coroutine.YieldFunc) error {
+type Panel struct {
+    Index int
+    Image *ebiten.Image
+}
+
+type Level struct {
+    ZMinimum int
+    ZMaximum int
+    Atmosphere string
+
+    BackgroundParallax float32
+    ForegroundParallax float32
+
+    BackgroundImage *ebiten.Image
+    FrontPanels []*ebiten.Image
+    Panels []Panel
+
+    PanelOrder []int
+    Description string
+}
+
+func LoadLevel(path string) (*Level, error) {
+    raw, err := sexp.ReadSExpression(dataPath(path))
+    if err != nil {
+        return nil, err
+    }
+
+    if strings.ToLower(raw.Name) != "level" {
+        return nil, fmt.Errorf("Expected 'level' as root element, got '%v'", raw.Name)
+    }
+
+    zMinimum, _ := sexp.ReadValue[int](raw, "z/minimum", 0)
+    zMaximum, _ := sexp.ReadValue[int](raw, "z/maximum", 0)
+
+    return &Level{
+        ZMinimum: zMinimum,
+        ZMaximum: zMaximum,
+    }, nil
+}
+
+func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer DrawFunc) DrawFunc) error {
+    levelPath := "paintown/levels/1.txt"
+
+    level, err := LoadLevel(levelPath)
+    if err != nil {
+        return err
+    }
+
+    drawer := func(screen *ebiten.Image) {
+        var options ebiten.DrawImageOptions
+        screen.DrawImage(level.BackgroundImage, &options)
+    }
+
+    oldDrawer := setDraw(drawer)
+    defer setDraw(oldDrawer)
+
+    for {
+        err := yield()
+        if err != nil {
+            return err
+        }
+    }
+
     return fmt.Errorf("Game not implemented yet")
 }
 
@@ -545,7 +607,7 @@ func makeRunMenu(setDraw func(drawer DrawFunc) DrawFunc) (func (yield coroutine.
                         return err
                     }
 
-                    err = runGame(choosePlayer, yield)
+                    err = runGame(choosePlayer, yield, setDraw)
                     if err != nil {
                         return err
                     }

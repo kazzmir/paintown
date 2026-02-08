@@ -7,6 +7,7 @@ import (
     "fmt"
     "bufio"
     "strings"
+    "strconv"
 )
 
 type SExpr struct {
@@ -17,7 +18,7 @@ type SExpr struct {
 
 func (sexpr *SExpr) GetChild(name string) *SExpr {
     for _, child := range sexpr.Children {
-        if child.Name == name {
+        if strings.ToLower(child.Name) == name {
             return child
         }
     }
@@ -53,6 +54,41 @@ func (sexpr *SExpr) GetValue(index int) string {
         return ""
     } else {
         return ""
+    }
+}
+
+func ReadValue[T any](sexpr *SExpr, path string, index int) (T, bool) {
+    parts := strings.Split(path, "/")
+
+    current := sexpr
+    for _, part := range parts {
+        current = current.GetChild(part)
+        if current == nil {
+            var zero T
+            return zero, false
+        }
+    }
+
+    valueStr := current.GetValue(index)
+    if valueStr == "" {
+        var zero T
+        return zero, false
+    }
+
+    var value T
+    switch any(value).(type) {
+        case int:
+            i, err := strconv.Atoi(valueStr)
+            if err != nil {
+                var zero T
+                return zero, false
+            }
+            return any(i).(T), true
+        case string:
+            return any(valueStr).(T), true
+        default:
+            var zero T
+            return zero, false
     }
 }
 
