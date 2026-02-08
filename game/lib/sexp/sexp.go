@@ -86,6 +86,20 @@ func ReadValue[T any](sexpr *SExpr, path string, index int) (T, bool) {
             return any(i).(T), true
         case string:
             return any(valueStr).(T), true
+        case float32:
+            f, err := strconv.ParseFloat(valueStr, 32)
+            if err != nil {
+                var zero T
+                return zero, false
+            }
+            return any(float32(f)).(T), true
+        case float64:
+            f, err := strconv.ParseFloat(valueStr, 64)
+            if err != nil {
+                var zero T
+                return zero, false
+            }
+            return any(f).(T), true
         default:
             var zero T
             return zero, false

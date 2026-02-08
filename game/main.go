@@ -546,9 +546,14 @@ func LoadLevel(path string) (*Level, error) {
     zMinimum, _ := sexp.ReadValue[int](raw, "z/minimum", 0)
     zMaximum, _ := sexp.ReadValue[int](raw, "z/maximum", 0)
 
+    backgroundParallax, _ := sexp.ReadValue[float32](raw, "background/parallax", 0)
+    foregroundParallax, _ := sexp.ReadValue[float32](raw, "foreground/parallax", 0)
+
     return &Level{
         ZMinimum: zMinimum,
         ZMaximum: zMaximum,
+        BackgroundParallax: backgroundParallax,
+        ForegroundParallax: foregroundParallax,
     }, nil
 }
 

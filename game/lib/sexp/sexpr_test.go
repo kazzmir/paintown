@@ -3,6 +3,7 @@ package sexp
 import (
     "testing"
     "strings"
+    "golang.org/x/exp/constraints"
 )
 
 func TestTokenize(test *testing.T) {
@@ -101,6 +102,17 @@ func TestSExprErrors(test *testing.T) {
     }
 }
 
+type Number interface {
+    constraints.Integer | constraints.Float
+}
+
+func abs[T Number](x T) T {
+    if x < 0 {
+        return -x
+    }
+    return x
+}
+
 func TestReadValue(test *testing.T) {
     data := `(a (b 123) (c "hello world"))`
     sexpr, err := parseSExpr(strings.NewReader(data))
@@ -124,5 +136,20 @@ func TestReadValue(test *testing.T) {
 
     if strValue != "hello world" {
         test.Errorf("Expected value 'hello world' for 'c', got '%s'", strValue)
+    }
+
+    data2 := `(a (b 18.24))`
+    sexpr2, err := parseSExpr(strings.NewReader(data2))
+    if err != nil {
+        test.Fatalf("Error parsing sexpr: %s", err)
+    }
+
+    floatValue, ok := ReadValue[float64](sexpr2, "b", 0)
+    if !ok {
+        test.Fatal("Expected to read value for 'b', got false")
+    }
+
+    if abs(floatValue - 18.24) > 0.0001 {
+        test.Errorf("Expected value 18.24 for 'b', got %f", floatValue)
     }
 }
