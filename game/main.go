@@ -71,6 +71,12 @@ func convertTransparency(img image.Image) image.Image {
     return newImg
 }
 
+type AnimationOwner interface {
+    Move(x int, y int, z int)
+    GetFacing() Facing
+    SetFacing(facing Facing)
+}
+
 type Animation struct {
     Name string
     Frame *ebiten.Image
@@ -88,6 +94,8 @@ type Animation struct {
 
     Delay int
     CurrentDelay int
+
+    Owner AnimationOwner
 }
 
 func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequence string, status string) *Animation {
@@ -202,6 +210,34 @@ type AnimationEventRange struct {
 
 func (rangeEvent *AnimationEventRange) Update(animation *Animation) {
     // TODO
+}
+
+type AnimationMoveEvent struct {
+    X int
+    Y int
+    Z int
+}
+
+func (moveEvent *AnimationMoveEvent) Update(animation *Animation) {
+    x := moveEvent.X
+
+    if animation.Owner.GetFacing() == FacingLeft {
+        x = -x
+    }
+
+    animation.Owner.Move(x, moveEvent.Y, moveEvent.Z)
+}
+
+type AnimationFaceEvent struct {
+    Facing string
+}
+
+func (faceEvent *AnimationFaceEvent) Update(animation *Animation) {
+    switch faceEvent.Facing {
+        case "reverse": animation.Owner.SetFacing(animation.Owner.GetFacing().Reverse())
+        case "left": animation.Owner.SetFacing(FacingLeft)
+        case "right": animation.Owner.SetFacing(FacingRight)
+    }
 }
 
 type AnimationEventAttack struct {
@@ -320,6 +356,22 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                 events = append(events, &AnimationEventFrame{
                     Image: ebiten.NewImageFromImage(convertTransparency(img)),
                 })
+            case "move":
+                x := 0
+                y := 0
+                z := 0
+                for i := range len(child.Children) {
+                    value, _ := child.GetInt(i)
+                    switch i {
+                        case 0: x = value
+                        case 1: y = value
+                        case 2: z = value
+                    }
+                }
+                events = append(events, &AnimationMoveEvent{X: x, Y: y, Z: z})
+            case "face":
+                value := child.GetValue(0)
+                events = append(events, &AnimationFaceEvent{Facing: value})
             default:
                 log.Printf("Unknown animation event type '%v'", child.Name)
         }
@@ -681,6 +733,14 @@ const (
     FacingLeft
 )
 
+func (facing Facing) Reverse() Facing {
+    if facing == FacingRight {
+        return FacingLeft
+    } else {
+        return FacingRight
+    }
+}
+
 type InputState struct {
     HeldRight bool
     HeldLeft bool
@@ -713,6 +773,20 @@ type PlayerState struct {
 
     NextAnimation *Animation
     NextAnimationTime uint64
+}
+
+func (playerState *PlayerState) GetFacing() Facing {
+    return playerState.Facing
+}
+
+func (playerState *PlayerState) SetFacing(facing Facing) {
+    playerState.Facing = facing
+}
+
+func (playerState *PlayerState) Move(x int, y int, z int) {
+    playerState.X += float64(x)
+    playerState.Y += float64(y)
+    playerState.Z += float64(z)
 }
 
 func (playerState *PlayerState) GetAnimation(name string) *Animation {
@@ -995,6 +1069,10 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
         Z: float64(level.ZMinimum + level.ZMaximum) / 2,
         Status: PlayerIdle,
         Animations: animations,
+    }
+
+    for _, animation := range playerState.Animations {
+        animation.Owner = &playerState
     }
 
     drawBackground := func(screen *ebiten.Image) {
