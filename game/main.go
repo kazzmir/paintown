@@ -886,9 +886,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                 playerState.X += 1
                 playerState.Facing = FacingRight
                 move = true
-            }
-
-            if input.HeldLeft {
+            } else if input.HeldLeft {
                 playerState.X -= 1
                 playerState.Facing = FacingLeft
                 move = true
@@ -897,9 +895,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             if input.HeldDown {
                 playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
                 move = true
-            }
-
-            if input.HeldUp {
+            } else if input.HeldUp {
                 playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
                 move = true
             }
