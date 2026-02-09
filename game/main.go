@@ -77,6 +77,8 @@ type Animation struct {
     Events []AnimationEvent
     CurrentEvent int
     Keys []InputKey
+    // times when the keys were pressed
+    KeyPresses []uint64
 
     Sequence string
     Status string
@@ -92,6 +94,7 @@ func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequen
     return &Animation{
         Name: name,
         Keys: keys,
+        KeyPresses: make([]uint64, len(keys)),
         Events: events,
         Sequence: sequence,
         Status: status,
@@ -679,6 +682,14 @@ const (
 )
 
 type InputState struct {
+    HeldRight bool
+    HeldLeft bool
+    HeldUp bool
+    HeldDown bool
+    HeldJump bool
+    HeldAttack1 bool
+    HeldAttack2 bool
+
     Right bool
     Left bool
     Up bool
@@ -745,36 +756,6 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     var nextAnimation *Animation
 
     if playerState.Status != PlayerJump {
-        if playerState.ShowAnimation == nil {
-            if input.Right {
-                playerState.X += 1
-                playerState.Facing = FacingRight
-                move = true
-            }
-
-            if input.Left {
-                playerState.X -= 1
-                playerState.Facing = FacingLeft
-                move = true
-            }
-
-            if input.Down {
-                playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
-                move = true
-            }
-
-            if input.Up {
-                playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
-                move = true
-            }
-
-            if input.Jump {
-                if playerState.Status != PlayerJump {
-                    doJump = true
-                }
-            }
-        }
-
         /*
         if input.Attack1 {
             playerState.ShowAnimation = playerState.GetAnimation("strong-punch")
@@ -815,20 +796,46 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             }
 
             pressedAll := len(animation.Keys) > 0
-            for _, key := range animation.Keys {
-                switch key {
-                    case InputKeyJump: pressedAll = pressedAll && input.Jump
-                    case InputKeyAttack1: pressedAll = pressedAll && input.Attack1
-                    case InputKeyAttack2: pressedAll = pressedAll && input.Attack2
-                    case InputKeyForward: pressedAll = pressedAll && ((playerState.Facing == FacingRight && input.Right) || (playerState.Facing == FacingLeft && input.Left))
-                    case InputKeyDown: pressedAll = pressedAll && input.Down
-                    case InputKeyBack: pressedAll = pressedAll && ((playerState.Facing == FacingRight && input.Left) || (playerState.Facing == FacingLeft && input.Right))
+            for i, key := range animation.Keys {
+
+                if counter - animation.KeyPresses[i] < uint64(len(animation.Keys) - i) * 20 {
+                } else {
+                    switch key {
+                        case InputKeyJump:
+                            if input.Jump {
+                                animation.KeyPresses[i] = counter
+                            }
+                        case InputKeyAttack1:
+                            if input.Attack1 {
+                                animation.KeyPresses[i] = counter
+                            }
+                        case InputKeyAttack2:
+                            if input.Attack2 {
+                                animation.KeyPresses[i] = counter
+                            }
+                        case InputKeyForward:
+                            if (playerState.Facing == FacingRight && input.Right) || (playerState.Facing == FacingLeft && input.Left) {
+                                animation.KeyPresses[i] = counter
+                            }
+                        case InputKeyDown:
+                            if input.Down {
+                                animation.KeyPresses[i] = counter
+                            }
+                        case InputKeyBack:
+                            if ( playerState.Facing == FacingRight && input.Left) || (playerState.Facing == FacingLeft && input.Right) {
+                                animation.KeyPresses[i] = counter
+                            }
+                    }
+
+                    pressedAll = false
+                    break
                 }
             }
 
             if pressedAll {
                 // prefer animation with a sequence
                 if nextAnimation == nil || inSequence {
+                    // log.Printf("Possible next animation: '%v' presses: %v", animation.Name, animation.KeyPresses)
                     possibleNextAnimations = append(possibleNextAnimations, animation)
                     // log.Printf("Set next animation to '%v' at %v", animation.Name, counter)
                     // nextAnimation = animation
@@ -863,9 +870,45 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                 return cmp.Compare(scoreA, scoreB)
             })
 
+            /*
+            for _, animation := range possibleNextAnimations {
+                log.Printf("Possible next animation: %v", animation.Name)
+            }
+            */
+
             // last element should be the one with the highest score
             nextAnimation = possibleNextAnimations[len(possibleNextAnimations) - 1]
             playerState.NextAnimationTime = counter
+        }
+
+        if playerState.ShowAnimation == nil {
+            if input.HeldRight {
+                playerState.X += 1
+                playerState.Facing = FacingRight
+                move = true
+            }
+
+            if input.HeldLeft {
+                playerState.X -= 1
+                playerState.Facing = FacingLeft
+                move = true
+            }
+
+            if input.HeldDown {
+                playerState.Z = min(float64(level.ZMaximum), playerState.Z + 1)
+                move = true
+            }
+
+            if input.HeldUp {
+                playerState.Z = max(float64(level.ZMinimum), playerState.Z - 1)
+                move = true
+            }
+
+            if input.Jump {
+                if playerState.Status != PlayerJump {
+                    doJump = true
+                }
+            }
         }
     }
 
@@ -1047,13 +1090,34 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
-    counter := uint64(0)
+    // avoid triggering moves immediately
+    counter := uint64(1000)
     var keys []ebiten.Key
     for {
         counter += 1
 
         keys = inpututil.AppendPressedKeys(keys[:0])
         var inputState InputState
+        for _, key := range keys {
+            switch key {
+                case ebiten.KeyArrowRight:
+                    inputState.HeldRight = true
+                case ebiten.KeyArrowLeft:
+                    inputState.HeldLeft = true
+                case ebiten.KeyArrowDown:
+                    inputState.HeldDown = true
+                case ebiten.KeyArrowUp:
+                    inputState.HeldUp = true
+                case ebiten.KeySpace:
+                    inputState.HeldJump = true
+                case ebiten.KeyA:
+                    inputState.HeldAttack1 = true
+                case ebiten.KeyS:
+                    inputState.HeldAttack2 = true
+            }
+        }
+
+        keys = inpututil.AppendJustPressedKeys(keys[:0])
         for _, key := range keys {
             switch key {
                 case ebiten.KeyArrowRight:
