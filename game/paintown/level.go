@@ -7,6 +7,7 @@ import (
     "strconv"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
+    "github.com/kazzmir/paintown/game/graphics"
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
@@ -64,7 +65,7 @@ func LoadLevel(path string) (*Level, error) {
         if err != nil {
             log.Printf("Error loading background image '%v': %v", backgroundPath, err)
         } else {
-            backgroundImage = ebiten.NewImageFromImage(convertTransparency(backgroundImagePng))
+            backgroundImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(backgroundImagePng))
         }
     }
 
@@ -75,7 +76,7 @@ func LoadLevel(path string) (*Level, error) {
         if err != nil {
             log.Printf("Error loading front panel image '%v': %v", panel.GetValue(0), err)
         } else {
-            frontPanels = append(frontPanels, ebiten.NewImageFromImage(convertTransparency(frontPanelPng)))
+            frontPanels = append(frontPanels, ebiten.NewImageFromImage(graphics.ConvertTransparency(frontPanelPng)))
         }
     }
 
@@ -88,7 +89,7 @@ func LoadLevel(path string) (*Level, error) {
         if err != nil {
             log.Printf("Error loading panel image '%v': %v", imagePath, err)
         } else {
-            panels[index] = ebiten.NewImageFromImage(convertTransparency(panelPng))
+            panels[index] = ebiten.NewImageFromImage(graphics.ConvertTransparency(panelPng))
         }
     }
 

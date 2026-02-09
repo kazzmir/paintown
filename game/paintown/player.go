@@ -10,6 +10,7 @@ import (
     "slices"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
+    "github.com/kazzmir/paintown/game/graphics"
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
@@ -347,7 +348,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                     return nil, err
                 }
                 events = append(events, &AnimationEventFrame{
-                    Image: ebiten.NewImageFromImage(convertTransparency(img)),
+                    Image: ebiten.NewImageFromImage(graphics.ConvertTransparency(img)),
                 })
             case "move":
                 x := 0

@@ -9,46 +9,13 @@ import (
     "image/color"
 
     "github.com/kazzmir/paintown/game/lib/coroutine"
+    "github.com/kazzmir/paintown/game/graphics"
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/vector"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
-
-// images use 255,0,255 as the transparent color
-func convertTransparency(img image.Image) image.Image {
-    bounds := img.Bounds()
-    newImg := image.NewNRGBA(bounds)
-
-    for x := bounds.Min.X; x < bounds.Max.X; x++ {
-        for y := bounds.Min.Y; y < bounds.Max.Y; y++ {
-            r, g, b, _ := img.At(x, y).RGBA()
-            if r == 0xFFFF && g == 0 && b == 0xFFFF {
-                newImg.Set(x, y, image.Transparent)
-            } else {
-                newImg.Set(x, y, img.At(x, y))
-            }
-        }
-    }
-
-    return newImg
-}
-
-func interpolateColors(start, end color.RGBA, steps int) []color.RGBA {
-    var colors []color.RGBA
-
-    for i := 0; i < steps; i++ {
-        t := float64(i) / float64(steps-1)
-        r := uint8(float64(start.R)*(1-t) + float64(end.R)*t)
-        g := uint8(float64(start.G)*(1-t) + float64(end.G)*t)
-        b := uint8(float64(start.B)*(1-t) + float64(end.B)*t)
-        a := uint8(float64(start.A)*(1-t) + float64(end.A)*t)
-        colors = append(colors, color.RGBA{R: r, G: g, B: b, A: a})
-    }
-
-    return colors
-}
 
 func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc) error {
     levelPath := "paintown/levels/1.txt"
@@ -287,7 +254,7 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
     counter := uint64(0)
     currentChoice := 0
 
-    selectedColors := append(interpolateColors(color.RGBA{R:255, A:255}, color.RGBA{A: 255}, 20), interpolateColors(color.RGBA{A:255}, color.RGBA{R:255, A:255}, 20)...)
+    selectedColors := append(graphics.InterpolateColors(color.RGBA{R:255, A:255}, color.RGBA{A: 255}, 20), graphics.InterpolateColors(color.RGBA{A:255}, color.RGBA{R:255, A:255}, 20)...)
 
     drawer := func (screen *ebiten.Image) {
         animation := animations[allPlayers[currentChoice].Definition.Name]
@@ -389,8 +356,9 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
 
         animation.Update()
 
-        yield()
+        err := yield()
+        if err != nil {
+            return nil, err
+        }
     }
 }
-
-
