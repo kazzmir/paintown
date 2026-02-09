@@ -75,6 +75,7 @@ type AnimationOwner interface {
     Move(x int, y int, z int)
     GetFacing() Facing
     SetFacing(facing Facing)
+    SetTrail(generate int, length int)
 }
 
 type Animation struct {
@@ -256,6 +257,15 @@ func (relativeOffsetEvent *AnimationEventRelativeOffset) Update(animation *Anima
     animation.OffsetY += relativeOffsetEvent.Y
 }
 
+type AnimationTrailEvent struct {
+    Generate int
+    Length int
+}
+
+func (trailEvent *AnimationTrailEvent) Update(animation *Animation) {
+    animation.Owner.SetTrail(trailEvent.Generate, trailEvent.Length)
+}
+
 type InputKey int
 const (
     InputKeyNone InputKey = iota
@@ -372,6 +382,11 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
             case "face":
                 value := child.GetValue(0)
                 events = append(events, &AnimationFaceEvent{Facing: value})
+            case "trail":
+                generate, _ := sexp.ReadValue[int](child, "generate", 0)
+                length, _ := sexp.ReadValue[int](child, "length", 0)
+                log.Printf("Trail generate=%v length=%v", generate, length)
+                events = append(events, &AnimationTrailEvent{Generate: generate, Length: length})
             default:
                 log.Printf("Unknown animation event type '%v'", child.Name)
         }
@@ -759,6 +774,15 @@ type InputState struct {
     Attack2 bool
 }
 
+type Trail struct {
+    X float64
+    Y float64
+    Z float64
+    Facing Facing
+    Image *ebiten.Image
+    Time int
+}
+
 type PlayerState struct {
     X float64
     Y float64
@@ -773,6 +797,12 @@ type PlayerState struct {
 
     NextAnimation *Animation
     NextAnimationTime uint64
+
+    TrailActive bool
+    TrailGenerate int
+    TrailLength int
+
+    Trails []*Trail
 }
 
 func (playerState *PlayerState) GetFacing() Facing {
@@ -789,12 +819,42 @@ func (playerState *PlayerState) Move(x int, y int, z int) {
     playerState.Z += float64(z)
 }
 
+func (playerState *PlayerState) SetTrail(generate int, length int) {
+    playerState.TrailActive = true
+    playerState.TrailGenerate = generate
+    playerState.TrailLength = length
+}
+
 func (playerState *PlayerState) GetAnimation(name string) *Animation {
     animation, ok := playerState.Animations[name]
     if ok {
         return animation
     }
     return nil
+}
+
+func (playerState *PlayerState) UpdateTrails(counter uint64) {
+    if playerState.TrailActive {
+        if playerState.TrailGenerate > 0 && counter % uint64(playerState.TrailGenerate) == 0 {
+            playerState.Trails = append(playerState.Trails, &Trail{
+                X: playerState.X + float64(playerState.CurrentAnimation().GetOffsetX()),
+                Y: playerState.Y + float64(playerState.CurrentAnimation().GetOffsetY()),
+                Z: playerState.Z,
+                Facing: playerState.Facing,
+                Image: playerState.CurrentAnimation().CurrentFrame(),
+                Time: playerState.TrailLength,
+            })
+        }
+    }
+
+    var trails []*Trail
+    for _, trail := range playerState.Trails {
+        trail.Time -= 1
+        if trail.Time > 0 {
+            trails = append(trails, trail)
+        }
+    }
+    playerState.Trails = trails
 }
 
 func (playerState *PlayerState) CurrentAnimation() *Animation {
@@ -828,6 +888,8 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     move := false
 
     var nextAnimation *Animation
+
+    playerState.UpdateTrails(counter)
 
     if playerState.Status != PlayerJump {
         /*
@@ -1022,6 +1084,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     if playerState.Status == PlayerMove || playerState.Status == PlayerIdle {
         if nextAnimation != nil && playerState.ShowAnimation == nil {
             playerState.ShowAnimation = nextAnimation
+            playerState.TrailActive = false
         }
     }
 
@@ -1037,6 +1100,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
 
                     if counter - playerState.NextAnimationTime < 180 {
                         playerState.ShowAnimation = nextAnimation
+                        playerState.TrailActive = true
                         playerState.NextAnimation = nil
                         if playerState.ShowAnimation != nil {
                             playerState.ShowAnimation.Update()
@@ -1129,6 +1193,28 @@ func runGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     drawPlayer := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
+
+        for _, trail := range playerState.Trails {
+            if trail.Facing == FacingLeft {
+                options.GeoM.Scale(-1, 1)
+            }
+
+            if playerState.TrailLength > 0 {
+                options.ColorScale.ScaleAlpha(0.7 * float32(trail.Time) / float32(playerState.TrailLength))
+            }
+
+            options.GeoM.Translate(trail.X - float64(cameraX), trail.Z - playerState.Y)
+            bounds := trail.Image.Bounds()
+            if playerState.Facing == FacingLeft {
+                options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+            } else {
+                options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+            }
+            screen.DrawImage(trail.Image, &options)
+
+            options.ColorScale.Reset()
+            options.GeoM.Reset()
+        }
 
         animation := playerState.CurrentAnimation()
 
