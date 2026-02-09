@@ -385,7 +385,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
             case "trail":
                 generate, _ := sexp.ReadValue[int](child, "generate", 0)
                 length, _ := sexp.ReadValue[int](child, "length", 0)
-                log.Printf("Trail generate=%v length=%v", generate, length)
+                // log.Printf("Trail generate=%v length=%v", generate, length)
                 events = append(events, &AnimationTrailEvent{Generate: generate, Length: length})
             default:
                 log.Printf("Unknown animation event type '%v'", child.Name)
@@ -1049,10 +1049,10 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
         playerState.Dy = 6.5
         playerState.Y = 0.001
 
-        if input.Right {
+        if input.HeldRight {
             playerState.Dx = 1
         }
-        if input.Left {
+        if input.HeldLeft {
             playerState.Dx = -1
         }
 
