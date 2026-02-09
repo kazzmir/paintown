@@ -4,8 +4,10 @@ import (
     "log"
     "os"
     "fmt"
+    "cmp"
     "strconv"
     "strings"
+    "slices"
     "math"
     "image"
     "image/png"
@@ -779,6 +781,8 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
         }
         */
 
+        var possibleNextAnimations []*Animation
+
         for _, animation := range playerState.Animations {
             if animation.Name == "idle" || animation.Name == "walk" || animation.Name == "grab" || animation.Name == "get" {
                 continue
@@ -825,12 +829,43 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             if pressedAll {
                 // prefer animation with a sequence
                 if nextAnimation == nil || inSequence {
+                    possibleNextAnimations = append(possibleNextAnimations, animation)
                     // log.Printf("Set next animation to '%v' at %v", animation.Name, counter)
-                    nextAnimation = animation
-                    playerState.NextAnimationTime = counter
+                    // nextAnimation = animation
+                    // playerState.NextAnimationTime = counter
                 }
                 // break
             }
+        }
+
+        // prioritize moves that are in sequence with the current animation, and
+        // have the longest set of keys to activate them
+        if len(possibleNextAnimations) > 0 {
+            isInSequence := func(animation *Animation) bool {
+                return playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name
+            }
+
+            slices.SortFunc(possibleNextAnimations, func(a, b *Animation) int {
+                scoreA := 0
+                scoreB := 0
+
+                if isInSequence(a) {
+                    scoreA += 1000
+                }
+
+                if isInSequence(b) {
+                    scoreB += 1000
+                }
+
+                scoreA += len(a.Keys)
+                scoreB += len(b.Keys)
+
+                return cmp.Compare(scoreA, scoreB)
+            })
+
+            // last element should be the one with the highest score
+            nextAnimation = possibleNextAnimations[len(possibleNextAnimations) - 1]
+            playerState.NextAnimationTime = counter
         }
     }
 
