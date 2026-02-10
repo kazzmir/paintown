@@ -173,14 +173,6 @@ func (offsetEvent *AnimationEventOffset) Update(animation *Animation) {
     animation.OffsetY = offsetEvent.Y
 }
 
-type AnimationEventStatus struct {
-    Status string
-}
-
-func (statusEvent *AnimationEventStatus) Update(animation *Animation) {
-    // TODO
-}
-
 type AnimationEventType struct {
     Type string
 }
@@ -569,6 +561,17 @@ func (playerState *PlayerState) CurrentAnimation() *Animation {
     return nil
 }
 
+// FIXME: replace string with an enum
+func (playerState *PlayerState) GetStatus() string {
+    switch playerState.Status {
+        case PlayerIdle: return "ground"
+        case PlayerMove: return "ground"
+        case PlayerJump: return "jump"
+    }
+
+    return "ground"
+}
+
 func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
     doJump := false
     move := false
@@ -577,7 +580,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
 
     playerState.UpdateTrails(counter)
 
-    if playerState.Status != PlayerJump {
+    // if playerState.Status != PlayerJump {
         /*
         if input.Attack1 {
             playerState.ShowAnimation = playerState.GetAnimation("strong-punch")
@@ -587,7 +590,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
         var possibleNextAnimations []*Animation
 
         for _, animation := range playerState.Animations {
-            if animation.Name == "idle" || animation.Name == "walk" || animation.Name == "grab" || animation.Name == "get" {
+            if animation.Name == "idle" || animation.Name == "walk" || animation.Name == "grab" || animation.Name == "get" || animation.Name == "jump" {
                 continue
             }
 
@@ -613,9 +616,26 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                 }
             }
 
+            requiredStatus := "ground"
+            if animation.Status != "" {
+                requiredStatus = animation.Status
+            }
+
+            if playerState.GetStatus() != requiredStatus {
+                continue
+            }
+
+            /*
+            if requiredStatus == "jump" {
+                log.Printf("Consider jumping animation %v", animation.Name)
+            }
+            */
+
+            /*
             if animation.Status != "" && animation.Status != "ground" {
                 continue
             }
+            */
 
             pressedAll := len(animation.Keys) > 0
             for i, key := range animation.Keys {
@@ -701,6 +721,8 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             // last element should be the one with the highest score
             nextAnimation = possibleNextAnimations[len(possibleNextAnimations) - 1]
             playerState.NextAnimationTime = counter
+
+            // log.Printf("Choose next animation: %v", nextAnimation.Name)
         }
 
         if playerState.ShowAnimation == nil {
@@ -728,7 +750,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                 }
             }
         }
-    }
+    // }
 
     if doJump {
         playerState.Status = PlayerJump
@@ -767,7 +789,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
         }
     }
 
-    if playerState.Status == PlayerMove || playerState.Status == PlayerIdle {
+    if playerState.Status == PlayerMove || playerState.Status == PlayerIdle || playerState.Status == PlayerJump {
         if nextAnimation != nil && playerState.ShowAnimation == nil {
             playerState.ShowAnimation = nextAnimation
             playerState.TrailActive = false
@@ -778,7 +800,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
 
     if animation != nil {
         if animation.Update() {
-            if playerState.Status != PlayerJump && playerState.Status != PlayerMove {
+            if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
                 playerState.Status = PlayerIdle
                 if playerState.ShowAnimation != nil {
                     playerState.ShowAnimation.Reset()
