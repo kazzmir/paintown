@@ -5,6 +5,7 @@ import (
     "strings"
     "log"
     "strconv"
+    "image"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
     "github.com/kazzmir/paintown/game/graphics"
@@ -16,6 +17,36 @@ import (
 type Panel struct {
     Index int
     Image *ebiten.Image
+}
+
+type Stimulation struct {
+    // health, or something else
+}
+
+type BlockObject struct {
+    Id int
+    Name string
+    Type string
+
+    // path to definition file
+    Path string
+
+    // for remapping graphics
+    Map int
+
+    // non-zero for enemies
+    Health int
+
+    // spawn point relative to start of block
+    Coords image.Point
+
+    Stimulation *Stimulation
+}
+
+type Block struct {
+    Id int
+    Length int
+    Objects []BlockObject
 }
 
 type Level struct {
@@ -32,6 +63,53 @@ type Level struct {
 
     PanelOrder []int
     Description string
+    Blocks []Block
+}
+
+func parseBlockObject(object *sexp.SExpr) BlockObject {
+    id, _ := sexp.ReadValue[int](object, "id", 0)
+    name, _ := sexp.ReadValue[string](object, "name", 0)
+    type_, _ := sexp.ReadValue[string](object, "type", 0)
+    path, _ := sexp.ReadValue[string](object, "path", 0)
+    mapIndex, _ := sexp.ReadValue[int](object, "map", 0)
+    health, _ := sexp.ReadValue[int](object, "health", 0)
+
+    coordsElement := object.GetChild("coords")
+    var coords image.Point
+    if coordsElement != nil {
+        x, _ := coordsElement.GetInt(0)
+        y, _ := coordsElement.GetInt(1)
+        coords = image.Point{X: x, Y: y}
+    }
+
+    // TODO: parse stimulation
+
+    return BlockObject{
+        Id: id,
+        Name: name,
+        Type: type_,
+        Path: path,
+        Map: mapIndex,
+        Coords: coords,
+        Health: health,
+    }
+}
+
+func parseBlock(block *sexp.SExpr) Block {
+    id, _ := sexp.ReadValue[int](block, "id", 0)
+    length, _ := sexp.ReadValue[int](block, "length", 0)
+
+    var objects []BlockObject
+    objectsRaw := block.FindAll("block", "object")
+    for _, object := range objectsRaw {
+        objects = append(objects, parseBlockObject(object))
+    }
+
+    return Block{
+        Id: id,
+        Length: length,
+        Objects: objects,
+    }
 }
 
 func LoadLevel(path string) (*Level, error) {
@@ -106,6 +184,29 @@ func LoadLevel(path string) (*Level, error) {
         }
     }
 
+    description, ok := sexp.ReadValue[string](raw, "description", 0)
+    if !ok {
+        description = ""
+    }
+
+    var blocks []Block
+
+    blocksRaw := raw.FindAll("level", "block")
+    for _, block := range blocksRaw {
+        blocks = append(blocks, parseBlock(block))
+    }
+
+    enemies := 0
+    for _, block := range blocks {
+        for _, object := range block.Objects {
+            if object.Type == "enemy" {
+                enemies += 1
+            }
+        }
+    }
+
+    log.Printf("Loaded level with %d blocks and %d enemies", len(blocks), enemies)
+
     return &Level{
         ZMinimum: zMinimum,
         ZMaximum: zMaximum,
@@ -115,5 +216,7 @@ func LoadLevel(path string) (*Level, error) {
         FrontPanels: frontPanels,
         Panels: panels,
         PanelOrder: order,
+        Description: description,
+        Blocks: blocks,
     }, nil
 }
