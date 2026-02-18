@@ -725,7 +725,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             // log.Printf("Choose next animation: %v", nextAnimation.Name)
         }
 
-        if playerState.ShowAnimation == nil {
+        if playerState.Status != PlayerJump && playerState.ShowAnimation == nil {
             if input.HeldRight {
                 playerState.X += 1
                 playerState.Facing = FacingRight
@@ -745,9 +745,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             }
 
             if input.Jump {
-                if playerState.Status != PlayerJump {
-                    doJump = true
-                }
+                doJump = true
             }
         }
     // }
@@ -777,6 +775,14 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
         }
     }
 
+    if playerState.Status == PlayerMove || playerState.Status == PlayerIdle || playerState.Status == PlayerJump {
+        if nextAnimation != nil && playerState.ShowAnimation == nil {
+            playerState.ShowAnimation = nextAnimation
+            nextAnimation.Reset()
+            playerState.TrailActive = false
+        }
+    }
+
     if playerState.Status == PlayerJump {
         playerState.Dy -= 0.2
         playerState.Y += playerState.Dy
@@ -786,13 +792,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             playerState.Dy = 0
             playerState.Dx = 0
             playerState.Status = PlayerIdle
-        }
-    }
-
-    if playerState.Status == PlayerMove || playerState.Status == PlayerIdle || playerState.Status == PlayerJump {
-        if nextAnimation != nil && playerState.ShowAnimation == nil {
-            playerState.ShowAnimation = nextAnimation
-            playerState.TrailActive = false
+            playerState.ShowAnimation = nil
         }
     }
 
@@ -800,10 +800,11 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
 
     if animation != nil {
         if animation.Update() {
-            if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
+            if playerState.Status == PlayerJump {
+                playerState.ShowAnimation = nil
+            } else if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
                 playerState.Status = PlayerIdle
                 if playerState.ShowAnimation != nil {
-                    playerState.ShowAnimation.Reset()
                     playerState.ShowAnimation = nil
 
                     if counter - playerState.NextAnimationTime < 180 {
@@ -811,6 +812,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                         playerState.TrailActive = true
                         playerState.NextAnimation = nil
                         if playerState.ShowAnimation != nil {
+                            playerState.ShowAnimation.Reset()
                             playerState.ShowAnimation.Update()
                         }
                     }
