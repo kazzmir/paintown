@@ -152,15 +152,8 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
         screen.DrawImage(buffer, &options)
     }
 
-    oldDrawer := setDraw(drawer)
-    defer setDraw(oldDrawer)
-
-    // avoid triggering moves immediately
-    counter := uint64(1000)
     var keys []ebiten.Key
-    for {
-        counter += 1
-
+    readInputState := func() InputState {
         keys = inpututil.AppendPressedKeys(keys[:0])
         var inputState InputState
         for _, key := range keys {
@@ -202,15 +195,37 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
             }
         }
 
+        return inputState
+    }
+
+    oldDrawer := setDraw(drawer)
+    defer setDraw(oldDrawer)
+
+    levelLimit := 400
+
+    // avoid triggering moves immediately
+    counter := uint64(1000)
+    for {
+        counter += 1
+
+        inputState := readInputState()
+
         playerState.Update(inputState, level, counter)
+
+        if playerState.X > float64(levelLimit) {
+            playerState.X = float64(levelLimit)
+        }
 
         if int(playerState.X) - cameraX < (data.ScreenWidth/2) / 4 {
             cameraX = max(0, cameraX - 1)
         }
 
-        if int(playerState.X) - cameraX > (data.ScreenWidth/2) * 3 / 4 {
-            // FIXME: add limit based on level width
-            cameraX = int(playerState.X) - (data.ScreenWidth/2) * 3 / 4
+        if int(playerState.X) - cameraX > data.ScreenWidth / 2 * 3 / 4 {
+            cameraX = int(playerState.X) - data.ScreenWidth / 2 * 3 / 4
+        }
+
+        if data.ScreenWidth / 2 + cameraX > levelLimit {
+            cameraX = levelLimit - data.ScreenWidth / 2
         }
 
         err := yield()
