@@ -17,15 +17,13 @@ import (
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc) error {
-    levelPath := "paintown/levels/1.txt"
-
+func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
     }
 
-    cameraX := 0
+    cameraX := float64(0)
 
     animations, err := player.LoadAnimations()
     if err != nil {
@@ -33,7 +31,7 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     }
 
     playerState := PlayerState{
-        X: 40,
+        X: 60,
         Y: 0,
         Z: float64(level.ZMinimum + level.ZMaximum) / 2,
         Status: PlayerIdle,
@@ -46,7 +44,7 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     drawBackground := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
-        options.GeoM.Translate(float64(-cameraX) * 1/float64(level.BackgroundParallax), 0)
+        options.GeoM.Translate(-cameraX * 1/float64(level.BackgroundParallax), 0)
         if level.BackgroundImage != nil {
             for {
                 x, _ := options.GeoM.Apply(0, 0)
@@ -61,7 +59,7 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
 
     drawBackPanels := func(screen *ebiten.Image) {
         var orderOptions ebiten.DrawImageOptions
-        orderOptions.GeoM.Translate(float64(-cameraX), 0)
+        orderOptions.GeoM.Translate(-cameraX, 0)
         for _, index := range level.PanelOrder {
             x, _ := orderOptions.GeoM.Apply(0, 0)
             if int(x) > screen.Bounds().Dx() {
@@ -79,7 +77,7 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     drawFrontPanels := func(screen *ebiten.Image) {
         if len(level.FrontPanels) > 0 {
             var panelOptions ebiten.DrawImageOptions
-            panelOptions.GeoM.Translate(float64(-cameraX) * float64(level.ForegroundParallax), float64(screen.Bounds().Dy()))
+            panelOptions.GeoM.Translate(-cameraX * float64(level.ForegroundParallax), float64(screen.Bounds().Dy()))
             panelI := 0
             for {
                 x, _ := panelOptions.GeoM.Apply(0, 0)
@@ -108,7 +106,7 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
                 options.ColorScale.ScaleAlpha(0.7 * float32(trail.Time) / float32(playerState.TrailLength))
             }
 
-            options.GeoM.Translate(trail.X - float64(cameraX), trail.Z - playerState.Y)
+            options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
             bounds := trail.Image.Bounds()
             if playerState.Facing == FacingLeft {
                 options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
@@ -128,7 +126,7 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
                 options.GeoM.Scale(-1, 1)
             }
 
-            options.GeoM.Translate(playerState.X - float64(cameraX), playerState.Z - playerState.Y)
+            options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
             bounds := animation.CurrentFrame().Bounds()
             if playerState.Facing == FacingLeft {
                 options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
@@ -201,31 +199,59 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
-    levelLimit := 400
+    blocks := level.Blocks
+    if len(blocks) == 0 {
+        return fmt.Errorf("No blocks in level")
+    }
+
+    currentBlock := -1
+    levelLimit := float64(0)
+
+    var enemies []*Enemy
+
+    cameraSpeed := float64(1)
+
+    // enemies = append(enemies, &Enemy{})
 
     // avoid triggering moves immediately
     counter := uint64(1000)
-    for {
+    for currentBlock < len(blocks) {
         counter += 1
+
+        if playerState.X > float64(levelLimit) - 50 && len(enemies) == 0 {
+            currentBlock += 1
+            if currentBlock < len(blocks) {
+                levelLimit += float64(blocks[currentBlock].Length)
+                log.Printf("Entering block %v, limit %v", currentBlock, levelLimit)
+
+                enemies = nil
+                for _, object := range blocks[currentBlock].Objects {
+                    if object.Type == "enemy" {
+                        enemies = append(enemies, &Enemy{})
+                    }
+                }
+            }
+        }
 
         inputState := readInputState()
 
         playerState.Update(inputState, level, counter)
 
-        if playerState.X > float64(levelLimit) {
-            playerState.X = float64(levelLimit)
+        if playerState.X > levelLimit {
+            playerState.X = levelLimit
         }
 
-        if int(playerState.X) - cameraX < (data.ScreenWidth/2) / 4 {
-            cameraX = max(0, cameraX - 1)
+        if playerState.X - cameraX < (data.ScreenWidth/2) / 4 {
+            cameraX = max(0, cameraX - cameraSpeed)
         }
 
-        if int(playerState.X) - cameraX > data.ScreenWidth / 2 * 3 / 4 {
-            cameraX = int(playerState.X) - data.ScreenWidth / 2 * 3 / 4
+        if playerState.X - cameraX > data.ScreenWidth / 2 * 3 / 4 {
+            cameraX = cameraX + cameraSpeed
+            // int(playerState.X) - data.ScreenWidth / 2 * 3 / 4
         }
 
         if data.ScreenWidth / 2 + cameraX > levelLimit {
-            cameraX = levelLimit - data.ScreenWidth / 2
+            cameraX = max(0, levelLimit - data.ScreenWidth / 2)
         }
 
         err := yield()
@@ -233,6 +259,9 @@ func RunGame(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(
             return err
         }
     }
+
+    // goto next level
+    return nil
 }
 
 func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer data.DrawFunc) data.DrawFunc) (*PaintownCharacter, error) {

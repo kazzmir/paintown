@@ -2,6 +2,7 @@ package main
 
 import (
     "log"
+    "fmt"
 
     "github.com/kazzmir/paintown/game/lib/coroutine"
     "github.com/kazzmir/paintown/game/paintown"
@@ -46,9 +47,11 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc) (func (yield 
                         return err
                     }
 
-                    err = paintown.RunGame(choosePlayer, yield, setDraw)
-                    if err != nil {
-                        return err
+                    for i := range 10 {
+                        err = paintown.RunLevel(choosePlayer, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i + 1))
+                        if err != nil {
+                            return err
+                        }
                     }
                 }
             }
