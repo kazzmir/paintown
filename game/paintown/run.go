@@ -42,6 +42,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         animation.Owner = &playerState
     }
 
+    var enemies []*Enemy
+
     drawBackground := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
         options.GeoM.Translate(-cameraX * 1/float64(level.BackgroundParallax), 0)
@@ -94,6 +96,29 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
     }
 
+    drawEnemies := func(screen *ebiten.Image) {
+        var options ebiten.DrawImageOptions
+
+        for _, enemy := range enemies {
+            animation := enemy.CurrentAnimation
+
+            if animation != nil && animation.CurrentFrame() != nil {
+                if enemy.Facing == FacingLeft {
+                    options.GeoM.Scale(-1, 1)
+                }
+
+                options.GeoM.Translate(enemy.X - cameraX, enemy.Z - enemy.Y)
+                bounds := animation.CurrentFrame().Bounds()
+                if enemy.Facing == FacingLeft {
+                    options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+                } else {
+                    options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+                }
+                screen.DrawImage(animation.CurrentFrame(), &options)
+            }
+        }
+    }
+
     drawPlayer := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
 
@@ -142,6 +167,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         drawBackground(buffer)
         drawBackPanels(buffer)
 
+        drawEnemies(buffer)
         drawPlayer(buffer)
 
         drawFrontPanels(buffer)
@@ -196,6 +222,22 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         return inputState
     }
 
+    createEnemies := func(objects []BlockObject) []*Enemy {
+        var out []*Enemy
+        for _, object := range objects {
+            if object.Type == "enemy" {
+                enemy, err := MakeEnemy(object)
+                if err != nil {
+                    log.Printf("Error creating enemy from object '%v': %v", object.Name, err)
+                } else {
+                    out = append(out, enemy)
+                }
+            }
+        }
+
+        return out
+    }
+
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
@@ -206,8 +248,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
     currentBlock := -1
     levelLimit := float64(0)
-
-    var enemies []*Enemy
 
     cameraSpeed := float64(1)
 
@@ -224,11 +264,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 levelLimit += float64(blocks[currentBlock].Length)
                 log.Printf("Entering block %v, limit %v", currentBlock, levelLimit)
 
-                enemies = nil
-                for _, object := range blocks[currentBlock].Objects {
-                    if object.Type == "enemy" {
-                        enemies = append(enemies, &Enemy{})
-                    }
+                enemies = createEnemies(blocks[currentBlock].Objects)
+                for _, enemy := range enemies {
+                    enemy.X += levelLimit - float64(blocks[currentBlock].Length)
+                    enemy.Z += float64(level.ZMinimum)
                 }
             }
         }
@@ -252,6 +291,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         if data.ScreenWidth / 2 + cameraX > levelLimit {
             cameraX = max(0, levelLimit - data.ScreenWidth / 2)
+        }
+
+        for _, enemy := range enemies {
+            enemy.Update(level)
         }
 
         err := yield()
