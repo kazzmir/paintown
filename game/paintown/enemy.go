@@ -107,7 +107,7 @@ func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
     }
 
     // if near the player, then initiate an attack
-    if rand.N(5) == 0 && (enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking) {
+    if rand.N(50) == 0 && (enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking) {
         var choices []*Animation
         zRange := 3.0
         for _, attack := range enemy.GetAttacks() {
