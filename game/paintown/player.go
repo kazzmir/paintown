@@ -274,34 +274,15 @@ func keyFromString(key string) InputKey {
 }
 
 func parseAttack(definition *sexp.SExpr) AnimationAttack {
-    x1Element := definition.GetChild("x1")
-    y1Element := definition.GetChild("y1")
-    x2Element := definition.GetChild("x2")
-    y2Element := definition.GetChild("y2")
-    forceElement := definition.GetChild("force")
-    damageElement := definition.GetChild("damage")
-
     var x1, y1, x2, y2 int
     var force, damage float64
 
-    if x1Element != nil {
-        x1, _ = x1Element.GetInt(0)
-    }
-    if y1Element != nil {
-        y1, _ = y1Element.GetInt(0)
-    }
-    if x2Element != nil {
-        x2, _ = x2Element.GetInt(0)
-    }
-    if y2Element != nil {
-        y2, _ = y2Element.GetInt(0)
-    }
-    if forceElement != nil {
-        force, _ = strconv.ParseFloat(forceElement.GetValue(0), 64)
-    }
-    if damageElement != nil {
-        damage, _ = strconv.ParseFloat(damageElement.GetValue(0), 64)
-    }
+    x1, _ = sexp.ReadValue[int](definition, "x1", 0)
+    y1, _ = sexp.ReadValue[int](definition, "y1", 0)
+    x2, _ = sexp.ReadValue[int](definition, "x2", 0)
+    y2, _ = sexp.ReadValue[int](definition, "y2", 0)
+    force, _ = sexp.ReadValue[float64](definition, "force", 0)
+    damage, _ = sexp.ReadValue[float64](definition, "damage", 0)
 
     return AnimationAttack{
         X1: x1,
