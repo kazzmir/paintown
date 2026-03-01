@@ -9,17 +9,28 @@ import (
     "github.com/kazzmir/paintown/game/data"
 )
 
+type EnemyState int
+
+const (
+    EnemyStateIdle EnemyState = iota
+    EnemyStateWalking
+    EnemyStateAttacking
+)
+
 type Enemy struct {
     Character *CharacterDefinition
     X float64
     Z float64
     Y float64
 
+    State EnemyState
+
     HasDestination bool
     DestX float64
     DestZ float64
     CurrentAnimation *Animation
     Animations map[string]*Animation
+    Attacks []*Animation
     Facing Facing
 }
 
@@ -58,7 +69,15 @@ func MakeEnemy(object BlockObject) (*Enemy, error) {
         idle = nil
     }
 
+    var attacks []*Animation
+    for _, animation := range animations {
+        if animation.HasAttack() {
+            attacks = append(attacks, animation)
+        }
+    }
+
     return &Enemy{
+        Attacks: attacks,
         Character: &definition,
         Animations: animations,
         CurrentAnimation: idle,
@@ -73,7 +92,38 @@ type PlayerInfo interface {
     GetZ() float64
 }
 
+func abs(x float64) float64 {
+    return max(x, -x)
+}
+
+func (enemy *Enemy) GetAttacks() []*Animation {
+    return enemy.Attacks
+}
+
 func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
+
+    if enemy.State == EnemyStateAttacking {
+        return
+    }
+
+    // if near the player, then initiate an attack
+    if rand.N(5) == 0 && (enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking) {
+        var choices []*Animation
+        zRange := 3.0
+        for _, attack := range enemy.GetAttacks() {
+            if abs(enemy.X - playerInfo.GetX()) < float64(attack.GetRange()) && abs(enemy.Z - playerInfo.GetZ()) < zRange {
+                choices = append(choices, attack)
+            }
+        }
+
+        if len(choices) > 0 {
+            enemy.State = EnemyStateAttacking
+            enemy.CurrentAnimation = choices[rand.N(len(choices))]
+            enemy.CurrentAnimation.Reset()
+            return
+        }
+    }
+
     if !enemy.HasDestination && rand.N(30) == 0 {
 
         if rand.N(5) == 0 {
@@ -120,6 +170,9 @@ func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
         if !moved {
             enemy.HasDestination = false
             enemy.CurrentAnimation = enemy.Animations["idle"]
+            enemy.State = EnemyStateIdle
+        } else {
+            enemy.State = EnemyStateWalking
         }
     }
 }
@@ -135,6 +188,10 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
     }
 
     if enemy.CurrentAnimation != nil {
-        enemy.CurrentAnimation.Update()
+        if enemy.CurrentAnimation.Update() {
+            if enemy.State == EnemyStateAttacking {
+                enemy.State = EnemyStateIdle
+            }
+        }
     }
 }

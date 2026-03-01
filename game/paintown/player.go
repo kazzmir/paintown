@@ -62,6 +62,15 @@ type AnimationOwner interface {
     SetTrail(generate int, length int)
 }
 
+type AnimationAttack struct {
+    X1 int
+    Y1 int
+    X2 int
+    Y2 int
+    Force float64
+    Damage float64
+}
+
 type Animation struct {
     Name string
     Frame *ebiten.Image
@@ -70,6 +79,8 @@ type Animation struct {
     Keys []InputKey
     // times when the keys were pressed
     KeyPresses []uint64
+
+    Range int
 
     Sequence string
     Status string
@@ -81,9 +92,10 @@ type Animation struct {
     CurrentDelay int
 
     Owner AnimationOwner
+    Attacks []AnimationAttack
 }
 
-func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequence string, status string) *Animation {
+func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequence string, status string, attacks []AnimationAttack) *Animation {
     return &Animation{
         Name: name,
         Keys: keys,
@@ -92,7 +104,16 @@ func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequen
         Sequence: sequence,
         Status: status,
         Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
+        Attacks: attacks,
     }
+}
+
+func (animation *Animation) HasAttack() bool {
+    return len(animation.Attacks) > 0
+}
+
+func (animation *Animation) GetRange() int {
+    return animation.Range
 }
 
 func (animation *Animation) CurrentFrame() *ebiten.Image {
@@ -181,14 +202,6 @@ func (typeEvent *AnimationEventType) Update(animation *Animation) {
     // TODO
 }
 
-type AnimationEventRange struct {
-    Range int
-}
-
-func (rangeEvent *AnimationEventRange) Update(animation *Animation) {
-    // TODO
-}
-
 type AnimationMoveEvent struct {
     X int
     Y int
@@ -215,12 +228,6 @@ func (faceEvent *AnimationFaceEvent) Update(animation *Animation) {
         case "left": animation.Owner.SetFacing(FacingLeft)
         case "right": animation.Owner.SetFacing(FacingRight)
     }
-}
-
-type AnimationEventAttack struct {
-    // TODO
-    /* (attack (box (x1 ...) (y1 ...) (x2 ...) (y2 ...) (force x y) (damage d)))
-     */
 }
 
 type AnimationEventRelativeOffset struct {
@@ -266,12 +273,18 @@ func keyFromString(key string) InputKey {
     return InputKeyNone
 }
 
+func parseAttack(definition *sexp.SExpr) AnimationAttack {
+    return AnimationAttack{}
+}
+
 func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
     var events []AnimationEvent
     var name string
     var sequence string
     var status string
+    var rangeValue int = 0
     var keys []InputKey
+    var attacks []AnimationAttack
     for _, child := range definition.Children {
         switch strings.ToLower(child.Name) {
             case "name":
@@ -304,8 +317,12 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                 }
             case "attack":
                 log.Printf("Handle 'attack'")
+                attacks = append(attacks, parseAttack(child))
             case "range":
-                log.Printf("Handle 'range'")
+                v, ok := child.GetInt(0)
+                if ok {
+                    rangeValue = v
+                }
             case "status":
                 status = child.GetValue(0)
             case "sequence":
@@ -368,7 +385,10 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
         }
     }
 
-    return MakeAnimation(name, events, keys, sequence, status), nil
+    out := MakeAnimation(name, events, keys, sequence, status, attacks)
+    out.Range = rangeValue
+
+    return out, nil
 }
 
 type PaintownCharacter struct {
