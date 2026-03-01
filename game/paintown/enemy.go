@@ -2,11 +2,13 @@ package paintown
 
 import (
     "log"
+    "fmt"
     "math/rand/v2"
     "path/filepath"
     "strings"
 
     "github.com/kazzmir/paintown/game/data"
+    "github.com/kazzmir/paintown/game/lib/sexp"
 )
 
 type EnemyState int
@@ -38,7 +40,7 @@ type Enemy struct {
     Facing Facing
 }
 
-func loadAnimations(definition *CharacterDefinition) (map[string]*Animation, error) {
+func loadAnimations(definition *CharacterDefinition, factory *ObjectFactory) (map[string]*Animation, error) {
     animations := definition.FindAll("character", "anim")
 
     // log.Printf("Found %v animations for character %v", len(animations), character.Definition.Name)
@@ -48,7 +50,7 @@ func loadAnimations(definition *CharacterDefinition) (map[string]*Animation, err
         animationName := animation.GetChild("name")
         name := animationName.GetValue(0)
         base := filepath.Join("chars", strings.ToLower(definition.Name), name)
-        animation, err := MakeAnimationFromDefinition(base, animation)
+        animation, err := factory.MakeAnimationFromDefinition(strings.ToLower(definition.Name), name, base, animation)
         if err == nil {
             out[name] = animation
         } else {
@@ -59,14 +61,72 @@ func loadAnimations(definition *CharacterDefinition) (map[string]*Animation, err
     return out, nil
 }
 
-func MakeEnemy(object BlockObject) (*Enemy, error) {
+type ObjectFactory struct {
+    definitions map[string]CharacterDefinition
+    animations map[string]map[string]*Animation
+}
+
+func MakeObjectFactory() *ObjectFactory {
+    return &ObjectFactory{
+        definitions: make(map[string]CharacterDefinition),
+        animations: make(map[string]map[string]*Animation),
+    }
+}
+
+func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animation string, baseDir string, definition *sexp.SExpr) (*Animation, error) {
+    chars, ok := factory.animations[player]
+    if !ok {
+        chars = make(map[string]*Animation)
+        factory.animations[player] = chars
+    }
+
+    useAnimation, ok := chars[player]
+    if !ok {
+        dir, ok := sexp.ReadValue[string](definition, "basedir", 0)
+        if ok {
+            baseDir = dir
+        }
+
+        loaded, err := MakeAnimationFromDefinition(baseDir, definition)
+        if err != nil {
+            return nil, err
+        }
+        useAnimation = loaded
+    }
+
+    if useAnimation != nil {
+        out := useAnimation.Clone()
+        out.Reset()
+        return out, nil
+    }
+
+    return nil, fmt.Errorf("Animation '%v' for character '%v' not found", animation, player)
+}
+
+func (factory *ObjectFactory) LoadDefinition(path string) (CharacterDefinition, error) {
+    definition, ok := factory.definitions[path]
+    if !ok {
+        var err error
+        definition, err = loadDefinition(path)
+        if err != nil {
+            return CharacterDefinition{}, err
+        }
+
+        factory.definitions[path] = definition
+    }
+
+    return definition, nil
+}
+
+func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
     definitionPath := data.DataPath(object.Path)
-    definition, err := loadDefinition(definitionPath)
+
+    definition, err := factory.LoadDefinition(definitionPath)
     if err != nil {
         return nil, err
     }
 
-    animations, err := loadAnimations(&definition)
+    animations, err := loadAnimations(&definition, factory)
 
     idle, ok := animations["idle"]
     if !ok {
