@@ -108,6 +108,16 @@ func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequen
     }
 }
 
+// return a duplicate animation but without an owner
+// the caller should invoke Reset() on the returned animation to reset the event state
+func (animation *Animation) Clone() *Animation {
+    out := *animation
+    out.Owner = nil
+    out.KeyPresses = make([]uint64, len(animation.Keys))
+    out.CurrentEvent = 0
+    return &out
+}
+
 func (animation *Animation) HasAttack() bool {
     return len(animation.Attacks) > 0
 }
