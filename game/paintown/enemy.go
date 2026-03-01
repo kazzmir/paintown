@@ -15,6 +15,9 @@ const (
     EnemyStateIdle EnemyState = iota
     EnemyStateWalking
     EnemyStateAttacking
+    EnemyStateFalling
+    EnemyStateFallen
+    EnemyStateRise
 )
 
 type Enemy struct {
@@ -24,6 +27,7 @@ type Enemy struct {
     Y float64
 
     State EnemyState
+    FallenCount int
 
     HasDestination bool
     DestX float64
@@ -104,6 +108,34 @@ func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
 
     if enemy.State == EnemyStateAttacking {
         return
+    }
+
+    if enemy.State == EnemyStateFallen {
+        if enemy.FallenCount > 0 {
+            enemy.FallenCount -= 1
+        } else {
+            enemy.State = EnemyStateRise
+            rise, ok := enemy.Animations["rise"]
+            if ok {
+                enemy.CurrentAnimation = rise
+            } else {
+                enemy.State = EnemyStateIdle
+            }
+        }
+    }
+
+    if enemy.State == EnemyStateRise {
+        return
+    }
+
+    if enemy.State == EnemyStateFalling {
+        enemy.Y -= 1
+        if enemy.Y < 0 {
+            enemy.Y = 0
+            enemy.State = EnemyStateFallen
+            // stay on ground for a while
+            enemy.FallenCount = 30
+        }
     }
 
     // if near the player, then initiate an attack
@@ -189,7 +221,7 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
 
     if enemy.CurrentAnimation != nil {
         if enemy.CurrentAnimation.Update() {
-            if enemy.State == EnemyStateAttacking {
+            if enemy.State == EnemyStateAttacking || enemy.State == EnemyStateRise {
                 enemy.State = EnemyStateIdle
             }
         }

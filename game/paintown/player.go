@@ -333,7 +333,6 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                     }
                 }
             case "attack":
-                log.Printf("Handle 'attack'")
                 attacks = append(attacks, parseAttack(child))
             case "range":
                 v, ok := child.GetInt(0)
@@ -345,7 +344,8 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
             case "sequence":
                 sequence = child.GetValue(0)
             case "type":
-                log.Printf("Handle 'type'")
+                // log.Printf("Handle 'type'")
+                // attacks will have an (attack) event, so we can just ignore the type for now
             case "keys":
                 for _, key := range child.Children {
                     input := keyFromString(key.Name)
