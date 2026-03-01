@@ -274,7 +274,43 @@ func keyFromString(key string) InputKey {
 }
 
 func parseAttack(definition *sexp.SExpr) AnimationAttack {
-    return AnimationAttack{}
+    x1Element := definition.GetChild("x1")
+    y1Element := definition.GetChild("y1")
+    x2Element := definition.GetChild("x2")
+    y2Element := definition.GetChild("y2")
+    forceElement := definition.GetChild("force")
+    damageElement := definition.GetChild("damage")
+
+    var x1, y1, x2, y2 int
+    var force, damage float64
+
+    if x1Element != nil {
+        x1, _ = x1Element.GetInt(0)
+    }
+    if y1Element != nil {
+        y1, _ = y1Element.GetInt(0)
+    }
+    if x2Element != nil {
+        x2, _ = x2Element.GetInt(0)
+    }
+    if y2Element != nil {
+        y2, _ = y2Element.GetInt(0)
+    }
+    if forceElement != nil {
+        force, _ = strconv.ParseFloat(forceElement.GetValue(0), 64)
+    }
+    if damageElement != nil {
+        damage, _ = strconv.ParseFloat(damageElement.GetValue(0), 64)
+    }
+
+    return AnimationAttack{
+        X1: x1,
+        Y1: y1,
+        X2: x2,
+        Y2: y2,
+        Force: force,
+        Damage: damage,
+    }
 }
 
 func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (*Animation, error) {
