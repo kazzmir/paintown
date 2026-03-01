@@ -266,6 +266,11 @@ func parseSExpr(reader io.Reader) (*SExpr, error) {
     return root, nil
 }
 
+func ReadSExpressionString(data string) (*SExpr, error) {
+    reader := strings.NewReader(data)
+    return parseSExpr(reader)
+}
+
 func ReadSExpression(path string) (*SExpr, error) {
     file, err := os.Open(path)
     if err != nil {
