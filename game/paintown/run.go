@@ -7,6 +7,8 @@ import (
     "os"
     "math"
     "image/color"
+    "slices"
+    "cmp"
 
     "github.com/kazzmir/paintown/game/lib/coroutine"
     "github.com/kazzmir/paintown/game/graphics"
@@ -96,10 +98,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
     }
 
-    drawEnemies := func(screen *ebiten.Image) {
+    drawEnemy := func(enemy *Enemy, screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
 
-        for _, enemy := range enemies {
+        // for _, enemy := range enemies {
             animation := enemy.CurrentAnimation
 
             if animation != nil && animation.CurrentFrame() != nil {
@@ -116,7 +118,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 }
                 screen.DrawImage(animation.CurrentFrame(), &options)
             }
-        }
+        // }
     }
 
     drawPlayer := func(screen *ebiten.Image) {
@@ -162,13 +164,41 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
     }
 
+    type Drawable struct {
+        Z float64
+        Draw func()
+    }
+
+    var objects []Drawable
     buffer := ebiten.NewImage(data.ScreenWidth / 2, data.ScreenHeight / 2)
     drawer := func(screen *ebiten.Image) {
         drawBackground(buffer)
         drawBackPanels(buffer)
 
-        drawEnemies(buffer)
-        drawPlayer(buffer)
+        objects = objects[:0]
+        for _, enemy := range enemies {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    drawEnemy(enemy, buffer)
+                },
+                Z: enemy.Z,
+            })
+        }
+
+        objects = append(objects, Drawable{
+            Draw: func(){
+                drawPlayer(buffer)
+            },
+            Z: playerState.Z,
+        })
+
+        slices.SortStableFunc(objects, func (a, b Drawable) int {
+            return cmp.Compare(a.Z, b.Z)
+        })
+
+        for _, object := range objects {
+            object.Draw()
+        }
 
         drawFrontPanels(buffer)
         var options ebiten.DrawImageOptions
@@ -294,7 +324,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         for _, enemy := range enemies {
-            enemy.Update(level)
+            enemy.Update(level, &playerState)
         }
 
         err := yield()

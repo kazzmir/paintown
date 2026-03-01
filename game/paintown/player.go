@@ -483,6 +483,18 @@ type PlayerState struct {
     Trails []*Trail
 }
 
+func (playerState *PlayerState) GetX() float64 {
+    return playerState.X
+}
+
+func (playerState *PlayerState) GetY() float64 {
+    return playerState.Y
+}
+
+func (playerState *PlayerState) GetZ() float64 {
+    return playerState.Z
+}
+
 func (playerState *PlayerState) GetFacing() Facing {
     return playerState.Facing
 }

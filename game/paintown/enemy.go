@@ -2,6 +2,7 @@ package paintown
 
 import (
     "log"
+    "math/rand/v2"
     "path/filepath"
     "strings"
 
@@ -13,6 +14,10 @@ type Enemy struct {
     X float64
     Z float64
     Y float64
+
+    HasDestination bool
+    DestX float64
+    DestZ float64
     CurrentAnimation *Animation
     Animations map[string]*Animation
     Facing Facing
@@ -63,7 +68,72 @@ func MakeEnemy(object BlockObject) (*Enemy, error) {
     }, nil
 }
 
-func (enemy *Enemy) Update(level *Level) {
+type PlayerInfo interface {
+    GetX() float64
+    GetZ() float64
+}
+
+func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
+    if !enemy.HasDestination && rand.N(30) == 0 {
+
+        if rand.N(5) == 0 {
+            // head directly towards the player
+            side := 1.0
+            if rand.N(2) == 0 {
+                side = -1.0
+            }
+            enemy.DestX = playerInfo.GetX() + 30 * side
+            enemy.DestZ = playerInfo.GetZ()
+        } else {
+            // move to a random place
+            width := 400
+            enemy.DestX = playerInfo.GetX() + float64(rand.N(width)) - float64(width) / 2
+            enemy.DestZ = float64(rand.N(level.ZMaximum - level.ZMinimum) + level.ZMinimum) + rand.Float64() - 0.5
+        }
+
+        enemy.HasDestination = true
+    }
+
+    if enemy.HasDestination {
+        walk, ok := enemy.Animations["walk"]
+        if ok && enemy.CurrentAnimation != walk {
+            enemy.CurrentAnimation = walk
+        }
+
+        moved := false
+        if enemy.X < enemy.DestX {
+            enemy.X += min(1, enemy.DestX - enemy.X)
+            moved = true
+        } else if enemy.X > enemy.DestX {
+            enemy.X -= min(1, enemy.X - enemy.DestX)
+            moved = true
+        }
+
+        if enemy.Z < enemy.DestZ {
+            enemy.Z += min(1, enemy.DestZ - enemy.Z)
+            moved = true
+        } else if enemy.Z > enemy.DestZ {
+            enemy.Z -= min(1, enemy.Z - enemy.DestZ)
+            moved = true
+        }
+
+        if !moved {
+            enemy.HasDestination = false
+            enemy.CurrentAnimation = enemy.Animations["idle"]
+        }
+    }
+}
+
+func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
+    enemy.Move(level, playerInfo)
+
+    if enemy.X < playerInfo.GetX() {
+        enemy.Facing = FacingRight
+    }
+    if enemy.X > playerInfo.GetX() {
+        enemy.Facing = FacingLeft
+    }
+
     if enemy.CurrentAnimation != nil {
         enemy.CurrentAnimation.Update()
     }
