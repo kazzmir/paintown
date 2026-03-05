@@ -1,0 +1,428 @@
+package cns
+
+import (
+	"fmt"
+	"io"
+	"strconv"
+	"strings"
+
+	"github.com/kazzmir/paintown/game/mugen/parsers"
+)
+
+type Data struct {
+	Life              int
+	Attack            int
+	Defence           int
+	FallDefenceUp     int
+	LiedownTime       int
+	AirJuggle         int
+	SparkNo           int
+	GuardSparkNo      int
+	KOEcho            int
+	Volume            int
+	IntPersistIndex   int
+	FloatPersistIndex int
+}
+
+type Size struct {
+	XScale         float64
+	YScale         float64
+	GroundBack     int
+	GroundFront    int
+	AirBack        int
+	AirFront       int
+	Height         int
+	AttackDist     int
+	ProjAttackDist int
+	ProjDoScale    int
+	HeadPos        []int
+	MidPos         []int
+	ShadowOffset   int
+	DrawOffset     []int
+}
+
+type Velocity struct {
+	WalkFwd     float64
+	WalkBack    float64
+	RunFwd      []float64
+	RunBack     []float64
+	JumpNeu     []float64
+	JumpBack    float64
+	JumpFwd     float64
+	RunJumpBack []float64
+	RunJumpFwd  []float64
+	AirJumpNeu  []float64
+	AirJumpBack float64
+	AirJumpFwd  float64
+}
+
+type Movement struct {
+	AirJumpNum     int
+	AirJumpHeight  int
+	YAccel         float64
+	StandFriction  float64
+	CrouchFriction float64
+}
+
+type StateController struct {
+	Name     string
+	Type     string
+	Triggers []string
+	// The rest of the keys we'll store loosely for now, or just provide access to the raw attributes
+	// In a full implementation, each controller type (ChangeState, HitDef, etc) has specific fields.
+	// We'll store them as a string map to avoid creating 50 struct types right now.
+	Params map[string]string
+}
+
+type StateDef struct {
+	ID          int
+	Type        string
+	MoveType    string
+	Physics     string
+	Anim        int
+	Ctrl        int
+	VelSet      []float64
+	PowerAdd    int
+	Juggle      int
+	FaceP2      int
+	HitDefault  int
+	SprPriority int
+
+	Controllers []StateController
+}
+
+type CNS struct {
+	Data     Data
+	Size     Size
+	Velocity Velocity
+	Movement Movement
+	States   map[int]*StateDef
+}
+
+func Parse(r io.Reader) (*CNS, error) {
+	ast, err := parsers.Parse(r)
+	if err != nil {
+		return nil, err
+	}
+
+	cns := &CNS{
+		States: make(map[int]*StateDef),
+	}
+
+	var currentState *StateDef
+
+	for _, section := range ast.Sections {
+		secName := strings.ToLower(strings.TrimSpace(section.Name))
+
+		if secName == "data" {
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if key == "life" {
+					cns.Data.Life = getAsInt(attr.Value)
+				}
+				if key == "attack" {
+					cns.Data.Attack = getAsInt(attr.Value)
+				}
+				if key == "defence" {
+					cns.Data.Defence = getAsInt(attr.Value)
+				}
+				if key == "fall.defence_up" {
+					cns.Data.FallDefenceUp = getAsInt(attr.Value)
+				}
+				if key == "liedown.time" {
+					cns.Data.LiedownTime = getAsInt(attr.Value)
+				}
+				if key == "airjuggle" {
+					cns.Data.AirJuggle = getAsInt(attr.Value)
+				}
+				if key == "sparkno" {
+					cns.Data.SparkNo = getAsInt(attr.Value)
+				}
+				if key == "guard.sparkno" {
+					cns.Data.GuardSparkNo = getAsInt(attr.Value)
+				}
+				if key == "ko.echo" {
+					cns.Data.KOEcho = getAsInt(attr.Value)
+				}
+				if key == "volume" {
+					cns.Data.Volume = getAsInt(attr.Value)
+				}
+				if key == "intpersistindex" {
+					cns.Data.IntPersistIndex = getAsInt(attr.Value)
+				}
+				if key == "floatpersistindex" {
+					cns.Data.FloatPersistIndex = getAsInt(attr.Value)
+				}
+			}
+		} else if secName == "size" {
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if key == "xscale" {
+					cns.Size.XScale = getAsFloat(attr.Value)
+				}
+				if key == "yscale" {
+					cns.Size.YScale = getAsFloat(attr.Value)
+				}
+				if key == "ground.back" {
+					cns.Size.GroundBack = getAsInt(attr.Value)
+				}
+				if key == "ground.front" {
+					cns.Size.GroundFront = getAsInt(attr.Value)
+				}
+				if key == "air.back" {
+					cns.Size.AirBack = getAsInt(attr.Value)
+				}
+				if key == "air.front" {
+					cns.Size.AirFront = getAsInt(attr.Value)
+				}
+				if key == "height" {
+					cns.Size.Height = getAsInt(attr.Value)
+				}
+				if key == "attack.dist" {
+					cns.Size.AttackDist = getAsInt(attr.Value)
+				}
+				if key == "proj.attack.dist" {
+					cns.Size.ProjAttackDist = getAsInt(attr.Value)
+				}
+				if key == "proj.doscale" {
+					cns.Size.ProjDoScale = getAsInt(attr.Value)
+				}
+				if key == "head.pos" {
+					cns.Size.HeadPos = getAsIntArray(attr.Value)
+				}
+				if key == "mid.pos" {
+					cns.Size.MidPos = getAsIntArray(attr.Value)
+				}
+				if key == "shadowoffset" {
+					cns.Size.ShadowOffset = getAsInt(attr.Value)
+				}
+				if key == "draw.offset" {
+					cns.Size.DrawOffset = getAsIntArray(attr.Value)
+				}
+			}
+		} else if secName == "velocity" {
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if key == "walk.fwd" {
+					cns.Velocity.WalkFwd = getAsFloat(attr.Value)
+				}
+				if key == "walk.back" {
+					cns.Velocity.WalkBack = getAsFloat(attr.Value)
+				}
+				if key == "run.fwd" {
+					cns.Velocity.RunFwd = getAsFloatArray(attr.Value)
+				}
+				if key == "run.back" {
+					cns.Velocity.RunBack = getAsFloatArray(attr.Value)
+				}
+				if key == "jump.neu" {
+					cns.Velocity.JumpNeu = getAsFloatArray(attr.Value)
+				}
+				if key == "jump.back" {
+					cns.Velocity.JumpBack = getAsFloat(attr.Value)
+				}
+				if key == "jump.fwd" {
+					cns.Velocity.JumpFwd = getAsFloat(attr.Value)
+				}
+				if key == "runjump.back" {
+					cns.Velocity.RunJumpBack = getAsFloatArray(attr.Value)
+				}
+				if key == "runjump.fwd" {
+					cns.Velocity.RunJumpFwd = getAsFloatArray(attr.Value)
+				}
+				if key == "airjump.neu" {
+					cns.Velocity.AirJumpNeu = getAsFloatArray(attr.Value)
+				}
+				if key == "airjump.back" {
+					cns.Velocity.AirJumpBack = getAsFloat(attr.Value)
+				}
+				if key == "airjump.fwd" {
+					cns.Velocity.AirJumpFwd = getAsFloat(attr.Value)
+				}
+			}
+		} else if secName == "movement" {
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if key == "airjump.num" {
+					cns.Movement.AirJumpNum = getAsInt(attr.Value)
+				}
+				if key == "airjump.height" {
+					cns.Movement.AirJumpHeight = getAsInt(attr.Value)
+				}
+				if key == "yaccel" {
+					cns.Movement.YAccel = getAsFloat(attr.Value)
+				}
+				if key == "stand.friction" {
+					cns.Movement.StandFriction = getAsFloat(attr.Value)
+				}
+				if key == "crouch.friction" {
+					cns.Movement.CrouchFriction = getAsFloat(attr.Value)
+				}
+			}
+		} else if strings.HasPrefix(secName, "statedef ") {
+			idStr := strings.TrimSpace(strings.TrimPrefix(secName, "statedef "))
+			stateID, err := strconv.Atoi(idStr)
+			if err != nil {
+				continue
+			}
+
+			currentState = &StateDef{
+				ID:          stateID,
+				Controllers: make([]StateController, 0),
+			}
+			cns.States[stateID] = currentState
+
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				if key == "type" {
+					currentState.Type = getAsString(attr.Value)
+				}
+				if key == "movetype" {
+					currentState.MoveType = getAsString(attr.Value)
+				}
+				if key == "physics" {
+					currentState.Physics = getAsString(attr.Value)
+				}
+				if key == "anim" {
+					currentState.Anim = getAsInt(attr.Value)
+				}
+				if key == "ctrl" {
+					currentState.Ctrl = getAsInt(attr.Value)
+				}
+				if key == "velset" {
+					currentState.VelSet = getAsFloatArray(attr.Value)
+				}
+				if key == "poweradd" {
+					currentState.PowerAdd = getAsInt(attr.Value)
+				}
+				if key == "juggle" {
+					currentState.Juggle = getAsInt(attr.Value)
+				}
+				if key == "facep2" {
+					currentState.FaceP2 = getAsInt(attr.Value)
+				}
+				if key == "hitdefpersist" { /* ignore for now */
+				}
+				if key == "movehitpersist" { /* ignore for now */
+				}
+				if key == "hitcountpersist" { /* ignore for now */
+				}
+				if key == "sprpriority" {
+					currentState.SprPriority = getAsInt(attr.Value)
+				}
+			}
+		} else if strings.HasPrefix(secName, "state ") {
+			if currentState == nil {
+				// Controller without a StateDef? Valid in MUGEN maybe for injected common1 states but we skip for strictness
+				continue
+			}
+
+			ctrl := StateController{
+				Triggers: make([]string, 0),
+				Params:   make(map[string]string),
+			}
+
+			parts := strings.SplitN(section.Name, ",", 2)
+			if len(parts) > 1 {
+				ctrl.Name = strings.TrimSpace(parts[1])
+			}
+
+			for _, attr := range section.Attributes {
+				key := strings.ToLower(attr.ID.String())
+
+				if key == "type" {
+					ctrl.Type = getAsString(attr.Value)
+				} else if strings.HasPrefix(key, "trigger") {
+					strVal := renderRawValue(attr.Value)
+					ctrl.Triggers = append(ctrl.Triggers, fmt.Sprintf("%s = %s", attr.ID.String(), strVal))
+				} else {
+					ctrl.Params[key] = renderRawValue(attr.Value)
+				}
+			}
+
+			currentState.Controllers = append(currentState.Controllers, ctrl)
+		}
+	}
+
+	return cns, nil
+}
+
+func getAsInt(v parsers.Value) int {
+	if nv, ok := v.(parsers.NumberValue); ok {
+		return int(nv.Val)
+	}
+	if kv, ok := v.(parsers.KeywordValue); ok {
+		val, _ := strconv.Atoi(strings.TrimSpace(kv.Val))
+		return val
+	}
+	if sv, ok := v.(parsers.StringValue); ok {
+		val, _ := strconv.Atoi(strings.TrimSpace(sv.Val))
+		return val
+	}
+	return 0
+}
+
+func getAsFloat(v parsers.Value) float64 {
+	if nv, ok := v.(parsers.NumberValue); ok {
+		return nv.Val
+	}
+	if kv, ok := v.(parsers.KeywordValue); ok {
+		val, _ := strconv.ParseFloat(strings.TrimSpace(kv.Val), 64)
+		return val
+	}
+	if sv, ok := v.(parsers.StringValue); ok {
+		val, _ := strconv.ParseFloat(strings.TrimSpace(sv.Val), 64)
+		return val
+	}
+	return 0
+}
+
+func getAsString(v parsers.Value) string {
+	if kv, ok := v.(parsers.KeywordValue); ok {
+		return strings.TrimSpace(kv.Val)
+	}
+	if sv, ok := v.(parsers.StringValue); ok {
+		return strings.TrimSpace(sv.Val)
+	}
+	// Number representation fallback
+	if nv, ok := v.(parsers.NumberValue); ok {
+		return fmt.Sprintf("%v", nv.Val)
+	}
+	return ""
+}
+
+func getAsIntArray(v parsers.Value) []int {
+	if list, ok := v.(*parsers.ValueList); ok {
+		var arr []int
+		for _, item := range list.Values {
+			arr = append(arr, getAsInt(item))
+		}
+		return arr
+	}
+	return []int{getAsInt(v)}
+}
+
+func getAsFloatArray(v parsers.Value) []float64 {
+	if list, ok := v.(*parsers.ValueList); ok {
+		var arr []float64
+		for _, item := range list.Values {
+			arr = append(arr, getAsFloat(item))
+		}
+		return arr
+	}
+	return []float64{getAsFloat(v)}
+}
+
+func renderRawValue(v parsers.Value) string {
+	if list, ok := v.(*parsers.ValueList); ok {
+		var parts []string
+		for _, item := range list.Values {
+			parts = append(parts, renderRawValue(item))
+		}
+		return strings.Join(parts, ", ")
+	}
+	if sv, ok := v.(parsers.StringValue); ok {
+		return fmt.Sprintf("\"%s\"", sv.Val)
+	}
+	return getAsString(v)
+}
