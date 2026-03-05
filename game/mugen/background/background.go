@@ -3,6 +3,7 @@ package background
 import (
 	"fmt"
 	"image"
+	"image/color"
 	"math"
 	"strings"
 
@@ -25,7 +26,8 @@ const (
 )
 
 type Background struct {
-	Elements []Element
+	Elements     []Element
+	BGClearColor color.Color
 }
 
 type Element interface {
@@ -79,7 +81,7 @@ func (e *CommonElement) applyBlending(op *ebiten.DrawImageOptions, trans string,
 		op.Blend = ebiten.Blend{
 			BlendOperationRGB:           ebiten.BlendOperationReverseSubtract,
 			BlendOperationAlpha:         ebiten.BlendOperationAdd,
-			BlendFactorSourceRGB:        ebiten.BlendFactorOne,
+			BlendFactorSourceRGB:        ebiten.BlendFactorSourceAlpha,
 			BlendFactorDestinationRGB:   ebiten.BlendFactorOne,
 			BlendFactorSourceAlpha:      ebiten.BlendFactorOne,
 			BlendFactorDestinationAlpha: ebiten.BlendFactorOne,
@@ -213,7 +215,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 	}
 
 	w, h := img.Size()
-	drawX := float64(screen.Bounds().Dx()/2) + e.Start[0] + e.CurrentPos[0] - cameraX*e.Delta[0]
+	drawX := 160.0 + e.Start[0] + e.CurrentPos[0] - cameraX*e.Delta[0]
 	drawY := e.Start[1] + e.CurrentPos[1] - cameraY*e.Delta[1]
 
 	originX := drawX - float64(xAxis)
@@ -226,27 +228,32 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 	tileWidth := float64(w) + float64(e.Spacing[0])
 	tileHeight := float64(h) + float64(e.Spacing[1])
 
+	tileX, tileY := e.Tile[0], e.Tile[1]
+	if e.Type == Parallax {
+		tileY = 0
+	}
+
 	minX, maxX := 0, 0
 	minY, maxY := 0, 0
 
-	if e.Tile[0] > 0 {
+	if tileX == 1 {
 		leftLimit := -originX
 		rightLimit := screenW - originX
 		minX = int(math.Floor(leftLimit / tileWidth))
 		maxX = int(math.Ceil(rightLimit / tileWidth))
-		if e.Tile[0] > 1 {
-			maxX = minX + e.Tile[0] - 1
-		}
+	} else if tileX > 1 {
+		minX = 0
+		maxX = int(tileX) - 1
 	}
 
-	if e.Tile[1] > 0 {
+	if tileY == 1 {
 		topLimit := -originY
 		bottomLimit := screenH - originY
 		minY = int(math.Floor(topLimit / tileHeight))
 		maxY = int(math.Ceil(bottomLimit / tileHeight))
-		if e.Tile[1] > 1 {
-			maxY = minY + e.Tile[1] - 1
-		}
+	} else if tileY > 1 {
+		minY = 0
+		maxY = int(tileY) - 1
 	}
 
 	target := screen

@@ -7,7 +7,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 	"github.com/kazzmir/paintown/game/mugen/font"
 )
 
@@ -45,16 +44,23 @@ func (s *StoryboardState) Draw(screen *ebiten.Image) {
 }
 
 type TitleState struct {
-	engine      *Engine
-	selectIndex int
-	topIndex    int
-	items       []string
+	engine         *Engine
+	selectIndex    int
+	topIndex       int
+	items          []string
+	cursorAlpha    float64
+	cursorAlphaMod float64
 }
 
 func NewTitleState(engine *Engine) *TitleState {
 	s := &TitleState{
-		engine: engine,
+		engine:         engine,
+		cursorAlpha:    0,
+		cursorAlphaMod: 2.0 / 60.0, // Pulse over 1 second? No, let's use a faster rate. Reference used 2/255 per tick? No, 2 per check.
 	}
+	// Reference used 60 FPS. 2/255 * 60 = 0.47 per second.
+	// Let's use 2.0/255.0 as the mod.
+	s.cursorAlphaMod = 2.0 / 255.0
 	// Extract active menu items from motif
 	// MUGEN order is typically fixed: arcade, versus, teamarcade, teamversus, teamcoop, survival, survivalcoop, training, watch, options, exit
 	order := []string{"arcade", "versus", "teamarcade", "teamversus", "teamcoop", "survival", "survivalcoop", "training", "watch", "options", "exit"}
@@ -67,6 +73,14 @@ func NewTitleState(engine *Engine) *TitleState {
 }
 
 func (s *TitleState) Update() (State, error) {
+	s.cursorAlpha += s.cursorAlphaMod
+	if s.cursorAlpha > 42.0/255.0 {
+		s.cursorAlpha = 42.0 / 255.0
+		s.cursorAlphaMod = -2.0 / 255.0
+	} else if s.cursorAlpha < 0 {
+		s.cursorAlpha = 0
+		s.cursorAlphaMod = 2.0 / 255.0
+	}
 	if s.engine.motif.TitleBG != nil {
 		for _, el := range s.engine.motif.TitleBG.Elements {
 			el.Update()
@@ -87,6 +101,10 @@ func (s *TitleState) Update() (State, error) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
 		s.selectIndex = (s.selectIndex + 1) % len(s.items)
 		s.engine.PlaySnd(s.engine.motif.TitleInfo.CursorMoveSnd[0], s.engine.motif.TitleInfo.CursorMoveSnd[1])
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		return nil, ebiten.Termination
 	}
 
 	visibleItems := s.engine.motif.TitleInfo.VisibleItems
@@ -113,6 +131,13 @@ func (s *TitleState) Update() (State, error) {
 }
 
 func (s *TitleState) Draw(screen *ebiten.Image) {
+	// 0. Clear screen with bgclearcolor
+	if s.engine.motif.TitleBG != nil && s.engine.motif.TitleBG.BGClearColor != nil {
+		screen.Fill(s.engine.motif.TitleBG.BGClearColor)
+	} else {
+		screen.Fill(color.Black)
+	}
+
 	// 1. Draw Layer 0 Backgrounds
 	if s.engine.motif.TitleBG != nil {
 		for _, el := range s.engine.motif.TitleBG.Elements {
@@ -143,17 +168,18 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 
 	// 3. Draw Menu Items
 	// Determine menu window for clipping
-	menuTarget := screen
 	visibleItems = s.engine.motif.TitleInfo.VisibleItems
 	if visibleItems <= 0 {
 		visibleItems = len(s.items)
 	}
 
 	margins := s.engine.motif.TitleInfo.VisibleMargins
+	menuTarget := screen
+	minY := 0.0
 	if margins[0] != 0 || margins[1] != 0 {
 		// margins.y = 12, 8
-		minY := menuY - float64(margins[0])
-		maxY := menuY + float64(visibleItems)*spacingY + float64(margins[1])
+		minY = menuY - float64(margins[0])
+		maxY := menuY + float64(visibleItems-1)*spacingY + float64(margins[1])
 		menuTarget = screen.SubImage(image.Rect(0, int(minY), screen.Bounds().Dx(), int(maxY))).(*ebiten.Image)
 	}
 
@@ -161,22 +187,23 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 	if s.engine.motif.TitleInfo.BoxCursorVisible {
 		box := s.engine.motif.TitleInfo.BoxCursorCoords
 		bx := menuX + float64(box[0])
-		by := menuY + float64(s.selectIndex-s.topIndex)*spacingY + float64(box[1])
+		by := menuY - 2 + float64(s.selectIndex-s.topIndex)*spacingY + float64(box[1])
 		bw := float64(box[2] - box[0])
 		bh := float64(box[3] - box[1])
 
-		// Semi-transparent black highlight matching modern/accurate MUGEN looks
-		vector.DrawFilledRect(menuTarget, float32(bx), float32(by), float32(bw), float32(bh), color.RGBA{R: 0, G: 0, B: 0, A: 100}, true)
+		// Use a 1x1 image and scale it to avoid FillRect potential alpha issues on some platforms/drivers
+		cursorImg := ebiten.NewImage(1, 1)
+		cursorImg.Fill(color.RGBA{R: 128, G: 200, B: 255, A: 255})
+		op := &ebiten.DrawImageOptions{}
+		op.GeoM.Scale(bw, bh)
+		op.GeoM.Translate(bx, by)
+		op.Blend = ebiten.BlendSourceOver
+		op.ColorScale.ScaleAlpha(float32(s.cursorAlpha))
+		menuTarget.DrawImage(cursorImg, op)
 	}
 
-	// Loop visibleItems + 1 to show partially visible next item
-	for i := 0; i < visibleItems+1; i++ {
-		idx := s.topIndex + i
-		if idx >= len(s.items) {
-			break
-		}
-
-		id := s.items[idx]
+	// Loop all items, they will get clipped by the menu's rect or drawspace
+	for idx, id := range s.items {
 		name := s.engine.motif.TitleInfo.ItemNames[id]
 
 		fontInfo := s.engine.motif.TitleInfo.ItemFont
@@ -202,7 +229,8 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 					yShift = -float64(f.Height) + 2
 				}
 
-				f.Draw(menuTarget, name, int(menuX), int(menuY+float64(i)*spacingY+yShift), fontInfo.Bank, align)
+				// Draw at y = menu_pos.y + (idx - topIndex) * spacing.y
+				f.Draw(menuTarget, name, int(menuX), int(menuY+float64(idx-s.topIndex)*spacingY+yShift), fontInfo.Bank, align)
 			}
 		}
 	}

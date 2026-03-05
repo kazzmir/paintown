@@ -2,6 +2,7 @@ package motif
 
 import (
 	"fmt"
+	"image/color"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -206,6 +207,15 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 			lowerName := strings.ToLower(sec.Name)
 			if strings.HasPrefix(lowerName, "titlebgdef") {
 				// Title background definition (bgclearcolor)
+				if motif.TitleBG == nil {
+					motif.TitleBG = &background.Background{}
+				}
+				for _, attr := range sec.Attributes {
+					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
+						v := getVector3(attr.Value)
+						motif.TitleBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
+					}
+				}
 			} else if strings.HasPrefix(lowerName, "titlebg ") || strings.HasPrefix(lowerName, "titlebg") {
 				// Parse individual background element
 			}
@@ -275,6 +285,7 @@ func loadBackground(ast *parsers.File, prefix string, sffData *sff.SFF, airData 
 			Delta:   [2]float64{1, 1},
 			Spacing: [2]int{0, 0},
 			Trans:   "none",
+			Window:  [4]int{0, 0, 319, 239},
 		}
 		var elemType string
 		var spriteNo [2]int
@@ -337,6 +348,7 @@ func loadBackground(ast *parsers.File, prefix string, sffData *sff.SFF, airData 
 
 		switch elemType {
 		case "normal":
+			common.Type = background.Normal
 			ne := &background.NormalElement{CommonElement: common}
 			if sffData != nil {
 				// Find sprite in SFF
@@ -350,6 +362,7 @@ func loadBackground(ast *parsers.File, prefix string, sffData *sff.SFF, airData 
 			}
 			bg.Elements = append(bg.Elements, ne)
 		case "animation":
+			common.Type = background.Animation
 			ae := &background.AnimationElement{
 				CommonElement: common,
 				Sprites:       make(map[string]*sff.Sprite),
@@ -374,6 +387,7 @@ func loadBackground(ast *parsers.File, prefix string, sffData *sff.SFF, airData 
 			}
 			bg.Elements = append(bg.Elements, ae)
 		case "parallax":
+			common.Type = background.Parallax
 			pe := &background.ParallaxElement{
 				CommonElement: common,
 				XScale:        xscale,
@@ -476,6 +490,20 @@ func getVector4(v parsers.Value) [4]int {
 		return [4]int{int(getFloat(v)), 0, 0, 0}
 	}
 	return [4]int{0, 0, 0, 0}
+}
+
+func getVector3(v parsers.Value) [3]float64 {
+	if list, ok := v.(*parsers.ValueList); ok {
+		var res [3]float64
+		for i := 0; i < 3 && i < len(list.Values); i++ {
+			res[i] = getFloat(list.Values[i])
+		}
+		return res
+	}
+	if v != nil {
+		return [3]float64{getFloat(v), 0, 0}
+	}
+	return [3]float64{0, 0, 0}
 }
 
 func getFontInfo(v parsers.Value) (int, int, int) {
