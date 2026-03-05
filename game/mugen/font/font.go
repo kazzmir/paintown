@@ -277,7 +277,9 @@ func (f *Font) TextWidth(text string) int {
 func (f *Font) Draw(screen *ebiten.Image, text string, x, y int, bank int, align Alignment) {
 	width := f.TextWidth(text)
 	startX := x + f.OffsetX
-	startY := y + f.OffsetY
+	// MUGEN treats Y as the baseline (bottom of the font cell), so we subtract
+	// the font height to get the top-left origin for glyph rendering.
+	startY := y + f.OffsetY - f.Height
 
 	switch align {
 	case AlignCenter:

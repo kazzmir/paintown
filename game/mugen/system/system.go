@@ -5,7 +5,6 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/font"
 )
@@ -13,34 +12,6 @@ import (
 type State interface {
 	Update() (State, error)
 	Draw(screen *ebiten.Image)
-}
-
-// TODO: Implement specific states like TitleState, SelectState, etc.
-
-type StoryboardState struct {
-	engine     *Engine
-	storyboard string
-	nextState  func() State
-	ticks      int
-}
-
-func (s *StoryboardState) Update() (State, error) {
-	if s.storyboard == "" {
-		return s.nextState(), nil
-	}
-
-	s.ticks++
-	// Basic implementation: skip on any key or after some time if we don't have a real storyboard player yet
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsKeyJustPressed(ebiten.KeySpace) || s.ticks > 120 {
-		return s.nextState(), nil
-	}
-
-	return s, nil
-}
-
-func (s *StoryboardState) Draw(screen *ebiten.Image) {
-	// Placeholder draw for storyboard
-	ebitenutil.DebugPrint(screen, "Playing Storyboard: "+s.storyboard+"\n(Press Enter to skip)")
 }
 
 type TitleState struct {
@@ -121,10 +92,26 @@ func (s *TitleState) Update() (State, error) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
 		s.engine.PlaySnd(s.engine.motif.TitleInfo.CursorDoneSnd[0], s.engine.motif.TitleInfo.CursorDoneSnd[1])
 		selected := s.items[s.selectIndex]
-		if selected == "exit" {
+		switch selected {
+		case "exit":
 			return nil, ebiten.Termination
+		case "options":
+			return NewOptionsState(s.engine), nil
+		case "arcade":
+			return NewSelectState(s.engine, "Arcade Mode"), nil
+		case "versus":
+			return NewSelectState(s.engine, "Versus Mode"), nil
+		case "teamarcade":
+			return NewSelectState(s.engine, "Team Arcade"), nil
+		case "teamversus":
+			return NewSelectState(s.engine, "Team Versus"), nil
+		case "survival":
+			return NewSelectState(s.engine, "Survival"), nil
+		case "training":
+			return NewSelectState(s.engine, "Training"), nil
+		default:
+			return NewSelectState(s.engine, selected), nil
 		}
-		// TODO: Transition to other states
 	}
 
 	return s, nil
@@ -221,16 +208,8 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 					align = font.AlignRight
 				}
 
-				// Shift font up by ascent estimated from box cursor
-				yShift := 0.0
-				if s.engine.motif.TitleInfo.BoxCursorVisible {
-					yShift = float64(s.engine.motif.TitleInfo.BoxCursorCoords[1])
-				} else {
-					yShift = -float64(f.Height) + 2
-				}
-
-				// Draw at y = menu_pos.y + (idx - topIndex) * spacing.y
-				f.Draw(menuTarget, name, int(menuX), int(menuY+float64(idx-s.topIndex)*spacingY+yShift), fontInfo.Bank, align)
+				// Y is now the baseline — draw directly at the motif-specified position
+				f.Draw(menuTarget, name, int(menuX), int(menuY+float64(idx-s.topIndex)*spacingY), fontInfo.Bank, align)
 			}
 		}
 	}

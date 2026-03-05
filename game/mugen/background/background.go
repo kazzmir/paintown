@@ -30,6 +30,13 @@ type Background struct {
 	BGClearColor color.Color
 }
 
+// Update advances all background elements by one tick (velocity, animation frames).
+func (b *Background) Update() {
+	for _, el := range b.Elements {
+		el.Update()
+	}
+}
+
 type Element interface {
 	Update()
 	Draw(screen *ebiten.Image, cameraX, cameraY float64, sprites map[string]*SpriteImages)

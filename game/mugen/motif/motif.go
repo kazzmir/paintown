@@ -63,13 +63,62 @@ type Motif struct {
 		BoxCursorCoords  [4]int
 	}
 
+	SelectInfo struct {
+		FadeInTime    int
+		FadeOutTime   int
+		Rows          int
+		Columns       int
+		Wrapping      bool
+		Pos           [2]int
+		CellSize      [2]int
+		CellSpacing   int
+		CellBgSpr     [2]int
+		CellRandSpr   [2]int
+		P1StartCell   [2]int
+		P2StartCell   [2]int
+		TitleOffset   [2]int
+		TitleFont     [3]int
+		P1FaceOffset  [2]float64
+		P2FaceOffset  [2]float64
+		P1FaceScale   [2]float64
+		P2FaceScale   [2]float64
+		P1NameOffset  [2]int
+		P2NameOffset  [2]int
+		P1NameFont    [3]int
+		P2NameFont    [3]int
+		CursorMoveSnd [2]int
+		CursorDoneSnd [2]int
+		CancelSnd     [2]int
+	}
+
+	VSScreen struct {
+		Time        int
+		FadeInTime  int
+		FadeOutTime int
+		P1Pos       [2]int
+		P2Pos       [2]int
+		P1NamePos   [2]int
+		P2NamePos   [2]int
+		P1NameFont  [3]int
+		P2NameFont  [3]int
+	}
+
+	OptionInfo struct {
+		CursorMoveSnd [2]int
+		CursorDoneSnd [2]int
+		CancelSnd     [2]int
+	}
+
 	// Loaded Assets
 	SpriteData *sff.SFF
 	SoundBank  *snd.SoundBank
 	Fonts      []*font.Font
 	SystemAIR  *air.Data
 
-	TitleBG *background.Background
+	TitleBG  *background.Background
+	SelectBG *background.Background
+	VsBG     *background.Background
+	OptionBG *background.Background
 }
 
 func LoadMotif(path string, dataDir string) (*Motif, error) {
@@ -188,19 +237,120 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 					motif.TitleInfo.CancelSnd = [2]int{int(v[0]), int(v[1])}
 				}
 			}
+		case "select info":
+			for _, attr := range sec.Attributes {
+				id := strings.ToLower(attr.ID.String())
+				switch id {
+				case "fadein.time":
+					motif.SelectInfo.FadeInTime = int(getFloat(attr.Value))
+				case "fadeout.time":
+					motif.SelectInfo.FadeOutTime = int(getFloat(attr.Value))
+				case "rows":
+					motif.SelectInfo.Rows = int(getFloat(attr.Value))
+				case "columns":
+					motif.SelectInfo.Columns = int(getFloat(attr.Value))
+				case "wrapping":
+					motif.SelectInfo.Wrapping = getBool(attr.Value)
+				case "pos":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.Pos = [2]int{int(v[0]), int(v[1])}
+				case "cell.size":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.CellSize = [2]int{int(v[0]), int(v[1])}
+				case "cell.spacing":
+					motif.SelectInfo.CellSpacing = int(getFloat(attr.Value))
+				case "cell.bg.spr":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.CellBgSpr = [2]int{int(v[0]), int(v[1])}
+				case "cell.random.spr":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.CellRandSpr = [2]int{int(v[0]), int(v[1])}
+				case "p1.cursor.startcell":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.P1StartCell = [2]int{int(v[0]), int(v[1])}
+				case "p2.cursor.startcell":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.P2StartCell = [2]int{int(v[0]), int(v[1])}
+				case "title.offset":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.TitleOffset = [2]int{int(v[0]), int(v[1])}
+				case "title.font":
+					i, b, a := getFontInfo(attr.Value)
+					motif.SelectInfo.TitleFont = [3]int{i, b, a}
+				case "p1.face.offset":
+					motif.SelectInfo.P1FaceOffset = getVector2(attr.Value)
+				case "p2.face.offset":
+					motif.SelectInfo.P2FaceOffset = getVector2(attr.Value)
+				case "p1.face.scale":
+					motif.SelectInfo.P1FaceScale = getVector2(attr.Value)
+				case "p2.face.scale":
+					motif.SelectInfo.P2FaceScale = getVector2(attr.Value)
+				case "p1.name.offset":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.P1NameOffset = [2]int{int(v[0]), int(v[1])}
+				case "p2.name.offset":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.P2NameOffset = [2]int{int(v[0]), int(v[1])}
+				case "p1.name.font":
+					i, b, a := getFontInfo(attr.Value)
+					motif.SelectInfo.P1NameFont = [3]int{i, b, a}
+				case "p2.name.font":
+					i, b, a := getFontInfo(attr.Value)
+					motif.SelectInfo.P2NameFont = [3]int{i, b, a}
+				case "cursor.move.snd":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.CursorMoveSnd = [2]int{int(v[0]), int(v[1])}
+				case "cursor.done.snd":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.CursorDoneSnd = [2]int{int(v[0]), int(v[1])}
+				case "cancel.snd":
+					v := getVector2(attr.Value)
+					motif.SelectInfo.CancelSnd = [2]int{int(v[0]), int(v[1])}
+				}
+			}
+		case "vs screen":
+			for _, attr := range sec.Attributes {
+				id := strings.ToLower(attr.ID.String())
+				switch id {
+				case "time":
+					motif.VSScreen.Time = int(getFloat(attr.Value))
+				case "fadein.time":
+					motif.VSScreen.FadeInTime = int(getFloat(attr.Value))
+				case "fadeout.time":
+					motif.VSScreen.FadeOutTime = int(getFloat(attr.Value))
+				case "p1.pos":
+					v := getVector2(attr.Value)
+					motif.VSScreen.P1Pos = [2]int{int(v[0]), int(v[1])}
+				case "p2.pos":
+					v := getVector2(attr.Value)
+					motif.VSScreen.P2Pos = [2]int{int(v[0]), int(v[1])}
+				case "p1.name.pos":
+					v := getVector2(attr.Value)
+					motif.VSScreen.P1NamePos = [2]int{int(v[0]), int(v[1])}
+				case "p2.name.pos":
+					v := getVector2(attr.Value)
+					motif.VSScreen.P2NamePos = [2]int{int(v[0]), int(v[1])}
+				case "p1.name.font":
+					i, b, a := getFontInfo(attr.Value)
+					motif.VSScreen.P1NameFont = [3]int{i, b, a}
+				case "p2.name.font":
+					i, b, a := getFontInfo(attr.Value)
+					motif.VSScreen.P2NameFont = [3]int{i, b, a}
+				}
+			}
 		case "option info":
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
 				case "cursor.move.snd":
 					v := getVector2(attr.Value)
-					motif.TitleInfo.CursorMoveSnd = [2]int{int(v[0]), int(v[1])}
+					motif.OptionInfo.CursorMoveSnd = [2]int{int(v[0]), int(v[1])}
 				case "cursor.done.snd":
 					v := getVector2(attr.Value)
-					motif.TitleInfo.CursorDoneSnd = [2]int{int(v[0]), int(v[1])}
+					motif.OptionInfo.CursorDoneSnd = [2]int{int(v[0]), int(v[1])}
 				case "cancel.snd":
 					v := getVector2(attr.Value)
-					motif.TitleInfo.CancelSnd = [2]int{int(v[0]), int(v[1])}
+					motif.OptionInfo.CancelSnd = [2]int{int(v[0]), int(v[1])}
 				}
 			}
 		default:
@@ -216,8 +366,38 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 						motif.TitleBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
 					}
 				}
-			} else if strings.HasPrefix(lowerName, "titlebg ") || strings.HasPrefix(lowerName, "titlebg") {
-				// Parse individual background element
+			} else if strings.HasPrefix(lowerName, "titlebg ") || lowerName == "titlebg" {
+				// Individual title bg elements are loaded via loadBackground below
+			} else if strings.HasPrefix(lowerName, "selectbgdef") {
+				if motif.SelectBG == nil {
+					motif.SelectBG = &background.Background{}
+				}
+				for _, attr := range sec.Attributes {
+					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
+						v := getVector3(attr.Value)
+						motif.SelectBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
+					}
+				}
+			} else if strings.HasPrefix(lowerName, "versusbgdef") {
+				if motif.VsBG == nil {
+					motif.VsBG = &background.Background{}
+				}
+				for _, attr := range sec.Attributes {
+					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
+						v := getVector3(attr.Value)
+						motif.VsBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
+					}
+				}
+			} else if strings.HasPrefix(lowerName, "optionbgdef") {
+				if motif.OptionBG == nil {
+					motif.OptionBG = &background.Background{}
+				}
+				for _, attr := range sec.Attributes {
+					if strings.ToLower(attr.ID.String()) == "bgclearcolor" {
+						v := getVector3(attr.Value)
+						motif.OptionBG.BGClearColor = color.RGBA{R: uint8(v[0]), G: uint8(v[1]), B: uint8(v[2]), A: 255}
+					}
+				}
 			}
 		}
 	}
@@ -263,7 +443,41 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 	}
 
 	// Load Title Background
-	motif.TitleBG = loadBackground(ast, "titlebg", motif.SpriteData, motif.SystemAIR)
+	{
+		titleBG := loadBackground(ast, "titlebg", motif.SpriteData, motif.SystemAIR)
+		// Preserve bgclearcolor that was parsed in the first pass
+		if motif.TitleBG != nil {
+			titleBG.BGClearColor = motif.TitleBG.BGClearColor
+		}
+		motif.TitleBG = titleBG
+	}
+
+	// Load Select Background
+	{
+		selectBG := loadBackground(ast, "selectbg", motif.SpriteData, motif.SystemAIR)
+		if motif.SelectBG != nil {
+			selectBG.BGClearColor = motif.SelectBG.BGClearColor
+		}
+		motif.SelectBG = selectBG
+	}
+
+	// Load Versus Background
+	{
+		vsBG := loadBackground(ast, "versusbg", motif.SpriteData, motif.SystemAIR)
+		if motif.VsBG != nil {
+			vsBG.BGClearColor = motif.VsBG.BGClearColor
+		}
+		motif.VsBG = vsBG
+	}
+
+	// Load Option Background
+	{
+		optBG := loadBackground(ast, "optionbg", motif.SpriteData, motif.SystemAIR)
+		if motif.OptionBG != nil {
+			optBG.BGClearColor = motif.OptionBG.BGClearColor
+		}
+		motif.OptionBG = optBG
+	}
 
 	return motif, nil
 }
