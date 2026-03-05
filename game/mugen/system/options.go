@@ -9,15 +9,15 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/font"
 )
 
-// optionItem represents a single configurable option in the options menu.
 type optionItem struct {
 	label    string
 	getValue func() int
 	setValue func(int)
 	// Display strings for each value, indexed by (value - min)
 	// If nil, just shows the integer.
-	choices  []string
-	min, max int
+	choices   []string
+	min, max  int
+	increment int // amount to change per press (default 1)
 }
 
 func (o *optionItem) displayValue() string {
@@ -28,19 +28,37 @@ func (o *optionItem) displayValue() string {
 			return o.choices[idx]
 		}
 	}
+	// Special case for time limit
+	if o.label == "Time Limit" && v == -1 {
+		return "Unlimited"
+	}
+	// Special case for life
+	if o.label == "Life" {
+		return fmt.Sprintf("%d%%", v)
+	}
 	return fmt.Sprintf("%d", v)
 }
 
-func (o *optionItem) increment() {
-	v := o.getValue() + 1
+func (o *optionItem) doIncrement() {
+	v := o.getValue()
+	inc := o.increment
+	if inc == 0 {
+		inc = 1
+	}
+	v += inc
 	if v > o.max {
 		v = o.max
 	}
 	o.setValue(v)
 }
 
-func (o *optionItem) decrement() {
-	v := o.getValue() - 1
+func (o *optionItem) doDecrement() {
+	v := o.getValue()
+	inc := o.increment
+	if inc == 0 {
+		inc = 1
+	}
+	v -= inc
 	if v < o.min {
 		v = o.min
 	}
@@ -72,16 +90,19 @@ func NewOptionsState(engine *Engine) *OptionsState {
 			min:      1, max: 8,
 		},
 		{
-			label:    "Life",
-			getValue: func() int { return engine.cfg.Options.Life },
-			setValue: func(v int) { engine.cfg.Options.Life = v },
-			min:      0, max: 300,
+			label:     "Life",
+			getValue:  func() int { return engine.cfg.Options.Life },
+			setValue:  func(v int) { engine.cfg.Options.Life = v },
+			min:       10,
+			max:       300,
+			increment: 10,
 		},
 		{
 			label:    "Time Limit",
 			getValue: func() int { return engine.cfg.Options.Time },
 			setValue: func(v int) { engine.cfg.Options.Time = v },
-			min:      -1, max: 99,
+			min:      -1,
+			max:      99,
 		},
 		{
 			label:    "Game Speed",
@@ -145,11 +166,11 @@ func (s *OptionsState) Update() (State, error) {
 
 	// Adjust value
 	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
-		s.items[s.cursor].decrement()
+		s.items[s.cursor].doDecrement()
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
-		s.items[s.cursor].increment()
+		s.items[s.cursor].doIncrement()
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
 
