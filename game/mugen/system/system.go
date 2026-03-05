@@ -174,7 +174,7 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 	if s.engine.motif.TitleInfo.BoxCursorVisible {
 		box := s.engine.motif.TitleInfo.BoxCursorCoords
 		bx := menuX + float64(box[0])
-		by := menuY - 2 + float64(s.selectIndex-s.topIndex)*spacingY + float64(box[1])
+		by := menuY + float64(s.selectIndex-s.topIndex)*spacingY + float64(box[1])
 		bw := float64(box[2] - box[0])
 		bh := float64(box[3] - box[1])
 

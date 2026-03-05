@@ -47,7 +47,8 @@ func (o *optionItem) doIncrement() {
 	}
 	v += inc
 	if v > o.max {
-		v = o.max
+		//v = o.max
+		v = o.min
 	}
 	o.setValue(v)
 }
@@ -60,7 +61,8 @@ func (o *optionItem) doDecrement() {
 	}
 	v -= inc
 	if v < o.min {
-		v = o.min
+		//v = o.min
+		v = o.max
 	}
 	o.setValue(v)
 }
@@ -98,11 +100,12 @@ func NewOptionsState(engine *Engine) *OptionsState {
 			increment: 10,
 		},
 		{
-			label:    "Time Limit",
-			getValue: func() int { return engine.cfg.Options.Time },
-			setValue: func(v int) { engine.cfg.Options.Time = v },
-			min:      -1,
-			max:      99,
+			label:     "Time Limit",
+			getValue:  func() int { return engine.cfg.Options.Time },
+			setValue:  func(v int) { engine.cfg.Options.Time = v },
+			min:       -1,
+			max:       99,
+			increment: 1,
 		},
 		{
 			label:    "Game Speed",
@@ -115,13 +118,13 @@ func NewOptionsState(engine *Engine) *OptionsState {
 			label:    "Sound Volume",
 			getValue: func() int { return engine.cfg.Options.WavVolume },
 			setValue: func(v int) { engine.cfg.Options.WavVolume = v },
-			min:      0, max: 100,
+			min:      0, max: 100, increment: 5,
 		},
 		{
 			label:    "Music Volume",
 			getValue: func() int { return engine.cfg.Options.MidiVolume },
 			setValue: func(v int) { engine.cfg.Options.MidiVolume = v },
-			min:      0, max: 100,
+			min:      0, max: 100, increment: 5,
 		},
 	}
 
@@ -239,7 +242,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 				cursorImg := ebiten.NewImage(240, int(spacing)+2)
 				cursorImg.Fill(color.RGBA{R: 128, G: 200, B: 255, A: 255})
 				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Translate(startX-120, yPos-2)
+				op.GeoM.Translate(startX-120, yPos-spacing)
 				op.Blend = ebiten.BlendSourceOver
 				op.ColorScale.ScaleAlpha(float32(s.cursorAlpha))
 				screen.DrawImage(cursorImg, op)
