@@ -79,23 +79,23 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 
 // ExtractPalette reads the 768-byte palette from the end of the PCX payload.
 // 8-bit PCX files have a palette at the end, preceded by a byte with value 12 (0x0C).
-func ExtractPalette(data []byte) (color.Palette, error) {
+func ExtractPalette(data []byte, transparent bool) (color.Palette, error) {
 	if len(data) >= 769 && data[len(data)-769] == 12 {
 		paletteData := data[len(data)-768:]
-		return createPalette(paletteData), nil
+		return createPalette(paletteData, transparent), nil
 	}
 
 	// Some MUGEN SFF tools might omit the 0x0C marker.
 	if len(data) >= 768 {
 		paletteData := data[len(data)-768:]
 		// We can't be 100% sure it's a palette, but in SFF v1 with samePalette=0, it usually is.
-		return createPalette(paletteData), nil
+		return createPalette(paletteData, transparent), nil
 	}
 
 	return nil, fmt.Errorf("not enough data for PCX palette (%d bytes)", len(data))
 }
 
-func createPalette(paletteData []byte) color.Palette {
+func createPalette(paletteData []byte, transparent bool) color.Palette {
 	pal := make(color.Palette, 256)
 	for i := 0; i < 256; i++ {
 		pal[i] = color.RGBA{
@@ -105,15 +105,17 @@ func createPalette(paletteData []byte) color.Palette {
 			A: 255,
 		}
 	}
-	// Index 0 is transparent in MUGEN
-	pal[0] = color.Transparent
+	if transparent {
+		// Index 0 is transparent in MUGEN
+		pal[0] = color.Transparent
+	}
 	return pal
 }
 
 // ReadPaletteACT reads a 768-byte palette from r and reverses the color order.
 // M.U.G.E.N .act files often store the transparent color at the end (index 255),
 // so reversing the palette puts it at index 0 where M.U.G.E.N expects it.
-func ReadPaletteACT(r io.Reader) (color.Palette, error) {
+func ReadPaletteACT(r io.Reader, transparent bool) (color.Palette, error) {
 	data := make([]byte, 768)
 	if _, err := io.ReadFull(r, data); err != nil {
 		return nil, err
@@ -129,7 +131,9 @@ func ReadPaletteACT(r io.Reader) (color.Palette, error) {
 			A: 255,
 		}
 	}
-	// Index 0 is transparent in MUGEN
-	pal[0] = color.Transparent
+	if transparent {
+		// Index 0 is transparent in MUGEN
+		pal[0] = color.Transparent
+	}
 	return pal, nil
 }

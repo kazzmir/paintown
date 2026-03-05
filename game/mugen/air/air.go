@@ -40,7 +40,10 @@ func Parse(r io.Reader) (*Data, error) {
 	if err != nil {
 		return nil, err
 	}
+	return ParseFromAST(ast)
+}
 
+func ParseFromAST(ast *parsers.File) (*Data, error) {
 	data := &Data{
 		Actions: make(map[int]*Action),
 	}
@@ -201,4 +204,43 @@ func parseElement(groupID string, list parsers.ValueList) Element {
 		el.Flags = getAsString(list.Values[4])
 	}
 	return el
+}
+
+type Player struct {
+	Action      *Action
+	CurrentIdx  int
+	TickCounter int
+}
+
+func NewPlayer(action *Action) *Player {
+	return &Player{
+		Action: action,
+	}
+}
+
+func (p *Player) Update() {
+	if p.Action == nil || len(p.Action.Elements) == 0 {
+		return
+	}
+
+	el := p.Action.Elements[p.CurrentIdx]
+	if el.Time == -1 {
+		return // Infinite frame
+	}
+
+	p.TickCounter++
+	if p.TickCounter >= el.Time {
+		p.TickCounter = 0
+		p.CurrentIdx++
+		if p.CurrentIdx >= len(p.Action.Elements) {
+			p.CurrentIdx = 0 // Loop
+		}
+	}
+}
+
+func (p *Player) CurrentElement() *Element {
+	if p.Action == nil || p.CurrentIdx < 0 || p.CurrentIdx >= len(p.Action.Elements) {
+		return nil
+	}
+	return &p.Action.Elements[p.CurrentIdx]
 }

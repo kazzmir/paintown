@@ -64,7 +64,7 @@ func (a *App) playCurrent() {
 	// Decode WAV with resampling to match the global audioContext
 	d, err := wav.DecodeWithSampleRate(sampleRate, bytes.NewReader(sound.Data))
 	if err != nil {
-		a.err = fmt.Errorf("failed to decode sound %%d-%%d: %%v", sound.Group, sound.Item, err)
+		a.err = fmt.Errorf("failed to decode sound %d-%d: %v", sound.Group, sound.Item, err)
 		fmt.Println(a.err)
 		return
 	}
@@ -117,7 +117,7 @@ func (a *App) Update() error {
 
 func (a *App) Draw(screen *ebiten.Image) {
 	if a.err != nil {
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("Error: %%v", a.err))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("Error: %v", a.err))
 		return
 	}
 
@@ -134,10 +134,10 @@ func (a *App) Draw(screen *ebiten.Image) {
 	}
 
 	msg := fmt.Sprintf("M.U.G.E.N SND Player\n\n"+
-		"Sound %%d/%%d\n"+
-		"Group: %%d | Item: %%d\n"+
-		"Size: %%d bytes\n\n"+
-		"Status: %%s\n\n"+
+		"Sound %d/%d\n"+
+		"Group: %d | Item: %d\n"+
+		"Size: %d bytes\n\n"+
+		"Status: %s\n\n"+
 		"Controls:\n"+
 		"  [SPACE] - Play current sound\n"+
 		"  [LEFT]  - Previous sound\n"+

@@ -15,6 +15,7 @@ type Sprite struct {
 	YAxis       uint16
 	Linked      bool
 	Image       image.Image
+	ImageOpaque image.Image
 }
 
 type SFF struct {
@@ -53,6 +54,15 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 	}
 
 	currentPalette := initialPalette
+	var initialPaletteOpaque color.Palette
+	if initialPalette != nil {
+		// Create opaque version of initialPalette?
+		// Usually ACT palettes are already handled.
+		// If we set index 0 to Transparent in ReadPaletteACT, we need the original.
+		// Actually, let's assume if initialPalette exists, currentPaletteOpaque should be it without index 0 transparency.
+		// But initialPalette is color.Palette (interface).
+	}
+	currentPaletteOpaque := initialPalette
 	spriteIndex := make(map[uint16]*Sprite)
 	var currentIndex uint16 = 0
 
@@ -118,6 +128,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			}
 
 			palToUse := currentPalette
+			palToUseOpaque := currentPaletteOpaque
 
 			// MUGEN SFF v1 Palette Rules:
 			// 1. Portraits (Group 9000) use their own palette and NEVER update currentPalette/SharedPalette.
@@ -126,22 +137,30 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 
 			if group == 9000 {
 				if !samePalette {
-					if pal, err := ExtractPalette(pcxData); err == nil {
+					if pal, err := ExtractPalette(pcxData, true); err == nil {
 						palToUse = pal
+					}
+					if pal, err := ExtractPalette(pcxData, false); err == nil {
+						palToUseOpaque = pal
 					}
 				}
 			} else {
 				// Combat sprites
 				if !samePalette {
-					pal, err := ExtractPalette(pcxData)
-					if err == nil {
+					palM, errM := ExtractPalette(pcxData, true)
+					palO, errO := ExtractPalette(pcxData, false)
+					if errM == nil && errO == nil {
 						// Case: (0,0) and initialPalette exists -> ignore internal PCX palette
 						if group == 0 && item == 0 && initialPalette != nil {
 							currentPalette = initialPalette
+							currentPaletteOpaque = initialPaletteOpaque
 							palToUse = initialPalette
+							palToUseOpaque = initialPaletteOpaque
 						} else {
-							currentPalette = pal
-							palToUse = pal
+							currentPalette = palM
+							currentPaletteOpaque = palO
+							palToUse = palM
+							palToUseOpaque = palO
 						}
 
 						if sff.SharedPalette == nil {
@@ -152,7 +171,9 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 					// samePalette == true
 					if group == 0 && item == 0 && initialPalette != nil {
 						currentPalette = initialPalette
+						currentPaletteOpaque = initialPaletteOpaque
 						palToUse = initialPalette
+						palToUseOpaque = initialPaletteOpaque
 					}
 				}
 			}
@@ -160,12 +181,31 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 			if palToUse == nil {
 				palToUse = sff.SharedPalette
 			}
-
-			// Special case: Group 9000 (portraits) might have their own palette embedded
-			// even if samePalette is true (though rare in v1).
-			// If we already updated currentPalette above, we are fine.
+			if palToUseOpaque == nil {
+				// Fallback to masked if opaque not available, or if initialPaletteOpaque was nil.
+				// This might happen if ExtractPalette(..., false) failed or wasn't called.
+				// In such cases, we can try to derive an opaque version from palToUse.
+				if palToUse != nil {
+					derivedOpaque := make(color.Palette, len(palToUse))
+					copy(derivedOpaque, palToUse)
+					if len(derivedOpaque) > 0 {
+						if rgba, ok := derivedOpaque[0].(color.RGBA); ok {
+							rgba.A = 255
+							derivedOpaque[0] = rgba
+						} else {
+							derivedOpaque = palToUse // Fallback
+						}
+					}
+					palToUseOpaque = derivedOpaque
+				} else {
+					// If even palToUse is nil, then there's no palette at all.
+					// This should ideally not happen if sff.SharedPalette is set.
+					palToUseOpaque = nil
+				}
+			}
 
 			img, err := DecodePCX(pcxData, palToUse)
+			imgOpaque, _ := DecodePCX(pcxData, palToUseOpaque) // Ignore error for opaque, use nil if it fails.
 			if err == nil {
 				sff.Sprites = append(sff.Sprites, Sprite{
 					GroupNumber: group,
@@ -174,6 +214,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 					YAxis:       y,
 					Linked:      false,
 					Image:       img,
+					ImageOpaque: imgOpaque,
 				})
 			} else {
 				fmt.Printf("Decode error Group %d Item %d: %v\n", group, item, err)

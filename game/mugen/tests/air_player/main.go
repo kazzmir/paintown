@@ -44,7 +44,7 @@ func NewApp() *App {
 	// 1. Try to load an external palette (ACT)
 	var initialPalette color.Palette
 	if actFile, err := os.Open(getPath("data-new/mugen/chars/kfm/kfm6.act")); err == nil {
-		if pal, err := sff.ReadPaletteACT(actFile); err == nil {
+		if pal, err := sff.ReadPaletteACT(actFile, true); err == nil {
 			initialPalette = pal
 		}
 		actFile.Close()
@@ -76,14 +76,14 @@ func NewApp() *App {
 	// 2. Load AIR (Animations)
 	airFile, err := os.Open(getPath("data-new/mugen/chars/kfm/kfm.air"))
 	if err != nil {
-		app.err = fmt.Errorf("failed to open air: %%v", err)
+		app.err = fmt.Errorf("failed to open air: %v", err)
 		return app
 	}
 	defer airFile.Close()
 
 	airData, err := air.Parse(airFile)
 	if err != nil {
-		app.err = fmt.Errorf("failed to parse air: %%v", err)
+		app.err = fmt.Errorf("failed to parse air: %v", err)
 		return app
 	}
 	app.actions = airData
@@ -174,7 +174,7 @@ func (a *App) Update() error {
 // Skipping cross lines without image/color
 func (a *App) Draw(screen *ebiten.Image) {
 	if a.err != nil {
-		ebitenutil.DebugPrint(screen, fmt.Sprintf("Error: %%v", a.err))
+		ebitenutil.DebugPrint(screen, fmt.Sprintf("Error: %v", a.err))
 		return
 	}
 	if len(a.cachedActionIDs) == 0 {

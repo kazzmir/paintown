@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# M.U.G.E.N Engine Launcher
+# This script runs the Go implementation of the MUGEN engine.
+
+# Get the directory where this script is located
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# Run the system package files
+go run "$DIR"/system/*.go "$@"
