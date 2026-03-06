@@ -189,26 +189,44 @@ func (p *Parser) parseValueList() (Value, error) {
 	var values []Value
 
 	for {
-		// It's possible for there to be an empty value (e.g. `x = 1, , 2`)
-		if p.tok.Type == TokenComma || p.tok.Type == TokenNewline || p.tok.Type == TokenEOF {
-			// This is an empty item
-			values = append(values, StringValue{Val: ""})
-		} else {
-			val, err := p.parseValue()
-			if err != nil {
-				return nil, err
-			}
-			values = append(values, val)
-		}
-
-		if p.tok.Type != TokenComma {
+		// Stop condition
+		if p.tok.Type == TokenNewline || p.tok.Type == TokenEOF {
 			break
 		}
-		p.advance() // Consume ','
+
+		if p.tok.Type == TokenComma {
+			// Empty value if we encounter a comma immediately (e.g. initial comma or consecutive commas: x = , , 2)
+			values = append(values, StringValue{Val: ""})
+			p.advance() // consume comma
+			continue
+		}
+
+		// Otherwise, try to parse a value
+		val, err := p.parseValue()
+		if err != nil {
+			return nil, err
+		}
+		values = append(values, val)
+
+		// After a value, if we have a comma, consume it and continue
+		if p.tok.Type == TokenComma {
+			p.advance()
+			// If a comma is the last thing before a newline/EOF, we had a trailing empty value: `x = 1, `
+			if p.tok.Type == TokenNewline || p.tok.Type == TokenEOF {
+				values = append(values, StringValue{Val: ""})
+				break
+			}
+		} else {
+			// No comma means the list is done
+			break
+		}
 	}
 
 	if len(values) == 1 {
 		return values[0], nil
+	}
+	if len(values) == 0 {
+		return StringValue{Val: ""}, nil
 	}
 
 	return &ValueList{
@@ -238,17 +256,21 @@ func (p *Parser) parseValue() (Value, error) {
 			p.advance()
 		default:
 			if len(parts) == 0 {
-				return nil, fmt.Errorf("expected value at line %d:%d, got %v", p.tok.Line, p.tok.Column, p.tok.Lit)
+				// We encountered an illegal token starting a value (e.g. '!')
+				// Consume it so we don't infinite loop, and treat it as part of the value string.
+				parts = append(parts, p.tok.Lit)
+				p.advance()
+			} else {
+				// We've gathered some parts, and hit a boundary (like a comma, newline, etc)
+				combined := strings.Join(parts, "")
+
+				// Try parsing as simple number
+				if val, err := strconv.ParseFloat(combined, 64); err == nil && len(parts) == 1 {
+					return NumberValue{Val: val}, nil
+				}
+
+				return KeywordValue{Val: combined}, nil
 			}
-
-			combined := strings.Join(parts, "")
-
-			// Try parsing as simple number
-			if val, err := strconv.ParseFloat(combined, 64); err == nil && len(parts) == 1 {
-				return NumberValue{Val: val}, nil
-			}
-
-			return KeywordValue{Val: combined}, nil
 		}
 	}
 }

@@ -27,8 +27,9 @@ type Element struct {
 }
 
 type Action struct {
-	ID       int
-	Elements []Element
+	ID        int
+	LoopStart int
+	Elements  []Element
 }
 
 type Data struct {
@@ -58,8 +59,9 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 			}
 
 			action := &Action{
-				ID:       actionID,
-				Elements: make([]Element, 0),
+				ID:        actionID,
+				LoopStart: -1,
+				Elements:  make([]Element, 0),
 			}
 
 			var defaultClsn1 []Box
@@ -108,6 +110,8 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 					} else if idx >= 0 && idx < len(defaultClsn2) {
 						defaultClsn2[idx] = b
 					}
+				} else if key == "loopstart" {
+					action.LoopStart = len(action.Elements)
 				} else {
 					// An animation element row: Group, Image, X, Y, Time, Flags
 					if listPointer, ok := attr.Value.(*parsers.ValueList); ok {

@@ -33,7 +33,9 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 
 	if palette == nil {
 		palette = make(color.Palette, 256)
-		// default to black
+		for i := range palette {
+			palette[i] = color.Black
+		}
 	}
 
 	img := image.NewPaletted(image.Rect(0, 0, width, height), palette)
@@ -122,6 +124,7 @@ func ReadPaletteACT(r io.Reader, transparent bool) (color.Palette, error) {
 	}
 	pal := make(color.Palette, 256)
 	for i := 0; i < 256; i++ {
+		// Reverse the color order: color i comes from file p	for i := 0; i < 256; i++ {
 		// Reverse the color order: color i comes from file position 255-i
 		srcIdx := (255 - i) * 3
 		pal[i] = color.RGBA{

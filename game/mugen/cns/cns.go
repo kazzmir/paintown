@@ -105,6 +105,10 @@ func Parse(r io.Reader) (*CNS, error) {
 		return nil, err
 	}
 
+	return ParseFromAST(ast)
+}
+
+func ParseFromAST(ast *parsers.File) (*CNS, error) {
 	cns := &CNS{
 		States: make(map[int]*StateDef),
 	}
@@ -269,6 +273,8 @@ func Parse(r io.Reader) (*CNS, error) {
 			currentState = &StateDef{
 				ID:          stateID,
 				Controllers: make([]StateController, 0),
+				Anim:        -1, // Default to "no change"
+				Ctrl:        -1, // Default to "no change"
 			}
 			cns.States[stateID] = currentState
 
@@ -312,6 +318,27 @@ func Parse(r io.Reader) (*CNS, error) {
 				}
 			}
 		} else if strings.HasPrefix(secName, "state ") {
+			stateNoStr := strings.TrimSpace(strings.TrimPrefix(secName, "state "))
+			// Remove comments and metadata from the header line
+			if idx := strings.Index(stateNoStr, ","); idx != -1 {
+				stateNoStr = strings.TrimSpace(stateNoStr[:idx])
+			}
+			stateNo, err := strconv.Atoi(stateNoStr)
+
+			if err == nil {
+				// If it's a negative state or we already have it, use it.
+				// Otherwise, if currentState is nil, we might need to handle this as a virtual state.
+				if stateNo < 0 {
+					if _, ok := cns.States[stateNo]; !ok {
+						cns.States[stateNo] = &StateDef{
+							ID:          stateNo,
+							Controllers: make([]StateController, 0),
+						}
+					}
+					currentState = cns.States[stateNo]
+				}
+			}
+
 			if currentState == nil {
 				// Controller without a StateDef? Valid in MUGEN maybe for injected common1 states but we skip for strictness
 				continue
