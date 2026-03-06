@@ -168,6 +168,7 @@ func main() {
 	fmt.Printf("Starting engine with resolution %dx%d\n", width, height)
 
 	ebiten.SetWindowSize(width*2, height*2)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("MUGEN Engine")
 
 	// Set TPS based on GameSpeed config
