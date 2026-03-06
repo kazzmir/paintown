@@ -8,6 +8,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/kazzmir/paintown/game/mugen/character"
+	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 type Game struct {
@@ -15,23 +17,18 @@ type Game struct {
 	camX    float64
 	camY    float64
 	punched bool
+
+	windowWidth  int
+	windowHeight int
 }
 
 func (g *Game) Update() error {
-	// Exit on ESC
-	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		return ebiten.Termination
-	}
+	// Update Input Manager (poll gamepads, etc.)
+	input.GlobalManager.Update()
 
-	var activeCommands []string
-	if ebiten.IsKeyPressed(ebiten.KeyX) {
-		activeCommands = append(activeCommands, "x")
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		activeCommands = append(activeCommands, "a")
-	}
-	if len(activeCommands) > 0 {
-		g.player.Commands.Add(activeCommands)
+	// Exit on action Escape
+	if input.GlobalManager.IsPressed(1, input.ActionEscape) {
+		return ebiten.Termination
 	}
 
 	if g.player.Character.GetTime() == 100 && !g.punched {
@@ -53,8 +50,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// Clear screen to light gray
 	screen.Fill(color.RGBA{200, 200, 200, 255})
 
-	// Draw player directly to the screen
-	g.player.Draw(screen, g.camX, g.camY)
+	// The player.Draw normally handles its own coordinates, but we want 2x scale
+	// Let's modify how we call it or apply a global transformation.
+	// For now, let's just use a simple approach:
+	g.player.DrawScaled(screen, g.camX, g.camY, 1.5, 1.5)
 
 	// Debug info
 	msg := fmt.Sprintf("State: %d\nTime: %d\nAnim: %d\nAnimTime: %d\nPos: (%.2f, %.2f)\nCam: (%.2f, %.2f)\nStateType: %s\nPhysics: %s\nMoveType: %s",
@@ -72,11 +71,20 @@ func (g *Game) Draw(screen *ebiten.Image) {
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 640, 480
+	return 320, 240 // Logical MUGEN resolution
 }
 
 func main() {
 	fmt.Println("Starting MUGEN Character Test...")
+
+	// Load configuration
+	cfg, err := config.LoadConfig("data-new/mugen")
+	if err != nil {
+		fmt.Printf("Warning: failed to load mugen.cfg, using defaults: %v\n", err)
+		cfg = &config.MugenConfig{}
+	}
+	input.GlobalManager = input.NewInputManager(cfg)
+
 	// Load KFM
 	baseDir := "data-new/mugen/chars/kfm/"
 	p, err := character.LoadPlayer(baseDir, "kfm.def")
@@ -85,21 +93,33 @@ func main() {
 	}
 	fmt.Println("Player loaded successfully.")
 
-	// Initial position
-	p.Character.X = 320
-	p.Character.Y = 400
+	// Initial position (center of logical 320x240 screen)
+	p.Character.X = 160
+	p.Character.Y = 200
 
 	// Force initial state to Stand
 	p.Character.ChangeState(0, -1, -1)
 	fmt.Printf("Initial State: %d, Anim: %d\n", p.Character.GetStateNo(), p.Character.GetAnim())
 
-	g := &Game{
-		player: p,
-		camX:   0,
-		camY:   0,
+	width := cfg.Video.Width
+	if width == 0 {
+		width = 640
+	}
+	height := cfg.Video.Height
+	if height == 0 {
+		height = 480
 	}
 
-	ebiten.SetWindowSize(640, 480)
+	g := &Game{
+		player:       p,
+		camX:         0,
+		camY:         0,
+		windowWidth:  width,
+		windowHeight: height,
+	}
+
+	ebiten.SetWindowSize(width, height)
+	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("MUGEN Character SM Test")
 	fmt.Println("Running Ebiten game loop...")
 	if err := ebiten.RunGame(g); err != nil {

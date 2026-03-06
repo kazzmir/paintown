@@ -10,8 +10,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -98,7 +99,8 @@ func NewApp() *App {
 }
 
 func (a *App) Update() error {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	input.GlobalManager.Update()
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		return ebiten.Termination
 	}
 
@@ -112,11 +114,11 @@ func (a *App) Update() error {
 	}
 
 	// Cycle Actions
-	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
 		a.currentActionIdx = (a.currentActionIdx + 1) % len(a.cachedActionIDs)
 		a.currentFrameIdx = 0
 		a.tickCounter = 0
-	} else if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+	} else if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
 		a.currentActionIdx--
 		if a.currentActionIdx < 0 {
 			a.currentActionIdx = len(a.cachedActionIDs) - 1
@@ -246,6 +248,14 @@ func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight
 func main() {
 	ebiten.SetWindowSize(960, 720)
 	ebiten.SetWindowTitle("Paintown MUGEN AIR Viewer")
+
+	// Load configuration
+	cfg, err := config.LoadConfig("data-new/mugen")
+	if err != nil {
+		fmt.Printf("Warning: failed to load mugen.cfg, using defaults: %v\n", err)
+		cfg = &config.MugenConfig{}
+	}
+	input.GlobalManager = input.NewInputManager(cfg)
 
 	app := NewApp()
 

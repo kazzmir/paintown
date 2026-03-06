@@ -14,23 +14,30 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/motif"
 )
 
 const sampleRate = 44100
 
 type Engine struct {
-	cfg          *config.MugenConfig
-	motif        *motif.Motif
-	dataDir      string
-	screenWidth  int
-	screenHeight int
-	currentState State
-	sprites      map[string]*background.SpriteImages
-	audioCtx     *audio.Context
+	cfg           *config.MugenConfig
+	motif         *motif.Motif
+	dataDir       string
+	screenWidth   int // Window width
+	screenHeight  int // Window height
+	logicalWidth  int // Game logic width (e.g. 320)
+	logicalHeight int // Game logic height (e.g. 240)
+	currentState  State
+	sprites       map[string]*background.SpriteImages
+	audioCtx      *audio.Context
 }
 
 func (e *Engine) Update() error {
+	if input.GlobalManager != nil {
+		input.GlobalManager.Update()
+	}
+
 	if e.currentState != nil {
 		next, err := e.currentState.Update()
 		if err != nil {
@@ -78,7 +85,7 @@ func (e *Engine) PlaySnd(group, item int) {
 }
 
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return e.screenWidth, e.screenHeight
+	return e.logicalWidth, e.logicalHeight
 }
 
 func main() {
@@ -109,6 +116,9 @@ func main() {
 		height = 240
 	}
 
+	// Initialize Input Manager
+	input.GlobalManager = input.NewInputManager(cfg)
+
 	// Load motif
 	m, err := motif.LoadMotif(cfg.Options.Motif, *dataDir)
 	if err != nil {
@@ -116,13 +126,15 @@ func main() {
 	}
 
 	engine := &Engine{
-		cfg:          cfg,
-		motif:        m,
-		dataDir:      *dataDir,
-		screenWidth:  width,
-		screenHeight: height,
-		sprites:      make(map[string]*background.SpriteImages),
-		audioCtx:     audio.NewContext(sampleRate),
+		cfg:           cfg,
+		motif:         m,
+		dataDir:       *dataDir,
+		screenWidth:   width,
+		screenHeight:  height,
+		logicalWidth:  320, // Standard MUGEN
+		logicalHeight: 240,
+		sprites:       make(map[string]*background.SpriteImages),
+		audioCtx:      audio.NewContext(sampleRate),
 	}
 
 	// Cache sprites

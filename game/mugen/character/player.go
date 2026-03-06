@@ -29,6 +29,9 @@ type Player struct {
 
 	// Command buffering
 	Commands *CommandBuffer
+
+	// Player ID (1 or 2)
+	PlayerID int
 }
 
 // LoadPlayer initializes a Player by loading all associated files.
@@ -53,6 +56,7 @@ func LoadPlayer(baseDir, defFile string) (*Player, error) {
 		Dir:         baseDir,
 		spriteCache: make(map[int]map[int]*ebiten.Image),
 		Commands:    NewCommandBuffer(120), // 2 seconds of history @ 60fps
+		PlayerID:    1,                     // Default to P1
 	}
 
 	// 0. Try to find a palette (.act)
@@ -168,7 +172,7 @@ func (p *Player) Update() {
 		fmt.Printf("Player.Update: Starting Tick 0\n")
 	}
 	// 1. Get raw inputs and add to buffer
-	raw := GetRawInputs()
+	raw := GetRawInputs(p.PlayerID)
 	p.Commands.Add(raw)
 
 	// 2. (Removed redundant AnimDuration sync as it's now handled by ChangeAnim)
@@ -237,6 +241,81 @@ func (p *Player) Draw(screen *ebiten.Image, camX, camY float64) {
 
 	opts := &ebiten.DrawImageOptions{}
 	opts.GeoM.Translate(drawX, drawY)
+	screen.DrawImage(ebitenSprite, opts)
+}
+
+// DrawScaled renders the player to the screen with a specific scale.
+func (p *Player) DrawScaled(screen *ebiten.Image, camX, camY, scaleX, scaleY float64) {
+	animNo := p.Character.GetAnim()
+	animData, ok := p.AIR.Actions[animNo]
+	if !ok {
+		return
+	}
+
+	var currentElement *air.Element
+
+	// Check for total animation time to handle loops
+	fullCycle := 0
+	for _, el := range animData.Elements {
+		if el.Time == -1 {
+			fullCycle = -1 // Infinite
+			break
+		}
+		fullCycle += el.Time
+	}
+
+	currentTime := p.Character.GetAnimTime()
+	if fullCycle > 0 {
+		currentTime = currentTime % fullCycle
+	}
+
+	elapsed := 0
+	for i := range animData.Elements {
+		el := &animData.Elements[i]
+		if el.Time == -1 || (elapsed <= currentTime && currentTime < elapsed+el.Time) {
+			currentElement = el
+			break
+		}
+		elapsed += el.Time
+	}
+
+	if currentElement == nil {
+		return
+	}
+
+	sprite := p.FindSprite(currentElement.Group, currentElement.Image)
+	if sprite == nil || sprite.Image == nil {
+		return
+	}
+
+	// Calculate draw position relative to camera
+	relX := p.Character.X - camX
+	relY := p.Character.Y - camY
+
+	// Convert image.Image to *ebiten.Image using cache
+	if p.spriteCache[currentElement.Group] == nil {
+		p.spriteCache[currentElement.Group] = make(map[int]*ebiten.Image)
+	}
+	ebitenSprite, cached := p.spriteCache[currentElement.Group][currentElement.Image]
+	if !cached {
+		ebitenSprite = ebiten.NewImageFromImage(sprite.Image)
+		p.spriteCache[currentElement.Group][currentElement.Image] = ebitenSprite
+	}
+
+	opts := &ebiten.DrawImageOptions{}
+
+	// 1. Pivot translation (move "feet/center" to 0,0)
+	opts.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
+
+	// 2. Element offsets (air displacement)
+	opts.GeoM.Translate(float64(currentElement.XOffset), float64(currentElement.YOffset))
+
+	// 3. Scaling
+	opts.GeoM.Scale(scaleX, scaleY)
+
+	// 4. Final translation to character position in logical world
+	opts.GeoM.Translate(relX, relY)
+
 	screen.DrawImage(ebitenSprite, opts)
 }
 

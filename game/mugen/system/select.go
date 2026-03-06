@@ -5,8 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 // SelectState handles character and stage selection.
@@ -126,55 +126,55 @@ func (s *SelectState) Update() (State, error) {
 
 	snd := s.engine.motif.SelectInfo
 
-	// P1 cursor — arrow keys
+	// P1 cursor
 	if !s.p1Done {
-		if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+		if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
 			s.p1CursorX = s.wrap(s.p1CursorX-1, s.cols())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+		if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
 			s.p1CursorX = s.wrap(s.p1CursorX+1, s.cols())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+		if input.GlobalManager.IsJustPressed(1, input.ActionUp) {
 			s.p1CursorY = s.wrap(s.p1CursorY-1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+		if input.GlobalManager.IsJustPressed(1, input.ActionDown) {
 			s.p1CursorY = s.wrap(s.p1CursorY+1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || inpututil.IsKeyJustPressed(ebiten.KeyZ) {
+		if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionZ) {
 			s.p1Done = true
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
 	}
 
-	// P2 cursor — WASD + F keys (only in two-player modes)
+	// P2 cursor (only in two-player modes)
 	if s.showP2 && !s.p2Done {
-		if inpututil.IsKeyJustPressed(ebiten.KeyA) {
+		if input.GlobalManager.IsJustPressed(2, input.ActionLeftUI) {
 			s.p2CursorX = s.wrap(s.p2CursorX-1, s.cols())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyD) {
+		if input.GlobalManager.IsJustPressed(2, input.ActionRightUI) {
 			s.p2CursorX = s.wrap(s.p2CursorX+1, s.cols())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyW) {
+		if input.GlobalManager.IsJustPressed(2, input.ActionUp) {
 			s.p2CursorY = s.wrap(s.p2CursorY-1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		if input.GlobalManager.IsJustPressed(2, input.ActionDown) {
 			s.p2CursorY = s.wrap(s.p2CursorY+1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		if input.GlobalManager.IsJustPressed(2, input.ActionA) || input.GlobalManager.IsJustPressed(2, input.ActionEnter) {
 			s.p2Done = true
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		s.engine.PlaySnd(snd.CancelSnd[0], snd.CancelSnd[1])
 		return NewTitleState(s.engine), nil
 	}

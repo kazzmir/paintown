@@ -303,8 +303,13 @@ func (p *Player) Update(input InputState) bool {
 	}
 
 	if input.IsSkipRequested() {
-		p.done = true
-		return true
+		p.currentIdx++
+		if p.currentIdx >= len(p.sb.Scenes) {
+			p.done = true
+			return true
+		}
+		p.sb.Scenes[p.currentIdx].Reset()
+		return false
 	}
 
 	scene := p.sb.Scenes[p.currentIdx]

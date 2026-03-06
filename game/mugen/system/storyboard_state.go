@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	sb "github.com/kazzmir/paintown/game/mugen/storyboard"
@@ -190,9 +190,9 @@ func (s *StoryboardState) Update() (State, error) {
 		return s.nextState(), nil
 	}
 
-	skip := inpututil.IsKeyJustPressed(ebiten.KeyEnter) ||
-		inpututil.IsKeyJustPressed(ebiten.KeyEscape) ||
-		inpututil.IsKeyJustPressed(ebiten.KeySpace)
+	skip := input.GlobalManager.IsJustPressed(1, input.ActionEnter) ||
+		input.GlobalManager.IsJustPressed(1, input.ActionEscape) ||
+		input.GlobalManager.IsJustPressed(1, input.ActionSpace)
 
 	done := s.player.Update(sb.InputState{Skip: skip})
 	if done {

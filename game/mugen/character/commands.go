@@ -3,7 +3,7 @@ package character
 import (
 	"strings"
 
-	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 // Command represents a single MUGEN command from .cmd
@@ -45,43 +45,48 @@ func (cb *CommandBuffer) Match(cmdStr string, maxTime int) bool {
 }
 
 // GetRawInputs returns the current pressed keys as MUGEN input names
-// TODO: Allow these to be overridden/configured at a later time.
-func GetRawInputs() []string {
+func GetRawInputs(player int) []string {
 	var inputs []string
 
+	if input.GlobalManager == nil {
+		return inputs
+	}
+
 	// Directional keys
-	if ebiten.IsKeyPressed(ebiten.KeyArrowRight) || ebiten.IsKeyPressed(ebiten.KeyRight) {
+	if input.GlobalManager.IsPressed(player, input.ActionRight) {
 		inputs = append(inputs, "holdfwd")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) || ebiten.IsKeyPressed(ebiten.KeyLeft) {
+	if input.GlobalManager.IsPressed(player, input.ActionLeft) {
 		inputs = append(inputs, "holdback")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowUp) || ebiten.IsKeyPressed(ebiten.KeyUp) {
+	if input.GlobalManager.IsPressed(player, input.ActionJump) {
 		inputs = append(inputs, "holdup")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyArrowDown) || ebiten.IsKeyPressed(ebiten.KeyDown) {
+	if input.GlobalManager.IsPressed(player, input.ActionCrouch) {
 		inputs = append(inputs, "holddown")
 	}
 
 	// Button keys
-	// Map asdzxc to x,y,z,a,b,c
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
+	if input.GlobalManager.IsPressed(player, input.ActionX) {
 		inputs = append(inputs, "x")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
+	if input.GlobalManager.IsPressed(player, input.ActionY) {
 		inputs = append(inputs, "y")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
+	if input.GlobalManager.IsPressed(player, input.ActionZ) {
 		inputs = append(inputs, "z")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyZ) {
+	if input.GlobalManager.IsPressed(player, input.ActionA) {
 		inputs = append(inputs, "a")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyX) {
+	if input.GlobalManager.IsPressed(player, input.ActionB) {
 		inputs = append(inputs, "b")
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyC) {
+	if input.GlobalManager.IsPressed(player, input.ActionC) {
 		inputs = append(inputs, "c")
+	}
+	if input.GlobalManager.IsPressed(player, input.ActionStart) {
+		inputs = append(inputs, "start")
 	}
 
 	return inputs

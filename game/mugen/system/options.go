@@ -5,8 +5,8 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 type optionItem struct {
@@ -155,34 +155,34 @@ func (s *OptionsState) Update() (State, error) {
 	}
 
 	// Navigate
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionUp) {
 		s.cursor--
 		if s.cursor < 0 {
 			s.cursor = len(s.items) - 1
 		}
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionDown) {
 		s.cursor = (s.cursor + 1) % len(s.items)
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
 
 	// Adjust value
-	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
 		s.items[s.cursor].doDecrement()
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
 		s.items[s.cursor].doIncrement()
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorMoveSnd[0], s.engine.motif.OptionInfo.CursorMoveSnd[1])
 	}
 
 	// Accept / close
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CancelSnd[0], s.engine.motif.OptionInfo.CancelSnd[1])
 		return NewTitleState(s.engine), nil
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		s.engine.PlaySnd(s.engine.motif.OptionInfo.CursorDoneSnd[0], s.engine.motif.OptionInfo.CursorDoneSnd[1])
 		// "Done" selects back to title
 		return NewTitleState(s.engine), nil
@@ -281,7 +281,7 @@ type WinScreenState struct{ engine *Engine }
 
 func NewWinScreenState(e *Engine) *WinScreenState { return &WinScreenState{engine: e} }
 func (s *WinScreenState) Update() (State, error) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		return NewTitleState(s.engine), nil
 	}
 	return s, nil
@@ -293,7 +293,7 @@ type ContinueScreenState struct{ engine *Engine }
 
 func NewContinueScreenState(e *Engine) *ContinueScreenState { return &ContinueScreenState{engine: e} }
 func (s *ContinueScreenState) Update() (State, error) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		return NewTitleState(s.engine), nil
 	}
 	return s, nil
@@ -307,7 +307,7 @@ func NewGameOverScreenState(e *Engine) *GameOverScreenState {
 	return &GameOverScreenState{engine: e}
 }
 func (s *GameOverScreenState) Update() (State, error) {
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		return NewTitleState(s.engine), nil
 	}
 	return s, nil

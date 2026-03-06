@@ -5,8 +5,8 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 type State interface {
@@ -62,19 +62,19 @@ func (s *TitleState) Update() (State, error) {
 		return s, nil
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyUp) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionUp) {
 		s.selectIndex--
 		if s.selectIndex < 0 {
 			s.selectIndex = len(s.items) - 1
 		}
 		s.engine.PlaySnd(s.engine.motif.TitleInfo.CursorMoveSnd[0], s.engine.motif.TitleInfo.CursorMoveSnd[1])
 	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyDown) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionDown) {
 		s.selectIndex = (s.selectIndex + 1) % len(s.items)
 		s.engine.PlaySnd(s.engine.motif.TitleInfo.CursorMoveSnd[0], s.engine.motif.TitleInfo.CursorMoveSnd[1])
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		return nil, ebiten.Termination
 	}
 
@@ -89,7 +89,7 @@ func (s *TitleState) Update() (State, error) {
 		s.topIndex = 0
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
 		s.engine.PlaySnd(s.engine.motif.TitleInfo.CursorDoneSnd[0], s.engine.motif.TitleInfo.CursorDoneSnd[1])
 		selected := s.items[s.selectIndex]
 		switch selected {

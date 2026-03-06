@@ -43,6 +43,9 @@ type Character struct {
 
 	// Command buffer reference
 	Commands *CommandBuffer
+
+	// Player ID (1 or 2)
+	PlayerID int
 }
 
 // NewCharacter returns a newly initialized character.
@@ -61,6 +64,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data) *Character {
 		Physics:      "S",
 		MoveType:     "I",
 		Ctrl:         true,
+		PlayerID:     1, // Default to P1
 	}
 }
 

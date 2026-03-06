@@ -5,18 +5,41 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 )
 
+type Keys struct {
+	Jump   ebiten.Key
+	Crouch ebiten.Key
+	Left   ebiten.Key
+	Right  ebiten.Key
+	A      ebiten.Key
+	B      ebiten.Key
+	C      ebiten.Key
+	X      ebiten.Key
+	Y      ebiten.Key
+	Z      ebiten.Key
+	Start  ebiten.Key
+	Escape ebiten.Key
+}
+
+type AIRamp struct {
+	Start []int
+	End   []int
+}
+
 type MugenConfig struct {
 	Options struct {
-		Difficulty int
-		Life       int
-		Time       int
-		GameSpeed  int
-		WavVolume  int
-		MidiVolume int
-		Motif      string
+		Difficulty   int
+		Life         int
+		Time         int
+		GameSpeed    int
+		WavVolume    int
+		MidiVolume   int
+		Team1Vs2Life int
+		TeamLoseOnKO bool
+		Motif        string
 	}
 	Rules struct {
 		GameType                    string
@@ -33,6 +56,14 @@ type MugenConfig struct {
 		SysExplodMax        int
 		HelperMax           int
 		PlayerProjectileMax int
+		FirstRun            bool
+	}
+	Debug struct {
+		Debug          bool
+		AllowDebugMode bool
+		AllowDebugKeys bool
+		Speedup        bool
+		StartStage     string
 	}
 	Video struct {
 		Width      int
@@ -42,6 +73,26 @@ type MugenConfig struct {
 		DoubleRes  int
 		VRetrace   bool
 		FullScreen bool
+		BlitMode   string
+	}
+	Sound struct {
+		Sound         bool
+		StereoEffects bool
+		PanningWidth  int
+		ReverseStereo bool
+	}
+	Arcade struct {
+		AIRandomColor bool
+		AICheat       bool
+		ArcadeRamp    AIRamp
+		TeamRamp      AIRamp
+		SurvivalRamp  AIRamp
+	}
+	Input struct {
+		Player1Keyboard Keys
+		Player2Keyboard Keys
+		Player1Joystick Keys
+		Player2Joystick Keys
 	}
 }
 
@@ -64,10 +115,12 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 	cfg.Config.DrawShadows = true
 
 	for _, sec := range ast.Sections {
-		switch strings.ToLower(sec.Name) {
-		case "options":
+		name := strings.ToLower(strings.TrimSpace(sec.Name))
+		switch {
+		case name == "options":
 			for _, attr := range sec.Attributes {
-				switch strings.ToLower(attr.ID.String()) {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
 				case "difficulty":
 					cfg.Options.Difficulty = int(getFloat(attr.Value))
 				case "life":
@@ -80,13 +133,18 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 					cfg.Options.WavVolume = int(getFloat(attr.Value))
 				case "midivolume":
 					cfg.Options.MidiVolume = int(getFloat(attr.Value))
+				case "team.1vs2life":
+					cfg.Options.Team1Vs2Life = int(getFloat(attr.Value))
+				case "team.loseonko":
+					cfg.Options.TeamLoseOnKO = getBool(attr.Value)
 				case "motif":
 					cfg.Options.Motif = getString(attr.Value)
 				}
 			}
-		case "rules":
+		case name == "rules":
 			for _, attr := range sec.Attributes {
-				switch strings.ToLower(attr.ID.String()) {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
 				case "gametype":
 					cfg.Rules.GameType = getString(attr.Value)
 				case "default.attack.lifetopowermul":
@@ -97,9 +155,10 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 					cfg.Rules.SuperTargetDefenceMul = getFloat(attr.Value)
 				}
 			}
-		case "config":
+		case name == "config":
 			for _, attr := range sec.Attributes {
-				switch strings.ToLower(attr.ID.String()) {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
 				case "gamespeed":
 					cfg.Config.GameSpeed = int(getFloat(attr.Value))
 				case "drawshadows":
@@ -116,11 +175,30 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 					cfg.Config.HelperMax = int(getFloat(attr.Value))
 				case "playerprojectilemax":
 					cfg.Config.PlayerProjectileMax = int(getFloat(attr.Value))
+				case "firstrun":
+					cfg.Config.FirstRun = getBool(attr.Value)
 				}
 			}
-		case "video linux", "video system", "video": // Support different video sections
+		case name == "debug":
 			for _, attr := range sec.Attributes {
-				switch strings.ToLower(attr.ID.String()) {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
+				case "debug":
+					cfg.Debug.Debug = getBool(attr.Value)
+				case "allowdebugmode":
+					cfg.Debug.AllowDebugMode = getBool(attr.Value)
+				case "allowdebugkeys":
+					cfg.Debug.AllowDebugKeys = getBool(attr.Value)
+				case "speedup":
+					cfg.Debug.Speedup = getBool(attr.Value)
+				case "startstage":
+					cfg.Debug.StartStage = getString(attr.Value)
+				}
+			}
+		case strings.HasPrefix(name, "video"):
+			for _, attr := range sec.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
 				case "width":
 					cfg.Video.Width = int(getFloat(attr.Value))
 				case "height":
@@ -135,8 +213,72 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 					cfg.Video.VRetrace = getBool(attr.Value)
 				case "fullscreen":
 					cfg.Video.FullScreen = getBool(attr.Value)
+				case "blitmode":
+					cfg.Video.BlitMode = getString(attr.Value)
 				}
 			}
+		case strings.HasPrefix(name, "sound"):
+			for _, attr := range sec.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
+				case "sound":
+					cfg.Sound.Sound = getBool(attr.Value)
+				case "stereoeffects":
+					cfg.Sound.StereoEffects = getBool(attr.Value)
+				case "panningwidth":
+					cfg.Sound.PanningWidth = int(getFloat(attr.Value))
+				case "reversestereo":
+					cfg.Sound.ReverseStereo = getBool(attr.Value)
+				}
+			}
+		case name == "arcade":
+			for _, attr := range sec.Attributes {
+				key := strings.ToLower(attr.ID.String())
+				switch key {
+				case "ai.randomcolor":
+					cfg.Arcade.AIRandomColor = getBool(attr.Value)
+				case "ai.cheat":
+					cfg.Arcade.AICheat = getBool(attr.Value)
+				case "arcade.airamp.start":
+					cfg.Arcade.ArcadeRamp.Start = getIntArray(attr.Value)
+				case "arcade.airamp.end":
+					cfg.Arcade.ArcadeRamp.End = getIntArray(attr.Value)
+				case "team.airamp.start":
+					cfg.Arcade.TeamRamp.Start = getIntArray(attr.Value)
+				case "team.airamp.end":
+					cfg.Arcade.TeamRamp.End = getIntArray(attr.Value)
+				case "survival.airamp.start":
+					cfg.Arcade.SurvivalRamp.Start = getIntArray(attr.Value)
+				case "survival.airamp.end":
+					cfg.Arcade.SurvivalRamp.End = getIntArray(attr.Value)
+				}
+			}
+		case name == "p1 keys":
+			parseKeys(sec, &cfg.Input.Player1Keyboard)
+		case name == "p2 keys":
+			parseKeys(sec, &cfg.Input.Player2Keyboard)
+		case name == "p1 joystick":
+			parseKeys(sec, &cfg.Input.Player1Joystick)
+		case name == "p2 joystick":
+			parseKeys(sec, &cfg.Input.Player2Joystick)
+		}
+	}
+
+	// 2. Load Extended Config (YAML) from multiple locations
+	// For now, we will hard code these locations temporarily until we have a better understanding of the projects structure
+	homeDir, _ := os.UserHomeDir()
+	extPaths := []string{
+		filepath.Join(dataDir, "mugen.yaml"),
+		filepath.Join(homeDir, ".paintown", "mugen.yaml"),
+		"game/mugen/mugen.yaml",
+	}
+
+	for _, path := range extPaths {
+		if path == "" {
+			continue
+		}
+		if ext, err := LoadExtendedConfig(path); err == nil {
+			mergeExtendedConfig(cfg, ext)
 		}
 	}
 
@@ -165,4 +307,187 @@ func getString(v parsers.Value) string {
 
 func getBool(v parsers.Value) bool {
 	return getFloat(v) != 0
+}
+
+func parseKeys(sec *parsers.Section, keys *Keys) {
+	for _, attr := range sec.Attributes {
+		keyName := strings.ToLower(attr.ID.String())
+		var val ebiten.Key
+
+		if n, ok := attr.Value.(parsers.NumberValue); ok {
+			val = ebiten.Key(n.Val)
+		} else {
+			str := strings.ToLower(getString(attr.Value))
+			val = stringToKey(str)
+		}
+
+		switch keyName {
+		case "jump":
+			keys.Jump = val
+		case "crouch":
+			keys.Crouch = val
+		case "left":
+			keys.Left = val
+		case "right":
+			keys.Right = val
+		case "a":
+			keys.A = val
+		case "b":
+			keys.B = val
+		case "c":
+			keys.C = val
+		case "x":
+			keys.X = val
+		case "y":
+			keys.Y = val
+		case "z":
+			keys.Z = val
+		case "start":
+			keys.Start = val
+		case "escape":
+			keys.Escape = val
+		}
+	}
+}
+
+func stringToKey(s string) ebiten.Key {
+	// Basic mapping for common keys.
+	// We can expand this or use a more comprehensive map.
+	switch strings.ToLower(s) {
+	case "up", "keyarrowup":
+		return ebiten.KeyUp
+	case "down", "keyarrowdown":
+		return ebiten.KeyDown
+	case "left", "keyarrowleft":
+		return ebiten.KeyLeft
+	case "right", "keyarrowright":
+		return ebiten.KeyRight
+	case "enter", "keyenter":
+		return ebiten.KeyEnter
+	case "space", "keyspace":
+		return ebiten.KeySpace
+	case "escape", "keyescape":
+		return ebiten.KeyEscape
+	case "a", "keya":
+		return ebiten.KeyA
+	case "b", "keyb":
+		return ebiten.KeyB
+	case "c", "keyc":
+		return ebiten.KeyC
+	case "d", "keyd":
+		return ebiten.KeyD
+	case "e", "keye":
+		return ebiten.KeyE
+	case "f", "keyf":
+		return ebiten.KeyF
+	case "g", "keyg":
+		return ebiten.KeyG
+	case "h", "keyh":
+		return ebiten.KeyH
+	case "i", "keyi":
+		return ebiten.KeyI
+	case "j", "keyj":
+		return ebiten.KeyJ
+	case "k", "keyk":
+		return ebiten.KeyK
+	case "l", "keyl":
+		return ebiten.KeyL
+	case "m", "keym":
+		return ebiten.KeyM
+	case "n", "keyn":
+		return ebiten.KeyN
+	case "o", "keyo":
+		return ebiten.KeyO
+	case "p", "keyp":
+		return ebiten.KeyP
+	case "q", "keyq":
+		return ebiten.KeyQ
+	case "r", "keyr":
+		return ebiten.KeyR
+	case "s", "keys":
+		return ebiten.KeyS
+	case "t", "keyt":
+		return ebiten.KeyT
+	case "u", "keyu":
+		return ebiten.KeyU
+	case "v", "keyv":
+		return ebiten.KeyV
+	case "w", "keyw":
+		return ebiten.KeyW
+	case "x", "keyx":
+		return ebiten.KeyX
+	case "y", "keyy":
+		return ebiten.KeyY
+	case "z", "keyz":
+		return ebiten.KeyZ
+	case "backspace", "keybackspace":
+		return ebiten.KeyBackspace
+	}
+	return 0
+}
+
+func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
+	// Merge Video
+	if ext.Video.Width > 0 {
+		cfg.Video.Width = ext.Video.Width
+	}
+	if ext.Video.Height > 0 {
+		cfg.Video.Height = ext.Video.Height
+	}
+	cfg.Video.FullScreen = ext.Video.FullScreen
+	cfg.Video.VRetrace = ext.Video.VSync
+
+	// Merge Keys
+	applyKeys := func(target *Keys, source map[string]string) {
+		for k, v := range source {
+			val := stringToKey(v)
+			if val == 0 {
+				continue
+			}
+			switch strings.ToLower(k) {
+			case "jump":
+				target.Jump = val
+			case "crouch":
+				target.Crouch = val
+			case "left":
+				target.Left = val
+			case "right":
+				target.Right = val
+			case "a":
+				target.A = val
+			case "b":
+				target.B = val
+			case "c":
+				target.C = val
+			case "x":
+				target.X = val
+			case "y":
+				target.Y = val
+			case "z":
+				target.Z = val
+			case "start":
+				target.Start = val
+			case "escape":
+				target.Escape = val
+			}
+		}
+	}
+
+	applyKeys(&cfg.Input.Player1Keyboard, ext.Input.P1.Keyboard)
+	applyKeys(&cfg.Input.Player2Keyboard, ext.Input.P2.Keyboard)
+
+	// Future: handle Joystick merging
+	// applyKeys(&cfg.Input.Player1Joystick, ext.Input.P1.Joy)
+	// applyKeys(&cfg.Input.Player2Joystick, ext.Input.P2.Joy)
+}
+
+func getIntArray(v parsers.Value) []int {
+	if list, ok := v.(*parsers.ValueList); ok {
+		var out []int
+		for _, item := range list.Values {
+			out = append(out, int(getFloat(item)))
+		}
+		return out
+	}
+	return []int{int(getFloat(v))}
 }

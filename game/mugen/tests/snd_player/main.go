@@ -10,7 +10,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/kazzmir/paintown/game/mugen/config"
+	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/snd"
 )
 
@@ -86,19 +87,21 @@ func (a *App) playCurrent() {
 }
 
 func (a *App) Update() error {
+	input.GlobalManager.Update()
+
 	// Handle Input
-	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionSpace) {
 		a.playCurrent()
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyRight) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
 		if a.bank != nil && len(a.bank.Sounds) > 0 {
 			a.currentIndex = (a.currentIndex + 1) % len(a.bank.Sounds)
 			a.playCurrent()
 		}
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyLeft) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
 		if a.bank != nil && len(a.bank.Sounds) > 0 {
 			a.currentIndex--
 			if a.currentIndex < 0 {
@@ -108,7 +111,7 @@ func (a *App) Update() error {
 		}
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
 		return ebiten.Termination
 	}
 
@@ -157,6 +160,14 @@ func (a *App) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Paintown MUGEN SND Viewer")
+
+	// Load configuration
+	cfg, err := config.LoadConfig("data-new/mugen")
+	if err != nil {
+		fmt.Printf("Warning: failed to load mugen.cfg, using defaults: %v\n", err)
+		cfg = &config.MugenConfig{}
+	}
+	input.GlobalManager = input.NewInputManager(cfg)
 
 	app := NewApp()
 

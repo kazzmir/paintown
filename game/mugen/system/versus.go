@@ -4,8 +4,8 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/input"
 )
 
 // VersusState shows the VS match-up screen.
@@ -32,7 +32,7 @@ func (s *VersusState) Update() (State, error) {
 	}
 
 	// Skip on button press
-	if inpututil.IsKeyJustPressed(ebiten.KeyEnter) || s.ticks >= vsTime {
+	if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || s.ticks >= vsTime {
 		// TODO: Transition to the actual fight
 		return NewTitleState(s.engine), nil
 	}
