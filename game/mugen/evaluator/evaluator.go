@@ -40,9 +40,10 @@ func Evaluate(expr Expression, env EvaluatorEnvironment) float64 {
 	case *Number:
 		return e.Value
 	case *Identifier:
-		res := evaluateIdentifier(strings.ToLower(e.Name), env)
+		name := normalizeIdentifier(e.Name)
+		res := evaluateIdentifier(name, env)
 		if res == math.MaxFloat64 && customEval != nil {
-			res = customEval(e.Name, env)
+			res = customEval(name, env)
 		}
 		return res
 	case *Unary:
@@ -147,7 +148,13 @@ func Evaluate(expr Expression, env EvaluatorEnvironment) float64 {
 	return 0
 }
 
+func normalizeIdentifier(name string) string {
+	// Collapse all internal whitespace into a single space and lowercase
+	return strings.Join(strings.Fields(strings.ToLower(name)), " ")
+}
+
 func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
+	// name is already normalized here
 	switch name {
 	case "time":
 		return float64(env.GetTime())

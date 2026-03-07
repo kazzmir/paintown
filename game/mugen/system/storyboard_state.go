@@ -194,6 +194,7 @@ func (s *StoryboardState) Update() (State, error) {
 		input.GlobalManager.IsJustPressed(1, input.ActionEscape) ||
 		input.GlobalManager.IsJustPressed(1, input.ActionSpace)
 
+		// this should be skip to next scene not done (unless on the last sceene)
 	done := s.player.Update(sb.InputState{Skip: skip})
 	if done {
 		return s.nextState(), nil

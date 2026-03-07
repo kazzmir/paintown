@@ -1,10 +1,86 @@
 #!/bin/bash
 
 # M.U.G.E.N Engine Launcher
-# This script runs the Go implementation of the MUGEN engine.
+# This script runs the Go implementation of the MUGEN engine or its specific test suites.
 
 # Get the directory where this script is located
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-# Run the system package files
-go run "$DIR"/system/*.go "$@"
+show_help() {
+    echo "Usage: $0 [mode] [parameters]"
+    echo ""
+    echo "Modes:"
+    echo "  --game          Run the main game (default if no mode specified)"
+    echo "  --test <name>   Run a specific test suite or unit test"
+    echo "  --help          Show this help message"
+    echo ""
+    echo "Available test applications (go run):"
+    for test_dir in "$DIR"/tests/*/; do
+        if [ -f "${test_dir}main.go" ]; then
+            tname=$(basename "${test_dir}")
+            echo "  - $tname"
+        fi
+    done
+    echo ""
+    echo "Available unit tests (go test):"
+    for test_file in "$DIR"/tests/*_test.go; do
+        if [ -f "$test_file" ]; then
+            tname=$(basename "$test_file" _test.go)
+            echo "  - $tname"
+        fi
+    done
+    echo ""
+    echo "Example:"
+    echo "  $0 --game --data-dir data-new/mugen --stage stages/kfm.def"
+    echo "  $0 --test character --data-dir data-new/mugen"
+    echo "  $0 --test parser"
+}
+
+# Default mode
+MODE="game"
+TARGET=""
+
+# Argument parsing
+if [[ $# -eq 0 ]]; then
+    MODE="game"
+elif [[ "$1" == "--help" ]]; then
+    show_help
+    exit 0
+elif [[ "$1" == "--game" ]]; then
+    MODE="game"
+    shift
+elif [[ "$1" == "--test" ]]; then
+    MODE="test"
+    TARGET="$2"
+    shift 2
+    if [[ -z "$TARGET" ]]; then
+        echo "Error: --test requires a test name."
+        show_help
+        exit 1
+    fi
+elif [[ "$1" == --* ]]; then
+    # If the first arg is a flag (like --data-dir), it implies game mode
+    MODE="game"
+fi
+
+# Execution
+if [[ "$MODE" == "test" ]]; then
+    # Check if it's an application test (directory with main.go)
+    APP_PATH="$DIR/tests/$TARGET/main.go"
+    # Check if it's a unit test file
+    UNIT_PATH="$DIR/tests/${TARGET}_test.go"
+    
+    if [[ -f "$APP_PATH" ]]; then
+        go run "$APP_PATH" "$@"
+    elif [[ -f "$UNIT_PATH" ]]; then
+        # For unit tests, we run the entire tests package but can filter if needed
+        # Forwarding additional args allows the user to pass -run etc.
+        go test -v "$DIR/tests" "$@"
+    else
+        echo "Error: Test target '$TARGET' not found."
+        show_help
+        exit 1
+    fi
+else
+    go run "$DIR"/system/*.go "$@"
+fi

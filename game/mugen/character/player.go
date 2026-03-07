@@ -254,54 +254,17 @@ func (p *Player) Update() {
 	// 1. (Removed redundant CommandBuffer.Add as Character.Update now handles it)
 
 	// 2. (Removed redundant AnimDuration sync as it's now handled by ChangeAnim)
-
 	// 3. Tick character state machine
 	p.Character.Update()
 }
 
-// Draw renders the player to the screen.
-func (p *Player) Draw(screen *ebiten.Image, camX, camY float64) {
-	animNo := p.Character.GetAnim()
-	animData, ok := p.AIR.Actions[animNo]
-	if !ok {
-		return
-	}
-
-	var currentElement *air.Element
-	if p.Character.AnimElem < len(animData.Elements) {
-		currentElement = &animData.Elements[p.Character.AnimElem]
-	}
-
-	if currentElement == nil {
-		return
-	}
-
-	sprite := p.FindSprite(currentElement.Group, currentElement.Image)
-	if sprite == nil || sprite.Image == nil {
-		return
-	}
-
-	// Calculate final draw position
-	drawX := p.Character.X - camX + float64(currentElement.XOffset) - float64(sprite.XAxis)
-	drawY := p.Character.Y - camY + float64(currentElement.YOffset) - float64(sprite.YAxis)
-
-	// Convert image.Image to *ebiten.Image using cache
-	if p.spriteCache[currentElement.Group] == nil {
-		p.spriteCache[currentElement.Group] = make(map[int]*ebiten.Image)
-	}
-	ebitenSprite, cached := p.spriteCache[currentElement.Group][currentElement.Image]
-	if !cached {
-		ebitenSprite = ebiten.NewImageFromImage(sprite.Image)
-		p.spriteCache[currentElement.Group][currentElement.Image] = ebitenSprite
-	}
-
-	opts := &ebiten.DrawImageOptions{}
-	opts.GeoM.Translate(drawX, drawY)
-	screen.DrawImage(ebitenSprite, opts)
+// Draw renders the player to the screen at the specified screen coordinates.
+func (p *Player) Draw(screen *ebiten.Image, screenX, screenY float64) {
+	p.DrawScaled(screen, screenX, screenY, 1.0, 1.0)
 }
 
-// DrawScaled renders the player to the screen with a specific scale.
-func (p *Player) DrawScaled(screen *ebiten.Image, camX, camY, scaleX, scaleY float64) {
+// DrawScaled renders the player to the screen at the specified screen coordinates with a specific scale.
+func (p *Player) DrawScaled(screen *ebiten.Image, screenX, screenY, scaleX, scaleY float64) {
 	animNo := p.Character.GetAnim()
 	animData, ok := p.AIR.Actions[animNo]
 	if !ok {
@@ -321,10 +284,6 @@ func (p *Player) DrawScaled(screen *ebiten.Image, camX, camY, scaleX, scaleY flo
 	if sprite == nil || sprite.Image == nil {
 		return
 	}
-
-	// Calculate draw position relative to camera
-	relX := p.Character.X - camX
-	relY := p.Character.Y - camY
 
 	// Convert image.Image to *ebiten.Image using cache
 	if p.spriteCache[currentElement.Group] == nil {
@@ -347,8 +306,8 @@ func (p *Player) DrawScaled(screen *ebiten.Image, camX, camY, scaleX, scaleY flo
 	// 3. Scaling
 	opts.GeoM.Scale(scaleX, scaleY)
 
-	// 4. Final translation to character position in logical world
-	opts.GeoM.Translate(relX, relY)
+	// 4. Final translation to specified screen position
+	opts.GeoM.Translate(screenX, screenY)
 
 	screen.DrawImage(ebitenSprite, opts)
 }

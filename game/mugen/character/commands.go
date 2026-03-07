@@ -37,7 +37,8 @@ func (cb *CommandBuffer) Add(inputs []string) {
 // Match checks if a command string (like "D, DF, F, a") is matched in history.
 // cmdStr: the comma-separated sequence
 // maxTime: the total ticks allowed for the sequence
-func (cb *CommandBuffer) Match(cmdStr string, maxTime int) bool {
+// bufferTime: the number of ticks from the end of history to find the LAST part of the sequence
+func (cb *CommandBuffer) Match(cmdStr string, maxTime, bufferTime int) bool {
 	if cmdStr == "" || len(cb.History) == 0 {
 		return false
 	}
@@ -47,60 +48,47 @@ func (cb *CommandBuffer) Match(cmdStr string, maxTime int) bool {
 		parts[i] = strings.TrimSpace(parts[i])
 	}
 
-	// We match from right to left (most recent input first)
-	historyIdx := len(cb.History) - 1
-	partIdx := len(parts) - 1
-
-	// Special case: single button/direction
-	if len(parts) == 1 {
-		return cb.tickMatches(historyIdx, parts[0])
+	// 1. Find the LAST element of the sequence in the bufferTime window
+	// If bufferTime is 1, it must be the current tick.
+	// If bufferTime is > 1, it can be any of the last N ticks.
+	historyIdx := -1
+	for i := len(cb.History) - 1; i >= 0 && i >= len(cb.History)-bufferTime; i-- {
+		if cb.tickMatches(i, parts[len(parts)-1]) {
+			historyIdx = i
+			break
+		}
 	}
 
-	// Sequence matching:
-	// Starting from the current tick, find parts[last],
-	// then search backwards (within maxTime) for parts[last-1], etc.
-	// This is a simplified version of MUGEN matching.
-
-	// Must find the last part in the most recent ticks (usually current tick)
-	if !cb.tickMatches(historyIdx, parts[partIdx]) {
+	if historyIdx == -1 {
 		return false
 	}
 
+	// Special case: single button/direction
+	if len(parts) == 1 {
+		return true
+	}
+
+	// 2. Match the rest of the sequence backwards (within maxTime)
+	partIdx := len(parts) - 2
 	lastMatchTick := historyIdx
-	partIdx--
+
+	// The total time limit starts from the tick we matched the last part.
+	limit := historyIdx - maxTime
+	if limit < 0 {
+		limit = 0
+	}
 
 	for partIdx >= 0 {
 		found := false
 		// Search backwards from lastMatchTick
-		// MUGEN gives 'maxTime' ticks for the ENTIRE sequence by default.
-		startSearch := lastMatchTick - 1
-		limit := len(cb.History) - maxTime
-		if limit < 0 {
-			limit = 0
-		}
-
-		for i := startSearch; i >= limit; i-- {
-			// Sequence parts (except the very last one we already matched)
-			// should usually be "just pressed" in MUGEN unless explicitly held with '/'.
+		for i := lastMatchTick - 1; i >= limit; i-- {
 			if cb.tickMatches(i, parts[partIdx]) {
-				// If not the last part (we are searching backwards, so partIdx < len(parts)-1)
-				// and it doesn't have a '/' hold modifier, require it to be a new press.
-				if !strings.HasPrefix(parts[partIdx], "/") {
-					// Edge trigger check: must not be pressed at i-1
-					if cb.tickMatches(i-1, parts[partIdx]) {
-						continue
-					}
-				}
-
-				// GAP CHECK: If the current part and the PREVIOUSLY matched part (partIdx+1)
-				// are the same direction, there MUST be at least one tick between 'i' and 'lastMatchTick'
-				// where the button was NOT pressed.
+				// MUGEN Accuracy:
+				// For same-direction components (e.g. F, F), there must be a gap.
+				// This is only required for "tap" motions.
 				if partIdx < len(parts)-1 {
-					prevPart := parts[partIdx+1]
-					// Strip hold/release modifiers for comparison
 					cleanCurr := strings.TrimPrefix(strings.TrimPrefix(parts[partIdx], "/"), "~")
-					cleanPrev := strings.TrimPrefix(strings.TrimPrefix(prevPart, "/"), "~")
-
+					cleanPrev := strings.TrimPrefix(strings.TrimPrefix(parts[partIdx+1], "/"), "~")
 					if cleanCurr == cleanPrev && !IsButton(cleanCurr) {
 						hasGap := false
 						for j := i + 1; j < lastMatchTick; j++ {

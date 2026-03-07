@@ -137,7 +137,7 @@ func NewStateMachine() *StateMachine {
 // registerCoreControllers binds supported MUGEN controllers to their handlers.
 func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["changestate"] = handleChangeState
-	sm.controllers["selfstate"] = handleChangeState // SelfState is same as ChangeState for now unless we handle helper/parent logic
+	sm.controllers["selfstate"] = handleSelfState
 	sm.controllers["changeanim"] = handleChangeAnim
 	sm.controllers["velset"] = handleVelSet
 	sm.controllers["veladd"] = handleVelAdd
@@ -189,7 +189,6 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["movehitreset"] = handleMoveHitReset
 	sm.controllers["hitadd"] = handleHitAdd
 	sm.controllers["changeanim2"] = handleChangeAnim2
-	sm.controllers["selfstate"] = handleSelfState
 	sm.controllers["palfx"] = handlePalFX
 	sm.controllers["allpalfx"] = handleAllPalFX
 	sm.controllers["bgpalfx"] = handleBGPalFX
@@ -291,7 +290,7 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 		if !ok {
 			return math.MaxFloat64 // Indicate unknown if not a character environment
 		}
-		switch strings.ToLower(name) {
+		switch name { // name is already normalized by Evaluate
 		case "time":
 			return float64(charEnv.GetTime())
 		case "animtime":
@@ -473,17 +472,26 @@ func handleChangeState(ctrl *cns.StateController, env Environment) error {
 	if !ok {
 		return fmt.Errorf("missing value in ChangeState")
 	}
-	var val int
-	fmt.Sscanf(valStr, "%d", &val)
+
+	// Support expressions for state value
+	expr, err := evaluator.Parse(valStr)
+	if err != nil {
+		return fmt.Errorf("error parsing ChangeState value '%s': %v", valStr, err)
+	}
+	val := int(evaluator.Evaluate(expr, env))
 
 	ctrlFlag := -1
 	if cStr, ok := ctrl.Params["ctrl"]; ok {
-		fmt.Sscanf(cStr, "%d", &ctrlFlag)
+		if cExpr, err := evaluator.Parse(cStr); err == nil {
+			ctrlFlag = int(evaluator.Evaluate(cExpr, env))
+		}
 	}
 
 	animOverride := -1
 	if aStr, ok := ctrl.Params["anim"]; ok {
-		fmt.Sscanf(aStr, "%d", &animOverride)
+		if aExpr, err := evaluator.Parse(aStr); err == nil {
+			animOverride = int(evaluator.Evaluate(aExpr, env))
+		}
 	}
 
 	env.ChangeState(val, ctrlFlag, animOverride)
@@ -998,18 +1006,31 @@ func handleChangeAnim2(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleSelfState(ctrl *cns.StateController, env Environment) error {
-	val := 0
-	if v, ok := ctrl.Params["value"]; ok {
-		val, _ = strconv.Atoi(v)
+	valStr, ok := ctrl.Params["value"]
+	if !ok {
+		return fmt.Errorf("missing value in SelfState")
 	}
+
+	expr, err := evaluator.Parse(valStr)
+	if err != nil {
+		return fmt.Errorf("error parsing SelfState value '%s': %v", valStr, err)
+	}
+	val := int(evaluator.Evaluate(expr, env))
+
 	ctrlFlag := -1
 	if cStr, ok := ctrl.Params["ctrl"]; ok {
-		ctrlFlag, _ = strconv.Atoi(cStr)
+		if cExpr, err := evaluator.Parse(cStr); err == nil {
+			ctrlFlag = int(evaluator.Evaluate(cExpr, env))
+		}
 	}
+
 	anim := -1
 	if aStr, ok := ctrl.Params["anim"]; ok {
-		anim, _ = strconv.Atoi(aStr)
+		if aExpr, err := evaluator.Parse(aStr); err == nil {
+			anim = int(evaluator.Evaluate(aExpr, env))
+		}
 	}
+
 	env.SelfState(val, ctrlFlag, anim)
 	return nil
 }

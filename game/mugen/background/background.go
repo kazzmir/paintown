@@ -32,10 +32,14 @@ const (
 type Background struct {
 	Elements     []Element
 	BGClearColor color.Color
+	Controllers  []*BGCtrlDef
 }
 
 // Update advances all background elements by one tick (velocity, animation frames).
 func (b *Background) Update() {
+	for _, ctrl := range b.Controllers {
+		ctrl.Update(b.Elements)
+	}
 	for _, el := range b.Elements {
 		el.Update()
 	}
@@ -45,6 +49,17 @@ type Element interface {
 	Update()
 	Draw(screen *ebiten.Image, cameraX, cameraY float64, sprites map[string]*SpriteImages)
 	GetLayerNo() int
+	GetID() int
+	SetVisible(v bool)
+	SetEnabled(v bool)
+	SetVelocityX(x float64)
+	SetVelocityY(y float64)
+	AddVelocityX(x float64)
+	AddVelocityY(y float64)
+	SetPositionX(x float64)
+	SetPositionY(y float64)
+	AddPositionX(x float64)
+	AddPositionY(y float64)
 }
 
 type CommonElement struct {
@@ -61,18 +76,84 @@ type CommonElement struct {
 	Velocity [2]float64
 	Trans    string // "none", "add", "add1", "sub", "addalpha"
 	Alpha    [2]int // s, d
+	Visible  bool
+	Enabled  bool
+
+	// Sinusoidal movement
+	SinX [3]float64 // amplitude, period, phase
+	SinY [3]float64 // amplitude, period, phase
 
 	// Internal state
 	CurrentPos [2]float64
+	Time       int // ticks since start
 }
 
 func (e *CommonElement) Update() {
+	if !e.Enabled {
+		return
+	}
 	e.CurrentPos[0] += e.Velocity[0]
 	e.CurrentPos[1] += e.Velocity[1]
+	e.Time++
+}
+
+func (e *CommonElement) GetOffset() (float64, float64) {
+	offX, offY := 0.0, 0.0
+	if e.SinX[1] > 0 {
+		offX = e.SinX[0] * math.Sin(2*math.Pi*float64(e.Time)/e.SinX[1]+e.SinX[2])
+	}
+	if e.SinY[1] > 0 {
+		offY = e.SinY[0] * math.Sin(2*math.Pi*float64(e.Time)/e.SinY[1]+e.SinY[2])
+	}
+	return offX, offY
 }
 
 func (e *CommonElement) GetLayerNo() int {
 	return e.LayerNo
+}
+
+func (e *CommonElement) GetID() int {
+	return e.ID
+}
+
+func (e *CommonElement) SetVisible(v bool) {
+	e.Visible = v
+}
+
+func (e *CommonElement) SetEnabled(v bool) {
+	e.Enabled = v
+}
+
+func (e *CommonElement) SetVelocityX(x float64) {
+	e.Velocity[0] = x
+}
+
+func (e *CommonElement) SetVelocityY(y float64) {
+	e.Velocity[1] = y
+}
+
+func (e *CommonElement) AddVelocityX(x float64) {
+	e.Velocity[0] += x
+}
+
+func (e *CommonElement) AddVelocityY(y float64) {
+	e.Velocity[1] += y
+}
+
+func (e *CommonElement) SetPositionX(x float64) {
+	e.CurrentPos[0] = x
+}
+
+func (e *CommonElement) SetPositionY(y float64) {
+	e.CurrentPos[1] = y
+}
+
+func (e *CommonElement) AddPositionX(x float64) {
+	e.CurrentPos[0] += x
+}
+
+func (e *CommonElement) AddPositionY(y float64) {
+	e.CurrentPos[1] += y
 }
 
 func (e *CommonElement) Draw(screen *ebiten.Image, cameraX, cameraY float64, sprites map[string]*SpriteImages) {
@@ -146,7 +227,8 @@ func (e *NormalElement) Draw(screen *ebiten.Image, cameraX, cameraY float64, spr
 		img = si.Opaque
 	}
 
-	e.CommonElement.draw(screen, img, int(e.Sprite.XAxis), int(e.Sprite.YAxis), cameraX, cameraY)
+	offX, offY := e.GetOffset()
+	e.CommonElement.drawWithBlending(screen, img, int(e.Sprite.XAxis), int(e.Sprite.YAxis), cameraX+offX, cameraY+offY, e.Trans, e.Alpha, nil)
 }
 
 type AnimationElement struct {
@@ -199,8 +281,6 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY float64, 
 			if strings.Contains(f, "as") {
 				// Custom alpha: ASxxxDyyy
 				trans = "addalpha"
-				// MUGEN format can be AS256D128
-				// We need a regex or simple parser
 				s, d := 256, 256
 				fmt.Sscanf(f, "as%dd%d", &s, &d)
 				alpha = [2]int{s, d}
@@ -217,15 +297,17 @@ func (e *AnimationElement) Draw(screen *ebiten.Image, cameraX, cameraY float64, 
 		img = si.Opaque
 	}
 
-	e.CommonElement.drawWithBlending(screen, img, pivotX-el.XOffset, pivotY-el.YOffset, cameraX, cameraY, trans, alpha)
+	offX, offY := e.GetOffset()
+	e.CommonElement.drawWithBlending(screen, img, pivotX-el.XOffset, pivotY-el.YOffset, cameraX+offX, cameraY+offY, trans, alpha, nil)
 }
 
-func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image, xAxis, yAxis int, cameraX, cameraY float64, trans string, alpha [2]int) {
-	if img == nil {
+func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image, xAxis, yAxis int, cameraX, cameraY float64, trans string, alpha [2]int, parallax *ParallaxElement) {
+	if img == nil || !e.Visible {
 		return
 	}
 
 	w, h := img.Size()
+
 	drawX := 160.0 + e.Start[0] + e.CurrentPos[0] - cameraX*e.Delta[0]
 	drawY := e.Start[1] + e.CurrentPos[1] - cameraY*e.Delta[1]
 
@@ -240,8 +322,31 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 	tileHeight := float64(h) + float64(e.Spacing[1])
 
 	tileX, tileY := e.Tile[0], e.Tile[1]
-	if e.Type == Parallax {
-		tileY = 0
+
+	// Determine scale and shearing for parallax
+	scaleX, scaleY := 1.0, 1.0
+	shearX := 0.0
+
+	if parallax != nil {
+		tileY = 0 // Parallax ignores Y tiling
+
+		// Scalestart/delta logic
+		if parallax.ScaleStart[0] != 0 {
+			scaleX = parallax.ScaleStart[0] + parallax.ScaleDelta[0]*cameraY
+		}
+		if parallax.ScaleStart[1] != 0 {
+			scaleY = parallax.ScaleStart[1] + parallax.ScaleDelta[1]*cameraY
+		} else if parallax.YScaleStart != 0 {
+			// Deprecated formula
+			scaleY = 1.0 / (parallax.YScaleStart/100.0 + parallax.YScaleDelta/100.0*cameraY)
+		}
+
+		// Shearing logic: (delta_bottom - delta_top) / height
+		// We'll simplify for now: just apply xscale if provided
+		if parallax.XScale[0] != 0 && parallax.XScale[1] != 0 {
+			// Approximate shear
+			shearX = (parallax.XScale[1] - parallax.XScale[0]) * cameraX / float64(h)
+		}
 	}
 
 	minX, maxX := 0, 0
@@ -281,7 +386,14 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 
 			op := &ebiten.DrawImageOptions{}
 			op.Filter = ebiten.FilterNearest
+
+			// Apply Scale and Shearing
+			op.GeoM.Scale(scaleX, scaleY)
+			if shearX != 0 {
+				op.GeoM.Skew(shearX, 0)
+			}
 			op.GeoM.Translate(xPos, yPos)
+
 			e.applyBlending(op, trans, alpha)
 			target.DrawImage(img, op)
 		}
@@ -289,14 +401,18 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 }
 
 func (e *CommonElement) draw(screen *ebiten.Image, img *ebiten.Image, xAxis, yAxis int, cameraX, cameraY float64) {
-	e.drawWithBlending(screen, img, xAxis, yAxis, cameraX, cameraY, e.Trans, e.Alpha)
+	e.drawWithBlending(screen, img, xAxis, yAxis, cameraX, cameraY, e.Trans, e.Alpha, nil)
 }
 
 type ParallaxElement struct {
 	CommonElement
-	Sprite *sff.Sprite
-	XScale [2]float64
-	YScale float64
+	Sprite      *sff.Sprite
+	XScale      [2]float64
+	Width       [2]float64
+	ScaleStart  [2]float64
+	ScaleDelta  [2]float64
+	YScaleStart float64
+	YScaleDelta float64
 }
 
 func (e *ParallaxElement) Update() {
@@ -319,9 +435,8 @@ func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY float64, s
 		img = si.Opaque
 	}
 
-	// Parallax is similar to normal but ignores Y tiling usually and applies X scaling based on vertical position
-	// For now, let's treat it as a normal element until we implement the complex XScale logic.
-	e.CommonElement.draw(screen, img, int(e.Sprite.XAxis), int(e.Sprite.YAxis), cameraX, cameraY)
+	offX, offY := e.GetOffset()
+	e.CommonElement.drawWithBlending(screen, img, int(e.Sprite.XAxis), int(e.Sprite.YAxis), cameraX+offX, cameraY+offY, e.Trans, e.Alpha, e)
 }
 func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.SFF, airData *air.Data) {
 	prefix = strings.ToLower(prefix)
@@ -340,6 +455,8 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			Spacing: [2]int{0, 0},
 			Trans:   "none",
 			Window:  [4]int{0, 0, 319, 239},
+			Visible: true,
+			Enabled: true,
 		}
 		var elemType string
 		var spriteNo [2]int
@@ -382,17 +499,34 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 				common.Window = getVector4(attr.Value)
 			case "layerno":
 				common.LayerNo = int(getFloat(attr.Value))
+			case "sin.x":
+				v := getVector3(attr.Value)
+				common.SinX = [3]float64{v[0], v[1], v[2]}
+			case "sin.y":
+				v := getVector3(attr.Value)
+				common.SinY = [3]float64{v[0], v[1], v[2]}
 			}
 		}
 
 		var xscale [2]float64
 		var yscale float64
+		var width [2]float64
+		var scalestart [2]float64
+		var scaledelta [2]float64
+
 		for _, attr := range sec.Attributes {
 			id := strings.ToLower(attr.ID.String())
-			if id == "xscale" {
+			switch id {
+			case "xscale":
 				xscale = getVector2(attr.Value)
-			} else if id == "yscale" {
+			case "yscale":
 				yscale = getFloat(attr.Value)
+			case "width":
+				width = getVector2(attr.Value)
+			case "scalestart":
+				scalestart = getVector2(attr.Value)
+			case "scaledelta":
+				scaledelta = getVector2(attr.Value)
 			}
 		}
 
@@ -440,7 +574,10 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			pe := &ParallaxElement{
 				CommonElement: common,
 				XScale:        xscale,
-				YScale:        yscale,
+				Width:         width,
+				ScaleStart:    scalestart,
+				ScaleDelta:    scaledelta,
+				YScaleStart:   yscale,
 			}
 			if sffData != nil {
 				for i := range sffData.Sprites {
@@ -510,6 +647,20 @@ func getBool(v parsers.Value) bool {
 	return getFloat(v) != 0
 }
 
+func getVector3(v parsers.Value) [3]float64 {
+	if list, ok := v.(*parsers.ValueList); ok {
+		var res [3]float64
+		for i := 0; i < 3 && i < len(list.Values); i++ {
+			res[i] = getFloat(list.Values[i])
+		}
+		return res
+	}
+	if v != nil {
+		return [3]float64{getFloat(v), 0, 0}
+	}
+	return [3]float64{0, 0, 0}
+}
+
 func getVector2(v parsers.Value) [2]float64 {
 	if list, ok := v.(*parsers.ValueList); ok {
 		if len(list.Values) >= 2 {
@@ -536,4 +687,104 @@ func getVector4(v parsers.Value) [4]int {
 		return [4]int{int(getFloat(v)), 0, 0, 0}
 	}
 	return [4]int{0, 0, 0, 0}
+}
+
+type BGCtrlDef struct {
+	Looptime int
+	CtrlIDs  []int
+	Ctrls    []*BGCtrl
+	Time     int // internal timer
+}
+
+func (d *BGCtrlDef) Update(elements []Element) {
+	if d.Looptime > 0 && d.Time >= d.Looptime {
+		d.Time = 0
+	}
+
+	for _, ctrl := range d.Ctrls {
+		ctrl.Update(d.Time, d.CtrlIDs, elements)
+	}
+
+	d.Time++
+}
+
+type BGCtrl struct {
+	Type     string
+	Time     [2]int
+	Looptime int
+	CtrlIDs  []int
+	Params   map[string]parsers.Value
+}
+
+func (c *BGCtrl) Update(globalTime int, defaultIDs []int, elements []Element) {
+	t := globalTime
+	if c.Looptime > 0 {
+		t = globalTime % c.Looptime
+	}
+
+	if t >= c.Time[0] && t <= c.Time[1] {
+		ids := c.CtrlIDs
+		if len(ids) == 0 {
+			ids = defaultIDs
+		}
+
+		for _, el := range elements {
+			match := false
+			if len(ids) == 0 {
+				match = true // affect all
+			} else {
+				for _, id := range ids {
+					if el.GetID() == id {
+						match = true
+						break
+					}
+				}
+			}
+
+			if match {
+				c.Apply(el)
+			}
+		}
+	}
+}
+
+func (c *BGCtrl) Apply(el Element) {
+	switch strings.ToLower(c.Type) {
+	case "visible":
+		if v, ok := c.Params["value"]; ok {
+			el.SetVisible(getFloat(v) != 0)
+		}
+	case "enabled":
+		if v, ok := c.Params["value"]; ok {
+			el.SetEnabled(getFloat(v) != 0)
+		}
+	case "velset":
+		if v, ok := c.Params["x"]; ok {
+			el.SetVelocityX(getFloat(v))
+		}
+		if v, ok := c.Params["y"]; ok {
+			el.SetVelocityY(getFloat(v))
+		}
+	case "veladd":
+		if v, ok := c.Params["x"]; ok {
+			el.AddVelocityX(getFloat(v))
+		}
+		if v, ok := c.Params["y"]; ok {
+			el.AddVelocityY(getFloat(v))
+		}
+	case "posset":
+		if v, ok := c.Params["x"]; ok {
+			el.SetPositionX(getFloat(v))
+		}
+		if v, ok := c.Params["y"]; ok {
+			el.SetPositionY(getFloat(v))
+		}
+	case "posadd":
+		if v, ok := c.Params["x"]; ok {
+			el.AddPositionX(getFloat(v))
+		}
+		if v, ok := c.Params["y"]; ok {
+			el.AddPositionY(getFloat(v))
+		}
+	}
 }

@@ -181,7 +181,7 @@ func (c *Character) Update() {
 			for name, cmdList := range c.CmdFile.Commands {
 				for _, cmd := range cmdList {
 					// MUGEN command matching
-					if c.Commands.Match(cmd.Sequence, cmd.Time) {
+					if c.Commands.Match(cmd.Sequence, cmd.Time, cmd.BufferTime) {
 						c.ActiveCommands = append(c.ActiveCommands, name)
 						matched = append(matched, name)
 						break // Found a match for this command name
@@ -277,6 +277,11 @@ func (c *Character) Update() {
 			// State 52 is standard Landing state in MUGEN common1.cns
 			c.ChangeState(52, -1, -1)
 		}
+	}
+
+	// Diagnostic: detect infinite fall
+	if c.Y > 5000 && !c.PosFrozen {
+		fmt.Printf("[WARNING] Tick %d: Extreme Y position (%.1f) detected in state %d! Potential grounding failure.\n", c.Time, c.Y, c.StateNo)
 	}
 
 	/*
