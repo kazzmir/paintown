@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -97,16 +98,24 @@ type MugenConfig struct {
 }
 
 func LoadConfig(dataDir string) (*MugenConfig, error) {
-	cfgPath := filepath.Join(dataDir, "data", "mugen.cfg")
+	// Robustness: check if dataDir already ends in /data or is the data folder
+	base := dataDir
+	if filepath.Base(dataDir) == "data" {
+		base = filepath.Dir(dataDir)
+	}
+
+	cfgPath := filepath.Join(base, "data", "mugen.cfg")
 	f, err := os.Open(cfgPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to open mugen.cfg at %s: %w", cfgPath, err)
 	}
 	defer f.Close()
 
+	fmt.Printf("Loading MUGEN config from: %s\n", cfgPath)
+
 	ast, err := parsers.Parse(f)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to parse mugen.cfg: %w", err)
 	}
 
 	cfg := &MugenConfig{}
@@ -265,10 +274,10 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 	}
 
 	// 2. Load Extended Config (YAML) from multiple locations
-	// For now, we will hard code these locations temporarily until we have a better understanding of the projects structure
 	homeDir, _ := os.UserHomeDir()
 	extPaths := []string{
-		filepath.Join(dataDir, "mugen.yaml"),
+		filepath.Join(base, "mugen.yaml"),
+		filepath.Join(base, "data", "mugen.yaml"),
 		filepath.Join(homeDir, ".paintown", "mugen.yaml"),
 		"game/mugen/mugen.yaml",
 	}
@@ -278,6 +287,7 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 			continue
 		}
 		if ext, err := LoadExtendedConfig(path); err == nil {
+			fmt.Printf("Merged extended config from: %s\n", path)
 			mergeExtendedConfig(cfg, ext)
 		}
 	}
@@ -445,9 +455,9 @@ func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
 				continue
 			}
 			switch strings.ToLower(k) {
-			case "jump":
+			case "jump", "up":
 				target.Jump = val
-			case "crouch":
+			case "crouch", "down":
 				target.Crouch = val
 			case "left":
 				target.Left = val

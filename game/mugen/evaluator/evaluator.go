@@ -164,40 +164,6 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 			return 1
 		}
 		return 0
-	case "statetype":
-		switch strings.ToUpper(env.GetStateType()) {
-		case "S":
-			return 1
-		case "C":
-			return 2
-		case "A":
-			return 3
-		case "L":
-			return 4
-		}
-		return 0
-	case "movetype":
-		switch strings.ToUpper(env.GetMoveType()) {
-		case "I":
-			return 1
-		case "A":
-			return 2
-		case "H":
-			return 3
-		}
-		return 0
-	case "physics":
-		switch strings.ToUpper(env.GetPhysics()) {
-		case "S":
-			return 1
-		case "C":
-			return 2
-		case "A":
-			return 3
-		case "N":
-			return 4
-		}
-		return 0
 	case "pos x":
 		x, _ := env.GetPos()
 		return x

@@ -109,15 +109,18 @@ func (p *Parser) parseAttribute() (*Attribute, error) {
 		Column: p.tok.Column,
 	}
 
-	idTok := p.tok
-	if idTok.Type != TokenIdentifier && idTok.Type != TokenKeyword && idTok.Type != TokenNumber {
-		return nil, fmt.Errorf("expected identifier at line %d:%d, got %v", idTok.Line, idTok.Column, idTok.Lit)
+	var idParts []string
+	for p.tok.Type != TokenEOF && p.tok.Type != TokenAssign && p.tok.Type != TokenComma && p.tok.Type != TokenNewline {
+		idParts = append(idParts, p.tok.Lit)
+		p.advance()
 	}
-	p.advance()
 
-	// For simplicity, assume the ID is a single token for now.
-	// If it needs to handle dots like `parseIdentifier` did, that logic would need to be re-integrated.
-	attr.ID = &Identifier{Parts: []string{idTok.Lit}}
+	if len(idParts) == 0 {
+		return nil, fmt.Errorf("expected identifier at line %d:%d, got %v", p.tok.Line, p.tok.Column, p.tok.Lit)
+	}
+
+	attrID := strings.Join(idParts, "")
+	attr.ID = &Identifier{Parts: []string{attrID}}
 
 	// MUGEN attributes typically have an '=', but animations like "200,4, 0,0, 1" do not.
 	// If the next token is '=', consume it and parse as normal assignment.
@@ -164,6 +167,7 @@ func (p *Parser) parseAttribute() (*Attribute, error) {
 
 	// Ensure newline or EOF ends the attribute
 	if p.tok.Type != TokenNewline && p.tok.Type != TokenEOF {
+		fmt.Printf("Warning: trailing garbage in attribute %s: %s (%v)\n", attrID, p.tok.Lit, p.tok.Type)
 		return nil, fmt.Errorf("expected newline after attribute at line %d:%d, got %v (%s)", p.tok.Line, p.tok.Column, p.tok.Type, p.tok.Lit)
 	}
 
@@ -201,10 +205,12 @@ func (p *Parser) parseValueList() (Value, error) {
 			continue
 		}
 
-		// Otherwise, try to parse a value
 		val, err := p.parseValue()
 		if err != nil {
 			return nil, err
+		}
+		if val == nil {
+			break
 		}
 		values = append(values, val)
 
@@ -256,21 +262,17 @@ func (p *Parser) parseValue() (Value, error) {
 			p.advance()
 		default:
 			if len(parts) == 0 {
-				// We encountered an illegal token starting a value (e.g. '!')
-				// Consume it so we don't infinite loop, and treat it as part of the value string.
-				parts = append(parts, p.tok.Lit)
-				p.advance()
-			} else {
-				// We've gathered some parts, and hit a boundary (like a comma, newline, etc)
-				combined := strings.Join(parts, "")
-
-				// Try parsing as simple number
-				if val, err := strconv.ParseFloat(combined, 64); err == nil && len(parts) == 1 {
-					return NumberValue{Val: val}, nil
-				}
-
-				return KeywordValue{Val: combined}, nil
+				return nil, nil
 			}
+			// We've gathered some parts, and hit a boundary (like a comma, newline, etc)
+			combined := strings.Join(parts, "")
+
+			// Try parsing as simple number
+			if val, err := strconv.ParseFloat(combined, 64); err == nil && len(parts) == 1 {
+				return NumberValue{Val: val}, nil
+			}
+
+			return KeywordValue{Val: combined}, nil
 		}
 	}
 }

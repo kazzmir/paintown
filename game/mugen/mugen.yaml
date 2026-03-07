@@ -8,12 +8,18 @@ input:
       crouch: KeyArrowDown
       left: KeyArrowLeft
       right: KeyArrowRight
-      a: KeyZ
-      b: KeyX
+      a: KeyA
+      b: KeyB
       c: KeyC
-      x: KeyA
-      y: KeyS
-      z: KeyD
+      x: KeyX
+      y: KeyY
+      z: KeyZ
+      #a: KeyA
+      #b: KeyO
+      #c: KeyE
+      #x: KeySemicolon
+      #y: KeyQ
+      #z: KeyJ
       start: KeyEnter
       escape: KeyEscape
     joy:

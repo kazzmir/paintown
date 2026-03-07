@@ -65,9 +65,11 @@ type Movement struct {
 }
 
 type StateController struct {
-	Name     string
-	Type     string
-	Triggers []string
+	Name           string
+	Type           string
+	Persistent     int
+	IgnoreHitPause int
+	Triggers       []string
 	// The rest of the keys we'll store loosely for now, or just provide access to the raw attributes
 	// In a full implementation, each controller type (ChangeState, HitDef, etc) has specific fields.
 	// We'll store them as a string map to avoid creating 50 struct types right now.
@@ -76,6 +78,7 @@ type StateController struct {
 
 type StateDef struct {
 	ID          int
+	Name        string
 	Type        string
 	MoveType    string
 	Physics     string
@@ -263,9 +266,9 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 					cns.Movement.CrouchFriction = getAsFloat(attr.Value)
 				}
 			}
-		} else if strings.HasPrefix(secName, "statedef ") {
-			idStr := strings.TrimSpace(strings.TrimPrefix(secName, "statedef "))
-			stateID, err := strconv.Atoi(idStr)
+		} else if fields := strings.Fields(strings.ReplaceAll(secName, ",", " ")); len(fields) >= 2 && fields[0] == "statedef" {
+			idPart := fields[1]
+			stateID, err := strconv.Atoi(idPart)
 			if err != nil {
 				continue
 			}
@@ -276,6 +279,12 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				Anim:        -1, // Default to "no change"
 				Ctrl:        -1, // Default to "no change"
 			}
+
+			// Extract name if present: [Statedef 0, Standing]
+			if idx := strings.Index(section.Name, ","); idx != -1 {
+				currentState.Name = strings.TrimSpace(section.Name[idx+1:])
+			}
+
 			cns.States[stateID] = currentState
 
 			for _, attr := range section.Attributes {
@@ -345,8 +354,10 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 			}
 
 			ctrl := StateController{
-				Triggers: make([]string, 0),
-				Params:   make(map[string]string),
+				Triggers:       make([]string, 0),
+				Params:         make(map[string]string),
+				Persistent:     1, // Default is 1
+				IgnoreHitPause: 0, // Default is 0
 			}
 
 			parts := strings.SplitN(section.Name, ",", 2)
@@ -359,6 +370,10 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 
 				if key == "type" {
 					ctrl.Type = getAsString(attr.Value)
+				} else if key == "persistent" {
+					ctrl.Persistent = getAsInt(attr.Value)
+				} else if key == "ignorehitpause" {
+					ctrl.IgnoreHitPause = getAsInt(attr.Value)
 				} else if strings.HasPrefix(key, "trigger") {
 					strVal := renderRawValue(attr.Value)
 					ctrl.Triggers = append(ctrl.Triggers, fmt.Sprintf("%s = %s", attr.ID.String(), strVal))

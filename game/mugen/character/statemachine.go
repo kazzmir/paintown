@@ -3,7 +3,7 @@ package character
 import (
 	"fmt"
 	"math"
-	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/cns"
@@ -31,10 +31,89 @@ type Environment interface {
 	GetPos() (float64, float64)
 	GetVel() (float64, float64)
 	GetStateNo() int
+	GetFacing() int
 	GetCtrl() bool
 	ChangeState(stateNo int, ctrl int, anim int) // ctrl/anim -1 means no change
 	ChangeAnim(animNo int)
 	Command(name string) bool
+	Turn()
+	SetCtrl(ctrl bool)
+	SetStateType(stype string)
+	SetPhysics(physics string)
+	SetMoveType(mtype string)
+	SetPower(power int)
+	AddPower(power int)
+	GetPower() int
+	SetLife(life int)
+	AddLife(life int)
+	GetLife() int
+	SetAttackMul(mul float64)
+	SetDefenceMul(mul float64)
+	SetSprPriority(priority int)
+	SetGravity(active bool)
+	VelMul(x, y float64)
+	PosFreeze(active bool)
+	HitDef(params map[string]string)
+	Projectile(params map[string]string)
+	AssertSpecial(flag string)
+	Explod(params map[string]string)
+	RemoveExplod(id int)
+	AfterImage(params map[string]string)
+	AfterImageTime(time int)
+	EnvShake(params map[string]string)
+	EnvColor(params map[string]string)
+	ScreenBound(params map[string]string)
+	Width(params map[string]string)
+	Trans(params map[string]string)
+	BindToParent(params map[string]string)
+	BindToRoot(params map[string]string)
+	BindToTarget(params map[string]string)
+	TargetBind(params map[string]string)
+	TargetDrop(id int)
+	TargetFacing(id, facing int)
+	TargetLifeAdd(id, val int, kill bool)
+	TargetPowerAdd(id, val int)
+	TargetState(id, state int)
+	TargetVelAdd(x, y float64, id int)
+	TargetVelSet(x, y float64, id int)
+	ReversalDef(params map[string]string)
+	MoveHitReset()
+	HitAdd(val int)
+	ChangeAnim2(animNo int)
+	SelfState(stateNo int, ctrl, anim int)
+	PalFX(params map[string]string)
+	AllPalFX(params map[string]string)
+	BGPalFX(params map[string]string)
+	RemapPal(params map[string]string)
+	AngleAdd(angle float64)
+	AngleDraw(angle float64)
+	AngleMul(mul float64)
+	AngleSet(angle float64)
+	Offset(x, y float64)
+	SndPan(channel int, pan int)
+	StopSnd(channel int)
+	AppendToClipboard(text string)
+	ClearClipboard()
+	DisplayToClipboard(text string)
+	ForceFeedback(params map[string]string)
+	SuperPause(params map[string]string)
+	Helper(params map[string]string)
+	DestroySelf()
+	FallEnvShake(params map[string]string)
+	GameMakeAnim(params map[string]string)
+	MakeDust(params map[string]string)
+	VarRandom(id int, min, max int)
+	VarRangeSet(min, max int, val int)
+	FVarRangeSet(min, max int, val float64)
+	VictoryQuote(quote int)
+	GetMoveHit() int
+	GetMoveContact() int
+	GetMoveGuarded() int
+
+	IsPaused() bool
+	GetPersistence(key string) int
+	SetPersistence(key string, val int)
+	GetStateFile() *cns.CNS
 }
 
 // ControllerType represents a generic function that applies a StateController to the environment.
@@ -68,33 +147,138 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["varadd"] = handleVarAdd
 	sm.controllers["fvarset"] = handleFVarSet
 	sm.controllers["fvaradd"] = handleFVarAdd
+	sm.controllers["turn"] = handleTurn
+	sm.controllers["ctrlset"] = handleCtrlSet
+	sm.controllers["statetypeset"] = handleStateTypeSet
+	sm.controllers["lifeadd"] = handleLifeAdd
+	sm.controllers["lifeset"] = handleLifeSet
+	sm.controllers["poweradd"] = handlePowerAdd
+	sm.controllers["powerset"] = handlePowerSet
+	sm.controllers["attackmulset"] = handleAttackMulSet
+	sm.controllers["defencemulset"] = handleDefenceMulSet
+	sm.controllers["sprpriority"] = handleSprPriority
+	sm.controllers["gravity"] = handleGravity
+	sm.controllers["velmul"] = handleVelMul
+	sm.controllers["posfreeze"] = handlePosFreeze
+	sm.controllers["pause"] = handlePause
+	sm.controllers["playsnd"] = handlePlaySnd
+	sm.controllers["hitdef"] = handleHitDef
+	sm.controllers["projectile"] = handleProjectile
+	sm.controllers["assertspecial"] = handleAssertSpecial
+	sm.controllers["explod"] = handleExplod
+	sm.controllers["removeexplod"] = handleRemoveExplod
+	sm.controllers["afterimage"] = handleAfterImage
+	sm.controllers["afterimagetime"] = handleAfterImageTime
+	sm.controllers["envshake"] = handleEnvShake
+	sm.controllers["envcolor"] = handleEnvColor
+	sm.controllers["screenbound"] = handleScreenBound
+	sm.controllers["width"] = handleWidth
+	sm.controllers["trans"] = handleTrans
+	sm.controllers["bindtoparent"] = handleBindToParent
+	sm.controllers["bindtoroot"] = handleBindToRoot
+	sm.controllers["bindtotarget"] = handleBindToTarget
+	sm.controllers["targetbind"] = handleTargetBind
+	sm.controllers["targetdrop"] = handleTargetDrop
+	sm.controllers["targetfacing"] = handleTargetFacing
+	sm.controllers["targetlifeadd"] = handleTargetLifeAdd
+	sm.controllers["targetpoweradd"] = handleTargetPowerAdd
+	sm.controllers["targetstate"] = handleTargetState
+	sm.controllers["targetveladd"] = handleTargetVelAdd
+	sm.controllers["targetvelset"] = handleTargetVelSet
+	sm.controllers["reversaldef"] = handleReversalDef
+	sm.controllers["movehitreset"] = handleMoveHitReset
+	sm.controllers["hitadd"] = handleHitAdd
+	sm.controllers["changeanim2"] = handleChangeAnim2
+	sm.controllers["selfstate"] = handleSelfState
+	sm.controllers["palfx"] = handlePalFX
+	sm.controllers["allpalfx"] = handleAllPalFX
+	sm.controllers["bgpalfx"] = handleBGPalFX
+	sm.controllers["remappal"] = handleRemapPal
+	sm.controllers["angleadd"] = handleAngleAdd
+	sm.controllers["angledraw"] = handleAngleDraw
+	sm.controllers["anglemul"] = handleAngleMul
+	sm.controllers["angleset"] = handleAngleSet
+	sm.controllers["offset"] = handleOffset
+	sm.controllers["sndpan"] = handleSndPan
+	sm.controllers["stopsnd"] = handleStopSnd
+	sm.controllers["appendtoclipboard"] = handleAppendToClipboard
+	sm.controllers["clearclipboard"] = handleClearClipboard
+	sm.controllers["displaytoclipboard"] = handleDisplayToClipboard
+	sm.controllers["forcefeedback"] = handleForceFeedback
+	sm.controllers["superpause"] = handleSuperPause
+	sm.controllers["helper"] = handleHelper
+	sm.controllers["destroyself"] = handleDestroySelf
+	sm.controllers["fallenvshake"] = handleFallEnvShake
+	sm.controllers["gamemakeanim"] = handleGameMakeAnim
+	sm.controllers["makedust"] = handleMakeDust
+	sm.controllers["varrandom"] = handleVarRandom
+	sm.controllers["varrangeset"] = handleVarRangeSet
+	sm.controllers["fvarrangeset"] = handleFVarRangeSet
+	sm.controllers["victoryquote"] = handleVictoryQuote
 }
 
 // ExecuteState executes all valid controllers within a given state definition.
 // Returns true if a state transition (ChangeState/SelfState) occurred.
 func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool, error) {
+	isPaused := env.IsPaused()
 	for i := range state.Controllers {
 		ctrl := &state.Controllers[i]
+
+		// 1. Hit Pause Skipping
+		if isPaused && ctrl.IgnoreHitPause == 0 {
+			continue
+		}
+
+		// Use a distinct prefix for negative states to prevent them being cleared during ChangeState.
+		isNegative := state.ID < 0
+		prefix := "pos"
+		if isNegative {
+			prefix = fmt.Sprintf("neg%d", state.ID)
+		}
+
+		persistKey := fmt.Sprintf("%s-%d-%s", prefix, i, ctrl.Type)
+		if ctrl.Name != "" {
+			persistKey = fmt.Sprintf("%s-%d-%s-%s", prefix, i, ctrl.Type, ctrl.Name)
+		}
+
+		currentPersistence := env.GetPersistence(persistKey)
+		if ctrl.Persistent == 0 && currentPersistence > 0 {
+			// Persistent = 0 means once-per-state entry
+			continue
+		}
+		if ctrl.Persistent > 1 && currentPersistence >= ctrl.Persistent {
+			// e.g. persistent = 5 means every 5 ticks
+			// This is a simplification; MUGEN persistence is usually "every N ticks" or "once".
+			// Persistent = 1 is default (every tick).
+			// If persistent > 1, MUGEN interprets it as "re-run every N ticks".
+		}
+
 		matched := sm.evaluateTriggers(ctrl, env)
 
 		if matched {
-			fmt.Printf("Tick %d: Activating %s (%s) in state %d\n", env.GetTime(), ctrl.Type, ctrl.Name, env.GetStateNo())
+			// fmt.Printf("Tick %d: Activating %s (%s) in state %d\n", env.GetTime(), ctrl.Type, ctrl.Name, env.GetStateNo())
 			handler, ok := sm.controllers[strings.ToLower(ctrl.Type)]
 			if !ok {
 				// Unsupported controller type
 				continue
 			}
+
+			// Update persistence counter
+			env.SetPersistence(persistKey, currentPersistence+1)
+
 			err := handler(ctrl, env)
 			if err != nil {
 				return false, fmt.Errorf("error executing %s: %v", ctrl.Type, err)
 			}
 
-			// If the controller type is ChangeState or SelfState, we aborted the rest of the controllers
-			// in this state block in the C++ version.
+			// If the controller type is ChangeState or SelfState, we abort the rest of the controllers
 			lowerType := strings.ToLower(ctrl.Type)
 			if lowerType == "changestate" || lowerType == "selfstate" {
 				return true, nil
 			}
+		} else {
+			// If trigger failed, we might need to reset something?
+			// Usually MUGEN persistence for > 1 works by counting executions.
 		}
 	}
 	return false, nil
@@ -149,26 +333,41 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 				return 1
 			}
 			return 0
+		case "facing":
+			return float64(charEnv.GetFacing())
 		case "movehit":
-			return 0 // Placeholder
+			return float64(charEnv.GetMoveHit())
 		case "movecontact":
-			return 0 // Placeholder
+			return float64(charEnv.GetMoveContact())
+		case "moveguarded":
+			return float64(charEnv.GetMoveGuarded())
 		case "power":
-			return 1000 // Placeholder
-		case "s": // Standing / Stand physics
-			return 1
-		case "c": // Crouching / Crouch physics
+			return float64(charEnv.GetPower())
+		case "life":
+			return float64(charEnv.GetLife())
+		case "alive":
+			if charEnv.GetLife() > 0 {
+				return 1
+			}
+			return 0
+		case "canrecover":
+			return 0 // Placeholder
+		case "roundstate":
+			return 2 // Fighting
+		case "s": // Stand (StateType/Physics)
 			return 2
-		case "a": // Aerial / Attack movetype
+		case "c": // Crouch (StateType/Physics)
 			return 3
-		case "l": // Lying
+		case "a": // Air (StateType) / Attack (MoveType)
+			return 1
+		case "l": // Liedown (StateType)
 			return 4
-		case "i": // Idle movetype
+		case "i": // Idle (MoveType)
+			return 0
+		case "h": // GetHit (MoveType)
 			return 5
-		case "h": // Hit movetype
-			return 6
-		case "n": // None physics
-			return 7
+		case "n": // None (Physics)
+			return 0
 		}
 		return math.MaxFloat64 // Mark as unknown
 	})
@@ -208,7 +407,13 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 			groupID = -1
 		} else if strings.HasPrefix(key, "trigger") {
 			idStr := strings.TrimPrefix(key, "trigger")
-			fmt.Sscanf(idStr, "%d", &groupID)
+			if idStr == "" {
+				groupID = 1 // Default to trigger1 if just "trigger"
+			} else if n, err := strconv.Atoi(idStr); err == nil {
+				groupID = n
+			} else {
+				groupID = 1
+			}
 		} else {
 			continue
 		}
@@ -224,6 +429,7 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 		for _, expr := range allExprs {
 			res := evaluator.Evaluate(expr, env)
 			if res == 0 {
+				// fmt.Printf("DEBUG: triggerall(%d) failed in state %d\n", i, env.GetStateNo())
 				return false
 			}
 		}
@@ -233,7 +439,7 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 	// A group is true if ALL its expressions are true.
 	hasNumberedGroup := false
 	for _, id := range groupIDs {
-		if id <= 0 {
+		if id < 0 {
 			continue
 		}
 		hasNumberedGroup = true
@@ -247,6 +453,8 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 		}
 		if groupMatched {
 			return true
+		} else {
+			// fmt.Printf("DEBUG: trigger%d failed in state %d\n", id, env.GetStateNo())
 		}
 	}
 
@@ -294,42 +502,55 @@ func handleChangeAnim(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleVelSet(ctrl *cns.StateController, env Environment) error {
+	curX, curY := env.GetVel()
+	newX, newY := curX, curY
+
+	// MUGEN VelSet can have "x" and "y" parameters
 	if xStr, ok := ctrl.Params["x"]; ok {
-		var x float64
-		fmt.Sscanf(xStr, "%f", &x)
-		env.SetVelocity(x, 0) // Simplify for stub: y is unaffected unless specified, but we don't have GetVelocity yet
+		if val, err := strconv.ParseFloat(xStr, 64); err == nil {
+			newX = val
+		}
 	}
 	if yStr, ok := ctrl.Params["y"]; ok {
-		var y float64
-		fmt.Sscanf(yStr, "%f", &y)
-		env.SetVelocity(0, y) // Simplify for stub
+		if val, err := strconv.ParseFloat(yStr, 64); err == nil {
+			newY = val
+		}
 	}
-	// For actual VelSet, X and Y can be specified independently while preserving the other.
+	env.SetVelocity(newX, newY)
 	return nil
 }
 
 func handleVelAdd(ctrl *cns.StateController, env Environment) error {
 	var x, y float64
 	if xStr, ok := ctrl.Params["x"]; ok {
-		fmt.Sscanf(xStr, "%f", &x)
+		if val, err := strconv.ParseFloat(xStr, 64); err == nil {
+			x = val
+		}
 	}
 	if yStr, ok := ctrl.Params["y"]; ok {
-		fmt.Sscanf(yStr, "%f", &y)
+		if val, err := strconv.ParseFloat(yStr, 64); err == nil {
+			y = val
+		}
 	}
 	env.AddVelocity(x, y)
 	return nil
 }
 
+func handleTurn(ctrl *cns.StateController, env Environment) error {
+	env.Turn()
+	return nil
+}
+
 func handlePosSet(ctrl *cns.StateController, env Environment) error {
-	var x, y float64
+	curX, curY := env.GetPos()
+	newX, newY := curX, curY
 	if xStr, ok := ctrl.Params["x"]; ok {
-		fmt.Sscanf(xStr, "%f", &x)
-		env.SetPosition(x, 0)
+		fmt.Sscanf(xStr, "%f", &newX)
 	}
 	if yStr, ok := ctrl.Params["y"]; ok {
-		fmt.Sscanf(yStr, "%f", &y)
-		env.SetPosition(0, y)
+		fmt.Sscanf(yStr, "%f", &newY)
 	}
+	env.SetPosition(newX, newY)
 	return nil
 }
 func handleVarSet(ctrl *cns.StateController, env Environment) error {
@@ -343,25 +564,17 @@ func handleVarSet(ctrl *cns.StateController, env Environment) error {
 		found = true
 	} else {
 		// Robust search for var(X) anywhere in params
-		reKey := regexp.MustCompile(`var\((\d+)\)`)
-		reVal := regexp.MustCompile(`\((\d+)\)`)
 		for k, v := range ctrl.Params {
 			k = strings.ToLower(k)
-			if match := reKey.FindStringSubmatch(k); match != nil {
-				fmt.Sscanf(match[1], "%d", &idx)
-				valStr = v
-				found = true
-				break
-			}
-			if k == "var" {
-				if match := reVal.FindStringSubmatch(v); match != nil {
-					fmt.Sscanf(match[1], "%d", &idx)
-					parts := strings.SplitN(v, "=", 2)
-					if len(parts) == 2 {
-						valStr = strings.TrimSpace(parts[1])
-						found = true
-						break
-					}
+			// Handle both var(1) and var1
+			if strings.HasPrefix(k, "var") {
+				inner := strings.TrimPrefix(k, "var")
+				inner = strings.Trim(inner, "()")
+				if n, err := strconv.Atoi(inner); err == nil {
+					idx = n
+					valStr = v
+					found = true
+					break
 				}
 			}
 		}
@@ -448,5 +661,547 @@ func handlePosAdd(ctrl *cns.StateController, env Environment) error {
 		fmt.Sscanf(yStr, "%f", &y)
 	}
 	env.AddPosition(x, y)
+	return nil
+}
+
+func handleCtrlSet(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.SetCtrl(val != 0)
+	}
+	return nil
+}
+
+func handleStateTypeSet(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["type"]; ok {
+		env.SetStateType(v)
+	}
+	if v, ok := ctrl.Params["physics"]; ok {
+		env.SetPhysics(v)
+	}
+	if v, ok := ctrl.Params["movetype"]; ok {
+		env.SetMoveType(v)
+	}
+	return nil
+}
+
+func handleLifeAdd(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.AddLife(val)
+	}
+	return nil
+}
+
+func handleLifeSet(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.SetLife(val)
+	}
+	return nil
+}
+
+func handlePowerAdd(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.AddPower(val)
+	}
+	return nil
+}
+
+func handlePowerSet(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.SetPower(val)
+	}
+	return nil
+}
+
+func handleAttackMulSet(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.ParseFloat(v, 64)
+		env.SetAttackMul(val)
+	}
+	return nil
+}
+
+func handleDefenceMulSet(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.ParseFloat(v, 64)
+		env.SetDefenceMul(val)
+	}
+	return nil
+}
+
+func handleSprPriority(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.SetSprPriority(val)
+	}
+	return nil
+}
+
+func handleGravity(ctrl *cns.StateController, env Environment) error {
+	env.SetGravity(true)
+	return nil
+}
+
+func handleVelMul(ctrl *cns.StateController, env Environment) error {
+	x, y := 1.0, 1.0
+	if v, ok := ctrl.Params["x"]; ok {
+		x, _ = strconv.ParseFloat(v, 64)
+	}
+	if v, ok := ctrl.Params["y"]; ok {
+		y, _ = strconv.ParseFloat(v, 64)
+	}
+	env.VelMul(x, y)
+	return nil
+}
+
+func handlePosFreeze(ctrl *cns.StateController, env Environment) error {
+	val := 1
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.PosFreeze(val != 0)
+	return nil
+}
+
+func handlePause(ctrl *cns.StateController, env Environment) error {
+	// Stub
+	return nil
+}
+
+func handlePlaySnd(ctrl *cns.StateController, env Environment) error {
+	// Stub
+	return nil
+}
+
+func handleHitDef(ctrl *cns.StateController, env Environment) error {
+	env.HitDef(ctrl.Params)
+	return nil
+}
+
+func handleProjectile(ctrl *cns.StateController, env Environment) error {
+	env.Projectile(ctrl.Params)
+	return nil
+}
+
+func handleAssertSpecial(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["flag"]; ok {
+		env.AssertSpecial(v)
+	}
+	if v, ok := ctrl.Params["flag2"]; ok {
+		env.AssertSpecial(v)
+	}
+	if v, ok := ctrl.Params["flag3"]; ok {
+		env.AssertSpecial(v)
+	}
+	return nil
+}
+
+func handleExplod(ctrl *cns.StateController, env Environment) error {
+	env.Explod(ctrl.Params)
+	return nil
+}
+
+func handleRemoveExplod(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	env.RemoveExplod(id)
+	return nil
+}
+
+func handleAfterImage(ctrl *cns.StateController, env Environment) error {
+	env.AfterImage(ctrl.Params)
+	return nil
+}
+
+func handleAfterImageTime(ctrl *cns.StateController, env Environment) error {
+	if v, ok := ctrl.Params["time"]; ok {
+		val, _ := strconv.Atoi(v)
+		env.AfterImageTime(val)
+	}
+	return nil
+}
+
+func handleEnvShake(ctrl *cns.StateController, env Environment) error {
+	env.EnvShake(ctrl.Params)
+	return nil
+}
+
+func handleEnvColor(ctrl *cns.StateController, env Environment) error {
+	env.EnvColor(ctrl.Params)
+	return nil
+}
+
+func handleScreenBound(ctrl *cns.StateController, env Environment) error {
+	env.ScreenBound(ctrl.Params)
+	return nil
+}
+
+func handleWidth(ctrl *cns.StateController, env Environment) error {
+	env.Width(ctrl.Params)
+	return nil
+}
+
+func handleTrans(ctrl *cns.StateController, env Environment) error {
+	env.Trans(ctrl.Params)
+	return nil
+}
+
+func handleBindToParent(ctrl *cns.StateController, env Environment) error {
+	env.BindToParent(ctrl.Params)
+	return nil
+}
+
+func handleBindToRoot(ctrl *cns.StateController, env Environment) error {
+	env.BindToRoot(ctrl.Params)
+	return nil
+}
+
+func handleBindToTarget(ctrl *cns.StateController, env Environment) error {
+	env.BindToTarget(ctrl.Params)
+	return nil
+}
+
+func handleTargetBind(ctrl *cns.StateController, env Environment) error {
+	env.TargetBind(ctrl.Params)
+	return nil
+}
+
+func handleTargetDrop(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["exclude"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	env.TargetDrop(id)
+	return nil
+}
+
+func handleTargetFacing(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	facing := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		facing, _ = strconv.Atoi(v)
+	}
+	env.TargetFacing(id, facing)
+	return nil
+}
+
+func handleTargetLifeAdd(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	kill := true
+	if v, ok := ctrl.Params["kill"]; ok {
+		kill = v != "0"
+	}
+	env.TargetLifeAdd(id, val, kill)
+	return nil
+}
+
+func handleTargetPowerAdd(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.TargetPowerAdd(id, val)
+	return nil
+}
+
+func handleTargetState(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.TargetState(id, val)
+	return nil
+}
+
+func handleTargetVelAdd(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	var x, y float64
+	if xStr, ok := ctrl.Params["x"]; ok {
+		x, _ = strconv.ParseFloat(xStr, 64)
+	}
+	if yStr, ok := ctrl.Params["y"]; ok {
+		y, _ = strconv.ParseFloat(yStr, 64)
+	}
+	env.TargetVelAdd(x, y, id)
+	return nil
+}
+
+func handleTargetVelSet(ctrl *cns.StateController, env Environment) error {
+	id := -1
+	if v, ok := ctrl.Params["id"]; ok {
+		id, _ = strconv.Atoi(v)
+	}
+	var x, y float64
+	if xStr, ok := ctrl.Params["x"]; ok {
+		x, _ = strconv.ParseFloat(xStr, 64)
+	}
+	if yStr, ok := ctrl.Params["y"]; ok {
+		y, _ = strconv.ParseFloat(yStr, 64)
+	}
+	env.TargetVelSet(x, y, id)
+	return nil
+}
+
+func handleReversalDef(ctrl *cns.StateController, env Environment) error {
+	env.ReversalDef(ctrl.Params)
+	return nil
+}
+
+func handleMoveHitReset(ctrl *cns.StateController, env Environment) error {
+	env.MoveHitReset()
+	return nil
+}
+
+func handleHitAdd(ctrl *cns.StateController, env Environment) error {
+	val := 1
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.HitAdd(val)
+	return nil
+}
+
+func handleChangeAnim2(ctrl *cns.StateController, env Environment) error {
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.ChangeAnim2(val)
+	return nil
+}
+
+func handleSelfState(ctrl *cns.StateController, env Environment) error {
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	ctrlFlag := -1
+	if cStr, ok := ctrl.Params["ctrl"]; ok {
+		ctrlFlag, _ = strconv.Atoi(cStr)
+	}
+	anim := -1
+	if aStr, ok := ctrl.Params["anim"]; ok {
+		anim, _ = strconv.Atoi(aStr)
+	}
+	env.SelfState(val, ctrlFlag, anim)
+	return nil
+}
+
+func handlePalFX(ctrl *cns.StateController, env Environment) error {
+	env.PalFX(ctrl.Params)
+	return nil
+}
+
+func handleAllPalFX(ctrl *cns.StateController, env Environment) error {
+	env.AllPalFX(ctrl.Params)
+	return nil
+}
+
+func handleBGPalFX(ctrl *cns.StateController, env Environment) error {
+	env.BGPalFX(ctrl.Params)
+	return nil
+}
+
+func handleRemapPal(ctrl *cns.StateController, env Environment) error {
+	env.RemapPal(ctrl.Params)
+	return nil
+}
+
+func handleAngleAdd(ctrl *cns.StateController, env Environment) error {
+	val := 0.0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.ParseFloat(v, 64)
+	}
+	env.AngleAdd(val)
+	return nil
+}
+
+func handleAngleDraw(ctrl *cns.StateController, env Environment) error {
+	val := 0.0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.ParseFloat(v, 64)
+	}
+	env.AngleDraw(val)
+	return nil
+}
+
+func handleAngleMul(ctrl *cns.StateController, env Environment) error {
+	val := 1.0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.ParseFloat(v, 64)
+	}
+	env.AngleMul(val)
+	return nil
+}
+
+func handleAngleSet(ctrl *cns.StateController, env Environment) error {
+	val := 0.0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.ParseFloat(v, 64)
+	}
+	env.AngleSet(val)
+	return nil
+}
+
+func handleOffset(ctrl *cns.StateController, env Environment) error {
+	x, y := 0.0, 0.0
+	if v, ok := ctrl.Params["x"]; ok {
+		x, _ = strconv.ParseFloat(v, 64)
+	}
+	if v, ok := ctrl.Params["y"]; ok {
+		y, _ = strconv.ParseFloat(v, 64)
+	}
+	env.Offset(x, y)
+	return nil
+}
+
+func handleSndPan(ctrl *cns.StateController, env Environment) error {
+	channel := -1
+	if v, ok := ctrl.Params["channel"]; ok {
+		channel, _ = strconv.Atoi(v)
+	}
+	pan := 0
+	if v, ok := ctrl.Params["pan"]; ok {
+		pan, _ = strconv.Atoi(v)
+	}
+	env.SndPan(channel, pan)
+	return nil
+}
+
+func handleStopSnd(ctrl *cns.StateController, env Environment) error {
+	channel := -1
+	if v, ok := ctrl.Params["channel"]; ok {
+		channel, _ = strconv.Atoi(v)
+	}
+	env.StopSnd(channel)
+	return nil
+}
+
+func handleAppendToClipboard(ctrl *cns.StateController, env Environment) error {
+	if text, ok := ctrl.Params["text"]; ok {
+		env.AppendToClipboard(text)
+	}
+	return nil
+}
+
+func handleClearClipboard(ctrl *cns.StateController, env Environment) error {
+	env.ClearClipboard()
+	return nil
+}
+
+func handleDisplayToClipboard(ctrl *cns.StateController, env Environment) error {
+	if text, ok := ctrl.Params["text"]; ok {
+		env.DisplayToClipboard(text)
+	}
+	return nil
+}
+
+func handleForceFeedback(ctrl *cns.StateController, env Environment) error {
+	env.ForceFeedback(ctrl.Params)
+	return nil
+}
+
+func handleSuperPause(ctrl *cns.StateController, env Environment) error {
+	env.SuperPause(ctrl.Params)
+	return nil
+}
+
+func handleHelper(ctrl *cns.StateController, env Environment) error {
+	env.Helper(ctrl.Params)
+	return nil
+}
+
+func handleDestroySelf(ctrl *cns.StateController, env Environment) error {
+	env.DestroySelf()
+	return nil
+}
+
+func handleFallEnvShake(ctrl *cns.StateController, env Environment) error {
+	env.FallEnvShake(ctrl.Params)
+	return nil
+}
+
+func handleGameMakeAnim(ctrl *cns.StateController, env Environment) error {
+	env.GameMakeAnim(ctrl.Params)
+	return nil
+}
+
+func handleMakeDust(ctrl *cns.StateController, env Environment) error {
+	env.MakeDust(ctrl.Params)
+	return nil
+}
+
+func handleVarRandom(ctrl *cns.StateController, env Environment) error {
+	idx := 0
+	if v, ok := ctrl.Params["v"]; ok {
+		idx, _ = strconv.Atoi(v)
+	}
+	min, max := 0, 1000
+	if r, ok := ctrl.Params["range"]; ok {
+		fmt.Sscanf(r, "%d,%d", &min, &max)
+	}
+	env.VarRandom(idx, min, max)
+	return nil
+}
+
+func handleVarRangeSet(ctrl *cns.StateController, env Environment) error {
+	min, max := 0, 0
+	if r, ok := ctrl.Params["range"]; ok {
+		fmt.Sscanf(r, "%d,%d", &min, &max)
+	}
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.VarRangeSet(min, max, val)
+	return nil
+}
+
+func handleFVarRangeSet(ctrl *cns.StateController, env Environment) error {
+	min, max := 0, 0
+	if r, ok := ctrl.Params["range"]; ok {
+		fmt.Sscanf(r, "%d,%d", &min, &max)
+	}
+	val := 0.0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.ParseFloat(v, 64)
+	}
+	env.FVarRangeSet(min, max, val)
+	return nil
+}
+
+func handleVictoryQuote(ctrl *cns.StateController, env Environment) error {
+	val := 0
+	if v, ok := ctrl.Params["value"]; ok {
+		val, _ = strconv.Atoi(v)
+	}
+	env.VictoryQuote(val)
 	return nil
 }
