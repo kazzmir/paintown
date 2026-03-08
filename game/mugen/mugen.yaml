@@ -29,16 +29,22 @@ input:
 
   p2:
     keyboard:
-      jump: KeyW
-      crouch: KeyS
-      left: KeyA
-      right: KeyD
-      a: KeyF
-      b: KeyG
-      c: KeyH
-      x: KeyR
-      y: KeyT
-      z: KeyY
+      jump: KeyT
+      crouch: KeyG
+      left: KeyF
+      right: KeyH
+      a: KeyU
+      b: KeyI
+      c: KeyO
+      x: KeyJ
+      y: KeyK
+      z: KeyL
+      #a: KeyV
+      #b: KeyB
+      #c: KeyN
+      #x: KeyR
+      #y: KeyT
+      #z: KeyY
       start: KeyBackspace
       escape: KeyEscape
     joy:

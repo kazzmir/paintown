@@ -22,12 +22,18 @@ type Stage struct {
 	}
 
 	PlayerInfo struct {
-		P1StartX float64
-		P1StartY float64
-		P1Facing int
-		P2StartX float64
-		P2StartY float64
-		P2Facing int
+		P1StartX   float64
+		P1StartY   float64
+		P1StartZ   float64
+		P1Facing   int
+		P2StartX   float64
+		P2StartY   float64
+		P2StartZ   float64
+		P2Facing   int
+		LeftBound  float64
+		RightBound float64
+		TopBound   float64
+		BotBound   float64
 	}
 
 	Bound struct {

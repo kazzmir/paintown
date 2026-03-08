@@ -280,6 +280,10 @@ func GetRawInputs(player int, facing int) []string {
 		inputs = append(inputs, "ButtonStart")
 	}
 
+	if len(inputs) > 1 {
+		// fmt.Printf("Tick Inputs: %v\n", inputs)
+	}
+
 	return inputs
 }
 

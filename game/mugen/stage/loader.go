@@ -79,14 +79,26 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.PlayerInfo.P1StartX = background.GetFloat(attr.Value)
 				case "p1starty":
 					stage.PlayerInfo.P1StartY = background.GetFloat(attr.Value)
+				case "p1startz":
+					stage.PlayerInfo.P1StartZ = background.GetFloat(attr.Value)
 				case "p1facing":
 					stage.PlayerInfo.P1Facing = int(background.GetFloat(attr.Value))
 				case "p2startx":
 					stage.PlayerInfo.P2StartX = background.GetFloat(attr.Value)
 				case "p2starty":
 					stage.PlayerInfo.P2StartY = background.GetFloat(attr.Value)
+				case "p2startz":
+					stage.PlayerInfo.P2StartZ = background.GetFloat(attr.Value)
 				case "p2facing":
 					stage.PlayerInfo.P2Facing = int(background.GetFloat(attr.Value))
+				case "leftbound":
+					stage.PlayerInfo.LeftBound = background.GetFloat(attr.Value)
+				case "rightbound":
+					stage.PlayerInfo.RightBound = background.GetFloat(attr.Value)
+				case "topbound":
+					stage.PlayerInfo.TopBound = background.GetFloat(attr.Value)
+				case "botbound":
+					stage.PlayerInfo.BotBound = background.GetFloat(attr.Value)
 				}
 			}
 		case name == "stageinfo":

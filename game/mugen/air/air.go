@@ -81,6 +81,15 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
 
+				// The INI parser groups ":" into identifiers instead of treating it as an assignment.
+				// For AIR files which use "Clsn1: 1", the ID becomes "clsn1:1" and Value is nil.
+				// We manually split this here to properly process it.
+				if strings.Contains(key, ":") && attr.Value == nil {
+					parts := strings.SplitN(key, ":", 2)
+					key = strings.TrimSpace(parts[0])
+					attr.Value = parsers.StringValue{Val: strings.TrimSpace(parts[1])}
+				}
+
 				if key == "clsn1default" {
 					consumed[attr] = true
 					count := getAsInt(attr.Value)
@@ -138,6 +147,11 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 						}
 						el.Clsn1 = append([]Box(nil), clsn1...) // Clone just in case
 						el.Clsn2 = append([]Box(nil), clsn2...)
+
+						if actionID == 240 {
+							fmt.Printf("[AIR_PARSER] Action 240 Elem %d: Clsn1=%d, Clsn2=%d (GroupID=%s)\n",
+								len(action.Elements), len(el.Clsn1), len(el.Clsn2), attr.ID.String())
+						}
 
 						action.Elements = append(action.Elements, el)
 					}

@@ -20,6 +20,10 @@ type Environment interface {
 	SetVar(idx, val int)
 	GetFVar(idx int) float64
 	SetFVar(idx int, val float64)
+	GetSysVar(idx int) int
+	SetSysVar(idx, val int)
+	GetSysFVar(idx int) float64
+	SetSysFVar(idx int, val float64)
 	GetStateType() string
 	GetPhysics() string
 	GetAnimElem() int
@@ -109,7 +113,7 @@ type Environment interface {
 	GetMoveHit() int
 	GetMoveContact() int
 	GetMoveGuarded() int
-
+	GetCNSVelocity() *cns.Velocity
 	IsPaused() bool
 	GetPersistence(key string) int
 	SetPersistence(key string, val int)
@@ -452,8 +456,20 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 		}
 		if groupMatched {
 			return true
-		} else {
-			// fmt.Printf("DEBUG: trigger%d failed in state %d\n", id, env.GetStateNo())
+		}
+	}
+
+	// MUGEN special triggers: command = "name"
+	// These are often parsed as simple attributes, but they are technically triggers.
+	// Check if any trigger resembles 'command = "..."'
+	for _, trigStr := range ctrl.Triggers {
+		trigStr = strings.ToLower(trigStr)
+		if strings.HasPrefix(trigStr, "command") && strings.Contains(trigStr, "=") {
+			parts := strings.SplitN(trigStr, "=", 2)
+			cmdName := strings.Trim(strings.TrimSpace(parts[1]), "\"")
+			if env.Command(cmdName) {
+				return true
+			}
 		}
 	}
 
@@ -503,27 +519,45 @@ func handleChangeAnim(ctrl *cns.StateController, env Environment) error {
 	if !ok {
 		return fmt.Errorf("missing value in ChangeAnim")
 	}
+	// Evaluate as an expression so that ifelse(...) and other MUGEN expressions work.
+	// For example, State 50 uses: ifelse((vel x)=0, 41, ifelse((vel x)>0, 42, 43))
 	var val int
-	fmt.Sscanf(valStr, "%d", &val)
+	if expr, err := evaluator.Parse(valStr); err == nil {
+		val = int(evaluator.Evaluate(expr, env))
+	} else if _, err := fmt.Sscanf(valStr, "%d", &val); err != nil {
+		return fmt.Errorf("invalid value in ChangeAnim: %s", valStr)
+	}
 	env.ChangeAnim(val)
 	return nil
 }
 
 func handleVelSet(ctrl *cns.StateController, env Environment) error {
+	// Read current velocity so we only override axes that are specified in params
 	curX, curY := env.GetVel()
 	newX, newY := curX, curY
 
-	// MUGEN VelSet can have "x" and "y" parameters
 	if xStr, ok := ctrl.Params["x"]; ok {
-		if val, err := strconv.ParseFloat(xStr, 64); err == nil {
+		if expr, err := evaluator.Parse(xStr); err == nil {
+			newX = evaluator.Evaluate(expr, env)
+		} else if val, err := strconv.ParseFloat(xStr, 64); err == nil {
 			newX = val
 		}
 	}
 	if yStr, ok := ctrl.Params["y"]; ok {
-		if val, err := strconv.ParseFloat(yStr, 64); err == nil {
+		if expr, err := evaluator.Parse(yStr); err == nil {
+			newY = evaluator.Evaluate(expr, env)
+		} else if val, err := strconv.ParseFloat(yStr, 64); err == nil {
 			newY = val
 		}
 	}
+
+	// Debug logging for State 40 jump velocity
+	if env.GetStateNo() == 40 {
+		xStrVal := ctrl.Params["x"]
+		yStrVal := ctrl.Params["y"]
+		fmt.Printf("[DEBUG] State 40: VelSet x_expr=%v, y_expr=%v -> newX=%v, newY=%v\n", xStrVal, yStrVal, newX, newY)
+	}
+
 	env.SetVelocity(newX, newY)
 	return nil
 }
@@ -531,12 +565,16 @@ func handleVelSet(ctrl *cns.StateController, env Environment) error {
 func handleVelAdd(ctrl *cns.StateController, env Environment) error {
 	var x, y float64
 	if xStr, ok := ctrl.Params["x"]; ok {
-		if val, err := strconv.ParseFloat(xStr, 64); err == nil {
+		if expr, err := evaluator.Parse(xStr); err == nil {
+			x = evaluator.Evaluate(expr, env)
+		} else if val, err := strconv.ParseFloat(xStr, 64); err == nil {
 			x = val
 		}
 	}
 	if yStr, ok := ctrl.Params["y"]; ok {
-		if val, err := strconv.ParseFloat(yStr, 64); err == nil {
+		if expr, err := evaluator.Parse(yStr); err == nil {
+			y = evaluator.Evaluate(expr, env)
+		} else if val, err := strconv.ParseFloat(yStr, 64); err == nil {
 			y = val
 		}
 	}
@@ -583,6 +621,21 @@ func handleVarSet(ctrl *cns.StateController, env Environment) error {
 					valStr = v
 					found = true
 					break
+				}
+			} else if strings.HasPrefix(k, "sysvar") {
+				inner := strings.TrimPrefix(k, "sysvar")
+				inner = strings.Trim(inner, "()")
+				if n, err := strconv.Atoi(inner); err == nil {
+					idx = n
+					valStr = v
+					if expr, err := evaluator.Parse(valStr); err == nil {
+						val := int(evaluator.Evaluate(expr, env))
+						env.SetSysVar(idx, val)
+						if idx == 1 && env.GetStateNo() == 40 {
+							fmt.Printf("[DEBUG] State 40 VarSet sysvar(1) = %d\n", val)
+						}
+					}
+					return nil
 				}
 			}
 		}
@@ -668,7 +721,9 @@ func handlePosAdd(ctrl *cns.StateController, env Environment) error {
 	if yStr, ok := ctrl.Params["y"]; ok {
 		fmt.Sscanf(yStr, "%f", &y)
 	}
-	env.AddPosition(x, y)
+	// PosAdd x is in character-local space (positive = forward).
+	// Multiply by Facing to convert to world space, same as VelX.
+	env.AddPosition(x*float64(env.GetFacing()), y)
 	return nil
 }
 

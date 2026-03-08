@@ -76,6 +76,40 @@ type StateController struct {
 	Params map[string]string
 }
 
+type HitDef struct {
+	Attr             string
+	HitFlag          string
+	GuardFlag        string
+	AnimType         string
+	AirAnimType      string
+	Damage           []int // [hit, guard]
+	PauseTime        []int // [hit, guard]
+	ShakeTime        int
+	SparkNo          int
+	GuardSparkNo     int
+	SparkXY          []int
+	HitSound         []int
+	GuardSound       []int
+	GroundType       string
+	GroundSlide      int
+	GroundHitTime    int
+	GuardSlide       int
+	GuardHitTime     int
+	AirHitTime       int
+	GroundVel        []float64
+	AirVel           []float64
+	AirGuardVel      []float64
+	GroundCornerPush float64
+	AirCornerPush    float64
+	DownVel          []float64
+	DownHitTime      int
+	GetPower         []int
+	GivePower        []int
+	Palfrm_Time      int
+	Palfrm_Mul       []float64
+	Palfrm_Add       []int
+}
+
 type StateDef struct {
 	ID          int
 	Name        string
@@ -114,6 +148,11 @@ func Parse(r io.Reader) (*CNS, error) {
 func ParseFromAST(ast *parsers.File) (*CNS, error) {
 	cns := &CNS{
 		States: make(map[int]*StateDef),
+		Movement: Movement{
+			StandFriction:  0.85,
+			CrouchFriction: 0.82,
+			YAccel:         0.44,
+		},
 	}
 
 	var currentState *StateDef
@@ -464,7 +503,126 @@ func renderRawValue(v parsers.Value) string {
 		return strings.Join(parts, ", ")
 	}
 	if sv, ok := v.(parsers.StringValue); ok {
-		return fmt.Sprintf("\"%s\"", sv.Val)
+		return sv.Val
 	}
 	return getAsString(v)
+}
+
+func ParseIntList(s string) []int {
+	parts := strings.Split(s, ",")
+	var res []int
+	for _, p := range parts {
+		val, _ := strconv.Atoi(strings.TrimSpace(p))
+		res = append(res, val)
+	}
+	return res
+}
+
+func ParseFloatList(s string) []float64 {
+	parts := strings.Split(s, ",")
+	var res []float64
+	for _, p := range parts {
+		val, _ := strconv.ParseFloat(strings.TrimSpace(p), 64)
+		res = append(res, val)
+	}
+	return res
+}
+
+func ParseHitDef(params map[string]string) HitDef {
+	hd := HitDef{}
+	if v, ok := params["attr"]; ok {
+		hd.Attr = v
+	}
+	if v, ok := params["hitflag"]; ok {
+		hd.HitFlag = v
+	}
+	if v, ok := params["guardflag"]; ok {
+		hd.GuardFlag = v
+	}
+	if v, ok := params["animtype"]; ok {
+		hd.AnimType = v
+	}
+	if v, ok := params["air.animtype"]; ok {
+		hd.AirAnimType = v
+	}
+	if v, ok := params["damage"]; ok {
+		hd.Damage = ParseIntList(v)
+	}
+	if v, ok := params["pausetime"]; ok {
+		hd.PauseTime = ParseIntList(v)
+	}
+	if v, ok := params["guard.pausetime"]; ok {
+		// If guard.pausetime is missing, it often defaults to hit pausetime or similar
+		// But let's just parse it if it exists.
+		p := ParseIntList(v)
+		if len(hd.PauseTime) >= 1 {
+			if len(p) == 1 {
+				hd.PauseTime = []int{hd.PauseTime[0], p[0]}
+			} else if len(p) >= 2 {
+				hd.PauseTime = p[:2]
+			}
+		}
+	}
+	if v, ok := params["sparkno"]; ok {
+		hd.SparkNo, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["guard.sparkno"]; ok {
+		hd.GuardSparkNo, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["sparkxy"]; ok {
+		hd.SparkXY = ParseIntList(v)
+	}
+	if v, ok := params["hitsound"]; ok {
+		hd.HitSound = ParseIntList(v)
+	}
+	if v, ok := params["guardsound"]; ok {
+		hd.GuardSound = ParseIntList(v)
+	}
+	if v, ok := params["ground.type"]; ok {
+		hd.GroundType = v
+	}
+	if v, ok := params["ground.slidetime"]; ok {
+		hd.GroundSlide, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["ground.hittime"]; ok {
+		hd.GroundHitTime, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["guard.slidetime"]; ok {
+		hd.GuardSlide, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["guard.hittime"]; ok {
+		hd.GuardHitTime, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["air.hittime"]; ok {
+		hd.AirHitTime, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["ground.velocity"]; ok {
+		hd.GroundVel = ParseFloatList(v)
+	}
+	if v, ok := params["air.velocity"]; ok {
+		hd.AirVel = ParseFloatList(v)
+	}
+	if v, ok := params["airguard.velocity"]; ok {
+		hd.AirGuardVel = ParseFloatList(v)
+	}
+	if v, ok := params["ground.cornerpush.veloff"]; ok {
+		hd.GroundCornerPush, _ = strconv.ParseFloat(v, 64)
+	}
+	if v, ok := params["air.cornerpush.veloff"]; ok {
+		hd.AirCornerPush, _ = strconv.ParseFloat(v, 64)
+	}
+	if v, ok := params["down.velocity"]; ok {
+		hd.DownVel = ParseFloatList(v)
+	}
+	if v, ok := params["down.hittime"]; ok {
+		hd.DownHitTime, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["getpower"]; ok {
+		hd.GetPower = ParseIntList(v)
+	}
+	if v, ok := params["givepower"]; ok {
+		hd.GivePower = ParseIntList(v)
+	}
+
+	return hd
 }
