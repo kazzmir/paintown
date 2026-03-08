@@ -9,11 +9,11 @@ input:
       left: KeyArrowLeft
       right: KeyArrowRight
       a: KeyA
-      b: KeyB
-      c: KeyC
-      x: KeyX
-      y: KeyY
-      z: KeyZ
+      b: KeyS
+      c: KeyD
+      x: KeyZ
+      y: KeyX
+      z: KeyC
       #a: KeyA
       #b: KeyO
       #c: KeyE

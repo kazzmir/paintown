@@ -30,8 +30,26 @@ type Stage struct {
 		P2Facing int
 	}
 
+	Bound struct {
+		ScreenLeft  float64
+		ScreenRight float64
+	}
+
 	StageInfo struct {
-		ZOffset float64
+		ZOffset  float64
+		AutoTurn bool
+		ResetBG  bool
+	}
+
+	Shadow struct {
+		Intensity int
+		Color     [3]int
+		YScale    float64
+		FadeRange [2]float64
+	}
+
+	Reflection struct {
+		Intensity int
 	}
 
 	Background   background.Background
@@ -47,7 +65,7 @@ func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
 	// Draw Layer 0 (Background)
 	for _, el := range s.Background.Elements {
 		if el.GetLayerNo() == 0 {
-			el.Draw(screen, cameraX, cameraY, s.SpriteImages)
+			el.Draw(screen, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
 		}
 	}
 
@@ -58,7 +76,7 @@ func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
 	// Draw Layer 1 (Foreground)
 	for _, el := range s.Background.Elements {
 		if el.GetLayerNo() == 1 {
-			el.Draw(screen, cameraX, cameraY, s.SpriteImages)
+			el.Draw(screen, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
 		}
 	}
 }

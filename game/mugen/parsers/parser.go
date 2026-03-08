@@ -265,7 +265,7 @@ func (p *Parser) parseValue() (Value, error) {
 				return nil, nil
 			}
 			// We've gathered some parts, and hit a boundary (like a comma, newline, etc)
-			combined := strings.Join(parts, "")
+			combined := strings.Join(parts, " ")
 
 			// Try parsing as simple number
 			if val, err := strconv.ParseFloat(combined, 64); err == nil && len(parts) == 1 {

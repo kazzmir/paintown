@@ -263,7 +263,21 @@ func (l *Lexer) NextToken() Token {
 			if err != nil {
 				break
 			}
-			if unicode.IsLetter(ch2) || unicode.IsDigit(ch2) || ch2 == '_' || ch2 == '.' || ch2 == '-' {
+			if ch2 == ' ' {
+				// Internal space check: only allow if followed by a letter/digit/underscore
+				next, err3 := l.read()
+				if err3 == nil {
+					if unicode.IsLetter(next) || unicode.IsDigit(next) || next == '_' || next == '.' || next == '-' || next == '/' || next == '\\' || next == ':' || next == '+' {
+						l.buf.WriteRune(' ')
+						l.buf.WriteRune(next)
+						continue
+					}
+					l.unread(next)
+				}
+				l.unread(ch2)
+				break
+			}
+			if unicode.IsLetter(ch2) || unicode.IsDigit(ch2) || ch2 == '_' || ch2 == '.' || ch2 == '-' || ch2 == '/' || ch2 == '\\' || ch2 == ':' || ch2 == '+' {
 				l.buf.WriteRune(ch2)
 			} else {
 				l.unread(ch2)

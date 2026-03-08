@@ -6,13 +6,15 @@ import (
 	"image"
 	"image/color"
 	"io"
+
+	"github.com/kazzmir/paintown/game/mugen/logger"
 )
 
 type Sprite struct {
 	GroupNumber uint16
 	ImageNumber uint16
-	XAxis       uint16
-	YAxis       uint16
+	XAxis       int16
+	YAxis       int16
 	Linked      bool
 	Image       image.Image
 	ImageOpaque image.Image
@@ -37,6 +39,7 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 
 	vHi := header[15]
 	if vHi != 1 {
+		logger.LogUnresolved(fmt.Sprintf("SFF Error: Unsupported version %d.%d", vHi, header[12]))
 		return nil, fmt.Errorf("unsupported SFF version: %d", vHi)
 	}
 
@@ -54,15 +57,6 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 	}
 
 	currentPalette := initialPalette
-	var initialPaletteOpaque color.Palette
-	if initialPalette != nil {
-		// Create opaque version of initialPalette?
-		// Usually ACT palettes are already handled.
-		// If we set index 0 to Transparent in ReadPaletteACT, we need the original.
-		// Actually, let's assume if initialPalette exists, currentPaletteOpaque should be it without index 0 transparency.
-		// But initialPalette is color.Palette (interface).
-	}
-	currentPaletteOpaque := initialPalette
 	spriteIndex := make(map[uint16]*Sprite)
 	var currentIndex uint16 = 0
 
@@ -79,8 +73,8 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 
 		nextLoc := binary.LittleEndian.Uint32(sub[0:4])
 		length := binary.LittleEndian.Uint32(sub[4:8])
-		x := binary.LittleEndian.Uint16(sub[8:10])
-		y := binary.LittleEndian.Uint16(sub[10:12])
+		x := int16(binary.LittleEndian.Uint16(sub[8:10]))
+		y := int16(binary.LittleEndian.Uint16(sub[10:12]))
 		group := binary.LittleEndian.Uint16(sub[12:14])
 		item := binary.LittleEndian.Uint16(sub[14:16])
 		prev := binary.LittleEndian.Uint16(sub[16:18])
@@ -127,41 +121,36 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 				// eof or read error
 			}
 
-			palToUse := currentPalette
-			palToUseOpaque := currentPaletteOpaque
-
 			// MUGEN SFF v1 Palette Rules:
 			// 1. Portraits (Group 9000) use their own palette and NEVER update currentPalette/SharedPalette.
 			// 2. If an ACT palette is provided, (0,0) MUST use it, even if samePalette is false.
 			// 3. Otherwise, if samePalette is false, extract the PCX palette and update the shared state.
+			var palToUse color.Palette
+			var palToUseOpaque color.Palette
 
 			if group == 9000 {
 				if !samePalette {
-					if pal, err := ExtractPalette(pcxData, true); err == nil {
-						palToUse = pal
-					}
-					if pal, err := ExtractPalette(pcxData, false); err == nil {
-						palToUseOpaque = pal
-					}
+					palToUse, _ = ExtractPalette(pcxData, true)
+					palToUseOpaque, _ = ExtractPalette(pcxData, false)
+					// Portraits don't update currentPalette/SharedPalette
+				} else {
+					palToUse = currentPalette
+					palToUseOpaque = currentPalette
 				}
 			} else {
 				// Combat sprites
 				if !samePalette {
-					palM, errM := ExtractPalette(pcxData, true)
-					palO, errO := ExtractPalette(pcxData, false)
-					if errM == nil && errO == nil {
+					palM, _ := ExtractPalette(pcxData, true)
+					palO, _ := ExtractPalette(pcxData, false)
+					if palM != nil {
 						// Case: (0,0) and initialPalette exists -> ignore internal PCX palette
 						if group == 0 && item == 0 && initialPalette != nil {
 							currentPalette = initialPalette
-							currentPaletteOpaque = initialPaletteOpaque
-							palToUse = initialPalette
-							palToUseOpaque = initialPaletteOpaque
 						} else {
 							currentPalette = palM
-							currentPaletteOpaque = palO
-							palToUse = palM
-							palToUseOpaque = palO
 						}
+						palToUse = currentPalette
+						palToUseOpaque = palO
 
 						if sff.SharedPalette == nil {
 							sff.SharedPalette = currentPalette
@@ -169,11 +158,13 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 					}
 				} else {
 					// samePalette == true
-					if group == 0 && item == 0 && initialPalette != nil {
-						currentPalette = initialPalette
-						currentPaletteOpaque = initialPaletteOpaque
-						palToUse = initialPalette
-						palToUseOpaque = initialPaletteOpaque
+					if currentPalette != nil {
+						palToUse = currentPalette
+						palToUseOpaque = currentPalette
+					} else {
+						// Fallback to shared
+						palToUse = sff.SharedPalette
+						palToUseOpaque = sff.SharedPalette
 					}
 				}
 			}
@@ -182,30 +173,11 @@ func ParseWithPalette(r io.ReadSeeker, initialPalette color.Palette) (*SFF, erro
 				palToUse = sff.SharedPalette
 			}
 			if palToUseOpaque == nil {
-				// Fallback to masked if opaque not available, or if initialPaletteOpaque was nil.
-				// This might happen if ExtractPalette(..., false) failed or wasn't called.
-				// In such cases, we can try to derive an opaque version from palToUse.
-				if palToUse != nil {
-					derivedOpaque := make(color.Palette, len(palToUse))
-					copy(derivedOpaque, palToUse)
-					if len(derivedOpaque) > 0 {
-						if rgba, ok := derivedOpaque[0].(color.RGBA); ok {
-							rgba.A = 255
-							derivedOpaque[0] = rgba
-						} else {
-							derivedOpaque = palToUse // Fallback
-						}
-					}
-					palToUseOpaque = derivedOpaque
-				} else {
-					// If even palToUse is nil, then there's no palette at all.
-					// This should ideally not happen if sff.SharedPalette is set.
-					palToUseOpaque = nil
-				}
+				palToUseOpaque = palToUse
 			}
 
 			img, err := DecodePCX(pcxData, palToUse)
-			imgOpaque, _ := DecodePCX(pcxData, palToUseOpaque) // Ignore error for opaque, use nil if it fails.
+			imgOpaque, _ := DecodePCX(pcxData, palToUseOpaque)
 			if err == nil {
 				sff.Sprites = append(sff.Sprites, Sprite{
 					GroupNumber: group,

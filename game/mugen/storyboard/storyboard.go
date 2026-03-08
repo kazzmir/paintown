@@ -208,7 +208,7 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 		spriteMap := s.buildSpriteMap(screen)
 		for _, el := range s.Background.Elements {
 			if el.GetLayerNo() == 0 {
-				el.Draw(screen, 0, 0, spriteMap)
+				el.Draw(screen, 0, 0, 0, spriteMap)
 			}
 		}
 	}
@@ -223,7 +223,7 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 		spriteMap := s.buildSpriteMap(screen)
 		for _, el := range s.Background.Elements {
 			if el.GetLayerNo() == 1 {
-				el.Draw(screen, 0, 0, spriteMap)
+				el.Draw(screen, 0, 0, 0, spriteMap)
 			}
 		}
 	}

@@ -203,7 +203,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if s.engine.motif.OptionBG != nil {
 		for _, el := range s.engine.motif.OptionBG.Elements {
 			if el.GetLayerNo() == 0 {
-				el.Draw(screen, 0, 0, s.engine.sprites)
+				el.Draw(screen, 0, 0, 0, s.engine.sprites)
 			}
 		}
 	}
@@ -268,7 +268,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 	if s.engine.motif.OptionBG != nil {
 		for _, el := range s.engine.motif.OptionBG.Elements {
 			if el.GetLayerNo() == 1 {
-				el.Draw(screen, 0, 0, s.engine.sprites)
+				el.Draw(screen, 0, 0, 0, s.engine.sprites)
 			}
 		}
 	}
