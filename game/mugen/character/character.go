@@ -41,6 +41,7 @@ type Character struct {
 	Physics      string // S, C, A, N
 	MoveType     string // I, A, H
 	Ctrl         bool   // If character is in control
+	PrevStateNo  int    // Tracks the previous state before the last ChangeState
 
 	// Variables explicitly defined by users (var(0) - var(59), fvar(0) - fvar(39))
 	IntVars   [60]int
@@ -129,10 +130,29 @@ type Character struct {
 
 	// HitGuard tracks which targets (by PlayerID) have already been hit by the current HitDef
 	// activation, preventing the same attack from landing multiple times per swing.
-	HitGuard map[int]bool
+	HitGuard         map[int]bool
+	GetHit           cns.HitDef
+	HitTime          int
+	HitShakeTime     int // Separate from visual ShakeTime? No, reuse ShakeTime.
+	HitFall          bool
+	HitFallVelActive bool // Tracks if HitFallVel controller was triggered
 
 	// Input latching to stabilize diagonals (input name -> ticks remaining)
 	InputLatch map[string]int
+
+	// Protection logic
+	NotHitByFlags map[string]int // flag -> ticks remaining
+	HitByFlags    map[string]int // flag -> ticks remaining
+
+	// Rounds
+	RoundsExisted int
+
+	// Advanced Movement
+	AirJumpCount int
+
+	// Match state
+	RoundState  int
+	IsMatchOver bool
 }
 
 // NewCharacter returns a newly initialized character.
@@ -144,6 +164,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		SM:                  NewStateMachine(),
 		Time:                0,
 		StateNo:             0,
+		PrevStateNo:         0,
 		Anim:                0,
 		AnimTime:            0,
 		AnimElem:            0,
@@ -184,6 +205,10 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		Projectiles:         make([]*Character, 0),
 		Explods:             make([]*ExplodData, 0),
 		DrawOffset:          []float64{0, 0},
+		NotHitByFlags:       make(map[string]int),
+		HitByFlags:          make(map[string]int),
+		RoundState:          2,
+		IsMatchOver:         false,
 	}
 }
 
@@ -212,6 +237,8 @@ func (c *Character) Update() {
 	isPaused := c.ShakeTime > 0
 	if isPaused {
 		c.ShakeTime--
+	} else if c.HitTime > 0 {
+		c.HitTime--
 	}
 
 	if c.Commands != nil && c.CmdFile != nil {
@@ -277,6 +304,10 @@ func (c *Character) Update() {
 		c.MoveHit = 0
 		c.MoveContact = 0
 		c.MoveGuarded = 0
+
+		if c.HitTime > 0 {
+			c.HitTime--
+		}
 	}
 
 	// 3. MUGEN multi-level state processing:
@@ -299,9 +330,6 @@ func (c *Character) Update() {
 		}
 		if stateDef, ok := c.StateFile.States[stateNo]; ok {
 			// Diagnostic: is AnimTime 0?
-			if c.GetAnimTime() == 0 {
-				// fmt.Printf("[Tick %d] State %d: AnimTime=0 reached\n", c.GetTime(), stateNo)
-			}
 
 			changed, err := c.SM.ExecuteState(stateDef, c)
 			if err != nil {
@@ -316,21 +344,23 @@ func (c *Character) Update() {
 		return false
 	}
 
-	// Negative states processing order
-	processState(-3)
-	processState(-2)
-	processState(-1)
+	if !isPaused {
+		// Negative states processing order
+		processState(-3)
+		processState(-2)
+		processState(-1)
 
-	// Process current state (and any new states we transition into)
-	for i := 0; i < 10; i++ { // Limit to 10 transitions per tick
-		if !processState(c.StateNo) {
-			break
+		// Process current state (and any new states we transition into)
+		for i := 0; i < 10; i++ { // Limit to 10 transitions per tick
+			if !processState(c.StateNo) {
+				break
+			}
 		}
 	}
 
-	// 3.5 Built-in Transitions (only if no state change happened that disabled ctrl)
-	if !isPaused && c.Ctrl {
-		c.handleBuiltinTransitions()
+	// 3.5 Built-in Transitions
+	if !isPaused {
+		c.HandleBuiltinTransitions()
 	}
 
 	// 4. Collision Detection (Phase 4)
@@ -343,7 +373,7 @@ func (c *Character) Update() {
 		c.UpdateAnimation()
 
 		// Apply friction
-		c.applyFriction()
+		c.ApplyFriction()
 
 		// Apply gravity
 		if strings.ToUpper(c.Physics) == "A" || c.GravityActive {
@@ -352,6 +382,22 @@ func (c *Character) Update() {
 				yaccel = c.StateFile.Movement.YAccel
 			}
 			c.VelY += yaccel
+		}
+
+		// Tick down protection flags
+		for k, v := range c.NotHitByFlags {
+			if v > 0 {
+				c.NotHitByFlags[k] = v - 1
+			} else {
+				delete(c.NotHitByFlags, k)
+			}
+		}
+		for k, v := range c.HitByFlags {
+			if v > 0 {
+				c.HitByFlags[k] = v - 1
+			} else {
+				delete(c.HitByFlags, k)
+			}
 		}
 
 		if !c.PosFrozen {
@@ -380,7 +426,7 @@ func (c *Character) Update() {
 			}
 
 			// Push collision
-			c.resolvePushCollision()
+			c.ResolvePushCollision()
 
 			// Auto-turn:
 			// Continuously face opponent. Now that VelX is negated upon flip
@@ -401,7 +447,8 @@ func (c *Character) Update() {
 		}
 
 		// Standard MUGEN Grounding
-		if c.Y >= 0 && c.VelY >= 0 && strings.ToUpper(c.Physics) == "A" {
+		// Standard MUGEN Grounding: Only for normal movement (Jump)
+		if c.Y >= 0 && c.VelY >= 0 && strings.ToUpper(c.Physics) == "A" && c.MoveType != "H" {
 			c.Y = 0
 			c.VelY = 0
 			c.ChangeState(52, -1, -1)
@@ -662,8 +709,6 @@ func (c *Character) HitDef(params map[string]string) {
 	c.CurrentHitDef = cns.ParseHitDef(params)
 	// Entering a HitDef makes the character an attacker
 	c.MoveType = "A"
-	// Reset the set of targets already hit this HitDef activation to prevent double-hits
-	c.HitGuard = make(map[int]bool)
 }
 
 func (c *Character) Helper(params map[string]string) {
@@ -802,7 +847,7 @@ func (c *Character) AfterImageTime(time int) {
 }
 
 func (c *Character) EnvShake(params map[string]string) {
-	// Stub
+	// Stub: Trigger screen shake in stage/game
 }
 
 func (c *Character) EnvColor(params map[string]string) {
@@ -870,7 +915,7 @@ func (c *Character) ReversalDef(params map[string]string) {
 }
 
 func (c *Character) MoveHitReset() {
-	// Logic: reset hit flags
+	c.HitGuard = make(map[int]bool)
 }
 
 func (c *Character) HitAdd(val int) {
@@ -954,9 +999,14 @@ func (c *Character) SuperPause(params map[string]string) {
 func (c *Character) DestroySelf() {
 	// Logic: mark for deletion from the game world
 }
+func (c *Character) VarRandom(id int, min, max int) {
+	// Stub: set variable to random value
+}
 
 func (c *Character) FallEnvShake(params map[string]string) {
 	// Logic: shake screen on fall impact
+	// Generic EnvShake for now
+	c.EnvShake(params)
 }
 
 func (c *Character) GameMakeAnim(params map[string]string) {
@@ -967,19 +1017,19 @@ func (c *Character) MakeDust(params map[string]string) {
 	// Stub: dust particles
 }
 
-func (c *Character) VarRandom(id int, min, max int) {
-	// Stub: set variable to random value
-}
-
 func (c *Character) VarRangeSet(min, max int, val int) {
-	for i := min; i <= max && i < len(c.IntVars); i++ {
-		c.IntVars[i] = val
+	for i := min; i <= max; i++ {
+		if i >= 0 && i < len(c.IntVars) {
+			c.IntVars[i] = val
+		}
 	}
 }
 
 func (c *Character) FVarRangeSet(min, max int, val float64) {
-	for i := min; i <= max && i < len(c.FloatVars); i++ {
-		c.FloatVars[i] = val
+	for i := min; i <= max; i++ {
+		if i >= 0 && i < len(c.FloatVars) {
+			c.FloatVars[i] = val
+		}
 	}
 }
 
@@ -997,6 +1047,225 @@ func (c *Character) GetMoveContact() int {
 
 func (c *Character) GetMoveGuarded() int {
 	return c.MoveGuarded
+}
+
+func (c *Character) GetHitShakeOver() bool {
+	return c.ShakeTime <= 0
+}
+
+func (c *Character) GetHitOver() bool {
+	return c.HitTime <= 0
+}
+
+func (c *Character) GetHitFall() bool {
+	return c.HitFall
+}
+
+func (c *Character) SetHitFall(fall bool) {
+	c.HitFall = fall
+}
+
+func (c *Character) SetHitFallDamage(damage int) {
+	// Stub
+}
+
+func (c *Character) SetHitFallVel(active bool) {
+	c.HitFallVelActive = active
+	if active {
+		c.VelX = c.GetHitVar("fall.xvel")
+		c.VelY = c.GetHitVar("fall.yvel")
+	}
+}
+
+func (c *Character) GetPrevStateNo() int {
+	return c.PrevStateNo
+}
+
+func (c *Character) GetRoundsExisted() int {
+	return c.RoundsExisted
+}
+
+func (c *Character) HitBy(params map[string]string) {
+	time := 1
+	if t, ok := params["time"]; ok {
+		fmt.Sscanf(t, "%d", &time)
+	}
+	if v, ok := params["value"]; ok {
+		c.HitByFlags[v] = time
+	}
+	if v, ok := params["value2"]; ok {
+		c.HitByFlags[v] = time
+	}
+}
+
+func (c *Character) NotHitBy(params map[string]string) {
+	time := 1
+	if t, ok := params["time"]; ok {
+		fmt.Sscanf(t, "%d", &time)
+	}
+	if v, ok := params["value"]; ok {
+		c.NotHitByFlags[v] = time
+	}
+	if v, ok := params["value2"]; ok {
+		c.NotHitByFlags[v] = time
+	}
+}
+
+func (c *Character) GetInGuardDist() bool {
+	// Guard distance is defined in [Size] in CNS
+	guardDist := 100.0 // Default
+	if c.StateFile != nil {
+		guardDist = float64(c.StateFile.Size.AttackDist)
+	}
+
+	for _, target := range c.Target {
+		if strings.ToUpper(target.MoveType) == "A" {
+			// Calculate relative distance
+			relDist := (target.X - c.X) * float64(c.Facing)
+			if relDist > 0 && relDist < guardDist {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (c *Character) GetMatchOver() bool {
+	return c.IsMatchOver
+}
+
+func (c *Character) GetRoundNo() int {
+	return 1
+}
+
+func (c *Character) GetRoundState() int {
+	return c.RoundState
+}
+
+func (c *Character) GetCNSMovement() *cns.Movement {
+	if c.StateFile != nil {
+		return &c.StateFile.Movement
+	}
+	return nil
+}
+
+func (c *Character) HasAnim(animNo int) bool {
+	if c.AirFile == nil {
+		return false
+	}
+	_, exists := c.AirFile.Actions[animNo]
+	return exists
+}
+
+func (c *Character) GetHitVar(name string) float64 {
+	val := 0.0
+	switch strings.ToLower(name) {
+	case "animtype":
+		// Light=0, Medium=1, Hard=2, Back=3, Up=4, DiagUp=5
+		switch strings.ToLower(c.GetHit.AnimType) {
+		case "light":
+			val = 0
+		case "medium":
+			val = 1
+		case "hard":
+			val = 2
+		case "back":
+			val = 3
+		case "up":
+			val = 4
+		case "diagup":
+			val = 5
+		}
+	case "air.animtype":
+		switch strings.ToLower(c.GetHit.AirAnimType) {
+		case "light":
+			val = 0
+		case "medium":
+			val = 1
+		case "hard":
+			val = 2
+		case "back":
+			val = 3
+		case "up":
+			val = 4
+		case "diagup":
+			val = 5
+		}
+	case "groundtype":
+		// None=0, Stand=1, Trip=2
+		switch strings.ToLower(c.GetHit.GroundType) {
+		case "none":
+			val = 0
+		case "high", "low": // Stand
+			val = 1
+		case "trip":
+			val = 2
+		default:
+			val = 1
+		}
+	case "xvel":
+		if c.HitFall || c.StateType == "A" {
+			if len(c.GetHit.AirVel) > 0 {
+				val = c.GetHit.AirVel[0]
+			}
+		} else if len(c.GetHit.GroundVel) > 0 {
+			val = c.GetHit.GroundVel[0]
+		}
+	case "yvel":
+		if c.HitFall || c.StateType == "A" {
+			if len(c.GetHit.AirVel) > 1 {
+				val = c.GetHit.AirVel[1]
+			} else if len(c.GetHit.GroundVel) > 1 {
+				val = c.GetHit.GroundVel[1]
+			}
+		} else if len(c.GetHit.GroundVel) > 1 {
+			val = c.GetHit.GroundVel[1]
+		}
+	case "yaccel":
+		if c.GetHit.YAccel != 0.0 {
+			val = c.GetHit.YAccel
+		} else {
+			val = 0.44 // MUGEN default
+		}
+	case "fall":
+		if c.HitFall {
+			val = 1
+		} else {
+			val = float64(c.GetHit.Fall)
+		}
+	case "fall.damage":
+		val = float64(c.GetHit.FallDamage)
+	case "fall.xvel":
+		if len(c.GetHit.FallVel) > 0 {
+			val = c.GetHit.FallVel[0]
+		}
+	case "fall.yvel":
+		if len(c.GetHit.FallVel) > 1 {
+			val = c.GetHit.FallVel[1]
+		} else {
+			val = -4.5
+		}
+	case "fall.recover":
+		if c.GetHit.FallRecover {
+			val = 1
+		}
+	case "hittime":
+		if c.StateType == "A" {
+			val = float64(c.GetHit.AirHitTime)
+		} else {
+			val = float64(c.GetHit.GroundHitTime)
+		}
+	case "slidetime":
+		val = float64(c.GetHit.GroundSlide)
+	case "ctrltime":
+		// This is usually GroundHitTime? MUGEN docs say it's same as hittime.
+		if c.StateType == "A" {
+			val = float64(c.GetHit.AirHitTime)
+		} else {
+			val = float64(c.GetHit.GroundHitTime)
+		}
+	}
+	return val
 }
 
 // GetTargetPos returns the world-space position of the first target (opponent).
@@ -1060,8 +1329,70 @@ func (c *Character) GetStateno() int {
 func (c *Character) GetStateFile() *cns.CNS {
 	return c.StateFile
 }
+func (c *Character) HandleBuiltinTransitions() {
+	if c.StateNo == 5110 {
+		liedownTime := 60 // Default MUGEN
+		if c.StateFile != nil && c.StateFile.Data.LiedownTime > 0 {
+			liedownTime = c.StateFile.Data.LiedownTime
+		}
 
-func (c *Character) handleBuiltinTransitions() {
+		if c.GetLife() <= 0 && c.GetAnimTime() == 0 {
+			c.ChangeState(5150, -1, -1)
+			return
+		}
+
+		if c.Time >= liedownTime {
+			c.ChangeState(5120, -1, -1)
+			return
+		}
+	}
+
+	// Jumping Sequence (Phase 10)
+	if c.StateNo == 40 && c.GetAnimTime() == 0 {
+		c.ChangeState(50, -1, -1)
+		return
+	}
+	if c.StateNo == 50 && c.VelY > 0 {
+		c.ChangeState(51, -1, -1)
+		return
+	}
+	if (c.StateNo == 50 || c.StateNo == 51) && c.Y >= 0 && c.VelY >= 0 {
+		c.ChangeState(52, -1, -1)
+		return
+	}
+	if c.StateNo == 52 && (c.GetAnimTime() == 0 || c.Time >= 3) {
+		c.ChangeState(0, -1, -1)
+		return
+	}
+
+	// Guarding Transitions (States 120-132)
+	if !c.Specials["noguard"] && c.GetInGuardDist() && c.Command("holdback") {
+		if c.StateNo < 120 || c.StateNo > 155 {
+			c.ChangeState(120, -1, -1)
+			return
+		}
+	}
+
+	// Guard Maintenance/Recovery
+	if c.StateNo >= 120 && c.StateNo <= 140 {
+		if !c.Command("holdback") || !c.GetInGuardDist() {
+			c.ChangeState(140, -1, -1) // Guard End
+			return
+		}
+
+		// State-specific Guard transitions
+		if c.StateNo == 120 { // Guard Start
+			if c.StateType == "S" {
+				c.ChangeState(130, -1, -1)
+			} else if c.StateType == "C" {
+				c.ChangeState(131, -1, -1)
+			} else {
+				c.ChangeState(132, -1, -1)
+			}
+			return
+		}
+	}
+
 	if c.StateFile == nil {
 		return
 	}
@@ -1070,7 +1401,7 @@ func (c *Character) handleBuiltinTransitions() {
 	phys := strings.ToUpper(c.Physics)
 
 	if st == "S" && phys == "S" {
-		if c.Command("holdup") {
+		if c.Command("holdup") && c.StateNo != 40 {
 			// Jump Start
 			// Set sysvar(1) for direction: 0=neutral, 1=fwd, -1=back
 			dir := 0
@@ -1081,35 +1412,126 @@ func (c *Character) handleBuiltinTransitions() {
 			}
 			c.SetSysVar(1, dir)
 			c.ChangeState(40, -1, -1)
-		} else if c.Command("holddown") {
+		} else if c.Command("holddown") && c.StateNo != 10 && c.StateNo != 11 {
 			c.ChangeState(10, -1, -1)
-		} else if c.Command("holdfwd") {
-			if c.StateNo != 20 && c.StateNo != 100 {
-				c.ChangeState(20, -1, -1)
-			}
-		} else if c.Command("holdback") {
-			if c.StateNo != 20 && c.StateNo != 105 {
-				c.ChangeState(20, -1, -1)
-			}
-		} else if c.StateNo == 20 {
+		} else if c.Ctrl && c.Command("holdfwd") && c.StateNo != 20 && c.StateNo != 100 {
+			c.ChangeState(20, -1, -1)
+		} else if c.Ctrl && c.Command("holdback") && c.StateNo != 20 && c.StateNo != 105 {
+			c.ChangeState(20, -1, -1)
+		} else if c.StateNo == 20 && c.Ctrl && !c.Command("holdfwd") && !c.Command("holdback") {
 			// Walk -> Stand
 			c.ChangeState(0, -1, -1)
 		}
 	} else if st == "C" && phys == "C" {
-		if !c.Command("holddown") {
+		if !c.Command("holddown") && c.StateNo != 12 {
 			c.ChangeState(12, -1, -1) // Crouch to Stand
 		}
 	}
 
 	// State-specific maintenance
+	if c.StateNo == 140 { // Guard End
+		if c.Time >= 20 { // Fixed recovery time for now
+			if c.StateType == "S" {
+				c.ChangeState(0, 1, -1)
+			} else if c.StateType == "C" {
+				c.ChangeState(11, 1, -1)
+			}
+		}
+	}
+
+	if c.StateNo >= 150 && c.StateNo <= 155 {
+		if c.GetHitOver() {
+			if c.StateType == "S" {
+				c.ChangeState(130, -1, -1)
+			} else if c.StateType == "C" {
+				c.ChangeState(131, -1, -1)
+			} else {
+				c.ChangeState(132, -1, -1)
+			}
+			return
+		}
+	}
+
+	// Ground Recovery (5200, 5201)
+	if c.HitFall && st == "L" && c.Command("recovery") {
+		canRecover := c.GetHitVar("fall.recover") != 0
+		if canRecover {
+			c.ChangeState(5200, -1, -1)
+			return
+		}
+	}
+
+	// Trip Sequence (5070)
+	if c.GetHitVar("fall") != 0 && strings.EqualFold(c.GetHit.GroundType, "Trip") {
+		if c.StateNo < 5070 || c.StateNo > 5071 {
+			c.ChangeState(5070, -1, -1)
+			return
+		}
+	}
+
+	// Air Recovery (5040, 5210)
+	if c.HitFall && st == "A" && c.Command("recovery") {
+		canRecover := c.GetHitVar("fall.recover") != 0
+		if canRecover {
+			// Air recovery states
+			if c.HasAnim(5210) {
+				c.ChangeState(5210, -1, -1)
+			} else {
+				c.ChangeState(5040, -1, -1)
+			}
+			return
+		}
+	}
+
+	// State-specific maintenance (System)
 	if c.StateNo == 100 { // RUN_FWD
 		if !c.Command("holdfwd") {
 			c.ChangeState(0, -1, -1)
 		}
+	} else if c.StateNo == 105 { // RUN_BACK
+		if !c.Command("holdback") {
+			c.ChangeState(0, -1, -1)
+		}
+	}
+
+	// Air Jump Bookkeeping (State 45)
+	if c.StateNo == 45 && c.Time == 0 {
+		c.AirJumpCount++
+	}
+
+	// Reset AirJumpCount on landing
+	if st == "S" || st == "C" {
+		c.AirJumpCount = 0
+	}
+
+	// Match End Transitions (Phase 11)
+	if c.GetRoundState() == 3 { // Match Finished
+		if c.GetLife() <= 0 {
+			if c.StateNo != 170 && c.StateNo != 5150 {
+				c.ChangeState(170, -1, -1) // Lose
+			}
+		} else if c.StateNo != 180 {
+			c.ChangeState(180, -1, -1) // Win
+		}
+	}
+
+	// Intro Transitions (Phase 11)
+	if c.GetRoundState() == 0 && c.StateNo != 190 {
+		c.ChangeState(190, -1, -1)
+	} else if c.GetRoundState() == 1 && c.StateNo != 191 {
+		c.ChangeState(191, -1, -1)
+	}
+
+	// Vertical Runs (110, 115) - Very simplified
+	if st == "S" && phys == "S" {
+		if c.Command("holdup") && c.Command("holdfwd") && c.StateNo != 40 {
+			// Some characters have a run-up or high jump
+			// c.ChangeState(110, -1, -1)
+		}
 	}
 }
 
-func (c *Character) applyFriction() {
+func (c *Character) ApplyFriction() {
 	if c.StateFile == nil {
 		return
 	}
@@ -1121,7 +1543,7 @@ func (c *Character) applyFriction() {
 	}
 }
 
-func (c *Character) resolvePushCollision() {
+func (c *Character) ResolvePushCollision() {
 	if c.StateFile == nil {
 		return
 	}
@@ -1183,8 +1605,12 @@ func (c *Character) ChangeState(stateNo int, ctrl int, anim int) {
 			c.LastStateChange = fmt.Sprintf("%d -> %d", c.StateNo, stateNo)
 		}
 	}
+	c.PrevStateNo = c.StateNo
 	c.StateNo = stateNo
-	c.Time = 0 // Entering a new state resets Time to 0.
+	c.Time = 0                      // Entering a new state resets Time to 0.
+	c.HitFallVelActive = false      // Reset HitFallVel on state change
+	c.PosFrozen = false             // Reset PosFreeze on state change
+	c.HitGuard = make(map[int]bool) // Reset hit memory on state change
 
 	// MUGEN Accuracy: Reseting persistence counters for all POSITIVE states.
 	// Negative states (-3, -2, -1) maintain their persistence across state changes.
@@ -1278,24 +1704,9 @@ func (c *Character) UpdateAnimation() {
 func (c *Character) ResolveCollisions(others []*Character) {
 	// 1. Check character's own HitBoxes
 	if c.MoveType == "A" {
-		el1 := c.CurrentElement()
-		clsn1Count := 0
-		if el1 != nil {
-			clsn1Count = len(el1.Clsn1)
-		}
 		for _, other := range others {
 			if other == c || other.Life <= 0 {
 				continue
-			}
-			el2 := other.CurrentElement()
-			clsn2Count := 0
-			if el2 != nil {
-				clsn2Count = len(el2.Clsn2)
-			}
-			// Debug: log hitbox presence for attack states
-			if c.MoveType == "A" {
-				fmt.Printf("[COLLISION] Attacker state=%d anim=%d elem=%d clsn1=%d | Defender state=%d anim=%d elem=%d clsn2=%d\n",
-					c.StateNo, c.Anim, c.AnimElem, clsn1Count, other.StateNo, other.Anim, other.AnimElem, clsn2Count)
 			}
 
 			if CheckCollision(c, other) {
@@ -1351,6 +1762,7 @@ func (c *Character) HandleHit(other *Character) {
 
 func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 	c.MoveContact = 1
+	c.GetHit = hit // Copy by value to avoid stack pointer issues
 
 	// Life reduction
 	damage := 0
@@ -1371,18 +1783,66 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 		c.ShakeTime = hit.PauseTime[0]
 	}
 
-	// Knockback Velocity: GroundVel from the HitDef is in LOCAL space relative to attacker.
-	// Negative = push defender backward (away from attacker).
-	if len(hit.GroundVel) > 0 {
-		c.VelX = -hit.GroundVel[0]
-	}
-	if len(hit.GroundVel) > 1 {
-		c.VelY = hit.GroundVel[1]
+	// Knockback Velocity
+	// Negative X = push defender backward (away from attacker).
+	if c.StateType == "A" || hit.Fall == 1 {
+		// Airborne hit or forced fall
+		if len(hit.AirVel) > 0 {
+			c.VelX = -hit.AirVel[0]
+		} else if len(hit.GroundVel) > 0 {
+			c.VelX = -hit.GroundVel[0]
+		}
+
+		if len(hit.AirVel) > 1 {
+			c.VelY = hit.AirVel[1]
+		} else if len(hit.GroundVel) > 1 {
+			c.VelY = hit.GroundVel[1]
+		}
+	} else {
+		// Grounded hit
+		if len(hit.GroundVel) > 0 {
+			c.VelX = -hit.GroundVel[0]
+		}
+		if len(hit.GroundVel) > 1 {
+			c.VelY = hit.GroundVel[1]
+		}
 	}
 
-	// Transition to Hit State (5000 is standard MUGEN "hit" state)
-	// In a full implementation, this depends on animtype, ground/air, etc.
-	c.ChangeState(5000, 0, -1)
+	// Turn to face attacker
+	if attacker.X > c.X {
+		c.Facing = 1
+	} else if attacker.X < c.X {
+		c.Facing = -1
+	}
+
+	// Set HitTime duration based on state
+	if c.StateType == "A" || hit.Fall == 1 {
+		if hit.AirHitTime > 0 {
+			c.HitTime = hit.AirHitTime
+		} else {
+			c.HitTime = 20 // Reasonable default if air.hittime missing
+		}
+	} else {
+		c.HitTime = hit.GroundHitTime
+	}
+
+	// Track if this hit causes a fall
+	c.HitFall = hit.Fall == 1 || c.StateType == "A"
+
+	// Guarding vs Normal Hit
+	if c.StateNo >= 120 && c.StateNo <= 155 {
+		// Guard Hit States (150-155)
+		if c.StateType == "S" {
+			c.ChangeState(150, 0, -1)
+		} else if c.StateType == "C" {
+			c.ChangeState(152, 0, -1)
+		} else {
+			c.ChangeState(154, 0, -1)
+		}
+	} else {
+		// Transition to Hit State (5000 is standard MUGEN "hit" state)
+		c.ChangeState(5000, 0, -1)
+	}
 }
 
 func (c *Character) Command(name string) bool {

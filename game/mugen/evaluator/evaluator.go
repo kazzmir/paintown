@@ -28,6 +28,7 @@ type EvaluatorEnvironment interface {
 	GetFacing() int
 	Command(name string) bool
 	GetCNSVelocity() *cns.Velocity
+	GetCNSMovement() *cns.Movement
 }
 
 // Environment is an alias to EvaluatorEnvironment for easier access
@@ -43,6 +44,17 @@ type CharacterEnvironment interface {
 	GetMoveGuarded() int
 	GetPower() int
 	GetLife() int
+	GetHitVar(name string) float64
+	GetHitShakeOver() bool
+	GetHitOver() bool
+	GetHitFall() bool
+	HasAnim(animNo int) bool
+	GetInGuardDist() bool
+	GetMatchOver() bool
+	GetRoundNo() int
+	GetRoundState() int
+	GetPrevStateNo() int
+	GetRoundsExisted() int
 }
 
 var customEval func(string, EvaluatorEnvironment) float64
@@ -102,6 +114,38 @@ func Evaluate(expr Expression, env EvaluatorEnvironment) float64 {
 		}
 
 		left := Evaluate(e.Left, env)
+
+		// Interval evaluation
+		if iv, ok := e.Right.(*Interval); ok {
+			min := Evaluate(iv.Left, env)
+			max := Evaluate(iv.Right, env)
+
+			inRange := true
+			if iv.LeftInc {
+				inRange = inRange && left >= min
+			} else {
+				inRange = inRange && left > min
+			}
+			if iv.RightInc {
+				inRange = inRange && left <= max
+			} else {
+				inRange = inRange && left < max
+			}
+
+			if e.Operator == "=" || e.Operator == "==" {
+				if inRange {
+					return 1
+				}
+				return 0
+			} else if e.Operator == "!=" {
+				if !inRange {
+					return 1
+				}
+				return 0
+			}
+			return 0
+		}
+
 		right := Evaluate(e.Right, env)
 
 		// Hard fix for unknown identifiers defaulting to 0
@@ -209,17 +253,16 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 		return y
 	case "facing":
 		return float64(env.GetFacing())
-	case "p2bodydist x":
+	case "p2bodydist x", "p2dist x":
 		// Distance from this character's axis to P2's axis, in character-local space.
-		// Negative means P2 is behind (crossed over) — triggers Turn (State 5) in common1.cns.
+		// Negative means P2 is behind (crossed over).
 		if charEnv, ok := env.(CharacterEnvironment); ok {
 			tx, _ := charEnv.GetTargetPos()
 			cx, _ := env.GetPos()
-			// Relative world distance, signed by facing
 			return (tx - cx) * float64(env.GetFacing())
 		}
 		return 0
-	case "p2bodydist y":
+	case "p2bodydist y", "p2dist y":
 		if charEnv, ok := env.(CharacterEnvironment); ok {
 			_, ty := charEnv.GetTargetPos()
 			_, cy := env.GetPos()
@@ -246,17 +289,107 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 			return float64(charEnv.GetPower())
 		}
 		return 0
+	case "hitshakeover":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetHitShakeOver() {
+				return 1
+			}
+		}
+		return 0
+	case "hitover":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetHitOver() {
+				return 1
+			}
+		}
+		return 0
+	case "hitfall":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetHitFall() {
+				return 1
+			}
+		}
+		return 0
+	case "alive":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetLife() > 0 {
+				return 1
+			}
+		}
+		return 0
+	case "canrecover":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetHitVar("fall.recover") != 0 {
+				return 1
+			}
+		}
+		return 0
+	case "roundsexisted":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			return float64(charEnv.GetRoundsExisted())
+		}
+		return 0
 	case "life":
 		if charEnv, ok := env.(CharacterEnvironment); ok {
 			return float64(charEnv.GetLife())
 		}
 		return 1000
+	case "inguarddist":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetInGuardDist() {
+				return 1
+			}
+		}
+		return 0
+	case "matchover":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			if charEnv.GetMatchOver() {
+				return 1
+			}
+		}
+		return 0
+	case "roundno":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			return float64(charEnv.GetRoundNo())
+		}
+		return 1
+	case "roundstate":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			return float64(charEnv.GetRoundState())
+		}
+		return 2 // Fighting
+	case "prevstateno":
+		if charEnv, ok := env.(CharacterEnvironment); ok {
+			return float64(charEnv.GetPrevStateNo())
+		}
+		return 0
+	case "vel z":
+		return 0 // Z-axis not currently supported
 	}
 	return math.MaxFloat64 // Mark as unknown
 }
 
 func evaluateCall(call *Call, env EvaluatorEnvironment) float64 {
-	switch call.Name {
+	switch strings.ToLower(call.Name) {
+	case "animexist", "selfanimexist":
+		if len(call.Arguments) > 0 {
+			animNo := int(Evaluate(call.Arguments[0], env))
+			if charEnv, ok := env.(CharacterEnvironment); ok {
+				if charEnv.HasAnim(animNo) {
+					return 1
+				}
+			}
+			return 0
+		}
+	case "gethitvar":
+		if len(call.Arguments) > 0 {
+			if id, ok := call.Arguments[0].(*Identifier); ok {
+				name := strings.ToLower(id.Name)
+				if charEnv, ok := env.(CharacterEnvironment); ok {
+					return charEnv.GetHitVar(name)
+				}
+			}
+		}
 	case "var":
 		if len(call.Arguments) > 0 {
 			idx := int(Evaluate(call.Arguments[0], env))
@@ -338,6 +471,21 @@ func evaluateCall(call *Call, env EvaluatorEnvironment) float64 {
 						return vel.JumpFwd
 					case "velocity.jump.back", "velocity.jump.back.x":
 						return vel.JumpBack
+					case "movement.yaccel":
+						m := env.GetCNSMovement()
+						if m != nil {
+							return m.YAccel
+						}
+					case "movement.stand.friction":
+						m := env.GetCNSMovement()
+						if m != nil {
+							return m.StandFriction
+						}
+					case "movement.crouch.friction":
+						m := env.GetCNSMovement()
+						if m != nil {
+							return m.CrouchFriction
+						}
 					}
 				}
 			}

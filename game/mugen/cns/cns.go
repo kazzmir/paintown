@@ -108,6 +108,11 @@ type HitDef struct {
 	Palfrm_Time      int
 	Palfrm_Mul       []float64
 	Palfrm_Add       []int
+	Fall             int
+	FallDamage       int
+	FallVel          []float64
+	FallRecover      bool
+	YAccel           float64
 }
 
 type StateDef struct {
@@ -374,21 +379,18 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 			stateNo, err := strconv.Atoi(stateNoStr)
 
 			if err == nil {
-				// If it's a negative state or we already have it, use it.
-				// Otherwise, if currentState is nil, we might need to handle this as a virtual state.
-				if stateNo < 0 {
-					if _, ok := cns.States[stateNo]; !ok {
-						cns.States[stateNo] = &StateDef{
-							ID:          stateNo,
-							Controllers: make([]StateController, 0),
-						}
+				// MUGEN controllers can refer to any state.
+				// If the state doesn't exist, we create a "virtual" StateDef for it.
+				if _, ok := cns.States[stateNo]; !ok {
+					cns.States[stateNo] = &StateDef{
+						ID:          stateNo,
+						Controllers: make([]StateController, 0),
 					}
-					currentState = cns.States[stateNo]
 				}
+				currentState = cns.States[stateNo]
 			}
 
 			if currentState == nil {
-				// Controller without a StateDef? Valid in MUGEN maybe for injected common1 states but we skip for strictness
 				continue
 			}
 
@@ -529,7 +531,9 @@ func ParseFloatList(s string) []float64 {
 }
 
 func ParseHitDef(params map[string]string) HitDef {
-	hd := HitDef{}
+	hd := HitDef{
+		FallRecover: true,
+	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v
 	}
@@ -622,6 +626,35 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["givepower"]; ok {
 		hd.GivePower = ParseIntList(v)
+	}
+
+	if v, ok := params["fall"]; ok {
+		hd.Fall, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["fall.damage"]; ok {
+		hd.FallDamage, _ = strconv.Atoi(v)
+	}
+	if v, ok := params["fall.xvelocity"]; ok {
+		hd.FallVel = ParseFloatList(v)
+	}
+	if v, ok := params["fall.yvelocity"]; ok {
+		yvels := ParseFloatList(v)
+		if len(yvels) > 0 {
+			if len(hd.FallVel) == 0 {
+				hd.FallVel = []float64{0, yvels[0]}
+			} else if len(hd.FallVel) == 1 {
+				hd.FallVel = append(hd.FallVel, yvels[0])
+			} else {
+				hd.FallVel[1] = yvels[0]
+			}
+		}
+	}
+	if v, ok := params["fall.recover"]; ok {
+		val, _ := strconv.Atoi(v)
+		hd.FallRecover = (val != 0)
+	}
+	if v, ok := params["yaccel"]; ok {
+		hd.YAccel, _ = strconv.ParseFloat(v, 64)
 	}
 
 	return hd

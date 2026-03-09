@@ -23,6 +23,8 @@ const (
 	tokOperator
 	tokLParen
 	tokRParen
+	tokLBracket
+	tokRBracket
 	tokComma
 	tokString
 )
@@ -98,6 +100,12 @@ func tokenize(input string) []token {
 		}
 
 		switch ch {
+		case '[':
+			tokens = append(tokens, token{tokLBracket, "["})
+			i++
+		case ']':
+			tokens = append(tokens, token{tokRBracket, "]"})
+			i++
 		case '(':
 			tokens = append(tokens, token{tokLParen, "("})
 			i++
@@ -203,10 +211,39 @@ func (p *Parser) parsePrimary() (Expression, error) {
 		return &Identifier{Name: tok.lit}, nil
 	case tokString:
 		return &StringExpr{Value: tok.lit}, nil
+	case tokLBracket:
+		expr, err := p.parseExpression(0)
+		if err != nil {
+			return nil, err
+		}
+		if p.advance().typ != tokComma {
+			return nil, fmt.Errorf("expected ',' in interval")
+		}
+		right, err := p.parseExpression(0)
+		if err != nil {
+			return nil, err
+		}
+		closeTok := p.advance()
+		if closeTok.typ != tokRBracket && closeTok.typ != tokRParen {
+			return nil, fmt.Errorf("expected ']' or ')' to close interval")
+		}
+		return &Interval{Left: expr, Right: right, LeftInc: true, RightInc: closeTok.typ == tokRBracket}, nil
 	case tokLParen:
 		expr, err := p.parseExpression(0)
 		if err != nil {
 			return nil, err
+		}
+		if p.peek().typ == tokComma {
+			p.advance() // Consume ','
+			right, err := p.parseExpression(0)
+			if err != nil {
+				return nil, err
+			}
+			closeTok := p.advance()
+			if closeTok.typ != tokRBracket && closeTok.typ != tokRParen {
+				return nil, fmt.Errorf("expected ']' or ')' to close interval")
+			}
+			return &Interval{Left: expr, Right: right, LeftInc: false, RightInc: closeTok.typ == tokRBracket}, nil
 		}
 		if p.advance().typ != tokRParen {
 			return nil, fmt.Errorf("expected ')'")

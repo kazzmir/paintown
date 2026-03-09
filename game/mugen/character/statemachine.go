@@ -51,6 +51,9 @@ type Environment interface {
 	SetLife(life int)
 	AddLife(life int)
 	GetLife() int
+	SetHitFall(fall bool)
+	SetHitFallDamage(damage int)
+	SetHitFallVel(active bool)
 	SetAttackMul(mul float64)
 	SetDefenceMul(mul float64)
 	SetSprPriority(priority int)
@@ -113,7 +116,16 @@ type Environment interface {
 	GetMoveHit() int
 	GetMoveContact() int
 	GetMoveGuarded() int
+	GetPrevStateNo() int
+	GetInGuardDist() bool
+	GetMatchOver() bool
+	GetRoundNo() int
+	GetRoundState() int
+	GetRoundsExisted() int
+	HitBy(params map[string]string)
+	NotHitBy(params map[string]string)
 	GetCNSVelocity() *cns.Velocity
+	GetCNSMovement() *cns.Movement
 	IsPaused() bool
 	GetPersistence(key string) int
 	SetPersistence(key string, val int)
@@ -163,11 +175,17 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["sprpriority"] = handleSprPriority
 	sm.controllers["gravity"] = handleGravity
 	sm.controllers["velmul"] = handleVelMul
+	sm.controllers["hitvelset"] = handleHitVelSet
+	sm.controllers["hitfalldamage"] = handleHitFallDamage
+	sm.controllers["hitfallset"] = handleHitFallSet
+	sm.controllers["hitfallvel"] = handleHitFallVel
 	sm.controllers["posfreeze"] = handlePosFreeze
 	sm.controllers["pause"] = handlePause
 	sm.controllers["playsnd"] = handlePlaySnd
 	sm.controllers["hitdef"] = handleHitDef
 	sm.controllers["projectile"] = handleProjectile
+	sm.controllers["hitby"] = handleHitBy
+	sm.controllers["nothitby"] = handleNotHitBy
 	sm.controllers["assertspecial"] = handleAssertSpecial
 	sm.controllers["explod"] = handleExplod
 	sm.controllers["removeexplod"] = handleRemoveExplod
@@ -224,6 +242,38 @@ func (sm *StateMachine) registerCoreControllers() {
 // Returns true if a state transition (ChangeState/SelfState) occurred.
 func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool, error) {
 	isPaused := env.IsPaused()
+
+	// Applying Statedef attributes on state entry (Time = 0)
+	// This ensures attributes like MoveType or Physics don't "stick" from the previous state.
+	if env.GetTime() == 0 && state.ID >= 0 {
+		if state.Type != "" && strings.ToUpper(state.Type) != "U" {
+			env.SetStateType(state.Type)
+		}
+		if state.MoveType != "" && strings.ToUpper(state.MoveType) != "U" {
+			env.SetMoveType(state.MoveType)
+		}
+		if state.Physics != "" && strings.ToUpper(state.Physics) != "U" {
+			env.SetPhysics(state.Physics)
+		}
+		if state.Ctrl != -1 {
+			env.SetCtrl(state.Ctrl != 0)
+		}
+		if state.SprPriority != -255 { // Default sentinel
+			env.SetSprPriority(state.SprPriority)
+		}
+		if state.Anim != -1 {
+			env.ChangeAnim(state.Anim)
+		}
+		if len(state.VelSet) > 0 {
+			x := state.VelSet[0]
+			y := 0.0
+			if len(state.VelSet) > 1 {
+				y = state.VelSet[1]
+			}
+			env.SetVelocity(x, y)
+		}
+	}
+
 	for i := range state.Controllers {
 		ctrl := &state.Controllers[i]
 
@@ -388,22 +438,35 @@ func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environm
 			continue
 		}
 
-		parts := strings.SplitN(trigStr, "=", 2)
-		if len(parts) < 2 {
-			continue
-		}
-		key := strings.ToLower(strings.TrimSpace(parts[0]))
-		val := strings.TrimSpace(parts[1])
+		// Use caching for trigger expressions
+		var expr evaluator.Expression
+		var err error
 
-		expr, ok := sm.cache[val]
-		if !ok {
-			var err error
-			expr, err = evaluator.Parse(val)
-			if err != nil {
+		if cached, ok := sm.cache[trigStr]; ok {
+			expr = cached
+		} else {
+			// Extract the numeric index from triggers like trigger1 = ...
+			parts := strings.SplitN(trigStr, "=", 2)
+			if len(parts) < 2 {
 				continue
 			}
-			sm.cache[val] = expr
+
+			rawExpr := strings.TrimSpace(parts[1])
+			expr, err = evaluator.Parse(rawExpr)
+			if err != nil {
+				// Cache the error-state too to avoid re-parsing invalid triggers
+				sm.cache[trigStr] = nil
+				continue
+			}
+			sm.cache[trigStr] = expr
 		}
+
+		if expr == nil {
+			continue
+		}
+
+		parts := strings.SplitN(trigStr, "=", 2)
+		key := strings.ToLower(strings.TrimSpace(parts[0]))
 
 		var groupID int
 		if strings.HasPrefix(key, "triggerall") {
@@ -591,10 +654,18 @@ func handlePosSet(ctrl *cns.StateController, env Environment) error {
 	curX, curY := env.GetPos()
 	newX, newY := curX, curY
 	if xStr, ok := ctrl.Params["x"]; ok {
-		fmt.Sscanf(xStr, "%f", &newX)
+		if expr, err := evaluator.Parse(xStr); err == nil {
+			newX = evaluator.Evaluate(expr, env)
+		} else if val, err := strconv.ParseFloat(xStr, 64); err == nil {
+			newX = val
+		}
 	}
 	if yStr, ok := ctrl.Params["y"]; ok {
-		fmt.Sscanf(yStr, "%f", &newY)
+		if expr, err := evaluator.Parse(yStr); err == nil {
+			newY = evaluator.Evaluate(expr, env)
+		} else if val, err := strconv.ParseFloat(yStr, 64); err == nil {
+			newY = val
+		}
 	}
 	env.SetPosition(newX, newY)
 	return nil
@@ -736,14 +807,20 @@ func handleCtrlSet(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleStateTypeSet(ctrl *cns.StateController, env Environment) error {
-	if v, ok := ctrl.Params["type"]; ok {
-		env.SetStateType(v)
-	}
-	if v, ok := ctrl.Params["physics"]; ok {
-		env.SetPhysics(v)
+	if v, ok := ctrl.Params["statetype"]; ok {
+		if strings.ToUpper(v) != "U" {
+			env.SetStateType(v)
+		}
 	}
 	if v, ok := ctrl.Params["movetype"]; ok {
-		env.SetMoveType(v)
+		if strings.ToUpper(v) != "U" {
+			env.SetMoveType(v)
+		}
+	}
+	if v, ok := ctrl.Params["physics"]; ok {
+		if strings.ToUpper(v) != "U" {
+			env.SetPhysics(v)
+		}
 	}
 	return nil
 }
@@ -812,12 +889,84 @@ func handleGravity(ctrl *cns.StateController, env Environment) error {
 func handleVelMul(ctrl *cns.StateController, env Environment) error {
 	x, y := 1.0, 1.0
 	if v, ok := ctrl.Params["x"]; ok {
-		x, _ = strconv.ParseFloat(v, 64)
+		if expr, err := evaluator.Parse(v); err == nil {
+			x = evaluator.Evaluate(expr, env)
+		} else {
+			x, _ = strconv.ParseFloat(v, 64)
+		}
 	}
 	if v, ok := ctrl.Params["y"]; ok {
-		y, _ = strconv.ParseFloat(v, 64)
+		if expr, err := evaluator.Parse(v); err == nil {
+			y = evaluator.Evaluate(expr, env)
+		} else {
+			y, _ = strconv.ParseFloat(v, 64)
+		}
 	}
 	env.VelMul(x, y)
+	return nil
+}
+
+func handleHitVelSet(ctrl *cns.StateController, env Environment) error {
+	charEnv, ok := env.(evaluator.CharacterEnvironment)
+	if !ok {
+		return nil
+	}
+
+	curX, curY := env.GetVel()
+	newX, newY := curX, curY
+
+	if v, ok := ctrl.Params["x"]; ok {
+		evalX := 0.0
+		if expr, err := evaluator.Parse(v); err == nil {
+			evalX = evaluator.Evaluate(expr, env)
+		} else {
+			evalX, _ = strconv.ParseFloat(v, 64)
+		}
+		if evalX != 0 {
+			newX = charEnv.GetHitVar("xvel") * evalX
+		}
+	}
+
+	if v, ok := ctrl.Params["y"]; ok {
+		evalY := 0.0
+		if expr, err := evaluator.Parse(v); err == nil {
+			evalY = evaluator.Evaluate(expr, env)
+		} else {
+			evalY, _ = strconv.ParseFloat(v, 64)
+		}
+		if evalY != 0 {
+			newY = charEnv.GetHitVar("yvel") * evalY
+		}
+	}
+
+	env.SetVelocity(newX, newY)
+	return nil
+}
+
+func handleHitFallDamage(ctrl *cns.StateController, env Environment) error {
+	charEnv, ok := env.(evaluator.CharacterEnvironment)
+	if !ok {
+		return nil
+	}
+	env.AddLife(-int(charEnv.GetHitVar("fall.damage")))
+	return nil
+}
+
+func handleHitFallSet(ctrl *cns.StateController, env Environment) error {
+	val := 0.0
+	if v, ok := ctrl.Params["value"]; ok {
+		if expr, err := evaluator.Parse(v); err == nil {
+			val = evaluator.Evaluate(expr, env)
+		} else {
+			val, _ = strconv.ParseFloat(v, 64)
+		}
+	}
+	env.SetHitFall(val != 0)
+	return nil
+}
+
+func handleHitFallVel(ctrl *cns.StateController, env Environment) error {
+	env.SetHitFallVel(true)
 	return nil
 }
 
@@ -874,6 +1023,16 @@ func handleRemoveExplod(ctrl *cns.StateController, env Environment) error {
 		id, _ = strconv.Atoi(v)
 	}
 	env.RemoveExplod(id)
+	return nil
+}
+
+func handleHitBy(ctrl *cns.StateController, env Environment) error {
+	env.HitBy(ctrl.Params)
+	return nil
+}
+
+func handleNotHitBy(ctrl *cns.StateController, env Environment) error {
+	env.NotHitBy(ctrl.Params)
 	return nil
 }
 

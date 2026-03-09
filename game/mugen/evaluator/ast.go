@@ -73,3 +73,23 @@ func (c *Call) String() string {
 	}
 	return fmt.Sprintf("%s(%s)", c.Name, args)
 }
+
+// Interval represents a range in MUGEN, e.g. [a, b] or (a, b]
+type Interval struct {
+	Left     Expression
+	Right    Expression
+	LeftInc  bool
+	RightInc bool
+}
+
+func (i *Interval) String() string {
+	l := "("
+	if i.LeftInc {
+		l = "["
+	}
+	r := ")"
+	if i.RightInc {
+		r = "]"
+	}
+	return fmt.Sprintf("%s%s, %s%s", l, i.Left.String(), i.Right.String(), r)
+}

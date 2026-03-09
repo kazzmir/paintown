@@ -35,6 +35,20 @@ func (g *Game) Update() error {
 		return ebiten.Termination
 	}
 
+	if ebiten.IsKeyPressed(ebiten.KeyR) {
+		g.p1.Character.ChangeState(0, 0, -1)
+		g.p1.Character.Life = 1000
+		g.p1.Character.X = -50
+		g.p1.Character.Y = 0
+		g.p1.Character.Facing = 1
+
+		g.p2.Character.ChangeState(0, 0, -1)
+		g.p2.Character.Life = 1000
+		g.p2.Character.X = 50
+		g.p2.Character.Y = 0
+		g.p2.Character.Facing = -1
+	}
+
 	// Update stage (animations)
 	if g.stage != nil {
 		g.stage.Update()
@@ -125,16 +139,22 @@ func (g *Game) Draw(screen *ebiten.Image) {
 				sY = 1
 			}
 
+			drawRectOutline := func(screen *ebiten.Image, rx, ry, rw, rh float64, clr color.Color) {
+				ebitenutil.DrawLine(screen, rx, ry, rx+rw, ry, clr)       // Top
+				ebitenutil.DrawLine(screen, rx, ry+rh, rx+rw, ry+rh, clr) // Bottom
+				ebitenutil.DrawLine(screen, rx, ry, rx, ry+rh, clr)       // Left
+				ebitenutil.DrawLine(screen, rx+rw, ry, rx+rw, ry+rh, clr) // Right
+			}
+
 			// Draw Clsn2 (Hurtboxes) in Green
 			for _, b := range el.Clsn2 {
 				x1, y1, x2, y2 := character.BoxToWorld(b, p.Character.X, p.Character.Y, p.Character.Facing, sX, sY)
-				// y1-p.Character.Y is the local Y offset of the box from the character axis
-				ebitenutil.DrawRect(screen, 160+x1-g.camX, screenY+(y1-p.Character.Y), x2-x1, y2-y1, color.RGBA{0, 255, 0, 180})
+				drawRectOutline(screen, 160+x1-g.camX, screenY+(y1-p.Character.Y), x2-x1, y2-y1, color.RGBA{0, 255, 0, 180})
 			}
 			// Draw Clsn1 (Hitboxes) in Red
 			for _, b := range el.Clsn1 {
 				x1, y1, x2, y2 := character.BoxToWorld(b, p.Character.X, p.Character.Y, p.Character.Facing, sX, sY)
-				ebitenutil.DrawRect(screen, 160+x1-g.camX, screenY+(y1-p.Character.Y), x2-x1, y2-y1, color.RGBA{255, 0, 0, 220})
+				drawRectOutline(screen, 160+x1-g.camX, screenY+(y1-p.Character.Y), x2-x1, y2-y1, color.RGBA{255, 0, 0, 220})
 			}
 		}
 	}
