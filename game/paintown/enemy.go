@@ -38,6 +38,7 @@ type Enemy struct {
     Animations map[string]*Animation
     Attacks []*Animation
     Facing Facing
+    Attack AnimationAttack
 }
 
 func loadAnimations(definition *CharacterDefinition, factory *ObjectFactory) (map[string]*Animation, error) {
@@ -140,7 +141,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         }
     }
 
-    return &Enemy{
+    enemy := &Enemy{
         Attacks: attacks,
         Character: &definition,
         Animations: animations,
@@ -148,7 +149,13 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         Facing: FacingLeft,
         X: float64(object.Coords.X),
         Z: float64(object.Coords.Y),
-    }, nil
+    }
+
+    for _, animation := range animations {
+        animation.Owner = enemy
+    }
+
+    return enemy, nil
 }
 
 type PlayerInfo interface {
@@ -160,11 +167,33 @@ func abs(x float64) float64 {
     return max(x, -x)
 }
 
+func (enemy *Enemy) GetFacing() Facing {
+    return enemy.Facing
+}
+
+func (enemy *Enemy) SetFacing(facing Facing) {
+    enemy.Facing = facing
+}
+
 func (enemy *Enemy) GetAttacks() []*Animation {
     return enemy.Attacks
 }
 
-func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
+func (enemy *Enemy) SetAttack(attack AnimationAttack) {
+    enemy.Attack = attack
+}
+
+func (enemy *Enemy) SetTrail(generate int, length int) {
+    // TODO
+}
+
+func (enemy *Enemy) Move(x int, y int, z int) {
+    enemy.X += float64(x)
+    enemy.Y += float64(y)
+    enemy.Z += float64(z)
+}
+
+func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
     if enemy.State == EnemyStateAttacking {
         return
@@ -270,7 +299,7 @@ func (enemy *Enemy) Move(level *Level, playerInfo PlayerInfo) {
 }
 
 func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
-    enemy.Move(level, playerInfo)
+    enemy.UpdateState(level, playerInfo)
 
     if enemy.X < playerInfo.GetX() {
         enemy.Facing = FacingRight

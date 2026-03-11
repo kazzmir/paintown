@@ -162,6 +162,18 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             }
             screen.DrawImage(animation.CurrentFrame(), &options)
         }
+
+        if !playerState.Attack.IsEmpty() {
+            x1, y1 := options.GeoM.Apply(float64(playerState.Attack.X1), float64(playerState.Attack.Y1))
+            x2, y2 := options.GeoM.Apply(float64(playerState.Attack.X2), float64(playerState.Attack.Y2))
+
+            x1, x2 = min(x1, x2), max(x1, x2)
+            y1, y2 = min(y1, y2), max(y1, y2)
+
+            // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
+
+            vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{R:255, A:255}, false)
+        }
     }
 
     type Drawable struct {

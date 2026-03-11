@@ -57,6 +57,7 @@ type InputState struct {
 
 type AnimationOwner interface {
     Move(x int, y int, z int)
+    SetAttack(attack AnimationAttack)
     GetFacing() Facing
     SetFacing(facing Facing)
     SetTrail(generate int, length int)
@@ -71,8 +72,13 @@ type AnimationAttack struct {
     Damage float64
 }
 
+func (attack *AnimationAttack) IsEmpty() bool {
+    return attack.X1 == 0 && attack.Y1 == 0 && attack.X2 == 0 && attack.Y2 == 0
+}
+
 type Animation struct {
     Name string
+    Type string
     Frame *ebiten.Image
     Events []AnimationEvent
     CurrentEvent int
@@ -92,19 +98,18 @@ type Animation struct {
     CurrentDelay int
 
     Owner AnimationOwner
-    Attacks []AnimationAttack
 }
 
-func MakeAnimation(name string, events []AnimationEvent, keys []InputKey, sequence string, status string, attacks []AnimationAttack) *Animation {
+func MakeAnimation(name string, animationType string, events []AnimationEvent, keys []InputKey, sequence string, status string) *Animation {
     return &Animation{
         Name: name,
+        Type: animationType,
         Keys: keys,
         KeyPresses: make([]uint64, len(keys)),
         Events: events,
         Sequence: sequence,
         Status: status,
         Delay: 1, // set delay to something non-zero to prevent immediately looping through all events
-        Attacks: attacks,
     }
 }
 
@@ -119,7 +124,7 @@ func (animation *Animation) Clone() *Animation {
 }
 
 func (animation *Animation) HasAttack() bool {
-    return len(animation.Attacks) > 0
+    return animation.Type == "attack"
 }
 
 func (animation *Animation) GetRange() int {
@@ -160,6 +165,9 @@ func (animation *Animation) Update() bool {
             if animation.CurrentEvent >= len(animation.Events) {
                 animation.CurrentEvent = 0
                 finished = true
+
+                // always reset attack
+                animation.Owner.SetAttack(AnimationAttack{})
             }
 
             // looped without setting delay, this would have been an infinite loop
@@ -192,6 +200,16 @@ type AnimationEventDelay struct {
 
 func (delayEvent *AnimationEventDelay) Update(animation *Animation) {
     animation.Delay = int(delayEvent.Delay)
+}
+
+type AnimationEventAttack struct {
+    Attack AnimationAttack
+}
+
+func (attackEvent *AnimationEventAttack) Update(animation *Animation) {
+    // log.Printf("set attack to %+v", attackEvent.Attack)
+    owner := animation.Owner
+    owner.SetAttack(attackEvent.Attack)
 }
 
 type AnimationEventOffset struct {
@@ -311,7 +329,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
     var status string
     var rangeValue int = 0
     var keys []InputKey
-    var attacks []AnimationAttack
+    var type_ string
     for _, child := range definition.Children {
         switch strings.ToLower(child.Name) {
             case "name":
@@ -343,7 +361,13 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                     }
                 }
             case "attack":
-                attacks = append(attacks, parseAttack(child))
+                box := child.GetChild("box")
+                if box != nil {
+                    events = append(events, &AnimationEventAttack{Attack: parseAttack(box)})
+                } else {
+                    events = append(events, &AnimationEventAttack{Attack: parseAttack(child)})
+                }
+
             case "range":
                 v, ok := child.GetInt(0)
                 if ok {
@@ -354,8 +378,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
             case "sequence":
                 sequence = child.GetValue(0)
             case "type":
-                // log.Printf("Handle 'type'")
-                // attacks will have an (attack) event, so we can just ignore the type for now
+                type_ = child.GetValue(0)
             case "keys":
                 for _, key := range child.Children {
                     input := keyFromString(key.Name)
@@ -412,7 +435,7 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
         }
     }
 
-    out := MakeAnimation(name, events, keys, sequence, status, attacks)
+    out := MakeAnimation(name, type_, events, keys, sequence, status)
     out.Range = rangeValue
 
     return out, nil
@@ -523,11 +546,17 @@ type PlayerState struct {
     NextAnimation *Animation
     NextAnimationTime uint64
 
+    Attack AnimationAttack
+
     TrailActive bool
     TrailGenerate int
     TrailLength int
 
     Trails []*Trail
+}
+
+func (playerState *PlayerState) SetAttack(attack AnimationAttack) {
+    playerState.Attack = attack
 }
 
 func (playerState *PlayerState) GetX() float64 {
