@@ -28,6 +28,7 @@ type Enemy struct {
     X float64
     Z float64
     Y float64
+    Vy float64
 
     State EnemyState
     FallenCount int
@@ -198,6 +199,17 @@ func (enemy *Enemy) Move(x int, y int, z int) {
     enemy.Z += float64(z)
 }
 
+func (enemy *Enemy) DoFall() {
+    enemy.State = EnemyStateFalling
+    enemy.Y = 10
+    enemy.Vy = 2
+    fall, ok := enemy.Animations["fall"]
+    if ok {
+        enemy.CurrentAnimation = fall
+        enemy.CurrentAnimation.Reset()
+    }
+}
+
 func (enemy *Enemy) HitBy(attack AnimationAttack) bool {
     frame := enemy.CurrentAnimation.CurrentFrame()
 
@@ -222,6 +234,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
     if enemy.State == EnemyStateFallen {
         if enemy.FallenCount > 0 {
             enemy.FallenCount -= 1
+            return
         } else {
             enemy.State = EnemyStateRise
             rise, ok := enemy.Animations["rise"]
@@ -238,13 +251,15 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
     }
 
     if enemy.State == EnemyStateFalling {
-        enemy.Y -= 1
+        enemy.Y += enemy.Vy
+        enemy.Vy -= 0.08
         if enemy.Y < 0 {
             enemy.Y = 0
             enemy.State = EnemyStateFallen
             // stay on ground for a while
-            enemy.FallenCount = 30
+            enemy.FallenCount = 90
         }
+        return
     }
 
     // if near the player, then initiate an attack
@@ -321,15 +336,23 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
     enemy.UpdateState(level, playerInfo)
 
-    if enemy.X < playerInfo.GetX() {
-        enemy.Facing = FacingRight
-    }
-    if enemy.X > playerInfo.GetX() {
-        enemy.Facing = FacingLeft
+    switch enemy.State {
+        case EnemyStateFalling, EnemyStateFallen, EnemyStateRise:
+        default:
+            if enemy.X < playerInfo.GetX() {
+                enemy.Facing = FacingRight
+            }
+            if enemy.X > playerInfo.GetX() {
+                enemy.Facing = FacingLeft
+            }
     }
 
     if enemy.CurrentAnimation != nil {
-        if enemy.CurrentAnimation.Update() {
+        loopAnimation := true
+        if enemy.State == EnemyStateFallen || enemy.State == EnemyStateFalling {
+            loopAnimation = false
+        }
+        if enemy.CurrentAnimation.Update(loopAnimation) {
             if enemy.State == EnemyStateAttacking || enemy.State == EnemyStateRise {
                 enemy.State = EnemyStateIdle
             }

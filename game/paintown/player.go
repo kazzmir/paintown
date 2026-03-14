@@ -154,12 +154,12 @@ func (animation *Animation) Reset() {
 }
 
 // returns true if the animation reaches the end of its events and loops back to the beginning
-func (animation *Animation) Update() bool {
+func (animation *Animation) Update(loop bool) bool {
     if animation.CurrentDelay > 0 {
         animation.CurrentDelay -= 1
         return false
     } else {
-        if len(animation.Events) == 0 {
+        if len(animation.Events) == 0 || animation.CurrentEvent >= len(animation.Events) {
             return true
         }
         now := animation.CurrentEvent
@@ -167,7 +167,7 @@ func (animation *Animation) Update() bool {
         for animation.CurrentDelay == 0 {
             animation.Events[animation.CurrentEvent].Update(animation)
             animation.CurrentEvent += 1
-            if animation.CurrentEvent >= len(animation.Events) {
+            if animation.CurrentEvent >= len(animation.Events) && loop {
                 animation.CurrentEvent = 0
                 finished = true
 
@@ -892,7 +892,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     animation := playerState.CurrentAnimation()
 
     if animation != nil {
-        if animation.Update() {
+        if animation.Update(true) {
             if playerState.Status == PlayerJump {
                 playerState.ShowAnimation = nil
             } else if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
@@ -906,7 +906,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                         playerState.NextAnimation = nil
                         if playerState.ShowAnimation != nil {
                             playerState.ShowAnimation.Reset()
-                            playerState.ShowAnimation.Update()
+                            playerState.ShowAnimation.Update(true)
                         }
                     }
                 }

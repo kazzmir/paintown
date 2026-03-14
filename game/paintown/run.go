@@ -330,7 +330,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             for _, enemy := range enemies {
                 if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit() {
                     if enemy.HitBy(playerState.Attack) {
-                        enemy.State = EnemyStateFalling
+                        enemy.DoFall()
                         log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
                     }
@@ -385,7 +385,7 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
                         log.Printf("Error loading idle animation for player '%v': %v", choice.Name(), err)
                     } else {
                         animations[player.Definition.Name] = idle
-                        idle.Update()
+                        idle.Update(true)
                     }
                 }
             }
@@ -499,7 +499,7 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
 
         animation := animations[allPlayers[currentChoice].Definition.Name]
 
-        animation.Update()
+        animation.Update(true)
 
         err := yield()
         if err != nil {
