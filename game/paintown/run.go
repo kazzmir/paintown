@@ -332,6 +332,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                     if enemy.HitBy(playerState.Attack) {
                         enemy.State = EnemyStateFalling
                         log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
+                        // create hit projectile, flash
                     }
                 }
             }
