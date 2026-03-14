@@ -4,6 +4,7 @@ import (
     "log"
     "strings"
     "strconv"
+    "image"
     "path/filepath"
     "fmt"
     "cmp"
@@ -70,6 +71,10 @@ type AnimationAttack struct {
     Y2 int
     Force float64
     Damage float64
+}
+
+func (attack *AnimationAttack) GetHitBox() image.Rectangle {
+    return image.Rect(attack.X1, attack.Y1, attack.X2, attack.Y2)
 }
 
 func (attack *AnimationAttack) IsEmpty() bool {

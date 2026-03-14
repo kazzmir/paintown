@@ -19,6 +19,8 @@ import (
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
+const Z_DISTANCE = 5
+
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
@@ -322,6 +324,17 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         if playerState.X > levelLimit {
             playerState.X = levelLimit
+        }
+
+        if !playerState.Attack.IsEmpty() {
+            for _, enemy := range enemies {
+                if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit() {
+                    if enemy.HitBy(playerState.Attack) {
+                        enemy.State = EnemyStateFalling
+                        log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
+                    }
+                }
+            }
         }
 
         if playerState.X - cameraX < (data.ScreenWidth/2) / 4 {

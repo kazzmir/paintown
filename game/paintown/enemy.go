@@ -3,6 +3,7 @@ package paintown
 import (
     "log"
     "fmt"
+    "image"
     "math/rand/v2"
     "path/filepath"
     "strings"
@@ -167,6 +168,10 @@ func abs(x float64) float64 {
     return max(x, -x)
 }
 
+func (enemy *Enemy) CanBeHit() bool {
+    return enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
+}
+
 func (enemy *Enemy) GetFacing() Facing {
     return enemy.Facing
 }
@@ -191,6 +196,21 @@ func (enemy *Enemy) Move(x int, y int, z int) {
     enemy.X += float64(x)
     enemy.Y += float64(y)
     enemy.Z += float64(z)
+}
+
+func (enemy *Enemy) HitBy(attack AnimationAttack) bool {
+    frame := enemy.CurrentAnimation.CurrentFrame()
+
+    x1 := enemy.X - float64(frame.Bounds().Dx()) / 2
+    y1 := enemy.Z - float64(frame.Bounds().Dy())
+
+    x2 := x1 + float64(frame.Bounds().Dx())
+    y2 := y1 + float64(frame.Bounds().Dy())
+
+    r1 := image.Rect(int(x1), int(y1), int(x2), int(y2))
+    r2 := attack.GetHitBox()
+
+    return r1.Overlaps(r2)
 }
 
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
