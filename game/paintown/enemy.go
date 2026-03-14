@@ -29,6 +29,7 @@ type Enemy struct {
     Z float64
     Y float64
     Vy float64
+    Vx float64
 
     State EnemyState
     FallenCount int
@@ -199,10 +200,11 @@ func (enemy *Enemy) Move(x int, y int, z int) {
     enemy.Z += float64(z)
 }
 
-func (enemy *Enemy) DoFall() {
+func (enemy *Enemy) DoFall(force float64) {
     enemy.State = EnemyStateFalling
     enemy.Y = 10
     enemy.Vy = 2
+    enemy.Vx = force
     fall, ok := enemy.Animations["fall"]
     if ok {
         enemy.CurrentAnimation = fall
@@ -252,6 +254,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
     if enemy.State == EnemyStateFalling {
         enemy.Y += enemy.Vy
+        enemy.X += enemy.Vx
         enemy.Vy -= 0.08
         if enemy.Y < 0 {
             enemy.Y = 0
