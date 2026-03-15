@@ -20,6 +20,9 @@ type Engine struct {
     Character paintown.CharacterDefinition
     Animation *paintown.Animation
 
+    TestImage *ebiten.Image
+    TestCollision *paintown.Collision
+
     Init sync.Once
 }
 
@@ -32,14 +35,21 @@ func MakeEngine(character paintown.CharacterDefinition) *Engine {
 
     idle.Update(true)
 
+    testImage := ebiten.NewImage(32, 32)
+    testImage.Fill(color.RGBA{})
+    vector.FillRect(testImage, 10, 10, 2, 2, color.RGBA{R: 255, A: 255}, false)
+
     return &Engine{
         Character: character,
         Animation: idle,
+        TestImage: testImage,
     }
 }
 
 func (engine *Engine) Update() error {
     engine.Init.Do(func() {
+        engine.TestCollision = paintown.MakeCollision(engine.TestImage)
+
         log.Printf("Initialize collision")
         engine.Animation.InitializeCollision()
         log.Printf("Done")
@@ -58,6 +68,7 @@ func (engine *Engine) Update() error {
 }
 
 func (engine *Engine) Draw(screen *ebiten.Image) {
+
     frame := engine.Animation.CurrentFrame()
 
     if frame == nil {
@@ -81,6 +92,26 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
             vector.StrokeRect(screen, x1, y1, x2-x1, y2-y1, 1, color.RGBA{B: 255, A: 200}, false)
         }
     }
+
+    /*
+    var options ebiten.DrawImageOptions
+    options.GeoM.Translate(float64((ScreenWidth - engine.TestImage.Bounds().Dx()) / 2), float64((ScreenHeight - engine.TestImage.Bounds().Dy()) / 2))
+
+    screen.DrawImage(engine.TestImage, &options)
+
+    collision := engine.TestCollision
+    if collision != nil {
+        mx, my := options.GeoM.Apply(0, 0)
+
+        for _, box := range collision.Boxes {
+            x1 := float32(box.Min.X) + float32(mx)
+            y1 := float32(box.Min.Y) + float32(my)
+            x2 := float32(box.Max.X) + float32(mx)
+            y2 := float32(box.Max.Y) + float32(my)
+            vector.StrokeRect(screen, x1, y1, x2-x1, y2-y1, 1, color.RGBA{B: 255, A: 200}, false)
+        }
+    }
+    */
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
