@@ -6,7 +6,7 @@ import (
 )
 
 type Flash struct {
-    X, Y float64
+    X, Y, Z float64
     Animation *Animation
 }
 
@@ -14,8 +14,8 @@ type FlashFactory struct {
     Animation *Animation
 }
 
-func (factory *FlashFactory) MakeFlash(x, y float64) *Flash {
-    return &Flash{X: x, Y: y, Animation: factory.Animation.Clone()}
+func (factory *FlashFactory) MakeFlash(x, y, z float64) *Flash {
+    return &Flash{X: x, Y: y, Z: z, Animation: factory.Animation.Clone()}
 }
 
 func MakeFlashFactory() (*FlashFactory, error) {
@@ -25,7 +25,11 @@ func MakeFlashFactory() (*FlashFactory, error) {
         return nil, err
     }
 
-    animation, err := MakeAnimationFromDefinition("misc/flash", raw)
+    // sexp should be (effect (anim ...))
+
+    animSexp := raw.GetChild("anim")
+
+    animation, err := MakeAnimationFromDefinition("misc/flash", animSexp)
     if err != nil {
         return nil, err
     }

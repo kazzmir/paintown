@@ -173,7 +173,7 @@ func tokenize(reader io.Reader) []string {
                 tokens = append(tokens, "(")
             case char == ')':
                 tokens = append(tokens, ")")
-            case char == ';':
+            case char == ';' || char == '#':
                 for char != '\n' {
                     char, err = byteReader.ReadByte()
                     if err != nil {

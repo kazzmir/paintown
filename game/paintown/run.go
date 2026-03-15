@@ -183,6 +183,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         Draw func()
     }
 
+    var flashes []*Flash
+
     var objects []Drawable
     buffer := ebiten.NewImage(data.ScreenWidth / 2, data.ScreenHeight / 2)
     drawer := func(screen *ebiten.Image) {
@@ -199,6 +201,19 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                     Z: enemy.Z,
                 })
             }
+        }
+
+        for _, flash := range flashes {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    var options ebiten.DrawImageOptions
+                    options.GeoM.Translate(float64(flash.X) - cameraX, float64(flash.Z) - float64(flash.Y))
+                    bounds := flash.Animation.CurrentFrame().Bounds()
+                    options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                    buffer.DrawImage(flash.Animation.CurrentFrame(), &options)
+                },
+                Z: float64(flash.Z),
+            })
         }
 
         objects = append(objects, Drawable{
@@ -299,6 +314,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
     cameraSpeed := float64(1)
 
+    flashFactory, err := MakeFlashFactory()
+    if err != nil {
+        return fmt.Errorf("Error creating flash factory: %v", err)
+    }
+
     // enemies = append(enemies, &Enemy{})
 
     // avoid triggering moves immediately
@@ -339,9 +359,21 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         enemy.Hurt(playerState.AttackId, playerState.Attack.Damage, force)
                         log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
+
+                        flashes = append(flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
                     }
                 }
             }
+        }
+
+        if len(flashes) > 0 {
+            flashesOut := make([]*Flash, 0, len(flashes))
+            for _, flash := range flashes {
+                if !flash.Animation.Update(false) {
+                    flashesOut = append(flashesOut, flash)
+                }
+            }
+            flashes = flashesOut
         }
 
         if playerState.X - cameraX < (data.ScreenWidth/2) / 4 {
