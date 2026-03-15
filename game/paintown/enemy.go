@@ -22,6 +22,7 @@ const (
     EnemyStateFallen
     EnemyStateRise
     EnemyStatePain
+    EnemyStateDead
 )
 
 type Enemy struct {
@@ -230,8 +231,9 @@ func (enemy *Enemy) DoFall(force float64) {
 
 func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     enemy.LastAttacked = attackId
+    enemy.Health -= damage
     enemy.Pain += damage
-    log.Printf("Enemy hurt for %v damage, pain is now %v", damage, enemy.Pain)
+    log.Printf("Enemy hurt for %v damage, pain is now %v. Health is %v", damage, enemy.Pain, enemy.Health)
 
     enemy.State = EnemyStatePain
     painAnimation, ok := enemy.Animations["pain"]
@@ -240,9 +242,22 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
         enemy.CurrentAnimation.Reset()
     }
 
-    if enemy.Pain >= enemy.PainThreshold {
+    if enemy.Pain >= enemy.PainThreshold || enemy.Health <= 0 {
         enemy.DoFall(force)
     }
+}
+
+func (enemy *Enemy) IsDead() bool {
+    return enemy.State == EnemyStateDead
+}
+
+// enemy blinks when they are dead and about to go away
+func (enemy *Enemy) Blinking() bool {
+    if enemy.Health <= 0 && enemy.State == EnemyStateFallen {
+        return (enemy.FallenCount / 10) % 2 == 0
+    }
+
+    return false
 }
 
 func (enemy *Enemy) HitBy(attack AnimationAttack) bool {
@@ -268,11 +283,15 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
         return
     }
 
+    if enemy.State == EnemyStateDead {
+        return
+    }
+
     if enemy.State == EnemyStateFallen {
         if enemy.FallenCount > 0 {
             enemy.FallenCount -= 1
             return
-        } else {
+        } else if enemy.Health > 0 {
             enemy.State = EnemyStateRise
             rise, ok := enemy.Animations["rise"]
             if ok {
@@ -280,6 +299,9 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
             } else {
                 enemy.State = EnemyStateIdle
             }
+        } else {
+            enemy.State = EnemyStateDead
+            return
         }
     }
 

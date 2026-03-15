@@ -493,7 +493,7 @@ type CharacterDefinition struct {
 }
 
 func (definition *CharacterDefinition) GetHealth() float64 {
-    v, _ := sexp.ReadValue[float64](definition.SExpr, "character/health", 0)
+    v, _ := sexp.ReadValue[float64](definition.SExpr, "health", 0)
     return v
 }
 

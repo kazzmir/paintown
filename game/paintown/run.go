@@ -191,12 +191,14 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         objects = objects[:0]
         for _, enemy := range enemies {
-            objects = append(objects, Drawable{
-                Draw: func() {
-                    drawEnemy(enemy, buffer)
-                },
-                Z: enemy.Z,
-            })
+            if !enemy.Blinking() {
+                objects = append(objects, Drawable{
+                    Draw: func() {
+                        drawEnemy(enemy, buffer)
+                    },
+                    Z: enemy.Z,
+                })
+            }
         }
 
         objects = append(objects, Drawable{
@@ -334,7 +336,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         if playerState.Facing == FacingLeft {
                             force = -force
                         }
-                        enemy.Hurt(playerState.AttackId, playerState.Attack.Damage, -force)
+                        enemy.Hurt(playerState.AttackId, playerState.Attack.Damage, force)
                         log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
                     }
@@ -355,9 +357,15 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             cameraX = max(0, levelLimit - data.ScreenWidth / 2)
         }
 
+        outEnemies := make([]*Enemy, 0, len(enemies))
         for _, enemy := range enemies {
             enemy.Update(level, &playerState)
+            if !enemy.IsDead() {
+                outEnemies = append(outEnemies, enemy)
+            }
         }
+
+        enemies = outEnemies
 
         err := yield()
         if err != nil {
