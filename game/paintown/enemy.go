@@ -21,6 +21,7 @@ const (
     EnemyStateFalling
     EnemyStateFallen
     EnemyStateRise
+    EnemyStatePain
 )
 
 type Enemy struct {
@@ -163,7 +164,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         Facing: FacingLeft,
         Health: max(1, definition.GetHealth()),
         // FIXME: make this a configuration option in the character definition
-        PainThreshold: 5,
+        PainThreshold: 7,
         X: float64(object.Coords.X),
         Z: float64(object.Coords.Y),
     }
@@ -231,6 +232,14 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     enemy.LastAttacked = attackId
     enemy.Pain += damage
     log.Printf("Enemy hurt for %v damage, pain is now %v", damage, enemy.Pain)
+
+    enemy.State = EnemyStatePain
+    painAnimation, ok := enemy.Animations["pain"]
+    if ok {
+        enemy.CurrentAnimation = painAnimation
+        enemy.CurrentAnimation.Reset()
+    }
+
     if enemy.Pain >= enemy.PainThreshold {
         enemy.DoFall(force)
     }
@@ -275,6 +284,10 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
     }
 
     if enemy.State == EnemyStateRise {
+        return
+    }
+
+    if enemy.State == EnemyStatePain {
         return
     }
 
@@ -366,7 +379,7 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
     enemy.UpdateState(level, playerInfo)
 
     switch enemy.State {
-        case EnemyStateFalling, EnemyStateFallen, EnemyStateRise:
+        case EnemyStateFalling, EnemyStateFallen, EnemyStateRise, EnemyStatePain:
         default:
             if enemy.X < playerInfo.GetX() {
                 enemy.Facing = FacingRight
@@ -382,7 +395,7 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
             loopAnimation = false
         }
         if enemy.CurrentAnimation.Update(loopAnimation) {
-            if enemy.State == EnemyStateAttacking || enemy.State == EnemyStateRise {
+            if enemy.State == EnemyStateAttacking || enemy.State == EnemyStateRise || enemy.State == EnemyStatePain {
                 enemy.State = EnemyStateIdle
             }
         }
