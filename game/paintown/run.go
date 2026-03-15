@@ -328,13 +328,13 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         if !playerState.Attack.IsEmpty() {
             for _, enemy := range enemies {
-                if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit() {
+                if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit(playerState.AttackId) {
                     if enemy.HitBy(playerState.Attack) {
                         force := float64(playerState.Attack.Force)
                         if playerState.Facing == FacingLeft {
                             force = -force
                         }
-                        enemy.DoFall(force)
+                        enemy.Hurt(playerState.AttackId, playerState.Attack.Damage, -force)
                         log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
                     }

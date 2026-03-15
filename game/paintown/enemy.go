@@ -31,8 +31,19 @@ type Enemy struct {
     Vy float64
     Vx float64
 
+    Health float64
+
+    // each time the enemy is hurt, add to Pain. When Pain reaches a certain threshold, the enemy will be knocked back and fall down.
+    // Pain will go down over time as well
+    Pain float64
+    PainThreshold float64
+
     State EnemyState
     FallenCount int
+
+    // each attack that hits the enemy has an id that increments monotonically. the enemy
+    // cannot be hit by the same attack twice (unless the attack explicitly enables this)
+    LastAttacked uint64
 
     HasDestination bool
     DestX float64
@@ -150,6 +161,9 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         Animations: animations,
         CurrentAnimation: idle,
         Facing: FacingLeft,
+        Health: max(1, definition.GetHealth()),
+        // FIXME: make this a configuration option in the character definition
+        PainThreshold: 5,
         X: float64(object.Coords.X),
         Z: float64(object.Coords.Y),
     }
@@ -170,8 +184,8 @@ func abs(x float64) float64 {
     return max(x, -x)
 }
 
-func (enemy *Enemy) CanBeHit() bool {
-    return enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
+func (enemy *Enemy) CanBeHit(attack uint64) bool {
+    return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
 }
 
 func (enemy *Enemy) GetFacing() Facing {
@@ -201,6 +215,7 @@ func (enemy *Enemy) Move(x int, y int, z int) {
 }
 
 func (enemy *Enemy) DoFall(force float64) {
+    enemy.Pain = 0
     enemy.State = EnemyStateFalling
     enemy.Y = 10
     enemy.Vy = 2
@@ -209,6 +224,15 @@ func (enemy *Enemy) DoFall(force float64) {
     if ok {
         enemy.CurrentAnimation = fall
         enemy.CurrentAnimation.Reset()
+    }
+}
+
+func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
+    enemy.LastAttacked = attackId
+    enemy.Pain += damage
+    log.Printf("Enemy hurt for %v damage, pain is now %v", damage, enemy.Pain)
+    if enemy.Pain >= enemy.PainThreshold {
+        enemy.DoFall(force)
     }
 }
 
@@ -228,6 +252,8 @@ func (enemy *Enemy) HitBy(attack AnimationAttack) bool {
 }
 
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
+
+    enemy.Pain = max(0, enemy.Pain - 0.1)
 
     if enemy.State == EnemyStateAttacking {
         return

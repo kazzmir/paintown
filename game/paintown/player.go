@@ -492,6 +492,11 @@ type CharacterDefinition struct {
     SExpr *sexp.SExpr
 }
 
+func (definition *CharacterDefinition) GetHealth() float64 {
+    v, _ := sexp.ReadValue[float64](definition.SExpr, "character/health", 0)
+    return v
+}
+
 func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
     return definition.SExpr.FindAll(names...)
 }
@@ -547,6 +552,8 @@ type PlayerState struct {
     ShowAnimation *Animation
     Status PlayerStatus
     Facing Facing
+
+    AttackId uint64
 
     NextAnimation *Animation
     NextAnimationTime uint64
@@ -870,6 +877,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
 
     if playerState.Status == PlayerMove || playerState.Status == PlayerIdle || playerState.Status == PlayerJump {
         if nextAnimation != nil && playerState.ShowAnimation == nil {
+            playerState.AttackId += 1
             playerState.ShowAnimation = nextAnimation
             nextAnimation.Reset()
             playerState.TrailActive = false
@@ -901,6 +909,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                     playerState.ShowAnimation = nil
 
                     if counter - playerState.NextAnimationTime < 180 {
+                        playerState.AttackId += 1
                         playerState.ShowAnimation = nextAnimation
                         playerState.TrailActive = true
                         playerState.NextAnimation = nil
