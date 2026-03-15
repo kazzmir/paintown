@@ -128,3 +128,13 @@ func MakeCollision(input image.Image) *Collision {
     
     return &Collision{Boxes: boxes}
 }
+
+func (collision *Collision) Intersect(rect image.Rectangle) bool {
+    for _, box := range collision.Boxes {
+        if box.Overlaps(rect) {
+            return true
+        }
+    }
+
+    return false
+}

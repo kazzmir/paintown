@@ -192,7 +192,9 @@ func (animation *Animation) Update(loop bool) bool {
                 finished = true
 
                 // always reset attack
-                animation.Owner.SetAttack(AnimationAttack{})
+                if animation.Owner != nil {
+                    animation.Owner.SetAttack(AnimationAttack{})
+                }
             }
 
             // looped without setting delay, this would have been an infinite loop
