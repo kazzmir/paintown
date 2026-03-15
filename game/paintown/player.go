@@ -85,6 +85,9 @@ type Animation struct {
     Name string
     Type string
     Frame *ebiten.Image
+
+    Collision map[*ebiten.Image]*Collision
+
     Events []AnimationEvent
     CurrentEvent int
     Keys []InputKey
@@ -111,6 +114,7 @@ func MakeAnimation(name string, animationType string, events []AnimationEvent, k
         Type: animationType,
         Keys: keys,
         KeyPresses: make([]uint64, len(keys)),
+        Collision: make(map[*ebiten.Image]*Collision),
         Events: events,
         Sequence: sequence,
         Status: status,
@@ -140,6 +144,10 @@ func (animation *Animation) CurrentFrame() *ebiten.Image {
     return animation.Frame
 }
 
+func (animation *Animation) CurrentCollision() *Collision {
+    return animation.Collision[animation.Frame]
+}
+
 func (animation *Animation) GetOffsetX() int {
     return animation.OffsetX
 }
@@ -151,6 +159,18 @@ func (animation *Animation) GetOffsetY() int {
 func (animation *Animation) Reset() {
     animation.CurrentEvent = 0
     animation.CurrentDelay = 0
+}
+
+func (animation *Animation) InitializeCollision() {
+    collisionMap := make(map[*ebiten.Image]*Collision)
+
+    for _, event := range animation.Events {
+        if frameEvent, ok := event.(*AnimationEventFrame); ok {
+            collisionMap[frameEvent.Image] = MakeCollision(frameEvent.Image)
+        }
+    }
+
+    animation.Collision = collisionMap
 }
 
 // returns true if the animation reaches the end of its events and loops back to the beginning
