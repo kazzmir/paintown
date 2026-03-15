@@ -502,7 +502,7 @@ func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
 }
 
 // a definition file is a parentheses delimited set of values
-func loadDefinition(path string) (CharacterDefinition, error) {
+func LoadDefinition(path string) (CharacterDefinition, error) {
     raw, err := sexp.ReadSExpression(path)
     if err != nil {
         return CharacterDefinition{}, err
@@ -519,7 +519,7 @@ func MakePaintownPlayer(name string) (*PaintownCharacter, error) {
     path := data.DataPath("players/" + name)
 
     definitionPath := filepath.Join(path, name + ".txt")
-    definition, err := loadDefinition(definitionPath)
+    definition, err := LoadDefinition(definitionPath)
     if err != nil {
         return nil, err
     }

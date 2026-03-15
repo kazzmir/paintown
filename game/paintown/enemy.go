@@ -124,7 +124,7 @@ func (factory *ObjectFactory) LoadDefinition(path string) (CharacterDefinition, 
     definition, ok := factory.definitions[path]
     if !ok {
         var err error
-        definition, err = loadDefinition(path)
+        definition, err = LoadDefinition(path)
         if err != nil {
             return CharacterDefinition{}, err
         }
