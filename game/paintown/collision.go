@@ -145,6 +145,9 @@ func flipRect(r image.Rectangle) image.Rectangle {
     return image.Rect(-r.Max.X, r.Min.Y, -r.Min.X, r.Max.Y).Canon()
 }
 
+// x and y are the world coordinates of the center of the bottom of the collision box
+// rect is the rectangle to check for intersection with the collision boxes
+// flip is whether to flip the collision boxes horizontally
 func (collision *Collision) Intersect(x float64, y float64, rect image.Rectangle, flip bool) bool {
     center := image.Pt(-collision.width / 2, -collision.height)
 
@@ -166,7 +169,7 @@ func (collision *Collision) Intersect(x float64, y float64, rect image.Rectangle
             b2 = flipRect(b2)
         }
 
-        b2 = b2.Add(image.Pt(int(x), int(y)))
+        b2 = b2.Add(worldPoint)
 
         if b2.Overlaps(rect) {
             return true
