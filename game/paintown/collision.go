@@ -10,6 +10,8 @@ type Collision struct {
     Boxes []image.Rectangle
     width int
     height int
+
+    MainBox image.Rectangle
 }
 
 func MakeCollision(input image.Image) *Collision {
@@ -123,24 +125,50 @@ func MakeCollision(input image.Image) *Collision {
 
     // fmt.Printf("merged boxes in %v iterations\n", count)
 
+    mainBox := image.Rectangle{}
+
     var boxes []image.Rectangle
     for _, r := range grid {
         boxes = append(boxes, r)
+        mainBox = mainBox.Union(r)
     }
     
     return &Collision{
         Boxes: boxes,
         width: input.Bounds().Dx(),
         height: input.Bounds().Dy(),
+        MainBox: mainBox,
     }
 }
 
-func (collision *Collision) Intersect(x float64, y float64, rect image.Rectangle, flip bool) bool {
+func flipRect(r image.Rectangle) image.Rectangle {
+    return image.Rect(-r.Max.X, r.Min.Y, -r.Min.X, r.Max.Y).Canon()
+}
 
-    point := image.Pt(int(x) - collision.width / 2, int(y) - collision.height)
+func (collision *Collision) Intersect(x float64, y float64, rect image.Rectangle, flip bool) bool {
+    center := image.Pt(-collision.width / 2, -collision.height)
+
+    worldPoint := image.Pt(int(x), int(y))
+
+    main := collision.MainBox.Add(center)
+
+    if flip {
+        main = flipRect(main)
+    }
+
+    if !main.Add(worldPoint).Overlaps(rect) {
+        return false
+    }
 
     for _, box := range collision.Boxes {
-        if box.Add(point).Overlaps(rect) {
+        b2 := box.Add(center)
+        if flip {
+            b2 = flipRect(b2)
+        }
+
+        b2 = b2.Add(image.Pt(int(x), int(y)))
+
+        if b2.Overlaps(rect) {
             return true
         }
     }
