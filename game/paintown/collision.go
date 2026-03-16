@@ -8,6 +8,8 @@ import (
 // collision takes an image and creates an optimized set of bounding boxes that bound the non-transparent pixels in the image
 type Collision struct {
     Boxes []image.Rectangle
+    width int
+    height int
 }
 
 func MakeCollision(input image.Image) *Collision {
@@ -126,12 +128,19 @@ func MakeCollision(input image.Image) *Collision {
         boxes = append(boxes, r)
     }
     
-    return &Collision{Boxes: boxes}
+    return &Collision{
+        Boxes: boxes,
+        width: input.Bounds().Dx(),
+        height: input.Bounds().Dy(),
+    }
 }
 
-func (collision *Collision) Intersect(rect image.Rectangle) bool {
+func (collision *Collision) Intersect(x float64, y float64, rect image.Rectangle, flip bool) bool {
+
+    point := image.Pt(int(x) - collision.width / 2, int(y) - collision.height)
+
     for _, box := range collision.Boxes {
-        if box.Overlaps(rect) {
+        if box.Add(point).Overlaps(rect) {
             return true
         }
     }

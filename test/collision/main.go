@@ -4,11 +4,13 @@ import (
     "log"
     "os"
     "sync"
+    "image"
     "image/color"
 
     "github.com/kazzmir/paintown/game/paintown"
 
     "github.com/hajimehoshi/ebiten/v2"
+    "github.com/hajimehoshi/ebiten/v2/ebitenutil"
     "github.com/hajimehoshi/ebiten/v2/vector"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -21,6 +23,8 @@ type Engine struct {
     Animation *paintown.Animation
 
     Init sync.Once
+
+    Box image.Rectangle
 }
 
 func MakeEngine(character paintown.CharacterDefinition) *Engine {
@@ -35,6 +39,7 @@ func MakeEngine(character paintown.CharacterDefinition) *Engine {
     return &Engine{
         Character: character,
         Animation: idle,
+        Box: image.Rect(10, 10, 30, 30).Add(image.Pt(50, 50)),
     }
 }
 
@@ -64,6 +69,19 @@ func (engine *Engine) Update() error {
         }
     }
 
+    if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+        engine.Box = engine.Box.Add(image.Pt(-1, 0))
+    }
+    if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+        engine.Box = engine.Box.Add(image.Pt(1, 0))
+    }
+    if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
+        engine.Box = engine.Box.Add(image.Pt(0, -1))
+    }
+    if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
+        engine.Box = engine.Box.Add(image.Pt(0, 1))
+    }
+
     return nil
 }
 
@@ -76,7 +94,7 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
     }
 
     var options ebiten.DrawImageOptions
-    options.GeoM.Translate(float64((ScreenWidth - frame.Bounds().Dx()) / 2), float64((ScreenHeight - frame.Bounds().Dy()) / 2))
+    options.GeoM.Translate(float64((ScreenWidth / 2 - frame.Bounds().Dx() / 2)), float64((ScreenHeight - 50 - frame.Bounds().Dy())))
 
     screen.DrawImage(frame, &options)
 
@@ -91,7 +109,13 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
             y2 := float32(box.Max.Y) + float32(my)
             vector.StrokeRect(screen, x1, y1, x2-x1, y2-y1, 1, color.RGBA{B: 255, A: 200}, false)
         }
+
+        if collision.Intersect(mx + float64(frame.Bounds().Dx() / 2), my + float64(frame.Bounds().Dy()), engine.Box, false) {
+            ebitenutil.DebugPrint(screen, "Collision!")
+        }
     }
+
+    vector.StrokeRect(screen, float32(engine.Box.Min.X), float32(engine.Box.Min.Y), float32(engine.Box.Dx()), float32(engine.Box.Dy()), 1, color.RGBA{G: 255, A: 255}, false)
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
