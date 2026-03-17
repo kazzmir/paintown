@@ -109,6 +109,8 @@ func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animati
             return nil, err
         }
         useAnimation = loaded
+
+        useAnimation.InitializeCollision()
     }
 
     if useAnimation != nil {

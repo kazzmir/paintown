@@ -9,6 +9,7 @@ import (
     "fmt"
     "cmp"
     "slices"
+    "sync"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
     "github.com/kazzmir/paintown/game/graphics"
@@ -164,11 +165,22 @@ func (animation *Animation) Reset() {
 func (animation *Animation) InitializeCollision() {
     collisionMap := make(map[*ebiten.Image]*Collision)
 
+    var group sync.WaitGroup
+    var lock sync.Mutex
+
     for _, event := range animation.Events {
         if frameEvent, ok := event.(*AnimationEventFrame); ok {
-            collisionMap[frameEvent.Image] = MakeCollision(frameEvent.Image)
+            group.Go(func() {
+                collision := MakeCollision(frameEvent.Image)
+
+                lock.Lock()
+                collisionMap[frameEvent.Image] = collision
+                lock.Unlock()
+            })
         }
     }
+
+    group.Wait()
 
     animation.Collision = collisionMap
 }
