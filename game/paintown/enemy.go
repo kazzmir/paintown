@@ -5,7 +5,7 @@ import (
     "fmt"
     "image"
     "math/rand/v2"
-    "path/filepath"
+    // "path/filepath"
     "strings"
 
     "github.com/kazzmir/paintown/game/data"
@@ -66,7 +66,8 @@ func loadAnimations(definition *CharacterDefinition, factory *ObjectFactory) (ma
     for _, animation := range animations {
         animationName := animation.GetChild("name")
         name := animationName.GetValue(0)
-        base := filepath.Join("chars", strings.ToLower(definition.Name), name)
+        // base := filepath.Join("chars", strings.ToLower(definition.Name), name)
+        base := "."
         animation, err := factory.MakeAnimationFromDefinition(strings.ToLower(definition.Name), name, base, animation)
         if err == nil {
             out[name] = animation
