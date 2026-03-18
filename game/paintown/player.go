@@ -484,6 +484,15 @@ type PaintownCharacter struct {
     Definition CharacterDefinition
 }
 
+func (character *PaintownCharacter) GetHitSound() string {
+    hit := character.Definition.SExpr.GetChild("hit-sound")
+    if hit != nil {
+        return hit.GetValue(0)
+    }
+
+    return ""
+}
+
 func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, error) {
     animations := character.Definition.FindAll("character", "anim")
 
@@ -588,6 +597,8 @@ type PlayerState struct {
     Facing Facing
 
     AttackId uint64
+
+    HitSound string
 
     NextAnimation *Animation
     NextAnimationTime uint64

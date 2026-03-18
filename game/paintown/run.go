@@ -15,13 +15,14 @@ import (
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
+    audiolib "github.com/hajimehoshi/ebiten/v2/audio"
     "github.com/hajimehoshi/ebiten/v2/vector"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const Z_DISTANCE = 5
 
-func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string) error {
+func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
@@ -40,6 +41,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         Z: float64(level.ZMinimum + level.ZMaximum) / 2,
         Status: PlayerIdle,
         Animations: animations,
+        HitSound: player.GetHitSound(),
     }
 
     for _, animation := range playerState.Animations {
@@ -301,6 +303,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         return out
     }
 
+    audio := MakeAudioManager(audioContext)
+
     oldDrawer := setDraw(drawer)
     defer setDraw(oldDrawer)
 
@@ -362,6 +366,17 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         // create hit projectile, flash
 
                         flashes = append(flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
+
+                        hitSound := playerState.HitSound
+                        if hitSound != "" {
+                            hitAudio, err := audio.LoadSound(hitSound)
+                            if err != nil {
+                                log.Printf("Error loading hit sound '%v': %v", hitSound, err)
+                            } else {
+                                hitAudio.Play()
+                            }
+                        }
+
                     }
                 }
             }

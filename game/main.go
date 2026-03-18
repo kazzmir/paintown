@@ -9,6 +9,7 @@ import (
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
+    "github.com/hajimehoshi/ebiten/v2/audio"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
@@ -18,7 +19,7 @@ type Engine struct {
     Drawer func(*ebiten.Image)
 }
 
-func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc) (func (yield coroutine.YieldFunc) error, error) {
+func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc, audioContext *audio.Context) (func (yield coroutine.YieldFunc) error, error) {
     backgroundPng, err := data.LoadPng("menu/paintown.png")
     if err != nil {
         return nil, err
@@ -48,7 +49,7 @@ func makeRunMenu(setDraw func(drawer data.DrawFunc) data.DrawFunc) (func (yield 
                     }
 
                     for i := range 10 {
-                        err = paintown.RunLevel(choosePlayer, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i + 1))
+                        err = paintown.RunLevel(choosePlayer, yield, setDraw, fmt.Sprintf("paintown/levels/%v.txt", i + 1), audioContext)
                         if err != nil {
                             return err
                         }
@@ -75,7 +76,9 @@ func MakeEngine() (*Engine, error) {
         return old
     }
 
-    menuLogic, err := makeRunMenu(setDraw)
+    audioContext := audio.NewContext(44100)
+
+    menuLogic, err := makeRunMenu(setDraw, audioContext)
 
     if err != nil {
         return nil, err

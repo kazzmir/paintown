@@ -17,7 +17,7 @@ type AudioManager struct {
     context *audiolib.Context
 }
 
-func NewAudioManager(context *audiolib.Context) *AudioManager {
+func MakeAudioManager(context *audiolib.Context) *AudioManager {
     return &AudioManager{
         context: context,
         sounds: make(map[string]*sync.Pool),
