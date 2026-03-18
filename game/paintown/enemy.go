@@ -43,6 +43,8 @@ type Enemy struct {
     State EnemyState
     FallenCount int
 
+    DieSound string
+
     // each attack that hits the enemy has an id that increments monotonically. the enemy
     // cannot be hit by the same attack twice (unless the attack explicitly enables this)
     LastAttacked uint64
@@ -171,6 +173,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         PainThreshold: 7,
         X: float64(object.Coords.X),
         Z: float64(object.Coords.Y),
+        DieSound: definition.GetDieSound(),
     }
 
     for _, animation := range animations {

@@ -484,15 +484,6 @@ type PaintownCharacter struct {
     Definition CharacterDefinition
 }
 
-func (character *PaintownCharacter) GetHitSound() string {
-    hit := character.Definition.SExpr.GetChild("hit-sound")
-    if hit != nil {
-        return hit.GetValue(0)
-    }
-
-    return ""
-}
-
 func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, error) {
     animations := character.Definition.FindAll("character", "anim")
 
@@ -542,6 +533,24 @@ func (definition *CharacterDefinition) GetHealth() float64 {
 
 func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
     return definition.SExpr.FindAll(names...)
+}
+
+func (definition *CharacterDefinition) GetHitSound() string {
+    hit := definition.SExpr.GetChild("hit-sound")
+    if hit != nil {
+        return hit.GetValue(0)
+    }
+
+    return ""
+}
+
+func (definition *CharacterDefinition) GetDieSound() string {
+    die := definition.SExpr.GetChild("die-sound")
+    if die != nil {
+        return die.GetValue(0)
+    }
+
+    return ""
 }
 
 // a definition file is a parentheses delimited set of values

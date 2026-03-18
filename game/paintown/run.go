@@ -41,7 +41,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         Z: float64(level.ZMinimum + level.ZMaximum) / 2,
         Status: PlayerIdle,
         Animations: animations,
-        HitSound: player.GetHitSound(),
+        HitSound: player.Definition.GetHitSound(),
     }
 
     for _, animation := range playerState.Animations {
@@ -377,6 +377,17 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                             }
                         }
 
+                        if enemy.Health <= 0 {
+                            dieSound := enemy.DieSound
+                            if dieSound != "" {
+                                dieAudio, err := audio.LoadSound(dieSound)
+                                if err != nil {
+                                    log.Printf("Error loading die sound '%v': %v", dieSound, err)
+                                } else {
+                                    dieAudio.Play()
+                                }
+                            }
+                        }
                     }
                 }
             }
