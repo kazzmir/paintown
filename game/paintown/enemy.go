@@ -3,6 +3,7 @@ package paintown
 import (
     "log"
     "fmt"
+    "image"
     "math/rand/v2"
     "path/filepath"
     "strings"
@@ -261,22 +262,9 @@ func (enemy *Enemy) Blinking() bool {
     return false
 }
 
-func (enemy *Enemy) HitBy(attack AnimationAttack) bool {
-    /*
-    frame := enemy.CurrentAnimation.CurrentFrame()
-
-    x1 := enemy.X - float64(frame.Bounds().Dx()) / 2
-    y1 := enemy.Z - float64(frame.Bounds().Dy())
-
-    x2 := x1 + float64(frame.Bounds().Dx())
-    y2 := y1 + float64(frame.Bounds().Dy())
-
-    r1 := image.Rect(int(x1), int(y1), int(x2), int(y2))
-    // r2 := attack.GetHitBox()
-
-    // return r1.Overlaps(r2)
-    */
-    return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X, enemy.Z + enemy.Y, attack.GetHitBox(), enemy.Facing == FacingLeft)
+func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
+    // FIXME: take offset into account
+    return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X, enemy.Z + enemy.Y, attackBox, enemy.Facing == FacingLeft)
 }
 
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {

@@ -159,6 +159,8 @@ func (collision *Collision) Intersect(x float64, y float64, rect image.Rectangle
         main = flipRect(main)
     }
 
+    // fmt.Printf("check collision between main %v and rect %v\n", main.Add(worldPoint), rect)
+
     if !main.Add(worldPoint).Overlaps(rect) {
         return false
     }

@@ -601,6 +601,31 @@ type PlayerState struct {
     Trails []*Trail
 }
 
+// return a rectangle representing the attack hitbox in world coordinates, taking into account the player's position, facing direction, and current animation frame
+func (playerState *PlayerState) GetAttackBox() image.Rectangle {
+    var geom ebiten.GeoM
+
+    if playerState.Facing == FacingLeft {
+        geom.Scale(-1, 1)
+    }
+
+    geom.Translate(playerState.X, playerState.Z - playerState.Y)
+
+    animation := playerState.CurrentAnimation()
+
+    bounds := animation.CurrentFrame().Bounds()
+    if playerState.Facing == FacingLeft {
+        geom.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+    } else {
+        geom.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+    }
+
+    x1, y1 := geom.Apply(float64(playerState.Attack.X1), float64(playerState.Attack.Y1))
+    x2, y2 := geom.Apply(float64(playerState.Attack.X2), float64(playerState.Attack.Y2))
+
+    return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
+}
+
 func (playerState *PlayerState) SetAttack(attack AnimationAttack) {
     playerState.Attack = attack
 }
