@@ -263,8 +263,7 @@ func (enemy *Enemy) Blinking() bool {
 }
 
 func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
-    // FIXME: take offset into account
-    return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X, enemy.Z + enemy.Y, attackBox, enemy.Facing == FacingLeft)
+    return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X + float64(enemy.CurrentAnimation.OffsetX), enemy.Z + enemy.Y + float64(enemy.CurrentAnimation.OffsetY), attackBox, enemy.Facing == FacingLeft)
 }
 
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
