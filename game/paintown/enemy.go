@@ -44,6 +44,7 @@ type Enemy struct {
     FallenCount int
 
     DieSound string
+    FallSound string
 
     // each attack that hits the enemy has an id that increments monotonically. the enemy
     // cannot be hit by the same attack twice (unless the attack explicitly enables this)
@@ -174,6 +175,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         X: float64(object.Coords.X),
         Z: float64(object.Coords.Y),
         DieSound: definition.GetDieSound(),
+        FallSound: definition.GetFallSound(),
     }
 
     for _, animation := range animations {
@@ -270,7 +272,7 @@ func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
     return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X + float64(enemy.CurrentAnimation.OffsetX), enemy.Z + enemy.Y + float64(enemy.CurrentAnimation.OffsetY), attackBox, enemy.Facing == FacingLeft)
 }
 
-func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo, didFall *bool) {
+func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
     enemy.Pain = max(0, enemy.Pain - 0.1)
 
@@ -317,7 +319,6 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo, didFall *bo
             enemy.State = EnemyStateFallen
             // stay on ground for a while
             enemy.FallenCount = 90
-            *didFall = true
         }
         return
     }
@@ -393,8 +394,12 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo, didFall *bo
     }
 }
 
-func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, didFall *bool) {
-    enemy.UpdateState(level, playerInfo, didFall)
+func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(EnemyState)) {
+    oldState := enemy.State
+    enemy.UpdateState(level, playerInfo)
+    if enemy.State != oldState {
+        newState(enemy.State)
+    }
 
     switch enemy.State {
         case EnemyStateFalling, EnemyStateFallen, EnemyStateRise, EnemyStatePain:

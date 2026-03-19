@@ -553,6 +553,15 @@ func (definition *CharacterDefinition) GetDieSound() string {
     return ""
 }
 
+func (definition *CharacterDefinition) GetFallSound() string {
+    die := definition.SExpr.GetChild("landed")
+    if die != nil {
+        return die.GetValue(0)
+    }
+
+    return ""
+}
+
 // a definition file is a parentheses delimited set of values
 func LoadDefinition(path string) (CharacterDefinition, error) {
     raw, err := sexp.ReadSExpression(path)
@@ -751,7 +760,7 @@ func (playerState *PlayerState) GetStatus() string {
     return "ground"
 }
 
-func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
+func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64, didFall *bool) {
     doJump := false
     move := false
 

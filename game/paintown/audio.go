@@ -59,3 +59,16 @@ func (audio *AudioManager) LoadSound(path string) (*audiolib.Player, error) {
     player.Rewind()
     return player, nil
 }
+
+func (audio *AudioManager) PlaySound(path string) error {
+    if path != "" {
+        sound, err := audio.LoadSound(path)
+        if err != nil {
+            return err
+        } else {
+            sound.Play()
+        }
+    }
+
+    return nil
+}

@@ -368,7 +368,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         inputState := readInputState()
 
-        playerState.Update(inputState, level, counter)
+        didFall := false
+        playerState.Update(inputState, level, counter, &didFall)
 
         if playerState.X > levelLimit {
             playerState.X = levelLimit
@@ -389,25 +390,15 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                         flashes = append(flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
 
-                        hitSound := playerState.HitSound
-                        if hitSound != "" {
-                            hitAudio, err := audio.LoadSound(hitSound)
-                            if err != nil {
-                                log.Printf("Error loading hit sound '%v': %v", hitSound, err)
-                            } else {
-                                hitAudio.Play()
-                            }
+                        err := audio.PlaySound(playerState.HitSound)
+                        if err != nil {
+                            log.Printf("Error playing hit sound: %v", err)
                         }
 
                         if enemy.Health <= 0 {
-                            dieSound := enemy.DieSound
-                            if dieSound != "" {
-                                dieAudio, err := audio.LoadSound(dieSound)
-                                if err != nil {
-                                    log.Printf("Error loading die sound '%v': %v", dieSound, err)
-                                } else {
-                                    dieAudio.Play()
-                                }
+                            err := audio.PlaySound(enemy.DieSound)
+                            if err != nil {
+                                log.Printf("Error playing enemy die sound: %v", err)
                             }
                         }
                     }
@@ -439,9 +430,14 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         outEnemies := make([]*Enemy, 0, len(enemies))
-        didFall := false
         for _, enemy := range enemies {
-            enemy.Update(level, &playerState, &didFall)
+            enemy.Update(level, &playerState, func(state EnemyState){
+                switch state {
+                    case EnemyStateFallen:
+                        didFall = true
+                        audio.PlaySound(enemy.FallSound)
+                }
+            })
             if !enemy.IsDead() {
                 outEnemies = append(outEnemies, enemy)
             }
