@@ -270,7 +270,7 @@ func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
     return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X + float64(enemy.CurrentAnimation.OffsetX), enemy.Z + enemy.Y + float64(enemy.CurrentAnimation.OffsetY), attackBox, enemy.Facing == FacingLeft)
 }
 
-func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
+func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo, didFall *bool) {
 
     enemy.Pain = max(0, enemy.Pain - 0.1)
 
@@ -317,6 +317,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
             enemy.State = EnemyStateFallen
             // stay on ground for a while
             enemy.FallenCount = 90
+            *didFall = true
         }
         return
     }
@@ -392,8 +393,8 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
     }
 }
 
-func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo) {
-    enemy.UpdateState(level, playerInfo)
+func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, didFall *bool) {
+    enemy.UpdateState(level, playerInfo, didFall)
 
     switch enemy.State {
         case EnemyStateFalling, EnemyStateFallen, EnemyStateRise, EnemyStatePain:

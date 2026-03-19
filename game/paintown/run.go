@@ -6,6 +6,7 @@ import (
     "log"
     "os"
     "math"
+    "math/rand/v2"
     "image/color"
     "slices"
     "cmp"
@@ -50,9 +51,12 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
     var enemies []*Enemy
 
+    var screenShake ebiten.GeoM
+
     drawBackground := func(screen *ebiten.Image) {
         var options ebiten.DrawImageOptions
         options.GeoM.Translate(-cameraX * 1/float64(level.BackgroundParallax), 0)
+        options.GeoM.Concat(screenShake)
         if level.BackgroundImage != nil {
             for {
                 x, _ := options.GeoM.Apply(0, 0)
@@ -68,6 +72,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     drawBackPanels := func(screen *ebiten.Image) {
         var orderOptions ebiten.DrawImageOptions
         orderOptions.GeoM.Translate(-cameraX, 0)
+        orderOptions.GeoM.Concat(screenShake)
         for _, index := range level.PanelOrder {
             x, _ := orderOptions.GeoM.Apply(0, 0)
             if int(x) > screen.Bounds().Dx() {
@@ -86,6 +91,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         if len(level.FrontPanels) > 0 {
             var panelOptions ebiten.DrawImageOptions
             panelOptions.GeoM.Translate(-cameraX * float64(level.ForegroundParallax), float64(screen.Bounds().Dy()))
+            panelOptions.GeoM.Concat(screenShake)
             panelI := 0
             for {
                 x, _ := panelOptions.GeoM.Apply(0, 0)
@@ -114,6 +120,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 }
 
                 options.GeoM.Translate(enemy.X - cameraX, enemy.Z - enemy.Y)
+                options.GeoM.Concat(screenShake)
                 bounds := animation.CurrentFrame().Bounds()
                 if enemy.Facing == FacingLeft {
                     options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
@@ -138,6 +145,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             }
 
             options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
+            options.GeoM.Concat(screenShake)
             bounds := trail.Image.Bounds()
             if playerState.Facing == FacingLeft {
                 options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
@@ -158,6 +166,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             }
 
             options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
+            options.GeoM.Concat(screenShake)
             bounds := animation.CurrentFrame().Bounds()
             if playerState.Facing == FacingLeft {
                 options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
@@ -327,8 +336,21 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
     // avoid triggering moves immediately
     counter := uint64(1000)
+    shake := 0
     for currentBlock < len(blocks) {
         counter += 1
+
+        if shake > 0 {
+            dx := (rand.Float64() - 0.5) * float64(shake) / 3
+            dy := (rand.Float64() - 0.5) * float64(shake) / 3
+
+            screenShake.Reset()
+            screenShake.Translate(dx, dy)
+
+            shake -= 1
+        } else {
+            screenShake.Reset()
+        }
 
         if playerState.X > float64(levelLimit) - 50 && len(enemies) == 0 {
             currentBlock += 1
@@ -417,11 +439,16 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         outEnemies := make([]*Enemy, 0, len(enemies))
+        didFall := false
         for _, enemy := range enemies {
-            enemy.Update(level, &playerState)
+            enemy.Update(level, &playerState, &didFall)
             if !enemy.IsDead() {
                 outEnemies = append(outEnemies, enemy)
             }
+        }
+
+        if didFall {
+            shake = 30
         }
 
         enemies = outEnemies
