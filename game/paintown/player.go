@@ -760,7 +760,7 @@ func (playerState *PlayerState) GetStatus() string {
     return "ground"
 }
 
-func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64, didFall *bool) {
+func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
     doJump := false
     move := false
 

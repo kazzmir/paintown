@@ -369,7 +369,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         inputState := readInputState()
 
         didFall := false
-        playerState.Update(inputState, level, counter, &didFall)
+        playerState.Update(inputState, level, counter)
 
         if playerState.X > levelLimit {
             playerState.X = levelLimit
