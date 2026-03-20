@@ -269,7 +269,15 @@ func (enemy *Enemy) Blinking() bool {
 }
 
 func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
-    return enemy.CurrentAnimation.CurrentCollision().Intersect(enemy.X + float64(enemy.CurrentAnimation.OffsetX), enemy.Z + enemy.Y + float64(enemy.CurrentAnimation.OffsetY), attackBox, enemy.Facing == FacingLeft)
+    collision := enemy.CurrentAnimation.CurrentCollision()
+    if collision == nil {
+        return false
+    }
+
+    x := enemy.X + float64(enemy.CurrentAnimation.OffsetX)
+    y := enemy.Z + enemy.Y + float64(enemy.CurrentAnimation.OffsetY)
+
+    return collision.Intersect(x, y, attackBox, enemy.Facing == FacingLeft)
 }
 
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
