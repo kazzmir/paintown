@@ -199,13 +199,17 @@ func (animation *Animation) Update(loop bool) bool {
         for animation.CurrentDelay == 0 {
             animation.Events[animation.CurrentEvent].Update(animation)
             animation.CurrentEvent += 1
-            if animation.CurrentEvent >= len(animation.Events) && loop {
-                animation.CurrentEvent = 0
-                finished = true
+            if animation.CurrentEvent >= len(animation.Events) {
+                if loop {
+                    animation.CurrentEvent = 0
+                    finished = true
 
-                // always reset attack
-                if animation.Owner != nil {
-                    animation.Owner.SetAttack(AnimationAttack{})
+                    // always reset attack
+                    if animation.Owner != nil {
+                        animation.Owner.SetAttack(AnimationAttack{})
+                    }
+                } else {
+                    return true
                 }
             }
 

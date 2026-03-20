@@ -390,6 +390,45 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         return out
     }
 
+    draw1 := setDraw(func(screen *ebiten.Image) {
+        drawBackground(buffer)
+        drawBackPanels(buffer)
+
+        var options ebiten.DrawImageOptions
+        options.GeoM.Scale(2, 2)
+        screen.DrawImage(buffer, &options)
+    })
+
+    preload := make(chan struct{}, 1)
+    go func(){
+        // preload all enemies
+        log.Printf("Preloading enemies...")
+        for _, block := range level.Blocks {
+            // create enemies, and throw them away
+            createEnemies(block.Objects)
+        }
+        log.Printf("Done preloading enemies")
+
+        preload <- struct{}{}
+    }()
+
+    preloaded := false
+    for !preloaded {
+        select {
+            case <-preload:
+                // preload is done, we can start the game
+                preloaded = true
+            default:
+        }
+
+        err := yield()
+        if err != nil {
+            return err
+        }
+    }
+
+    setDraw(draw1)
+
     audio := MakeAudioManager(audioContext)
 
     oldDrawer := setDraw(drawer)
