@@ -101,7 +101,7 @@ func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animati
         factory.animations[player] = chars
     }
 
-    useAnimation, ok := chars[player]
+    useAnimation, ok := chars[animation]
     if !ok {
         dir, ok := sexp.ReadValue[string](definition, "basedir", 0)
         if ok {
@@ -115,6 +115,7 @@ func (factory *ObjectFactory) MakeAnimationFromDefinition(player string, animati
         useAnimation = loaded
 
         useAnimation.InitializeCollision()
+        chars[animation] = useAnimation
     }
 
     if useAnimation != nil {
