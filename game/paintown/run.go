@@ -17,6 +17,7 @@ import (
 
     "github.com/hajimehoshi/ebiten/v2"
     audiolib "github.com/hajimehoshi/ebiten/v2/audio"
+    "github.com/hajimehoshi/ebiten/v2/colorm"
     "github.com/hajimehoshi/ebiten/v2/vector"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -199,9 +200,44 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
     }
 
+    drawPlayerShadow := func(screen *ebiten.Image) {
+        var options colorm.DrawImageOptions
+
+        animation := playerState.CurrentAnimation()
+
+        if animation != nil && animation.CurrentFrame() != nil {
+
+            // options.GeoM.Skew(0.5, 0)
+
+            bounds := animation.CurrentFrame().Bounds()
+            options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+
+            if playerState.Facing == FacingLeft {
+                options.GeoM.Scale(-1, 1)
+            }
+
+            options.GeoM.Scale(0.9, 0.7)
+            options.GeoM.Skew(0.6, 0)
+
+            options.GeoM.Translate(playerState.X - cameraX - playerState.Y / 4, playerState.Z)
+            options.GeoM.Concat(screenShake)
+
+            options.GeoM.Translate(0, 0)
+            var m colorm.ColorM
+
+            m.ChangeHSV(0, 1, 0)
+
+            alpha := min(0.4, playerState.Y / 300)
+
+            m.Scale(1, 1, 1, 0.4 - alpha)
+            colorm.DrawImage(screen, animation.CurrentFrame(), m, &options)
+        }
+    }
+
     type Drawable struct {
         Z float64
         Draw func()
+        DrawFirst func()
     }
 
     showForwardArrow := false
@@ -247,6 +283,9 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         objects = append(objects, Drawable{
+            DrawFirst: func() {
+                drawPlayerShadow(buffer)
+            },
             Draw: func(){
                 drawPlayer(buffer)
             },
@@ -256,6 +295,12 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         slices.SortStableFunc(objects, func (a, b Drawable) int {
             return cmp.Compare(a.Z, b.Z)
         })
+
+        for _, object := range objects {
+            if object.DrawFirst != nil {
+                object.DrawFirst()
+            }
+        }
 
         for _, object := range objects {
             object.Draw()
