@@ -21,7 +21,17 @@ import (
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
-const Z_DISTANCE = 5
+const Z_DISTANCE = 6
+
+func loadArrowImage() (*ebiten.Image, error) {
+    path := "sprites/arrow.png"
+    img, err := data.LoadPng(path)
+    if err != nil {
+        return nil, err
+    }
+
+    return ebiten.NewImageFromImage(graphics.ConvertTransparency(img)), nil
+}
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
     level, err := LoadLevel(levelPath)
@@ -194,7 +204,16 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         Draw func()
     }
 
+    showForwardArrow := false
     var flashes []*Flash
+
+    arrowImage, err := loadArrowImage()
+    if err != nil {
+        arrowImage = ebiten.NewImage(1, 1)
+    }
+
+    // avoid triggering moves immediately
+    counter := uint64(1000)
 
     var objects []Drawable
     buffer := ebiten.NewImage(data.ScreenWidth / 2, data.ScreenHeight / 2)
@@ -243,6 +262,13 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         drawFrontPanels(buffer)
+
+        if showForwardArrow && (counter / 20) % 2 == 0 {
+            var arrowOptions ebiten.DrawImageOptions
+            arrowOptions.GeoM.Translate(float64(buffer.Bounds().Dx() - arrowImage.Bounds().Dx() - 10), float64(buffer.Bounds().Dy() / 2 - arrowImage.Bounds().Dy() / 2))
+            buffer.DrawImage(arrowImage, &arrowOptions)
+        }
+
         var options ebiten.DrawImageOptions
         options.GeoM.Scale(2, 2)
         screen.DrawImage(buffer, &options)
@@ -334,8 +360,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
     // enemies = append(enemies, &Enemy{})
 
-    // avoid triggering moves immediately
-    counter := uint64(1000)
     shake := 0
     for currentBlock < len(blocks) {
         counter += 1
@@ -364,6 +388,13 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                     enemy.Z += float64(level.ZMinimum)
                 }
             }
+        } else if len(enemies) == 0 {
+            // no enemies left in the current block, so show the arrow indicating the way forward
+            showForwardArrow = true
+        }
+
+        if len(enemies) > 0 {
+            showForwardArrow = false
         }
 
         inputState := readInputState()
