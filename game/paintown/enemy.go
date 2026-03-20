@@ -53,7 +53,7 @@ type Enemy struct {
     HasDestination bool
     DestX float64
     DestZ float64
-    CurrentAnimation *Animation
+    CurrentAnimationValue *Animation
     Animations map[string]*Animation
     Attacks []*Animation
     Facing Facing
@@ -167,7 +167,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         Attacks: attacks,
         Character: &definition,
         Animations: animations,
-        CurrentAnimation: idle,
+        CurrentAnimationValue: idle,
         Facing: FacingLeft,
         Health: max(1, definition.GetHealth()),
         // FIXME: make this a configuration option in the character definition
@@ -194,8 +194,24 @@ func abs(x float64) float64 {
     return max(x, -x)
 }
 
+func (enemy *Enemy) CurrentAnimation() *Animation {
+    return enemy.CurrentAnimationValue
+}
+
 func (enemy *Enemy) CanBeHit(attack uint64) bool {
     return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
+}
+
+func (enemy *Enemy) GetX() float64 {
+    return enemy.X
+}
+
+func (enemy *Enemy) GetY() float64 {
+    return enemy.Y
+}
+
+func (enemy *Enemy) GetZ() float64 {
+    return enemy.Z
 }
 
 func (enemy *Enemy) GetFacing() Facing {
@@ -232,8 +248,8 @@ func (enemy *Enemy) DoFall(force float64) {
     enemy.Vx = force
     fall, ok := enemy.Animations["fall"]
     if ok {
-        enemy.CurrentAnimation = fall
-        enemy.CurrentAnimation.Reset()
+        enemy.CurrentAnimationValue = fall
+        enemy.CurrentAnimationValue.Reset()
     }
 }
 
@@ -246,8 +262,8 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     enemy.State = EnemyStatePain
     painAnimation, ok := enemy.Animations["pain"]
     if ok {
-        enemy.CurrentAnimation = painAnimation
-        enemy.CurrentAnimation.Reset()
+        enemy.CurrentAnimationValue = painAnimation
+        enemy.CurrentAnimationValue.Reset()
     }
 
     if enemy.Pain >= enemy.PainThreshold || enemy.Health <= 0 {
@@ -269,13 +285,13 @@ func (enemy *Enemy) Blinking() bool {
 }
 
 func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
-    collision := enemy.CurrentAnimation.CurrentCollision()
+    collision := enemy.CurrentAnimationValue.CurrentCollision()
     if collision == nil {
         return false
     }
 
-    x := enemy.X + float64(enemy.CurrentAnimation.OffsetX)
-    y := enemy.Z + enemy.Y + float64(enemy.CurrentAnimation.OffsetY)
+    x := enemy.X + float64(enemy.CurrentAnimationValue.OffsetX)
+    y := enemy.Z + enemy.Y + float64(enemy.CurrentAnimationValue.OffsetY)
 
     return collision.Intersect(x, y, attackBox, enemy.Facing == FacingLeft)
 }
@@ -300,7 +316,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
             enemy.State = EnemyStateRise
             rise, ok := enemy.Animations["rise"]
             if ok {
-                enemy.CurrentAnimation = rise
+                enemy.CurrentAnimationValue = rise
             } else {
                 enemy.State = EnemyStateIdle
             }
@@ -343,8 +359,8 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
         if len(choices) > 0 {
             enemy.State = EnemyStateAttacking
-            enemy.CurrentAnimation = choices[rand.N(len(choices))]
-            enemy.CurrentAnimation.Reset()
+            enemy.CurrentAnimationValue = choices[rand.N(len(choices))]
+            enemy.CurrentAnimationValue.Reset()
             return
         }
     }
@@ -371,8 +387,8 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
     if enemy.HasDestination {
         walk, ok := enemy.Animations["walk"]
-        if ok && enemy.CurrentAnimation != walk {
-            enemy.CurrentAnimation = walk
+        if ok && enemy.CurrentAnimationValue != walk {
+            enemy.CurrentAnimationValue = walk
         }
 
         moved := false
@@ -394,7 +410,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
         if !moved {
             enemy.HasDestination = false
-            enemy.CurrentAnimation = enemy.Animations["idle"]
+            enemy.CurrentAnimationValue = enemy.Animations["idle"]
             enemy.State = EnemyStateIdle
         } else {
             enemy.State = EnemyStateWalking
@@ -420,12 +436,12 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(En
             }
     }
 
-    if enemy.CurrentAnimation != nil {
+    if enemy.CurrentAnimationValue != nil {
         loopAnimation := true
         if enemy.State == EnemyStateFallen || enemy.State == EnemyStateFalling {
             loopAnimation = false
         }
-        if enemy.CurrentAnimation.Update(loopAnimation) {
+        if enemy.CurrentAnimationValue.Update(loopAnimation) {
             if enemy.State == EnemyStateAttacking || enemy.State == EnemyStateRise || enemy.State == EnemyStatePain {
                 enemy.State = EnemyStateIdle
             }
