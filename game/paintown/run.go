@@ -147,6 +147,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         var options ebiten.DrawImageOptions
 
         for _, trail := range playerState.Trails {
+            bounds := trail.Image.Bounds()
+
+            // FIXME: take offset x/y into account
+            options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+
             if trail.Facing == FacingLeft {
                 options.GeoM.Scale(-1, 1)
             }
@@ -157,12 +162,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
             options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
             options.GeoM.Concat(screenShake)
-            bounds := trail.Image.Bounds()
-            if playerState.Facing == FacingLeft {
-                options.GeoM.Translate(+float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
-            } else {
-                options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
-            }
             screen.DrawImage(trail.Image, &options)
 
             options.ColorScale.Reset()
@@ -172,18 +171,16 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         animation := playerState.CurrentAnimation()
 
         if animation != nil && animation.CurrentFrame() != nil {
+
+            bounds := animation.CurrentFrame().Bounds()
+            options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+
             if playerState.Facing == FacingLeft {
                 options.GeoM.Scale(-1, 1)
             }
 
             options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
             options.GeoM.Concat(screenShake)
-            bounds := animation.CurrentFrame().Bounds()
-            if playerState.Facing == FacingLeft {
-                options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-            } else {
-                options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-            }
             screen.DrawImage(animation.CurrentFrame(), &options)
         }
 
@@ -206,7 +203,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         animation := playerState.CurrentAnimation()
 
         if animation != nil && animation.CurrentFrame() != nil {
-
             // options.GeoM.Skew(0.5, 0)
 
             bounds := animation.CurrentFrame().Bounds()
