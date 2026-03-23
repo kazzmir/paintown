@@ -23,6 +23,9 @@ const (
     PlayerIdle PlayerStatus = iota
     PlayerMove
     PlayerJump
+    PlayerStateFallen
+    PlayerStateFalling
+    PlayerStatePain
 )
 
 type Facing int
@@ -500,6 +503,7 @@ func (character *PaintownCharacter) LoadAnimations() (map[string]*Animation, err
         base := filepath.Join("players", strings.ToLower(character.Definition.Name), name)
         animation, err := MakeAnimationFromDefinition(base, animation)
         if err == nil {
+            animation.InitializeCollision()
             out[name] = animation
         } else {
             log.Printf("Error loading animation '%v' for character '%v': %v", name, character.Definition.Name, err)
@@ -615,6 +619,9 @@ type Trail struct {
     Time int
 }
 
+type Attacker interface {
+}
+
 type PlayerState struct {
     X float64
     Y float64
@@ -635,6 +642,10 @@ type PlayerState struct {
 
     Health float64
     MaxHealth float64
+    Pain float64
+    PainThreshold float64
+
+    Attackers map[Attacker]uint64
 
     NextAnimation *Animation
     NextAnimationTime uint64
@@ -646,6 +657,49 @@ type PlayerState struct {
     TrailLength int
 
     Trails []*Trail
+
+    // FIXME: this needs to be per enemy
+    LastAttacked uint64
+}
+
+func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, error) {
+    animations, err := player.LoadAnimations()
+    if err != nil {
+        return nil, err
+    }
+
+    icon := player.Definition.GetIcon()
+
+    var iconImage *ebiten.Image
+    if icon != "" {
+        img, err := data.LoadPng(icon)
+        if err == nil {
+            iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
+        } else {
+            log.Printf("Unable to load icon %v: %v", icon, err)
+        }
+    }
+
+    playerState := PlayerState{
+        X: 60,
+        Y: 0,
+        Z: float64(level.ZMinimum + level.ZMaximum) / 2,
+        Status: PlayerIdle,
+        Animations: animations,
+        HitSound: player.Definition.GetHitSound(),
+        // TODO: make configurable in the definition file
+        PainThreshold: 4,
+        Icon: iconImage,
+        Health: max(1, player.Definition.GetHealth()),
+        MaxHealth: max(1, player.Definition.GetHealth()),
+        Attackers: make(map[Attacker]uint64),
+    }
+
+    for _, animation := range playerState.Animations {
+        animation.Owner = &playerState
+    }
+
+    return &playerState, nil
 }
 
 // return a rectangle representing the attack hitbox in world coordinates, taking into account the player's position, facing direction, and current animation frame
@@ -671,6 +725,10 @@ func (playerState *PlayerState) GetAttackBox() image.Rectangle {
     x2, y2 := geom.Apply(float64(playerState.Attack.X2), float64(playerState.Attack.Y2))
 
     return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
+}
+
+func (playerState *PlayerState) ResetAttackers() {
+    playerState.Attackers = make(map[Attacker]uint64)
 }
 
 func (playerState *PlayerState) SetAttack(attack AnimationAttack) {
@@ -749,6 +807,48 @@ func (playerState *PlayerState) UpdateTrails(counter uint64) {
     playerState.Trails = trails
 }
 
+func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
+    lastAttack, has := playerState.Attackers[hitter]
+
+    if has && attack <= lastAttack {
+        return false
+    }
+
+    return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling
+}
+
+func (playerState *PlayerState) Hurt(hitter Attacker, attackId uint64, damage float64, force float64) {
+    playerState.Attackers[hitter] = attackId
+    playerState.Health -= damage
+    playerState.Pain += damage
+
+    playerState.Status = PlayerStatePain
+    painAnimation, ok := playerState.Animations["pain"]
+    if ok {
+        playerState.ShowAnimation = painAnimation
+        playerState.ShowAnimation.Reset()
+    }
+
+    /*
+    // TODO
+    if playerState.Pain >= playerState.PainThreshold || playerState.Health <= 0 {
+        enemy.DoFall(force)
+    }
+    */
+}
+
+func (playerState *PlayerState) HitBy(attackBox image.Rectangle) bool {
+    collision := playerState.CurrentAnimation().CurrentCollision()
+    if collision == nil {
+        return false
+    }
+
+    x := playerState.X + float64(playerState.CurrentAnimation().OffsetX)
+    y := playerState.Z + playerState.Y + float64(playerState.CurrentAnimation().OffsetY)
+
+    return collision.Intersect(x, y, attackBox, playerState.Facing == FacingLeft)
+}
+
 func (playerState *PlayerState) CurrentAnimation() *Animation {
     if playerState.ShowAnimation != nil {
         return playerState.ShowAnimation
@@ -789,6 +889,8 @@ func (playerState *PlayerState) GetStatus() string {
 func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
     doJump := false
     move := false
+
+    playerState.Pain = max(0, playerState.Pain - 0.1)
 
     var nextAnimation *Animation
 

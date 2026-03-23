@@ -34,42 +34,6 @@ func loadArrowImage() (*ebiten.Image, error) {
     return ebiten.NewImageFromImage(graphics.ConvertTransparency(img)), nil
 }
 
-func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, error) {
-    animations, err := player.LoadAnimations()
-    if err != nil {
-        return nil, err
-    }
-
-    icon := player.Definition.GetIcon()
-
-    var iconImage *ebiten.Image
-    if icon != "" {
-        img, err := data.LoadPng(icon)
-        if err == nil {
-            iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
-        } else {
-            log.Printf("Unable to load icon %v: %v", icon, err)
-        }
-    }
-
-    playerState := PlayerState{
-        X: 60,
-        Y: 0,
-        Z: float64(level.ZMinimum + level.ZMaximum) / 2,
-        Status: PlayerIdle,
-        Animations: animations,
-        HitSound: player.Definition.GetHitSound(),
-        Icon: iconImage,
-        Health: max(1, player.Definition.GetHealth()),
-        MaxHealth: max(1, player.Definition.GetHealth()),
-    }
-
-    for _, animation := range playerState.Animations {
-        animation.Owner = &playerState
-    }
-
-    return &playerState, nil
-}
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
     level, err := LoadLevel(levelPath)
@@ -163,6 +127,19 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                     options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
                 }
                 screen.DrawImage(animation.CurrentFrame(), &options)
+
+                if !enemy.Attack.IsEmpty() {
+                    x1, y1 := options.GeoM.Apply(float64(enemy.Attack.X1), float64(enemy.Attack.Y1))
+                    x2, y2 := options.GeoM.Apply(float64(enemy.Attack.X2), float64(enemy.Attack.Y2))
+
+                    x1, x2 = min(x1, x2), max(x1, x2)
+                    y1, y2 = min(y1, y2), max(y1, y2)
+
+                    // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
+
+                    vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{B:255, A:255}, false)
+                }
+
             }
         // }
     }
@@ -338,11 +315,14 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         for _, flash := range flashes {
             objects = append(objects, Drawable{
                 Draw: func() {
-                    var options ebiten.DrawImageOptions
-                    options.GeoM.Translate(float64(flash.X) - cameraX, float64(flash.Z) - float64(flash.Y))
-                    bounds := flash.Animation.CurrentFrame().Bounds()
-                    options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
-                    buffer.DrawImage(flash.Animation.CurrentFrame(), &options)
+                    frame := flash.Animation.CurrentFrame()
+                    if frame != nil {
+                        var options ebiten.DrawImageOptions
+                        options.GeoM.Translate(float64(flash.X) - cameraX, float64(flash.Z) - float64(flash.Y))
+                        bounds := frame.Bounds()
+                        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                        buffer.DrawImage(frame, &options)
+                    }
                 },
                 Z: float64(flash.Z),
             })
@@ -538,6 +518,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 showHealthMap = make(map[*Enemy]uint64)
 
+                playerState.ResetAttackers()
+
                 enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range enemies {
                     enemy.X += levelLimit - float64(blocks[currentBlock].Length)
@@ -628,6 +610,28 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 }
             })
             if !enemy.IsDead() {
+
+                if !enemy.Attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
+                    if playerState.HitBy(enemy.GetAttackBox()) {
+                        force := enemy.Attack.Force
+                        if enemy.GetFacing() == FacingLeft {
+                            force = -force
+                        }
+
+                        playerState.Hurt(enemy, enemy.AttackId, enemy.Attack.Damage, force)
+                        showHealthMap[enemy] = counter
+
+                        flashes = append(flashes, flashFactory.MakeFlash(playerState.X, playerState.Y + 50, playerState.Z + 0.1))
+
+                        showHealthMap[enemy] = counter
+
+                        err := audio.PlaySound(enemy.HitSound)
+                        if err != nil {
+                            log.Printf("Error playing hit sound: %v", err)
+                        }
+                    }
+                }
+
                 outEnemies = append(outEnemies, enemy)
             }
         }

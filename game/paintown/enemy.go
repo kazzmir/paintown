@@ -48,11 +48,13 @@ type Enemy struct {
     FallenCount int
 
     DieSound string
+    HitSound string
     FallSound string
 
     // each attack that hits the enemy has an id that increments monotonically. the enemy
     // cannot be hit by the same attack twice (unless the attack explicitly enables this)
     LastAttacked uint64
+    AttackId uint64
 
     HasDestination bool
     DestX float64
@@ -195,6 +197,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         X: float64(object.Coords.X),
         Z: float64(object.Coords.Y),
         DieSound: definition.GetDieSound(),
+        HitSound: definition.GetHitSound(),
         FallSound: definition.GetFallSound(),
     }
 
@@ -220,6 +223,30 @@ func (enemy *Enemy) CurrentAnimation() *Animation {
 
 func (enemy *Enemy) CanBeHit(attack uint64) bool {
     return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
+}
+
+func (enemy *Enemy) GetAttackBox() image.Rectangle {
+    var geom ebiten.GeoM
+
+    if enemy.Facing == FacingLeft {
+        geom.Scale(-1, 1)
+    }
+
+    geom.Translate(enemy.X, enemy.Z - enemy.Y)
+
+    animation := enemy.CurrentAnimationValue
+
+    bounds := animation.CurrentFrame().Bounds()
+    if enemy.Facing == FacingLeft {
+        geom.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+    } else {
+        geom.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+    }
+
+    x1, y1 := geom.Apply(float64(enemy.Attack.X1), float64(enemy.Attack.Y1))
+    x2, y2 := geom.Apply(float64(enemy.Attack.X2), float64(enemy.Attack.Y2))
+
+    return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
 }
 
 func (enemy *Enemy) GetX() float64 {
@@ -389,6 +416,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
             enemy.State = EnemyStateAttacking
             enemy.CurrentAnimationValue = choices[rand.N(len(choices))]
             enemy.CurrentAnimationValue.Reset()
+            enemy.AttackId += 1
             return
         }
     }
@@ -401,7 +429,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
             if rand.N(2) == 0 {
                 side = -1.0
             }
-            enemy.DestX = playerInfo.GetX() + 30 * side
+            enemy.DestX = playerInfo.GetX() + 40 * side
             enemy.DestZ = playerInfo.GetZ()
         } else {
             // move to a random place
