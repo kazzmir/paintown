@@ -10,6 +10,9 @@ import (
 
     "github.com/kazzmir/paintown/game/data"
     "github.com/kazzmir/paintown/game/lib/sexp"
+    "github.com/kazzmir/paintown/game/graphics"
+
+    "github.com/hajimehoshi/ebiten/v2"
 )
 
 type EnemyState int
@@ -34,6 +37,7 @@ type Enemy struct {
     Vx float64
 
     Health float64
+    MaxHealth float64
 
     // each time the enemy is hurt, add to Pain. When Pain reaches a certain threshold, the enemy will be knocked back and fall down.
     // Pain will go down over time as well
@@ -58,6 +62,7 @@ type Enemy struct {
     Attacks []*Animation
     Facing Facing
     Attack AnimationAttack
+    Icon *ebiten.Image
 }
 
 func loadAnimations(definition *CharacterDefinition, factory *ObjectFactory) (map[string]*Animation, error) {
@@ -164,6 +169,18 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         }
     }
 
+    icon := definition.GetIcon()
+
+    var iconImage *ebiten.Image
+    if icon != "" {
+        img, err := data.LoadPng(icon)
+        if err == nil {
+            iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
+        } else {
+            log.Printf("Unable to load icon %v: %v", icon, err)
+        }
+    }
+
     enemy := &Enemy{
         Attacks: attacks,
         Character: &definition,
@@ -171,6 +188,8 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         CurrentAnimationValue: idle,
         Facing: FacingLeft,
         Health: max(1, definition.GetHealth()),
+        MaxHealth: max(1, definition.GetHealth()),
+        Icon: iconImage,
         // FIXME: make this a configuration option in the character definition
         PainThreshold: 7,
         X: float64(object.Coords.X),
@@ -229,6 +248,14 @@ func (enemy *Enemy) GetAttacks() []*Animation {
 
 func (enemy *Enemy) SetAttack(attack AnimationAttack) {
     enemy.Attack = attack
+}
+
+func (enemy *Enemy) GetIcon() *ebiten.Image {
+    return enemy.Icon
+}
+
+func (enemy *Enemy) GetHealthPercent() float64 {
+    return enemy.Health / enemy.MaxHealth
 }
 
 func (enemy *Enemy) SetTrail(generate int, length int) {

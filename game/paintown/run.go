@@ -34,17 +34,22 @@ func loadArrowImage() (*ebiten.Image, error) {
     return ebiten.NewImageFromImage(graphics.ConvertTransparency(img)), nil
 }
 
-func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
-    level, err := LoadLevel(levelPath)
-    if err != nil {
-        return err
-    }
-
-    cameraX := float64(0)
-
+func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, error) {
     animations, err := player.LoadAnimations()
     if err != nil {
-        return err
+        return nil, err
+    }
+
+    icon := player.Definition.GetIcon()
+
+    var iconImage *ebiten.Image
+    if icon != "" {
+        img, err := data.LoadPng(icon)
+        if err == nil {
+            iconImage = ebiten.NewImageFromImage(graphics.ConvertTransparency(img))
+        } else {
+            log.Printf("Unable to load icon %v: %v", icon, err)
+        }
     }
 
     playerState := PlayerState{
@@ -54,10 +59,29 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         Status: PlayerIdle,
         Animations: animations,
         HitSound: player.Definition.GetHitSound(),
+        Icon: iconImage,
+        Health: max(1, player.Definition.GetHealth()),
+        MaxHealth: max(1, player.Definition.GetHealth()),
     }
 
     for _, animation := range playerState.Animations {
         animation.Owner = &playerState
+    }
+
+    return &playerState, nil
+}
+
+func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
+    level, err := LoadLevel(levelPath)
+    if err != nil {
+        return err
+    }
+
+    cameraX := float64(0)
+
+    playerState, err := MakePlayerState(player, level)
+    if err != nil {
+        return err
     }
 
     var enemies []*Enemy
@@ -238,6 +262,27 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
     }
 
+    type HealthObject interface {
+        GetIcon() *ebiten.Image
+        GetHealthPercent() float64
+    }
+
+    drawHealthBar := func(screen *ebiten.Image, health HealthObject, slot int) {
+        icon := health.GetIcon()
+
+        x := 5.0 + (slot % 3) * 90
+        y := 2.0 + (slot / 3) * 30
+        var options ebiten.DrawImageOptions
+        options.GeoM.Translate(float64(x), float64(y))
+        screen.DrawImage(icon, &options)
+
+        x1 := x + icon.Bounds().Dx() + 2
+        length := 60
+        vector.FillRect(screen, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 32, G: 32, B: 32, A: 200}, false)
+        healthLength := float64(length) * health.GetHealthPercent()
+        vector.FillRect(screen, float32(x1), float32(y), float32(healthLength), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, false)
+    }
+
     type Drawable struct {
         Z float64
         Draw func()
@@ -255,11 +300,20 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     // avoid triggering moves immediately
     counter := uint64(1000)
 
+    // tracks whether to show the health for an enemy. the value is the last logical time
+    // that the enemy did something worth displaying the health bar for.
+    // if the value is less than X, then display the health bar
+    showHealthMap := make(map[*Enemy]uint64)
+
     var objects []Drawable
     buffer := ebiten.NewImage(data.ScreenWidth / 2, data.ScreenHeight / 2)
     drawer := func(screen *ebiten.Image) {
         drawBackground(buffer)
         drawBackPanels(buffer)
+
+        healthObjects := []HealthObject{
+            playerState,
+        }
 
         objects = objects[:0]
         for _, enemy := range enemies {
@@ -273,6 +327,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                     },
                     Z: enemy.Z,
                 })
+            }
+
+            when, ok := showHealthMap[enemy]
+            if enemy.Health > 0 && ok && counter - when < 600 {
+                healthObjects = append(healthObjects, enemy)
             }
         }
 
@@ -291,7 +350,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         objects = append(objects, Drawable{
             DrawFirst: func() {
-                drawShadow(buffer, &playerState)
+                drawShadow(buffer, playerState)
             },
             Draw: func(){
                 drawPlayer(buffer)
@@ -314,6 +373,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         drawFrontPanels(buffer)
+
+        for i, health := range healthObjects {
+            drawHealthBar(buffer, health, i)
+        }
 
         if showForwardArrow && (counter / 20) % 2 == 0 {
             var arrowOptions ebiten.DrawImageOptions
@@ -473,6 +536,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 levelLimit += float64(blocks[currentBlock].Length)
                 log.Printf("Entering block %v, limit %v", currentBlock, levelLimit)
 
+                showHealthMap = make(map[*Enemy]uint64)
+
                 enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range enemies {
                     enemy.X += levelLimit - float64(blocks[currentBlock].Length)
@@ -511,6 +576,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         // create hit projectile, flash
 
                         flashes = append(flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
+
+                        showHealthMap[enemy] = counter
 
                         err := audio.PlaySound(playerState.HitSound)
                         if err != nil {
@@ -553,7 +620,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         outEnemies := make([]*Enemy, 0, len(enemies))
         for _, enemy := range enemies {
-            enemy.Update(level, &playerState, func(state EnemyState){
+            enemy.Update(level, playerState, func(state EnemyState){
                 switch state {
                     case EnemyStateFallen:
                         didFall = true

@@ -539,6 +539,15 @@ func (definition *CharacterDefinition) FindAll(names ...string) []*sexp.SExpr {
     return definition.SExpr.FindAll(names...)
 }
 
+func (definition *CharacterDefinition) GetIcon() string {
+    icon := definition.SExpr.GetChild("icon")
+    if icon != nil {
+        return icon.GetValue(0)
+    }
+
+    return ""
+}
+
 func (definition *CharacterDefinition) GetHitSound() string {
     hit := definition.SExpr.GetChild("hit-sound")
     if hit != nil {
@@ -618,9 +627,14 @@ type PlayerState struct {
     Status PlayerStatus
     Facing Facing
 
+    Icon *ebiten.Image
+
     AttackId uint64
 
     HitSound string
+
+    Health float64
+    MaxHealth float64
 
     NextAnimation *Animation
     NextAnimationTime uint64
@@ -661,6 +675,14 @@ func (playerState *PlayerState) GetAttackBox() image.Rectangle {
 
 func (playerState *PlayerState) SetAttack(attack AnimationAttack) {
     playerState.Attack = attack
+}
+
+func (playerState *PlayerState) GetIcon() *ebiten.Image {
+    return playerState.Icon
+}
+
+func (playerState *PlayerState) GetHealthPercent() float64 {
+    return playerState.Health / playerState.MaxHealth
 }
 
 func (playerState *PlayerState) GetX() float64 {
