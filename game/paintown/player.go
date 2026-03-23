@@ -986,6 +986,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
             playerState.Dx = 0
             playerState.Status = PlayerIdle
             playerState.ShowAnimation = nil
+            playerState.Attack = AnimationAttack{}
         }
     }
 
