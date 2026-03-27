@@ -50,6 +50,7 @@ type Enemy struct {
     DieSound string
     HitSound string
     FallSound string
+    Name string
 
     // each attack that hits the enemy has an id that increments monotonically. the enemy
     // cannot be hit by the same attack twice (unless the attack explicitly enables this)
@@ -183,6 +184,11 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         }
     }
 
+    name := object.Name
+    if name == "" {
+        name = definition.GetName()
+    }
+
     enemy := &Enemy{
         Attacks: attacks,
         Character: &definition,
@@ -199,6 +205,7 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         DieSound: definition.GetDieSound(),
         HitSound: definition.GetHitSound(),
         FallSound: definition.GetFallSound(),
+        Name: name,
     }
 
     for _, animation := range animations {
@@ -223,6 +230,10 @@ func (enemy *Enemy) CurrentAnimation() *Animation {
 
 func (enemy *Enemy) CanBeHit(attack uint64) bool {
     return attack > enemy.LastAttacked && enemy.State != EnemyStateFallen && enemy.State != EnemyStateFalling
+}
+
+func (enemy *Enemy) GetName() string {
+    return enemy.Name
 }
 
 func (enemy *Enemy) GetAttackBox() image.Rectangle {
@@ -324,6 +335,10 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     if enemy.Pain >= enemy.PainThreshold || enemy.Health <= 0 {
         enemy.DoFall(force)
     }
+}
+
+func (enemy *Enemy) GetHealth() string {
+    return enemy.Name
 }
 
 func (enemy *Enemy) IsDead() bool {

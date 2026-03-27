@@ -18,6 +18,7 @@ import (
     "github.com/hajimehoshi/ebiten/v2"
     audiolib "github.com/hajimehoshi/ebiten/v2/audio"
     "github.com/hajimehoshi/ebiten/v2/colorm"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
     "github.com/hajimehoshi/ebiten/v2/vector"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
 )
@@ -34,12 +35,36 @@ func loadArrowImage() (*ebiten.Image, error) {
     return ebiten.NewImageFromImage(graphics.ConvertTransparency(img)), nil
 }
 
+func loadFont() (*text.GoTextFace, error) {
+    file, err := data.LoadFile("fonts/arial.ttf")
+    if err != nil {
+        return nil, err
+    }
+
+    source, err := text.NewGoTextFaceSource(file)
+    if err != nil {
+        return nil, err
+    }
+
+    return &text.GoTextFace{
+        Source: source,
+        Size:   15,
+    }, nil
+}
 
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
         return err
     }
+
+    font, err := loadFont()
+	if err != nil {
+		return err
+	}
+
+    fontWidth, fontHeight := text.Measure("A", font, 1)
+    _ = fontWidth
 
     cameraX := float64(0)
 
@@ -242,19 +267,26 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     type HealthObject interface {
         GetIcon() *ebiten.Image
         GetHealthPercent() float64
+        GetName() string
     }
 
     drawHealthBar := func(screen *ebiten.Image, health HealthObject, slot int) {
         icon := health.GetIcon()
 
         x := 5.0 + (slot % 3) * 90
-        y := 2.0 + (slot / 3) * 30
+        y := float64(2.0 + (slot / 3) * 30)
         var options ebiten.DrawImageOptions
-        options.GeoM.Translate(float64(x), float64(y))
+        options.GeoM.Translate(float64(x), y)
         screen.DrawImage(icon, &options)
 
+        var textOptions text.DrawOptions
+        textOptions.GeoM.Translate(float64(x+icon.Bounds().Dx()+2), float64(y))
+        text.Draw(screen, health.GetName(), font, &textOptions)
+
+        y += fontHeight + 1
+
         x1 := x + icon.Bounds().Dx() + 2
-        length := 60
+        length := 80
         vector.FillRect(screen, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 32, G: 32, B: 32, A: 200}, false)
         healthLength := float64(length) * health.GetHealthPercent()
         vector.FillRect(screen, float32(x1), float32(y), float32(healthLength), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, false)
@@ -354,10 +386,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         drawFrontPanels(buffer)
 
-        for i, health := range healthObjects {
-            drawHealthBar(buffer, health, i)
-        }
-
         if showForwardArrow && (counter / 20) % 2 == 0 {
             var arrowOptions ebiten.DrawImageOptions
             arrowOptions.GeoM.Translate(float64(buffer.Bounds().Dx() - arrowImage.Bounds().Dx() - 10), float64(buffer.Bounds().Dy() / 2 - arrowImage.Bounds().Dy() / 2))
@@ -367,6 +395,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         var options ebiten.DrawImageOptions
         options.GeoM.Scale(2, 2)
         screen.DrawImage(buffer, &options)
+
+        for i, health := range healthObjects {
+            drawHealthBar(screen, health, i)
+        }
     }
 
     var keys []ebiten.Key

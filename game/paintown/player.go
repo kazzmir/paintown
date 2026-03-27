@@ -570,6 +570,15 @@ func (definition *CharacterDefinition) GetDieSound() string {
     return ""
 }
 
+func (definition *CharacterDefinition) GetName() string {
+    name := definition.SExpr.GetChild("name")
+    if name != nil {
+        return name.GetValue(0)
+    }
+
+    return ""
+}
+
 func (definition *CharacterDefinition) GetFallSound() string {
     die := definition.SExpr.GetChild("landed")
     if die != nil {
@@ -650,6 +659,8 @@ type PlayerState struct {
     NextAnimation *Animation
     NextAnimationTime uint64
 
+    Name string
+
     Attack AnimationAttack
 
     TrailActive bool
@@ -680,6 +691,8 @@ func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, err
         }
     }
 
+    name := player.Definition.GetName()
+
     playerState := PlayerState{
         X: 60,
         Y: 0,
@@ -693,6 +706,7 @@ func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, err
         Health: max(1, player.Definition.GetHealth()),
         MaxHealth: max(1, player.Definition.GetHealth()),
         Attackers: make(map[Attacker]uint64),
+        Name: name,
     }
 
     for _, animation := range playerState.Animations {
@@ -873,6 +887,10 @@ func (playerState *PlayerState) CurrentAnimation() *Animation {
     }
 
     return nil
+}
+
+func (playerState *PlayerState) GetName() string {
+    return playerState.Name
 }
 
 // FIXME: replace string with an enum
