@@ -289,7 +289,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         length := 80
         vector.FillRect(screen, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 32, G: 32, B: 32, A: 200}, false)
         healthLength := float64(length) * health.GetHealthPercent()
-        vector.FillRect(screen, float32(x1), float32(y), float32(healthLength), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, false)
+
+		sub := screen.SubImage(image.Rect(x1, int(y), x1 + int(healthLength), int(y) + 10)).(*ebiten.Image)
+		graphics.DrawHorizontalGradient(sub, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, color.NRGBA{R: 0, G: 200, B: 0, A: 255})
+        // vector.FillRect(screen, float32(x1), float32(y), float32(healthLength), float32(10), color.NRGBA{R: 200, G: 0, B: 0, A: 255}, false)
     }
 
     type Drawable struct {
