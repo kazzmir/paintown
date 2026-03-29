@@ -402,6 +402,10 @@ func (playerState *PlayerState) CanBeHit(hitter Attacker, attack uint64) bool {
     return playerState.Status != PlayerStateFallen && playerState.Status != PlayerStateFalling
 }
 
+func (playerState *PlayerState) NextAttackId() {
+    playerState.AttackId += 1
+}
+
 func (playerState *PlayerState) Hurt(hitter Attacker, attackId uint64, damage float64, force float64) {
     playerState.Attackers[hitter] = attackId
     playerState.Health -= damage

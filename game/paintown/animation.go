@@ -21,6 +21,7 @@ type AnimationOwner interface {
     GetFacing() Facing
     SetFacing(facing Facing)
     SetTrail(generate int, length int)
+    NextAttackId()
 }
 
 type AnimationAttack struct {
@@ -205,6 +206,13 @@ type AnimationEventNop struct {
 
 func (nopEvent *AnimationEventNop) Update(animation *Animation, system System) {
     animation.CurrentDelay = animation.Delay
+}
+
+type AnimationEventNextTicket struct {
+}
+
+func (nextTicketEvent *AnimationEventNextTicket) Update(animation *Animation, system System) {
+    animation.Owner.NextAttackId()
 }
 
 type AnimationEventDelay struct {
@@ -463,6 +471,8 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                 // ignore, shadow is dynamically computed now
             case "nop":
                 events = append(events, &AnimationEventNop{})
+            case "next-ticket":
+                events = append(events, &AnimationEventNextTicket{})
             default:
                 log.Printf("'%s': Unknown animation event type '%v'", name, child.Name)
         }

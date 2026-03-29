@@ -345,6 +345,10 @@ func (enemy *Enemy) IsDead() bool {
     return enemy.State == EnemyStateDead
 }
 
+func (enemy *Enemy) NextAttackId() {
+    enemy.AttackId += 1
+}
+
 // enemy blinks when they are dead and about to go away
 func (enemy *Enemy) Blinking() bool {
     if enemy.Health <= 0 && enemy.State == EnemyStateFallen {
