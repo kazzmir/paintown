@@ -153,9 +153,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 }
                 screen.DrawImage(animation.CurrentFrame(), &options)
 
-                if !enemy.Attack.IsEmpty() {
-                    x1, y1 := options.GeoM.Apply(float64(enemy.Attack.X1), float64(enemy.Attack.Y1))
-                    x2, y2 := options.GeoM.Apply(float64(enemy.Attack.X2), float64(enemy.Attack.Y2))
+                // FIXME: ugly to pull this attack out
+                attack := enemy.CurrentAnimationValue.Attack
+                if !attack.IsEmpty() {
+                    x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
+                    x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
 
                     x1, x2 = min(x1, x2), max(x1, x2)
                     y1, y2 = min(y1, y2), max(y1, y2)
@@ -210,9 +212,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             screen.DrawImage(animation.CurrentFrame(), &options)
         }
 
-        if !playerState.Attack.IsEmpty() {
-            x1, y1 := options.GeoM.Apply(float64(playerState.Attack.X1), float64(playerState.Attack.Y1))
-            x2, y2 := options.GeoM.Apply(float64(playerState.Attack.X2), float64(playerState.Attack.Y2))
+        attack := playerState.CurrentAnimation().Attack
+        if !attack.IsEmpty() {
+            x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
+            x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
 
             x1, x2 = min(x1, x2), max(x1, x2)
             y1, y2 = min(y1, y2), max(y1, y2)
@@ -584,16 +587,17 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             playerState.X = levelLimit
         }
 
-        if !playerState.Attack.IsEmpty() {
+        if !playerState.CurrentAnimation().Attack.IsEmpty() {
+            attack := playerState.CurrentAnimation().Attack
             attackBox := playerState.GetAttackBox()
             for _, enemy := range enemies {
                 if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit(playerState.AttackId) {
                     if enemy.HitBy(attackBox) {
-                        force := float64(playerState.Attack.Force)
+                        force := float64(attack.Force)
                         if playerState.Facing == FacingLeft {
                             force = -force
                         }
-                        enemy.Hurt(playerState.AttackId, playerState.Attack.Damage, force)
+                        enemy.Hurt(playerState.AttackId, attack.Damage, force)
                         // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
 
@@ -651,14 +655,15 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             }, audio)
             if !enemy.IsDead() {
 
-                if !enemy.Attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
+                attack := enemy.CurrentAnimationValue.Attack
+                if !attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
                     if playerState.HitBy(enemy.GetAttackBox()) {
-                        force := enemy.Attack.Force
+                        force := attack.Force
                         if enemy.GetFacing() == FacingLeft {
                             force = -force
                         }
 
-                        playerState.Hurt(enemy, enemy.AttackId, enemy.Attack.Damage, force)
+                        playerState.Hurt(enemy, enemy.AttackId, attack.Damage, force)
                         showHealthMap[enemy] = counter
 
                         flashes = append(flashes, flashFactory.MakeFlash(playerState.X, playerState.Y + 50, playerState.Z + 0.1))

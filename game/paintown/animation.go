@@ -17,7 +17,7 @@ import (
 
 type AnimationOwner interface {
     Move(x int, y int, z int)
-    SetAttack(attack AnimationAttack)
+    // SetAttack(attack AnimationAttack)
     GetFacing() Facing
     SetFacing(facing Facing)
     SetTrail(generate int, length int)
@@ -64,6 +64,8 @@ type Animation struct {
 
     Delay int
     CurrentDelay int
+
+    Attack AnimationAttack
 
     Owner AnimationOwner
 }
@@ -119,6 +121,7 @@ func (animation *Animation) GetOffsetY() int {
 func (animation *Animation) Reset() {
     animation.CurrentEvent = 0
     animation.CurrentDelay = 0
+    animation.Attack = AnimationAttack{}
 }
 
 func (animation *Animation) InitializeCollision() {
@@ -164,9 +167,7 @@ func (animation *Animation) Update(loop bool, system System) bool {
                     finished = true
 
                     // always reset attack
-                    if animation.Owner != nil {
-                        animation.Owner.SetAttack(AnimationAttack{})
-                    }
+                    animation.Attack = AnimationAttack{}
                 } else {
                     return true
                 }
@@ -228,9 +229,7 @@ type AnimationEventAttack struct {
 }
 
 func (attackEvent *AnimationEventAttack) Update(animation *Animation, system System) {
-    // log.Printf("set attack to %+v", attackEvent.Attack)
-    owner := animation.Owner
-    owner.SetAttack(attackEvent.Attack)
+    animation.Attack = attackEvent.Attack
 }
 
 type AnimationEventOffset struct {

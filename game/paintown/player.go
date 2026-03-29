@@ -232,8 +232,6 @@ type PlayerState struct {
 
     Name string
 
-    Attack AnimationAttack
-
     TrailActive bool
     TrailGenerate int
     TrailLength int
@@ -306,18 +304,14 @@ func (playerState *PlayerState) GetAttackBox() image.Rectangle {
         geom.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
     }
 
-    x1, y1 := geom.Apply(float64(playerState.Attack.X1), float64(playerState.Attack.Y1))
-    x2, y2 := geom.Apply(float64(playerState.Attack.X2), float64(playerState.Attack.Y2))
+    x1, y1 := geom.Apply(float64(animation.Attack.X1), float64(animation.Attack.Y1))
+    x2, y2 := geom.Apply(float64(animation.Attack.X2), float64(animation.Attack.Y2))
 
     return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
 }
 
 func (playerState *PlayerState) ResetAttackers() {
     playerState.Attackers = make(map[Attacker]uint64)
-}
-
-func (playerState *PlayerState) SetAttack(attack AnimationAttack) {
-    playerState.Attack = attack
 }
 
 func (playerState *PlayerState) GetIcon() *ebiten.Image {
@@ -703,7 +697,6 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
             playerState.Dx = 0
             playerState.Status = PlayerIdle
             playerState.ShowAnimation = nil
-            playerState.Attack = AnimationAttack{}
         }
     }
 

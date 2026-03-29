@@ -53,7 +53,7 @@ type Enemy struct {
     Name string
 
     // each attack that hits the enemy has an id that increments monotonically. the enemy
-    // cannot be hit by the same attack twice (unless the attack explicitly enables this)
+    // cannot be hit by the same attack twice (unless the attack explicitly enables this via next-ticket)
     LastAttacked uint64
     AttackId uint64
 
@@ -64,7 +64,6 @@ type Enemy struct {
     Animations map[string]*Animation
     Attacks []*Animation
     Facing Facing
-    Attack AnimationAttack
     Icon *ebiten.Image
 }
 
@@ -254,8 +253,8 @@ func (enemy *Enemy) GetAttackBox() image.Rectangle {
         geom.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
     }
 
-    x1, y1 := geom.Apply(float64(enemy.Attack.X1), float64(enemy.Attack.Y1))
-    x2, y2 := geom.Apply(float64(enemy.Attack.X2), float64(enemy.Attack.Y2))
+    x1, y1 := geom.Apply(float64(animation.Attack.X1), float64(animation.Attack.Y1))
+    x2, y2 := geom.Apply(float64(animation.Attack.X2), float64(animation.Attack.Y2))
 
     return image.Rect(int(x1), int(y1), int(x2), int(y2)).Canon()
 }
@@ -282,10 +281,6 @@ func (enemy *Enemy) SetFacing(facing Facing) {
 
 func (enemy *Enemy) GetAttacks() []*Animation {
     return enemy.Attacks
-}
-
-func (enemy *Enemy) SetAttack(attack AnimationAttack) {
-    enemy.Attack = attack
 }
 
 func (enemy *Enemy) GetIcon() *ebiten.Image {
