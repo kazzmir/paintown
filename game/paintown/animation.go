@@ -199,6 +199,14 @@ func (frameEvent *AnimationEventFrame) Update(animation *Animation, system Syste
     animation.CurrentDelay = animation.Delay
 }
 
+// reset the delay timer
+type AnimationEventNop struct {
+}
+
+func (nopEvent *AnimationEventNop) Update(animation *Animation, system System) {
+    animation.CurrentDelay = animation.Delay
+}
+
 type AnimationEventDelay struct {
     Delay float32
 }
@@ -449,6 +457,12 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                 events = append(events, &AnimationSoundEvent{Sound: value})
             case "bbox":
                 // ignore
+            case "loop":
+                // used to determine if the animation should loop
+            case "shadow":
+                // ignore, shadow is dynamically computed now
+            case "nop":
+                events = append(events, &AnimationEventNop{})
             default:
                 log.Printf("'%s': Unknown animation event type '%v'", name, child.Name)
         }
