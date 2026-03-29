@@ -67,7 +67,16 @@ type Enemy struct {
     Icon *ebiten.Image
 }
 
-func loadAnimations(definition *CharacterDefinition, factory *ObjectFactory) (map[string]*Animation, error) {
+type AnimationCreator interface {
+    MakeAnimationFromDefinition(player string, animation string, baseDir string, definition *sexp.SExpr) (*Animation, error)
+}
+
+type EnemyFactory interface {
+    AnimationCreator
+    LoadDefinition(path string) (CharacterDefinition, error)
+}
+
+func loadAnimations(definition *CharacterDefinition, factory AnimationCreator) (map[string]*Animation, error) {
     animations := definition.FindAll("character", "anim")
 
     // log.Printf("Found %v animations for character %v", len(animations), character.Definition.Name)
@@ -149,7 +158,7 @@ func (factory *ObjectFactory) LoadDefinition(path string) (CharacterDefinition, 
     return definition, nil
 }
 
-func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
+func MakeEnemy(object BlockObject, factory EnemyFactory) (*Enemy, error) {
     definitionPath := data.DataPath(object.Path)
 
     definition, err := factory.LoadDefinition(definitionPath)
@@ -157,7 +166,14 @@ func MakeEnemy(object BlockObject, factory *ObjectFactory) (*Enemy, error) {
         return nil, err
     }
 
+    return MakeEnemyFromDefinition(object, definition, factory)
+}
+
+func MakeEnemyFromDefinition(object BlockObject, definition CharacterDefinition, factory AnimationCreator) (*Enemy, error) {
     animations, err := loadAnimations(&definition, factory)
+    if err != nil {
+        return nil, err
+    }
 
     idle, ok := animations["idle"]
     if !ok {
