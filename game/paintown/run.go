@@ -107,6 +107,45 @@ func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.Ge
     }
 }
 
+func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
+    var options ebiten.DrawImageOptions
+
+    // for _, enemy := range enemies {
+    animation := enemy.CurrentAnimation()
+
+    if animation != nil && animation.CurrentFrame() != nil {
+        if enemy.Facing == FacingLeft {
+            options.GeoM.Scale(-1, 1)
+        }
+
+        options.GeoM.Translate(enemy.X - cameraX, enemy.Z - enemy.Y)
+        options.GeoM.Concat(screenShake)
+        bounds := animation.CurrentFrame().Bounds()
+        if enemy.Facing == FacingLeft {
+            options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+        } else {
+            options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+        }
+        screen.DrawImage(animation.CurrentFrame(), &options)
+
+        // FIXME: ugly to pull this attack out
+        attack := enemy.CurrentAnimationValue.Attack
+        if !attack.IsEmpty() {
+            x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
+            x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
+
+            x1, x2 = min(x1, x2), max(x1, x2)
+            y1, y2 = min(y1, y2), max(y1, y2)
+
+            // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
+
+            vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{B:255, A:255}, false)
+        }
+
+    }
+    // }
+}
+
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
@@ -185,45 +224,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 panelI = (panelI + 1) % len(level.FrontPanels)
             }
         }
-    }
-
-    drawEnemy := func(enemy *Enemy, screen *ebiten.Image) {
-        var options ebiten.DrawImageOptions
-
-        // for _, enemy := range enemies {
-            animation := enemy.CurrentAnimation()
-
-            if animation != nil && animation.CurrentFrame() != nil {
-                if enemy.Facing == FacingLeft {
-                    options.GeoM.Scale(-1, 1)
-                }
-
-                options.GeoM.Translate(enemy.X - cameraX, enemy.Z - enemy.Y)
-                options.GeoM.Concat(screenShake)
-                bounds := animation.CurrentFrame().Bounds()
-                if enemy.Facing == FacingLeft {
-                    options.GeoM.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-                } else {
-                    options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-                }
-                screen.DrawImage(animation.CurrentFrame(), &options)
-
-                // FIXME: ugly to pull this attack out
-                attack := enemy.CurrentAnimationValue.Attack
-                if !attack.IsEmpty() {
-                    x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
-                    x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
-
-                    x1, x2 = min(x1, x2), max(x1, x2)
-                    y1, y2 = min(y1, y2), max(y1, y2)
-
-                    // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
-
-                    vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{B:255, A:255}, false)
-                }
-
-            }
-        // }
     }
 
     type ShadowObject interface {
@@ -343,7 +343,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         drawShadow(buffer, enemy)
                     },
                     Draw: func() {
-                        drawEnemy(enemy, buffer)
+                        DrawEnemy(enemy, cameraX, screenShake, buffer)
                     },
                     Z: enemy.Z,
                 })

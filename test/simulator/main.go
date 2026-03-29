@@ -3,9 +3,7 @@ package main
 import (
     "log"
     "sync"
-    /*
     "image"
-    */
     "image/color"
     "flag"
 
@@ -51,12 +49,14 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
         playerState.Y = 0
         playerState.Z = 200
 
-        playerState.Status = paintown.PlayerIdle
-
-        enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{}, enemyDefinition, paintown.MakeObjectFactory())
+        enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{
+            Coords: image.Pt(200, 200),
+        }, enemyDefinition, paintown.MakeObjectFactory())
         if err != nil {
             log.Fatal(err)
         }
+
+        enemy.Facing = paintown.FacingLeft
 
         engine.Player = playerState
         engine.Enemy = enemy
@@ -94,8 +94,14 @@ func (engine *Engine) Update() error {
         }
     }
 
+    level := paintown.Level{ZMinimum: 50, ZMaximum: 51}
+
     if engine.Player != nil {
-        engine.Player.Update(paintown.InputState{}, &paintown.Level{ZMinimum: 50, ZMaximum: 50}, &paintown.DummySystem{}, engine.Counter)
+        engine.Player.Update(paintown.InputState{}, &level, &paintown.DummySystem{}, engine.Counter)
+    }
+
+    if engine.Enemy != nil {
+        engine.Enemy.Update(&level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
     }
 
     /*
@@ -122,6 +128,10 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
 
     if engine.Player != nil {
         paintown.DrawPlayer(engine.Player, 0, ebiten.GeoM{}, screen)
+    }
+
+    if engine.Enemy != nil {
+        paintown.DrawEnemy(engine.Enemy, 0, ebiten.GeoM{}, screen)
     }
 
     /*
