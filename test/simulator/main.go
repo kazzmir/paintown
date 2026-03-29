@@ -30,6 +30,10 @@ type Engine struct {
     Init sync.Once
 }
 
+type DoNothing struct {}
+func (nothing *DoNothing) Update(enemy *paintown.Enemy, level *paintown.Level, playerInfo paintown.PlayerInfo) {
+}
+
 func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition paintown.CharacterDefinition) *Engine {
     engine := &Engine{}
 
@@ -50,8 +54,8 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
         playerState.Z = 200
 
         enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{
-            Coords: image.Pt(200, 200),
-        }, enemyDefinition, paintown.MakeObjectFactory())
+            Coords: image.Pt(250, 200),
+        }, enemyDefinition, paintown.MakeObjectFactory(), &DoNothing{})
         if err != nil {
             log.Fatal(err)
         }

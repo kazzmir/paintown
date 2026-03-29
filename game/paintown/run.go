@@ -464,7 +464,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         var out []*Enemy
         for _, object := range objects {
             if object.Type == "enemy" {
-                enemy, err := MakeEnemy(object, factory)
+                enemy, err := MakeEnemy(object, factory, &BehaviorNormal{})
                 if err != nil {
                     log.Printf("Error creating enemy from object '%v': %v", object.Name, err)
                 } else {
