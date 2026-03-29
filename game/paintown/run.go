@@ -273,7 +273,10 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     drawHealthBar := func(screen *ebiten.Image, health HealthObject, slot int) {
         icon := health.GetIcon()
 
-        x := 5.0 + (slot % 3) * 90
+        totalWidth := 100
+        gap := 5
+
+        x := 5.0 + (slot % 3) * (totalWidth + gap)
         y := float64(2.0 + (slot / 3) * 30)
         var options ebiten.DrawImageOptions
         options.GeoM.Translate(float64(x), y)
@@ -286,7 +289,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         y += fontHeight + 1
 
         x1 := x + icon.Bounds().Dx() + 2
-        length := 80
+        length := totalWidth - icon.Bounds().Dx() - 2
         vector.FillRect(screen, float32(x1), float32(y), float32(length), float32(10), color.NRGBA{R: 32, G: 32, B: 32, A: 200}, false)
         healthLength := float64(length) * health.GetHealthPercent()
 
