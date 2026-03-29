@@ -35,7 +35,7 @@ func MakeEngine(character paintown.CharacterDefinition) *Engine {
         log.Fatal(err)
     }
 
-    idle.Update(true)
+    idle.Update(true, &paintown.DummySystem{})
 
     return &Engine{
         Character: character,
@@ -60,7 +60,7 @@ func (engine *Engine) Update() error {
             case ebiten.KeySpace:
                 frame := engine.Animation.CurrentFrame()
                 for {
-                    if engine.Animation.Update(true) {
+                    if engine.Animation.Update(true, &paintown.DummySystem{}) {
                         break
                     }
                     if frame != engine.Animation.CurrentFrame() {

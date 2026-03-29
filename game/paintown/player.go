@@ -189,7 +189,7 @@ func (animation *Animation) InitializeCollision() {
 }
 
 // returns true if the animation reaches the end of its events and loops back to the beginning
-func (animation *Animation) Update(loop bool) bool {
+func (animation *Animation) Update(loop bool, system System) bool {
     if animation.CurrentDelay > 0 {
         animation.CurrentDelay -= 1
         return false
@@ -200,7 +200,7 @@ func (animation *Animation) Update(loop bool) bool {
         now := animation.CurrentEvent
         finished := false
         for animation.CurrentDelay == 0 {
-            animation.Events[animation.CurrentEvent].Update(animation)
+            animation.Events[animation.CurrentEvent].Update(animation, system)
             animation.CurrentEvent += 1
             if animation.CurrentEvent >= len(animation.Events) {
                 if loop {
@@ -227,15 +227,19 @@ func (animation *Animation) Update(loop bool) bool {
     }
 }
 
+type System interface {
+    PlaySound(sound string) error
+}
+
 type AnimationEvent interface {
-    Update(*Animation)
+    Update(*Animation, System)
 }
 
 type AnimationEventFrame struct {
     Image *ebiten.Image
 }
 
-func (frameEvent *AnimationEventFrame) Update(animation *Animation) {
+func (frameEvent *AnimationEventFrame) Update(animation *Animation, system System) {
     animation.Frame = frameEvent.Image
     animation.CurrentDelay = animation.Delay
 }
@@ -244,7 +248,7 @@ type AnimationEventDelay struct {
     Delay float32
 }
 
-func (delayEvent *AnimationEventDelay) Update(animation *Animation) {
+func (delayEvent *AnimationEventDelay) Update(animation *Animation, system System) {
     animation.Delay = int(delayEvent.Delay)
 }
 
@@ -252,7 +256,7 @@ type AnimationEventAttack struct {
     Attack AnimationAttack
 }
 
-func (attackEvent *AnimationEventAttack) Update(animation *Animation) {
+func (attackEvent *AnimationEventAttack) Update(animation *Animation, system System) {
     // log.Printf("set attack to %+v", attackEvent.Attack)
     owner := animation.Owner
     owner.SetAttack(attackEvent.Attack)
@@ -263,7 +267,7 @@ type AnimationEventOffset struct {
     Y int
 }
 
-func (offsetEvent *AnimationEventOffset) Update(animation *Animation) {
+func (offsetEvent *AnimationEventOffset) Update(animation *Animation, system System) {
     animation.OffsetX = offsetEvent.X
     animation.OffsetY = offsetEvent.Y
 }
@@ -272,7 +276,7 @@ type AnimationEventType struct {
     Type string
 }
 
-func (typeEvent *AnimationEventType) Update(animation *Animation) {
+func (typeEvent *AnimationEventType) Update(animation *Animation, system System) {
     // TODO
 }
 
@@ -282,7 +286,7 @@ type AnimationMoveEvent struct {
     Z int
 }
 
-func (moveEvent *AnimationMoveEvent) Update(animation *Animation) {
+func (moveEvent *AnimationMoveEvent) Update(animation *Animation, system System) {
     x := moveEvent.X
 
     if animation.Owner.GetFacing() == FacingLeft {
@@ -296,7 +300,7 @@ type AnimationFaceEvent struct {
     Facing string
 }
 
-func (faceEvent *AnimationFaceEvent) Update(animation *Animation) {
+func (faceEvent *AnimationFaceEvent) Update(animation *Animation, system System) {
     switch faceEvent.Facing {
         case "reverse": animation.Owner.SetFacing(animation.Owner.GetFacing().Reverse())
         case "left": animation.Owner.SetFacing(FacingLeft)
@@ -309,7 +313,7 @@ type AnimationEventRelativeOffset struct {
     Y int
 }
 
-func (relativeOffsetEvent *AnimationEventRelativeOffset) Update(animation *Animation) {
+func (relativeOffsetEvent *AnimationEventRelativeOffset) Update(animation *Animation, system System) {
     animation.OffsetX += relativeOffsetEvent.X
     animation.OffsetY += relativeOffsetEvent.Y
 }
@@ -319,8 +323,17 @@ type AnimationTrailEvent struct {
     Length int
 }
 
-func (trailEvent *AnimationTrailEvent) Update(animation *Animation) {
+func (trailEvent *AnimationTrailEvent) Update(animation *Animation, system System) {
     animation.Owner.SetTrail(trailEvent.Generate, trailEvent.Length)
+}
+
+type AnimationSoundEvent struct {
+    // path to sound file
+    Sound string
+}
+
+func (soundEvent *AnimationSoundEvent) Update(animation *Animation, system System) {
+    system.PlaySound(soundEvent.Sound)
 }
 
 type InputKey int
@@ -476,8 +489,13 @@ func MakeAnimationFromDefinition(baseDirectory string, definition *sexp.SExpr) (
                 length, _ := sexp.ReadValue[int](child, "length", 0)
                 // log.Printf("Trail generate=%v length=%v", generate, length)
                 events = append(events, &AnimationTrailEvent{Generate: generate, Length: length})
+            case "sound":
+                value := child.GetValue(0)
+                events = append(events, &AnimationSoundEvent{Sound: value})
+            case "bbox":
+                // ignore
             default:
-                log.Printf("Unknown animation event type '%v'", child.Name)
+                log.Printf("'%s': Unknown animation event type '%v'", name, child.Name)
         }
     }
 
@@ -904,7 +922,7 @@ func (playerState *PlayerState) GetStatus() string {
     return "ground"
 }
 
-func (playerState *PlayerState) Update(input InputState, level *Level, counter uint64) {
+func (playerState *PlayerState) Update(input InputState, level *Level, system System, counter uint64) {
     doJump := false
     move := false
 
@@ -1135,7 +1153,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
     animation := playerState.CurrentAnimation()
 
     if animation != nil {
-        if animation.Update(true) {
+        if animation.Update(true, system) {
             if playerState.Status == PlayerJump {
                 playerState.ShowAnimation = nil
             } else if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
@@ -1150,7 +1168,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, counter u
                         playerState.NextAnimation = nil
                         if playerState.ShowAnimation != nil {
                             playerState.ShowAnimation.Reset()
-                            playerState.ShowAnimation.Update(true)
+                            playerState.ShowAnimation.Update(true, system)
                         }
                     }
                 }

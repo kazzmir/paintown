@@ -489,7 +489,7 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
     }
 }
 
-func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(EnemyState)) {
+func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(EnemyState), system System) {
     oldState := enemy.State
     enemy.UpdateState(level, playerInfo)
     if enemy.State != oldState {
@@ -512,7 +512,7 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(En
         if enemy.State == EnemyStateFallen || enemy.State == EnemyStateFalling {
             loopAnimation = false
         }
-        if enemy.CurrentAnimationValue.Update(loopAnimation) {
+        if enemy.CurrentAnimationValue.Update(loopAnimation, system) {
             if enemy.State == EnemyStateAttacking || enemy.State == EnemyStateRise || enemy.State == EnemyStatePain {
                 enemy.State = EnemyStateIdle
             }

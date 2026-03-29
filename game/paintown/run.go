@@ -576,7 +576,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         inputState := readInputState()
 
         didFall := false
-        playerState.Update(inputState, level, counter)
+        playerState.Update(inputState, level, audio, counter)
 
         if playerState.X > levelLimit {
             playerState.X = levelLimit
@@ -618,7 +618,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         if len(flashes) > 0 {
             flashesOut := make([]*Flash, 0, len(flashes))
             for _, flash := range flashes {
-                if !flash.Animation.Update(false) {
+                if !flash.Animation.Update(false, audio) {
                     flashesOut = append(flashesOut, flash)
                 }
             }
@@ -646,7 +646,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         didFall = true
                         audio.PlaySound(enemy.FallSound)
                 }
-            })
+            }, audio)
             if !enemy.IsDead() {
 
                 if !enemy.Attack.IsEmpty() && abs(enemy.Z - playerState.Z) < Z_DISTANCE && playerState.CanBeHit(enemy, enemy.AttackId) {
@@ -690,6 +690,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     return nil
 }
 
+type DummySystem struct {}
+func (dummy *DummySystem) PlaySound(path string) error {
+    return nil
+}
+
 func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDraw func(drawer data.DrawFunc) data.DrawFunc) (*PaintownCharacter, error) {
 
     animations := make(map[string]*Animation)
@@ -710,7 +715,7 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
                         log.Printf("Error loading idle animation for player '%v': %v", choice.Name(), err)
                     } else {
                         animations[player.Definition.Name] = idle
-                        idle.Update(true)
+                        idle.Update(true, &DummySystem{})
                     }
                 }
             }
@@ -824,7 +829,7 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
 
         animation := animations[allPlayers[currentChoice].Definition.Name]
 
-        animation.Update(true)
+        animation.Update(true, &DummySystem{})
 
         err := yield()
         if err != nil {
