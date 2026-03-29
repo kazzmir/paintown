@@ -5,8 +5,8 @@ import (
     "sync"
     /*
     "image"
-    "image/color"
     */
+    "image/color"
     "flag"
 
     "github.com/kazzmir/paintown/game/data"
@@ -26,6 +26,7 @@ const ScreenHeight = 240
 type Engine struct {
     Player *paintown.PlayerState
     Enemy *paintown.Enemy
+    Counter uint64
 
     Load func()
     Init sync.Once
@@ -46,6 +47,12 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
             log.Fatal(err)
         }
 
+        playerState.X = 100
+        playerState.Y = 0
+        playerState.Z = 200
+
+        playerState.Status = paintown.PlayerIdle
+
         enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{}, enemyDefinition, paintown.MakeObjectFactory())
         if err != nil {
             log.Fatal(err)
@@ -60,6 +67,7 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
 
 func (engine *Engine) Update() error {
     engine.Init.Do(engine.Load)
+    engine.Counter += 1
 
     keys := inpututil.AppendJustPressedKeys(nil)
 
@@ -86,6 +94,10 @@ func (engine *Engine) Update() error {
         }
     }
 
+    if engine.Player != nil {
+        engine.Player.Update(paintown.InputState{}, &paintown.Level{ZMinimum: 50, ZMaximum: 50}, &paintown.DummySystem{}, engine.Counter)
+    }
+
     /*
     if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
         engine.Box = engine.Box.Add(image.Pt(-1, 0))
@@ -105,6 +117,12 @@ func (engine *Engine) Update() error {
 }
 
 func (engine *Engine) Draw(screen *ebiten.Image) {
+
+    screen.Fill(color.RGBA{R: 0, G: 0, B: 200, A: 255})
+
+    if engine.Player != nil {
+        paintown.DrawPlayer(engine.Player, 0, ebiten.GeoM{}, screen)
+    }
 
     /*
     frame := engine.Animation.CurrentFrame()
@@ -165,6 +183,7 @@ func main() {
 
     ebiten.SetWindowSize(ScreenWidth*3, ScreenHeight*3)
     ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
+    ebiten.SetTPS(90)
 
     playerArg := *playerPath
     if playerArg == "" {

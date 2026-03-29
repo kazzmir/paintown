@@ -52,6 +52,61 @@ func loadFont() (*text.GoTextFace, error) {
     }, nil
 }
 
+func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.GeoM, screen *ebiten.Image) {
+    var options ebiten.DrawImageOptions
+
+    for _, trail := range playerState.Trails {
+        bounds := trail.Image.Bounds()
+
+        // FIXME: take offset x/y into account
+        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+
+        if trail.Facing == FacingLeft {
+            options.GeoM.Scale(-1, 1)
+        }
+
+        if playerState.TrailLength > 0 {
+            options.ColorScale.ScaleAlpha(0.7 * float32(trail.Time) / float32(playerState.TrailLength))
+        }
+
+        options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
+        options.GeoM.Concat(screenShake)
+        screen.DrawImage(trail.Image, &options)
+
+        options.ColorScale.Reset()
+        options.GeoM.Reset()
+    }
+
+    animation := playerState.CurrentAnimation()
+
+    if animation != nil && animation.CurrentFrame() != nil {
+
+        bounds := animation.CurrentFrame().Bounds()
+        options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
+
+        if playerState.Facing == FacingLeft {
+            options.GeoM.Scale(-1, 1)
+        }
+
+        options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
+        options.GeoM.Concat(screenShake)
+        screen.DrawImage(animation.CurrentFrame(), &options)
+    }
+
+    attack := playerState.CurrentAnimation().Attack
+    if !attack.IsEmpty() {
+        x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
+        x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
+
+        x1, x2 = min(x1, x2), max(x1, x2)
+        y1, y2 = min(y1, y2), max(y1, y2)
+
+        // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
+
+        vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{R:255, A:255}, false)
+    }
+}
+
 func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func(drawer data.DrawFunc) data.DrawFunc, levelPath string, audioContext *audiolib.Context) error {
     level, err := LoadLevel(levelPath)
     if err != nil {
@@ -169,61 +224,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
             }
         // }
-    }
-
-    drawPlayer := func(screen *ebiten.Image) {
-        var options ebiten.DrawImageOptions
-
-        for _, trail := range playerState.Trails {
-            bounds := trail.Image.Bounds()
-
-            // FIXME: take offset x/y into account
-            options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
-
-            if trail.Facing == FacingLeft {
-                options.GeoM.Scale(-1, 1)
-            }
-
-            if playerState.TrailLength > 0 {
-                options.ColorScale.ScaleAlpha(0.7 * float32(trail.Time) / float32(playerState.TrailLength))
-            }
-
-            options.GeoM.Translate(trail.X - cameraX, trail.Z - playerState.Y)
-            options.GeoM.Concat(screenShake)
-            screen.DrawImage(trail.Image, &options)
-
-            options.ColorScale.Reset()
-            options.GeoM.Reset()
-        }
-
-        animation := playerState.CurrentAnimation()
-
-        if animation != nil && animation.CurrentFrame() != nil {
-
-            bounds := animation.CurrentFrame().Bounds()
-            options.GeoM.Translate(-float64(bounds.Dx()) / 2 + float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
-
-            if playerState.Facing == FacingLeft {
-                options.GeoM.Scale(-1, 1)
-            }
-
-            options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
-            options.GeoM.Concat(screenShake)
-            screen.DrawImage(animation.CurrentFrame(), &options)
-        }
-
-        attack := playerState.CurrentAnimation().Attack
-        if !attack.IsEmpty() {
-            x1, y1 := options.GeoM.Apply(float64(attack.X1), float64(attack.Y1))
-            x2, y2 := options.GeoM.Apply(float64(attack.X2), float64(attack.Y2))
-
-            x1, x2 = min(x1, x2), max(x1, x2)
-            y1, y2 = min(y1, y2), max(y1, y2)
-
-            // log.Printf("Draw attack box from (%v, %v) to (%v, %v)", x1, y1, x2, y2)
-
-            vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2 - x1), float32(y2 - y1), 3, color.RGBA{R:255, A:255}, false)
-        }
     }
 
     type ShadowObject interface {
@@ -376,7 +376,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                 drawShadow(buffer, playerState)
             },
             Draw: func(){
-                drawPlayer(buffer)
+                DrawPlayer(playerState, cameraX, screenShake, buffer)
             },
             Z: playerState.Z,
         })
