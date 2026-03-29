@@ -13,10 +13,10 @@ import (
     "github.com/kazzmir/paintown/game/paintown"
 
     "github.com/hajimehoshi/ebiten/v2"
+    "github.com/hajimehoshi/ebiten/v2/inpututil"
     /*
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
     "github.com/hajimehoshi/ebiten/v2/vector"
-    "github.com/hajimehoshi/ebiten/v2/inpututil"
     */
 )
 
@@ -61,19 +61,13 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
 func (engine *Engine) Update() error {
     engine.Init.Do(engine.Load)
 
-    /*
-    engine.Init.Do(func() {
-        log.Printf("Initialize collision")
-        engine.Animation.InitializeCollision()
-        log.Printf("Done")
-    })
-
     keys := inpututil.AppendJustPressedKeys(nil)
 
     for _, key := range keys {
         switch key {
             case ebiten.KeyEscape, ebiten.KeyCapsLock:
                 return ebiten.Termination
+                /*
             case ebiten.KeySpace:
                 frame := engine.Animation.CurrentFrame()
                 for {
@@ -84,11 +78,15 @@ func (engine *Engine) Update() error {
                         break
                     }
                 }
+                */
+                /*
             case ebiten.KeyTab:
                 engine.Flip = !engine.Flip
+                */
         }
     }
 
+    /*
     if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
         engine.Box = engine.Box.Add(image.Pt(-1, 0))
     }
