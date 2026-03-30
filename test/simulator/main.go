@@ -31,8 +31,29 @@ type Engine struct {
     Init sync.Once
 }
 
-type DoNothing struct {}
-func (nothing *DoNothing) Update(enemy *paintown.Enemy, level *paintown.Level, playerInfo paintown.PlayerInfo) {
+// always stands at X
+type WaitAtBehavior struct {
+    X int
+}
+
+func (wait *WaitAtBehavior) Update(enemy *paintown.Enemy, level *paintown.Level, playerInfo paintown.PlayerInfo) {
+    enemy.DestX = float64(wait.X)
+
+    moved := false
+    if enemy.X < enemy.DestX {
+        enemy.X += min(1, enemy.DestX - enemy.X)
+        moved = true
+    } else if enemy.X > enemy.DestX {
+        enemy.X -= min(1, enemy.X - enemy.DestX)
+        moved = true
+    }
+
+    if moved {
+        enemy.State = paintown.EnemyStateWalking
+    } else {
+        enemy.State = paintown.EnemyStateIdle
+        enemy.CurrentAnimationValue = enemy.Animations["idle"]
+    }
 }
 
 func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition paintown.CharacterDefinition) *Engine {
@@ -55,12 +76,13 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
 
         enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{
             Coords: image.Pt(250, 200),
-        }, enemyDefinition, paintown.MakeObjectFactory(), &DoNothing{})
+        }, enemyDefinition, paintown.MakeObjectFactory(), &WaitAtBehavior{X: 250})
         if err != nil {
             log.Fatal(err)
         }
 
         enemy.Facing = paintown.FacingLeft
+        enemy.Health = 10000000
 
         engine.Player = playerState
         engine.Enemy = enemy
