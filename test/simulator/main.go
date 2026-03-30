@@ -124,6 +124,22 @@ func (engine *Engine) Update() error {
         engine.Enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
     }
 
+    attackBox := engine.Player.GetAttackBox()
+    attack := engine.Player.CurrentAnimation().Attack
+    if !attackBox.Empty() {
+        enemy := engine.Enemy
+        playerState := engine.Player
+        if enemy.CanBeHit(playerState.AttackId) {
+            if enemy.HitBy(attackBox) {
+                force := float64(attack.Force)
+                if playerState.Facing == paintown.FacingLeft {
+                    force = -force
+                }
+                enemy.Hurt(playerState.AttackId, attack.Damage, force)
+            }
+        }
+    }
+
     return nil
 }
 

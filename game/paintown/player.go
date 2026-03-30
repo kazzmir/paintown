@@ -297,6 +297,10 @@ func (playerState *PlayerState) GetAttackBox() image.Rectangle {
 
     animation := playerState.CurrentAnimation()
 
+    if animation == nil || animation.CurrentFrame() == nil {
+        return image.Rectangle{}
+    }
+
     bounds := animation.CurrentFrame().Bounds()
     if playerState.Facing == FacingLeft {
         geom.Translate(+float64(bounds.Dx()) / 2 - float64(animation.GetOffsetX()), float64(-bounds.Dy()) + float64(animation.GetOffsetY()))
