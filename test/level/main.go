@@ -49,7 +49,7 @@ func (engine *Engine) Update() error {
                     Path: path,
                 }
 
-                _, err := paintown.MakeEnemy(object, factory)
+                _, err := paintown.MakeEnemy(object, factory, &paintown.BehaviorNormal{})
                 if err != nil {
                     log.Printf("Error creating enemy %v: %v", path, err)
                 }
