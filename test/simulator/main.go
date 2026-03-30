@@ -59,6 +59,7 @@ func (wait *WaitAtBehavior) Update(enemy *paintown.Enemy, level *paintown.Level,
 func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition paintown.CharacterDefinition) *Engine {
     engine := &Engine{
         Level: paintown.Level{ZMinimum: 200, ZMaximum: 201},
+        Counter: 1000,
     }
 
     engine.Load = func() {

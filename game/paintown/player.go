@@ -217,6 +217,10 @@ type PlayerState struct {
 
     Icon *ebiten.Image
 
+    // map of active animations to the time they were activated, used to determine if an attack should be invoked
+    // at the end of the current animation
+    ActivatedAnimations map[*Animation]uint64
+
     AttackId uint64
 
     HitSound string
@@ -227,9 +231,6 @@ type PlayerState struct {
     PainThreshold float64
 
     Attackers map[Attacker]uint64
-
-    NextAnimation *Animation
-    NextAnimationTime uint64
 
     Name string
 
@@ -277,6 +278,7 @@ func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, err
         MaxHealth: max(1, player.Definition.GetHealth()),
         Attackers: make(map[Attacker]uint64),
         Name: name,
+        ActivatedAnimations: make(map[*Animation]uint64),
     }
 
     for _, animation := range playerState.Animations {
@@ -488,8 +490,6 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
 
     playerState.Pain = max(0, playerState.Pain - 0.1)
 
-    var nextAnimation *Animation
-
     playerState.UpdateTrails(counter)
 
     // if playerState.Status != PlayerJump {
@@ -499,33 +499,9 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
         }
         */
 
-        var possibleNextAnimations []*Animation
-
         for _, animation := range playerState.Animations {
             if animation.Name == "idle" || animation.Name == "walk" || animation.Name == "grab" || animation.Name == "get" || animation.Name == "jump" {
                 continue
-            }
-
-            inSequence := false
-
-            if animation.Sequence != "" {
-                ok := true
-
-                /*
-                if playerState.ShowAnimation != nil {
-                    log.Printf("Check animation %v with sequence %v against %v", animation.Name, animation.Sequence, playerState.ShowAnimation.Name)
-                }
-                */
-
-                if playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name {
-                    // log.Printf("Animation %v is ok", animation.Name)
-                    inSequence = true
-                } else {
-                    ok = false
-                }
-                if !ok {
-                    continue
-                }
             }
 
             requiredStatus := "ground"
@@ -552,7 +528,8 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
             pressedAll := len(animation.Keys) > 0
             for i, key := range animation.Keys {
 
-                if counter - animation.KeyPresses[i] < uint64(len(animation.Keys) - i) * 20 {
+                if counter - animation.KeyPresses[i] < uint64(len(animation.Keys) - 1 - i) * 20 {
+                    // log.Printf("Key %v for animation %v was recently pressed at %v, counter: %v", key, animation.Name, animation.KeyPresses[i], counter)
                 } else {
                     switch key {
                         case InputKeyJump:
@@ -581,60 +558,78 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
                             }
                     }
 
-                    pressedAll = false
-                    break
+                    // if this is the last key in the sequence then consider it the sequence as activated
+                    if i == len(animation.Keys) - 1 && animation.KeyPresses[i] == counter {
+                    } else {
+                        pressedAll = false
+                        break
+                    }
                 }
             }
 
             if pressedAll {
-                // prefer animation with a sequence
-                if nextAnimation == nil || inSequence {
-                    // log.Printf("Possible next animation: '%v' presses: %v", animation.Name, animation.KeyPresses)
-                    possibleNextAnimations = append(possibleNextAnimations, animation)
-                    // log.Printf("Set next animation to '%v' at %v", animation.Name, counter)
-                    // nextAnimation = animation
-                    // playerState.NextAnimationTime = counter
-                }
-                // break
+                playerState.ActivatedAnimations[animation] = counter
             }
         }
 
+        /*
+        for animation, activationTime := range playerState.ActivatedAnimations {
+            log.Printf("Activated animation '%v' at %v, time since activation: %v", animation.Name, activationTime, counter - activationTime)
+        }
+        */
+
         // prioritize moves that are in sequence with the current animation, and
         // have the longest set of keys to activate them
-        if len(possibleNextAnimations) > 0 {
-            isInSequence := func(animation *Animation) bool {
-                return playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name
+        chooseNextAnimation := func() *Animation {
+            possibleNextAnimations := make([]*Animation, 0, len(playerState.ActivatedAnimations))
+            for animation, activationTime := range playerState.ActivatedAnimations {
+                if counter - activationTime < 40 {
+                    possibleNextAnimations = append(possibleNextAnimations, animation)
+                }
             }
 
-            slices.SortFunc(possibleNextAnimations, func(a, b *Animation) int {
-                scoreA := 0
-                scoreB := 0
-
-                if isInSequence(a) {
-                    scoreA += 1000
+            if len(possibleNextAnimations) > 0 {
+                isInSequence := func(animation *Animation) bool {
+                    return playerState.ShowAnimation != nil && animation.Sequence == playerState.ShowAnimation.Name
                 }
 
-                if isInSequence(b) {
-                    scoreB += 1000
+                slices.SortFunc(possibleNextAnimations, func(a, b *Animation) int {
+                    scoreA := 0
+                    scoreB := 0
+
+                    if a.Sequence != "" {
+                        if isInSequence(a) {
+                            scoreA += 1000
+                        } else {
+                            scoreA -= 1000
+                        }
+                    }
+
+                    if b.Sequence != "" {
+                        if isInSequence(b) {
+                            scoreB += 1000
+                        } else {
+                            scoreB -= 1000
+                        }
+                    }
+
+                    scoreA += len(a.Keys)
+                    scoreB += len(b.Keys)
+
+                    return cmp.Compare(scoreA, scoreB)
+                })
+
+                /*
+                for _, animation := range possibleNextAnimations {
+                    log.Printf("Possible next animation: %v", animation.Name)
                 }
+                */
 
-                scoreA += len(a.Keys)
-                scoreB += len(b.Keys)
-
-                return cmp.Compare(scoreA, scoreB)
-            })
-
-            /*
-            for _, animation := range possibleNextAnimations {
-                log.Printf("Possible next animation: %v", animation.Name)
+                // last element should be the one with the highest score
+                return possibleNextAnimations[len(possibleNextAnimations) - 1]
             }
-            */
 
-            // last element should be the one with the highest score
-            nextAnimation = possibleNextAnimations[len(possibleNextAnimations) - 1]
-            playerState.NextAnimationTime = counter
-
-            // log.Printf("Choose next animation: %v", nextAnimation.Name)
+            return nil
         }
 
         if playerState.Status != PlayerJump && playerState.ShowAnimation == nil {
@@ -688,11 +683,13 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
     }
 
     if playerState.Status == PlayerMove || playerState.Status == PlayerIdle || playerState.Status == PlayerJump {
+        nextAnimation := chooseNextAnimation()
         if nextAnimation != nil && playerState.ShowAnimation == nil {
             playerState.AttackId += 1
             playerState.ShowAnimation = nextAnimation
             nextAnimation.Reset()
             playerState.TrailActive = false
+            playerState.ActivatedAnimations = make(map[*Animation]uint64)
         }
     }
 
@@ -713,18 +710,22 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
 
     if animation != nil {
         if animation.Update(true, system) {
+            // if we get here then the current animation has completed
+
             if playerState.Status == PlayerJump {
                 playerState.ShowAnimation = nil
             } else if /* playerState.Status != PlayerJump && */ playerState.Status != PlayerMove {
                 playerState.Status = PlayerIdle
                 if playerState.ShowAnimation != nil {
+                    nextAnimation := chooseNextAnimation()
+
                     playerState.ShowAnimation = nil
 
-                    if counter - playerState.NextAnimationTime < 180 {
+                    if nextAnimation != nil {
+                        playerState.ActivatedAnimations = make(map[*Animation]uint64)
                         playerState.AttackId += 1
                         playerState.ShowAnimation = nextAnimation
                         playerState.TrailActive = true
-                        playerState.NextAnimation = nil
                         if playerState.ShowAnimation != nil {
                             playerState.ShowAnimation.Reset()
                             playerState.ShowAnimation.Update(true, system)
