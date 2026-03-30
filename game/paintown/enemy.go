@@ -403,6 +403,7 @@ func (enemy *Enemy) Move(x int, y int, z int) {
 func (enemy *Enemy) DoFall(force float64) {
     enemy.Pain = 0
     enemy.State = EnemyStateFalling
+    enemy.AttackId += 1
     enemy.Y = 10
     enemy.Vy = 2
     enemy.Vx = force
@@ -437,6 +438,10 @@ func (enemy *Enemy) GetHealth() string {
 
 func (enemy *Enemy) IsDead() bool {
     return enemy.State == EnemyStateDead
+}
+
+func (enemy *Enemy) GetAttackId() uint64 {
+    return enemy.AttackId
 }
 
 func (enemy *Enemy) NextAttackId() {

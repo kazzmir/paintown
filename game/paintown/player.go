@@ -200,6 +200,7 @@ type Trail struct {
 }
 
 type Attacker interface {
+    GetAttackId() uint64
 }
 
 type PlayerState struct {
@@ -404,8 +405,12 @@ func (playerState *PlayerState) NextAttackId() {
     playerState.AttackId += 1
 }
 
-func (playerState *PlayerState) Hurt(hitter Attacker, attackId uint64, damage float64, force float64) {
-    playerState.Attackers[hitter] = attackId
+func (playerState *PlayerState) IgnoreHit(hitter Attacker) {
+    playerState.Attackers[hitter] = hitter.GetAttackId()
+}
+
+func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
+    playerState.Attackers[hitter] = hitter.GetAttackId()
     playerState.Health -= damage
     playerState.Pain += damage
 

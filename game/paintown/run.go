@@ -597,6 +597,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                             force = -force
                         }
                         enemy.Hurt(playerState.AttackId, attack.Damage, force)
+                        playerState.IgnoreHit(enemy)
                         // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
 
@@ -662,7 +663,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                             force = -force
                         }
 
-                        playerState.Hurt(enemy, enemy.AttackId, attack.Damage, force)
+                        playerState.Hurt(enemy, attack.Damage, force)
                         showHealthMap[enemy] = counter
 
                         flashes = append(flashes, flashFactory.MakeFlash(playerState.X, playerState.Y + 50, playerState.Z + 0.1))

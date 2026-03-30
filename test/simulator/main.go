@@ -158,7 +158,22 @@ func (engine *Engine) Update() error {
                     force = -force
                 }
                 enemy.Hurt(playerState.AttackId, attack.Damage, force)
+                playerState.IgnoreHit(enemy)
             }
+        }
+    }
+
+    attack = engine.Enemy.CurrentAnimationValue.Attack
+    if !attack.IsEmpty() && engine.Player.CanBeHit(engine.Enemy, engine.Enemy.AttackId) {
+        playerState := engine.Player
+        enemy := engine.Enemy
+        if playerState.HitBy(enemy.GetAttackBox()) {
+            force := attack.Force
+            if enemy.GetFacing() == paintown.FacingLeft {
+                force = -force
+            }
+
+            playerState.Hurt(enemy, attack.Damage, force)
         }
     }
 
