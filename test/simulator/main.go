@@ -12,9 +12,9 @@ import (
 
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
+    "github.com/hajimehoshi/ebiten/v2/vector"
     /*
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
-    "github.com/hajimehoshi/ebiten/v2/vector"
     */
 )
 
@@ -129,6 +129,8 @@ func (engine *Engine) Update() error {
 
 func (engine *Engine) Draw(screen *ebiten.Image) {
     screen.Fill(color.RGBA{R: 64, G: 64, B: 64, A: 255})
+
+    vector.StrokeLine(screen, 0, float32(engine.Level.ZMinimum), ScreenWidth, float32(engine.Level.ZMinimum), 2, color.NRGBA{R: 255, G: 255, B: 255, A: 100}, false)
 
     if engine.Player != nil {
         paintown.DrawPlayer(engine.Player, 0, ebiten.GeoM{}, screen)
