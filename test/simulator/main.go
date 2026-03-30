@@ -24,6 +24,7 @@ const ScreenHeight = 240
 type Engine struct {
     Player *paintown.PlayerState
     Enemy *paintown.Enemy
+    Level paintown.Level
     Counter uint64
 
     Load func()
@@ -35,15 +36,14 @@ func (nothing *DoNothing) Update(enemy *paintown.Enemy, level *paintown.Level, p
 }
 
 func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition paintown.CharacterDefinition) *Engine {
-    engine := &Engine{}
+    engine := &Engine{
+        Level: paintown.Level{ZMinimum: 200, ZMaximum: 201},
+    }
 
     engine.Load = func() {
         player := paintown.PaintownCharacter{Definition: playerDefinition}
 
-        playerState, err := paintown.MakePlayerState(&player, &paintown.Level{
-            ZMinimum: 50,
-            ZMaximum: 50,
-        })
+        playerState, err := paintown.MakePlayerState(&player, &engine.Level)
 
         if err != nil {
             log.Fatal(err)
@@ -51,7 +51,7 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
 
         playerState.X = 100
         playerState.Y = 0
-        playerState.Z = 200
+        playerState.Z = float64(engine.Level.ZMinimum)
 
         enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{
             Coords: image.Pt(250, 200),
@@ -73,62 +73,63 @@ func (engine *Engine) Update() error {
     engine.Init.Do(engine.Load)
     engine.Counter += 1
 
-    keys := inpututil.AppendJustPressedKeys(nil)
+    var inputState paintown.InputState
+    keys := inpututil.AppendPressedKeys(nil)
+    for _, key := range keys {
+        switch key {
+            case ebiten.KeyArrowRight:
+                inputState.HeldRight = true
+            case ebiten.KeyArrowLeft:
+                inputState.HeldLeft = true
+            case ebiten.KeyArrowDown:
+                inputState.HeldDown = true
+            case ebiten.KeyArrowUp:
+                inputState.HeldUp = true
+            case ebiten.KeySpace:
+                inputState.HeldJump = true
+            case ebiten.KeyA:
+                inputState.HeldAttack1 = true
+            case ebiten.KeyS:
+                inputState.HeldAttack2 = true
+        }
+    }
 
+    keys = inpututil.AppendJustPressedKeys(keys[:0])
     for _, key := range keys {
         switch key {
             case ebiten.KeyEscape, ebiten.KeyCapsLock:
                 return ebiten.Termination
-                /*
+            case ebiten.KeyArrowRight:
+                inputState.Right = true
+            case ebiten.KeyArrowLeft:
+                inputState.Left = true
+            case ebiten.KeyArrowDown:
+                inputState.Down = true
+            case ebiten.KeyArrowUp:
+                inputState.Up = true
             case ebiten.KeySpace:
-                frame := engine.Animation.CurrentFrame()
-                for {
-                    if engine.Animation.Update(true, &paintown.DummySystem{}) {
-                        break
-                    }
-                    if frame != engine.Animation.CurrentFrame() {
-                        break
-                    }
-                }
-                */
-                /*
-            case ebiten.KeyTab:
-                engine.Flip = !engine.Flip
-                */
+                inputState.Jump = true
+            case ebiten.KeyA:
+                inputState.Attack1 = true
+            case ebiten.KeyS:
+                inputState.Attack2 = true
         }
     }
 
-    level := paintown.Level{ZMinimum: 50, ZMaximum: 51}
-
     if engine.Player != nil {
-        engine.Player.Update(paintown.InputState{}, &level, &paintown.DummySystem{}, engine.Counter)
+        engine.Player.Update(inputState, &engine.Level, &paintown.DummySystem{}, engine.Counter)
     }
 
     if engine.Enemy != nil {
-        engine.Enemy.Update(&level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
+        engine.Enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
     }
-
-    /*
-    if ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
-        engine.Box = engine.Box.Add(image.Pt(-1, 0))
-    }
-    if ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-        engine.Box = engine.Box.Add(image.Pt(1, 0))
-    }
-    if ebiten.IsKeyPressed(ebiten.KeyArrowUp) {
-        engine.Box = engine.Box.Add(image.Pt(0, -1))
-    }
-    if ebiten.IsKeyPressed(ebiten.KeyArrowDown) {
-        engine.Box = engine.Box.Add(image.Pt(0, 1))
-    }
-    */
 
     return nil
 }
 
 func (engine *Engine) Draw(screen *ebiten.Image) {
 
-    screen.Fill(color.RGBA{R: 0, G: 0, B: 200, A: 255})
+    screen.Fill(color.RGBA{R: 64, G: 64, B: 64, A: 255})
 
     if engine.Player != nil {
         paintown.DrawPlayer(engine.Player, 0, ebiten.GeoM{}, screen)
