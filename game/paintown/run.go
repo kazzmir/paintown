@@ -580,7 +580,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         inputState := readInputState()
 
-        didFall := false
         playerState.Update(inputState, level, audio, counter)
 
         if playerState.X > levelLimit {
@@ -649,7 +648,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             enemy.Update(level, playerState, func(state EnemyState){
                 switch state {
                     case EnemyStateFallen:
-                        didFall = true
+                        shake = 30
                         audio.PlaySound(enemy.FallSound)
                 }
             }, audio)
@@ -679,10 +678,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 outEnemies = append(outEnemies, enemy)
             }
-        }
-
-        if didFall {
-            shake = 30
         }
 
         enemies = outEnemies

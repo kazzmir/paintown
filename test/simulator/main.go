@@ -128,7 +128,6 @@ func (engine *Engine) Update() error {
 }
 
 func (engine *Engine) Draw(screen *ebiten.Image) {
-
     screen.Fill(color.RGBA{R: 64, G: 64, B: 64, A: 255})
 
     if engine.Player != nil {
@@ -138,51 +137,6 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
     if engine.Enemy != nil {
         paintown.DrawEnemy(engine.Enemy, 0, ebiten.GeoM{}, screen)
     }
-
-    /*
-    frame := engine.Animation.CurrentFrame()
-
-    if frame == nil {
-        return
-    }
-
-    var options ebiten.DrawImageOptions
-    options.GeoM.Translate(-float64(frame.Bounds().Dx() / 2), -float64(frame.Bounds().Dy()))
-    if engine.Flip {
-        options.GeoM.Scale(-1, 1)
-    }
-    x := ScreenWidth / 2
-    y := ScreenHeight - 50
-    options.GeoM.Translate(float64(x), float64(y))
-
-    screen.DrawImage(frame, &options)
-
-    collision := engine.Animation.CurrentCollision()
-    if collision != nil {
-        // mx, my := options.GeoM.Apply(0, 0)
-
-        for _, box := range collision.Boxes {
-            x1, y1 := options.GeoM.Apply(float64(box.Min.X), float64(box.Min.Y))
-            x2, y2 := options.GeoM.Apply(float64(box.Max.X), float64(box.Max.Y))
-            / *
-            x1 := float32(box.Min.X) + float32(mx)
-            y1 := float32(box.Min.Y) + float32(my)
-            x2 := float32(box.Max.X) + float32(mx)
-            y2 := float32(box.Max.Y) + float32(my)
-            * /
-            x1, x2 = min(x1, x2), max(x1, x2)
-            y1, y2 = min(y1, y2), max(y1, y2)
-            vector.StrokeRect(screen, float32(x1), float32(y1), float32(x2-x1), float32(y2-y1), 1, color.RGBA{B: 255, A: 200}, false)
-        }
-
-        bx, by := options.GeoM.Apply(float64(frame.Bounds().Dx() / 2), float64(frame.Bounds().Dy()))
-        if collision.Intersect(bx, by, engine.Box, engine.Flip) {
-            ebitenutil.DebugPrint(screen, "Collision!")
-        }
-    }
-
-    vector.StrokeRect(screen, float32(engine.Box.Min.X), float32(engine.Box.Min.Y), float32(engine.Box.Dx()), float32(engine.Box.Dy()), 1, color.RGBA{G: 255, A: 255}, false)
-    */
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
