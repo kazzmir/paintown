@@ -102,6 +102,16 @@ func (animation *Animation) GetRange() int {
     return animation.Range
 }
 
+func (animation *Animation) FirstFrame() *ebiten.Image {
+    for _, event := range animation.Events {
+        if frameEvent, ok := event.(*AnimationEventFrame); ok {
+            return frameEvent.Image
+        }
+    }
+
+    return nil
+}
+
 func (animation *Animation) CurrentFrame() *ebiten.Image {
     return animation.Frame
 }

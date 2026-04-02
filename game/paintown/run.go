@@ -734,13 +734,68 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
 
     selectedColors := append(graphics.InterpolateColors(color.RGBA{R:255, A:255}, color.RGBA{A: 255}, 20), graphics.InterpolateColors(color.RGBA{A:255}, color.RGBA{R:255, A:255}, 20)...)
 
+    bigStart := float32(-500)
+    bigX := bigStart
+
     drawer := func (screen *ebiten.Image) {
         animation := animations[allPlayers[currentChoice].Definition.Name]
         var options ebiten.DrawImageOptions
         screen.DrawImage(background, &options)
 
         x := 60.0
-        y := 130.0
+        y := 150.0
+
+        frame := animation.FirstFrame()
+        frame = frame.SubImage(image.Rect(0, 0, frame.Bounds().Dx(), frame.Bounds().Dy() / 2)).(*ebiten.Image)
+
+        bigY := float32(0.0)
+        bigWidth := float32(frame.Bounds().Dx() * 4)
+        bigHeight := float32(frame.Bounds().Dy() * 4)
+
+        vertices := []ebiten.Vertex{
+            ebiten.Vertex{
+                DstX: bigX,
+                DstY: bigY,
+                SrcX: 0,
+                SrcY: 0,
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0.8,
+            },
+            ebiten.Vertex{
+                DstX: bigX + bigWidth,
+                DstY: bigY,
+                SrcX: float32(frame.Bounds().Dx()),
+                SrcY: 0,
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0.8,
+            },
+            ebiten.Vertex{
+                DstX: bigX,
+                DstY: bigY + bigHeight,
+                SrcX: 0,
+                SrcY: float32(frame.Bounds().Dy()),
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0,
+            },
+            ebiten.Vertex{
+                DstX: bigX + bigWidth,
+                DstY: bigY + bigHeight,
+                SrcX: float32(frame.Bounds().Dx()),
+                SrcY: float32(frame.Bounds().Dy()),
+                ColorR: 1,
+                ColorG: 1,
+                ColorB: 1,
+                ColorA: 0,
+            },
+        }
+
+        screen.DrawTriangles(vertices, []uint16{0, 1, 2, 1, 2, 3}, frame, nil)
 
         currentBounds := animation.CurrentFrame().Bounds()
 
@@ -815,19 +870,34 @@ func ChooseCharacter(yield coroutine.YieldFunc, background *ebiten.Image, setDra
     for {
         counter += 1
         keys = inpututil.AppendJustPressedKeys(keys[:0])
+        change := false
         for _, key := range keys {
             switch key {
                 case ebiten.KeyEnter:
                     return allPlayers[currentChoice], nil
                 case ebiten.KeyArrowRight:
                     currentChoice = (currentChoice + 1) % len(allPlayers)
+                    change = true
                 case ebiten.KeyArrowLeft:
                     currentChoice = (currentChoice - 1 + len(allPlayers)) % len(allPlayers)
+                    change = true
                 case ebiten.KeyArrowDown:
                     currentChoice = (currentChoice + perRow) % len(allPlayers)
+                    change = true
                 case ebiten.KeyArrowUp:
                     currentChoice = (currentChoice - perRow + len(allPlayers)) % len(allPlayers)
+                    change = true
             }
+        }
+
+        if change {
+            bigX = bigStart
+        }
+
+        bigPos := float32(-60)
+        if bigX < bigPos {
+            speed := math.Sqrt(float64(bigPos - bigX))
+            bigX += max(float32(speed), 1)
         }
 
         animation := animations[allPlayers[currentChoice].Definition.Name]
