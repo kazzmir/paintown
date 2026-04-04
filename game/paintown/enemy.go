@@ -402,6 +402,11 @@ func (enemy *Enemy) Move(x int, y int, z int) {
 }
 
 func (enemy *Enemy) DoFall(force float64) {
+    // can't fall again in the middle of falling or after already fallen
+    if enemy.State == EnemyStateFalling || enemy.State == EnemyStateFallen || enemy.State == EnemyStateDead {
+        return
+    }
+
     enemy.Pain = 0
     enemy.State = EnemyStateFalling
     enemy.AttackId += 1

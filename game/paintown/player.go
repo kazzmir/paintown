@@ -205,6 +205,8 @@ type Attacker interface {
 }
 
 type Grabbed interface {
+    DoFall(force float64)
+    Attacker
 }
 
 type PlayerState struct {
@@ -374,6 +376,7 @@ func (playerState *PlayerState) DoGrab(grabbed Grabbed) {
         playerState.ShowAnimation = grab
         grab.Reset()
         grab.Update(false, &dummySystem{})
+        playerState.Grabbed = grabbed
     }
 }
 
@@ -497,6 +500,7 @@ func (playerState *PlayerState) GetStatus() string {
         case PlayerIdle: return "ground"
         case PlayerMove: return "ground"
         case PlayerJump: return "jump"
+        case PlayerStateGrab: return "grab"
     }
 
     return "ground"
@@ -509,11 +513,6 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
     playerState.Pain = max(0, playerState.Pain - 0.1)
 
     playerState.UpdateTrails(counter)
-
-    if playerState.Status == PlayerStateGrab {
-        playerState.ShowAnimation.Update(false, system)
-        return
-    }
 
     // if playerState.Status != PlayerJump {
         /*
@@ -594,6 +593,35 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
                 playerState.ActivatedAnimations[animation] = counter
             }
         }
+
+    if playerState.Status == PlayerStateGrab {
+        playerState.ShowAnimation.Update(false, system)
+
+        throwAnimation, ok := playerState.Animations["throw"]
+        if ok {
+            throw, ok := playerState.ActivatedAnimations[throwAnimation]
+            if ok && counter == throw {
+                playerState.ShowAnimation = throwAnimation
+                throwAnimation.Reset()
+                playerState.TrailActive = false
+                playerState.ActivatedAnimations = make(map[*Animation]uint64)
+                playerState.Status = PlayerIdle
+
+                if playerState.Grabbed != nil {
+                    force := -3.5
+                    if playerState.Facing == FacingLeft {
+                        force = -force
+                    }
+                    playerState.Grabbed.DoFall(force)
+                    playerState.IgnoreHit(playerState.Grabbed)
+                    playerState.Grabbed = nil
+                }
+            }
+        }
+
+        return
+    }
+
 
         /*
         for animation, activationTime := range playerState.ActivatedAnimations {
