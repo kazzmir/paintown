@@ -6,6 +6,7 @@ import (
     "image"
     "image/color"
     "flag"
+    "math"
 
     "github.com/kazzmir/paintown/game/data"
     "github.com/kazzmir/paintown/game/paintown"
@@ -161,6 +162,17 @@ func (engine *Engine) Update() error {
                 enemy.Hurt(playerState.AttackId, attack.Damage, force)
                 playerState.IgnoreHit(enemy)
             }
+        }
+    }
+
+    // if the player is not attacking but is within N distance of an enemy, and the enemy is in an idle state or walking state
+    // then put the player into a grab state and the enemy into a grabbed state
+
+    if engine.Enemy.State == paintown.EnemyStateIdle || engine.Enemy.State == paintown.EnemyStateWalking {
+        distance := math.Abs(engine.Player.X - engine.Enemy.X)
+        if distance < 40 && engine.Player.Status == paintown.PlayerMove {
+            engine.Player.DoGrab(engine.Enemy)
+            engine.Enemy.WasGrabbed()
         }
     }
 

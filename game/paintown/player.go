@@ -24,6 +24,7 @@ const (
     PlayerStateFallen
     PlayerStateFalling
     PlayerStatePain
+    PlayerStateGrab
 )
 
 type Facing int
@@ -203,6 +204,9 @@ type Attacker interface {
     GetAttackId() uint64
 }
 
+type Grabbed interface {
+}
+
 type PlayerState struct {
     X float64
     Y float64
@@ -216,6 +220,8 @@ type PlayerState struct {
     Facing Facing
 
     Icon *ebiten.Image
+
+    Grabbed Grabbed
 
     // map of active animations to the time they were activated, used to determine if an attack should be invoked
     // at the end of the current animation
@@ -361,6 +367,16 @@ func (playerState *PlayerState) SetTrail(generate int, length int) {
     playerState.TrailLength = length
 }
 
+func (playerState *PlayerState) DoGrab(grabbed Grabbed) {
+    playerState.Status = PlayerStateGrab
+    grab, ok := playerState.Animations["grab"]
+    if ok {
+        playerState.ShowAnimation = grab
+        grab.Reset()
+        grab.Update(false, &dummySystem{})
+    }
+}
+
 func (playerState *PlayerState) GetAnimation(name string) *Animation {
     animation, ok := playerState.Animations[name]
     if ok {
@@ -412,6 +428,8 @@ func (playerState *PlayerState) IgnoreHit(hitter Attacker) {
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
+    playerState.Grabbed = nil
+
     playerState.Attackers[hitter] = hitter.GetAttackId()
     playerState.Health -= damage
     playerState.Pain += damage
@@ -491,6 +509,11 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
     playerState.Pain = max(0, playerState.Pain - 0.1)
 
     playerState.UpdateTrails(counter)
+
+    if playerState.Status == PlayerStateGrab {
+        playerState.ShowAnimation.Update(false, system)
+        return
+    }
 
     // if playerState.Status != PlayerJump {
         /*

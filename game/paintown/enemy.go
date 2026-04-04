@@ -26,6 +26,7 @@ const (
     EnemyStateRise
     EnemyStatePain
     EnemyStateDead
+    EnemyStateGrabbed
 )
 
 // controls the actions the enemy will take
@@ -469,9 +470,31 @@ func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
     return collision.Intersect(x, y, attackBox, enemy.Facing == FacingLeft)
 }
 
+type dummySystem struct {
+}
+
+func (system *dummySystem) PlaySound(name string) error {
+    return nil
+}
+
+func (enemy *Enemy) WasGrabbed() {
+    enemy.State = EnemyStateGrabbed
+
+    pain, ok := enemy.Animations["pain"]
+    if ok {
+        enemy.CurrentAnimationValue = pain
+        enemy.CurrentAnimationValue.Reset()
+        enemy.CurrentAnimationValue.Update(false, &dummySystem{})
+    }
+}
+
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
     enemy.Pain = max(0, enemy.Pain - 0.1)
+
+    if enemy.State == EnemyStateGrabbed {
+        return
+    }
 
     if enemy.State == EnemyStateAttacking {
         return
@@ -539,6 +562,10 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(En
             if enemy.X > playerInfo.GetX() {
                 enemy.Facing = FacingLeft
             }
+    }
+
+    if enemy.State == EnemyStateGrabbed {
+        return
     }
 
     if enemy.CurrentAnimationValue != nil {
