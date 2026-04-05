@@ -671,7 +671,12 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
         }
 
     if playerState.Status == PlayerStateGrab {
-        playerState.ShowAnimation.Update(false, system)
+        if playerState.ShowAnimation.Update(false, system) {
+            grab, ok := playerState.Animations["grab"]
+            if ok {
+                playerState.ShowAnimation = grab
+            }
+        }
 
         nextAnimation := chooseNextAnimation()
 
@@ -680,9 +685,9 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
             nextAnimation.Reset()
             playerState.TrailActive = false
             playerState.ActivatedAnimations = make(map[*Animation]uint64)
-            playerState.Status = PlayerIdle
 
             if nextAnimation.Name == "throw" && playerState.Grabbed != nil {
+                playerState.Status = PlayerIdle
                 force := -3.5
                 if playerState.Facing == FacingLeft {
                     force = -force
