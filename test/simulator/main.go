@@ -3,6 +3,7 @@ package main
 import (
     "log"
     "sync"
+    "fmt"
     "image"
     "image/color"
     "flag"
@@ -14,9 +15,7 @@ import (
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
     "github.com/hajimehoshi/ebiten/v2/vector"
-    /*
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
-    */
 )
 
 const ScreenWidth = 320
@@ -205,6 +204,9 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
     if engine.Enemy != nil {
         paintown.DrawEnemy(engine.Enemy, 0, ebiten.GeoM{}, screen)
     }
+
+    ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Player state: %v", engine.Player.Status), 0, 0)
+    ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Enemy state: %v", engine.Enemy.State), 0, 15)
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

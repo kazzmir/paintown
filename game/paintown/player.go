@@ -27,6 +27,20 @@ const (
     PlayerStateGrab
 )
 
+func (status PlayerStatus) String() string {
+    switch status {
+        case PlayerIdle: return "Idle"
+        case PlayerMove: return "Move"
+        case PlayerJump: return "Jump"
+        case PlayerStateFallen: return "Fallen"
+        case PlayerStateFalling: return "Falling"
+        case PlayerStatePain: return "Pain"
+        case PlayerStateGrab: return "Grab"
+    }
+
+    return "Unknown"
+}
+
 type Facing int
 const (
     FacingRight Facing = iota
@@ -594,33 +608,6 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
             }
         }
 
-    if playerState.Status == PlayerStateGrab {
-        playerState.ShowAnimation.Update(false, system)
-
-        throwAnimation, ok := playerState.Animations["throw"]
-        if ok {
-            throw, ok := playerState.ActivatedAnimations[throwAnimation]
-            if ok && counter == throw {
-                playerState.ShowAnimation = throwAnimation
-                throwAnimation.Reset()
-                playerState.TrailActive = false
-                playerState.ActivatedAnimations = make(map[*Animation]uint64)
-                playerState.Status = PlayerIdle
-
-                if playerState.Grabbed != nil {
-                    force := -3.5
-                    if playerState.Facing == FacingLeft {
-                        force = -force
-                    }
-                    playerState.Grabbed.DoFall(force)
-                    playerState.IgnoreHit(playerState.Grabbed)
-                    playerState.Grabbed = nil
-                }
-            }
-        }
-
-        return
-    }
 
 
         /*
@@ -683,6 +670,32 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
             return nil
         }
 
+    if playerState.Status == PlayerStateGrab {
+        playerState.ShowAnimation.Update(false, system)
+
+        nextAnimation := chooseNextAnimation()
+
+        if nextAnimation != nil {
+            playerState.ShowAnimation = nextAnimation
+            nextAnimation.Reset()
+            playerState.TrailActive = false
+            playerState.ActivatedAnimations = make(map[*Animation]uint64)
+            playerState.Status = PlayerIdle
+
+            if nextAnimation.Name == "throw" && playerState.Grabbed != nil {
+                force := -3.5
+                if playerState.Facing == FacingLeft {
+                    force = -force
+                }
+                playerState.Grabbed.DoFall(force)
+                playerState.IgnoreHit(playerState.Grabbed)
+                playerState.Grabbed = nil
+            }
+        }
+
+        return
+    }
+
         if playerState.Status != PlayerJump && playerState.ShowAnimation == nil {
             if input.HeldRight {
                 playerState.X += 1
@@ -728,7 +741,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
     } else if playerState.Status != PlayerJump {
         if move {
             playerState.Status = PlayerMove
-        } else {
+        } else if playerState.Status != PlayerStateGrab {
             playerState.Status = PlayerIdle
         }
     }
@@ -776,7 +789,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
                         playerState.ActivatedAnimations = make(map[*Animation]uint64)
                         playerState.AttackId += 1
                         playerState.ShowAnimation = nextAnimation
-                        playerState.TrailActive = true
+                        playerState.TrailActive = false
                         if playerState.ShowAnimation != nil {
                             playerState.ShowAnimation.Reset()
                             playerState.ShowAnimation.Update(true, system)

@@ -29,6 +29,21 @@ const (
     EnemyStateGrabbed
 )
 
+func (state EnemyState) String() string {
+    switch state {
+        case EnemyStateIdle: return "Idle"
+        case EnemyStateWalking: return "Walking"
+        case EnemyStateAttacking: return "Attacking"
+        case EnemyStateFalling: return "Falling"
+        case EnemyStateFallen: return "Fallen"
+        case EnemyStateRise: return "Rising"
+        case EnemyStatePain: return "Pain"
+        case EnemyStateDead: return "Dead"
+        case EnemyStateGrabbed: return "Grabbed"
+        default: return fmt.Sprintf("Unknown(%v)", int(state))
+    }
+}
+
 // controls the actions the enemy will take
 type Behavior interface {
     Update(enemy *Enemy, level *Level, playerInfo PlayerInfo)
