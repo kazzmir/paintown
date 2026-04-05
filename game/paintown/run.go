@@ -599,8 +599,13 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         enemy.Hurt(playerState.AttackId, attack.Damage, force)
                         playerState.IgnoreHit(enemy)
 
-                        if enemy.State != EnemyStateFalling && playerState.Grabbed == enemy {
-                            enemy.State = EnemyStateGrabbed
+                        if playerState.Grabbed == enemy {
+                            if enemy.State == EnemyStateFalling || enemy.State == EnemyStateDead {
+                                playerState.Grabbed = nil
+                                playerState.Status = PlayerIdle
+                            } else {
+                                enemy.State = EnemyStateGrabbed
+                            }
                         }
 
                         // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
