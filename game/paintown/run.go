@@ -598,6 +598,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                         }
                         enemy.Hurt(playerState.AttackId, attack.Damage, force)
                         playerState.IgnoreHit(enemy)
+
+                        if enemy.State != EnemyStateFalling && playerState.Grabbed == enemy {
+                            enemy.State = EnemyStateGrabbed
+                        }
+
                         // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
                         // create hit projectile, flash
 
@@ -616,6 +621,28 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                                 log.Printf("Error playing enemy die sound: %v", err)
                             }
                         }
+                    }
+                }
+            }
+        } else if playerState.Status == PlayerMove {
+            for _, enemy := range enemies {
+                if abs(enemy.Z - playerState.Z) < Z_DISTANCE {
+                    grabbed := false
+
+                    if playerState.Facing == FacingRight && enemy.X > playerState.X && enemy.X - playerState.X < 50 {
+                        grabbed = true
+                    }
+
+                    if playerState.Facing == FacingLeft && enemy.X < playerState.X && playerState.X - enemy.X < 50 {
+                        grabbed = true
+                    }
+
+                    if grabbed {
+                        showHealthMap[enemy] = counter
+                        playerState.DoGrab(enemy)
+                        enemy.WasGrabbed()
+                        enemy.Z = playerState.Z + 0.1
+                        break
                     }
                 }
             }

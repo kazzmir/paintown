@@ -497,6 +497,11 @@ func (system *dummySystem) PlaySound(name string) error {
     return nil
 }
 
+func (enemy *Enemy) Ungrab() {
+    enemy.State = EnemyStateIdle
+    enemy.CurrentAnimationValue = enemy.Animations["idle"]
+}
+
 func (enemy *Enemy) WasGrabbed() {
     enemy.State = EnemyStateGrabbed
 

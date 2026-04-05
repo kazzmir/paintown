@@ -220,6 +220,7 @@ type Attacker interface {
 
 type Grabbed interface {
     DoFall(force float64)
+    Ungrab()
     Attacker
 }
 
@@ -445,6 +446,10 @@ func (playerState *PlayerState) IgnoreHit(hitter Attacker) {
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
+    if playerState.Grabbed != nil {
+        playerState.Grabbed.Ungrab()
+    }
+
     playerState.Grabbed = nil
 
     playerState.Attackers[hitter] = hitter.GetAttackId()
@@ -681,6 +686,7 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
         nextAnimation := chooseNextAnimation()
 
         if nextAnimation != nil {
+            playerState.AttackId += 1
             playerState.ShowAnimation = nextAnimation
             nextAnimation.Reset()
             playerState.TrailActive = false
