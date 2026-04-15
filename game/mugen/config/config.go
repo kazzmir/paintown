@@ -279,9 +279,17 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 		filepath.Join(base, "mugen.yaml"),
 		filepath.Join(base, "data", "mugen.yaml"),
 		filepath.Join(homeDir, ".paintown", "mugen.yaml"),
+		"mugen.yaml",
 		"game/mugen/mugen.yaml",
 	}
 
+	// Also search relative to the executable's location
+	if exePath, err := os.Executable(); err == nil {
+		exeDir := filepath.Dir(exePath)
+		extPaths = append(extPaths, filepath.Join(exeDir, "mugen.yaml"))
+	}
+
+	loaded := false
 	for _, path := range extPaths {
 		if path == "" {
 			continue
@@ -289,8 +297,31 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 		if ext, err := LoadExtendedConfig(path); err == nil {
 			fmt.Printf("Merged extended config from: %s\n", path)
 			mergeExtendedConfig(cfg, ext)
+			loaded = true
+			break
 		}
 	}
+
+	if !loaded {
+		fmt.Printf("WARNING: No mugen.yaml found. Searched paths:\n")
+		for _, path := range extPaths {
+			fmt.Printf("  - %s\n", path)
+		}
+		fmt.Printf("Keyboard bindings will use hardcoded defaults.\n")
+	}
+
+	fmt.Printf("P1 Keyboard: Jump=%v Crouch=%v Left=%v Right=%v A=%v B=%v C=%v X=%v Y=%v Z=%v Start=%v\n",
+		cfg.Input.Player1Keyboard.Jump, cfg.Input.Player1Keyboard.Crouch,
+		cfg.Input.Player1Keyboard.Left, cfg.Input.Player1Keyboard.Right,
+		cfg.Input.Player1Keyboard.A, cfg.Input.Player1Keyboard.B, cfg.Input.Player1Keyboard.C,
+		cfg.Input.Player1Keyboard.X, cfg.Input.Player1Keyboard.Y, cfg.Input.Player1Keyboard.Z,
+		cfg.Input.Player1Keyboard.Start)
+	fmt.Printf("P2 Keyboard: Jump=%v Crouch=%v Left=%v Right=%v A=%v B=%v C=%v X=%v Y=%v Z=%v Start=%v\n",
+		cfg.Input.Player2Keyboard.Jump, cfg.Input.Player2Keyboard.Crouch,
+		cfg.Input.Player2Keyboard.Left, cfg.Input.Player2Keyboard.Right,
+		cfg.Input.Player2Keyboard.A, cfg.Input.Player2Keyboard.B, cfg.Input.Player2Keyboard.C,
+		cfg.Input.Player2Keyboard.X, cfg.Input.Player2Keyboard.Y, cfg.Input.Player2Keyboard.Z,
+		cfg.Input.Player2Keyboard.Start)
 
 	return cfg, nil
 }
@@ -319,13 +350,219 @@ func getBool(v parsers.Value) bool {
 	return getFloat(v) != 0
 }
 
+// dosScancodeToKey converts legacy DOS/DirectInput keyboard scancodes
+// (as used in original MUGEN mugen.cfg files) to ebiten key constants.
+func dosScancodeToKey(code int) ebiten.Key {
+	switch code {
+	case 1:
+		return ebiten.KeyEscape
+	case 2:
+		return ebiten.KeyDigit1
+	case 3:
+		return ebiten.KeyDigit2
+	case 4:
+		return ebiten.KeyDigit3
+	case 5:
+		return ebiten.KeyDigit4
+	case 6:
+		return ebiten.KeyDigit5
+	case 7:
+		return ebiten.KeyDigit6
+	case 8:
+		return ebiten.KeyDigit7
+	case 9:
+		return ebiten.KeyDigit8
+	case 10:
+		return ebiten.KeyDigit9
+	case 11:
+		return ebiten.KeyDigit0
+	case 12:
+		return ebiten.KeyMinus
+	case 13:
+		return ebiten.KeyEqual
+	case 14:
+		return ebiten.KeyBackspace
+	case 15:
+		return ebiten.KeyTab
+	case 16:
+		return ebiten.KeyQ
+	case 17:
+		return ebiten.KeyW
+	case 18:
+		return ebiten.KeyE
+	case 19:
+		return ebiten.KeyR
+	case 20:
+		return ebiten.KeyT
+	case 21:
+		return ebiten.KeyY
+	case 22:
+		return ebiten.KeyU
+	case 23:
+		return ebiten.KeyI
+	case 24:
+		return ebiten.KeyO
+	case 25:
+		return ebiten.KeyP
+	case 26:
+		return ebiten.KeyBracketLeft
+	case 27:
+		return ebiten.KeyBracketRight
+	case 28:
+		return ebiten.KeyEnter
+	case 29:
+		return ebiten.KeyControlLeft
+	case 30:
+		return ebiten.KeyA
+	case 31:
+		return ebiten.KeyS
+	case 32:
+		return ebiten.KeyD
+	case 33:
+		return ebiten.KeyF
+	case 34:
+		return ebiten.KeyG
+	case 35:
+		return ebiten.KeyH
+	case 36:
+		return ebiten.KeyJ
+	case 37:
+		return ebiten.KeyK
+	case 38:
+		return ebiten.KeyL
+	case 39:
+		return ebiten.KeySemicolon
+	case 40:
+		return ebiten.KeyQuote
+	case 41:
+		return ebiten.KeyBackquote
+	case 42:
+		return ebiten.KeyShiftLeft
+	case 43:
+		return ebiten.KeyBackslash
+	case 44:
+		return ebiten.KeyZ
+	case 45:
+		return ebiten.KeyX
+	case 46:
+		return ebiten.KeyC
+	case 47:
+		return ebiten.KeyV
+	case 48:
+		return ebiten.KeyB
+	case 49:
+		return ebiten.KeyN
+	case 50:
+		return ebiten.KeyM
+	case 51:
+		return ebiten.KeyComma
+	case 52:
+		return ebiten.KeyPeriod
+	case 53:
+		return ebiten.KeySlash
+	case 54:
+		return ebiten.KeyShiftRight
+	case 55:
+		return ebiten.KeyNumpadMultiply
+	case 56:
+		return ebiten.KeyAltLeft
+	case 57:
+		return ebiten.KeySpace
+	case 58:
+		return ebiten.KeyCapsLock
+	case 59:
+		return ebiten.KeyF1
+	case 60:
+		return ebiten.KeyF2
+	case 61:
+		return ebiten.KeyF3
+	case 62:
+		return ebiten.KeyF4
+	case 63:
+		return ebiten.KeyF5
+	case 64:
+		return ebiten.KeyF6
+	case 65:
+		return ebiten.KeyF7
+	case 66:
+		return ebiten.KeyF8
+	case 67:
+		return ebiten.KeyF9
+	case 68:
+		return ebiten.KeyF10
+	case 69:
+		return ebiten.KeyNumLock
+	case 70:
+		return ebiten.KeyScrollLock
+	case 71:
+		return ebiten.KeyNumpad7
+	case 72:
+		return ebiten.KeyNumpad8
+	case 73:
+		return ebiten.KeyNumpad9
+	case 74:
+		return ebiten.KeyNumpadSubtract
+	case 75:
+		return ebiten.KeyNumpad4
+	case 76:
+		return ebiten.KeyNumpad5
+	case 77:
+		return ebiten.KeyNumpad6
+	case 78:
+		return ebiten.KeyNumpadAdd
+	case 79:
+		return ebiten.KeyNumpad1
+	case 80:
+		return ebiten.KeyNumpad2
+	case 81:
+		return ebiten.KeyNumpad3
+	case 82:
+		return ebiten.KeyNumpad0
+	case 83:
+		return ebiten.KeyNumpadDecimal
+	case 87:
+		return ebiten.KeyF11
+	case 88:
+		return ebiten.KeyF12
+	case 156:
+		return ebiten.KeyNumpadEnter
+	case 157:
+		return ebiten.KeyControlRight
+	case 181:
+		return ebiten.KeyNumpadDivide
+	case 184:
+		return ebiten.KeyAltRight
+	case 199:
+		return ebiten.KeyHome
+	case 200:
+		return ebiten.KeyArrowUp
+	case 201:
+		return ebiten.KeyPageUp
+	case 203:
+		return ebiten.KeyArrowLeft
+	case 205:
+		return ebiten.KeyArrowRight
+	case 207:
+		return ebiten.KeyEnd
+	case 208:
+		return ebiten.KeyArrowDown
+	case 209:
+		return ebiten.KeyPageDown
+	case 210:
+		return ebiten.KeyInsert
+	case 211:
+		return ebiten.KeyDelete
+	}
+	return 0
+}
+
 func parseKeys(sec *parsers.Section, keys *Keys) {
 	for _, attr := range sec.Attributes {
 		keyName := strings.ToLower(attr.ID.String())
 		var val ebiten.Key
 
 		if n, ok := attr.Value.(parsers.NumberValue); ok {
-			val = ebiten.Key(n.Val)
+			val = dosScancodeToKey(int(n.Val))
 		} else {
 			str := strings.ToLower(getString(attr.Value))
 			val = stringToKey(str)
@@ -432,6 +669,56 @@ func stringToKey(s string) ebiten.Key {
 		return ebiten.KeyZ
 	case "backspace", "keybackspace":
 		return ebiten.KeyBackspace
+	case "tab", "keytab":
+		return ebiten.KeyTab
+	case "semicolon", "keysemicolon":
+		return ebiten.KeySemicolon
+	case "comma", "keycomma":
+		return ebiten.KeyComma
+	case "period", "keyperiod":
+		return ebiten.KeyPeriod
+	case "slash", "keyslash":
+		return ebiten.KeySlash
+	case "quote", "keyquote":
+		return ebiten.KeyQuote
+	case "minus", "keyminus":
+		return ebiten.KeyMinus
+	case "equal", "keyequal":
+		return ebiten.KeyEqual
+	case "bracketleft", "keybracketleft":
+		return ebiten.KeyBracketLeft
+	case "bracketright", "keybracketright":
+		return ebiten.KeyBracketRight
+	case "backslash", "keybackslash":
+		return ebiten.KeyBackslash
+	case "backquote", "keybackquote":
+		return ebiten.KeyBackquote
+	case "shiftleft", "keyshiftleft":
+		return ebiten.KeyShiftLeft
+	case "shiftright", "keyshiftright":
+		return ebiten.KeyShiftRight
+	case "controlleft", "keycontrolleft":
+		return ebiten.KeyControlLeft
+	case "controlright", "keycontrolright":
+		return ebiten.KeyControlRight
+	case "altleft", "keyaltleft":
+		return ebiten.KeyAltLeft
+	case "altright", "keyaltright":
+		return ebiten.KeyAltRight
+	case "capslock", "keycapslock":
+		return ebiten.KeyCapsLock
+	case "delete", "keydelete":
+		return ebiten.KeyDelete
+	case "insert", "keyinsert":
+		return ebiten.KeyInsert
+	case "home", "keyhome":
+		return ebiten.KeyHome
+	case "end", "keyend":
+		return ebiten.KeyEnd
+	case "pageup", "keypageup":
+		return ebiten.KeyPageUp
+	case "pagedown", "keypagedown":
+		return ebiten.KeyPageDown
 	}
 	return 0
 }
