@@ -132,6 +132,8 @@ type Enemy struct {
     Vy float64
     Vx float64
 
+    GrabTime uint64
+
     Behavior Behavior
 
     Health float64
@@ -515,6 +517,7 @@ type Grabber interface {
 }
 
 func (enemy *Enemy) WasGrabbed(grabber Grabber) {
+    enemy.GrabTime = 300
     enemy.State = EnemyStateGrabbed
     enemy.Grabber = grabber
 
@@ -531,6 +534,14 @@ func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
     enemy.Pain = max(0, enemy.Pain - 0.1)
 
     if enemy.State == EnemyStateGrabbed {
+        if enemy.GrabTime > 0 {
+            enemy.GrabTime -= 1
+        }
+
+        if enemy.GrabTime == 0 {
+            enemy.Ungrab()
+        }
+
         return
     }
 
