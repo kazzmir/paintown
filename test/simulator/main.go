@@ -3,9 +3,11 @@ package main
 import (
     "log"
     "sync"
+    "fmt"
     "image"
     "image/color"
     "flag"
+    "math"
 
     "github.com/kazzmir/paintown/game/data"
     "github.com/kazzmir/paintown/game/paintown"
@@ -13,9 +15,7 @@ import (
     "github.com/hajimehoshi/ebiten/v2"
     "github.com/hajimehoshi/ebiten/v2/inpututil"
     "github.com/hajimehoshi/ebiten/v2/vector"
-    /*
     "github.com/hajimehoshi/ebiten/v2/ebitenutil"
-    */
 )
 
 const ScreenWidth = 320
@@ -164,6 +164,17 @@ func (engine *Engine) Update() error {
         }
     }
 
+    // if the player is not attacking but is within N distance of an enemy, and the enemy is in an idle state or walking state
+    // then put the player into a grab state and the enemy into a grabbed state
+
+    if engine.Enemy.State == paintown.EnemyStateIdle || engine.Enemy.State == paintown.EnemyStateWalking {
+        distance := math.Abs(engine.Player.X - engine.Enemy.X)
+        if distance < 40 && engine.Player.Status == paintown.PlayerMove {
+            engine.Player.DoGrab(engine.Enemy)
+            engine.Enemy.WasGrabbed(engine.Player)
+        }
+    }
+
     attack = engine.Enemy.CurrentAnimationValue.Attack
     if !attack.IsEmpty() && engine.Player.CanBeHit(engine.Enemy, engine.Enemy.AttackId) {
         playerState := engine.Player
@@ -193,6 +204,9 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
     if engine.Enemy != nil {
         paintown.DrawEnemy(engine.Enemy, 0, ebiten.GeoM{}, screen)
     }
+
+    ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Player state: %v", engine.Player.Status), 0, 0)
+    ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Enemy state: %v", engine.Enemy.State), 0, 15)
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {

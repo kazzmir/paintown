@@ -26,7 +26,23 @@ const (
     EnemyStateRise
     EnemyStatePain
     EnemyStateDead
+    EnemyStateGrabbed
 )
+
+func (state EnemyState) String() string {
+    switch state {
+        case EnemyStateIdle: return "Idle"
+        case EnemyStateWalking: return "Walking"
+        case EnemyStateAttacking: return "Attacking"
+        case EnemyStateFalling: return "Falling"
+        case EnemyStateFallen: return "Fallen"
+        case EnemyStateRise: return "Rising"
+        case EnemyStatePain: return "Pain"
+        case EnemyStateDead: return "Dead"
+        case EnemyStateGrabbed: return "Grabbed"
+        default: return fmt.Sprintf("Unknown(%v)", int(state))
+    }
+}
 
 // controls the actions the enemy will take
 type Behavior interface {
@@ -116,6 +132,8 @@ type Enemy struct {
     Vy float64
     Vx float64
 
+    GrabTime uint64
+
     Behavior Behavior
 
     Health float64
@@ -125,6 +143,9 @@ type Enemy struct {
     // Pain will go down over time as well
     Pain float64
     PainThreshold float64
+
+    // the character that has grabbed this enemy
+    Grabber Grabber
 
     State EnemyState
     FallenCount int
@@ -400,13 +421,20 @@ func (enemy *Enemy) Move(x int, y int, z int) {
     enemy.Z += float64(z)
 }
 
-func (enemy *Enemy) DoFall(force float64) {
+func (enemy *Enemy) DoFall(xforce float64, yforce float64) {
+    // can't fall again in the middle of falling or after already fallen
+    if enemy.State == EnemyStateFalling || enemy.State == EnemyStateFallen || enemy.State == EnemyStateDead {
+        return
+    }
+
+    enemy.Ungrab()
+
     enemy.Pain = 0
     enemy.State = EnemyStateFalling
     enemy.AttackId += 1
-    enemy.Y = 10
+    enemy.Y = yforce
     enemy.Vy = 2
-    enemy.Vx = force
+    enemy.Vx = xforce
     fall, ok := enemy.Animations["fall"]
     if ok {
         enemy.CurrentAnimationValue = fall
@@ -428,7 +456,7 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     }
 
     if enemy.Pain >= enemy.PainThreshold || enemy.Health <= 0 {
-        enemy.DoFall(force)
+        enemy.DoFall(force, 0.5)
     }
 }
 
@@ -469,9 +497,58 @@ func (enemy *Enemy) HitBy(attackBox image.Rectangle) bool {
     return collision.Intersect(x, y, attackBox, enemy.Facing == FacingLeft)
 }
 
+type dummySystem struct {
+}
+
+func (system *dummySystem) PlaySound(name string) error {
+    return nil
+}
+
+func (enemy *Enemy) Ungrab() {
+    enemy.State = EnemyStateIdle
+    enemy.CurrentAnimationValue = enemy.Animations["idle"]
+    if enemy.Grabber != nil {
+        enemy.Grabber.ReleaseGrab()
+        enemy.Grabber = nil
+    }
+}
+
+type Grabber interface {
+    ReleaseGrab()
+}
+
+func (enemy *Enemy) IsGrabbable() bool {
+    return enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking || enemy.State == EnemyStatePain
+}
+
+func (enemy *Enemy) WasGrabbed(grabber Grabber) {
+    enemy.GrabTime = 300
+    enemy.State = EnemyStateGrabbed
+    enemy.Grabber = grabber
+
+    pain, ok := enemy.Animations["pain"]
+    if ok {
+        enemy.CurrentAnimationValue = pain
+        enemy.CurrentAnimationValue.Reset()
+        enemy.CurrentAnimationValue.Update(false, &dummySystem{})
+    }
+}
+
 func (enemy *Enemy) UpdateState(level *Level, playerInfo PlayerInfo) {
 
     enemy.Pain = max(0, enemy.Pain - 0.1)
+
+    if enemy.State == EnemyStateGrabbed {
+        if enemy.GrabTime > 0 {
+            enemy.GrabTime -= 1
+        }
+
+        if enemy.GrabTime == 0 {
+            enemy.Ungrab()
+        }
+
+        return
+    }
 
     if enemy.State == EnemyStateAttacking {
         return
@@ -539,6 +616,10 @@ func (enemy *Enemy) Update(level *Level, playerInfo PlayerInfo, newState func(En
             if enemy.X > playerInfo.GetX() {
                 enemy.Facing = FacingLeft
             }
+    }
+
+    if enemy.State == EnemyStateGrabbed {
+        return
     }
 
     if enemy.CurrentAnimationValue != nil {
