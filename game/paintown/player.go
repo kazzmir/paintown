@@ -219,7 +219,7 @@ type Attacker interface {
 }
 
 type Grabbed interface {
-    DoFall(force float64)
+    DoFall(xforce float64, yforce float64)
     Ungrab()
     Attacker
 }
@@ -382,6 +382,11 @@ func (playerState *PlayerState) SetTrail(generate int, length int) {
     playerState.TrailActive = true
     playerState.TrailGenerate = generate
     playerState.TrailLength = length
+}
+
+func (playerState *PlayerState) ReleaseGrab() {
+    playerState.Status = PlayerIdle
+    playerState.Grabbed = nil
 }
 
 func (playerState *PlayerState) DoGrab(grabbed Grabbed) {
@@ -698,8 +703,9 @@ func (playerState *PlayerState) Update(input InputState, level *Level, system Sy
                 if playerState.Facing == FacingLeft {
                     force = -force
                 }
-                playerState.Grabbed.DoFall(force)
-                playerState.IgnoreHit(playerState.Grabbed)
+                grabbed := playerState.Grabbed
+                grabbed.DoFall(force, 15)
+                playerState.IgnoreHit(grabbed)
                 playerState.Grabbed = nil
             }
         }

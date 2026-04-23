@@ -142,6 +142,9 @@ type Enemy struct {
     Pain float64
     PainThreshold float64
 
+    // the character that has grabbed this enemy
+    Grabber Grabber
+
     State EnemyState
     FallenCount int
 
@@ -416,18 +419,20 @@ func (enemy *Enemy) Move(x int, y int, z int) {
     enemy.Z += float64(z)
 }
 
-func (enemy *Enemy) DoFall(force float64) {
+func (enemy *Enemy) DoFall(xforce float64, yforce float64) {
     // can't fall again in the middle of falling or after already fallen
     if enemy.State == EnemyStateFalling || enemy.State == EnemyStateFallen || enemy.State == EnemyStateDead {
         return
     }
 
+    enemy.Ungrab()
+
     enemy.Pain = 0
     enemy.State = EnemyStateFalling
     enemy.AttackId += 1
-    enemy.Y = 10
+    enemy.Y = yforce
     enemy.Vy = 2
-    enemy.Vx = force
+    enemy.Vx = xforce
     fall, ok := enemy.Animations["fall"]
     if ok {
         enemy.CurrentAnimationValue = fall
@@ -449,7 +454,7 @@ func (enemy *Enemy) Hurt(attackId uint64, damage float64, force float64) {
     }
 
     if enemy.Pain >= enemy.PainThreshold || enemy.Health <= 0 {
-        enemy.DoFall(force)
+        enemy.DoFall(force, 0.5)
     }
 }
 
@@ -500,10 +505,18 @@ func (system *dummySystem) PlaySound(name string) error {
 func (enemy *Enemy) Ungrab() {
     enemy.State = EnemyStateIdle
     enemy.CurrentAnimationValue = enemy.Animations["idle"]
+    if enemy.Grabber != nil {
+        enemy.Grabber.ReleaseGrab()
+    }
 }
 
-func (enemy *Enemy) WasGrabbed() {
+type Grabber interface {
+    ReleaseGrab()
+}
+
+func (enemy *Enemy) WasGrabbed(grabber Grabber) {
     enemy.State = EnemyStateGrabbed
+    enemy.Grabber = grabber
 
     pain, ok := enemy.Animations["pain"]
     if ok {

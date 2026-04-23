@@ -171,7 +171,7 @@ func (engine *Engine) Update() error {
         distance := math.Abs(engine.Player.X - engine.Enemy.X)
         if distance < 40 && engine.Player.Status == paintown.PlayerMove {
             engine.Player.DoGrab(engine.Enemy)
-            engine.Enemy.WasGrabbed()
+            engine.Enemy.WasGrabbed(engine.Player)
         }
     }
 

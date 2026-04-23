@@ -645,7 +645,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
                     if grabbed {
                         showHealthMap[enemy] = counter
                         playerState.DoGrab(enemy)
-                        enemy.WasGrabbed()
+                        enemy.WasGrabbed(playerState)
                         enemy.Z = playerState.Z + 0.1
                         break
                     }
