@@ -631,7 +631,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             }
         } else if playerState.Status == PlayerMove {
             for _, enemy := range enemies {
-                if abs(enemy.Z - playerState.Z) < Z_DISTANCE {
+                if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.IsGrabbable() {
                     grabbed := false
 
                     if playerState.Facing == FacingRight && enemy.X > playerState.X && enemy.X - playerState.X < 50 {

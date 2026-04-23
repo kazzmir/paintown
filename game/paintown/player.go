@@ -390,9 +390,9 @@ func (playerState *PlayerState) ReleaseGrab() {
 }
 
 func (playerState *PlayerState) DoGrab(grabbed Grabbed) {
-    playerState.Status = PlayerStateGrab
     grab, ok := playerState.Animations["grab"]
     if ok {
+        playerState.Status = PlayerStateGrab
         playerState.ShowAnimation = grab
         grab.Reset()
         grab.Update(false, &dummySystem{})

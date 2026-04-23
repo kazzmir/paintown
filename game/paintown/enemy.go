@@ -509,11 +509,16 @@ func (enemy *Enemy) Ungrab() {
     enemy.CurrentAnimationValue = enemy.Animations["idle"]
     if enemy.Grabber != nil {
         enemy.Grabber.ReleaseGrab()
+        enemy.Grabber = nil
     }
 }
 
 type Grabber interface {
     ReleaseGrab()
+}
+
+func (enemy *Enemy) IsGrabbable() bool {
+    return enemy.State == EnemyStateIdle || enemy.State == EnemyStateWalking || enemy.State == EnemyStatePain
 }
 
 func (enemy *Enemy) WasGrabbed(grabber Grabber) {
