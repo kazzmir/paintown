@@ -146,6 +146,17 @@ func (engine *Engine) Update() error {
                 inputState.Attack1 = true
             case ebiten.KeyS:
                 inputState.Attack2 = true
+
+            case ebiten.Key1:
+                engine.EnemiesEnabled[0] = !engine.EnemiesEnabled[0]
+            case ebiten.Key2:
+                if len(engine.EnemiesEnabled) > 1 {
+                    engine.EnemiesEnabled[1] = !engine.EnemiesEnabled[1]
+                }
+            case ebiten.Key3:
+                if len(engine.EnemiesEnabled) > 2 {
+                    engine.EnemiesEnabled[2] = !engine.EnemiesEnabled[2]
+                }
         }
     }
 
