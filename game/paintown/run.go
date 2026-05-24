@@ -715,7 +715,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             screenShake.Reset()
         }
 
-        if playerState.X > model.LevelLimit - 50 && len(model.Enemies) == 0 {
+        if playerState.X > model.LevelLimit - 100 && len(model.Enemies) == 0 {
             currentBlock += 1
             if currentBlock < len(blocks) {
                 model.LevelLimit += float64(blocks[currentBlock].Length)
