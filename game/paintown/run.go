@@ -152,6 +152,7 @@ type GameModel struct {
     ShowHealthMap map[*Enemy]uint64
     Counter uint64
     Flashes []*Flash
+    LevelLimit float64
 }
 
 func (model *GameModel) UpdateHealthMap(enemy *Enemy, counter uint64) {
@@ -163,6 +164,81 @@ func (model *GameModel) UpdateHealthMap(enemy *Enemy, counter uint64) {
 
 func (model *GameModel) ResetHealthMap() {
     model.ShowHealthMap = make(map[*Enemy]uint64)
+}
+
+func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputState, level *Level, system System, flashFactory *FlashFactory) {
+    playerState.Update(inputState, level, system, model.Counter)
+
+    if playerState.X > model.LevelLimit {
+        playerState.X = model.LevelLimit
+    }
+
+    if !playerState.CurrentAnimation().Attack.IsEmpty() {
+        attack := playerState.CurrentAnimation().Attack
+        attackBox := playerState.GetAttackBox()
+        for _, enemy := range model.Enemies {
+            if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit(playerState.AttackId) {
+                if enemy.HitBy(attackBox) {
+                    force := float64(attack.Force)
+                    if playerState.Facing == FacingLeft {
+                        force = -force
+                    }
+                    enemy.Hurt(playerState.AttackId, attack.Damage, force)
+                    playerState.IgnoreHit(enemy)
+
+                    if playerState.Grabbed == enemy {
+                        if enemy.State == EnemyStateFalling || enemy.State == EnemyStateDead {
+                            playerState.Grabbed = nil
+                            playerState.Status = PlayerIdle
+                        } else {
+                            enemy.State = EnemyStateGrabbed
+                        }
+                    }
+
+                    // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
+                    // create hit projectile, flash
+
+                    model.Flashes = append(model.Flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
+
+                    model.UpdateHealthMap(enemy, model.Counter)
+
+                    err := system.PlaySound(playerState.HitSound)
+                    if err != nil {
+                        log.Printf("Error playing hit sound: %v", err)
+                    }
+
+                    if enemy.Health <= 0 {
+                        err := system.PlaySound(enemy.DieSound)
+                        if err != nil {
+                            log.Printf("Error playing enemy die sound: %v", err)
+                        }
+                    }
+                }
+            }
+        }
+    } else if playerState.Status == PlayerMove {
+        for _, enemy := range model.Enemies {
+            if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.IsGrabbable() {
+                grabbed := false
+
+                if playerState.Facing == FacingRight && enemy.X > playerState.X && enemy.X - playerState.X < 50 {
+                    grabbed = true
+                }
+
+                if playerState.Facing == FacingLeft && enemy.X < playerState.X && playerState.X - enemy.X < 50 {
+                    grabbed = true
+                }
+
+                if grabbed {
+                    model.UpdateHealthMap(enemy, model.Counter)
+                    playerState.DoGrab(enemy)
+                    enemy.WasGrabbed(playerState)
+                    enemy.Z = playerState.Z + 0.1
+                    break
+                }
+            }
+        }
+    }
 }
 
 func (model *GameModel) UpdateFlashes(system System) {
@@ -614,7 +690,6 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
     }
 
     currentBlock := -1
-    levelLimit := float64(0)
 
     cameraSpeed := float64(1)
 
@@ -640,11 +715,11 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             screenShake.Reset()
         }
 
-        if playerState.X > float64(levelLimit) - 50 && len(model.Enemies) == 0 {
+        if playerState.X > model.LevelLimit - 50 && len(model.Enemies) == 0 {
             currentBlock += 1
             if currentBlock < len(blocks) {
-                levelLimit += float64(blocks[currentBlock].Length)
-                log.Printf("Entering block %v, limit %v", currentBlock, levelLimit)
+                model.LevelLimit += float64(blocks[currentBlock].Length)
+                log.Printf("Entering block %v, limit %v", currentBlock, model.LevelLimit)
 
                 model.ResetHealthMap()
 
@@ -652,7 +727,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 model.Enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range model.Enemies {
-                    enemy.X += levelLimit - float64(blocks[currentBlock].Length)
+                    enemy.X += model.LevelLimit - float64(blocks[currentBlock].Length)
                     enemy.Z += float64(level.ZMinimum)
                 }
             }
@@ -667,78 +742,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
         inputState := readInputState()
 
-        playerState.Update(inputState, level, audio, model.Counter)
+        model.UpdatePlayer(playerState, inputState, level, audio, flashFactory)
 
-        if playerState.X > levelLimit {
-            playerState.X = levelLimit
-        }
-
-        if !playerState.CurrentAnimation().Attack.IsEmpty() {
-            attack := playerState.CurrentAnimation().Attack
-            attackBox := playerState.GetAttackBox()
-            for _, enemy := range model.Enemies {
-                if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.CanBeHit(playerState.AttackId) {
-                    if enemy.HitBy(attackBox) {
-                        force := float64(attack.Force)
-                        if playerState.Facing == FacingLeft {
-                            force = -force
-                        }
-                        enemy.Hurt(playerState.AttackId, attack.Damage, force)
-                        playerState.IgnoreHit(enemy)
-
-                        if playerState.Grabbed == enemy {
-                            if enemy.State == EnemyStateFalling || enemy.State == EnemyStateDead {
-                                playerState.Grabbed = nil
-                                playerState.Status = PlayerIdle
-                            } else {
-                                enemy.State = EnemyStateGrabbed
-                            }
-                        }
-
-                        // log.Printf("Enemy hit! Enemy at (%v, %v), attack from (%v, %v) to (%v, %v)", enemy.X, enemy.Z, playerState.Attack.X1, playerState.Attack.Y1, playerState.Attack.X2, playerState.Attack.Y2)
-                        // create hit projectile, flash
-
-                        model.Flashes = append(model.Flashes, flashFactory.MakeFlash(enemy.X, enemy.Y + 50, enemy.Z + 0.1))
-
-                        model.UpdateHealthMap(enemy, model.Counter)
-
-                        err := audio.PlaySound(playerState.HitSound)
-                        if err != nil {
-                            log.Printf("Error playing hit sound: %v", err)
-                        }
-
-                        if enemy.Health <= 0 {
-                            err := audio.PlaySound(enemy.DieSound)
-                            if err != nil {
-                                log.Printf("Error playing enemy die sound: %v", err)
-                            }
-                        }
-                    }
-                }
-            }
-        } else if playerState.Status == PlayerMove {
-            for _, enemy := range model.Enemies {
-                if abs(enemy.Z - playerState.Z) < Z_DISTANCE && enemy.IsGrabbable() {
-                    grabbed := false
-
-                    if playerState.Facing == FacingRight && enemy.X > playerState.X && enemy.X - playerState.X < 50 {
-                        grabbed = true
-                    }
-
-                    if playerState.Facing == FacingLeft && enemy.X < playerState.X && playerState.X - enemy.X < 50 {
-                        grabbed = true
-                    }
-
-                    if grabbed {
-                        model.UpdateHealthMap(enemy, model.Counter)
-                        playerState.DoGrab(enemy)
-                        enemy.WasGrabbed(playerState)
-                        enemy.Z = playerState.Z + 0.1
-                        break
-                    }
-                }
-            }
-        }
 
         model.UpdateFlashes(audio)
 
@@ -751,8 +756,8 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             // int(playerState.X) - data.ScreenWidth / 2 * 3 / 4
         }
 
-        if data.ScreenWidth / 2 + cameraX > levelLimit {
-            cameraX = max(0, levelLimit - data.ScreenWidth / 2)
+        if data.ScreenWidth / 2 + cameraX > model.LevelLimit {
+            cameraX = max(0, model.LevelLimit - data.ScreenWidth / 2)
         }
 
         model.UpdateEnemies(level, playerState, audio, flashFactory)

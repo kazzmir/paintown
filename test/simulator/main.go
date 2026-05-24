@@ -7,7 +7,6 @@ import (
     "image"
     "image/color"
     "flag"
-    "math"
 
     "github.com/kazzmir/paintown/game/data"
     "github.com/kazzmir/paintown/game/paintown"
@@ -26,7 +25,10 @@ type Engine struct {
     Enemies []*paintown.Enemy
     EnemiesEnabled []bool
     Level paintown.Level
-    Counter uint64
+    FlashFactory *paintown.FlashFactory
+    // Counter uint64
+
+    Model paintown.GameModel
 
     Load func()
     Init sync.Once
@@ -60,10 +62,19 @@ func (wait *WaitAtBehavior) Update(enemy *paintown.Enemy, level *paintown.Level,
 func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinitions []paintown.CharacterDefinition) *Engine {
     engine := &Engine{
         Level: paintown.Level{ZMinimum: 200, ZMaximum: 201},
-        Counter: 1000,
+        Model: paintown.GameModel{
+            Counter: 1000,
+            LevelLimit: 1000,
+        },
     }
 
     engine.Load = func() {
+        flashFactory, err := paintown.MakeFlashFactory()
+        if err != nil {
+            log.Fatal(err)
+        }
+        engine.FlashFactory = flashFactory
+
         player := paintown.PaintownCharacter{Definition: playerDefinition}
 
         playerState, err := paintown.MakePlayerState(&player, &engine.Level)
@@ -97,6 +108,7 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinitions 
 
         engine.Player = playerState
         engine.Enemies = enemies
+        engine.Model.Enemies = enemies
     }
 
     return engine
@@ -104,7 +116,7 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinitions 
 
 func (engine *Engine) Update() error {
     engine.Init.Do(engine.Load)
-    engine.Counter += 1
+    engine.Model.Counter += 1
 
     var inputState paintown.InputState
     keys := inpututil.AppendPressedKeys(nil)
@@ -160,16 +172,19 @@ func (engine *Engine) Update() error {
         }
     }
 
-    if engine.Player != nil {
-        engine.Player.Update(inputState, &engine.Level, &paintown.DummySystem{}, engine.Counter)
-    }
-
+    var enemies []*paintown.Enemy
     for i, enemy := range engine.Enemies {
         if engine.EnemiesEnabled[i] {
-            if enemy != nil {
-                enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
-            }
+            enemies = append(enemies, enemy)
         }
+    }
+    engine.Model.Enemies = enemies
+
+    engine.Model.UpdatePlayer(engine.Player, inputState, &engine.Level, &paintown.DummySystem{}, engine.FlashFactory)
+
+    /*
+    if engine.Player != nil {
+        engine.Player.Update(inputState, &engine.Level, &paintown.DummySystem{}, engine.Model.Counter)
     }
 
     attackBox := engine.Player.GetAttackBox()
@@ -188,9 +203,22 @@ func (engine *Engine) Update() error {
             }
         }
     }
+    */
+
+    engine.Model.UpdateEnemies(&engine.Level, engine.Player, &paintown.DummySystem{}, engine.FlashFactory)
 
     // if the player is not attacking but is within N distance of an enemy, and the enemy is in an idle state or walking state
     // then put the player into a grab state and the enemy into a grabbed state
+
+    /*
+
+    for i, enemy := range engine.Enemies {
+        if engine.EnemiesEnabled[i] {
+            if enemy != nil {
+                enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
+            }
+        }
+    }
 
     for i, enemy := range engine.Enemies {
         if engine.EnemiesEnabled[i] {
@@ -216,6 +244,7 @@ func (engine *Engine) Update() error {
             }
         }
     }
+    */
 
     return nil
 }
