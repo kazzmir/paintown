@@ -148,11 +148,15 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 
 type GameModel struct {
     Enemies []*Enemy
+    Item []*Item
     Shake int
     ShowHealthMap map[*Enemy]uint64
     Counter uint64
     Flashes []*Flash
     LevelLimit float64
+
+    ItemFactory ItemFactory
+    Items []*Item
 }
 
 func (model *GameModel) UpdateHealthMap(enemy *Enemy, counter uint64) {
@@ -164,6 +168,22 @@ func (model *GameModel) UpdateHealthMap(enemy *Enemy, counter uint64) {
 
 func (model *GameModel) ResetHealthMap() {
     model.ShowHealthMap = make(map[*Enemy]uint64)
+}
+
+func (model *GameModel) CreateItems(objects []BlockObject) []*Item {
+    var out []*Item
+    for _, object := range objects {
+        if object.Type == "item" {
+            item, err := MakeItem(object, &model.ItemFactory)
+            if err != nil {
+                log.Printf("Error creating item from object '%v': %v", object.Name, err)
+            } else {
+                out = append(out, item)
+            }
+        }
+    }
+
+    return out
 }
 
 func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputState, level *Level, system System, flashFactory *FlashFactory) {
@@ -725,6 +745,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 playerState.ResetAttackers()
 
+                model.Items = model.CreateItems(blocks[currentBlock].Objects)
                 model.Enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range model.Enemies {
                     enemy.X += model.LevelLimit - float64(blocks[currentBlock].Length)
