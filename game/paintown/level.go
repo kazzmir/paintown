@@ -23,6 +23,9 @@ type Stimulation struct {
     // health, or something else
 }
 
+func (stimulation *Stimulation) Apply(player *PlayerState) {
+}
+
 type BlockObject struct {
     Id int
     Name string

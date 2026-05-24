@@ -78,3 +78,9 @@ func MakeItem(object BlockObject, itemFactory *ItemFactory) (*Item, error) {
         Frame: original.Frame,
     }, nil
 }
+
+func (item *Item) ApplyStimulation(player *PlayerState) {
+    if item.Stimulation != nil {
+        item.Stimulation.Apply(player)
+    }
+}

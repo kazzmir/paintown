@@ -458,6 +458,8 @@ func (playerState *PlayerState) Pickup(item *Item) {
         playerState.ShowAnimation = get
         get.Reset()
     }
+
+    item.ApplyStimulation(playerState)
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
