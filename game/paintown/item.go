@@ -2,6 +2,7 @@ package paintown
 
 import (
     "github.com/kazzmir/paintown/game/lib/sexp"
+    "github.com/kazzmir/paintown/game/graphics"
     "github.com/kazzmir/paintown/game/data"
 
     "github.com/hajimehoshi/ebiten/v2"
@@ -9,7 +10,7 @@ import (
 
 type Item struct {
     X int
-    Y int
+    Z int
     Stimulation *Stimulation
     Sound string
     Frame *ebiten.Image
@@ -45,12 +46,12 @@ func (factory *ItemFactory) Load(path string) (*Item, error) {
     var frame *ebiten.Image
     if frameExp != nil {
         framePath := frameExp.GetValue(0)
-        originalFrame, err := data.LoadPng(data.DataPath(framePath))
+        originalFrame, err := data.LoadPng(framePath)
         if err != nil {
             return nil, err
         }
 
-        frame = ebiten.NewImageFromImage(originalFrame)
+        frame = ebiten.NewImageFromImage(graphics.ConvertTransparency(originalFrame))
     }
 
     item = &Item{
@@ -71,7 +72,7 @@ func MakeItem(object BlockObject, itemFactory *ItemFactory) (*Item, error) {
 
     return &Item{
         X: object.Coords.X,
-        Y: object.Coords.Y,
+        Z: object.Coords.Y,
         Stimulation: stimulation,
         Sound: original.Sound,
         Frame: original.Frame,

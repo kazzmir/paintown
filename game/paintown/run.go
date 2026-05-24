@@ -170,7 +170,7 @@ func (model *GameModel) ResetHealthMap() {
     model.ShowHealthMap = make(map[*Enemy]uint64)
 }
 
-func (model *GameModel) CreateItems(objects []BlockObject) []*Item {
+func (model *GameModel) CreateItems(objects []BlockObject, level *Level) []*Item {
     var out []*Item
     for _, object := range objects {
         if object.Type == "item" {
@@ -178,6 +178,7 @@ func (model *GameModel) CreateItems(objects []BlockObject) []*Item {
             if err != nil {
                 log.Printf("Error creating item from object '%v': %v", object.Name, err)
             } else {
+                item.Z += level.ZMinimum
                 out = append(out, item)
             }
         }
@@ -518,6 +519,23 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         objects = objects[:0]
+
+        for _, item := range model.Items {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    var options ebiten.DrawImageOptions
+                    options.GeoM.Translate(float64(item.X) - cameraX, float64(item.Z))
+                    options.GeoM.Concat(screenShake)
+                    if item.Frame != nil {
+                        bounds := item.Frame.Bounds()
+                        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                        buffer.DrawImage(item.Frame, &options)
+                    }
+                },
+                Z: float64(item.Z),
+            })
+        }
+
         for _, enemy := range model.Enemies {
             if !enemy.Blinking() {
                 objects = append(objects, Drawable{
@@ -745,7 +763,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 playerState.ResetAttackers()
 
-                model.Items = model.CreateItems(blocks[currentBlock].Objects)
+                model.Items = model.CreateItems(blocks[currentBlock].Objects, level)
                 model.Enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range model.Enemies {
                     enemy.X += model.LevelLimit - float64(blocks[currentBlock].Length)
