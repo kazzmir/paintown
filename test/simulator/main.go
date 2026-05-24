@@ -181,70 +181,7 @@ func (engine *Engine) Update() error {
     engine.Model.Enemies = enemies
 
     engine.Model.UpdatePlayer(engine.Player, inputState, &engine.Level, &paintown.DummySystem{}, engine.FlashFactory)
-
-    /*
-    if engine.Player != nil {
-        engine.Player.Update(inputState, &engine.Level, &paintown.DummySystem{}, engine.Model.Counter)
-    }
-
-    attackBox := engine.Player.GetAttackBox()
-    attack := engine.Player.CurrentAnimation().Attack
-    if !attackBox.Empty() {
-        enemy := engine.Enemies[0]
-        playerState := engine.Player
-        if enemy.CanBeHit(playerState.AttackId) {
-            if enemy.HitBy(attackBox) {
-                force := float64(attack.Force)
-                if playerState.Facing == paintown.FacingLeft {
-                    force = -force
-                }
-                enemy.Hurt(playerState.AttackId, attack.Damage, force)
-                playerState.IgnoreHit(enemy)
-            }
-        }
-    }
-    */
-
     engine.Model.UpdateEnemies(&engine.Level, engine.Player, &paintown.DummySystem{}, engine.FlashFactory)
-
-    // if the player is not attacking but is within N distance of an enemy, and the enemy is in an idle state or walking state
-    // then put the player into a grab state and the enemy into a grabbed state
-
-    /*
-
-    for i, enemy := range engine.Enemies {
-        if engine.EnemiesEnabled[i] {
-            if enemy != nil {
-                enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
-            }
-        }
-    }
-
-    for i, enemy := range engine.Enemies {
-        if engine.EnemiesEnabled[i] {
-            if enemy.State == paintown.EnemyStateIdle || enemy.State == paintown.EnemyStateWalking {
-                distance := math.Abs(engine.Player.X - enemy.X)
-                if distance < 40 && engine.Player.Status == paintown.PlayerMove {
-                    engine.Player.DoGrab(enemy)
-                    enemy.WasGrabbed(engine.Player)
-                }
-            }
-
-            attack = enemy.CurrentAnimationValue.Attack
-            if !attack.IsEmpty() && engine.Player.CanBeHit(enemy, enemy.AttackId) {
-                playerState := engine.Player
-                if playerState.HitBy(enemy.GetAttackBox()) {
-                    force := attack.Force
-                    if enemy.GetFacing() == paintown.FacingLeft {
-                        force = -force
-                    }
-
-                    playerState.Hurt(enemy, attack.Damage, force)
-                }
-            }
-        }
-    }
-    */
 
     return nil
 }
