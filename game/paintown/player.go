@@ -21,6 +21,7 @@ const (
     PlayerIdle PlayerStatus = iota
     PlayerMove
     PlayerJump
+    PlayerGet
     PlayerStateFallen
     PlayerStateFalling
     PlayerStatePain
@@ -448,6 +449,15 @@ func (playerState *PlayerState) NextAttackId() {
 
 func (playerState *PlayerState) IgnoreHit(hitter Attacker) {
     playerState.Attackers[hitter] = hitter.GetAttackId()
+}
+
+func (playerState *PlayerState) Pickup(item *Item) {
+    playerState.Status = PlayerGet
+    get, ok := playerState.Animations["get"]
+    if ok {
+        playerState.ShowAnimation = get
+        get.Reset()
+    }
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {

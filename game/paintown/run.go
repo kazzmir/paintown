@@ -188,6 +188,28 @@ func (model *GameModel) CreateItems(objects []BlockObject, level *Level) []*Item
 }
 
 func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputState, level *Level, system System, flashFactory *FlashFactory) {
+    if playerState.Status == PlayerIdle && inputState.Attack1 {
+        var gotItems []*Item
+        for _, item := range model.Items {
+            diff := abs(float64(item.Z) - playerState.Z)
+            if diff < Z_DISTANCE && abs(float64(item.X) - playerState.X) < 30 {
+                playerState.Pickup(item)
+                system.PlaySound(item.Sound)
+                gotItems = append(gotItems, item)
+            }
+        }
+
+        if len(gotItems) > 0 {
+            var itemsOut []*Item
+            for _, item := range model.Items {
+                if !slices.Contains(gotItems, item) {
+                    itemsOut = append(itemsOut, item)
+                }
+            }
+            model.Items = itemsOut
+        }
+    }
+
     playerState.Update(inputState, level, system, model.Counter)
 
     if playerState.X > model.LevelLimit {
