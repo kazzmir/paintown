@@ -676,6 +676,22 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
             cameraX = max(0, levelLimit - data.ScreenWidth / 2)
         }
 
+        for _, enemy := range enemies {
+            if enemy.State == EnemyStateFalling {
+
+                for _, other := range enemies {
+                    if other != enemy && other.CanBeHit(enemy.AttackId) && other.HitBy(enemy.GetAttackBox()) {
+                        attack := enemy.CurrentAnimationValue.Attack
+                        force := float64(attack.Force)
+                        if enemy.Vx < 0 {
+                            force = -force
+                        }
+                        other.Hurt(enemy.AttackId, attack.Damage, force)
+                    }
+                }
+            }
+        }
+
         outEnemies := make([]*Enemy, 0, len(enemies))
         for _, enemy := range enemies {
             enemy.Update(level, playerState, func(state EnemyState){

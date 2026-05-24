@@ -23,7 +23,8 @@ const ScreenHeight = 240
 
 type Engine struct {
     Player *paintown.PlayerState
-    Enemy *paintown.Enemy
+    Enemies []*paintown.Enemy
+    EnemiesEnabled []bool
     Level paintown.Level
     Counter uint64
 
@@ -56,7 +57,7 @@ func (wait *WaitAtBehavior) Update(enemy *paintown.Enemy, level *paintown.Level,
     }
 }
 
-func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition paintown.CharacterDefinition) *Engine {
+func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinitions []paintown.CharacterDefinition) *Engine {
     engine := &Engine{
         Level: paintown.Level{ZMinimum: 200, ZMaximum: 201},
         Counter: 1000,
@@ -75,18 +76,27 @@ func MakeEngine(playerDefinition paintown.CharacterDefinition, enemyDefinition p
         playerState.Y = 0
         playerState.Z = float64(engine.Level.ZMinimum)
 
-        enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{
-            Coords: image.Pt(250, 200),
-        }, enemyDefinition, paintown.MakeObjectFactory(), &WaitAtBehavior{X: 250})
-        if err != nil {
-            log.Fatal(err)
+        var enemies []*paintown.Enemy
+        for i, enemyDefinition := range enemyDefinitions {
+
+            x := 230 + i*40
+
+            enemy, err := paintown.MakeEnemyFromDefinition(paintown.BlockObject{
+                Coords: image.Pt(x, 200),
+            }, enemyDefinition, paintown.MakeObjectFactory(), &WaitAtBehavior{X: x})
+            if err != nil {
+                log.Fatal(err)
+            }
+
+            enemy.Facing = paintown.FacingLeft
+            enemy.Health = 10000000
+
+            enemies = append(enemies, enemy)
+            engine.EnemiesEnabled = append(engine.EnemiesEnabled, true)
         }
 
-        enemy.Facing = paintown.FacingLeft
-        enemy.Health = 10000000
-
         engine.Player = playerState
-        engine.Enemy = enemy
+        engine.Enemies = enemies
     }
 
     return engine
@@ -143,14 +153,18 @@ func (engine *Engine) Update() error {
         engine.Player.Update(inputState, &engine.Level, &paintown.DummySystem{}, engine.Counter)
     }
 
-    if engine.Enemy != nil {
-        engine.Enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
+    for i, enemy := range engine.Enemies {
+        if engine.EnemiesEnabled[i] {
+            if enemy != nil {
+                enemy.Update(&engine.Level, engine.Player, func(state paintown.EnemyState) {}, &paintown.DummySystem{})
+            }
+        }
     }
 
     attackBox := engine.Player.GetAttackBox()
     attack := engine.Player.CurrentAnimation().Attack
     if !attackBox.Empty() {
-        enemy := engine.Enemy
+        enemy := engine.Enemies[0]
         playerState := engine.Player
         if enemy.CanBeHit(playerState.AttackId) {
             if enemy.HitBy(attackBox) {
@@ -167,25 +181,28 @@ func (engine *Engine) Update() error {
     // if the player is not attacking but is within N distance of an enemy, and the enemy is in an idle state or walking state
     // then put the player into a grab state and the enemy into a grabbed state
 
-    if engine.Enemy.State == paintown.EnemyStateIdle || engine.Enemy.State == paintown.EnemyStateWalking {
-        distance := math.Abs(engine.Player.X - engine.Enemy.X)
-        if distance < 40 && engine.Player.Status == paintown.PlayerMove {
-            engine.Player.DoGrab(engine.Enemy)
-            engine.Enemy.WasGrabbed(engine.Player)
-        }
-    }
-
-    attack = engine.Enemy.CurrentAnimationValue.Attack
-    if !attack.IsEmpty() && engine.Player.CanBeHit(engine.Enemy, engine.Enemy.AttackId) {
-        playerState := engine.Player
-        enemy := engine.Enemy
-        if playerState.HitBy(enemy.GetAttackBox()) {
-            force := attack.Force
-            if enemy.GetFacing() == paintown.FacingLeft {
-                force = -force
+    for i, enemy := range engine.Enemies {
+        if engine.EnemiesEnabled[i] {
+            if enemy.State == paintown.EnemyStateIdle || enemy.State == paintown.EnemyStateWalking {
+                distance := math.Abs(engine.Player.X - enemy.X)
+                if distance < 40 && engine.Player.Status == paintown.PlayerMove {
+                    engine.Player.DoGrab(enemy)
+                    enemy.WasGrabbed(engine.Player)
+                }
             }
 
-            playerState.Hurt(enemy, attack.Damage, force)
+            attack = enemy.CurrentAnimationValue.Attack
+            if !attack.IsEmpty() && engine.Player.CanBeHit(enemy, enemy.AttackId) {
+                playerState := engine.Player
+                if playerState.HitBy(enemy.GetAttackBox()) {
+                    force := attack.Force
+                    if enemy.GetFacing() == paintown.FacingLeft {
+                        force = -force
+                    }
+
+                    playerState.Hurt(enemy, attack.Damage, force)
+                }
+            }
         }
     }
 
@@ -201,12 +218,14 @@ func (engine *Engine) Draw(screen *ebiten.Image) {
         paintown.DrawPlayer(engine.Player, 0, ebiten.GeoM{}, screen)
     }
 
-    if engine.Enemy != nil {
-        paintown.DrawEnemy(engine.Enemy, 0, ebiten.GeoM{}, screen)
+    for i, enemy := range engine.Enemies {
+        if engine.EnemiesEnabled[i] {
+             paintown.DrawEnemy(enemy, 0, ebiten.GeoM{}, screen)
+        }
     }
 
     ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Player state: %v", engine.Player.Status), 0, 0)
-    ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Enemy state: %v", engine.Enemy.State), 0, 15)
+    ebitenutil.DebugPrintAt(screen, fmt.Sprintf("Enemy state: %v", engine.Enemies[0].State), 0, 15)
 }
 
 func (engine *Engine) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
@@ -246,7 +265,17 @@ func main() {
         log.Fatal(err)
     }
 
-    err = ebiten.RunGame(MakeEngine(playerDefinition, enemyDefinition))
+    enemyDefinitions := []paintown.CharacterDefinition{enemyDefinition}
+    for _, path := range []string{"chars/angel/angel.txt", "chars/billy/billy.txt"} {
+        log.Printf("Loading enemy definition from %s", path)
+        definition, err := paintown.LoadDefinition(data.DataPath(path))
+        if err != nil {
+            log.Fatal(err)
+        }
+        enemyDefinitions = append(enemyDefinitions, definition)
+    }
+
+    err = ebiten.RunGame(MakeEngine(playerDefinition, enemyDefinitions))
     if err != nil {
         log.Fatal(err)
     }
