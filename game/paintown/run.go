@@ -90,6 +90,23 @@ func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.Ge
 
         options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
         options.GeoM.Concat(screenShake)
+
+        if playerState.VisualEffect.Time > 0 {
+            switch playerState.VisualEffect.Effect {
+                case VisualEffectGlow:
+                    r, g, b, a := playerState.VisualEffect.Color.RGBA()
+                    fr := float32(r) / float32(65535)
+                    fg := float32(g) / float32(65535)
+                    fb := float32(b) / float32(65535)
+                    fa := float32(a) / float32(65535)
+
+                    angle := float64(playerState.VisualEffect.Time * 6) * math.Pi / 180
+                    sin := float32((math.Sin(angle) + 1) / 2)
+
+                    options.ColorScale.Scale(1 + fr * sin, 1 + fg * sin, 1 + fb * sin, 1 + fa * sin)
+            }
+        }
+
         screen.DrawImage(animation.CurrentFrame(), &options)
     }
 
@@ -148,11 +165,15 @@ func DrawEnemy(enemy *Enemy, cameraX float64, screenShake ebiten.GeoM, screen *e
 
 type GameModel struct {
     Enemies []*Enemy
+    Item []*Item
     Shake int
     ShowHealthMap map[*Enemy]uint64
     Counter uint64
     Flashes []*Flash
     LevelLimit float64
+
+    ItemFactory ItemFactory
+    Items []*Item
 }
 
 func (model *GameModel) UpdateHealthMap(enemy *Enemy, counter uint64) {
@@ -166,7 +187,46 @@ func (model *GameModel) ResetHealthMap() {
     model.ShowHealthMap = make(map[*Enemy]uint64)
 }
 
+func (model *GameModel) CreateItems(objects []BlockObject, level *Level) []*Item {
+    var out []*Item
+    for _, object := range objects {
+        if object.Type == "item" {
+            item, err := MakeItem(object, &model.ItemFactory)
+            if err != nil {
+                log.Printf("Error creating item from object '%v': %v", object.Name, err)
+            } else {
+                item.Z += level.ZMinimum
+                out = append(out, item)
+            }
+        }
+    }
+
+    return out
+}
+
 func (model *GameModel) UpdatePlayer(playerState *PlayerState, inputState InputState, level *Level, system System, flashFactory *FlashFactory) {
+    if playerState.Status == PlayerIdle && inputState.Attack1 {
+        var gotItems []*Item
+        for _, item := range model.Items {
+            diff := abs(float64(item.Z) - playerState.Z)
+            if diff < Z_DISTANCE && abs(float64(item.X) - playerState.X) < 30 {
+                playerState.Pickup(item)
+                system.PlaySound(item.Sound)
+                gotItems = append(gotItems, item)
+            }
+        }
+
+        if len(gotItems) > 0 {
+            var itemsOut []*Item
+            for _, item := range model.Items {
+                if !slices.Contains(gotItems, item) {
+                    itemsOut = append(itemsOut, item)
+                }
+            }
+            model.Items = itemsOut
+        }
+    }
+
     playerState.Update(inputState, level, system, model.Counter)
 
     if playerState.X > model.LevelLimit {
@@ -498,6 +558,23 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
         }
 
         objects = objects[:0]
+
+        for _, item := range model.Items {
+            objects = append(objects, Drawable{
+                Draw: func() {
+                    var options ebiten.DrawImageOptions
+                    options.GeoM.Translate(float64(item.X) - cameraX, float64(item.Z))
+                    options.GeoM.Concat(screenShake)
+                    if item.Frame != nil {
+                        bounds := item.Frame.Bounds()
+                        options.GeoM.Translate(-float64(bounds.Dx()) / 2, float64(-bounds.Dy()))
+                        buffer.DrawImage(item.Frame, &options)
+                    }
+                },
+                Z: float64(item.Z),
+            })
+        }
+
         for _, enemy := range model.Enemies {
             if !enemy.Blinking() {
                 objects = append(objects, Drawable{
@@ -725,6 +802,7 @@ func RunLevel(player *PaintownCharacter, yield coroutine.YieldFunc, setDraw func
 
                 playerState.ResetAttackers()
 
+                model.Items = model.CreateItems(blocks[currentBlock].Objects, level)
                 model.Enemies = createEnemies(blocks[currentBlock].Objects)
                 for _, enemy := range model.Enemies {
                     enemy.X += model.LevelLimit - float64(blocks[currentBlock].Length)

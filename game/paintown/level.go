@@ -19,8 +19,26 @@ type Panel struct {
     Image *ebiten.Image
 }
 
+type StimulationKind int
+const (
+    StimulationKindNone StimulationKind = iota
+    StimulationKindHealth
+    StimulationKindPower
+)
+
 type Stimulation struct {
     // health, or something else
+    Kind StimulationKind
+    Value int
+}
+
+func (stimulation *Stimulation) Apply(player *PlayerState) {
+    switch stimulation.Kind {
+        case StimulationKindHealth:
+            player.AddHealth(float64(stimulation.Value))
+        case StimulationKindPower:
+            player.AddPower(float64(stimulation.Value), 100)
+    }
 }
 
 type BlockObject struct {
@@ -40,7 +58,7 @@ type BlockObject struct {
     // spawn point relative to start of block
     Coords image.Point
 
-    Stimulation *Stimulation
+    Stimulation Stimulation
 }
 
 type Block struct {
@@ -82,7 +100,22 @@ func parseBlockObject(object *sexp.SExpr) BlockObject {
         coords = image.Point{X: x, Y: y}
     }
 
-    // TODO: parse stimulation
+    var stimulation Stimulation
+
+    stimulationElement := object.GetChild("stimulation")
+    if stimulationElement != nil {
+        healthValue, isHealth := sexp.ReadValue[int](stimulationElement, "health", 0)
+        if isHealth {
+            stimulation.Kind = StimulationKindHealth
+            stimulation.Value = healthValue
+        }
+
+        powerValue, isPower := sexp.ReadValue[int](stimulationElement, "power", 0)
+        if isPower {
+            stimulation.Kind = StimulationKindPower
+            stimulation.Value = powerValue
+        }
+    }
 
     return BlockObject{
         Id: id,
@@ -92,6 +125,7 @@ func parseBlockObject(object *sexp.SExpr) BlockObject {
         Map: mapIndex,
         Coords: coords,
         Health: health,
+        Stimulation: stimulation,
     }
 }
 

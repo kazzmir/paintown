@@ -8,6 +8,7 @@ import (
     "fmt"
     "cmp"
     "slices"
+    "image/color"
 
     "github.com/kazzmir/paintown/game/lib/sexp"
     "github.com/kazzmir/paintown/game/graphics"
@@ -21,6 +22,7 @@ const (
     PlayerIdle PlayerStatus = iota
     PlayerMove
     PlayerJump
+    PlayerGet
     PlayerStateFallen
     PlayerStateFalling
     PlayerStatePain
@@ -224,6 +226,19 @@ type Grabbed interface {
     Attacker
 }
 
+type VisualEffectType int
+const (
+    VisualEffectNone VisualEffectType = iota
+    VisualEffectGlow
+    VisualEffectSuperGlow
+)
+
+type VisualEffect struct {
+    Effect VisualEffectType
+    Color color.RGBA
+    Time uint64
+}
+
 type PlayerState struct {
     X float64
     Y float64
@@ -248,6 +263,8 @@ type PlayerState struct {
 
     HitSound string
 
+    VisualEffect VisualEffect
+
     Health float64
     MaxHealth float64
     Pain float64
@@ -262,9 +279,6 @@ type PlayerState struct {
     TrailLength int
 
     Trails []*Trail
-
-    // FIXME: this needs to be per enemy
-    LastAttacked uint64
 }
 
 func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, error) {
@@ -384,6 +398,23 @@ func (playerState *PlayerState) SetTrail(generate int, length int) {
     playerState.TrailLength = length
 }
 
+func (playerState *PlayerState) AddHealth(health float64) {
+    playerState.Health = min(playerState.MaxHealth, playerState.Health + health)
+    playerState.SetGlowEffect(color.RGBA{R: 255, G: 255, A: 255}, 150)
+}
+
+func (playerState *PlayerState) AddPower(power float64, length int) {
+    // TODO: add power modifier
+}
+
+func (playerState *PlayerState) SetGlowEffect(color color.RGBA, time uint64) {
+    playerState.VisualEffect = VisualEffect{
+        Effect: VisualEffectGlow,
+        Color: color,
+        Time: time,
+    }
+}
+
 func (playerState *PlayerState) ReleaseGrab() {
     playerState.Status = PlayerIdle
     playerState.Grabbed = nil
@@ -448,6 +479,17 @@ func (playerState *PlayerState) NextAttackId() {
 
 func (playerState *PlayerState) IgnoreHit(hitter Attacker) {
     playerState.Attackers[hitter] = hitter.GetAttackId()
+}
+
+func (playerState *PlayerState) Pickup(item *Item) {
+    playerState.Status = PlayerGet
+    get, ok := playerState.Animations["get"]
+    if ok {
+        playerState.ShowAnimation = get
+        get.Reset()
+    }
+
+    item.ApplyStimulation(playerState)
 }
 
 func (playerState *PlayerState) Hurt(hitter Attacker, damage float64, force float64) {
@@ -533,6 +575,13 @@ func (playerState *PlayerState) GetStatus() string {
 func (playerState *PlayerState) Update(input InputState, level *Level, system System, counter uint64) {
     doJump := false
     move := false
+
+    if playerState.VisualEffect.Time > 0 {
+        playerState.VisualEffect.Time -= 1
+        if playerState.VisualEffect.Time == 0 {
+            playerState.VisualEffect.Effect = VisualEffectNone
+        }
+    }
 
     playerState.Pain = max(0, playerState.Pain - 0.1)
 
