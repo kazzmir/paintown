@@ -90,6 +90,23 @@ func DrawPlayer(playerState *PlayerState, cameraX float64, screenShake ebiten.Ge
 
         options.GeoM.Translate(playerState.X - cameraX, playerState.Z - playerState.Y)
         options.GeoM.Concat(screenShake)
+
+        if playerState.VisualEffect.Time > 0 {
+            switch playerState.VisualEffect.Effect {
+                case VisualEffectGlow:
+                    r, g, b, a := playerState.VisualEffect.Color.RGBA()
+                    fr := float32(r) / float32(65535)
+                    fg := float32(g) / float32(65535)
+                    fb := float32(b) / float32(65535)
+                    fa := float32(a) / float32(65535)
+
+                    angle := float64(playerState.VisualEffect.Time * 6) * math.Pi / 180
+                    sin := float32((math.Sin(angle) + 1) / 2)
+
+                    options.ColorScale.Scale(1 + fr * sin, 1 + fg * sin, 1 + fb * sin, 1 + fa * sin)
+            }
+        }
+
         screen.DrawImage(animation.CurrentFrame(), &options)
     }
 
