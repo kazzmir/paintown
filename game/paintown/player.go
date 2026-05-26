@@ -263,9 +263,6 @@ type PlayerState struct {
     TrailLength int
 
     Trails []*Trail
-
-    // FIXME: this needs to be per enemy
-    LastAttacked uint64
 }
 
 func MakePlayerState(player *PaintownCharacter, level *Level) (*PlayerState, error) {
