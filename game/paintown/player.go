@@ -385,6 +385,14 @@ func (playerState *PlayerState) SetTrail(generate int, length int) {
     playerState.TrailLength = length
 }
 
+func (playerState *PlayerState) AddHealth(health float64) {
+    playerState.Health = min(playerState.MaxHealth, playerState.Health + health)
+}
+
+func (playerState *PlayerState) AddPower(power float64, length int) {
+    // TODO: add power modifier
+}
+
 func (playerState *PlayerState) ReleaseGrab() {
     playerState.Status = PlayerIdle
     playerState.Grabbed = nil

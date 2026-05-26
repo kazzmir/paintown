@@ -11,7 +11,7 @@ import (
 type Item struct {
     X int
     Z int
-    Stimulation *Stimulation
+    Stimulation Stimulation
     Sound string
     Frame *ebiten.Image
 }
@@ -80,7 +80,5 @@ func MakeItem(object BlockObject, itemFactory *ItemFactory) (*Item, error) {
 }
 
 func (item *Item) ApplyStimulation(player *PlayerState) {
-    if item.Stimulation != nil {
-        item.Stimulation.Apply(player)
-    }
+    item.Stimulation.Apply(player)
 }
