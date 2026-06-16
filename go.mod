@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	github.com/hajimehoshi/ebiten/v2 v2.9.8
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
