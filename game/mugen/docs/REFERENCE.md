@@ -301,3 +301,23 @@ showing the first contact pass occurs before ordinary paused passes. All three
 programs match character.TickCharacters, used by production; hit-trade-pause-replay
 reproduces native evidence. Full hitpause duration, priorities, multiple contacts,
 guard/overrides, helper and projectile order are not inferred from these probes.
+
+## HitOverride cases
+
+The twelve override-* fixtures cover basic/slot/default-time/forceair/clear/
+expire/lasttick/hitstate/missing-state/missing-attr/nonmatch/projectile cases.
+Runs use -virtual3 for the first six and -virtual for the remaining cases; the
+first basic -virtual capture predates the final entry-counter fixture. All final
+source/hash-pinned observations compare through TickCharacters. Native omissions
+of attr or stateno yield inactive overrides rather than the manual's advertised
+required-parameter rejection. Standard get-hit entry precedes override entry,
+without executing standard-state controllers, as PrevStateNo/entry-counter show.
+Forceair uses air values but respects air.fall=0. Damage applies after first
+state execution only when movetype remains H. override-forceair-replay reproduces
+the final case. This does not establish custom-state exclusion or complete pause,
+helper/projectile/ownership behavior.
+
+The first override-basic-native/native2 captures stalled in initial fade-in as
+all desktop monitor outputs disconnected; they contain no interpreted numeric
+observations. A task-owned Xvfb restored native and Go execution. Original
+reference assets remain untouched; see BUILD.md for the temporary display setup.

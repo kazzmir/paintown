@@ -16,7 +16,7 @@ import (
 )
 
 func TestReferenceHitCoordinates(t *testing.T) {
-	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause"} {
+	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause", "override-basic", "override-slots", "override-forceair", "override-clear", "override-expire", "override-lasttick", "override-hitstate", "override-missing-state", "override-missing-attr", "override-default-time", "override-nonmatch", "override-projectile"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			source, err := os.ReadFile(stem + ".cns")
@@ -60,6 +60,21 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						t.Fatal(err)
 					}
 					file.Data.Life = 1000
+					if strings.HasPrefix(name, "override-") {
+						data, err := os.ReadFile("../temp/mugen-1.1b1/data/common1.cns")
+						if err != nil {
+							t.Fatal(err)
+						}
+						common, err := cns.ParseNamed(strings.NewReader(string(data)), "common1.cns")
+						if err != nil {
+							t.Fatal(err)
+						}
+						for id, state := range common.States {
+							if file.States[id] == nil {
+								file.States[id] = state
+							}
+						}
+					}
 					actions, err := air.Parse(strings.NewReader(string(frames)))
 					if err != nil {
 						t.Fatal(err)
@@ -91,7 +106,11 @@ func TestReferenceHitCoordinates(t *testing.T) {
 							t.Fatal(err)
 						}
 					}
-					if players[0].StateNo != 5000 {
+					wantState := 5000
+					if strings.HasPrefix(name, "override-") {
+						wantState = int(referenceFloat(t, test.Captures[0].Variables["0"]))
+					}
+					if players[0].StateNo != wantState {
 						t.Fatal("authored contact did not reach victim state", players[0].StateNo)
 					}
 					for _, capture := range test.Captures {

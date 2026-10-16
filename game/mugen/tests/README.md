@@ -173,3 +173,9 @@ with a fresh --name replays same-frame/pre-damage and next-frame/post-damage
 values. Character tests use the same TickCharacters entry as production. The
 fixture tests do not open a window, but current Character imports still need
 Ebitengine display initialization; only engine/evaluator are display-independent.
+
+HitOverride: override-* fixtures are pinned cases replayed with --case default;
+clipboard output is appended to the negative CMD state so every destination can
+report. The Go suite now gates all 108 stock states compiling and compares twelve
+native override cases. Full controller parity remains open. When desktop outputs
+are disconnected, use the private display environment described in docs/BUILD.md.

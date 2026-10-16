@@ -190,6 +190,9 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["hitdef"] = handleHitDef
 	sm.controllers["projectile"] = handleProjectile
 	sm.controllers["hitby"] = handleHitBy
+	sm.controllers["hitoverride"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("HitOverride requires compiled parameters")
+	}
 	sm.controllers["nothitby"] = handleNotHitBy
 	sm.controllers["assertspecial"] = handleAssertSpecial
 	sm.controllers["explod"] = handleExplod

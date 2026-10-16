@@ -4,6 +4,40 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4h — Stock HitOverride and get-hit context
+
+Registered/compiled HitOverride with typed state/slot/time/forceair values and
+shared display-independent hit attribute filters. Eight timed slots survive
+state entry, lowest matching slot wins, and blank/omitted attributes or missing
+stateno disable the slot. The last two omissions are accepted by the beta despite
+the manual calling those parameters required. Stock time=0 clearing works.
+Both KFM variants now compile all 108 states; the three diagnosed missing-
+controller gaps are replaced by a complete stock compilation gate.
+
+Twelve source-pinned native cases match default duration, interval expiry,
+nonmatching/projectile attributes, slots, forceair, clearing and omission forms.
+Native override first enters the standard 5000/5010/5020 get-hit state without
+executing its controllers, then the selected override: PrevStateNo exposes that
+intermediate entry. Forceair selects air vectors/time while allowing the target
+Statedef to remain S; it does not force fall when air.fall=0. Stored hit-air
+context is now separate from current StateType/fall. Native deferred damage is
+applied only if the resulting contact state remains movetype H; I destinations
+retain life while H destinations take damage. These observations are matched by
+the shared production tick. A fresh forceair replay matches; full races pass.
+
+Full HitOverride/custom-state behavior is still partial: matching p1stateno /
+p2getp1state exclusions, invalid-value fallbacks, hitpause duration edges,
+helper/projectile scheduling and ownership remain open. HitDef defaults/flags,
+priority/guard/reversal and complete GetHitVar semantics are also incomplete.
+No full controller/trigger inventory row is promoted to Verified.
+
+During this checkpoint all desktop outputs disconnected. The native captures
+stalled at frame 5 and Ebitengine tests failed with no-monitor initialization.
+Xvfb 21.1.12-1ubuntu1.8 was downloaded/extracted only under temp/virtual-display;
+a private authenticated :97 server and software GL restored tests/probes. No
+system package/display configuration was changed. See BUILD.md for provenance
+and environment. The failed early override captures remain as diagnostic evidence.
+
 ## M4g — Shared root-player tick/contact phases
 
 Production matches and the character diagnostic now use character.TickCharacters:

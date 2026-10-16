@@ -40,3 +40,36 @@ its own directory, the program root, data/, then font/. Bitmap font SFF children
 resolve relative to their font DEF, honoring Windows separators and case. Declared
 missing/malformed motif fonts now fail loading. A missing Windows TTF referenced
 inside a valid font definition still uses the observable fallback above.
+
+## Private verification display
+
+During M4h the desktop X server :0 stayed reachable but xrandr reported every
+output disconnected. Ebitengine then failed initializeGLFW with "no monitor was
+found" and native probes stalled in fade-in. Do not alter the user's monitor or
+focus configuration to work around this.
+
+A temporary Xvfb archive was downloaded with apt-get download into
+`temp/virtual-display/` and extracted with dpkg-deb -x into its root/ directory.
+No system package was installed. Package: Ubuntu noble-updates xvfb,
+2:21.1.12-1ubuntu1.8 amd64. Archive SHA256:
+`712429d9342c7d6cef63afb33ccfcd2bd477a69371b5c9941a9c6dde31a4cd3c`.
+Existing host libraries satisfy its dependencies. A mode-0600 Xauthority file
+contains a private random cookie; never print or commit it. The server is local
+only, started with:
+
+```
+game/mugen/temp/virtual-display/root/usr/bin/Xvfb :97 -screen 0 1280x960x24 -nolisten tcp -noreset -auth game/mugen/temp/virtual-display/Xauthority -fbdir game/mugen/temp/virtual-display
+```
+
+While that task-owned server runs, checks and probes use:
+
+```
+DISPLAY=:97 XAUTHORITY=/home/juvinious/projects/paintown/game/mugen/temp/virtual-display/Xauthority LIBGL_ALWAYS_SOFTWARE=1 GOPROXY=off game/mugen/mugen --check -race
+```
+
+The same environment can prefix reference_probe.py or app_smoke.py. Captures
+still target only their spawned process's visible window. Server/auth/framebuffer
+and downloaded binaries are ignored temporary artifacts. Check that a display
+number is free before creating a new server and stop only the server created by
+this task when verification work ends. Fully display-independent Character /
+Match extraction remains open; the virtual server is a verification adapter.

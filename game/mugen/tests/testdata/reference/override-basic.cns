@@ -1,0 +1,257 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700+(Facing=-1)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, override]
+type=HitOverride
+trigger1=Time=0
+attr=SCA,AA
+stateno=710
+time=-1
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, hit]
+type=HitDef
+trigger1=Time=0
+attr=S,NA
+hitflag=MAF
+damage=25,0
+pausetime=0,0
+ground.type=High
+ground.hittime=11
+ground.slidetime=5
+ground.velocity=-16,0
+air.velocity=-12,-20
+air.hittime=17
+yaccel=0.8
+fall.xvelocity=-8
+fall.yvelocity=-24
+[Statedef 710]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 710, observation 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=StateNo
+[State 710, observation 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Life
+[State 710, observation 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=GetHitVar(xvel)
+[State 710, observation 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=GetHitVar(yvel)
+[State 710, observation 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=GetHitVar(fall)
+[State 710, observation 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=StateType=A
+[State 710, observation 6]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=Life
+[State 710, observation 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=GetHitVar(yaccel)
+[State 710, observation 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=PrevStateNo
+[State 710, observation 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=GetHitVar(hittime)
+[State 710, observation 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Ctrl
+[State 710, observation 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=var(31)
+[Statedef 711]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 711, observation 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=StateNo
+[State 711, observation 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Life
+[State 711, observation 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=GetHitVar(xvel)
+[State 711, observation 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=GetHitVar(yvel)
+[State 711, observation 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=GetHitVar(fall)
+[State 711, observation 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=StateType=A
+[State 711, observation 6]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=Life
+[State 711, observation 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=GetHitVar(yaccel)
+[State 711, observation 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=PrevStateNo
+[State 711, observation 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=GetHitVar(hittime)
+[State 711, observation 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Ctrl
+[State 711, observation 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=var(31)
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, observed entry]
+type=VarAdd
+trigger1=Time=0
+v=31
+value=1
+[State 5000, observation 0]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=StateNo
+[State 5000, observation 1]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Life
+[State 5000, observation 2]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=GetHitVar(xvel)
+[State 5000, observation 3]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=GetHitVar(yvel)
+[State 5000, observation 4]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=GetHitVar(fall)
+[State 5000, observation 5]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=StateType=A
+[State 5000, observation 6]
+type=VarSet
+trigger1=Time=1
+fv=6
+value=Life
+[State 5000, observation 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=GetHitVar(yaccel)
+[State 5000, observation 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=PrevStateNo
+[State 5000, observation 9]
+type=VarSet
+trigger1=Time=0
+fv=9
+value=GetHitVar(hittime)
+[State 5000, observation 10]
+type=VarSet
+trigger1=Time=0
+fv=10
+value=Ctrl
+[State 5000, observation 11]
+type=VarSet
+trigger1=Time=0
+fv=11
+value=var(31)

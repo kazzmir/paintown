@@ -113,6 +113,7 @@ type HitDef struct {
 	Palfrm_Mul       []float64
 	Palfrm_Add       []int
 	Fall             int
+	AirFall          int
 	FallDamage       int
 	FallVel          []float64
 	FallXUnchanged   bool
@@ -660,6 +661,10 @@ func ParseHitDef(params map[string]string) HitDef {
 
 	if v, ok := params["fall"]; ok {
 		hd.Fall, _ = strconv.Atoi(v)
+	}
+	hd.AirFall = hd.Fall
+	if v, ok := params["air.fall"]; ok {
+		hd.AirFall, _ = strconv.Atoi(v)
 	}
 	if v, ok := params["fall.damage"]; ok {
 		hd.FallDamage, _ = strconv.Atoi(v)

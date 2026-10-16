@@ -10,6 +10,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/combat"
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
@@ -163,6 +164,7 @@ type Character struct {
 	HitTime          int
 	HitShakeTime     int // Separate from visual ShakeTime? No, reuse ShakeTime.
 	HitFall          bool
+	GetHitAir        bool
 	HitFallVelActive bool // Tracks if HitFallVel controller was triggered
 
 	// Input latching to stabilize diagonals (input name -> ticks remaining)
@@ -171,6 +173,7 @@ type Character struct {
 	// Protection logic
 	NotHitByFlags map[string]int // flag -> ticks remaining
 	HitByFlags    map[string]int // flag -> ticks remaining
+	HitOverrides  [8]combat.HitOverride
 
 	// Rounds
 	RoundsExisted int
@@ -430,6 +433,7 @@ func (c *Character) finishTick() {
 		}
 
 		// Tick down protection flags
+		c.tickHitOverrides()
 		for k, v := range c.NotHitByFlags {
 			if v > 0 {
 				c.NotHitByFlags[k] = v - 1
@@ -1256,7 +1260,7 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = 1
 		}
 	case "xvel":
-		if c.HitFall || c.StateType == "A" {
+		if c.GetHitAir {
 			if len(c.GetHit.AirVel) > 0 {
 				val = c.GetHit.AirVel[0]
 			}
@@ -1264,7 +1268,7 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = c.GetHit.GroundVel[0]
 		}
 	case "yvel":
-		if c.HitFall || c.StateType == "A" {
+		if c.GetHitAir {
 			if len(c.GetHit.AirVel) > 1 {
 				val = c.GetHit.AirVel[1]
 			} else if len(c.GetHit.GroundVel) > 1 {
@@ -1278,8 +1282,6 @@ func (c *Character) GetHitVar(name string) float64 {
 	case "fall":
 		if c.HitFall {
 			val = 1
-		} else {
-			val = float64(c.GetHit.Fall)
 		}
 	case "fall.damage":
 		val = float64(c.GetHit.FallDamage)
@@ -1304,7 +1306,7 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = 1
 		}
 	case "hittime":
-		if c.StateType == "A" {
+		if c.GetHitAir {
 			val = float64(c.GetHit.AirHitTime)
 		} else {
 			val = float64(c.GetHit.GroundHitTime)
@@ -1313,7 +1315,7 @@ func (c *Character) GetHitVar(name string) float64 {
 		val = float64(c.GetHit.GroundSlide)
 	case "ctrltime":
 		// This is usually GroundHitTime? MUGEN docs say it's same as hittime.
-		if c.StateType == "A" {
+		if c.GetHitAir {
 			val = float64(c.GetHit.AirHitTime)
 		} else {
 			val = float64(c.GetHit.GroundHitTime)
@@ -1797,6 +1799,9 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 }
 
 func (c *Character) applyHitDamage(damage int) {
+	if c.MoveType != "H" {
+		return
+	}
 	c.Life -= damage
 	if c.Life < 0 {
 		c.Life = 0
@@ -1804,6 +1809,9 @@ func (c *Character) applyHitDamage(damage int) {
 }
 
 func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
+	override, hasOverride := c.matchingOverride(hit.Attr)
+	airHit := c.StateType == "A" || (hasOverride && override.ForceAir)
+	c.GetHitAir = airHit
 	hit = c.hitInLocalSpace(attacker, hit)
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 
@@ -1834,7 +1842,7 @@ func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
 	}
 
 	// Set HitTime duration based on state
-	if c.StateType == "A" || hit.Fall == 1 {
+	if airHit {
 		if hit.AirHitTime > 0 {
 			c.HitTime = hit.AirHitTime
 		} else {
@@ -1845,10 +1853,23 @@ func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
 	}
 
 	// Track if this hit causes a fall
-	c.HitFall = hit.Fall == 1 || c.StateType == "A"
+	c.HitFall = hit.Fall == 1
+	if airHit {
+		c.HitFall = hit.AirFall == 1
+	}
 
 	// Guarding vs Normal Hit
-	if c.StateNo >= 120 && c.StateNo <= 155 {
+	if hasOverride {
+		standard := 5000
+		if c.StateType == "C" {
+			standard = 5010
+		}
+		if airHit {
+			standard = 5020
+		}
+		c.ChangeState(standard, 0, -1)
+		c.ChangeState(override.StateNo, 0, -1)
+	} else if c.StateNo >= 120 && c.StateNo <= 155 {
 		// Guard Hit States (150-155)
 		if c.StateType == "S" {
 			c.ChangeState(150, 0, -1)
@@ -1859,7 +1880,13 @@ func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
 		}
 	} else {
 		// Transition to Hit State (5000 is standard MUGEN "hit" state)
-		c.ChangeState(5000, 0, -1)
+		state := 5000
+		if c.StateType == "C" {
+			state = 5010
+		} else if airHit {
+			state = 5020
+		}
+		c.ChangeState(state, 0, -1)
 	}
 	return int(finalDamage)
 }

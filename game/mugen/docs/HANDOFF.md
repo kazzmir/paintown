@@ -268,6 +268,17 @@ fields, including newly-started hitpause. Native paused replay and full races
 pass. The group tick also backs all hit coordinate/default fixtures. Full entity
 registry, priority/guard/HitOverride and helper/projectile phase rules are next.
 
+M4g is commit `183f40e0`. M4h adds HitOverride and shared attribute filters;
+all 108 stock states now compile. Twelve native cases match slots/defaults/expiry,
+omissions, forceair, intermediate get-hit entry and damage state behavior. Full
+races and forceair replay pass. Remaining custom-state exclusions, invalid-value
+fallbacks, ownership and pause edges prevent a full HitOverride parity claim.
+
+The desktop now reports no connected monitors. Tests/probes use private Xvfb
+:97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
+see BUILD.md. The server was started by this task (exec session 15800), with
+all extracted files under temp/. Do not reconfigure the desktop.
+
 Next finish playable match behavior with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

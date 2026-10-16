@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"github.com/kazzmir/paintown/game/mugen/combat"
 	"math"
 	"strings"
 	"testing"
@@ -19,6 +20,7 @@ type parameterHost struct {
 	self                       bool
 	quote, removed, combo      int
 	paletteSource, paletteDest [2]int
+	override                   combat.HitOverride
 }
 
 func newParameterHost() *parameterHost {
@@ -47,6 +49,10 @@ func (h *parameterHost) RemoveExplod(n int)             { h.removed = n }
 func (h *parameterHost) HitAdd(n int)                   { h.combo += n }
 func (h *parameterHost) SetPaletteMapping(source, dest [2]int) error {
 	h.paletteSource, h.paletteDest = source, dest
+	return nil
+}
+func (h *parameterHost) SetHitOverride(value combat.HitOverride) error {
+	h.override = value
 	return nil
 }
 func (h *parameterHost) GetHitVar(name string) float64 {
@@ -112,6 +118,30 @@ func TestCompiledPaletteParameters(t *testing.T) {
 		}
 		if h.paletteSource != [2]int{-1, 0} || h.paletteDest != [2]int{-1, 0} {
 			t.Fatal("bad parameters mutated mapping")
+		}
+	}
+}
+
+func TestCompiledHitOverrideParameters(t *testing.T) {
+	h := newParameterHost()
+	h.vars[0] = 2
+	runController(t, h, "HitOverride", "attr=SA,AP\nstateno=700+var(0)\nslot=1+1\ntime=2+3\nforceair=1")
+	hit, _ := combat.ParseAttributes("A,HP")
+	if h.override.StateNo != 702 || h.override.Slot != 2 || h.override.Time != 5 || !h.override.ForceAir || !h.override.Attributes.Matches(hit) {
+		t.Fatal("override expressions/filter", h.override)
+	}
+	runController(t, h, "HitOverride", "attr=SCA,NA\nstateno=710")
+	if h.override.Slot != 0 || h.override.Time != 1 || h.override.ForceAir {
+		t.Fatal("override defaults", h.override)
+	}
+	before := h.override
+	for _, params := range []string{"attr=S,XX\nstateno=710", "attr=S,NA\nstateno=1/0", "attr=S,NA\nstateno=710\nslot=8"} {
+		state := stateSource(t, "[State 7, invalid override]\ntype=HitOverride\ntrigger1=1\n"+params+"\n")
+		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
+			t.Fatal("invalid override accepted", params)
+		}
+		if h.override != before {
+			t.Fatal("invalid override mutated slot")
 		}
 	}
 }

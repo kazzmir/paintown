@@ -75,3 +75,11 @@ complete a result, rematch and exit. Owned-window captures under
 `temp/app-runs/first-mixed-fight/` show equal KFM/KFM720 sizes and exposed a
 portrait scaling mismatch, corrected in the following capture. No native match,
 round timing, audio or screenshot parity is claimed.
+
+HitOverride now closes the stock compile gap: all 108 states compile per KFM
+variant. Native-backed slots/expiry/forceair/basic entry and damage behavior work;
+custom-state exclusions, invalid fallbacks and complete ownership/projectile
+rules remain pending. Standard get-hit entry selects 5000/5010/5020 from hit
+context. Override entry retains that intermediate state in PrevStateNo, and air
+hit data stays available even when the destination Statedef changes state type.
+This remains partial combat compatibility, not the full M4/M5 gates.

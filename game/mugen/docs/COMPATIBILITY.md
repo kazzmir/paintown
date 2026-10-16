@@ -7,6 +7,13 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4h implements the stock HitOverride path with typed parameters, attribute
+filters, timed slots and native-backed entry/forceair/damage behavior. Twelve
+native cases match; both stock characters now compile all 108 states. Complete
+custom-state exclusions, invalid fallbacks, pause/ownership/projectile rules are
+still open. Get-hit air context is independent of current state type/fall.
+
+
 M4g shares root state/contact/damage/physics phases and positive continuation.
 Three native trade programs match pre-damage Time=0 and post-damage Time=1
 observations, with and without newly-started hitpause. P2 life/state/type queries
