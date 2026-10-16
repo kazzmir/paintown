@@ -118,8 +118,12 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 			if !value.IsNumber() {
 				return fmt.Errorf("state %d entry %s = %s evaluated to %v", state.ID, name, expr.String(), value)
 			}
-			if name != "velset" && value.Kind() != evaluator.IntKind {
-				return fmt.Errorf("state %d entry %s requires an integer, got %v", state.ID, name, value)
+			if name != "velset" {
+				n, err := evaluator.CoerceInt(value, env, "entry "+name)
+				if err != nil {
+					return fmt.Errorf("state %d: %w", state.ID, err)
+				}
+				value = evaluator.Int(n)
 			}
 			values[name] = append(values[name], value)
 		}

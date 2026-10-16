@@ -4,6 +4,35 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M2c — Compiled core controller parameters
+
+Core movement, variable/range/parent-variable, transition, life/power/control,
+angle/multiplier, HitAdd, HitVelSet, VictoryQuote, PosFreeze and RemoveExplod
+parameters now compile once and evaluate as typed expressions. Missing required
+parameters and malformed expressions fail before any state controller runs.
+Bottom numeric parameters produce contextual runtime errors instead of silently
+becoming zero. That strict runtime failure policy still needs executable probes.
+
+The bundled CNS warning guidance permits float-to-integer truncation with a
+warning. Corrected entry attributes, assignment indices, trigger integer
+arguments and redirect IDs to follow that rule; integer-only operators remain
+strict. Parent variable expressions evaluate in the helper while writes target
+the parent. VarRangeSet evaluates its value once and supports float ranges.
+Explicit transition overrides retain presence separately from negative values.
+HitVelSet uses enable flags rather than multiplying velocity; the incoming-hit
+x-velocity convention remains a combat/reference comparison obligation.
+
+HitAdd now has a separate combo counter, with match-owned credit/reset still
+pending. VictoryQuote supports its optional random-selection default, range and
+helper restriction; the result screen does not consume it yet. SelfState state
+ownership is still incomplete. Many other controllers retain legacy handlers.
+
+Validation: full MUGEN tests pass. Added behavior regressions for expression
+side-effect order, int32 overflow, float32 variable arithmetic, parent context,
+range defaults/evaluate-once, movement omission/facing, defence/kill handling,
+transition overrides, optional defaults and compile/runtime failures. These
+expectations are documentation-backed; executable semantic parity is not claimed.
+
 ## Reviewed baseline
 
 Assessment, plan, compatibility inventory, and working instructions captured

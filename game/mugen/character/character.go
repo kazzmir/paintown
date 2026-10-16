@@ -119,6 +119,9 @@ type Character struct {
 
 	// Stats
 	HitCount int
+	// ComboCount is the displayed combo counter, distinct from the current
+	// attack's HitCount. Match combat owns its reset/credit rules.
+	ComboCount int
 
 	// Visual/Drawing State
 	DrawAngle  float64
@@ -868,7 +871,7 @@ func (c *Character) Explod(params map[string]string) {
 func (c *Character) RemoveExplod(id int) {
 	var remaining []*ExplodData
 	for _, e := range c.Explods {
-		if e.ID != id {
+		if id != -1 && e.ID != id {
 			remaining = append(remaining, e)
 		}
 	}
@@ -958,7 +961,7 @@ func (c *Character) MoveHitReset() {
 }
 
 func (c *Character) HitAdd(val int) {
-	c.HitCount += val
+	c.ComboCount += val
 }
 
 func (c *Character) ChangeAnim2(animNo int) {
@@ -1073,6 +1076,12 @@ func (c *Character) FVarRangeSet(min, max int, val float64) {
 }
 
 func (c *Character) VictoryQuote(quote int) {
+	if c.Parent != nil {
+		return
+	}
+	if quote < 0 || quote > 99 {
+		quote = -1
+	}
 	c.VictoryQuoteIndex = quote
 }
 
@@ -1638,6 +1647,29 @@ func (c *Character) ResolvePushCollision() {
 func (c *Character) ChangeState(stateNo int, ctrl int, anim int) {
 	overrides := engine.EntryOverrides{HasCtrl: ctrl != -1, Ctrl: ctrl != 0, HasAnim: anim != -1, Anim: anim}
 	c.changeState(stateNo, overrides)
+}
+
+// Transition preserves explicit negative ctrl/anim values without conflating
+// them with the legacy ChangeState -1 omission sentinel. State-owner restoration
+// for SelfState is completed with the custom-state ownership work.
+func (c *Character) Transition(stateNo int, overrides engine.EntryOverrides, self bool) error {
+	c.changeState(stateNo, overrides)
+	return c.RuntimeError
+}
+
+func (c *Character) ParentEnvironment() engine.Environment {
+	if c.Parent == nil {
+		return nil
+	}
+	return c.Parent
+}
+
+func (c *Character) GetDefenceMultiplier() float64 {
+	base := 100
+	if c.StateFile != nil && c.StateFile.Data.Defence > 0 {
+		base = c.StateFile.Data.Defence
+	}
+	return float64(base) / 100 * c.DefenceMul
 }
 
 func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {

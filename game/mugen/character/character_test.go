@@ -23,6 +23,25 @@ func fixtureCharacter(t *testing.T, source string) *Character {
 	return c
 }
 
+func TestComboAndVictoryQuoteControllers(t *testing.T) {
+	c := fixtureCharacter(t, "[State 7, idle]\ntype=Null\ntrigger1=1\n")
+	c.HitCount = 2
+	c.HitAdd(3)
+	if c.HitCount != 2 || c.ComboCount != 3 {
+		t.Fatal("HitAdd changed current attack hit count")
+	}
+	c.VictoryQuote(100)
+	if c.VictoryQuoteIndex != -1 {
+		t.Fatal("invalid quote must select randomly")
+	}
+	c.VictoryQuote(42)
+	c.Parent = &Character{}
+	c.VictoryQuote(3)
+	if c.VictoryQuoteIndex != 42 {
+		t.Fatal("helper changed victory quote")
+	}
+}
+
 func TestHitPauseBoundary(t *testing.T) {
 	c := fixtureCharacter(t, `[State 7, normal]
 type=VarAdd

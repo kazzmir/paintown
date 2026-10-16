@@ -91,9 +91,11 @@ func EvaluateValue(expr Expression, env EvaluatorEnvironment) Value {
 			}
 			hasID = true
 			id = EvaluateValue(s.Arguments[0], env)
-			if id.kind != IntKind {
-				return failure(env, "invalid %s redirection ID", name)
+			n, err := CoerceInt(id, env, name+" redirection ID")
+			if err != nil {
+				return failure(env, "%v", err)
 			}
+			id = Int(n)
 		}
 		dest := resolver.Redirect(name, id, hasID)
 		if dest == nil {
@@ -287,10 +289,11 @@ func assignment(e *Binary, env EvaluatorEnvironment) Value {
 	}
 	index := EvaluateValue(variable.Arguments[0], env)
 	value := EvaluateValue(e.Right, env)
-	if index.kind != IntKind || !value.IsNumber() {
+	indexNumber, indexErr := CoerceInt(index, env, "assignment index")
+	if indexErr != nil || !value.IsNumber() {
 		return failure(env, "invalid assignment operand")
 	}
-	idx := int(index.integer)
+	idx := int(indexNumber)
 	if strings.EqualFold(variable.Name, "var") && idx >= 0 && idx < 60 {
 		n, ok := value.truncate()
 		if !ok {
@@ -370,9 +373,13 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 			return failure(env, "unimplemented GetHitVar field %s", field)
 		}
 	}
-	if len(args) == 1 && env != nil {
-		if args[0].kind == IntKind {
-			idx := int(args[0].integer)
+	if len(args) == 1 && env != nil && integerArgumentTrigger(name) {
+		index, err := CoerceInt(args[0], env, name+" argument")
+		if err != nil {
+			return failure(env, "%v", err)
+		}
+		{
+			idx := int(index)
 			switch name {
 			case "var":
 				if idx >= 0 && idx < 60 {
@@ -470,6 +477,14 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 		}
 	}
 	return failure(env, "unknown trigger or invalid arguments: %s", e.String())
+}
+
+func integerArgumentTrigger(name string) bool {
+	switch name {
+	case "var", "fvar", "sysvar", "sysfvar", "animexist", "selfanimexist", "animelemtime", "animelemno":
+		return true
+	}
+	return false
 }
 
 // The legacy character adapter remains until its constants join the typed

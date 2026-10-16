@@ -75,3 +75,19 @@ func (v Value) truncate() (int32, bool) {
 	}
 	return int32(n), true
 }
+
+// CoerceInt implements the documented warning-and-truncation rule for integer
+// trigger/controller arguments. Operators that require integer operands (%, &,
+// |, ^, ~) deliberately do not call this conversion.
+func CoerceInt(v Value, env EvaluatorEnvironment, context string) (int32, error) {
+	n, ok := v.truncate()
+	if !ok {
+		return 0, fmt.Errorf("%s: cannot convert %v to int32", context, v)
+	}
+	if v.kind == FloatKind {
+		if sink, ok := env.(WarningEnvironment); ok {
+			sink.EvaluationWarning(fmt.Sprintf("%s: float %v truncated to int %d", context, v, n))
+		}
+	}
+	return n, nil
+}

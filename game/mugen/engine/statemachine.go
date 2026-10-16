@@ -164,6 +164,8 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["posset"] = handlePosSet
 	sm.controllers["posadd"] = handlePosAdd
 	sm.controllers["varset"] = handleVarSet
+	sm.controllers["parentvarset"] = handleVarSet
+	sm.controllers["parentvaradd"] = handleVarAdd
 	sm.controllers["varadd"] = handleVarAdd
 	sm.controllers["fvarset"] = handleFVarSet
 	sm.controllers["fvaradd"] = handleFVarAdd

@@ -95,7 +95,12 @@ regressions. Full tests and engine/character race tests pass. Player.Update now
 returns runtime errors; its existing statement callers still build. See
 CHECKPOINTS.md for details and remaining reference-ordering obligations.
 
-Next compile typed controller parameter schemas, implement animation and complete
+M2c compiles core typed controller parameters, adds ParentVarSet/Add and float
+VarRangeSet paths, fixes integer argument conversion to warn/truncate, and tests
+core expression/default/error behavior. See CHECKPOINTS.md. Many complex
+controllers still use legacy handlers, and no controller is reference-Verified.
+
+Next implement animation and complete
 constant bindings, extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, SFF v2/fonts, and many controller/world

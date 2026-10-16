@@ -19,8 +19,10 @@ State entry now has a single explicit EnterState path. Entry expressions compile
 once and evaluate on entry, with omission/U semantics and combat persistence.
 Executing controllers at Time=0 does not reapply entry attributes.
 
-Current limitations: many controller bodies remain incomplete, typed controller
-parameter compilation is pending, and the production Character still needs its
+Core controller parameters compile to typed expressions with explicit omission
+and integer conversion rules. Complex controllers still use legacy handlers.
+
+Current limitations: many controller bodies remain incomplete, and the production Character still needs its
 full world/ownership/tick extraction and reference timing comparisons.
 World-level simulation and complete conformance are subsequent work. See the
 checkpoint ledger and compatibility inventory; this extraction does not claim

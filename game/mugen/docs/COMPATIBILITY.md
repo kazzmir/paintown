@@ -27,6 +27,14 @@ expressions/overrides/persistence, hitpause boundaries, contact timers, PosFreez
 Gravity, active-hit gating and runtime failure propagation. Entry/physics phase
 ordering and exact reference edge cases still require executable comparisons.
 
+M2c compiles typed expressions for core movement, variables/ranges/parent
+variables, transitions, life/power/control, angles/multipliers and several simple
+controllers. Integer arguments truncate floats with warnings. New headless
+behavior tests cover these paths. HitAdd has a separate combo counter and
+VictoryQuote now honors its documented default/helper rule. World ownership,
+combat integration and reference parity remain outstanding; the dated tables
+below describe the original assessment rather than current completion counts.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

@@ -90,8 +90,26 @@ trigger1=1
 	}
 }
 
+func TestEntryIntegerConversionWarns(t *testing.T) {
+	h := &warningEntryHost{entryHost: newEntryHost()}
+	state := stateSource(t, "ctrl=1.9\npoweradd=3.9\n[State 7, idle]\ntype=Null\ntrigger1=1\n")
+	if err := NewStateMachine().EnterState(state, h, EntryOverrides{}); err != nil {
+		t.Fatal(err)
+	}
+	if !h.ctrl || h.power != 3 || len(h.warnings) != 2 {
+		t.Fatalf("ctrl=%v power=%d warnings=%v", h.ctrl, h.power, h.warnings)
+	}
+}
+
+type warningEntryHost struct {
+	*entryHost
+	warnings []string
+}
+
+func (h *warningEntryHost) EvaluationWarning(s string) { h.warnings = append(h.warnings, s) }
+
 func TestInvalidEntry(t *testing.T) {
-	for _, params := range []string{"type=Q", "anim=1@2", "ctrl=0.0", "velset=1,2,3", "anim=1/0"} {
+	for _, params := range []string{"type=Q", "anim=1@2", "velset=1,2,3", "anim=1/0"} {
 		t.Run(params, func(t *testing.T) {
 			h := newEntryHost()
 			sm := NewStateMachine()

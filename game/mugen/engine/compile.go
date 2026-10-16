@@ -62,6 +62,14 @@ func (sm *StateMachine) compileState(state *cns.StateDef) (*stateProgram, error)
 		} else {
 			err = validateUniversal(ctrl)
 			if err == nil {
+				var typed ControllerFunc
+				var handled bool
+				typed, handled, err = compileCoreController(ctrl)
+				if handled {
+					handler = typed
+				}
+			}
+			if err == nil {
 				triggers, err = sm.compileTriggers(ctrl)
 			}
 		}

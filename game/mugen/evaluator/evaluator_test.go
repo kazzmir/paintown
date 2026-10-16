@@ -76,7 +76,7 @@ func TestTypedArithmetic(t *testing.T) {
 }
 
 func TestBottomPropagation(t *testing.T) {
-	for _, source := range []string{"1/0", "1%0", "1.0%2", "~1.0", "1.0&1", "(-1)**0.5", "ln(0)", "acos(2)", "log(1,2)", "exp(1000)", "unknown", "unknown=0", "!unknown", "unknown(1)", "0&&(1/0)", "1||(1/0)", "var(-1)", "fvar(40)", "var(0.0)"} {
+	for _, source := range []string{"1/0", "1%0", "1.0%2", "~1.0", "1.0&1", "(-1)**0.5", "ln(0)", "acos(2)", "log(1,2)", "exp(1000)", "unknown", "unknown=0", "!unknown", "unknown(1)", "0&&(1/0)", "1||(1/0)", "var(-1)", "fvar(40)"} {
 		t.Run(source, func(t *testing.T) {
 			env := &fixtureEnvironment{}
 			if got := evaluate(t, source, env); !got.IsBottom() {
@@ -86,6 +86,17 @@ func TestBottomPropagation(t *testing.T) {
 				t.Fatal("missing diagnostic")
 			}
 		})
+	}
+}
+
+func TestIntegerArgumentCoercion(t *testing.T) {
+	env := &fixtureEnvironment{}
+	env.vars[0] = 7
+	if got := evaluate(t, "var(0.9)", env); got.Number() != 7 || got.IsBottom() || len(env.warnings) != 1 {
+		t.Fatalf("float index: %v, warnings=%v", got, env.warnings)
+	}
+	if got := evaluate(t, "var(1.9):=3", env); got.Number() != 3 || env.vars[1] != 3 || len(env.warnings) != 2 {
+		t.Fatalf("assignment index: %v, warnings=%v", got, env.warnings)
 	}
 }
 
