@@ -3,7 +3,9 @@
 The pinned distribution is labeled M.U.G.E.N 1.1 beta 1 in readme.txt
 (2013-07-27). Its executable reports **M.U.G.E.N ver 1.1.0 Beta 1 P1
 (2013.08.11)**. Compatibility experiments use that supplied executable and the
-109-file hash manifest. The original distribution is not executed or modified.
+109-file hash manifest. The engine runs from a copy. Read-only extraction and
+compression tools write only to disposable output directories; the original
+distribution is unchanged.
 
 ## Wine startup, 2026-10-16
 
@@ -28,6 +30,25 @@ this environment. It does not establish any Go parity, a completed round,
 deterministic input replay, or a semantic reference result. The help invocation
 `wine mugen.exe -h` remained open until its 40-second timeout; help exit behavior
 is not used as a success signal.
+
+## Sprite extraction and compression, 2026-10-16
+
+The bundled `sff2png.exe` identifies as SFF2PNG v0.2 (2010-07-12). Invoked with
+`chars/kfm/kfm.sff` and an output prefix in `temp/reference-runs/extract-kfm`,
+it exited successfully and wrote 281 indexed PNGs. The Go decoder matches all
+281 opaque RGBA pixel hashes; axes/group/item are checked against source headers.
+The recorded oracle is `tests/testdata/kfm-sprites.json`, including source/tool
+hashes. Transparency masking is tested separately because the tool exports
+opaque palettes. This is decoder evidence, not animation or fight parity.
+
+The bundled `sprmake2.exe` identifies as SprMaker 2.01beta (2010-06-16). It
+successfully encoded six original patterned sprites to exercise RLE5, PNG8/24/32
+and uncompressed RGB/RGBA. The fixture is `sff/testdata/formats.sff`; its
+definition and standard-library Python input generator accompany it. The Go
+decoder matches every visible pixel/alpha against the input formulas. RLE5
+runs encode length minus one, unlike the incomplete C++ reader's implementation.
+Raw RGB/RGBA bytes are in channel order without a decoded-size prefix; compressed
+formats include that prefix. These findings have focused regressions.
 
 ## Next reference work
 

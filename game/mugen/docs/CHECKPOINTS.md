@@ -4,6 +4,30 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3a — SFF v2/v2.01 decoding and sprite reference comparison
+
+Added CPU-only SFF v2/v2.01 decoding for raw indexed/RGB/RGBA, RLE8, RLE5,
+LZ5 and PNG8/24/32; ldata/tdata, signed axes, palette/sprite links and palette
+identity are retained. Indexed images expose masked and opaque views; true-color
+images preserve alpha. Optional palette selection shares immutable pixels and
+does not mutate the archive. Linked/cyclic/out-of-range data and malformed
+packets fail with context instead of producing empty sprites. Hardened v1 chain,
+count, link and PCX validation, and retained transparent color RGB for opaque use.
+
+Validation: all **1376 sprites across all 27 stock SFF archives** decode with
+nonempty masked/opaque images. Every one of **281 KFM sprites** matches the
+opaque RGBA pixel hash exported by the bundled SFF2PNG v0.2 tool. Hashes and axes
+are recorded in `tests/testdata/kfm-sprites.json`; reference art stays untracked.
+The bundled SprMaker 2.01beta encoded small original fixtures covering RLE5,
+PNG8/24/32 and raw RGB/RGBA absent from the stock corpus. Pixel formulas, input
+generator and definition accompany that fixture in `sff/testdata/`.
+
+Full regression/race tests pass. A three-second packet fuzz run completed 121863
+executions without failure. Focused packet/link/malformed-PCX tests cover
+overlapping/recycled LZ5 references, masking and independent linked metadata.
+This closes the initial v2 load blocker, not M3: selected character palettes,
+font v2/TTF, sound/path hardening and AIR/render behavior remain unfinished.
+
 ## M2c — Compiled core controller parameters
 
 Core movement, variable/range/parent-variable, transition, life/power/control,

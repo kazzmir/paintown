@@ -100,10 +100,16 @@ VarRangeSet paths, fixes integer argument conversion to warn/truncate, and tests
 core expression/default/error behavior. See CHECKPOINTS.md. Many complex
 controllers still use legacy handlers, and no controller is reference-Verified.
 
-Next implement animation and complete
+M2c is commit `d5d9ac0f`. M3a adds SFF v2/v2.01 and all required encodings,
+strict decoding, and CPU palette selection. All 1376 sprites in 27 stock archives
+load, and all 281 KFM sprite pixel hashes match Elecbyte's extractor. Original
+fixtures were encoded with its compressor to cover absent formats. Full race
+tests pass. Asset parity evidence is in CHECKPOINTS.md and REFERENCE.md.
+
+Next integrate font v2/TTF and selected palettes, implement animation and complete
 constant bindings, extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
-provisional. State ownership, match flow, SFF v2/fonts, and many controller/world
+provisional. State ownership, match flow, fonts, and many controller/world
 behaviors are incomplete. Do not call M1 or full M0/M2 complete.
 
 The reference quick match loaded successfully through match-loop initialization

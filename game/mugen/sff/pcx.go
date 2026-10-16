@@ -15,6 +15,9 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 	if len(data) < 128 {
 		return nil, fmt.Errorf("data too short for PCX header")
 	}
+	if data[0] != 10 || data[3] != 8 || data[65] != 1 || data[2] > 1 {
+		return nil, fmt.Errorf("unsupported PCX format: manufacturer=%d encoding=%d bits=%d planes=%d", data[0], data[2], data[3], data[65])
+	}
 
 	// Read dimensions from header
 	xmin := int(binary.LittleEndian.Uint16(data[4:6]))
@@ -30,6 +33,9 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 	}
 
 	bytesPerLine := int(binary.LittleEndian.Uint16(data[66:68]))
+	if bytesPerLine < width || int64(bytesPerLine)*int64(height) > maxSpritePixels {
+		return nil, fmt.Errorf("invalid PCX row size %d for %dx%d", bytesPerLine, width, height)
+	}
 
 	if palette == nil {
 		palette = make(color.Palette, 256)
@@ -41,7 +47,11 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 	img := image.NewPaletted(image.Rect(0, 0, width, height), palette)
 
 	// Decode RLE
-	r := bytes.NewReader(data[128:])
+	pixelEnd := len(data)
+	if len(data) >= 897 && data[len(data)-769] == 12 {
+		pixelEnd -= 769
+	}
+	r := bytes.NewReader(data[128:pixelEnd])
 
 	expectedBytes := bytesPerLine * height
 	pixelData := make([]byte, expectedBytes)
@@ -50,14 +60,17 @@ func DecodePCX(data []byte, palette color.Palette) (*image.Paletted, error) {
 	for idx < expectedBytes {
 		b, err := r.ReadByte()
 		if err != nil {
-			break
+			return nil, fmt.Errorf("PCX pixels: %w", err)
 		}
 
-		if (b & 0xC0) == 0xC0 {
+		if data[2] == 1 && (b&0xC0) == 0xC0 {
 			runLength := int(b & 0x3F)
+			if runLength == 0 || runLength > expectedBytes-idx {
+				return nil, fmt.Errorf("invalid PCX run length %d", runLength)
+			}
 			colorByte, err := r.ReadByte()
 			if err != nil {
-				break
+				return nil, fmt.Errorf("PCX run: %w", err)
 			}
 			for i := 0; i < runLength && idx < expectedBytes; i++ {
 				pixelData[idx] = colorByte
@@ -109,7 +122,9 @@ func createPalette(paletteData []byte, transparent bool) color.Palette {
 	}
 	if transparent {
 		// Index 0 is transparent in MUGEN
-		pal[0] = color.Transparent
+		c := color.NRGBAModel.Convert(pal[0]).(color.NRGBA)
+		c.A = 0
+		pal[0] = c
 	}
 	return pal
 }
@@ -136,7 +151,9 @@ func ReadPaletteACT(r io.Reader, transparent bool) (color.Palette, error) {
 	}
 	if transparent {
 		// Index 0 is transparent in MUGEN
-		pal[0] = color.Transparent
+		c := color.NRGBAModel.Convert(pal[0]).(color.NRGBA)
+		c.A = 0
+		pal[0] = c
 	}
 	return pal, nil
 }

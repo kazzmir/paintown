@@ -35,6 +35,11 @@ VictoryQuote now honors its documented default/helper rule. World ownership,
 combat integration and reference parity remain outstanding; the dated tables
 below describe the original assessment rather than current completion counts.
 
+M3a adds SFF v2/v2.01 and all required sprite encodings. All 1376 stock sprites
+decode. Every KFM sprite matches Elecbyte SFF2PNG's opaque pixel output; original
+reference-compressed fixtures cover absent encoding variants. Palette selection
+is available at the decoder boundary; player/font integration remains pending.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).
