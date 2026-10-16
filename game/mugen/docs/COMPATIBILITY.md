@@ -57,6 +57,12 @@ persistence. The success-count interpretation is superseded: N uses a cooldown,
 and suppressed/used one-shot controllers skip triggers. Character and headless
 hosts pass both authored programs against pinned reference variables.
 
+M1c covers the 74 documented Const names: 73 supported stock values match the
+executable and their declared kinds are tested. The beta rejects the documented
+jump.changeanim.threshold constant for both 1.0 and 1.1 character declarations;
+compiled paths now reject it too. Constant omission/required-field, tuple/default
+and localcoord/version edge cases remain open. See REFERENCE.md for evidence.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

@@ -126,8 +126,16 @@ one-shot-side-effect interpretation: fixed to fire immediately, apply a cooldown
 and skip triggers when suppressed. Headless and Character tests use the same
 authored programs and pinned numeric observations.
 
-Next integrate selected character palettes and complete
-constant bindings, extend the headless world/state runner, and compare authored
+M2e is commit `cf651a4a`. M1c binds the full documented Const catalogue: 73
+supported values match the executable; one documented constant is rejected by
+the beta and by compiled Go paths. Retained CNS fields cover new recovery and
+friction values, and Data.power initializes maximum power. Incomplete Data
+groups are rejected by the reference; exact required-field/default rules still
+need measurement. The optional Win32 reference error reader is built by
+`mugen --reference-tools`. See REFERENCE.md and tests/README.md.
+
+Next integrate selected character palettes, harden complete resource loading,
+extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world
 behaviors are incomplete. Do not call M1 or full M0/M2 complete.

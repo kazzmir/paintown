@@ -4,6 +4,35 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M1c — Documented constant bindings and reference rejections
+
+Added a typed catalogue for all 74 documented Const names. The supplied beta
+rejects `movement.jump.changeanim.threshold`, including with mugenversion=1.1;
+it is marked unavailable rather than assigned an invented value. All other 73
+names bind through retained CNS fields, including previously discarded recovery,
+friction and tuple parameters. Integer/float32 kinds follow their declared
+types. The fall defence multiplier is computed from fall.defence_up. Data.power
+defaults to 3000 as observed for stock KFM and initializes maximum power.
+
+Compiled triggers, entry attributes and core controller parameters now reject
+unknown/unavailable constant names before side effects. Numeric constant fields
+fail with line/field context on malformed or out-of-range values. Player loading
+retains the main CNS constant table when merging state files.
+
+Validation: all 73 supported stock values match seven reference clipboard pages;
+tests separately assert documented kinds, schema coverage, tuple projection,
+malformed input and unavailable-name rejection. The reference parser rejection
+is captured as a dedicated authored fixture and reproduced for 1.1 characters.
+Fresh supported-value probe pages reproduce their assertions. Full tests/race
+checks pass, and root module hashes remain unchanged.
+
+The reference rejects omitted/incomplete Data groups with "Can't load Data
+constants". The exact required-field set, other omission defaults, incomplete
+tuple semantics and version/localcoord interactions remain loader/reference work;
+the 73-value comparison is not a complete constants conformance claim. Added a
+small Win32 helper to read only the private reference error dialog, built by
+`mugen --reference-tools`; regular captures still require no input/focus changes.
+
 ## M2e — Reference state order and corrected persistence
 
 Added authored negative-state and persistence probes to the repeatable capture

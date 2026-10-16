@@ -11,6 +11,7 @@ import (
 
 type Data struct {
 	Life              int
+	Power             int
 	Attack            int
 	Defence           int
 	FallDefenceUp     int
@@ -145,6 +146,9 @@ type CNS struct {
 	Velocity Velocity
 	Movement Movement
 	States   map[int]*StateDef
+	// ConstantFields retains numeric fields not represented by legacy structs,
+	// including the 1.0/1.1 recovery/friction additions and tuple components.
+	ConstantFields map[string][]float64
 }
 
 func NewStateDef(id int) *StateDef {
@@ -163,11 +167,15 @@ func Parse(r io.Reader) (*CNS, error) {
 func ParseFromAST(ast *parsers.File) (*CNS, error) {
 	cns := &CNS{
 		States: make(map[int]*StateDef),
+		Data:   Data{Power: 3000},
 		Movement: Movement{
 			StandFriction:  0.85,
 			CrouchFriction: 0.82,
 			YAccel:         0.44,
 		},
+	}
+	if err := cns.readConstantFields(ast); err != nil {
+		return nil, err
 	}
 
 	var currentState *StateDef
@@ -180,6 +188,9 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				key := strings.ToLower(attr.ID.String())
 				if key == "life" {
 					cns.Data.Life = getAsInt(attr.Value)
+				}
+				if key == "power" {
+					cns.Data.Power = getAsInt(attr.Value)
 				}
 				if key == "attack" {
 					cns.Data.Attack = getAsInt(attr.Value)

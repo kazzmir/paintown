@@ -55,3 +55,17 @@ Named state probes use `--fixture state-order --pages 0` or
 new observations only in that disposable run directory; it does not change the
 committed expected data. A fixture may supply its own neutral CMD state program.
 Engine and Character tests run both programs against the pinned variables.
+
+Float-valued probes select `--bank fvar`. `constants-a --bank fvar --pages 0 12 24`
+and `constants-b --bank fvar --pages 0 12 24 28` cover the documented constant
+catalogue; the one reference-rejected name is an explicit unavailable slot.
+The exact glyph reader accepts signed decimals/exponents, preserving nine-digit
+float32 round trips. Kind assertions follow the documentation's declarations.
+
+Build the optional error reader with `game/mugen/mugen --reference-tools`.
+It reads only the reference MUGEN error dialog inside the private Wine prefix,
+without input/clipboard/focus operations. The runner uses it to record and check
+expected load rejections. For example, `--fixture constant-unavailable --pages 0
+--mugenversion 1.1` checks the pinned invalid-constant error. `--bare-constants`
+is an omission/load-error experiment using empty constant groups; the supplied
+engine rejects incomplete Data groups. It is not a source of valid fallback data.

@@ -102,6 +102,33 @@ authored fixtures. Fresh `state-order-verified` and `persistence-verified` runs
 reproduced every observation. The production Character and headless state-pass
 host execute the same programs against those numerical assertions.
 
+## Constant catalogue, 2026-10-16
+
+The bundled trigger docs list 74 Const names. The two authored `constants-a/b`
+fixtures query them through fvars, and seven debug clipboard pages capture values
+with nine significant digits. All 73 supported names match Go's retained fields
+and computed fall defence multiplier; Go tests separately check declared kinds.
+Stock KFM omits data.power and receives 3000, which the port now preserves.
+
+`Const(movement.jump.changeanim.threshold)` is rejected at load with
+"Invalid cnstname movement.jump.changeanim.threshold in: Const". This was observed
+for stock mugenversion=1.0 and explicitly for 1.1. The dedicated
+`constant-unavailable` fixture pins the rejection; a fresh verified run matches
+it. The numeric B fixture leaves that slot unavailable, without claiming a value
+for it. This is an actual binary/documentation mismatch in the supplied beta.
+
+Attempting empty constants groups or Data containing only life/attack/defence
+fails with "Can't load Data constants". The exact required-field set is not yet
+established, so no invented defaults are derived from those failed experiments.
+The successful numeric pages use the original stock KFM constants. Fresh
+`constants-a-verified` and `constants-b-verified` runs reproduce selected pages.
+
+The optional `tests/reference_text` helper runs as Win32 inside the same private
+Wine prefix and reads only the known MUGEN error dialog through Win32 text APIs.
+It makes no input/focus/clipboard changes. Build it with `mugen --reference-tools`;
+expected-error probes require it. The runner stores complete error evidence in
+its temporary run directory and checks the stable expected rejection text.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed

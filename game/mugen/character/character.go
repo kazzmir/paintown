@@ -173,6 +173,10 @@ type Character struct {
 
 // NewCharacter returns a newly initialized character.
 func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Character {
+	maxPower := stateFile.Data.Power
+	if maxPower == 0 && len(stateFile.ConstantFields["data.power"]) == 0 {
+		maxPower = 3000
+	}
 	return &Character{
 		StateFile:           stateFile,
 		AirFile:             airFile,
@@ -198,7 +202,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		Life:                stateFile.Data.Life,
 		MaxLife:             stateFile.Data.Life,
 		Power:               0,
-		MaxPower:            3000,
+		MaxPower:            maxPower,
 		AttackMul:           1.0,
 		DefenceMul:          1.0,
 		X:                   0.0,

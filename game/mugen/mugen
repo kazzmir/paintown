@@ -22,6 +22,7 @@ show_help() {
     echo "  --game          Run the main game (default if no mode specified)"
     echo "  --test <name>   Run a specific test suite or unit test"
     echo "  --check         Build and test every MUGEN package"
+    echo "  --reference-tools Build the isolated Windows diagnostic helper"
     echo "  --help          Show this help message"
     echo ""
     echo "Available test applications (go run):"
@@ -72,6 +73,9 @@ elif [[ "$1" == "--test" ]]; then
 elif [[ "$1" == "--check" ]]; then
     shift
     exec go test ./game/mugen/... "$@"
+elif [[ "$1" == "--reference-tools" ]]; then
+    mkdir -p "$DIR/temp/reference-tools"
+    exec env GOOS=windows GOARCH=386 CGO_ENABLED=0 go build -o "$DIR/temp/reference-tools/wintext.exe" "$DIR/tests/reference_text"
 elif [[ "$1" == --* ]]; then
     # If the first arg is a flag (like --data-dir), it implies game mode
     MODE="game"

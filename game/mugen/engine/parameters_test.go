@@ -183,6 +183,8 @@ func TestBadControllerParametersFailBeforeStateEffects(t *testing.T) {
 		"type=LifeAdd", "type=VarSet\nv=0", "type=VarSet\nv=0\nfv=0\nvalue=1",
 		"type=VelSet\nx=1@2", "type=ParentVarSet\nsysvar(0)=1",
 		"type=VarRangeSet\nvalue=1\nfvalue=1.0",
+		"type=LifeAdd\nvalue=Const(data.unknown)",
+		"type=LifeAdd\nvalue=Const(movement.jump.changeanim.threshold)",
 	} {
 		h := newParameterHost()
 		state := stateSource(t, lifeController("trigger1=1")+"[State 7, bad]\ntrigger1=1\n"+bad+"\n")

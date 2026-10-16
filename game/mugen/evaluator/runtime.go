@@ -28,6 +28,10 @@ type AnimationEnvironment interface {
 	GetAnimElemNo(int) (int, bool)
 }
 
+type ConstantEnvironment interface {
+	LookupConstant(string) (Value, bool)
+}
+
 func failure(env EvaluatorEnvironment, format string, args ...any) Value {
 	if sink, ok := env.(WarningEnvironment); ok {
 		sink.EvaluationWarning(fmt.Sprintf(format, args...))
@@ -487,11 +491,17 @@ func integerArgumentTrigger(name string) bool {
 	return false
 }
 
-// The legacy character adapter remains until its constants join the typed
-// environment. Only fields it actually implements may use this compatibility path.
+// Typed hosts preserve each constant's declared numeric type. Older environment
+// adapters retain their limited float-valued compatibility path.
 func constant(e *Call, args []Value, env EvaluatorEnvironment) Value {
 	if env == nil || len(args) != 1 || args[0].kind != TextKind {
 		return failure(env, "Const expects an available constant")
+	}
+	if constants, ok := env.(ConstantEnvironment); ok {
+		if value, found := constants.LookupConstant(args[0].text); found {
+			return value
+		}
+		return failure(env, "unknown or unavailable constant %s", args[0].text)
 	}
 	if n, found := legacyConstant(args[0].text, env); found {
 		return Float(float32(n))

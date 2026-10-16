@@ -1,0 +1,279 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "4e2ec917dbc5060a700729f10d239df73942d64ae5ea0c7ab38d6ff061e6c788",
+  "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "eee5b6528786ba90a664d09e9dd9f33edb1f9a7d5e873c696c3ddd2989763570",
+      "variables": {
+        "0": 0,
+        "1": -2.54999995,
+        "2": 2.5,
+        "3": -2.54999995,
+        "4": 4,
+        "5": -8.10000038,
+        "6": 0,
+        "7": -2.54999995,
+        "8": 2.5,
+        "9": -0.150000006,
+        "10": -3.5,
+        "11": 0.5
+      }
+    },
+    {
+      "page": 12,
+      "path": "animation-page12.png",
+      "sha256": "7b493e471e524b32c9d01c98deae972bd5e8d300f1147e924f4446cba6e4c314",
+      "variables": {
+        "12": 0.200000003,
+        "13": 0,
+        "14": -4.5,
+        "15": -1,
+        "16": 0,
+        "17": -2,
+        "18": 1.5,
+        "19": 1,
+        "20": 35,
+        "21": 0.439999998,
+        "22": 0.850000024,
+        "23": 0.819999993
+      }
+    },
+    {
+      "page": 24,
+      "path": "animation-page24.png",
+      "sha256": "1611690008fc880977fe8dea420f2d2bdee5a5d00894f62a4d84eb77e0292f69",
+      "variables": {
+        "24": 2,
+        "25": 0.0500000007,
+        "26": 0,
+        "27": 25,
+        "28": -20,
+        "29": 10,
+        "30": -1,
+        "31": 0.349999994,
+        "32": 15,
+        "33": 0,
+        "34": 20,
+        "35": 0.400000006
+      }
+    },
+    {
+      "page": 28,
+      "path": "animation-page28.png",
+      "sha256": "f86a2e0629e69c755179df5571409c9bf89a397ff67b756376e17feeff2226a9",
+      "variables": {
+        "28": -20,
+        "29": 10,
+        "30": -1,
+        "31": 0.349999994,
+        "32": 15,
+        "33": 0,
+        "34": 20,
+        "35": 0.400000006,
+        "36": 12,
+        "37": 0.0500000007,
+        "38": 0,
+        "39": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "names": [
+    {
+      "name": "velocity.jump.neu.x",
+      "kind": "float",
+      "index": 0
+    },
+    {
+      "name": "velocity.jump.back.x",
+      "kind": "float",
+      "index": 1
+    },
+    {
+      "name": "velocity.jump.fwd.x",
+      "kind": "float",
+      "index": 2
+    },
+    {
+      "name": "velocity.runjump.back.x",
+      "kind": "float",
+      "index": 3
+    },
+    {
+      "name": "velocity.runjump.fwd.x",
+      "kind": "float",
+      "index": 4
+    },
+    {
+      "name": "velocity.airjump.y",
+      "kind": "float",
+      "index": 5
+    },
+    {
+      "name": "velocity.airjump.neu.x",
+      "kind": "float",
+      "index": 6
+    },
+    {
+      "name": "velocity.airjump.back.x",
+      "kind": "float",
+      "index": 7
+    },
+    {
+      "name": "velocity.airjump.fwd.x",
+      "kind": "float",
+      "index": 8
+    },
+    {
+      "name": "velocity.air.gethit.groundrecover.x",
+      "kind": "float",
+      "index": 9
+    },
+    {
+      "name": "velocity.air.gethit.groundrecover.y",
+      "kind": "float",
+      "index": 10
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.mul.x",
+      "kind": "float",
+      "index": 11
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.mul.y",
+      "kind": "float",
+      "index": 12
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.add.x",
+      "kind": "float",
+      "index": 13
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.add.y",
+      "kind": "float",
+      "index": 14
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.back",
+      "kind": "float",
+      "index": 15
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.fwd",
+      "kind": "float",
+      "index": 16
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.up",
+      "kind": "float",
+      "index": 17
+    },
+    {
+      "name": "velocity.air.gethit.airrecover.down",
+      "kind": "float",
+      "index": 18
+    },
+    {
+      "name": "movement.airjump.num",
+      "kind": "int",
+      "index": 19
+    },
+    {
+      "name": "movement.airjump.height",
+      "kind": "int",
+      "index": 20
+    },
+    {
+      "name": "movement.yaccel",
+      "kind": "float",
+      "index": 21
+    },
+    {
+      "name": "movement.stand.friction",
+      "kind": "float",
+      "index": 22
+    },
+    {
+      "name": "movement.crouch.friction",
+      "kind": "float",
+      "index": 23
+    },
+    {
+      "name": "movement.stand.friction.threshold",
+      "kind": "float",
+      "index": 24
+    },
+    {
+      "name": "movement.crouch.friction.threshold",
+      "kind": "float",
+      "index": 25
+    },
+    {
+      "name": "movement.jump.changeanim.threshold",
+      "kind": "float",
+      "index": 26,
+      "supported": false
+    },
+    {
+      "name": "movement.air.gethit.groundlevel",
+      "kind": "float",
+      "index": 27
+    },
+    {
+      "name": "movement.air.gethit.groundrecover.ground.threshold",
+      "kind": "float",
+      "index": 28
+    },
+    {
+      "name": "movement.air.gethit.groundrecover.groundlevel",
+      "kind": "float",
+      "index": 29
+    },
+    {
+      "name": "movement.air.gethit.airrecover.threshold",
+      "kind": "float",
+      "index": 30
+    },
+    {
+      "name": "movement.air.gethit.airrecover.yaccel",
+      "kind": "float",
+      "index": 31
+    },
+    {
+      "name": "movement.air.gethit.trip.groundlevel",
+      "kind": "float",
+      "index": 32
+    },
+    {
+      "name": "movement.down.bounce.offset.x",
+      "kind": "float",
+      "index": 33
+    },
+    {
+      "name": "movement.down.bounce.offset.y",
+      "kind": "float",
+      "index": 34
+    },
+    {
+      "name": "movement.down.bounce.yaccel",
+      "kind": "float",
+      "index": 35
+    },
+    {
+      "name": "movement.down.bounce.groundlevel",
+      "kind": "float",
+      "index": 36
+    },
+    {
+      "name": "movement.down.friction.threshold",
+      "kind": "float",
+      "index": 37
+    }
+  ]
+}

@@ -90,7 +90,7 @@ func compileEntry(state *cns.StateDef) (entryProgram, error) {
 			return program, fmt.Errorf("%s has invalid component count", name)
 		}
 		for _, part := range parts {
-			expr, err := evaluator.Parse(part)
+			expr, err := evaluator.ParseReference(part)
 			if err != nil {
 				return program, fmt.Errorf("%s = %s: %w", name, value, err)
 			}

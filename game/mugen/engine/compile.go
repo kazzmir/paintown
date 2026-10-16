@@ -127,7 +127,7 @@ func (sm *StateMachine) compileTriggers(ctrl *cns.StateController) (triggerProgr
 		expr, found := sm.cache[raw]
 		if !found {
 			var err error
-			expr, err = evaluator.Parse(raw)
+			expr, err = evaluator.ParseReference(raw)
 			if err != nil {
 				return program, fmt.Errorf("%s = %s: %w", key, raw, err)
 			}

@@ -151,6 +151,7 @@ func LoadPlayer(baseDir, defFile string) (*Player, error) {
 				masterCNS.Size = parsed.Size
 				masterCNS.Velocity = parsed.Velocity
 				masterCNS.Movement = parsed.Movement
+				masterCNS.ConstantFields = parsed.ConstantFields
 				for id, state := range parsed.States {
 					masterCNS.States[id] = state
 				}
