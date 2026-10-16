@@ -2,6 +2,7 @@
 [State -1, enforce measured entry after the engine's intro setup]
 type=ChangeState
 triggerall=roundstate=2
+triggerall=ctrl
 trigger1=var(3)=0
 trigger1=var(3):=1
 value=5900

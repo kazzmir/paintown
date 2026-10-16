@@ -24,7 +24,6 @@ type resourceCase struct {
 	Omitted      []string          `json:"omitted_files"`
 	StateOrder   []string          `json:"state_file_order"`
 	ExpectedFail string            `json:"expected_load_error"`
-	KnownGoDiffs map[string]int    `json:"known_go_differences"`
 	Captures     []struct{ Variables map[string]int }
 }
 
@@ -141,7 +140,13 @@ func TestReferenceCharacterResources(t *testing.T) {
 				} else if p.SND == nil || len(p.SND.Sounds) != 12 {
 					t.Fatal("stock character sound bank was not loaded")
 				}
-				p.Character.ChangeState(5900, -1, -1)
+				if fixture == "resource-common" {
+					// The native probe waits for the round's initial control grant,
+					// then forces 5900 itself. Begin at that same controlled point.
+					p.Character.ChangeState(0, 1, -1)
+				} else {
+					p.Character.ChangeState(5900, -1, -1)
+				}
 				for tick := 0; tick < 40; tick++ {
 					if err := p.Update(); err != nil {
 						t.Fatal(err)
@@ -149,13 +154,6 @@ func TestReferenceCharacterResources(t *testing.T) {
 				}
 				for _, capture := range test.Captures {
 					for index, want := range capture.Variables {
-						if current, gap := test.KnownGoDiffs[index]; gap {
-							t.Logf("known startup/control gap: var(%s) reference=%d current=%d; remove inventory when fixed", index, want, current)
-							if want == current {
-								t.Fatal("stale known-difference inventory")
-							}
-							want = current
-						}
 						i, err := strconv.Atoi(index)
 						if err != nil {
 							t.Fatal(err)

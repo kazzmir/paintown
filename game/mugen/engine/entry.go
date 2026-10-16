@@ -10,6 +10,8 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 )
 
+// EntryOverrides carries optional transition parameters. They are applied
+// before destination entry expressions; explicit Statedef parameters win.
 type EntryOverrides struct {
 	HasCtrl bool
 	Ctrl    bool
@@ -110,6 +112,12 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 	if state.ID < 0 {
 		return stateError(state, fmt.Errorf("cannot enter special state %d", state.ID))
 	}
+	if overrides.HasCtrl {
+		env.SetCtrl(overrides.Ctrl)
+	}
+	if overrides.HasAnim {
+		env.ChangeAnim(overrides.Anim)
+	}
 	program := compiled.entry
 	values := make(map[string][]evaluator.Value)
 	for _, name := range entryOrder {
@@ -151,13 +159,9 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 		n := int(v[0].Number())
 		switch name {
 		case "anim":
-			if !overrides.HasAnim {
-				env.ChangeAnim(n)
-			}
+			env.ChangeAnim(n)
 		case "ctrl":
-			if !overrides.HasCtrl {
-				env.SetCtrl(v[0].Bool())
-			}
+			env.SetCtrl(v[0].Bool())
 		case "velset":
 			y := 0.0
 			if len(v) > 1 {
@@ -171,12 +175,6 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 		case "sprpriority":
 			env.SetSprPriority(n)
 		}
-	}
-	if overrides.HasCtrl {
-		env.SetCtrl(overrides.Ctrl)
-	}
-	if overrides.HasAnim {
-		env.ChangeAnim(overrides.Anim)
 	}
 	return nil
 }

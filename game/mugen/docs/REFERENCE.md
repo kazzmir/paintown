@@ -156,21 +156,31 @@ handling of duplicate states inside one file. The harness hashes and copies a
 fixture's authored .extra directory and pins --state-file-order on replay.
 
 Additional resource-load cases show blank st9 and blank sound succeed. Common
-cases for blank, omitted and explicit stcommon reach common state 0. A forced
-post-intro negative-state transition enters 5900, where ctrl is observed as 0;
-after the transition into common 0, the reference observes ctrl=1 and the current
-Go runner observes ctrl=0. The reason is not yet established. All three cases
-include explicit known_go_differences and remain partial. Do not infer an entry
-or ChangeState default from this interaction; probe ordinary non-special states
-and round/control restoration separately. Native replay checks the actual native
-values, while Go tests assert the documented current difference and fail if the
-inventory becomes stale. All other captured variables are compared directly.
+cases for blank, omitted and explicit stcommon reach common state 0. The initial
+probe entered 5900 as soon as RoundState=2; the round's later control grant made
+its ctrl observation differ from an already-running Go host. Requiring ctrl as
+well before the forced transition removes that interference. Go begins at the
+same controlled point, and all twenty resource cases compare directly. Earlier
+known_go_differences were removed. Production round-control timing is still open.
 
 The real character loader consumes these cases and reports missing/malformed
 resources with DEF key/line plus resource/state source. Shared-resource search
 now has explicit roots, but the exact native character/motif/data priority needs
 separate conflicting-file probes. Selected external/internal palettes and
 non-character load failures remain reference work.
+
+## Transition parameters and entry precedence, 2026-10-16
+
+The authored entry-control sequence runs ordinary states 700..706 and records
+24 variables in two pages. Conflicting transition ctrl=0 / Statedef ctrl=1 yields
+1, and the reverse yields 0. Statedef anim=9990 wins over transition anim=9991.
+Omitted destination parameters preserve transition values. An entry animation
+expression conditional on ctrl sees the transition's incoming control=0 and
+selects 9991, even though the preceding state had control=1. Both the pure host
+and Character match every recorded value after applying transition values before
+entry evaluation. This supersedes the M2b override-wins interpretation. The
+fresh ordinary-entry-parameters-replay run reproduces both pages. These probes
+compare animation IDs, not additional animation-clock boundaries or owner rules.
 
 ## Next reference work
 

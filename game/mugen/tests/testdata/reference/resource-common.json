@@ -9,9 +9,9 @@
         {
           "page": 0,
           "path": "animation-page0.png",
-          "sha256": "682461a2ec864406c7b6dfa02418f6ba42e7207b1969ff6df1886d97cf84ea09",
+          "sha256": "ab72f4f59d7e4c728c24d304e1906c1311945b7aa709ec37905a0aee4c4afeb4",
           "variables": {
-            "0": 1,
+            "0": 0,
             "1": 0,
             "2": 0,
             "3": 1,
@@ -30,11 +30,7 @@
       "bare_constants": false,
       "clipboard_in_cmd": true,
       "mugenversion": "1.1",
-      "cmd_sha256": "52bca007f57e73d41fa3cb7d799ea67dc7b0d85e8b270f4f1c3c7ddb8cdd63b5",
-      "known_go_differences": {
-        "0": 0
-      },
-      "known_difference_note": "State 5900 observes ctrl=0 in both engines; after its transition to common state 0, the reference observes ctrl=1 and Go observes ctrl=0. Special-state/round control restoration remains M2/M4 work; this is not a verified parity case."
+      "cmd_sha256": "b650dccf17afe792360e3f7307a638ce308e9e283f0f0c25ef5a085bf5cde87c"
     },
     "common-omitted": {
       "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
@@ -45,9 +41,9 @@
         {
           "page": 0,
           "path": "animation-page0.png",
-          "sha256": "b8c3e5d69df1c87dc68bb464b5596c79e7bafb5333b33f7326ed3f7777b7a0d2",
+          "sha256": "70be2aec93611708d55a4595113f8e492a5e314518f6e8bc1477590b03a3852b",
           "variables": {
-            "0": 1,
+            "0": 0,
             "1": 0,
             "2": 0,
             "3": 1,
@@ -69,11 +65,7 @@
         "stcommon"
       ],
       "mugenversion": "1.1",
-      "cmd_sha256": "52bca007f57e73d41fa3cb7d799ea67dc7b0d85e8b270f4f1c3c7ddb8cdd63b5",
-      "known_go_differences": {
-        "0": 0
-      },
-      "known_difference_note": "State 5900 observes ctrl=0 in both engines; after its transition to common state 0, the reference observes ctrl=1 and Go observes ctrl=0. Special-state/round control restoration remains M2/M4 work; this is not a verified parity case."
+      "cmd_sha256": "b650dccf17afe792360e3f7307a638ce308e9e283f0f0c25ef5a085bf5cde87c"
     },
     "common-explicit": {
       "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
@@ -84,9 +76,9 @@
         {
           "page": 0,
           "path": "animation-page0.png",
-          "sha256": "df949b21999af252b4cf464bc0a3336cf89fe3b215162ebc609bd1e36dc4bdb9",
+          "sha256": "5bf4fd535a2e2fb1083a7fd3df3c9b256dc3680977f13e38cf27e60de6fc32f6",
           "variables": {
-            "0": 1,
+            "0": 0,
             "1": 0,
             "2": 0,
             "3": 1,
@@ -108,11 +100,7 @@
       },
       "clipboard_in_cmd": true,
       "mugenversion": "1.1",
-      "cmd_sha256": "52bca007f57e73d41fa3cb7d799ea67dc7b0d85e8b270f4f1c3c7ddb8cdd63b5",
-      "known_go_differences": {
-        "0": 0
-      },
-      "known_difference_note": "State 5900 observes ctrl=0 in both engines; after its transition to common state 0, the reference observes ctrl=1 and Go observes ctrl=0. Special-state/round control restoration remains M2/M4 work; this is not a verified parity case."
+      "cmd_sha256": "b650dccf17afe792360e3f7307a638ce308e9e283f0f0c25ef5a085bf5cde87c"
     }
   }
 }

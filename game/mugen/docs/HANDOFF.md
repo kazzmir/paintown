@@ -145,13 +145,20 @@ first-definition state-file precedence, constants-only cns handling, strict
 file/parse errors, character SND loading and named state diagnostics. It removes
 the global common cache and adds explicit root/motif options plus a shared
 Windows/case-insensitive resolver. Twenty resource cases run through the real
-loader: seventeen fully match; three common-state cases explicitly inventory
-ctrl=0 in Go versus ctrl=1 in the reference after leaving 5900 for common 0.
-Entry 5900 sees ctrl=0 in both; isolate the subsequent special-state/round
-control behavior before changing entry defaults. See resource-common.json.
-Blank numbered ST files and blank sound are accepted; primary st remains
+loader; their initial common-state control difference was later isolated to
+round-control startup by M2f. Blank numbered ST files and blank sound are accepted; primary st remains
 required. Same-file duplicate states and exact common search order need probes.
 Full tests/races and fresh reversed-order reference replay pass.
+
+M3d is commit `283f5bb5`. M2f corrects ordinary transition parameter ordering:
+ChangeState ctrl/anim apply before entry expressions, then explicit Statedef
+parameters take precedence. Both hosts match all 24 values from the new authored
+entry-control trace; this supersedes M2b's override-wins assumption. The common
+probe now waits for both RoundState=2 and the initial control grant, and Go starts
+at the same controlled point. All twenty resource cases then match directly;
+there is no special common-state ctrl default to invent. Actual production round
+control scheduling remains M4 work. Full regression/race checks and native
+parameter replay pass.
 
 Next integrate selected character palettes, harden non-character resource loading,
 extend the headless world/state runner, and compare authored

@@ -23,7 +23,10 @@ block while later negative levels still run, as observed in the reference.
 
 State entry now has a single explicit EnterState path. Entry expressions compile
 once and evaluate on entry, with omission/U semantics and combat persistence.
-Executing controllers at Time=0 does not reapply entry attributes.
+Executing controllers at Time=0 does not reapply entry attributes. Native probes
+show that transition ctrl/anim values apply before entry expressions, then
+explicit Statedef ctrl/anim take precedence. The earlier override-wins assumption
+was incorrect. Omitted entry values preserve the incoming transition values.
 
 Core controller parameters compile to typed expressions with explicit omission
 and integer conversion rules. Complex controllers still use legacy handlers.

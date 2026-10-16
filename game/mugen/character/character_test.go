@@ -83,8 +83,8 @@ func TestEntryOnceDuringHitPause(t *testing.T) {
 	if c.RuntimeError != nil {
 		t.Fatal(c.RuntimeError)
 	}
-	if c.Power != 20 || c.Anim != 9 || !c.Ctrl || c.Time != 1 {
-		t.Fatalf("entry repeated or override lost: power=%d anim=%d ctrl=%v time=%d", c.Power, c.Anim, c.Ctrl, c.Time)
+	if c.Power != 20 || c.Anim != 5 || c.Ctrl || c.Time != 1 {
+		t.Fatalf("entry repeated or entry parameters lost: power=%d anim=%d ctrl=%v time=%d", c.Power, c.Anim, c.Ctrl, c.Time)
 	}
 }
 

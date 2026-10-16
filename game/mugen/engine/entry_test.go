@@ -17,6 +17,8 @@ func newEntryHost() *entryHost {
 	return &entryHost{host: newHost(), stateType: "A", moveType: "A", physics: "A", ctrl: true, anim: 42, priority: 7, juggle: 4, x: 2, y: -3}
 }
 func (h *entryHost) GetTime() int                 { return 0 }
+func (h *entryHost) GetCtrl() bool                { return h.ctrl }
+func (h *entryHost) GetAnim() int                 { return h.anim }
 func (h *entryHost) BeginStateEntry(a, b, c bool) { h.entries++; h.persist = [3]bool{a, b, c} }
 func (h *entryHost) SetJuggleCost(n int)          { h.juggle = n }
 func (h *entryHost) FaceOpponent()                { h.turns++ }
@@ -47,7 +49,7 @@ func TestEntryDefaults(t *testing.T) {
 	}
 }
 
-func TestEntryExpressionsAndOverrides(t *testing.T) {
+func TestEntryExpressionsAfterTransitionParameters(t *testing.T) {
 	h := newEntryHost()
 	h.vars[0] = 3
 	sm := NewStateMachine()
@@ -74,7 +76,7 @@ trigger1=1
 	if h.stateType != "A" || h.moveType != "A" || h.physics != "A" {
 		t.Fatal("U did not preserve entry enums")
 	}
-	if h.anim != 999 || h.animChanges != 1 || !h.ctrl || h.power != 13 || h.priority != 5 || h.juggle != 5 || h.turns != 1 || h.x != 2 || h.y != 2 || h.vars[1] != 2 {
+	if h.anim != 203 || h.animChanges != 2 || h.ctrl || h.power != 13 || h.priority != 5 || h.juggle != 5 || h.turns != 1 || h.x != 2 || h.y != 2 || h.vars[1] != 2 {
 		t.Fatalf("entry = %+v", h)
 	}
 	if h.persist != [3]bool{true, false, true} {
@@ -85,7 +87,7 @@ trigger1=1
 			t.Fatal(err)
 		}
 	}
-	if h.entries != 1 || h.animChanges != 1 || h.power != 13 {
+	if h.entries != 1 || h.animChanges != 2 || h.power != 13 {
 		t.Fatalf("Time=0 execution reapplied entry: %+v", h)
 	}
 }

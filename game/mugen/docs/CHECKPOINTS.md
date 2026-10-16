@@ -4,6 +4,28 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M2f — Reference-correct transition/entry ordering
+
+An authored ordinary-state sequence records control and animation across seven
+entries, with omitted/explicit transition parameters, conflicting Statedef
+parameters and an entry expression reading the incoming control flag. All 24
+recorded variables match the headless executor and production Character after
+fixing the shared entry path. Transition ctrl/anim apply before destination
+entry expressions; explicit Statedef ctrl/anim take precedence. This supersedes
+M2b's incorrect assumption that controller parameters win. Entry remains a
+single activation and is not reapplied during hitpause or repeated Time=0 passes.
+A fresh native replay reproduces both pages. Full regression/race checks pass.
+
+The three M3d common-state differences were isolated to the probe's round startup:
+RoundState=2 becomes visible before the round's initial control grant. The probe
+now waits for ctrl as well, then forces the transition. The Go runner begins at
+that same controlled point. All twenty resource cases now compare directly,
+without known-difference substitutions. No special ctrl default or state-0 hack
+was added. Production round setup/control scheduling still belongs to M4.
+
+The new evidence establishes these parameter interactions, not the complete
+entry expression ordering, owner changes, self-transitions or all special states.
+
 ## M3d — Character resource loading and measured state-file precedence
 
 Character loading now requires primary cns/st/cmd/sprite/anim files, propagates
@@ -22,14 +44,12 @@ optional. Blank/omitted stcommon uses standard common states. The process-global
 mutable common cache is removed; independent loads see current files without
 mutating earlier players. LoadOptions accepts explicit root/motif directories.
 
-Twenty pinned reference resource cases now run through the real loader and
-state pass. Seventeen match every recorded observation/rejection. Three common
-cases retain an explicit known difference: state 5900 observes ctrl=0 in both
-engines, but after entering common state 0 the reference observes ctrl=1 and Go
-observes ctrl=0. Tests pin the current difference as an inventory that must be
-removed when fixed; these cases are not full parity claims. Other state/animation
-observations match. The control/special-state/round interaction remains M2/M4
-work. Fresh reversed-order replay passes. Missing/malformed resources for all
+At this checkpoint, twenty pinned resource cases ran through the real loader
+and state pass. Seventeen matched every recorded observation/rejection. Three
+common cases retained a control difference that M2f above later isolated to the
+probe's round startup. That temporary inventory was removed after the probe
+waited for the native control grant and Go began at the same point. Fresh
+reversed-order replay passes. Missing/malformed resources for all
 seven supported resource groups, case/Windows paths, named runtime errors and
 independent common loads have regression coverage.
 

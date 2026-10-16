@@ -77,8 +77,12 @@ and a fresh run name. Authoring options `--file key=value`, `--omit-file key` an
 independence. An optional `.extra` directory contains authored auxiliary files;
 its hashes are pinned. `--state-file-order st0 st` records reordered declarations.
 
-`TestReferenceCharacterResources` checks twenty loader cases, including three
-common-state traces with an explicit current Go/reference ctrl difference. Those
-are known-gap inventory tests, not parity claims; see REFERENCE.md. All other
-variables are compared directly. Missing/malformed resources, source filenames,
+`TestReferenceCharacterResources` compares all twenty loader cases directly.
+Common probes wait for the initial round-control grant before forcing entry,
+and Go starts at that same point. See REFERENCE.md for the earlier startup
+difference and its isolation. Missing/malformed resources, source filenames,
 Windows/case names and independent common loads have separate regressions.
+
+`--fixture entry-control --mugenversion 1.1 --pages 0 12` replays transition versus
+entry parameter precedence. Pure engine and Character tests compare all 24
+recorded variables, including incoming-control reads by entry expressions.
