@@ -4,6 +4,41 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4l — Typed sound commands and native PCM mixer checks
+
+PlaySnd, SndPan and StopSnd now compile typed parameters into an ordered CPU
+command queue. Sound banks stay immutable; audio owners are separate from input
+slots, including helper/projectile allocation. The thread-safe S16 stereo mixer
+handles channel replacement, low-priority requests, automatic voices, owner
+stops, global StopSnd -1, loops, finite sample expiry and PCM decoding/resampling.
+Fragmented reads preserve frame alignment through reset. Production playback
+and match resource binding are the next checkpoint; no fight audio claim yet.
+
+Twenty-three authored programs cover 24 native cases: twelve audio cases and
+twelve accepted/rejected grammar cases. Native capture uses only a private,
+authenticated PulseAudio null sink. Fifty-five stable tone segments produce
+63 Go tick checks, including stereo samples and both 1.0/1.1 character versions.
+Source/AIR/original tone-bank/executable/config/PCM hashes and settings are pinned.
+A fresh sound-channels-audio-replay matches amplitudes and relative cue onsets.
+The full scoped race suite and display-independent mixer/evaluator races pass.
+See AUDIO.md and tests/README.md for reproduction and evidence limits.
+
+The beta's behavior differs from plausible manual interpretations: PlaySnd pan
+uses common-game pixels while SndPan uses character-local units; pan supplies
+the value when both offsets exist but abspan still selects absolute mode.
+Deprecated volume is parsed/evaluated but ignored. Tested freqmul values do not
+change pitch, even for 1.0 characters; nonpositive values still start a sample.
+A leading F/S is stripped before expression parsing, including Facing/FVar;
+parentheses protect identifiers. Unavailable samples warn and continue.
+Measured integer panning/volume truncation and center-channel asymmetry match.
+
+Open: production/HUD/hit cues, device and round lifecycle, channel-0 hit/guard
+interruption, complete ownership, arbitrary-rate/libresample fidelity, capacity
+fallbacks, extreme/bottom arguments, stereo/config edges, BGM and storyboards.
+The queue cap and linear resampler are diagnosed provisional implementations.
+Known-trigger validation is opt-in for sound, not complete language validation.
+No whole sound controller or asset row is promoted to Verified.
+
 ## M4k — Guard distance, move-type order and body push
 
 Guard range now belongs to the attacker, in its local units, and extends in the

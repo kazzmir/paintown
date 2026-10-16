@@ -81,6 +81,8 @@ func typedHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(En
 func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	name := strings.ToLower(ctrl.Type)
 	switch name {
+	case "playsnd", "sndpan", "stopsnd":
+		return compileSound(ctrl, name)
 	case "playerpush":
 		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, values map[string]evaluator.Value) error {
 			context, ok := env.(interface{ SetPlayerPush(bool) })

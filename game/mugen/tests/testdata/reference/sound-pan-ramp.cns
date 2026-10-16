@@ -1,0 +1,74 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=700
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, begin tone]
+type=PlaySnd
+triggerall=Facing=1
+trigger1=Time=0
+value=1,0
+channel=1
+loop=1
+abspan=0
+[State 700, pan 60]
+type=SndPan
+triggerall=Facing=1
+trigger1=Time=60
+channel=1
+abspan=60
+[State 700, pan 120]
+type=SndPan
+triggerall=Facing=1
+trigger1=Time=120
+channel=1
+abspan=120
+[State 700, pan 240]
+type=SndPan
+triggerall=Facing=1
+trigger1=Time=180
+channel=1
+abspan=240
+[State 700, pan 480]
+type=SndPan
+triggerall=Facing=1
+trigger1=Time=240
+channel=1
+abspan=480
+[State 700, pan -240]
+type=SndPan
+triggerall=Facing=1
+trigger1=Time=300
+channel=1
+abspan=-240
+[State 700, stop]
+type=StopSnd
+triggerall=Facing=1
+trigger1=Time=360
+channel=1
+[State 700, report]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=1

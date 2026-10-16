@@ -12,5 +12,7 @@ and the handoff for current progress; the assessment describes the original base
 
 7. [Match runtime](MATCH.md): production flow, controls, tests and current fight limitations.
 
+8. [Sound runtime](AUDIO.md): native PCM evidence, command/mixer behavior and remaining audio work.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

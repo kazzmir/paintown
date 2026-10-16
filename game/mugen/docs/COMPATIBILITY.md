@@ -185,6 +185,14 @@ behavior. HD motif layout/default windows/origin and physical window size are
 corrected. Mixed-player geometry, camera/cropping and actual fight flow remain
 unfinished; see COORDINATES.md.
 
+M4l replaces the three sound controller stubs with typed command emission and
+a CPU mixer. Twenty-four native cases cover syntax, channels, panning, gain,
+loops, finite sample expiry, stereo and tested ignored frequency multipliers.
+Fifty-five native tone segments back 63 production-Character tick checks; full
+races and a fresh channel replay pass. Production device/match/HUD wiring,
+complete lifecycle/ownership, arbitrary-rate resampling and edge arguments remain
+open. See AUDIO.md. Baseline inventory rows below retain the original census.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).
@@ -460,7 +468,7 @@ Header census of the supplied distribution: 27 SFF, 5 SND, 9 FNT (including two 
 | SFF v2/v2.01 | Rejected | Raw, RLE8, RLE5, LZ5, PNG8/24/32; palette/sprite links, ldata/tdata, depth, offsets and bounds. |
 | FNT v1 | Partial | Fixed/variable metrics, mapping, banks, glyph transparency, offsets and invalid containers. |
 | FNT v2 bitmap / TrueType | Missing | SFF palette/sprite banks including RGBA, text metrics/UTF-8 where specified, font file lookup and fallback policy. |
-| SND / WAV | SND extraction and menu WAV playback | Complete RIFF variants used by target, decode/resample/mix, source ownership, channel/pan/loop/stop and lifecycle. |
+| SND / WAV | Strict archives/PCM decoding; typed character commands and measured CPU mixing | Production device/HUD/hit integration, complete lifecycle/ownership, arbitrary-rate fidelity and configuration edges; BGM/storyboard audio. |
 | BGM | Paths partly parsed; playback missing | Target-supported formats, looping/volume/transitions, stage/motif/storyboard music. Additional fixtures needed: stock distribution has no music files. |
 | Stage/motif/storyboard/fight | Partial loaders; fight UI absent | Default resource paths, localcoord/zoom, animation/layers/background controllers, stage shadows/reflections, HUD and progression. |
 

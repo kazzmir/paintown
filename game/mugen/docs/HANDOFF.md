@@ -300,6 +300,17 @@ failed draft constant setup. Audit native required Data constants separately.
 Dynamic Width, airborne/corner/pause push, projectile range, full auto-turn and
 world ownership remain open.
 
+M4k is commit `c8993728`. M4l adds typed sound controllers, independent audio
+owners/queues and a thread-safe CPU mixer. Twenty-three authored programs cover
+24 native cases, 55 tone segments and 63 Go tick checks. Full races pass and a
+fresh channel audio replay matches. See AUDIO.md for measured common/local pan,
+channel replacement/global stop, ignored pitch/deprecated volume, prefix parsing
+and private PulseAudio provenance. Production match/device/HUD/contact audio is
+not connected yet: resetRound must bind each new character to its actual own
+bank and fight common bank on the shared queue. Integrate that pipeline next.
+The task-owned private Pulse server runs in exec session 77895, with all state
+under temp/audio-reference/. Do not touch the desktop's audio server.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with

@@ -16,6 +16,8 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/snd"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 // Character represents a MUGEN entity running through the State Machine.
@@ -128,6 +130,10 @@ type Character struct {
 	GuardDistance     float64
 	Specials          map[string]bool
 	ActiveReversalDef map[string]string
+	SoundQueue        *sound.Queue
+	AudioOwner        uint64
+	OwnSounds         *snd.SoundBank
+	CommonSounds      *snd.SoundBank
 
 	// Hierarchy
 	Parent *Character
@@ -194,11 +200,14 @@ type Character struct {
 
 // NewCharacter returns a newly initialized character.
 func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Character {
+	queue := &sound.Queue{}
 	maxPower := stateFile.Data.Power
 	if maxPower == 0 && len(stateFile.ConstantFields["data.power"]) == 0 {
 		maxPower = 3000
 	}
 	return &Character{
+		SoundQueue:          queue,
+		AudioOwner:          queue.NewOwner(),
 		LocalCoord:          coord.Default(),
 		GameCoord:           coord.Default(),
 		StateFile:           stateFile,
@@ -746,6 +755,7 @@ func (c *Character) Helper(params map[string]string) {
 	// Create a new character as a helper
 	// It shares the same files but has its own state machine
 	h := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+	h.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
 	h.LocalCoord = c.LocalCoord
 	h.GameCoord = c.GameCoord
 	h.Palettes = c.Palettes
@@ -786,6 +796,7 @@ func (c *Character) Projectile(params map[string]string) {
 	}
 
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+	p.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
 	p.LocalCoord = c.LocalCoord
 	p.GameCoord = c.GameCoord
 	p.Palettes = c.Palettes
@@ -1012,14 +1023,6 @@ func (c *Character) AngleSet(angle float64) {
 
 func (c *Character) Offset(x, y float64) {
 	c.DrawOffset = []float64{x, y}
-}
-
-func (c *Character) SndPan(channel int, pan int) {
-	// Stub: sound panning
-}
-
-func (c *Character) StopSnd(channel int) {
-	// Stub: stop sound
 }
 
 func (c *Character) AppendToClipboard(text string) {

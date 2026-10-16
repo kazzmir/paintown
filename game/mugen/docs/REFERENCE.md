@@ -423,3 +423,17 @@ All 23 programs/26 cases compare source hashes and captured fields in production
 TickCharacters. Airborne/height collision gating, corner transfer, pause,
 dynamic Width, complete auto-turn eligibility and entity ownership are separate
 open obligations; no complete body-physics parity is inferred.
+
+## Sound command and PCM evidence (M4l)
+
+See AUDIO.md and `tests/sound_probe.py`. Twenty-three original authored programs
+cover twelve audio cases (including legacy character version) and twelve grammar
+cases. Pinned JSON records include 55 stable native tone segments and 63 Go tick
+checks. Original tone banks are reproducible with generate_sound_bank.py; no
+reference sound assets are committed. Native capture uses only the task-owned
+private PulseAudio null-sink monitor. Configuration/source/AIR/SND/executable/PCM
+hashes are retained, with amplitude tolerance 8 signed-16 units and relative
+onset tolerance 0.35 seconds. Absolute startup and full waveforms are not compared.
+A fresh sound-channels-audio-replay reproduces channel isolation, low priority,
+replacement, automatic overlap and global stop with matching measurements.
+Full scoped races pass. Device/frontend cues and lifecycle remain open.

@@ -193,6 +193,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		}
 	}
 	p.Character = NewCharacter(master, nil, p.CMD)
+	p.Character.OwnSounds = p.SND
 	p.Character.LocalCoord = local
 	p.Character.Palettes = palette.New(p.SFF)
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR

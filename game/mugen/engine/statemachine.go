@@ -96,8 +96,6 @@ type Environment interface {
 	AngleMul(mul float64)
 	AngleSet(angle float64)
 	Offset(x, y float64)
-	SndPan(channel int, pan int)
-	StopSnd(channel int)
 	AppendToClipboard(text string)
 	ClearClipboard()
 	DisplayToClipboard(text string)
@@ -742,8 +740,7 @@ func handlePause(ctrl *cns.StateController, env Environment) error {
 }
 
 func handlePlaySnd(ctrl *cns.StateController, env Environment) error {
-	// Stub
-	return nil
+	return fmt.Errorf("PlaySnd requires compiled parameters")
 }
 
 func handleHitDef(ctrl *cns.StateController, env Environment) error {
@@ -1064,25 +1061,11 @@ func handleOffset(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleSndPan(ctrl *cns.StateController, env Environment) error {
-	channel := -1
-	if v, ok := ctrl.Params["channel"]; ok {
-		channel, _ = strconv.Atoi(v)
-	}
-	pan := 0
-	if v, ok := ctrl.Params["pan"]; ok {
-		pan, _ = strconv.Atoi(v)
-	}
-	env.SndPan(channel, pan)
-	return nil
+	return fmt.Errorf("SndPan requires compiled parameters")
 }
 
 func handleStopSnd(ctrl *cns.StateController, env Environment) error {
-	channel := -1
-	if v, ok := ctrl.Params["channel"]; ok {
-		channel, _ = strconv.Atoi(v)
-	}
-	env.StopSnd(channel)
-	return nil
+	return fmt.Errorf("StopSnd requires compiled parameters")
 }
 
 func handleAppendToClipboard(ctrl *cns.StateController, env Environment) error {

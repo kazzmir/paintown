@@ -204,3 +204,27 @@ near-axis spacing and mixed coordinates. They all use production group ticks.
 prefix and is pinned in case metadata; --bare-constants retains its prior empty-
 group mode. Push fixtures use complete numeric KFM defaults with explicit widths.
 Native partial Data rejection still needs dedicated loader-validation coverage.
+
+Sound controller/mixer fixtures are `testdata/reference/sound-*`. Twelve audio
+cases replay real grouped Character ticks through the CPU mixer and compare
+63 plateau checks against 55 native segments. Twelve additional grammar cases
+pin accepted/rejected resource-prefix and parameter behavior. Sources, original
+bank bytes and native executable/config/PCM hashes are retained. Regenerate an
+original bank with `python3 game/mugen/tests/generate_sound_bank.py --help`.
+
+Native sound replay requires the private Pulse server documented in
+[../docs/AUDIO.md](../docs/AUDIO.md), plus the private display in BUILD.md:
+
+```sh
+DISPLAY=:97 XAUTHORITY="$PWD/game/mugen/temp/virtual-display/Xauthority" \
+LIBGL_ALWAYS_SOFTWARE=1 \
+PULSE_SERVER="unix:$PWD/game/mugen/temp/audio-reference/native" \
+PULSE_COOKIE="$PWD/game/mugen/temp/audio-reference/cookie" \
+python3 game/mugen/tests/sound_probe.py --fixture sound-channels \
+  --name sound-channels-audio-replay-new --seconds 14
+```
+
+Use a new run name. `--record` records a selected case; default replay checks
+source/numeric observations, settings, tone amplitudes and relative onsets.
+It records only the private null sink, never a microphone or desktop audio.
+This is controlled PCM evidence, not full-waveform or device output parity.

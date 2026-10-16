@@ -52,6 +52,40 @@ func Parse(input string) (Expression, error) {
 	return expr, nil
 }
 
+// ParseReferenceTuple parses expressions with the same comma/redirect grammar
+// as scalar triggers. A string split would misread parent,var(n),item tuples.
+func ParseReferenceTuple(source string, count int) ([]Expression, error) {
+	tokens, err := tokenize(source)
+	if err != nil {
+		return nil, err
+	}
+	p := &Parser{tokens: tokens}
+	var expressions []Expression
+	for {
+		expr, err := p.parseExpression(0)
+		if err != nil {
+			return nil, err
+		}
+		if err := validateIntervals(expr, false); err != nil {
+			return nil, err
+		}
+		if err := validateConstants(expr); err != nil {
+			return nil, err
+		}
+		expressions = append(expressions, expr)
+		if p.peek().typ == tokEOF {
+			break
+		}
+		if p.advance().typ != tokComma {
+			return nil, p.errorf("expected expression separator")
+		}
+	}
+	if len(expressions) != count {
+		return nil, fmt.Errorf("expected %d expressions, got %d", count, len(expressions))
+	}
+	return expressions, nil
+}
+
 func validateIntervals(expr Expression, allowed bool) error {
 	switch e := expr.(type) {
 	case *Interval:
