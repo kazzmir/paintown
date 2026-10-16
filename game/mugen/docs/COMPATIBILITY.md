@@ -7,6 +7,11 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4e removes forced guard-state restarts/shortcuts and gates builtin movement on
+control. Three native fixtures match guard-end timing, custom guard ownership
+and uncontrolled crouch behavior. Guard damage/flags/hit response remain open.
+
+
 M4d connects the real production selection/versus/fight/result/rematch flow to
 one shared match.Match, with stock HUD drawing and mixed-resolution spawn/draw.
 Injected keys and logical combat inputs exercise the same runtime. Round phases,

@@ -1,0 +1,48 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, idle]
+type=Null
+trigger1=1
+[Statedef 11]
+type=C
+movetype=I
+physics=C
+anim=9990
+ctrl=0
+[State 11, idle]
+type=Null
+trigger1=1
+[Statedef -2]
+[State -2, wait for control]
+type=VarSet
+trigger1=RoundState=2 && ctrl && !var(58)
+v=58
+value=1
+[State -2, clock]
+type=VarAdd
+trigger1=var(58)
+v=59
+value=1
+[State -2, trace]
+type=VarSet
+trigger1=var(59)=[2,13]
+v=var(59)-2
+value=StateNo*100+Time
+[State -2, enter crouch without control]
+type=ChangeState
+trigger1=var(59)=1
+value=11

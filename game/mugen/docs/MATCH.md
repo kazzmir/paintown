@@ -51,9 +51,9 @@ announcements and win icons. Stage aspect cropping uses the declared high/low
 cut suggestions. Mixed character and portrait sizes convert to the drawing
 space. HUD alpha/scale/angle/interpolation, delayed life bars, color/font-height
 variants, shadows, zoom, tall-stage overdraw and precise native camera framing
-remain incomplete. Existing guard maintenance can restart state 140, several
-movement paths ignore Ctrl, and hit vectors are not yet converted across player
-spaces. These are next fixes before calling the M4 game playable. Character/
+remain incomplete. Guard state ownership/recovery and movement Ctrl gates now match focused native
+fixtures. Complete guard entry/combat rules and hit-vector conversion across
+player spaces remain next fixes before calling the M4 game playable. Character/
 common sounds, fight announcement sounds, BGM and common hit effects are not
 consumed yet.
 

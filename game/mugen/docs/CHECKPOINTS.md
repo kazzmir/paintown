@@ -4,6 +4,22 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4e — Guard-state ownership and movement control
+
+Removed the per-tick guard maintenance that re-entered 140 and skipped custom
+120 logic. Common CNS owns guard start/hold/hit transitions. The documented
+engine return from 140 now waits for AnimTime=0 and selects standing/crouched/
+air states, replacing the fixed 20-tick delay. Guard entry, jump/crouch/walk and
+crouch release require control.
+
+Three hash-pinned native fixtures match 36 recorded state/time observations:
+a five-tick guard-end animation returns to state 0, a custom 120 stays in 120
+without an engine-imposed 130/140 transition, and an uncontrolled crouched 11
+stays crouched. A fresh guard-end replay matches. Authored tests also hold each
+movement direction with Ctrl=0. Full tests/races pass. This does not complete
+native guard-entry eligibility, guard flags/damage/velocity/pause, or combat phase
+ordering; those remain separate work.
+
 ## M4d — First production fight connection
 
 Selection now retains DEF/name/palette/mode/music metadata, confirms P1/P2

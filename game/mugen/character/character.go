@@ -1370,31 +1370,24 @@ func (c *Character) HandleBuiltinTransitions() {
 	}
 
 	// Guarding Transitions (States 120-132)
-	if !c.Specials["noguard"] && c.GetInGuardDist() && c.Command("holdback") {
+	if c.Ctrl && !c.Specials["noguard"] && c.GetInGuardDist() && c.Command("holdback") {
 		if c.StateNo < 120 || c.StateNo > 155 {
 			c.ChangeState(120, -1, -1)
 			return
 		}
 	}
 
-	// Guard Maintenance/Recovery
-	if c.StateNo >= 120 && c.StateNo <= 140 {
-		if !c.Command("holdback") || !c.GetInGuardDist() {
-			c.ChangeState(140, -1, -1) // Guard End
-			return
+	// Common CNS owns guard-start/hold/hit transitions. State 140's
+	// animation-end return is explicitly an engine rule in common1.cns.
+	if c.StateNo == 140 && c.GetAnimTime() == 0 {
+		state := 0
+		if c.StateType == "C" {
+			state = 11
+		} else if c.StateType == "A" {
+			state = 51
 		}
-
-		// State-specific Guard transitions
-		if c.StateNo == 120 { // Guard Start
-			if c.StateType == "S" {
-				c.ChangeState(130, -1, -1)
-			} else if c.StateType == "C" {
-				c.ChangeState(131, -1, -1)
-			} else {
-				c.ChangeState(132, -1, -1)
-			}
-			return
-		}
+		c.ChangeState(state, -1, -1)
+		return
 	}
 
 	if c.StateFile == nil {
@@ -1405,7 +1398,7 @@ func (c *Character) HandleBuiltinTransitions() {
 	phys := strings.ToUpper(c.Physics)
 
 	if st == "S" && phys == "S" {
-		if c.Command("holdup") && c.StateNo != 40 {
+		if c.Ctrl && c.Command("holdup") && c.StateNo != 40 {
 			// Jump Start
 			// Set sysvar(1) for direction: 0=neutral, 1=fwd, -1=back
 			dir := 0
@@ -1416,7 +1409,7 @@ func (c *Character) HandleBuiltinTransitions() {
 			}
 			c.SetSysVar(1, dir)
 			c.ChangeState(40, -1, -1)
-		} else if c.Command("holddown") && c.StateNo != 10 && c.StateNo != 11 {
+		} else if c.Ctrl && c.Command("holddown") && c.StateNo != 10 && c.StateNo != 11 {
 			c.ChangeState(10, -1, -1)
 		} else if c.Ctrl && c.Command("holdfwd") && c.StateNo != 20 && c.StateNo != 100 {
 			c.ChangeState(20, -1, -1)
@@ -1427,32 +1420,8 @@ func (c *Character) HandleBuiltinTransitions() {
 			c.ChangeState(0, -1, -1)
 		}
 	} else if st == "C" && phys == "C" {
-		if !c.Command("holddown") && c.StateNo != 12 {
+		if c.Ctrl && !c.Command("holddown") && c.StateNo != 12 {
 			c.ChangeState(12, -1, -1) // Crouch to Stand
-		}
-	}
-
-	// State-specific maintenance
-	if c.StateNo == 140 { // Guard End
-		if c.Time >= 20 { // Fixed recovery time for now
-			if c.StateType == "S" {
-				c.ChangeState(0, 1, -1)
-			} else if c.StateType == "C" {
-				c.ChangeState(11, 1, -1)
-			}
-		}
-	}
-
-	if c.StateNo >= 150 && c.StateNo <= 155 {
-		if c.GetHitOver() {
-			if c.StateType == "S" {
-				c.ChangeState(130, -1, -1)
-			} else if c.StateType == "C" {
-				c.ChangeState(131, -1, -1)
-			} else {
-				c.ChangeState(132, -1, -1)
-			}
-			return
 		}
 	}
 

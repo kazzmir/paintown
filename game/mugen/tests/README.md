@@ -148,3 +148,8 @@ Production fights: see docs/MATCH.md. The system flow test injects keys through
 title, selection, stage, versus, fight, result, rematch and menu. match tests use
 the same lifecycle with stock KFM/KFM720 and logical walk/punch input. For owned
 window inspection, app_smoke.py accepts --match CHAR_DEF CHAR_DEF and --stage.
+
+Guard/control probes: --fixture guard-end, guard-start or control-gating with
+--mugenversion 1.1 --pages 0 and a fresh --name replay native state/time traces.
+These fixtures wait for round control before entering the measured state; the
+Go runner starts at the corresponding control boundary.

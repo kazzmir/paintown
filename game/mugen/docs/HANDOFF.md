@@ -240,6 +240,11 @@ See MATCH.md for verification and gaps. Round phases/camera/combat timing are
 provisional; guard, hit scaling, selected palettes, audio/effects and mode
 progression still prevent the full M4 gate.
 
+M4d is commit `c7486a71`. M4e fixes guard-state ownership, animation-based
+guard-end recovery and movement control gates. Three native fixtures match 36
+state/time observations; guard-end replay and full race checks pass. Guard combat
+flags/damage/velocity/pause remain open.
+
 Next finish playable match behavior with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

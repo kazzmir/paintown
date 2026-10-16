@@ -251,3 +251,12 @@ record starts -280/-70, P2Dist X 560/140 and P2BodyDist X 480/120; all 24
 recorded fvars match Go. Native replay player-distance-replay checks the inverse
 case. Only disposable copied characters are modified. No hit/camera/timing
 parity is inferred from these static distance observations.
+
+## Guard state and control probes
+
+`guard-end`, `guard-start` and `control-gating` each pin 12 state/time values.
+Native runs of the same names with -native suffix show a five-tick action in
+140 ending in state 0, a custom 120 remaining under CNS control, and a crouched
+state 11 retaining Ctrl=0 without auto-standing. All 36 values match Character;
+guard-end-replay reproduces the native capture. No guard damage/velocity or
+keyboard-driven entry parity is inferred from these fixtures.
