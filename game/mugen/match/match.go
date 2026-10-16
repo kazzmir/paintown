@@ -10,6 +10,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/character"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/fight"
 	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/sound"
@@ -36,6 +37,8 @@ type Options struct {
 	RoundTime, LifePercent       int
 	Input                        func(playerID, facing int) []string
 	SoundQueue                   *sound.Queue
+	MotifSpace                   coord.Space
+	MaxEffects                   int
 }
 
 type Phase int
@@ -65,6 +68,8 @@ type Match struct {
 	TimeLeft               int     // counts; -1 means unlimited
 	CameraX, CameraY       float64 // common game-space units
 	SoundQueue             *sound.Queue
+	Effects                *effect.Scene
+	commonEffects          effect.Source
 	timeTicks              int
 	matchDone              bool
 }
@@ -90,6 +95,16 @@ func New(request Request, options Options) (*Match, error) {
 	if err != nil {
 		return nil, fmt.Errorf("match fight screen: %w", err)
 	}
+	m.Effects = effect.NewScene(options.MaxEffects)
+	motifWidth := options.MotifSpace.Width
+	if motifWidth <= 0 {
+		motifWidth = 320
+	}
+	fxScale := 1.0
+	if attribute := m.Fight.Attribute("FightFx", "scale"); attribute != nil {
+		fxScale = background.GetFloat(attribute.Value)
+	}
+	m.commonEffects = effect.Source{Sprites: m.Fight.EffectSprites, Animations: m.Fight.EffectAnimations, Scale: fxScale * float64(options.GameSpace.Width) / float64(motifWidth)}
 	for slot, selected := range request.Players {
 		if selected.Palette < 1 || selected.Palette > 12 || selected.AILevel < 0 || selected.AILevel > 8 {
 			return nil, fmt.Errorf("match player %d: invalid palette/AI level", slot+1)
@@ -113,6 +128,7 @@ func (m *Match) Setting(section, key string, fallback int) int {
 }
 
 func (m *Match) resetRound() error {
+	m.Effects.Clear()
 	// A fresh round retires its voices/cache before new entry controllers emit
 	// commands. Complete native round/custom-state lifecycle remains to verify.
 	if err := m.ClearSounds(); err != nil {
@@ -130,6 +146,7 @@ func (m *Match) resetRound() error {
 		c.LocalCoord = p.LocalCoord
 		c.GameCoord = m.Options.GameSpace
 		c.Palettes = palette.New(p.SFF)
+		c.BindEffects(&m.Effects.Queue, m.commonEffects)
 		c.PlayerID, p.PlayerID = slot+1, slot+1
 		c.PaletteNo, c.AILevel = m.Request.Players[slot].Palette, m.Request.Players[slot].AILevel
 		c.RoundNo, c.RoundsExisted, c.RoundState = m.Round, m.Round-1, 0
@@ -190,6 +207,9 @@ func (m *Match) Update() error {
 	if m.Phase == Finished {
 		return nil
 	}
+	if err := m.Effects.Advance(); err != nil {
+		return fmt.Errorf("fight effects: %w", err)
+	}
 	m.Stage.Update()
 	for _, p := range m.Players {
 		c := p.Character
@@ -202,6 +222,9 @@ func (m *Match) Update() error {
 	}
 	if err := character.TickCharacters([]*character.Character{m.Players[0].Character, m.Players[1].Character}); err != nil {
 		return fmt.Errorf("match tick %d: %w", m.Tick, err)
+	}
+	if err := m.Effects.Flush(); err != nil {
+		return fmt.Errorf("fight effects: %w", err)
 	}
 	m.updateCamera()
 	m.Tick++

@@ -339,13 +339,23 @@ empty HUD bank; negative IDs alone retained the spoken announcement. Earlier
 captures remain diagnostic. See AUDIO.md. Complete KO states/kill flags/revival,
 helpers and Pause/SuperPause still need work. Common hit/guard effects are next.
 
+M4o is commit `6ba7c9c1`. M4p connects typed spark parameters, shared effect
+clocks/resources, finite expiry/clear and production contact drawing with AIR
+blend metadata. Eight native programs cover five markers, two absences and a
+Data S-prefix coercion packet; frame anchors/resource choices match. Full races,
+pure core races, common-default/guard native replays and real normal/additive
+Go window inspections pass. See EFFECTS.md. A concrete M4d viewport discrepancy
+is now measured: native 1280x720 stage fits at scale three with horizontal margins,
+while Go's provisional width/cut path differs. Investigate world/HUD framing and
+screen/game coordinate bindings next. Full effect/AIR/pause/ownership is open.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next integrate common hit/guard effects for the playable match,
-then continue complete HitDef/protection/priority/entity semantics. Continue complete storyboard/rendering
+Next fix the measured world/HUD viewport and coordinate-binding discrepancy,
+then continue complete HitDef/protection/priority/entity and effect semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

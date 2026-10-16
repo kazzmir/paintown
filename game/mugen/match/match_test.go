@@ -110,7 +110,7 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 	for _, p := range m.Players {
 		p.Character.InputSource = source
 	}
-	sawAttack, sawHit, sawContactCue, audible := false, false, false, false
+	sawAttack, sawHit, sawContactCue, audible, sawSpark := false, false, false, false, false
 	for tick := 0; tick < 600; tick++ {
 		if err := m.Update(); err != nil {
 			t.Fatal(err)
@@ -128,6 +128,12 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			t.Fatal(err)
 		}
 		audible = audible || !bytes.Equal(pcm, make([]byte, len(pcm)))
+		for _, instance := range m.Effects.Active {
+			sawSpark = true
+			if instance.Source.Sprites != m.Fight.EffectSprites || instance.Source.Animations != m.Fight.EffectAnimations {
+				t.Fatal("KFM contact did not use common effect resources")
+			}
+		}
 		if m.Players[0].Character.StateNo == 200 {
 			sawAttack = true
 		}
@@ -135,8 +141,8 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			sawHit = true
 		}
 		if sawAttack && sawHit && m.Players[1].Character.Ctrl && m.Players[1].Character.Life < m.Players[1].Character.MaxLife {
-			if !sawContactCue || !audible {
-				t.Fatal("real KFM contact did not reach shared sound playback", sawContactCue, audible)
+			if !sawContactCue || !audible || !sawSpark {
+				t.Fatal("real KFM contact did not reach shared sound/effect playback", sawContactCue, audible, sawSpark)
 			}
 			return
 		}

@@ -17,6 +17,8 @@ type FightState struct {
 	match                              *match.Match
 	hud                                *FightHUD
 	stageCanvas, gameCanvas, hudCanvas *ebiten.Image
+	effectImages                       map[effectImageKey]effectImage
+	effectWarnings                     map[string]bool
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
@@ -24,7 +26,7 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 		return nil, err
 	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
-		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue})
+		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue, MotifSpace: engine.motif.Info.LocalCoord, MaxEffects: engine.cfg.Config.SysExplodMax})
 	if err != nil {
 		return nil, err
 	}
@@ -50,6 +52,7 @@ func (s *FightState) Update() (State, error) {
 		if err := s.match.ClearSounds(); err != nil {
 			return s, err
 		}
+		s.match.Effects.Clear()
 		return NewTitleState(s.engine), nil
 	}
 	if s.match.Phase == match.Finished && input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
@@ -84,6 +87,7 @@ func (s *FightState) Draw(screen *ebiten.Image) {
 		c := p.Character
 		p.DrawScaled(s.stageCanvas, float64(stageSpace.Width)/2+c.X*scale-cameraX, m.Stage.StageInfo.ZOffset+c.Y*scale-cameraY, scale, scale)
 	}
+	s.drawEffects(s.stageCanvas)
 	m.Stage.DrawForeground(s.stageCanvas, cameraX, cameraY)
 	s.gameCanvas.Fill(color.Black)
 	scale, _ := stageSpace.ScaleTo(gameSpace)

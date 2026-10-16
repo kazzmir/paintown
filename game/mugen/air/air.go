@@ -18,17 +18,19 @@ type Box struct {
 }
 
 type Element struct {
-	Group       int
-	Image       int
-	XOffset     int
-	YOffset     int
-	Time        int
-	Flags       string
-	Clsn1       []Box
-	Clsn2       []Box
-	Interpolate bool
-	FlipX       bool
-	FlipY       bool
+	Group              int
+	Image              int
+	XOffset            int
+	YOffset            int
+	Time               int
+	Flags              string
+	Clsn1              []Box
+	Clsn2              []Box
+	Interpolate        bool
+	FlipX              bool
+	FlipY              bool
+	Blend              string
+	AlphaSrc, AlphaDst int
 }
 
 type Action struct {
@@ -133,7 +135,10 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 					// An animation element row: Group, Image, X, Y, Time, Flags
 					if listPointer, ok := attr.Value.(*parsers.ValueList); ok {
 						consumed[attr] = true
-						el := parseElement(attr.ID.String(), *listPointer)
+						el, err := parseElement(attr.ID.String(), *listPointer)
+						if err != nil {
+							return nil, fmt.Errorf("AIR action %d line %d: %w", actionID, attr.Line, err)
+						}
 						// Apply clsn bounds
 						clsn1 := defaultClsn1
 						if nextClsn1 != nil {
@@ -213,7 +218,7 @@ func parseIndex(key string) int {
 	return -1
 }
 
-func parseElement(groupID string, list parsers.ValueList) Element {
+func parseElement(groupID string, list parsers.ValueList) (Element, error) {
 	el := Element{}
 	el.Group, _ = strconv.Atoi(strings.TrimSpace(groupID))
 
@@ -236,9 +241,32 @@ func parseElement(groupID string, list parsers.ValueList) Element {
 		el.FlipY = strings.Contains(f, "V")
 	}
 	if len(list.Values) > 5 {
-		el.Interpolate = strings.ToLower(getAsString(list.Values[5])) == "interpolate"
+		draw := strings.ToUpper(getAsString(list.Values[5]))
+		el.Interpolate = draw == "INTERPOLATE"
+		switch draw {
+		case "A":
+			el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", 256, 256
+		case "A1":
+			el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", 256, 128
+		case "S":
+			el.Blend, el.AlphaSrc, el.AlphaDst = "sub", 256, 256
+		default:
+			if strings.HasPrefix(draw, "AS") {
+				parts := strings.SplitN(draw[2:], "D", 2)
+				if len(parts) == 2 {
+					source, sourceErr := strconv.Atoi(parts[0])
+					dest, destErr := strconv.Atoi(parts[1])
+					if sourceErr == nil && destErr == nil {
+						el.Blend, el.AlphaSrc, el.AlphaDst = "alpha", source, dest
+					}
+				}
+			}
+			if draw != "" && draw != "INTERPOLATE" && el.Blend == "" {
+				return el, fmt.Errorf("invalid draw type %q", draw)
+			}
+		}
 	}
-	return el
+	return el, nil
 }
 
 type Player struct {

@@ -8,7 +8,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
-// Sound parameters are compiled here while the remaining legacy HitDef schema
+// Sound and spark parameters compile here while the remaining legacy schema
 // is progressively replaced. Never mutate the shared controller's source map.
 func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	type cue struct {
@@ -17,14 +17,15 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 		args []argument
 	}
 	var cues []cue
-	for _, key := range []string{"hitsound", "guardsound"} {
+	for _, key := range []string{"hitsound", "guardsound", "sparkno", "guard.sparkno", "sparkxy"} {
 		raw, present := ctrl.Params[key]
 		if !present {
 			continue
 		}
 		raw = strings.TrimSpace(raw)
 		own := false
-		if len(raw) > 0 {
+		resource := key != "sparkxy"
+		if resource && len(raw) > 0 {
 			switch raw[0] {
 			case 'S', 's':
 				own = true
@@ -33,8 +34,12 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 				raw = raw[1:]
 			}
 		}
-		expressions, err := evaluator.ParseReferenceTuple(raw, 2)
-		if err != nil {
+		count := 2
+		if key == "sparkno" || key == "guard.sparkno" {
+			count = 1
+		}
+		expressions, err := evaluator.ParseReferenceTuple(raw, count)
+		if err != nil && count == 2 {
 			// The beta accepts a group alone and supplies item zero.
 			if single, singleErr := evaluator.ParseReferenceTuple(raw, 1); singleErr == nil {
 				expressions, err = append(single, &evaluator.Number{Value: 0}), nil
@@ -66,7 +71,10 @@ func compileHitDef(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 			if cue.own {
 				prefix = "S"
 			}
-			params[cue.key] = fmt.Sprintf("%s%d,%d", prefix, int(values["0"].Number()), int(values["1"].Number()))
+			params[cue.key] = fmt.Sprintf("%s%d", prefix, int(values["0"].Number()))
+			if len(cue.args) == 2 {
+				params[cue.key] += fmt.Sprintf(",%d", int(values["1"].Number()))
+			}
 		}
 		env.HitDef(params)
 		return nil

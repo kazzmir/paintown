@@ -14,5 +14,7 @@ and the handoff for current progress; the assessment describes the original base
 
 8. [Sound runtime](AUDIO.md): native PCM evidence, command/mixer behavior and remaining audio work.
 
+9. [Contact effects](EFFECTS.md): spark geometry, resource/clock/render wiring and viewport findings.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

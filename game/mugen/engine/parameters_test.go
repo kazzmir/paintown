@@ -112,8 +112,8 @@ func TestVariableExpressions(t *testing.T) {
 	}
 }
 
-func TestHitDefSoundExpressionsAreHostLocalAndCompileBeforeMutation(t *testing.T) {
-	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\n")
+func TestHitDefResourcesAreHostLocalAndCompileBeforeMutation(t *testing.T) {
+	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\nsparkno=S(var(2):=99)\nguard.sparkno=-1\nsparkxy=(var(3):=-10),(var(4):=-70)\n")
 	machine := NewStateMachine()
 	a, b := newParameterHost(), newParameterHost()
 	b.vars[0] = 10
@@ -124,6 +124,9 @@ func TestHitDefSoundExpressionsAreHostLocalAndCompileBeforeMutation(t *testing.T
 	}
 	if a.hitParams["hitsound"] != "S6,7" || b.hitParams["hitsound"] != "S16,17" || a.hitParams["guardsound"] != "7,0" {
 		t.Fatal("sound tuple values/default/bank", a.hitParams, b.hitParams)
+	}
+	if a.hitParams["sparkno"] != "S99" || a.hitParams["guard.sparkno"] != "-1" || a.hitParams["sparkxy"] != "-10,-70" {
+		t.Fatal("spark resource expressions", a.hitParams)
 	}
 	if state.Controllers[0].Params["hitsound"] != "S(var(0):=var(0)+6),var(1):=var(0)+1" {
 		t.Fatal("compiled sound changed shared CNS source")

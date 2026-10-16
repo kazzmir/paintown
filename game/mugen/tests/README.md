@@ -254,3 +254,12 @@ are recorded. --window-ms/--step-ms are pinned so short KO tones retain their
 plateaus; Go checks can request WindowTicks (default 12). Fresh ko-sound-initial-
 suppressed replay verifies global initial suppression with later echoes. Earlier
 captures containing stock spoken announcements remain diagnostic-only in temp.
+
+M4p spark-* and guard-spark-own programs use the original formats.sff RGB marker
+with blank fighters. spark_probe.py --fixture spark-common-default --name NEW
+--action 9992 replays numeric/source checks plus the calibrated native marker
+geometry/core hash; common-bank patch recipes repeat automatically. Calibration
+is limited to static zero-camera KFM scenes and flipped markers. --expect-none
+checks disabled/missing markers after confirmed contact. Data-prefix coercion
+has a separate numeric-only case. See EFFECTS.md for the eight-case scope,
+production GPU inspections and the viewport discrepancy still being corrected.

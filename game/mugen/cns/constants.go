@@ -49,6 +49,14 @@ func (c *CNS) readConstantFields(ast *parsers.File) error {
 			values := make([]float64, len(parts))
 			for i, part := range parts {
 				n, err := strconv.ParseFloat(strings.TrimSpace(part), 64)
+				// The beta accepts S-prefixed numeric [Data] spark defaults but
+				// coerces them to zero; only HitDef supports own-bank prefixes.
+				trimmed := strings.TrimSpace(part)
+				if err != nil && (name == "data.sparkno" || name == "data.guard.sparkno") && len(trimmed) > 1 && (trimmed[0] == 'S' || trimmed[0] == 's') {
+					if _, suffixErr := strconv.ParseInt(trimmed[1:], 10, 32); suffixErr == nil {
+						n, err = 0, nil
+					}
+				}
 				if err != nil || math.IsNaN(n) || math.IsInf(n, 0) {
 					return fmt.Errorf("line %d constant %s: invalid number %q", attr.Line, name, part)
 				}

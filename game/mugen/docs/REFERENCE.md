@@ -462,3 +462,12 @@ global nokosnd behavior. Native echo/initial-only suppression replay passes with
 hashes are pinned. Earlier captures with spoken announcements are diagnostic-only.
 Full races pass. Exact audio onset/world-clock boundaries and complete KO/pause/
 revival/entity state behavior remain open.
+
+M4p adds eight spark programs and spark_probe.py. Five persistent original RGB
+markers, two confirmed absences and one numeric Data-prefix program isolate
+geometry/resource/default behavior. Character/scene frame anchors and resource
+choices match; fresh common-default and guard replays reproduce the native
+pixel-core hashes. Calibration is limited to static KFM scenes; EFFECTS.md gives
+bounds and the newly measured world/HUD viewport discrepancy. Full races and
+real Go normal/additive marker window inspections pass. No full framebuffer,
+blend, pause/lifetime or ownership parity is claimed.

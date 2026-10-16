@@ -12,6 +12,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/combat"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/effect"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/logger"
@@ -159,6 +160,8 @@ type Character struct {
 	Explods        []*ExplodData
 	koSoundStarted bool
 	koSoundAge     int
+	EffectQueue    *effect.Queue
+	CommonEffects  effect.Source
 
 	// Constants
 	VictoryQuoteIndex int
@@ -210,6 +213,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 	return &Character{
 		SoundQueue:          queue,
 		AudioOwner:          queue.NewOwner(),
+		EffectQueue:         &effect.Queue{},
 		LocalCoord:          coord.Default(),
 		GameCoord:           coord.Default(),
 		StateFile:           stateFile,
@@ -729,6 +733,12 @@ func (c *Character) HitDef(params map[string]string) {
 	c.HitDefActive = true
 	// Parse and store the new HitDef
 	c.CurrentHitDef = cns.ParseHitDef(params)
+	if _, specified := params["sparkno"]; !specified {
+		c.CurrentHitDef.SparkNo = c.StateFile.Data.SparkNo
+	}
+	if _, specified := params["guard.sparkno"]; !specified {
+		c.CurrentHitDef.GuardSparkNo = c.StateFile.Data.GuardSparkNo
+	}
 	if _, specified := params["guard.dist"]; specified {
 		c.GuardDistance = c.CurrentHitDef.GuardDist
 	}
@@ -758,6 +768,7 @@ func (c *Character) Helper(params map[string]string) {
 	// It shares the same files but has its own state machine
 	h := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	h.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
+	h.BindEffects(c.EffectQueue, c.CommonEffects)
 	h.LocalCoord = c.LocalCoord
 	h.GameCoord = c.GameCoord
 	h.Palettes = c.Palettes
@@ -799,6 +810,7 @@ func (c *Character) Projectile(params map[string]string) {
 
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	p.BindSound(c.SoundQueue, c.OwnSounds, c.CommonSounds)
+	p.BindEffects(c.EffectQueue, c.CommonEffects)
 	p.LocalCoord = c.LocalCoord
 	p.GameCoord = c.GameCoord
 	p.Palettes = c.Palettes
@@ -1842,6 +1854,10 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 }
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
+	if err := c.contactEffect(attacker, hit, guarded); err != nil {
+		c.RuntimeError = fmt.Errorf("player %d contact effect: %w", c.PlayerID, err)
+		return 0
+	}
 	if err := c.contactSound(attacker, hit, guarded); err != nil {
 		c.RuntimeError = fmt.Errorf("player %d contact sound: %w", c.PlayerID, err)
 		return 0

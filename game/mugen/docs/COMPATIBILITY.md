@@ -212,6 +212,13 @@ native programs pin 21 segments and 25 Go checks; full races and fresh isolated
 replay pass. Full KO state/kill/revival/helper/pause behavior remains incomplete.
 See AUDIO.md for exact scope and diagnostic announcement-isolation findings.
 
+M4p connects common/own hit/guard sparks through a CPU effect scene and actual
+production rendering, with typed resource/position parameters and retained AIR
+blend metadata. Eight native programs, full races, fresh marker replays and Go
+GPU inspection support the stated geometry/resource/lifetime scope. Full AIR/
+Explod/pause/palette/ownership parity remains open. EFFECTS.md records the measured
+M4d viewport discrepancy; world/HUD framing is the next correction.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

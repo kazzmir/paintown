@@ -1,0 +1,53 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "50ccd712d618b8982baddc7601d57fb9a9014019e46c01ab23ee82b4b4300f98",
+  "air_sha256": "ab587d21408871481dfb3f44d77385bdc42aed0f8ac5e5fee974abb05d9cfd7c",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "745a8a9dc0e6cb1440d2dff52a2be26f6df3ea2ffa9b128102c106dd9130efc6",
+      "variables": {
+        "0": -70,
+        "1": 0,
+        "2": 1,
+        "3": 5000,
+        "4": 10,
+        "5": 140,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "bank": "fvar",
+  "bare_constants": false,
+  "files": {
+    "sprite": "probe.sff"
+  },
+  "fixture_constants": true,
+  "clipboard_in_cmd": true,
+  "extra_sha256": {
+    "probe.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02"
+  },
+  "mugenversion": "1.1",
+  "spark": {
+    "window": [
+      1280,
+      720
+    ],
+    "visible": false,
+    "action": -1,
+    "common": true,
+    "recipe_sha256": {
+      "data/marker-fx.sff": "30f91d8cac02c17b532b571d6798723a40ce8be2f1682d471b12f5a173f33e02",
+      "data/marker-fx.air": "ab587d21408871481dfb3f44d77385bdc42aed0f8ac5e5fee974abb05d9cfd7c",
+      "data/fight.def": "9f1b4bc427b4c0d7c64c7000a96e800ec56ec88e034e0218c5adf5e5a94d81a9",
+      "data/mugen1/fight.def": "0f828215107ab304f790e5d17578a22146bd87707c625f50361483d65c79d2e7"
+    }
+  }
+}

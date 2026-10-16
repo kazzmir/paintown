@@ -4,6 +4,37 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4p — Native spark geometry and production contact effects
+
+Added a shared CPU effect queue/scene with independent AIR clocks, finite
+one-pass expiry, explicit infinite frames and scene cleanup. Match binds own/
+common resources before state execution. Typed HitDef sparkno/guard.sparkno/
+sparkxy expressions preserve source maps; omitted defaults come from CNS Data.
+Production drawing consumes actual frames, axes, facing/offset/scale/palette
+state and AIR A/A1/S/ASnDm blend metadata, with retired-cache pruning. Other
+HitDef fields and full Explod/AIR/world behavior remain incomplete.
+
+Eight authored native programs cover own hit/guard, two offsets, common/default
+selection, disabled/missing common effects and Data-prefix coercion. Five
+persistent RGB markers and two confirmed absences are pinned with numeric/source/
+asset/window/core/recipe hashes. Go frame anchors and resource choices match.
+Native common-default and guard replays match the same geometry/core hashes.
+The beta accepts Data sparkno=S9992 but exposes zero rather than an own default;
+the parser now matches that observation. See EFFECTS.md for precise calibration.
+
+Full races and pure engine/effect/AIR races pass, including independent clocks,
+expiry/clear/errors, typed host isolation and actual KFM common spark emission.
+Normal/additive markers were inspected through real owned Go windows at
+spark-own-production and spark-add-production; additive RGB is visible on the
+stage. This is GPU-route evidence, not native framebuffer/blend parity.
+
+The controlled native scene exposes a framing discrepancy: its 1280x720 stage
+fits height at scale three with horizontal margins. The provisional M4d Go
+width/cut-suggestion path differs. Resolve world/HUD framing and screen/game
+coordinate bindings next, then continue remaining combat/entity gates. Native
+pause/clock, dynamic Width/mixed profiles, layers/palettes, full AIR/Explod and
+capacity rules remain open. M4o's reversal point is commit `6ba7c9c1`.
+
 ## M4o — Root KO voices, echoes and global suppression
 
 The shared post-damage root tick now plays own-bank sound 11,0 once on KO,

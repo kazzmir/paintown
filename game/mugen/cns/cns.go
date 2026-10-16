@@ -92,6 +92,8 @@ type HitDef struct {
 	ShakeTime        int
 	SparkNo          int
 	GuardSparkNo     int
+	SparkOwn         bool
+	GuardSparkOwn    bool
 	SparkXY          []int
 	HitSound         []int
 	GuardSound       []int
@@ -598,20 +600,22 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.GuardPauseTime = ParseIntList(v)
 	}
 	if v, ok := params["sparkno"]; ok {
+		v, hd.SparkOwn = literalResourceBank(v)
 		hd.SparkNo, _ = strconv.Atoi(v)
 	}
 	if v, ok := params["guard.sparkno"]; ok {
+		v, hd.GuardSparkOwn = literalResourceBank(v)
 		hd.GuardSparkNo, _ = strconv.Atoi(v)
 	}
 	if v, ok := params["sparkxy"]; ok {
 		hd.SparkXY = ParseIntList(v)
 	}
 	if v, ok := params["hitsound"]; ok {
-		v, hd.HitSoundOwn = literalSoundBank(v)
+		v, hd.HitSoundOwn = literalResourceBank(v)
 		hd.HitSound = ParseIntList(v)
 	}
 	if v, ok := params["guardsound"]; ok {
-		v, hd.GuardSoundOwn = literalSoundBank(v)
+		v, hd.GuardSoundOwn = literalResourceBank(v)
 		hd.GuardSound = ParseIntList(v)
 	}
 	if v, ok := params["ground.type"]; ok {
@@ -737,9 +741,9 @@ func ParseHitDef(params map[string]string) HitDef {
 	return hd
 }
 
-// The compiled controller evaluates the tuple before reaching this literal
-// compatibility parser. S selects the attacker's own bank; omission is common.
-func literalSoundBank(value string) (string, bool) {
+// Compiled controllers evaluate expressions before this literal compatibility
+// parser. S selects the attacker's own bank; F or omission selects common.
+func literalResourceBank(value string) (string, bool) {
 	value = strings.TrimSpace(value)
 	if len(value) > 0 && (value[0] == 'S' || value[0] == 's') {
 		return value[1:], true

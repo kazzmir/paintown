@@ -65,7 +65,8 @@ coverage. Complete guard/combat/default schemas and phase ordering remain next
 fixes before calling the full M4 milestone playable. Character/common PlaySnd and fight announcements now reach the production audio
 stream (M4m). Contact hit/guard cues now use typed sound expressions and measured voice
 interruption/panning (M4n). Root KO voice/echo and global suppression now have focused native audio checks
-(M4o). Full KO state/pause/revival semantics, BGM and common hit effects remain open;
+(M4o). Full KO state/pause/revival semantics, BGM remains open. Common/own hit and guard effects now render through a shared
+scene (M4p); exact viewport/AIR/pause/ownership parity remains open;
 scene/round cleanup is provisional. See AUDIO.md.
 
 Validation: full regression and race checks pass. Match tests cover stock mixed
@@ -86,3 +87,9 @@ rules remain pending. Standard get-hit entry selects 5000/5010/5020 from hit
 context. Override entry retains that intermediate state in PrevStateNo, and air
 hit data stays available even when the destination Statedef changes state type.
 This remains partial combat compatibility, not the full M4/M5 gates.
+
+Controlled native spark markers now expose a viewport mismatch in the provisional
+M4d crop path. The native 1280x720 KFM world fits height at scale three, leaving
+horizontal margins; its HUD spans the window. Correct world/HUD framing and
+screen/game coordinate bindings next. Contact frame anchors themselves match
+focused native scenes; see EFFECTS.md. Full screenshot parity is not claimed.
