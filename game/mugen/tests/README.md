@@ -110,3 +110,12 @@ failures and layer 99. Application tests cover failure propagation and resolved
 selection paths. Configured-duration assertions are regression checks, not
 native timing or screenshot parity. Text/audio and full scene drawing remain
 incomplete.
+
+Run `python3 game/mugen/tests/app_smoke.py --name UNIQUE_NAME` for production
+startup inspection. It builds with the scoped module, copies the reference into
+temp/app-runs/, selects the KFM motif, excludes ambient YAML overrides, and
+captures its own process window at 2/6/16 seconds. Go, DISPLAY, xdotool and
+ImageMagick import are required. It sends no input or focus changes, records
+hashes and commit/dirty state, and terminates its own process. Use --motif or
+--seconds for other inspection points. Live keyboard/window timing can affect
+results; it does not assert native image parity or deterministic gameplay.

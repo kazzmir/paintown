@@ -101,6 +101,11 @@ stock storyboards load and complete CPU playback; backgrounds, declared fonts/
 sound banks, 100 animation layers, safe scene indices and error/path handoffs are
 covered. Text, timed audio, full rendering and native timing parity remain open.
 
+M0d production captures show the KFM logo/intro/title flow with readable fonts
+and separate title graphics. Normal shared-AST sections no longer generate false
+unsupported warnings. This is a startup inspection only; input decoding,
+selection-to-fight and complete visual/gameplay parity remain unfinished.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

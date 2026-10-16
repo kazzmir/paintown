@@ -148,11 +148,6 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 						el.Clsn1 = append([]Box(nil), clsn1...) // Clone just in case
 						el.Clsn2 = append([]Box(nil), clsn2...)
 
-						if actionID == 240 {
-							fmt.Printf("[AIR_PARSER] Action 240 Elem %d: Clsn1=%d, Clsn2=%d (GroupID=%s)\n",
-								len(action.Elements), len(el.Clsn1), len(el.Clsn2), attr.ID.String())
-						}
-
 						action.Elements = append(action.Elements, el)
 					}
 				}
@@ -166,8 +161,6 @@ func ParseFromAST(ast *parsers.File) (*Data, error) {
 			}
 
 			data.Actions[actionID] = action
-		} else {
-			logger.LogUnresolved(fmt.Sprintf("Unhandled AIR Section: [%s]", section.Name))
 		}
 	}
 

@@ -4,6 +4,29 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M0d — Production startup captures and diagnostic ownership
+
+A repeatable app_smoke.py builds the actual application with the scoped module,
+uses a disposable stock copy/explicit empty override, and captures only its owned
+window at requested times. It sends no input or focus changes and stops only its
+own process. Binary/config hashes and commit/dirty metadata accompany captures;
+images/logs remain in temp/. This is visual inspection, not a native pixel test.
+
+The KFM motif startup reaches the Elecbyte logo (2 s), animated intro (6 s), and
+readable title menu with its correct separate title graphics (16 s). Captures
+were inspected in kfm-startup1 and the isolated kfm-startup3 repeat. The earlier
+kfm-startup2 repeat exited cleanly after two captures while other graphical tests
+were running; its cause is unestablished and its failure/evidence remain recorded.
+Do not treat this live desktop tool as deterministic input/timing conformance.
+
+AIR/background parsers no longer warn about normal unrelated sections of shared
+DEF ASTs or emit unconditional sprite/action debug prints. Unsupported attributes
+inside their own sections remain diagnosed, with a regression proving both
+properties. Full tests/races pass. Startup diagnostics also expose a separate
+stock keyboard-number conversion issue (the current mapper is DOS-scancode based);
+resolve it before relying on keyboard gameplay. No playable match or full visual
+parity is claimed.
+
 ## M3g — Shared storyboard resources and application handoff
 
 Storyboard.Load now parses once, constructs CPU sprite/animation/background

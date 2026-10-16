@@ -193,7 +193,18 @@ and races pass. Full storyboard rendering/audio/text semantics are still open;
 clearcolor=-1 is metadata only until persistent-framebuffer drawing is implemented.
 No native storyboard timing/screenshot parity is claimed.
 
-Next integrate selected character palettes, complete storyboard/rendering semantics,
+M3g is commit `a4caa9ea`. M0d adds repeatable production owned-window startup
+captures and removes false shared-AST diagnostics while retaining unknown owned
+attributes. Isolated KFM startup captures show logo/intro/title with readable
+fonts and separate KFM title graphics. Evidence is in temp/app-runs/kfm-startup1
+and kfm-startup3. Run2 exited cleanly early with cause unestablished; see the
+ledger. Tool records binary/config hashes and commit/dirty state, sends no input
+or focus changes, and is not a deterministic parity harness. Full tests/races pass.
+The stock input diagnostics show wrong keyboard mappings from DOS conversion;
+fix/reference-check numeric key codes and valid KeyA=0 handling next.
+
+Next fix keyboard decoding/presence handling and reach playable match flow,
+then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

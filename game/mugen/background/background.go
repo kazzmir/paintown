@@ -611,17 +611,6 @@ func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset f
 func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.SFF, airData *air.Data) {
 	prefix = strings.ToLower(prefix)
 	for _, sec := range ast.Sections {
-		name := strings.ToLower(sec.Name)
-		// Skip known top-level sections
-		if name == "info" || name == "camera" || name == "playerinfo" || name == "bound" || name == "stageinfo" || name == "shadow" || name == "music" || name == "scaling" || name == "reflection" || strings.HasPrefix(name, "bgdef") || strings.HasPrefix(name, "bgctrl") {
-			continue
-		}
-		if !strings.HasPrefix(name, prefix) {
-			logger.LogUnresolved(fmt.Sprintf("Unhandled Section: [%s]", sec.Name))
-		}
-	}
-
-	for _, sec := range ast.Sections {
 		lowerName := strings.ToLower(sec.Name)
 		if !strings.HasPrefix(lowerName, prefix) || strings.HasSuffix(lowerName, "def") {
 			continue
@@ -795,7 +784,6 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 					}
 				}
 			}
-			fmt.Printf("Loaded Normal BG: spr=%v, start=%v, delta=%v, mask=%v\n", spriteNo, ne.Start, ne.Delta, ne.Mask)
 			b.Elements = append(b.Elements, ne)
 		case "anim", "animation":
 			common.Type = Animation
@@ -820,7 +808,6 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 					}
 				}
 			}
-			fmt.Printf("Loaded Anim BG: action=%v, start=%v, delta=%v, mask=%v\n", actionNo, ae.Start, ae.Delta, ae.Mask)
 			b.Elements = append(b.Elements, ae)
 		case "parallax":
 			common.Type = Parallax
@@ -837,7 +824,6 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 					}
 				}
 			}
-			fmt.Printf("Loaded Parallax BG: spr=%v, start=%v, delta=%v, mask=%v\n", spriteNo, pe.Start, pe.Delta, pe.Mask)
 			b.Elements = append(b.Elements, pe)
 		}
 	}

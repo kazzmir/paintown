@@ -196,6 +196,17 @@ match all recorded variables. The state-binding-replay run reproduces the trace.
 These cases do not establish whether invalid expressions in discarded duplicates
 are diagnosed at load, or every accepted header spelling/range.
 
+## Go production startup inspection, 2026-10-16
+
+The Go application (not the reference executable) now has an owned-window smoke
+runner. KFM startup captures show the Elecbyte logo, intro background, and title
+menu with readable fonts and separate KFM title sprites. The successful isolated
+runs are temp/app-runs/kfm-startup1 and kfm-startup3. A concurrent-test repeat,
+kfm-startup2, exited with code 0 after two captures; no cause is established.
+The runner records failures rather than accepting missing windows. These images
+are inspection evidence, not native pixel/timing comparisons. Original stock
+content remains unchanged, and captures/binaries/copies are untracked.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed
