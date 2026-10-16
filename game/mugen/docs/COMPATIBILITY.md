@@ -63,6 +63,11 @@ jump.changeanim.threshold constant for both 1.0 and 1.1 character declarations;
 compiled paths now reject it too. Constant omission/required-field, tuple/default
 and localcoord/version edge cases remain open. See REFERENCE.md for evidence.
 
+M3c validates SND/WAV structure and decodes all 45 stock sounds across five banks.
+Authored fixtures cover additional PCM widths/channels and malformed archives.
+Runtime audio and non-PCM codecs remain incomplete. New resource probes pin fatal
+missing-file behavior and the st0..st9 range for the upcoming loader changes.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

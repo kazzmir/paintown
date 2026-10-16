@@ -69,3 +69,8 @@ expected load rejections. For example, `--fixture constant-unavailable --pages 0
 --mugenversion 1.1` checks the pinned invalid-constant error. `--bare-constants`
 is an omission/load-error experiment using empty constant groups; the supplied
 engine rejects incomplete Data groups. It is not a source of valid fallback data.
+
+Resource matrix cases run with `--fixture resource-load --case st9-version11`
+and a fresh run name. Authoring options `--file key=value`, `--omit-file key` and
+`--clipboard-in-cmd` are recorded in evidence and checked on replay. The current
+Go loader is still being brought into agreement with these reference rules.

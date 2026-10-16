@@ -129,6 +129,22 @@ It makes no input/focus/clipboard changes. Build it with `mugen --reference-tool
 expected-error probes require it. The runner stores complete error evidence in
 its temporary run directory and checks the stable expected rejection text.
 
+## Resource file rules, 2026-10-16
+
+The `resource-load` fixture records a state-file marker with its clipboard in
+the neutral CMD state, allowing tests to change state-file declarations. The
+pinned case matrix shows these load failures: omitted/blank primary st, missing
+declared st8/st9, missing sound, and missing stcommon. Missing st10/st12 files
+are ignored and the character reaches its marker state. The st9/st10 boundary
+also holds with an explicit mugenversion=1.1 declaration.
+
+Cases and engine/fixture/capture hashes are in `resource-load.json`; errors were
+read directly from the private MUGEN error dialog. The runner accepts --file and
+--omit-file when authoring, and --case when verifying a pinned matrix entry.
+This evidence corrects the Go loader's arbitrary scan/break behavior: all ten
+recognized extra state-file slots must be considered, even after gaps. Additional
+merge precedence, motif/common fallback and palette behavior still need probes.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed

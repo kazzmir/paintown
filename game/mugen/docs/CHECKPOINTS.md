@@ -4,6 +4,30 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3c — Bounded sound archives, PCM decoding and resource probes
+
+SND extraction validates counts, offsets, cycles, lengths and each embedded WAV,
+retaining version/format/rate/channel/frame metadata. Both zero and EOF tail
+sentinels are supported: every stock archive uses EOF, so requiring zero would
+incorrectly reject them. RIFF chunk bounds, padding, PCM alignment and byte rates
+are checked. CPU decoding supports integer PCM8/16/24/32 and float PCM32/64;
+unrecognized codecs remain identifiable but decoding them returns an error.
+
+All 45 sounds in the five stock banks parse and decode completely (the stock
+payloads are mono PCM8). Original fixtures cover signedness, stereo, wider PCM,
+float samples, odd padding, malformed chunks/links/counts and nonfinite samples.
+A bounded sound-archive fuzz run completed 141173 executions without failure.
+Full regression/race tests pass. Audio channels, mixing/resampling, runtime sound
+controllers and non-PCM codecs remain M6 work. Per-sound/raw-bank allocation
+budgets are 256 MiB/512 MiB; these are parser bounds, not measured native limits.
+
+Reference file probes establish that st is required, missing declared sound and
+common-state files are fatal, and numbered state files include st0 through st9
+without requiring a continuous sequence. st10/st12 are ignored. Boundary cases
+were checked for 1.1 character declarations as well. The authored resource case
+matrix and error/numeric evidence are pinned for the next loader checkpoint;
+the existing Go loader has not yet been changed to match these rules.
+
 ## M1c — Documented constant bindings and reference rejections
 
 Added a typed catalogue for all 74 documented Const names. The supplied beta

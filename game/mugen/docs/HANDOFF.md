@@ -134,6 +134,12 @@ groups are rejected by the reference; exact required-field/default rules still
 need measurement. The optional Win32 reference error reader is built by
 `mugen --reference-tools`. See REFERENCE.md and tests/README.md.
 
+M1c is commit `d972c8d1`. M3c hardens sound archives and adds CPU PCM decoding;
+all 45 stock sounds decode, full race tests pass, and 141173 fuzz executions pass.
+Reference resource cases pin required primary st, fatal missing sound/common
+files, and recognized st0..st9 (including gaps); st10/st12 are ignored. The Go
+loader still needs to apply these rules. See resource-load.json and REFERENCE.md.
+
 Next integrate selected character palettes, harden complete resource loading,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains

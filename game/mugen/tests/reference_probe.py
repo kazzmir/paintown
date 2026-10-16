@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -39,6 +39,14 @@ def prepare(reference, destination, fixture, bare=False, version=None):
                             key + ' = ' + value, definition)
     if version is not None:
         definition = re.sub(r'(?im)^\s*mugenversion\s*=.*$', 'mugenversion = ' + version, definition)
+    for key, value in (files or {}).items():
+        definition, count = re.subn(r'(?im)^\s*' + re.escape(key) + r'\s*=.*$',
+                                    lambda match: key + ' = ' + value, definition)
+        if not count:
+            definition = re.sub(r'(?im)^(\s*\[files\]\s*)$',
+                                lambda match: match.group(1) + '\n' + key + ' = ' + value, definition)
+    for key in omitted or []:
+        definition = re.sub(r'(?im)^\s*' + re.escape(key) + r'\s*=.*\n?', '', definition)
     (char / 'kfm.def').write_text(definition)
     commands = re.split(r'(?im)^\s*\[statedef', (char / 'kfm.cmd').read_text())[0]
     command_fixture = fixture.with_suffix('.cmd')
@@ -67,8 +75,14 @@ def page_source(base, page, bank='var'):
     return base
 
 
-def capture(run, prefix, source, page, seconds, bank='var'):
-    (run / 'chars/kfm/probe.cns').write_text(page_source(source, page, bank))
+def capture(run, prefix, source, page, seconds, bank='var', clipboard_in_cmd=False):
+    if clipboard_in_cmd:
+        commands = run / 'chars/kfm/probe.cmd'
+        base = re.split(r'(?im)\n\[State -?\d+, dump\]', commands.read_text())[0]
+        commands.write_text(page_source(base, page, bank))
+        (run / 'chars/kfm/probe.cns').write_text(source)
+    else:
+        (run / 'chars/kfm/probe.cns').write_text(page_source(source, page, bank))
     env = os.environ.copy()
     env.update(WINEARCH='win32', WINEPREFIX=str(prefix), WINEDEBUG='-all')
     output = run.parent / ('animation-page' + str(page) + '.png')
@@ -169,23 +183,56 @@ def main():
     parser.add_argument('--bare-constants', action='store_true', help='Use empty constant groups for omission/load-error probes')
     parser.add_argument('--bank', choices=['var', 'fvar'], default='var')
     parser.add_argument('--mugenversion', choices=['1.0', '1.1'])
+    parser.add_argument('--file', action='append', default=[], help='Override one character Files entry: key=value')
+    parser.add_argument('--clipboard-in-cmd', action='store_true')
+    parser.add_argument('--omit-file', action='append', default=[])
+    parser.add_argument('--case', help='Use a pinned named case from the fixture JSON')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     args = parser.parse_args()
+    case_expected = None
+    if args.case:
+        if not re.fullmatch('[a-z0-9_-]+', args.fixture):
+            parser.error('Invalid fixture name')
+        catalogue = json.loads((project / 'tests/testdata/reference' / (args.fixture + '.json')).read_text())
+        if args.case not in catalogue.get('cases', {}):
+            parser.error('Unknown fixture case')
+        case_expected = catalogue['cases'][args.case]
+        args.file = [key + '=' + value for key, value in case_expected.get('files', {}).items()]
+        args.omit_file = case_expected.get('omitted_files', [])
+        args.clipboard_in_cmd = case_expected.get('clipboard_in_cmd', False)
+        args.bank = case_expected.get('bank', 'var')
+        args.mugenversion = case_expected.get('mugenversion')
+        args.bare_constants = case_expected.get('bare_constants', False)
+        args.pages = [capture['page'] for capture in case_expected.get('captures', [])] or [0]
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
         parser.error('Page exceeds the variable bank')
     reference = args.reference.resolve()
+    files = {}
+    for item in args.file:
+        key, separator, value = item.partition('=')
+        if not separator or not re.fullmatch('[a-z0-9_.]+', key):
+            parser.error('Files overrides use lowercase key=value')
+        files[key] = value
+    if any(not re.fullmatch('[a-z0-9_.]+', key) or key in files for key in args.omit_file):
+        parser.error('Omitted file keys must be simple names and cannot also be overridden')
     work = project / 'temp/reference-runs' / args.name
     work.mkdir(parents=True, exist_ok=False)
     run = work / 'stock'
     fixture = project / 'tests/testdata/reference' / args.fixture
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
                 'invocation': 'wine mugen.exe kfm kfm -s kfm -nojoy', 'captures': [],
                 'bank': args.bank, 'bare_constants': args.bare_constants}
+    if files:
+        evidence['files'] = files
+    if args.clipboard_in_cmd:
+        evidence['clipboard_in_cmd'] = True
+    if args.omit_file:
+        evidence['omitted_files'] = args.omit_file
     if args.mugenversion is not None:
         evidence['mugenversion'] = args.mugenversion
     if fixture.with_suffix('.cmd').exists():
@@ -193,11 +240,15 @@ def main():
     expected_variables = {}
     expected = {}
     if not args.record:
-        expected = json.loads(fixture.with_suffix('.json').read_text())
+        expected = case_expected or json.loads(fixture.with_suffix('.json').read_text())
         if expected.get('bank', 'var') != args.bank or expected.get('bare_constants', False) != args.bare_constants:
             raise RuntimeError('Variable bank/constants mode differs from pinned fixture')
         if expected.get('mugenversion') != args.mugenversion:
             raise RuntimeError('Character version differs from pinned fixture')
+        if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
+            raise RuntimeError('Files/clipboard mode differs from pinned fixture')
+        if expected.get('omitted_files', []) != args.omit_file:
+            raise RuntimeError('Omitted files differ from pinned fixture')
         for key in [key for key in evidence if key.endswith('_sha256')]:
             if evidence[key] != expected[key]:
                 raise RuntimeError('Pinned reference/fixture hash mismatch: ' + key)
@@ -205,7 +256,7 @@ def main():
                               for index, value in capture['variables'].items()}
     for page in args.pages:
         try:
-            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank)
+            path = capture(run, project / 'temp/wine-reference', base, page, args.seconds, args.bank, args.clipboard_in_cmd)
         except ReferenceRejected as error:
             evidence['load_error'] = error.text
             (work / 'evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')
