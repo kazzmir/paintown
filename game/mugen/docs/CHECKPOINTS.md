@@ -4,6 +4,24 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3h — Fight/HUD resource definitions
+
+Added fight.Load for the stock fight definition, main SFF/SND/fonts, embedded
+animations, fightfx sprites/AIR and common sounds. It retains the raw layout AST,
+attributes and source locations for the production HUD renderer rather than
+inventing replacement graphics. Required and declared missing/malformed assets
+retain the parent Files key/line and resource path. Font lookup follows the
+same documented directory order as the motif; font-height keys are not filenames.
+DEF extraction can now reuse an already-parsed AST.
+
+Both stock fight definitions load their complete declared asset groups and
+retain life/power/time/round layout attributes. All four motifs hand off their
+resolved fight definition correctly; big shares mugen1/fight.def. Regressions cover missing/malformed
+resources in all six file categories. Full tests/races pass; root module hashes
+are unchanged. Loading a HUD definition does not render it or complete fight
+flow: bars, portraits, round announcements/effects and audio consumption remain
+M4 presentation work, and language/font-height variants are still pending.
+
 ## M4a — Stock keyboard symbols and explicit binding presence
 
 Replaced the incorrect DOS scancode conversion with SDL 1.2 symbols used by the

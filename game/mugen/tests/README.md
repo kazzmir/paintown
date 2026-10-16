@@ -125,3 +125,8 @@ sources; no OS key events are generated. They cover all 22 stock bindings,
 explicit KeyA=0 and disabled presence, YAML overrides, per-player confirmation,
 and the actual facing-relative gameplay input path. See INPUT.md for remaining
 command timing, layout and gamepad work.
+
+Fight resource tests cover both stock fight definitions, main SFF/SND/fonts,
+embedded AIR, fightfx SFF/AIR, common sounds and retained layout attributes.
+Missing/malformed declared files are checked with source context. HUD drawing
+and live match behavior require separate M4 integration tests.

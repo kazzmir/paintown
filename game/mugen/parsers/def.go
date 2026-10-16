@@ -18,7 +18,11 @@ func ParseDef(r io.Reader) (*DefData, error) {
 	if err != nil {
 		return nil, err
 	}
+	return ParseDefFromAST(file)
+}
 
+// ParseDefFromAST extracts mappings without reparsing an embedded definition.
+func ParseDefFromAST(file *File) (*DefData, error) {
 	data := &DefData{
 		Files:     make(map[string]string),
 		FileLines: make(map[string]int),

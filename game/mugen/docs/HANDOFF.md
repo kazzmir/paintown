@@ -210,6 +210,13 @@ and loaded stock keys reach facing-relative gameplay input. Confirmation honors
 P2 Start independently. Joystick config values stay raw; runtime gamepad support
 and layout-specific symbols remain pending. Full tests/races pass. See INPUT.md.
 
+M4a is commit `9b166ac2`. M3h adds fight.Load and source-preserved fight layout
+metadata. Both stock fight definitions load main HUD archives/fonts,
+embedded AIR, fightfx SFF/AIR and common sounds. Missing/malformed declared
+resources have contextual tests; full tests/races pass. This is the asset side
+of the fight connection; no actual Match/Fight state has been added yet. The
+versus screen still returns to title and selection still drops chosen players.
+
 Next reach playable match flow with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

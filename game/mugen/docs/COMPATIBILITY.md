@@ -112,6 +112,11 @@ Keyboard sources are injectable per manager and confirm bindings are player-loca
 Full command/gamepad/layout behavior and playable match flow remain incomplete;
 see INPUT.md.
 
+M3h loads both stock fight/HUD definitions and their declared main/effect/
+common sound/font/animation resources, retaining raw layout/source metadata.
+Production HUD drawing, round announcements/audio/effects and actual fight flow
+remain incomplete; resource loading alone is not gameplay compatibility.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).
