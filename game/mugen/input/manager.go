@@ -74,6 +74,7 @@ func (a Action) String() string {
 }
 
 type InputManager struct {
+	Keyboard   KeyboardSource
 	P1Keyboard config.Keys
 	P2Keyboard config.Keys
 	P1Joystick config.Keys
@@ -86,6 +87,25 @@ type InputManager struct {
 	LastActionEvent string
 }
 
+// KeyboardSource is scoped to one input manager, allowing deterministic tests
+// and replays without changing the operating system's keyboard state.
+type KeyboardSource interface {
+	IsPressed(ebiten.Key) bool
+	IsJustPressed(ebiten.Key) bool
+}
+
+type physicalKeyboard struct{}
+
+func (physicalKeyboard) IsPressed(key ebiten.Key) bool     { return ebiten.IsKeyPressed(key) }
+func (physicalKeyboard) IsJustPressed(key ebiten.Key) bool { return inpututil.IsKeyJustPressed(key) }
+
+func (im *InputManager) keyboard() KeyboardSource {
+	if im.Keyboard != nil {
+		return im.Keyboard
+	}
+	return physicalKeyboard{}
+}
+
 func NewInputManager(cfg *config.MugenConfig) *InputManager {
 	return &InputManager{
 		P1Keyboard: cfg.Input.Player1Keyboard,
@@ -96,15 +116,15 @@ func NewInputManager(cfg *config.MugenConfig) *InputManager {
 }
 
 func (im *InputManager) Update() {
-	im.GamepadIDs = inpututil.AppendJustConnectedGamepadIDs(im.GamepadIDs[:0])
-	im.GamepadIDs = ebiten.AppendGamepadIDs(im.GamepadIDs)
+	im.GamepadIDs = ebiten.AppendGamepadIDs(im.GamepadIDs[:0])
 
 	// Reset action log each frame
 	im.LastActionEvent = ""
 
 	// Update raw key events (store only the latest for status line)
+	source := im.keyboard()
 	for k := ebiten.Key(0); k <= ebiten.KeyMax; k++ {
-		if inpututil.IsKeyJustPressed(k) {
+		if source.IsJustPressed(k) {
 			im.LastKeyEvent = fmt.Sprintf("%v(%d)", k, int(k))
 		}
 	}
@@ -117,7 +137,7 @@ func (im *InputManager) IsPressed(player int, action Action) bool {
 	}
 
 	key := im.getActionKey(keys, action)
-	if key != 0 && ebiten.IsKeyPressed(key) {
+	if key >= 0 && key <= ebiten.KeyMax && im.keyboard().IsPressed(key) {
 		sep := ""
 		if im.LastActionEvent != "" {
 			sep = ", "
@@ -137,7 +157,7 @@ func (im *InputManager) IsJustPressed(player int, action Action) bool {
 	}
 
 	key := im.getActionKey(keys, action)
-	if key != 0 && inpututil.IsKeyJustPressed(key) {
+	if key >= 0 && key <= ebiten.KeyMax && im.keyboard().IsJustPressed(key) {
 		return true
 	}
 
@@ -145,73 +165,42 @@ func (im *InputManager) IsJustPressed(player int, action Action) bool {
 }
 
 func (im *InputManager) getActionKey(keys config.Keys, action Action) ebiten.Key {
+	var name string
+	var fallback ebiten.Key
 	switch action {
 	case ActionJump, ActionUp:
-		if keys.Jump == 0 {
-			return ebiten.KeyUp
-		}
-		return keys.Jump
+		name, fallback = "jump", ebiten.KeyArrowUp
 	case ActionCrouch, ActionDown:
-		if keys.Crouch == 0 {
-			return ebiten.KeyDown
-		}
-		return keys.Crouch
+		name, fallback = "crouch", ebiten.KeyArrowDown
 	case ActionLeft, ActionLeftUI:
-		if keys.Left == 0 {
-			return ebiten.KeyLeft
-		}
-		return keys.Left
+		name, fallback = "left", ebiten.KeyArrowLeft
 	case ActionRight, ActionRightUI:
-		if keys.Right == 0 {
-			return ebiten.KeyRight
-		}
-		return keys.Right
+		name, fallback = "right", ebiten.KeyArrowRight
 	case ActionA:
-		if keys.A == 0 {
-			return ebiten.KeyZ
-		}
-		return keys.A
+		name, fallback = "a", ebiten.KeyZ
 	case ActionB:
-		if keys.B == 0 {
-			return ebiten.KeyX
-		}
-		return keys.B
+		name, fallback = "b", ebiten.KeyX
 	case ActionC:
-		if keys.C == 0 {
-			return ebiten.KeyC
-		}
-		return keys.C
+		name, fallback = "c", ebiten.KeyC
 	case ActionX:
-		if keys.X == 0 {
-			return ebiten.KeyA
-		}
-		return keys.X
+		name, fallback = "x", ebiten.KeyA
 	case ActionY:
-		if keys.Y == 0 {
-			return ebiten.KeyS
-		}
-		return keys.Y
+		name, fallback = "y", ebiten.KeyS
 	case ActionZ:
-		if keys.Z == 0 {
-			return ebiten.KeyD
-		}
-		return keys.Z
-	case ActionStart:
-		if keys.Start == 0 {
-			return ebiten.KeyEnter
-		}
-		return keys.Start
+		name, fallback = "z", ebiten.KeyD
+	case ActionStart, ActionEnter:
+		name, fallback = "start", ebiten.KeyEnter
 	case ActionEscape:
-		if keys.Escape == 0 {
-			return ebiten.KeyEscape
-		}
-		return keys.Escape
-	case ActionEnter:
-		return ebiten.KeyEnter
+		name, fallback = "escape", ebiten.KeyEscape
 	case ActionSpace:
 		return ebiten.KeySpace
+	default:
+		return config.NoKey
 	}
-	return 0
+	if key, configured := keys.Binding(name); configured {
+		return key
+	}
+	return fallback
 }
 
 // Global instance for convenience

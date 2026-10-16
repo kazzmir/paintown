@@ -4,6 +4,28 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4a — Stock keyboard symbols and explicit binding presence
+
+Replaced the incorrect DOS scancode conversion with SDL 1.2 symbols used by the
+supplied beta config. All 22 stock bindings now map correctly, including P1
+arrows/punctuation and P2 letters. Keys retain explicit presence independently of
+numeric value: KeyA=0 works in legacy config, YAML overrides and input polling.
+Unknown/unbound keys cannot silently poll A. Joystick identifiers remain raw
+instead of passing through keyboard conversion; the gamepad adapter is pending.
+
+Named overrides use Ebitengine's key-name parser, including function/keypad keys;
+none/disabled explicitly unbinds. The manager accepts an instance-local keyboard
+source, supporting injected held/edge events without OS input. Menu confirmation
+uses each player's Start binding. Device ID collection no longer duplicates
+newly connected gamepads. See INPUT.md for defaults, APIs and limitations.
+
+Tests cover the full stock binding corpus, zero/presence across value copies,
+YAML KeyA/disabled overrides, unknown symbols, injected held/edge and isolated
+player confirmation. Loaded stock keys reach the real facing-relative gameplay
+input path. Full tests/race checks pass; root module hashes remain unchanged.
+This is an input foundation: no first playable match, complete command timing,
+keyboard-layout or gamepad parity is claimed.
+
 ## M0d — Production startup captures and diagnostic ownership
 
 A repeatable app_smoke.py builds the actual application with the scoped module,

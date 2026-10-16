@@ -119,3 +119,9 @@ ImageMagick import are required. It sends no input or focus changes, records
 hashes and commit/dirty state, and terminates its own process. Use --motif or
 --seconds for other inspection points. Live keyboard/window timing can affect
 results; it does not assert native image parity or deterministic gameplay.
+
+Input regressions use the stock SDL key-number corpus and injected keyboard
+sources; no OS key events are generated. They cover all 22 stock bindings,
+explicit KeyA=0 and disabled presence, YAML overrides, per-player confirmation,
+and the actual facing-relative gameplay input path. See INPUT.md for remaining
+command timing, layout and gamepad work.

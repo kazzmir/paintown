@@ -5,8 +5,29 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/config"
 )
+
+func TestStockKeyboardBindings(t *testing.T) {
+	cfg, err := config.LoadConfigWithOverrides(referenceRoot(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, test := range []struct {
+		keys config.Keys
+		want map[string]ebiten.Key
+	}{
+		{cfg.Input.Player1Keyboard, map[string]ebiten.Key{"jump": ebiten.KeyArrowUp, "crouch": ebiten.KeyArrowDown, "left": ebiten.KeyArrowLeft, "right": ebiten.KeyArrowRight, "a": ebiten.KeyComma, "b": ebiten.KeyPeriod, "c": ebiten.KeySlash, "x": ebiten.KeyL, "y": ebiten.KeySemicolon, "z": ebiten.KeyQuote, "start": ebiten.KeyEnter}},
+		{cfg.Input.Player2Keyboard, map[string]ebiten.Key{"jump": ebiten.KeyW, "crouch": ebiten.KeyS, "left": ebiten.KeyA, "right": ebiten.KeyD, "a": ebiten.KeyF, "b": ebiten.KeyG, "c": ebiten.KeyH, "x": ebiten.KeyR, "y": ebiten.KeyT, "z": ebiten.KeyY, "start": ebiten.KeyU}},
+	} {
+		for action, want := range test.want {
+			if got, present := test.keys.Binding(action); !present || got != want {
+				t.Errorf("stock %s=%v present=%v want %v", action, got, present, want)
+			}
+		}
+	}
+}
 
 func TestLoadConfig(t *testing.T) {
 	// Create a temporary data directory structure

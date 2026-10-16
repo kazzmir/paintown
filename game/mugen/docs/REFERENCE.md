@@ -207,6 +207,16 @@ The runner records failures rather than accepting missing windows. These images
 are inspection evidence, not native pixel/timing comparisons. Original stock
 content remains unchanged, and captures/binaries/copies are untracked.
 
+## Keyboard symbol evidence, 2026-10-16
+
+The supplied mugen.cfg contains SDL symbols such as 273 for Up, 44 for Comma and
+97 for A. Their meanings are checked against the primary
+[SDL 1.2 header](https://github.com/libsdl-org/SDL-1.2/blob/main/include/SDL_keysym.h).
+The former DOS lookup misdecoded them. All 22 configured stock actions now match
+the intended keys and flow through injected-key gameplay tests. This is config/
+adapter evidence, not reference hardware or command-timing parity. SDL WORLD and
+shifted-only symbols, device mappings and full command semantics remain open.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed

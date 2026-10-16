@@ -203,7 +203,14 @@ or focus changes, and is not a deterministic parity harness. Full tests/races pa
 The stock input diagnostics show wrong keyboard mappings from DOS conversion;
 fix/reference-check numeric key codes and valid KeyA=0 handling next.
 
-Next fix keyboard decoding/presence handling and reach playable match flow,
+M0d is commit `7478a922`. M4a fixes SDL 1.2 numeric keyboard symbols, explicit
+zero-valued KeyA/presence and disabled bindings, and adds per-manager injectable
+keyboard held/edge queries. All 22 stock keys match, YAML KeyA overrides work,
+and loaded stock keys reach facing-relative gameplay input. Confirmation honors
+P2 Start independently. Joystick config values stay raw; runtime gamepad support
+and layout-specific symbols remain pending. Full tests/races pass. See INPUT.md.
+
+Next reach playable match flow with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains

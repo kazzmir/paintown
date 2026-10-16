@@ -106,6 +106,12 @@ and separate title graphics. Normal shared-AST sections no longer generate false
 unsupported warnings. This is a startup inspection only; input decoding,
 selection-to-fight and complete visual/gameplay parity remain unfinished.
 
+M4a fixes stock SDL keyboard numbers and explicit KeyA/disabled presence. All 22
+stock bindings, YAML overrides and facing-relative gameplay input have tests.
+Keyboard sources are injectable per manager and confirm bindings are player-local.
+Full command/gamepad/layout behavior and playable match flow remain incomplete;
+see INPUT.md.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).
