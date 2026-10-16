@@ -4,6 +4,29 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M2e — Reference state order and corrected persistence
+
+Added authored negative-state and persistence probes to the repeatable capture
+runner. The reference trace is 32145 for -3/-2/-1/positive/next-positive order;
+post-transition controllers remain unexecuted, and the new positive state sees
+Time=0 and the correct previous state. Character and pure tests now share
+RunStatePass; both execute the authored programs against recorded variables.
+
+Executable persistence observations **supersede M2a's documentation-based
+interpretation**. Persistent N fires on the first true trigger, then suppresses
+the next N-1 eligible passes before checking triggers again. False conditions
+after that cooldown leave it ready. Suppressed controllers do not evaluate
+triggers; a used persistent=0 trigger also stops evaluating. The intermittent
+fixture fires at ticks 0,2,5,8,11, with eight trigger side effects; its one-shot
+trigger evaluates once. Fixed the gate/order and replaced the earlier incorrect
+success-count/one-shot tests. Pause/negative-state reset interactions still need
+additional probes. The diagnosed 10-transition runaway guard is provisional.
+
+The harness supports named CNS/AIR/CMD fixtures and records only disposable
+evidence with --record; normal runs check pinned engine/fixture hashes and exact
+observations. Full tests/race checks and fresh probe reruns validate this
+checkpoint. No complete world/state-ownership coverage is claimed.
+
 ## M2d / M0c — Shared animation clock and executable reference trace
 
 Replaced the background/storyboard and Character animation clocks with one
@@ -216,10 +239,9 @@ the state, with state/controller/name/type/line context. Compilation errors stay
 errors on repeated execution. Added the explicit Null controller. Triggerall and
 numbered groups execute in documented order, stop at number gaps, and preserve
 repeated-condition AND semantics. Bottom is false at the trigger boundary.
-Persistent N counts successful conditions and activates on each Nth success;
-one-shot persistence resets on host re-entry. Trigger side effects continue to
-evaluate even after a one-shot controller has activated, matching the prior C++
-activation structure; executable reference confirmation is still required.
+At this checkpoint N counted successful conditions and one-shot triggers kept
+evaluating. **M2e supersedes both behaviors after executable probes disproved
+them.** Positive one-shot state re-entry reset remains supported.
 
 Validation: headless `go test -race ./game/mugen/engine` passes. Regressions cover
 trigger ordering/gaps/AND/OR, invalid-state atomic validation, persistence across

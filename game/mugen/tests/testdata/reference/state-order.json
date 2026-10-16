@@ -1,0 +1,29 @@
+{
+  "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+  "cns_sha256": "740dfd8e6673f6890b58ce914d6126c96c2e07e70e064c21b06dfa9316108ca0",
+  "air_sha256": "53914b0e8a0b940fb69f27970dffe9f758fb73e31259b2b6c1c30177b696e48c",
+  "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+  "captures": [
+    {
+      "page": 0,
+      "path": "animation-page0.png",
+      "sha256": "12df3dc7a7bd45dc9adef3749422a8aca8f31c881efadb6d84684b13bf4b756d",
+      "variables": {
+        "0": 32145,
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 31,
+        "7": 30,
+        "8": 0,
+        "9": 0,
+        "10": 0,
+        "11": 0
+      }
+    }
+  ],
+  "cmd_sha256": "99f64f81f4214655e9b62474381fd61864fa0ffee9de2d8cd3e44cf58ae09a83",
+  "observations": "Negative states append 3,2,1 and positive states append 4,5. Post-transition controllers remain zero; final state 31, previous 30, entry Time zero."
+}

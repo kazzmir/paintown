@@ -81,6 +81,27 @@ wrapper scripts do not expose a usable per-tick capture hook at initialization.
 Input/console attempts did not produce a reliable trace; they are not part of
 the runner. Clipboard captures provide the reproducible route used here.
 
+## State order and persistence, 2026-10-16
+
+The named `state-order` fixture records 32145, showing -3/-2/-1 followed by a
+two-state positive chain. Counters after each ChangeState stay zero; the final
+state observes StateNo=31, PrevStateNo=30 and Time=0. This resolves the earlier
+C++ comment ambiguity for ordinary self-owned negative states. Ownership and
+helper eligibility are separate outstanding cases.
+
+The `persistence` fixture records intermittent conditions true except at ticks
+1,4,7,10. Persistent=2 activates at 0,2,5,8,11 and evaluates its side-effecting
+trigger eight times. Persistent=0's side-effecting trigger evaluates once. This
+disproves the earlier interpretation that N counts only successful conditions
+and that one-shot trigger expressions continue after activation. The executor
+now applies a pre-trigger cooldown/one-shot gate. Negative-state re-entry and
+pause interactions still need probes.
+
+Numerical evidence and engine/source/capture hashes are committed alongside the
+authored fixtures. Fresh `state-order-verified` and `persistence-verified` runs
+reproduced every observation. The production Character and headless state-pass
+host execute the same programs against those numerical assertions.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed

@@ -52,6 +52,11 @@ Other offset/zero/infinite cases have documentation-based tests but still need
 reference probes. Both stock players load; 105/108 states per character compile,
 with HitOverride blocking the remaining three. Match playability is pending.
 
+M2e adds executable reference evidence for negative-state order/abortion and
+persistence. The success-count interpretation is superseded: N uses a cooldown,
+and suppressed/used one-shot controllers skip triggers. Character and headless
+hosts pass both authored programs against pinned reference variables.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).
@@ -310,7 +315,7 @@ Trigger status totals: 86 Missing, 41 Present, 0 Verified.
 | Trigger syntax | Subset | All old forms and component forms, strings/enums, legal redirects and missing destinations. |
 | State entry | Applied in two places | Every Statedef attribute, omission/defaults, expressions, override ordering, self-transition and owner switch. |
 | Trigger groups | Partial | triggerall first, ordered contiguous numbered groups, repeated clauses and short-circuit behavior between clauses. |
-| Persistence | >1 unimplemented | Count successful trigger evaluations, once per entry, pauses, negative states and re-entry. |
+| Persistence | >1 unimplemented | M2e implements observed activation/cooldown and one-shot suppression; pause/negative-state re-entry interactions still need probes. |
 | Tick scheduling | Local Character.Update | Negative-state eligibility/order, hitpause/ignorehitpause, Pause/SuperPause, animation/physics/collision ordering and transitions. |
 | Lifetimes and ownership | Incomplete | Distinct entity/input/helper/target identities; state and animation owners; creation/deletion and binding. |
 | Version behavior | Mostly absent | Character mugenversion, deprecated syntax and documented 1.1 additions. |

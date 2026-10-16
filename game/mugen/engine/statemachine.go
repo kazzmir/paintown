@@ -258,9 +258,6 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 		if isPaused && ctrl.IgnoreHitPause == 0 {
 			continue
 		}
-		if !compiled.triggers.match(env) {
-			continue
-		}
 		prefix := "pos"
 		if state.ID < 0 {
 			prefix = "neg"
@@ -271,14 +268,17 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 			if count > 0 {
 				continue
 			}
+		} else if ctrl.Persistent > 1 && count > 0 {
+			env.SetPersistence(key, count-1)
+			continue
+		}
+		if !compiled.triggers.match(env) {
+			continue
+		}
+		if ctrl.Persistent == 0 {
 			env.SetPersistence(key, 1)
 		} else if ctrl.Persistent > 1 {
-			count++
-			if count < ctrl.Persistent {
-				env.SetPersistence(key, count)
-				continue
-			}
-			env.SetPersistence(key, 0)
+			env.SetPersistence(key, ctrl.Persistent-1)
 		}
 		if err := compiled.handler(ctrl, env); err != nil {
 			return false, controllerError(state, i, ctrl, err)

@@ -334,52 +334,9 @@ func (c *Character) Update() {
 	// 3. MUGEN multi-level state processing:
 	// -3, then -2, then -1, then current state level.
 
-	processState := func(stateNo int) bool {
-		if c.RuntimeError != nil {
-			return false
-		}
-		/*
-			if sd, ok := c.StateFile.States[stateNo]; ok {
-				fmt.Printf("Tick %d: Processing state %d (%s)\n", c.Time, stateNo, sd.Name)
-			} else {
-				fmt.Printf("Tick %d: Processing state %d\n", c.Time, stateNo)
-			}
-		*/
-		if stateDef, ok := c.StateFile.States[stateNo]; ok {
-			// Diagnostic: is AnimTime 0?
-
-			changed, err := c.SM.ExecuteState(stateDef, c)
-			if err != nil {
-				c.RuntimeError = err
-				return false
-			}
-			if changed {
-				// c.LastStateChange already set in ChangeState
-				return true
-			}
-		}
-		return false
-	}
-
-	{
-		// Paused passes still evaluate controllers with ignorehitpause.
-		// Negative states processing order
-		processState(-3)
-		processState(-2)
-		processState(-1)
-		if c.RuntimeError != nil {
-			return
-		}
-
-		// Process current state (and any new states we transition into)
-		for i := 0; i < 10; i++ { // Limit to 10 transitions per tick
-			if !processState(c.StateNo) {
-				break
-			}
-			if i == 9 {
-				c.RuntimeError = fmt.Errorf("player %d exceeded 10 state transitions in one tick", c.PlayerID)
-			}
-		}
+	// Paused passes still evaluate controllers with ignorehitpause.
+	if err := c.SM.RunStatePass(c.StateFile.States, c); err != nil {
+		c.RuntimeError = fmt.Errorf("player %d: %w", c.PlayerID, err)
 	}
 	if c.RuntimeError != nil {
 		return

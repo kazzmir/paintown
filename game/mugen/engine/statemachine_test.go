@@ -77,7 +77,7 @@ func TestTriggerGroups(t *testing.T) {
 	}
 }
 
-func TestPersistenceCountsTrueTriggers(t *testing.T) {
+func TestPersistenceCooldown(t *testing.T) {
 	h := newHost()
 	sm := NewStateMachine()
 	state := stateSource(t, lifeController("trigger1=var(0)\npersistent=2"))
@@ -86,13 +86,7 @@ func TestPersistenceCountsTrueTriggers(t *testing.T) {
 		if _, err := sm.ExecuteState(state, h); err != nil {
 			t.Fatal(err)
 		}
-		want := 0
-		if i >= 2 {
-			want = 1
-		}
-		if i >= 5 {
-			want = 2
-		}
+		want := []int{1, 1, 2, 2, 3, 3}[i]
 		if h.life != want {
 			t.Fatalf("tick %d: life=%d, want %d", i, h.life, want)
 		}
@@ -108,14 +102,14 @@ func TestOnceAndReentry(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	if h.life != 1 || h.vars[1] != 3 {
+	if h.life != 1 || h.vars[1] != 1 {
 		t.Fatalf("life=%d, trigger evaluations=%d", h.life, h.vars[1])
 	}
 	h.ChangeState(7, -1, -1)
 	if _, err := sm.ExecuteState(state, h); err != nil {
 		t.Fatal(err)
 	}
-	if h.life != 2 {
+	if h.life != 2 || h.vars[1] != 2 {
 		t.Fatal("reentry did not reset one-shot persistence")
 	}
 }

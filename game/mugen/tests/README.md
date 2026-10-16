@@ -49,3 +49,9 @@ Each capture reads two clipboard lines by exact matching against the bundled
 debug font, rejects ambiguous/missing glyphs, and checks the pinned observations.
 Captures/logs/hashes remain in its run directory. Each run name must be new.
 The Go clock regressions use the committed numerical observations without Wine.
+
+Named state probes use `--fixture state-order --pages 0` or
+`--fixture persistence --pages 0 12`, each with a new `--name`. `--record` saves
+new observations only in that disposable run directory; it does not change the
+committed expected data. A fixture may supply its own neutral CMD state program.
+Engine and Character tests run both programs against the pinned variables.

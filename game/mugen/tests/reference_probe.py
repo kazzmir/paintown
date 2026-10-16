@@ -33,20 +33,23 @@ def prepare(reference, destination, fixture):
                             key + ' = ' + value, definition)
     (char / 'kfm.def').write_text(definition)
     commands = re.split(r'(?im)^\s*\[statedef', (char / 'kfm.cmd').read_text())[0]
-    commands += '\n[Statedef -1]\n[State -1, no input]\ntype=Null\ntrigger1=1\n'
+    command_fixture = fixture.with_suffix('.cmd')
+    commands += ('\n' + command_fixture.read_text() if command_fixture.exists() else
+                 '\n[Statedef -1]\n[State -1, no input]\ntype=Null\ntrigger1=1\n')
     (char / 'probe.cmd').write_text(commands)
-    shutil.copyfile(fixture / 'animation-loop.air', char / 'probe.air')
+    shutil.copyfile(fixture.with_suffix('.air'), char / 'probe.air')
     constants = re.split(r'(?im)^\s*\[statedef', (char / 'kfm.cns').read_text())[0]
-    source = constants + '\n' + (fixture / 'animation-loop.cns').read_text()
+    source = constants + '\n' + fixture.with_suffix('.cns').read_text()
     config = destination / 'data/mugen.cfg'
     config.write_text(re.sub(r'(?im)^Debug\s*=\s*0\s*$', 'Debug = 1', config.read_text()))
     return source
 
 
 def page_source(base, page):
+    owner = re.findall(r'(?im)^\s*\[statedef\s+(-?\d+)\]', base)[-1]
     for chunk in range(2):
         start = page + chunk * 6
-        base += ('\n[State 0, dump]\ntype=' +
+        base += ('\n[State ' + owner + ', dump]\ntype=' +
                  ('DisplayToClipboard' if chunk == 0 else 'AppendToClipboard') +
                  '\ntrigger1=time>=30\ntext="P' + str(start) + ':' +
                  ','.join(['%d'] * 6) + '\\n"\nparams=' +
@@ -142,9 +145,11 @@ def main():
     parser.add_argument('--reference', type=Path, default=project / 'temp/mugen-1.1b1')
     parser.add_argument('--name', default='animation-loop')
     parser.add_argument('--seconds', type=float, default=6)
+    parser.add_argument('--fixture', default='animation-loop')
+    parser.add_argument('--record', action='store_true', help='Record a new fixture without comparing prior observations')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     args = parser.parse_args()
-    if not re.fullmatch('[a-z0-9_-]+', args.name) or not 3 <= args.seconds <= 30:
+    if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > 48 for page in args.pages):
         parser.error('Pages must begin from variable indices 0 to 48')
@@ -152,25 +157,29 @@ def main():
     work = project / 'temp/reference-runs' / args.name
     work.mkdir(parents=True, exist_ok=False)
     run = work / 'stock'
-    fixture = project / 'tests/testdata/reference'
+    fixture = project / 'tests/testdata/reference' / args.fixture
     base = prepare(reference, run, fixture)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
-                'cns_sha256': digest(fixture / 'animation-loop.cns'),
-                'air_sha256': digest(fixture / 'animation-loop.air'),
+                'cns_sha256': digest(fixture.with_suffix('.cns')),
+                'air_sha256': digest(fixture.with_suffix('.air')),
                 'invocation': 'wine mugen.exe kfm kfm -s kfm -nojoy', 'captures': []}
-    expected = json.loads((fixture / 'animation-loop.json').read_text())
-    for key in ['engine_sha256', 'cns_sha256', 'air_sha256']:
-        if evidence[key] != expected[key]:
-            raise RuntimeError('Pinned reference/fixture hash mismatch: ' + key)
-    expected_variables = {int(index): value for capture in expected['captures']
-                          for index, value in capture['variables'].items()}
+    if fixture.with_suffix('.cmd').exists():
+        evidence['cmd_sha256'] = digest(fixture.with_suffix('.cmd'))
+    expected_variables = {}
+    if not args.record:
+        expected = json.loads(fixture.with_suffix('.json').read_text())
+        for key in [key for key in evidence if key.endswith('_sha256')]:
+            if evidence[key] != expected[key]:
+                raise RuntimeError('Pinned reference/fixture hash mismatch: ' + key)
+        expected_variables = {int(index): value for capture in expected['captures']
+                              for index, value in capture['variables'].items()}
     for page in args.pages:
         path = capture(run, project / 'temp/wine-reference', base, page, args.seconds)
         variables = read_clipboard(path, reference, page)
         evidence['captures'].append({'page': page, 'path': path.name, 'sha256': digest(path),
                                      'variables': variables})
         for index, value in variables.items():
-            if index not in expected_variables or expected_variables[index] != value:
+            if not args.record and (index not in expected_variables or expected_variables[index] != value):
                 raise RuntimeError('Reference observation mismatch at variable ' + str(index))
         print('Captured', path, flush=True)
     (work / 'evidence.json').write_text(json.dumps(evidence, indent=2) + '\n')

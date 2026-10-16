@@ -8,3 +8,5 @@ type ControllerFunc = engine.ControllerFunc
 type StateMachine = engine.StateMachine
 
 func NewStateMachine() *StateMachine { return engine.NewStateMachine() }
+
+func (c *Character) StateExecutionError() error { return c.RuntimeError }

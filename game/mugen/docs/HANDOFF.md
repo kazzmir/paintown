@@ -119,6 +119,13 @@ captures and exact bitmap-font matching without keyboard/focus automation.
 See tests/README.md and REFERENCE.md. Both stock characters load, with 105/108
 states compiling; HitOverride remains an explicit three-state gap per character.
 
+M2d is commit `2f82750b`. M2e adds named state-order/persistence probes and moves
+the complete state pass into engine.RunStatePass. Negative order/abortion matches
+the executable. Persistence probes disproved the earlier M2a success-count and
+one-shot-side-effect interpretation: fixed to fire immediately, apply a cooldown,
+and skip triggers when suppressed. Headless and Character tests use the same
+authored programs and pinned numeric observations.
+
 Next integrate selected character palettes and complete
 constant bindings, extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains

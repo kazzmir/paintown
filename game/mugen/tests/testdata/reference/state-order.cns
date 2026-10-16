@@ -1,0 +1,122 @@
+; The negative states append 3,2,1; the positive chain appends 4,5.
+; var(58) freezes the result after the first positive state chain completes.
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, idle]
+type=Null
+trigger1=1
+[Statedef 10]
+physics=N
+[State 10, fallback]
+type=VarSet
+trigger1=var(58)=0
+v=6
+value=StateNo
+[State 10, freeze]
+type=VarSet
+trigger1=1
+v=58
+value=1
+[Statedef 20]
+physics=N
+[State 20, fallback]
+type=VarSet
+trigger1=var(58)=0
+v=6
+value=StateNo
+[State 20, freeze]
+type=VarSet
+trigger1=1
+v=58
+value=1
+[Statedef 30]
+physics=N
+[State 30, order]
+type=VarSet
+trigger1=var(58)=0
+v=0
+value=var(0)*10+4
+[State 30, transition]
+type=ChangeState
+trigger1=1
+value=31
+[State 30, after transition]
+type=VarAdd
+trigger1=1
+v=4
+value=1
+[Statedef 31]
+physics=N
+[State 31, order]
+type=VarSet
+trigger1=var(58)=0
+v=0
+value=var(0)*10+5
+[State 31, final state]
+type=VarSet
+trigger1=var(58)=0
+v=6
+value=StateNo
+[State 31, previous state]
+type=VarSet
+trigger1=var(58)=0
+v=7
+value=PrevStateNo
+[State 31, entry time]
+type=VarSet
+trigger1=var(58)=0
+v=8
+value=Time
+[State 31, freeze]
+type=VarSet
+trigger1=1
+v=58
+value=1
+[Statedef -3]
+[State -3, order]
+type=VarSet
+triggerall=var(58)=0
+trigger1=StateNo=0 || StateNo=10 || StateNo=20
+v=0
+value=var(0)*10+3
+[State -3, transition]
+type=ChangeState
+triggerall=var(58)=0
+trigger1=StateNo=0
+value=10
+[State -3, after transition]
+type=VarAdd
+triggerall=var(58)=0
+trigger1=StateNo=0 || StateNo=10 || StateNo=20
+v=1
+value=1
+[Statedef -2]
+[State -2, order]
+type=VarSet
+triggerall=var(58)=0
+trigger1=StateNo=0 || StateNo=10 || StateNo=20
+v=0
+value=var(0)*10+2
+[State -2, transition]
+type=ChangeState
+triggerall=var(58)=0
+trigger1=StateNo=10
+value=20
+[State -2, after transition]
+type=VarAdd
+triggerall=var(58)=0
+trigger1=StateNo=0 || StateNo=10 || StateNo=20
+v=2
+value=1
