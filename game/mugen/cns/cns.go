@@ -65,6 +65,7 @@ type Movement struct {
 }
 
 type StateController struct {
+	Line           int
 	Name           string
 	Type           string
 	Persistent     int
@@ -116,6 +117,9 @@ type HitDef struct {
 }
 
 type StateDef struct {
+	Line int
+	// Parameters retains entry expressions; numeric fields are legacy accessors.
+	Parameters  map[string]string
 	ID          int
 	Name        string
 	Type        string
@@ -318,6 +322,8 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 			}
 
 			currentState = &StateDef{
+				Line:        section.Line,
+				Parameters:  make(map[string]string),
 				ID:          stateID,
 				Controllers: make([]StateController, 0),
 				Anim:        -1, // Default to "no change"
@@ -333,6 +339,7 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
+				currentState.Parameters[key] = attributeExpression(attr)
 				if key == "type" {
 					currentState.Type = getAsString(attr.Value)
 				}
@@ -395,6 +402,7 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 			}
 
 			ctrl := StateController{
+				Line:           section.Line,
 				Triggers:       make([]string, 0),
 				Params:         make(map[string]string),
 				Persistent:     1, // Default is 1
@@ -416,10 +424,10 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				} else if key == "ignorehitpause" {
 					ctrl.IgnoreHitPause = getAsInt(attr.Value)
 				} else if strings.HasPrefix(key, "trigger") {
-					strVal := renderRawValue(attr.Value)
+					strVal := attributeExpression(attr)
 					ctrl.Triggers = append(ctrl.Triggers, fmt.Sprintf("%s = %s", attr.ID.String(), strVal))
 				} else {
-					ctrl.Params[key] = renderRawValue(attr.Value)
+					ctrl.Params[key] = attributeExpression(attr)
 				}
 			}
 
@@ -505,9 +513,16 @@ func renderRawValue(v parsers.Value) string {
 		return strings.Join(parts, ", ")
 	}
 	if sv, ok := v.(parsers.StringValue); ok {
-		return sv.Val
+		return strconv.Quote(sv.Val)
 	}
 	return getAsString(v)
+}
+
+func attributeExpression(attr *parsers.Attribute) string {
+	if attr.RawValue != "" {
+		return attr.RawValue
+	}
+	return renderRawValue(attr.Value)
 }
 
 func ParseIntList(s string) []int {

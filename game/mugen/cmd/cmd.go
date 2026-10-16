@@ -113,7 +113,10 @@ func Parse(r io.Reader) (*Data, error) {
 					// However, the AST has already tokenized the rhs. Let's dump it back to a string form.
 					// Actually, trigger values often have complex ops e.g. trigger1 = statetype != A
 					// We'll reconstruct the raw string for now
-					strVal := renderRawValue(attr.Value)
+					strVal := attr.RawValue
+					if strVal == "" {
+						strVal = renderRawValue(attr.Value)
+					}
 					ctrl.Triggers = append(ctrl.Triggers, fmt.Sprintf("%s = %s", attr.ID.String(), strVal))
 				}
 			}

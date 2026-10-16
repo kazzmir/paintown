@@ -1,6 +1,6 @@
 # Handoff
 
-Updated: 2026-10-16. Status: M0a baseline checkpoint implemented and tested.
+Updated: 2026-10-16. Status: M0a and M1a source-fidelity checkpoints tested.
 
 ## Current authorization
 
@@ -72,9 +72,13 @@ override selection, stderr diagnostics, separate physics-check application,
 and the launcher's `--check` are implemented. See CHECKPOINTS.md for validation.
 Reviewed baseline documentation is commit `06cdd9c1`.
 
-Reference help timed out under isolated Wine, but wrote a log identifying the
-binary as 1.1.0 Beta 1 P1 (2013.08.11). A bounded quick match is being checked.
-No gameplay parity or complete M0 semantic harness has been verified yet.
+M0a is commit `982c6058`. M1a replaces source-damaging parser reconstruction,
+retains entry/controller expressions and their locations, and adds regressions.
+All tests pass. Numeric/state semantics still use the old implementation.
+
+The reference quick match loaded successfully through match-loop initialization
+under Wine. The binary identifies itself as 1.1.0 Beta 1 P1 (2013.08.11).
+See REFERENCE.md; no Go gameplay parity or full semantic harness is claimed.
 
 ## Next action
 

@@ -18,10 +18,12 @@ type Section struct {
 
 // Attribute represents a key-value assignment, e.g., name = "Player 1"
 type Attribute struct {
-	ID     *Identifier
-	Value  Value
-	Line   int
-	Column int
+	ID    *Identifier
+	Value Value
+	// RawValue retains operators, quotes and numeric spelling for CNS expressions.
+	RawValue string
+	Line     int
+	Column   int
 }
 
 // Identifier represents the left-hand side of an attribute assignment.

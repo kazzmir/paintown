@@ -40,3 +40,21 @@ binary as **1.1.0 Beta 1 P1 (2013.08.11)**, while the readme labels the distribu
 record this distinction in future comparisons. Quick-match startup is being
 investigated. Headless semantic fixture execution and strict controller/trigger
 diagnostics remain M0/M1/M2 work.
+
+## M1a — Preserve expression source through container parsing
+
+Replaced token reconstruction with a line-oriented container parser retaining
+raw expressions and line/column locations. CNS/CMD now consume the preserved
+text; Statedef entry expressions are retained separately for runtime compilation.
+Added explicit tests for operators, quoted semicolons/commas, nested calls and
+intervals, numeric spelling, Windows paths, duplicate triggers, AIR rows, select
+options, malformed sections/strings, and reader failures. Required old corpus
+checks and all 33 stock DEF files still pass.
+
+Validation: new regressions demonstrated failures with the original parser;
+`GOPROXY=off game/mugen/mugen --check` passes after the replacement. This fixes
+source fidelity, not expression arithmetic or state execution. Those are next.
+
+The isolated Wine quick match reached both game-loop and match-loop initialization
+with the stock character/stage/assets loaded. See REFERENCE.md for the observed
+evidence and limits; no Go/reference semantic comparison is claimed yet.
