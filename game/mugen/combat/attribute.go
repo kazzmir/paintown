@@ -12,12 +12,22 @@ type Attributes struct {
 }
 
 func ParseAttributes(source string) (Attributes, error) {
+	return parseAttributes(source, false)
+}
+
+// Protection controllers also accept a posture-only or attack-only mask.
+// An absent component stays empty; NotHitBy complements both components.
+func ParseProtectionAttributes(source string) (Attributes, error) {
+	return parseAttributes(source, true)
+}
+
+func parseAttributes(source string, partial bool) (Attributes, error) {
 	var result Attributes
 	if strings.TrimSpace(source) == "" {
 		return result, nil
 	}
 	parts := strings.Split(strings.ToUpper(source), ",")
-	if len(parts) < 2 {
+	if len(parts) < 2 && !partial {
 		return result, fmt.Errorf("hit attributes require state types and attack classes")
 	}
 	for _, letter := range strings.TrimSpace(parts[0]) {
@@ -51,7 +61,7 @@ func ParseAttributes(source string) (Attributes, error) {
 			return Attributes{}, fmt.Errorf("invalid hit attack class %q", part)
 		}
 	}
-	if result.States == 0 || result.Attacks == 0 {
+	if !partial && (result.States == 0 || result.Attacks == 0) {
 		return Attributes{}, fmt.Errorf("empty hit attribute component")
 	}
 	return result, nil
@@ -61,6 +71,15 @@ func (a Attributes) Matches(hit Attributes) bool {
 	return a.States&hit.States != 0 && a.Attacks&hit.Attacks != 0
 }
 func (a Attributes) Empty() bool { return a.States == 0 || a.Attacks == 0 }
+
+func (a Attributes) Complement() Attributes {
+	return Attributes{States: ^a.States & 7, Attacks: ^a.Attacks & 511}
+}
+
+type HitFilter struct {
+	Attributes Attributes
+	Time       int
+}
 
 type HitOverride struct {
 	Attributes          Attributes

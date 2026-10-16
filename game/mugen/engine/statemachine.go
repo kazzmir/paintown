@@ -121,8 +121,6 @@ type Environment interface {
 	GetRoundNo() int
 	GetRoundState() int
 	GetRoundsExisted() int
-	HitBy(params map[string]string)
-	NotHitBy(params map[string]string)
 	GetCNSVelocity() *cns.Velocity
 	GetCNSMovement() *cns.Movement
 	IsPaused() bool
@@ -189,11 +187,15 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["playsnd"] = handlePlaySnd
 	sm.controllers["hitdef"] = handleHitDef
 	sm.controllers["projectile"] = handleProjectile
-	sm.controllers["hitby"] = handleHitBy
+	sm.controllers["hitby"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("HitBy requires compiled parameters")
+	}
 	sm.controllers["hitoverride"] = func(*cns.StateController, Environment) error {
 		return fmt.Errorf("HitOverride requires compiled parameters")
 	}
-	sm.controllers["nothitby"] = handleNotHitBy
+	sm.controllers["nothitby"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("NotHitBy requires compiled parameters")
+	}
 	sm.controllers["assertspecial"] = handleAssertSpecial
 	sm.controllers["explod"] = handleExplod
 	sm.controllers["removeexplod"] = handleRemoveExplod
@@ -772,16 +774,6 @@ func handleRemoveExplod(ctrl *cns.StateController, env Environment) error {
 		id, _ = strconv.Atoi(v)
 	}
 	env.RemoveExplod(id)
-	return nil
-}
-
-func handleHitBy(ctrl *cns.StateController, env Environment) error {
-	env.HitBy(ctrl.Params)
-	return nil
-}
-
-func handleNotHitBy(ctrl *cns.StateController, env Environment) error {
-	env.NotHitBy(ctrl.Params)
 	return nil
 }
 

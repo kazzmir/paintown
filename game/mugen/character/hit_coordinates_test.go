@@ -16,7 +16,7 @@ import (
 )
 
 func TestReferenceHitCoordinates(t *testing.T) {
-	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause", "override-basic", "override-slots", "override-forceair", "override-clear", "override-expire", "override-lasttick", "override-hitstate", "override-missing-state", "override-missing-attr", "override-default-time", "override-nonmatch", "override-projectile", "contact-activation", "hit-countdown", "guard-contact", "guard-crouch", "guard-air", "guard-wrong-height", "guard-exit-contact", "guard-override", "guard-defaults", "guard-air-defaults", "pause-release", "attacker-pause"} {
+	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause", "override-basic", "override-slots", "override-forceair", "override-clear", "override-expire", "override-lasttick", "override-hitstate", "override-missing-state", "override-missing-attr", "override-default-time", "override-nonmatch", "override-projectile", "contact-activation", "hit-countdown", "guard-contact", "guard-crouch", "guard-air", "guard-wrong-height", "guard-exit-contact", "guard-override", "guard-defaults", "guard-air-defaults", "pause-release", "attacker-pause", "protect-all", "protect-attack-only", "protect-clear", "protect-expire", "protect-hitby-all", "protect-hitby-attack", "protect-hitby-pair", "protect-lasttick", "protect-negative", "protect-pair-attack", "protect-pair-hit", "protect-pair-other", "protect-pair-state", "protect-replace", "protect-slots", "protect-attacker-air", "protect-defender-air", "protect-attr-only", "protect-class-allow", "protect-empty", "protect-dynamic-pose", "protect-missing", "protect-both", "protect-both-first", "protect-both-second", "override-current-pose", "override-authored-pose"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			source, err := os.ReadFile(stem + ".cns")
@@ -38,6 +38,7 @@ func TestReferenceHitCoordinates(t *testing.T) {
 					GameWidth    int    `json:"game_width"`
 					CNSHash      string `json:"cns_sha256"`
 					AIRHash      string `json:"air_sha256"`
+					ExpectedFail string `json:"expected_load_error"`
 					Captures     []struct{ Variables map[string]json.RawMessage }
 				}
 			}
@@ -60,6 +61,12 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						t.Fatal(err)
 					}
 					file.Data.Life = 1000
+					if test.ExpectedFail != "" {
+						if err := NewStateMachine().CompileState(file.States[700]); err == nil {
+							t.Fatal("accepted native-rejected protection definition")
+						}
+						return
+					}
 					if strings.HasPrefix(name, "override-") || name == "attacker-pause" {
 						data, err := os.ReadFile("../temp/mugen-1.1b1/data/common1.cns")
 						if err != nil {
@@ -107,7 +114,7 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						}
 					}
 					wantState := 5000
-					if strings.HasPrefix(name, "override-") || strings.HasPrefix(name, "guard-") {
+					if strings.HasPrefix(name, "override-") || strings.HasPrefix(name, "guard-") || strings.HasPrefix(name, "protect-") {
 						wantState = int(referenceFloat(t, test.Captures[0].Variables["0"]))
 					}
 					if name == "pause-release" {

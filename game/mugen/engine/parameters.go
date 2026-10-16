@@ -81,6 +81,8 @@ func typedHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(En
 func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	name := strings.ToLower(ctrl.Type)
 	switch name {
+	case "hitby", "nothitby":
+		return compileHitFilter(ctrl, name == "nothitby")
 	case "hitoverride":
 		return compileHitOverride(ctrl)
 	case "remappal":

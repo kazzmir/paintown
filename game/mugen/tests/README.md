@@ -187,3 +187,11 @@ HitOverride precedence. Twelve source-pinned programs compare production group
 ticks; pause-release-replay repeats native clock packets. M2b/M4g timing
 assumptions are superseded; see docs/REFERENCE.md. These do not establish full
 priority/protection/helper/projectile or GetHitVar parity.
+
+Protection probes protect-* cover two shared HitBy/NotHitBy slots, independent
+mask complements, partial/empty masks, duration/expiry/clearing, replacement,
+current attacker posture, both-parameter precedence and missing-parameter load
+rejection. Twenty-four accepted programs plus two override posture cases compare
+production group ticks; protect-missing checks compile rejection. A dynamic-pose
+native replay verifies the captured case. Complete invalid-value, pause and
+entity/ownership behavior remains open.

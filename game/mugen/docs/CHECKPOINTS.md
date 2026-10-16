@@ -4,6 +4,35 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4j — HitBy/NotHitBy protection slots and attack posture
+
+Replaced unused string flag maps with two shared timed protection slots. HitBy
+sets allowed state/attack masks; NotHitBy complements each component separately.
+All active slots must allow a contact. Partial posture-only, attack-only and
+empty masks are distinct; HitBy SCA has no allowed attack classes, while
+NotHitBy SCA blocks all postures. A blocked HitDef stays active and can connect
+after protection expires. Time defaults to 1, time=0 clears, time=-1 persists,
+and both controllers overwrite the same slot selected by value/value2.
+Typed compilation evaluates duration before mutation and diagnoses malformed or
+missing attributes. The old raw methods/handlers are removed.
+
+Twenty-five native protection programs (24 accepted, one load rejection) match
+production collisions, including last-tick/expiry, slot intersection/replacement,
+empty/partial masks and parameter precedence. The beta accepts both value and
+value2 and uses value, contrary to the manual's one-parameter rule. It rejects
+omission of both. Attack posture comes from the attacker's current StateType,
+including a change after HitDef execution; the authored attr posture does not
+control protection matching. Two further HitOverride probes establish the same
+rule, now shared by contact snapshots without mutating authored definitions.
+GetHitVar(damage) exposes pending damage during the contact pass and clears
+after damage processing; later native observations return zero.
+
+Full tests/races pass; protect-dynamic-pose-replay independently reproduces the
+native case. Native resource/source hashes remain pinned; all edits stay scoped.
+Complete invalid mask/value fallbacks, pause/superpause aging, custom-state and
+helper/projectile ownership, hit flags, priority/reversal and guard-entry distance
+remain open. No entire controller/trigger inventory row is promoted to Verified.
+
 ## M4i — Contact activation, separate clocks and guard response
 
 Twelve new source-pinned native programs distinguish contact activation and

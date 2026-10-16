@@ -45,7 +45,9 @@ func TickCharacters(players []*Character) error {
 					continue
 				}
 				if CheckCollision(attacker, defender) {
-					contacts = append(contacts, contact{attacker, defender, attacker.CurrentHitDef, attacker.HitGuard, defender.guardsHit(attacker.CurrentHitDef)})
+					hit := attacker.CurrentHitDef
+					hit.Attr = attacker.attributesForHit(hit)
+					contacts = append(contacts, contact{attacker, defender, hit, attacker.HitGuard, defender.guardsHit(hit)})
 					if attacker != c {
 						projectileHits[attacker] = true
 						break

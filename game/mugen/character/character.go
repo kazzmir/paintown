@@ -173,9 +173,8 @@ type Character struct {
 	InputLatch map[string]int
 
 	// Protection logic
-	NotHitByFlags map[string]int // flag -> ticks remaining
-	HitByFlags    map[string]int // flag -> ticks remaining
-	HitOverrides  [8]combat.HitOverride
+	HitFilters   [2]combat.HitFilter
+	HitOverrides [8]combat.HitOverride
 
 	// Rounds
 	RoundsExisted int
@@ -247,8 +246,6 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		Projectiles:         make([]*Character, 0),
 		Explods:             make([]*ExplodData, 0),
 		DrawOffset:          []float64{0, 0},
-		NotHitByFlags:       make(map[string]int),
-		HitByFlags:          make(map[string]int),
 		HitTime:             -1,
 		RoundState:          2,
 		RoundNo:             1,
@@ -1126,32 +1123,6 @@ func (c *Character) GetRoundsExisted() int {
 	return c.RoundsExisted
 }
 
-func (c *Character) HitBy(params map[string]string) {
-	time := 1
-	if t, ok := params["time"]; ok {
-		fmt.Sscanf(t, "%d", &time)
-	}
-	if v, ok := params["value"]; ok {
-		c.HitByFlags[v] = time
-	}
-	if v, ok := params["value2"]; ok {
-		c.HitByFlags[v] = time
-	}
-}
-
-func (c *Character) NotHitBy(params map[string]string) {
-	time := 1
-	if t, ok := params["time"]; ok {
-		fmt.Sscanf(t, "%d", &time)
-	}
-	if v, ok := params["value"]; ok {
-		c.NotHitByFlags[v] = time
-	}
-	if v, ok := params["value2"]; ok {
-		c.NotHitByFlags[v] = time
-	}
-}
-
 func (c *Character) GetInGuardDist() bool {
 	// Guard distance is defined in [Size] in CNS
 	guardDist := 100.0 // Default
@@ -1782,7 +1753,9 @@ func (c *Character) HandleHit(other *Character) {
 	c.HitGuard[other.PlayerID] = true
 
 	// 1. Mark attacker results
-	guarded := other.guardsHit(c.CurrentHitDef)
+	hit := c.CurrentHitDef
+	hit.Attr = c.attributesForHit(hit)
+	guarded := other.guardsHit(hit)
 	c.MoveHit = 1
 	c.MoveContact = 1
 	c.MoveGuarded = 0
@@ -1810,6 +1783,8 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 }
 
 func (c *Character) applyHitDamage(damage int) {
+	// This variable exposes pending damage during entry/state execution only.
+	c.GetHitDamage = 0
 	if c.MoveType != "H" {
 		return
 	}
@@ -1820,6 +1795,7 @@ func (c *Character) applyHitDamage(damage int) {
 }
 
 func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
+	hit.Attr = attacker.attributesForHit(hit)
 	return c.prepareContact(attacker, hit, c.guardsHit(hit))
 }
 
@@ -2029,19 +2005,9 @@ func (c *Character) ageDefenses() {
 	}
 	// Tick down protection flags
 	c.tickHitOverrides()
-	for k, v := range c.NotHitByFlags {
-		if v > 0 {
-			c.NotHitByFlags[k] = v - 1
-		} else {
-			delete(c.NotHitByFlags, k)
+	for slot := range c.HitFilters {
+		if c.HitFilters[slot].Time > 0 {
+			c.HitFilters[slot].Time--
 		}
 	}
-	for k, v := range c.HitByFlags {
-		if v > 0 {
-			c.HitByFlags[k] = v - 1
-		} else {
-			delete(c.HitByFlags, k)
-		}
-	}
-
 }

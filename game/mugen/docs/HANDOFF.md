@@ -282,12 +282,21 @@ are explicitly superseded. Native guard.slidetime defaults to ground.slidetime,
 contrary to the manual. Remaining protection/priority/entity/guard-entry and
 complete GetHitVar behavior prevents a complete combat claim.
 
+M4i is commit `5ed632a8`. M4j integrates HitBy/NotHitBy as two shared timed
+collision filters with typed duration, mask intersection/complement and slot
+replacement. Twenty-five native protection programs (one rejection) and two
+current-posture HitOverride programs match; full races and a dynamic-pose replay
+pass. Both value/value2 are accepted with value precedence, contrary to manual.
+Current attacker StateType drives matching, including changes after HitDef.
+GetHitVar(damage) clears after contact damage processing. Complete pause,
+invalid-value, entity and custom-state behavior remains open.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next measure and implement protection filters/guard-entry distance, then runtime
+Next measure and implement guard-entry distance, then runtime
 audio/effects for the playable match. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains

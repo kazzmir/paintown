@@ -352,3 +352,33 @@ hittime=-1/slide=0/ctrl=11. Native omitted guard.slidetime inherits ground.slide
 These compare through production TickCharacters. They do not establish all
 GetHitVar fields, damage scaling, input/distance entry, protection filters,
 priority/reversal, multiple contacts or helper/projectile/world ownership.
+
+## Protection masks and current attack posture
+
+Twenty-five protect-* programs have pinned default cases. Twenty-four execute;
+protect-missing records the beta's load rejection for omitting both value and
+value2. Tests verify matching compile rejection with source hashes. All accepted
+programs compare production state/life/time/pending-damage observations; a fresh
+protect-dynamic-pose-replay verifies the original capture.
+
+HitBy allowed masks intersect across two active slots. NotHitBy complements
+posture and attack masks individually: absent components remain empty before
+complementing. Thus HitBy SCA and HitBy ,NA block all contacts, NotHitBy SCA
+blocks all, and NotHitBy ,NA,AP excludes normal attacks/all projectiles while
+allowing a special attack. Blank NotHitBy allows contacts. Slot replacement is
+shared across the controllers; time=0 clears, time=-1 persists. Default one-tick
+protection blocks the first attempt and the still-active HitDef connects next
+tick; the delayed Life/Time observations distinguish expiry from no protection.
+
+Both parameters are accepted; protect-both-first/second show value wins over
+value2, despite the manual's exclusive rule. The attacker, defender and authored
+attr postures are varied independently: actual current attacker StateType is
+used. protect-dynamic-pose changes posture after HitDef execution and permits
+the contact on the next tick. override-current-pose/authored-pose confirm the
+same posture source for HitOverride (710 versus 5000). The authored CurrentHitDef
+remains unchanged. Later GetHitVar(damage) is zero after processing, unlike its
+pending value seen by contact-state controllers.
+
+These establish the listed masks/clock edges in ordinary root-player ticks;
+complete malformed-value fallbacks, pause/superpause, custom state ownership,
+helpers/projectiles and the remaining hit/guard/priority rules are not inferred.

@@ -21,6 +21,8 @@ type parameterHost struct {
 	quote, removed, combo      int
 	paletteSource, paletteDest [2]int
 	override                   combat.HitOverride
+	filter                     combat.HitFilter
+	filterSlot                 int
 }
 
 func newParameterHost() *parameterHost {
@@ -53,6 +55,10 @@ func (h *parameterHost) SetPaletteMapping(source, dest [2]int) error {
 }
 func (h *parameterHost) SetHitOverride(value combat.HitOverride) error {
 	h.override = value
+	return nil
+}
+func (h *parameterHost) SetHitFilter(slot int, value combat.HitFilter) error {
+	h.filter, h.filterSlot = value, slot
 	return nil
 }
 func (h *parameterHost) GetHitVar(name string) float64 {
@@ -142,6 +148,31 @@ func TestCompiledHitOverrideParameters(t *testing.T) {
 		}
 		if h.override != before {
 			t.Fatal("invalid override mutated slot")
+		}
+	}
+}
+
+func TestProtectionCompilationIsTypedAndAtomic(t *testing.T) {
+	h := newParameterHost()
+	h.vars[0] = 3
+	runController(t, h, "NotHitBy", "value2=,NA,AP\ntime=var(0)+2")
+	hit, _ := combat.ParseAttributes("A,SA")
+	if h.filterSlot != 1 || h.filter.Time != 5 || !h.filter.Attributes.Matches(hit) {
+		t.Fatal("attack-only protection/time expression", h.filterSlot, h.filter)
+	}
+	runController(t, h, "HitBy", "value=S,NA\nvalue2=C,NA")
+	hit, _ = combat.ParseAttributes("S,NA")
+	if h.filterSlot != 0 || h.filter.Time != 1 || !h.filter.Attributes.Matches(hit) {
+		t.Fatal("value precedence/default time", h.filterSlot, h.filter)
+	}
+	before := h.filter
+	for _, params := range []string{"time=2", "value=S,XX", "value=S,NA\ntime=1/0"} {
+		state := stateSource(t, "[State 7, invalid protection]\ntype=HitBy\ntrigger1=1\n"+params+"\n")
+		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
+			t.Fatal("invalid protection accepted", params)
+		}
+		if h.filter != before {
+			t.Fatal("invalid protection changed active slot")
 		}
 	}
 }

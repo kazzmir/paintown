@@ -49,6 +49,9 @@ func CheckCollision(attacker, defender *Character) bool {
 	if attacker.MoveType != "A" || !attacker.HitDefActive {
 		return false
 	}
+	if !defender.allowsHit(attacker.attributesForHit(attacker.CurrentHitDef)) {
+		return false
+	}
 
 	el1 := attacker.CurrentElement()
 	if el1 == nil || len(el1.Clsn1) == 0 {

@@ -7,6 +7,11 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4j replaces ignored HitBy/NotHitBy maps with two shared timed collision filters.
+Twenty-five native programs cover masks/slots/expiry/omission/precedence; two
+HitOverride programs also establish current attack posture. Typed duration and
+validation are integrated. Full pause/entity/invalid-value behavior remains open.
+
 M4i corrects prior-tick HitDef activation/contact-before-state ordering and
 separates attacker hitpause from receiver hitshake. Twelve native programs cover
 clock/countdown boundaries and guard damage/flags/velocity/time/defaults, including
