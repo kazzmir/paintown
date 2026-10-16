@@ -4,6 +4,31 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4g — Shared root-player tick/contact phases
+
+Production matches and the character diagnostic now use character.TickCharacters:
+all root state passes run before contact collection, eligible contacts are
+snapshotted before any victim transition disables another attack, then contact
+entry/positive-state continuation runs before damage and physics/time. This fixes
+the previous P1-update-before-P2-state-pass advantage. Positive continuation uses
+the existing executor and does not rerun negative states; engine-driven builtin
+transitions also run their new Time=0 positive state before timers advance.
+
+Three native trade fixtures pin first-pass and next-tick Life/P2Life/state/contact
+observations. Equal-priority hits trade, get-hit Time=0 sees 1000/1000 life before
+deduction, and Time=1 sees 975/975 and both players in 5000. The same observations
+hold with 8,8 hitpause: the first contact-state pass runs despite the newly started
+pause, while HitShakeOver still sees pause state. A fresh paused-trade replay
+matches. The older hit-coordinate/default fixtures now use the production group
+tick too. P2Life/P2StateNo and type queries use the current opponent context.
+
+Full tests/races pass, including a regression preventing repeated negative passes
+and Time=0 entry effects across hitpause. This is root contact ordering evidence,
+not complete world phases: priority/attribute/guard/overrides, entity identity,
+multiple contacts, helpers/projectiles, push/physics ordering, KO accounting and
+pause duration edges remain open. Character/asset imports still initialize
+Ebitengine, so full display-independent Match extraction is not complete.
+
 ## M3i — Selected v2 palettes and compiled RemapPal
 
 Added instance-local palette maps over immutable SFF data. RemapPal now compiles

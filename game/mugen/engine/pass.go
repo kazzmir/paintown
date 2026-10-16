@@ -30,6 +30,12 @@ func (sm *StateMachine) RunStatePass(states map[int]*cns.StateDef, env Environme
 			}
 		}
 	}
+	return sm.RunPositivePass(states, env)
+}
+
+// RunPositivePass continues the current state after an engine transition without
+// running negative states a second time in the same tick.
+func (sm *StateMachine) RunPositivePass(states map[int]*cns.StateDef, env Environment) error {
 	// Retain the existing diagnosed cap until its exact reference limit is
 	// measured. This is a runaway guard, not a conformance claim about the cap.
 	for i := 0; i < 10; i++ {
@@ -41,8 +47,10 @@ func (sm *StateMachine) RunStatePass(states map[int]*cns.StateDef, env Environme
 		if err != nil {
 			return err
 		}
-		if err := failure(); err != nil {
-			return err
+		if host, ok := env.(interface{ StateExecutionError() error }); ok {
+			if err := host.StateExecutionError(); err != nil {
+				return err
+			}
 		}
 		if !changed {
 			return nil

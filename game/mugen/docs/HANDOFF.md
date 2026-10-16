@@ -261,6 +261,13 @@ races pass and selected-palette-fight captures show alternate P2 colors. Native
 RemapPal edge probes, SFF v1 external palN and full effect/helper ownership remain
 open.
 
+M3i is commit `0b2f2d0b`. M4g uses shared root state/contact/damage/physics
+phases in production and the character diagnostic. Three native trade fixtures
+match first-entry pre-damage life and next-tick post-damage life/state/contact
+fields, including newly-started hitpause. Native paused replay and full races
+pass. The group tick also backs all hit coordinate/default fixtures. Full entity
+registry, priority/guard/HitOverride and helper/projectile phase rules are next.
+
 Next finish playable match behavior with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

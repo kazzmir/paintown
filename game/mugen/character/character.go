@@ -20,15 +20,18 @@ import (
 // Character represents a MUGEN entity running through the State Machine.
 // It implements the Environment interface so the state machine can execute controllers against it.
 type Character struct {
-	RuntimeError     error
-	stateInitialized bool
-	updateActive     bool
-	pausedThisTick   bool
-	JuggleCost       int
-	HitDefActive     bool
-	contactSerial    uint64
-	RuntimeWarnings  []string
-	warningSeen      map[string]bool
+	RuntimeError      error
+	stateInitialized  bool
+	updateActive      bool
+	pausedThisTick    bool
+	contactStatePass  bool
+	JuggleCost        int
+	HitDefActive      bool
+	contactSerial     uint64
+	tickContactSerial uint64
+	stateSerial       uint64
+	RuntimeWarnings   []string
+	warningSeen       map[string]bool
 
 	// CNS data containing states and physics globals
 	StateFile  *cns.CNS
@@ -250,19 +253,27 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 
 // Update ticks the character's state machine forward by one frame.
 func (c *Character) Update() {
-	if c.RuntimeError != nil {
+	if !c.beginTick() {
 		return
+	}
+	c.ResolveCollisions(c.Target)
+	c.finishTick()
+}
+
+func (c *Character) beginTick() bool {
+	if c.RuntimeError != nil {
+		c.updateActive = false
+		return false
 	}
 	if !c.stateInitialized {
 		c.ChangeState(c.StateNo, -1, -1)
 		if c.RuntimeError != nil {
-			return
+			return false
 		}
 	}
 	c.updateActive = true
 	c.pausedThisTick = c.ShakeTime > 0
-	contactAtStart := c.contactSerial
-	defer func() { c.updateActive = false }()
+	c.tickContactSerial = c.contactSerial
 
 	/*
 		if c.Time%60 == 0 {
@@ -364,21 +375,36 @@ func (c *Character) Update() {
 		c.RuntimeError = fmt.Errorf("player %d: %w", c.PlayerID, err)
 	}
 	if c.RuntimeError != nil {
-		return
+		c.updateActive = false
+		return false
 	}
 
-	// 3.5 Built-in Transitions
+	// Engine transitions enter their positive state in this same tick.
+	generation := c.stateSerial
 	if !isPaused {
 		c.HandleBuiltinTransitions()
 	}
+	if c.RuntimeError == nil && generation != c.stateSerial {
+		c.RuntimeError = c.SM.RunPositivePass(c.StateFile.States, c)
+	}
+	if c.RuntimeError != nil {
+		c.updateActive = false
+		return false
+	}
+	return true
+}
 
-	// 4. Collision Detection (Phase 4)
-	c.ResolveCollisions(c.Target)
+func (c *Character) finishTick() {
+	defer func() { c.updateActive = false }()
+	if c.RuntimeError != nil {
+		return
+	}
+	isPaused := c.pausedThisTick
 
 	// 5. Physics and Time update
 	if !isPaused {
 		c.Time++
-		if c.contactSerial == contactAtStart && c.ShakeTime == 0 {
+		if c.contactSerial == c.tickContactSerial && c.ShakeTime == 0 {
 			if c.MoveHit > 0 {
 				c.MoveHit++
 			}
@@ -1305,6 +1331,9 @@ func (c *Character) GetTargetPos() (float64, float64) {
 }
 
 func (c *Character) IsPaused() bool {
+	if c.contactStatePass {
+		return false
+	}
 	if c.updateActive {
 		return c.pausedThisTick || c.ShakeTime > 0
 	}
@@ -1619,6 +1648,7 @@ func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {
 	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, next.Name)
 	c.PrevStateNo = c.StateNo
 	c.StateNo = stateNo
+	c.stateSerial++
 	c.Time = 0
 	c.HitFallVelActive = false
 	c.PosFrozen = false
@@ -1762,6 +1792,18 @@ func (c *Character) HandleHit(other *Character) {
 }
 
 func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
+	damage := c.prepareHit(attacker, hit)
+	c.applyHitDamage(damage)
+}
+
+func (c *Character) applyHitDamage(damage int) {
+	c.Life -= damage
+	if c.Life < 0 {
+		c.Life = 0
+	}
+}
+
+func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
 	hit = c.hitInLocalSpace(attacker, hit)
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 
@@ -1772,10 +1814,6 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 	}
 	// Apply attack/defence multipliers
 	finalDamage := float64(damage) * attacker.AttackMul / c.DefenceMul
-	c.Life -= int(finalDamage)
-	if c.Life < 0 {
-		c.Life = 0
-	}
 
 	// Hit Pause/Shake
 	if len(hit.PauseTime) > 1 {
@@ -1823,6 +1861,7 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 		// Transition to Hit State (5000 is standard MUGEN "hit" state)
 		c.ChangeState(5000, 0, -1)
 	}
+	return int(finalDamage)
 }
 
 func (c *Character) Command(name string) bool {

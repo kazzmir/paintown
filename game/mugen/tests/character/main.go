@@ -60,10 +60,7 @@ func (g *Game) Update() error {
 	g.p2.Character.CameraX = g.camX
 	g.p2.Character.ScreenWidth = 320
 
-	if err := g.p1.Update(); err != nil {
-		return err
-	}
-	if err := g.p2.Update(); err != nil {
+	if err := character.TickCharacters([]*character.Character{g.p1.Character, g.p2.Character}); err != nil {
 		return err
 	}
 

@@ -33,11 +33,18 @@ python3 game/mugen/tests/app_smoke.py --name UNIQUE_NAME --motif data/mugen1/sys
 fight definition, phase, round, wins, timer and camera. Script environments retain
 their local coordinates. Spawn/bounds/camera values translate explicitly.
 Character input accepts a logical source without polling the keyboard first;
-the physical adapter is the default for old diagnostic applications. The legacy
-Character tick still processes players sequentially, including collision and
-push, and Target still means both opponent and acquired target. These must be
-replaced with reference-backed world phases/ownership rather than duplicated
-inside another fight engine.
+the physical adapter is the default for old diagnostic applications. The production root tick runs all state passes before collecting contacts,
+then snapshots eligible hits, enters/processes get-hit positive states before
+damage, and advances physics/time. This supports equal-priority trades and
+matches focused pre/post-damage and newly-started hitpause probes. Negative
+states run once; engine transitions continue through the same positive executor.
+The character diagnostic uses the same group tick. Isolated Character.Update
+retains a single-character adapter over the shared state/physics methods.
+
+Target still conflates opponent and acquired target, and entity identity,
+priority/guard/overrides, multi-contact rules, helper/projectile and push/physics
+phases remain incomplete. Match tests open no window but Character/asset imports
+still initialize Ebitengine; fully display-independent extraction is pending.
 
 Current round phases cover pre-intro, Intro assertions, round/fight announcements,
 control grant, active timer, pre-over, win/lose poses, round reset and match

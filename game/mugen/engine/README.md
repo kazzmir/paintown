@@ -36,3 +36,8 @@ full world/ownership/tick extraction and reference timing comparisons.
 World-level simulation and complete conformance are subsequent work. See the
 checkpoint ledger and compatibility inventory; this extraction does not claim
 full state-machine coverage.
+
+RunPositivePass is also used after engine/contact transitions without repeating
+negative states. Production root-player contact ordering now lives in
+character.TickCharacters and has focused native trade probes; that adapter still
+contains Ebitengine-coupled Character/assets and is not the complete world core.

@@ -7,6 +7,13 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4g shares root state/contact/damage/physics phases and positive continuation.
+Three native trade programs match pre-damage Time=0 and post-damage Time=1
+observations, with and without newly-started hitpause. P2 life/state/type queries
+now use opponent data. Priority, guarding/overrides, entity registry and full
+world/pause/physics ordering remain incomplete.
+
+
 M3i applies selected stock v2 palettes through compiled RemapPal and shared
 character/HUD caches. Authored tests cover documented mapping/removal/depth/limit
 rules, pixel selection, cache refresh and round reset. Native controller edge

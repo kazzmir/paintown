@@ -182,9 +182,9 @@ func (m *Match) Update() error {
 		if m.Phase != Active && m.Phase != PreOver {
 			c.Ctrl = false
 		}
-		if err := p.Update(); err != nil {
-			return fmt.Errorf("match tick %d: %w", m.Tick, err)
-		}
+	}
+	if err := character.TickCharacters([]*character.Character{m.Players[0].Character, m.Players[1].Character}); err != nil {
+		return fmt.Errorf("match tick %d: %w", m.Tick, err)
 	}
 	m.updateCamera()
 	m.Tick++

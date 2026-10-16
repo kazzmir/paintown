@@ -167,3 +167,9 @@ in both stock archives. Character tests cover cache refresh/removal; match tests
 verify common CNS applies PalNo again after reset. selected-palette-fight is an
 owned-window Go capture of the actual renderer; no native remap-edge parity is
 claimed from it.
+
+Contact ordering: --fixture hit-trade-phases or hit-trade-pause --case default
+with a fresh --name replays same-frame/pre-damage and next-frame/post-damage
+values. Character tests use the same TickCharacters entry as production. The
+fixture tests do not open a window, but current Character imports still need
+Ebitengine display initialization; only engine/evaluator are display-independent.

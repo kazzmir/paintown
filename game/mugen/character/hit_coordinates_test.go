@@ -16,7 +16,7 @@ import (
 )
 
 func TestReferenceHitCoordinates(t *testing.T) {
-	for _, name := range []string{"hit-coordinates", "hit-defaults"} {
+	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			source, err := os.ReadFile(stem + ".cns")
@@ -87,11 +87,8 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						c.Ctrl = true
 					}
 					for tick := 0; tick < 40; tick++ {
-						for _, c := range players {
-							c.Update()
-							if c.RuntimeError != nil {
-								t.Fatal(c.RuntimeError)
-							}
+						if err := TickCharacters(players[:]); err != nil {
+							t.Fatal(err)
 						}
 					}
 					if players[0].StateNo != 5000 {
@@ -110,7 +107,7 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						}
 					}
 					// Converting a received hit must not rewrite the attacker's definition.
-					if players[1].CurrentHitDef.GroundVel[0] != -16 {
+					if !strings.HasPrefix(name, "hit-trade") && players[1].CurrentHitDef.GroundVel[0] != -16 {
 						t.Fatal("shared attacker vectors changed")
 					}
 				})

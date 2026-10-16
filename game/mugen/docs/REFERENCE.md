@@ -290,3 +290,14 @@ palette pixel tests and production selected-palette-fight captures show distinct
 P2 colors. These are Go rendering/asset checks, not native controller edge or
 screenshot parity. V1 external palettes and exact helper/effect ownership still
 need authored executable fixtures.
+
+## Shared contact phase probes
+
+`hit-trade`, `hit-trade-phases` and `hit-trade-pause` pin equal-priority contact
+observations. First get-hit positive-state execution sees Life/P2Life=1000/1000;
+at Time=1 both are 975 and both states are 5000. Initial contact counters reset
+through get-hit state entry. These values are unchanged with 8,8 hitpause,
+showing the first contact pass occurs before ordinary paused passes. All three
+programs match character.TickCharacters, used by production; hit-trade-pause-replay
+reproduces native evidence. Full hitpause duration, priorities, multiple contacts,
+guard/overrides, helper and projectile order are not inferred from these probes.
