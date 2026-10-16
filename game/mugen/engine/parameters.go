@@ -87,6 +87,21 @@ func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, err
 		return compileVariable(ctrl, name == "parentvaradd", true)
 	case "varrangeset":
 		return compileVariableRange(ctrl)
+	case "changeanim":
+		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"elem", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
+			element := 1
+			if value, present := v["elem"]; present {
+				element = int(value.Number())
+			}
+			if animation, ok := env.(interface{ ChangeAnimation(int, int) error }); ok {
+				return animation.ChangeAnimation(int(v["value"].Number()), element)
+			}
+			if element != 1 {
+				return fmt.Errorf("ChangeAnim element selection is unavailable")
+			}
+			env.ChangeAnim(int(v["value"].Number()))
+			return nil
+		})
 	case "changestate", "selfstate":
 		return typedHandler(ctrl, []argumentSpec{{"value", true, true}, {"ctrl", true, false}, {"anim", true, false}}, func(env Environment, v map[string]evaluator.Value) error {
 			ctrlValue, hasCtrl := v["ctrl"]

@@ -4,6 +4,38 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M2d / M0c — Shared animation clock and executable reference trace
+
+Replaced the background/storyboard and Character animation clocks with one
+display-independent AIR player. Frame durations, zero-duration skips, infinite
+holds, element selection, reset and zero-cycle diagnostics now share that path.
+Character implements AnimElemTime/AnimElemNo and legacy AnimElem bindings;
+ChangeAnim compiles value/elem expressions. Missing actions warn and retain the
+last animation. Animation clocks freeze in hitpause. Animation ownership and
+ChangeAnim2 remain pending.
+
+An authored 2/3/4-tick action with LoopStart at element 2 runs in the supplied
+engine. Twenty-four ticks / 48 encoded numeric observations were captured in
+four two-line clipboard pages, using a neutral CMD state. Exact bitmap masks
+read the numbers; screenshots were inspected and remain untracked. The trace
+demonstrates initial AnimTime=-9, zero on the first displayed tick after wrapping,
+then -6 on the next tick. Element elapsed time retains the old end value on that
+boundary before resuming the loop clock. Both previous Go clocks were wrong.
+
+The authored fixture, hash-pinned numeric observations and a repeatable capture
+tool live under tests/. It uses a disposable distribution copy/private Wine
+prefix, captures only its own process's window, and does not send input or
+change focus. Full regression/race checks pass. Clock tests compare every
+recorded element/time value; other tests cover pause, expression events, element
+selection, infinite/zero schedules and query bounds. Nonzero AnimElemNo offsets,
+zero/infinite edge cases and initial-element overrides still need reference
+probes; their tests presently follow the documentation.
+
+The stock player inventory now loads both characters: 281 sprites, 117 actions
+and 108 states each. 105 states compile; three per character still fail explicitly
+on the missing HitOverride. The test pins this known gap and fails on unexpected
+compilation gaps. This is not a complete stock-compilation/playability gate.
+
 ## M3b — Font v2 bitmap banks and TrueType
 
 Font loading now accepts FNT v2 definitions, palette and RGBA sprite banks,

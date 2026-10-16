@@ -172,8 +172,7 @@ func (s *Scene) Reset() {
 	for _, l := range s.Layers {
 		l.Enabled = false
 		if l.Player != nil {
-			l.Player.CurrentIdx = 0
-			l.Player.TickCounter = 0
+			l.Player.Reset(1)
 		}
 	}
 }

@@ -39,3 +39,13 @@ with expected kind/value and optional variable assertions. The runner emits
 deterministic observations (including warnings and variable changes) and exits
 nonzero on malformed fixtures or mismatches. These use the production typed
 evaluator; world-bound trigger semantics require the forthcoming engine runner.
+
+Run the authored reference animation probe with
+`python3 game/mugen/tests/reference_probe.py --name UNIQUE_NAME`. It requires
+Wine, DISPLAY, xdotool, ImageMagick `import` and Pillow; it copies the supplied
+distribution and uses a private Wine prefix under `temp/`. It captures only the
+spawned process's window, sends no input, and makes no focus/pointer changes.
+Each capture reads two clipboard lines by exact matching against the bundled
+debug font, rejects ambiguous/missing glyphs, and checks the pinned observations.
+Captures/logs/hashes remain in its run directory. Each run name must be new.
+The Go clock regressions use the committed numerical observations without Wine.

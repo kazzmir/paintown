@@ -45,6 +45,13 @@ runtime font files load. Tests cover banks, alpha, metrics and UTF-8/blend paths
 Windows fonts use an explicit portable fallback if absent. Reference rendering
 parity is pending. See BUILD.md for dependencies and font lookup.
 
+M2d unifies animation clocks and binds AnimElem/AnimElemTime/AnimElemNo in
+Character. A 24-tick authored looping action matches the supplied executable's
+recorded AnimTime, all three element elapsed times, and current-element queries.
+Other offset/zero/infinite cases have documentation-based tests but still need
+reference probes. Both stock players load; 105/108 states per character compile,
+with HitOverride blocking the remaining three. Match playability is pending.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

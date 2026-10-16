@@ -249,54 +249,36 @@ func parseElement(groupID string, list parsers.ValueList) Element {
 }
 
 type Player struct {
-	Action      *Action
-	CurrentIdx  int
-	TickCounter int
+	Action          *Action
+	CurrentIdx      int
+	TickCounter     int
+	Elapsed         int
+	Error           error
+	time            int64
+	starts          []int64
+	total, loopTime int64
+	boundary        bool
 }
 
 func NewPlayer(action *Action) *Player {
-	return &Player{
-		Action: action,
-	}
+	p := &Player{Action: action}
+	p.Reset(1)
+	return p
 }
 
 func (p *Player) Update() {
-	if p.Action == nil || len(p.Action.Elements) == 0 {
-		return
-	}
-
-	p.TickCounter++
-	for {
-		el := p.Action.Elements[p.CurrentIdx]
-		if el.Time == -1 {
-			return // Infinite frame
-		}
-		if p.TickCounter <= el.Time {
-			break
-		}
-
-		// Advance frame
-		p.TickCounter -= el.Time
-		p.CurrentIdx++
-		if p.CurrentIdx >= len(p.Action.Elements) {
-			if p.Action.LoopStart != -1 {
-				p.CurrentIdx = p.Action.LoopStart
-			} else {
-				p.CurrentIdx = 0
-			}
-		}
-	}
+	p.advance()
 }
 
 func (p *Player) CurrentElement() *Element {
-	if p.Action == nil || p.CurrentIdx < 0 || p.CurrentIdx >= len(p.Action.Elements) {
+	if p.Error != nil || p.Action == nil || p.CurrentIdx < 0 || p.CurrentIdx >= len(p.Action.Elements) {
 		return nil
 	}
 	return &p.Action.Elements[p.CurrentIdx]
 }
 
 func (p *Player) NextElement() *Element {
-	if p.Action == nil || len(p.Action.Elements) == 0 {
+	if p.Error != nil || p.Action == nil || len(p.Action.Elements) == 0 {
 		return nil
 	}
 	nextIdx := p.CurrentIdx + 1
@@ -306,6 +288,9 @@ func (p *Player) NextElement() *Element {
 		} else {
 			nextIdx = 0
 		}
+	}
+	if nextIdx < 0 || nextIdx >= len(p.Action.Elements) {
+		return nil
 	}
 	return &p.Action.Elements[nextIdx]
 }

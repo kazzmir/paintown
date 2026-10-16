@@ -31,7 +31,8 @@ type Character struct {
 	StateFile *cns.CNS
 
 	// AIR data containing animation definitions
-	AirFile *air.Data
+	AirFile   *air.Data
+	animation *air.Player
 	// CMD data containing command definitions
 	CmdFile *cmd.Data
 
@@ -406,7 +407,6 @@ func (c *Character) Update() {
 				c.MoveGuarded++
 			}
 		}
-		c.AnimTime++
 		c.UpdateAnimation()
 
 		// Apply friction
@@ -537,38 +537,10 @@ func (c *Character) GetAnimElem() int {
 }
 
 func (c *Character) GetAnimTime() int {
-	if c.AirFile == nil {
-		return 0
+	if p := c.animationClock(); p != nil {
+		return p.AnimTime()
 	}
-	anim, ok := c.AirFile.Actions[c.Anim]
-	if !ok || len(anim.Elements) == 0 {
-		return 0
-	}
-
-	if c.AnimElem >= len(anim.Elements) {
-		return 0
-	}
-
-	// MUGEN animationTime() returns -(remaining_duration) or similar.
-	// Actually, the common usage is AnimTime = 0 check.
-	// We'll return (total_remaining_ticks).
-	total := 0
-	for i := c.AnimElem; i < len(anim.Elements); i++ {
-		time := anim.Elements[i].Time
-		if time == -1 {
-			return -1 // Infinite duration
-		}
-		if i == c.AnimElem {
-			// Remaining for current element
-			total += time - c.AnimElemTime
-		} else {
-			total += time
-		}
-	}
-	// MUGEN Accuracy: AnimTime = 0 means the last tick of the last frame.
-	// total is the number of ticks including the current one.
-	// So 1 tick remaining (current tick) should return 0.
-	return -(total - 1)
+	return 0
 }
 
 func (c *Character) GetVar(idx int) int {
@@ -1754,39 +1726,17 @@ func (c *Character) FaceOpponent() {
 }
 
 func (c *Character) ChangeAnim(animNo int) {
-	c.Anim = animNo
-	c.AnimTime = 0
-	c.AnimElem = 0
-	c.AnimElemTime = 0
+	if err := c.ChangeAnimation(animNo, 1); err != nil {
+		c.RuntimeError = err
+	}
 }
 
 func (c *Character) UpdateAnimation() {
-	if c.AirFile == nil {
-		return
-	}
-	anim, ok := c.AirFile.Actions[c.Anim]
-	if !ok || len(anim.Elements) == 0 {
-		return
-	}
-
-	if c.AnimElem < len(anim.Elements) {
-		currElem := anim.Elements[c.AnimElem]
-		if currElem.Time != -1 {
-			c.AnimElemTime++
-			if c.AnimElemTime >= currElem.Time {
-				if c.AnimElem+1 < len(anim.Elements) {
-					c.AnimElem++
-					c.AnimElemTime = 0
-				} else {
-					// End of animation reached. Default to looping back to the beginning or LoopStart
-					loopTo := 0
-					if anim.LoopStart != -1 {
-						loopTo = anim.LoopStart
-					}
-					c.AnimElem = loopTo
-					c.AnimElemTime = 0
-				}
-			}
+	if p := c.animationClock(); p != nil {
+		p.Update()
+		c.syncAnimation()
+		if p.Error != nil {
+			c.RuntimeError = p.Error
 		}
 	}
 }

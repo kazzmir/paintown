@@ -1,6 +1,7 @@
 # Handoff
 
-Updated: 2026-10-16. Status: M0a, M1a, and typed-language/replay checkpoints tested.
+Updated: 2026-10-16. State/language, sprite/font, and finite animation checkpoints
+are tested. Full compatibility and playable match flow remain unfinished.
 
 ## Current authorization
 
@@ -111,7 +112,14 @@ render support. All 19 runtime font files load; full race tests pass. The scoped
 `mugen.mod`/`mugen.sum` overlay is required for direct Go commands (the launcher
 selects it). Root module files stay unchanged. BUILD.md explains font fallback.
 
-Next integrate selected character palettes, implement animation and complete
+M3b is commit `2f1ebe84`. M2d unifies animation clocks and adds actual Character
+animation trigger bindings. A hash-pinned authored reference probe records 24
+ticks and the clock matches every observation. Its runner uses process-window
+captures and exact bitmap-font matching without keyboard/focus automation.
+See tests/README.md and REFERENCE.md. Both stock characters load, with 105/108
+states compiling; HitOverride remains an explicit three-state gap per character.
+
+Next integrate selected character palettes and complete
 constant bindings, extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

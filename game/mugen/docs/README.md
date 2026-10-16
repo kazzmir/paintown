@@ -7,6 +7,8 @@ and the handoff for current progress; the assessment describes the original base
 2. [Implementation plan](PLAN.md): architecture, scope, milestones, dependencies, and acceptance gates.
 3. [Compatibility inventory](COMPATIBILITY.md): all 89 documented controllers, 127 triggers, and the stock asset census.
 4. [Handoff](HANDOFF.md): authorization, completed work, environment, and next action.
+5. [Build and fonts](BUILD.md): scoped dependency metadata and portable font lookup.
+6. [Reference evidence](REFERENCE.md): executable probes and pixel/timing comparisons.
 
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.

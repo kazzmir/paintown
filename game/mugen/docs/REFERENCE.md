@@ -50,6 +50,37 @@ runs encode length minus one, unlike the incomplete C++ reader's implementation.
 Raw RGB/RGBA bytes are in channel order without a decoded-size prefix; compressed
 formats include that prefix. These findings have focused regressions.
 
+## Animation loop trace, 2026-10-16
+
+`tests/reference_probe.py` prepares a disposable distribution copy with the
+authored `tests/testdata/reference/animation-loop.cns` and `.air`. Stock KFM
+constants/assets/commands remain available; the command state is replaced by a
+neutral Null controller so it cannot overwrite trace variables. The 2/3/4-tick
+action loops at element 2. CNS records its first 30 ticks in player variables,
+then displays two six-parameter lines per capture (the documented printf limit).
+
+Four captures from `temp/reference-runs/animation-loop-clean2` supplied 48
+encoded observations covering 24 ticks. Exact matching against the bundled
+f-4x6 debug glyph masks reads the numbers, and captures were inspected visually.
+The fixture JSON records source/engine/capture hashes and decoded tick values.
+The shared Go clock matches all of them, including three loop-boundary ticks.
+This establishes the finite-loop timing used by those assertions, not complete
+animation or rendering parity.
+
+The finalized runner reproduced pages 0 and 30 in a fresh
+`temp/reference-runs/animation-loop-verified` run with all assertions passing.
+
+The automatic runner checks hashes and numeric observations. It requires
+Wine, DISPLAY, xdotool, ImageMagick import, and Pillow, and captures only its own
+spawned process window. It sends no keyboard/mouse events or focus changes. The
+private prefix is shared with these reference runs and must not be used by an
+unrelated Wine process. Each invocation creates a fresh named run directory.
+
+Exploration found that Lua player query exports exist, but the bundled Lua
+wrapper scripts do not expose a usable per-tick capture hook at initialization.
+Input/console attempts did not produce a reliable trace; they are not part of
+the runner. Clipboard captures provide the reproducible route used here.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed
