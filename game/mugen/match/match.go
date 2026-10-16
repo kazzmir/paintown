@@ -114,6 +114,7 @@ func (m *Match) resetRound() error {
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
 		c.LocalCoord = p.LocalCoord
+		c.GameCoord = m.Options.GameSpace
 		c.PlayerID, p.PlayerID = slot+1, slot+1
 		c.PaletteNo, c.AILevel = m.Request.Players[slot].Palette, m.Request.Players[slot].AILevel
 		c.RoundNo, c.RoundsExisted, c.RoundState = m.Round, m.Round-1, 0

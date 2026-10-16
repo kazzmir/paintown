@@ -94,6 +94,9 @@ func TestTypedArithmetic(t *testing.T) {
 		{"sin(0)", FloatKind, 0}, {"cos(0)", FloatKind, 1},
 		{"ln(exp(1))", FloatKind, float64(float32(math.Log(float64(float32(math.E)))))},
 		{"log(2,8)", FloatKind, 3},
+		{"exp(1000)", FloatKind, math.Inf(1)},
+		{"3.0e38*2.0", FloatKind, math.Inf(1)},
+		{"-3.0e38*2.0", FloatKind, math.Inf(-1)},
 	}
 	for _, tc := range cases {
 		t.Run(tc.source, func(t *testing.T) {
@@ -106,7 +109,7 @@ func TestTypedArithmetic(t *testing.T) {
 }
 
 func TestBottomPropagation(t *testing.T) {
-	for _, source := range []string{"1/0", "1%0", "1.0%2", "~1.0", "1.0&1", "(-1)**0.5", "ln(0)", "acos(2)", "log(1,2)", "exp(1000)", "unknown", "unknown=0", "!unknown", "unknown(1)", "0&&(1/0)", "1||(1/0)", "var(-1)", "fvar(40)"} {
+	for _, source := range []string{"1/0", "1%0", "1.0%2", "~1.0", "1.0&1", "(-1)**0.5", "ln(0)", "acos(2)", "log(1,2)", "unknown", "unknown=0", "!unknown", "unknown(1)", "0&&(1/0)", "1||(1/0)", "var(-1)", "fvar(40)"} {
 		t.Run(source, func(t *testing.T) {
 			env := &fixtureEnvironment{}
 			if got := evaluate(t, source, env); !got.IsBottom() {
@@ -116,6 +119,14 @@ func TestBottomPropagation(t *testing.T) {
 				t.Fatal("missing diagnostic")
 			}
 		})
+	}
+}
+
+func TestScientificNotationRequiresDecimalPoint(t *testing.T) {
+	for _, source := range []string{"1e2", "1e-2", "1.0e", "1.0e+", ".5E-"} {
+		if _, err := ParseReference(source); err == nil {
+			t.Fatal("invalid/native-rejected exponent spelling compiled", source)
+		}
 	}
 }
 

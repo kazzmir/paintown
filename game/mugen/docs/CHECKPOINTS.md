@@ -4,6 +4,36 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4f — Received hit coordinates and native float overflow
+
+Received HitDef vectors now copy/convert into the defender's local units;
+shared attacker slices stay unchanged. Current knockback is no longer assigned
+with an invented reversed sign on contact: get-hit CNS applies stored vectors
+through HitVelSet. Explicit acceleration/fall vectors, omitted defaults and
+unchanged entry velocities match six native contact cases across 320/1280 player
+spaces and common game widths 1280/640. Default yaccel is .35 in 240p units,
+not the old .44 fallback; explicit zero remains distinct from omission.
+
+Omitted fall.xvelocity has a native no-change sentinel in common game units.
+Its reported float scales with local/game width and can become negative infinity
+when the local width exceeds game width. A native edge capture initially failed
+the numeric-only glyph reader; it now exactly recognizes Windows #INF output
+and writes JSON-safe labels. A fresh smallgame replay matches. Character/helpers/
+projectiles retain the common profile as well as their local profile.
+
+Separate language probes confirm float arithmetic, Exp and exponent overflow
+produce IEEE infinity, with ordinary infinity comparisons and reciprocal zero.
+The evaluator no longer converts infinity to bottom; NaN/domain failures remain
+bottom. Scientific literals are now tokenized. The beta accepts decimal-point
+forms (1.0e2, .5E+1, 2.E2) and rejects 1e2; Go preserves that restriction.
+Native-pinned Character tests and the JSONL runner cover the new semantics;
+JSONL traces use a nonfinite label because JSON has no infinity literal.
+
+Full regression/race checks pass. These cases do not complete HitDef schemas,
+air/guard contact selection, no-change bounce application, hit/fall ownership,
+world phase order or every GetHitVar field. Numeric overflow/domain/conversion
+edges beyond the recorded cases remain open. No full combat row is Verified.
+
 ## M4e — Guard-state ownership and movement control
 
 Removed the per-tick guard maintenance that re-entered 140 and skipped custom

@@ -32,6 +32,7 @@ type Character struct {
 	// CNS data containing states and physics globals
 	StateFile  *cns.CNS
 	LocalCoord coord.Space
+	GameCoord  coord.Space
 
 	// AIR data containing animation definitions
 	AirFile   *air.Data
@@ -188,6 +189,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 	}
 	return &Character{
 		LocalCoord:          coord.Default(),
+		GameCoord:           coord.Default(),
 		StateFile:           stateFile,
 		AirFile:             airFile,
 		CmdFile:             cmdFile,
@@ -698,6 +700,9 @@ func (c *Character) HitDef(params map[string]string) {
 	c.HitDefActive = true
 	// Parse and store the new HitDef
 	c.CurrentHitDef = cns.ParseHitDef(params)
+	if _, specified := params["yaccel"]; !specified {
+		c.CurrentHitDef.YAccel = float64(float32(0.35) * float32(c.LocalCoordinateWidth()) / 320)
+	}
 	// Entering a HitDef makes the character an attacker
 	c.MoveType = "A"
 }
@@ -713,6 +718,7 @@ func (c *Character) Helper(params map[string]string) {
 	// It shares the same files but has its own state machine
 	h := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	h.LocalCoord = c.LocalCoord
+	h.GameCoord = c.GameCoord
 	h.Parent = c
 	h.Root = c.Root
 	if h.Root == nil {
@@ -748,6 +754,7 @@ func (c *Character) Projectile(params map[string]string) {
 
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	p.LocalCoord = c.LocalCoord
+	p.GameCoord = c.GameCoord
 	p.Parent = c
 	p.Root = c.Root
 	if p.Root == nil {
@@ -1224,11 +1231,7 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = c.GetHit.GroundVel[1]
 		}
 	case "yaccel":
-		if c.GetHit.YAccel != 0.0 {
-			val = c.GetHit.YAccel
-		} else {
-			val = 0.44 // MUGEN default
-		}
+		val = c.GetHit.YAccel
 	case "fall":
 		if c.HitFall {
 			val = 1
@@ -1238,14 +1241,20 @@ func (c *Character) GetHitVar(name string) float64 {
 	case "fall.damage":
 		val = float64(c.GetHit.FallDamage)
 	case "fall.xvel":
-		if len(c.GetHit.FallVel) > 0 {
+		if c.GetHit.FallXUnchanged {
+			width := c.GameCoord.Width
+			if width <= 0 {
+				width = 320
+			}
+			val = float64(float32(-math.MaxFloat32) * (float32(c.LocalCoordinateWidth()) / float32(width)))
+		} else if len(c.GetHit.FallVel) > 0 {
 			val = c.GetHit.FallVel[0]
 		}
 	case "fall.yvel":
 		if len(c.GetHit.FallVel) > 1 {
 			val = c.GetHit.FallVel[1]
 		} else {
-			val = -4.5
+			val = -4.5 * float64(c.LocalCoordinateWidth()) / 320
 		}
 	case "fall.recover":
 		if c.GetHit.FallRecover {
@@ -1736,6 +1745,7 @@ func (c *Character) HandleHit(other *Character) {
 }
 
 func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
+	hit = c.hitInLocalSpace(attacker, hit)
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 
 	// Life reduction
@@ -1757,30 +1767,8 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 		c.ShakeTime = hit.PauseTime[0]
 	}
 
-	// Knockback Velocity
-	// Negative X = push defender backward (away from attacker).
-	if c.StateType == "A" || hit.Fall == 1 {
-		// Airborne hit or forced fall
-		if len(hit.AirVel) > 0 {
-			c.VelX = -hit.AirVel[0]
-		} else if len(hit.GroundVel) > 0 {
-			c.VelX = -hit.GroundVel[0]
-		}
-
-		if len(hit.AirVel) > 1 {
-			c.VelY = hit.AirVel[1]
-		} else if len(hit.GroundVel) > 1 {
-			c.VelY = hit.GroundVel[1]
-		}
-	} else {
-		// Grounded hit
-		if len(hit.GroundVel) > 0 {
-			c.VelX = -hit.GroundVel[0]
-		}
-		if len(hit.GroundVel) > 1 {
-			c.VelY = hit.GroundVel[1]
-		}
-	}
+	// Knockback is stored in GetHit and applied by the get-hit state's
+	// HitVelSet, rather than inventing an immediate opposite-sign velocity.
 
 	// Turn to face attacker
 	attackerX, _ := c.PositionOf(attacker)

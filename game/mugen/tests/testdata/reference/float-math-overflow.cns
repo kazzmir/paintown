@@ -1,0 +1,59 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, positive overflow]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=3.0e38*2.0
+[State 0, negative overflow]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=-3.0e38*2.0
+[State 0, greater]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=fvar(0)>3.0e38
+[State 0, less]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=fvar(1)<-3.0e38
+[State 0, self equal]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=fvar(0)=fvar(0)
+[State 0, reciprocal]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=1.0/fvar(0)
+[State 0, math overflow 6]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=Exp(1000)
+[State 0, math overflow 7]
+type=VarSet
+trigger1=Time=0
+fv=7
+value=(3.0e38)**2.0
+[State 0, math overflow 8]
+type=VarSet
+trigger1=Time=0
+fv=8
+value=Exp(90)

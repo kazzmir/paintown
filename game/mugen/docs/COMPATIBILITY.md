@@ -7,6 +7,13 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4f converts received hit vectors/defaults across local spaces and pins the
+common-space no-change fall X sentinel. Native overflow probes correct the prior
+infinity-as-bottom assumption and scientific-notation lexing. Six contact cases,
+three language programs and a rejected exponent spelling have pinned evidence.
+Complete combat/default schemas and numeric edge coverage remain open.
+
+
 M4e removes forced guard-state restarts/shortcuts and gates builtin movement on
 control. Three native fixtures match guard-end timing, custom guard ownership
 and uncontrolled crouch behavior. Guard damage/flags/hit response remain open.

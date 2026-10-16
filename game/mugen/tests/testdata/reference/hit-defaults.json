@@ -1,0 +1,134 @@
+{
+  "cases": {
+    "240-720": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "f9b902813a78f242767c58a931bffd37828b5c5b10189a5e0cb4b4f12dbbaf37",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "bfaebc5b9c85e16749221835da38f6656ba23eeabb2f8e5003774557b827557e",
+          "variables": {
+            "0": -4,
+            "1": 0,
+            "2": 0.349999994,
+            "3": -8.50705867e+37,
+            "4": -4.5,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "320,240",
+      "p2_localcoord": "1280,720"
+    },
+    "720-240": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "f9b902813a78f242767c58a931bffd37828b5c5b10189a5e0cb4b4f12dbbaf37",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "053843cf153eda26e163550d7f1e53fa5c05364a9d33b1fd2b7e0294f2c2f081",
+          "variables": {
+            "0": -64,
+            "1": 0,
+            "2": 1.39999998,
+            "3": -3.40282347e+38,
+            "4": -18,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "1280,720",
+      "p2_localcoord": "320,240"
+    },
+    "game640": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "f9b902813a78f242767c58a931bffd37828b5c5b10189a5e0cb4b4f12dbbaf37",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "74e7070d3a10c04b422d2919f1f5e2f92cac4e94b8eb820cb42759dd3dee6cee",
+          "variables": {
+            "0": -4,
+            "1": 0,
+            "2": 0.349999994,
+            "3": -1.70141173e+38,
+            "4": -4.5,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "320,240",
+      "p2_localcoord": "1280,720",
+      "game_width": 640
+    },
+    "smallgame": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "f9b902813a78f242767c58a931bffd37828b5c5b10189a5e0cb4b4f12dbbaf37",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm probeopponent -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "d4768c63611b5759e9de287f74a660af17146cacd2783c3519aa3e3045a23b18",
+          "variables": {
+            "0": -64,
+            "1": 0,
+            "2": 1.39999998,
+            "3": "negative_infinity",
+            "4": -18,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "mugenversion": "1.1",
+      "localcoord": "1280,720",
+      "p2_localcoord": "320,240",
+      "game_width": 640
+    }
+  }
+}

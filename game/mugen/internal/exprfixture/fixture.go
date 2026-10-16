@@ -4,13 +4,16 @@ package exprfixture
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/evaluator"
 )
 
 type Expected struct {
-	Kind  string  `json:"kind"`
-	Value float64 `json:"value"`
+	Kind      string  `json:"kind"`
+	Value     float64 `json:"value"`
+	Nonfinite string  `json:"nonfinite,omitempty"`
 }
 type Step struct {
 	Expression string      `json:"expr"`
@@ -28,6 +31,7 @@ type Observation struct {
 	Expression string      `json:"expr"`
 	Kind       string      `json:"kind"`
 	Value      float64     `json:"value"`
+	Nonfinite  string      `json:"nonfinite,omitempty"`
 	Warnings   []string    `json:"warnings,omitempty"`
 	Vars       map[int]int `json:"vars,omitempty"`
 }
@@ -47,6 +51,13 @@ func Run(f Fixture) ([]Observation, error) {
 		value := evaluator.EvaluateValue(expr, env)
 		kind := map[evaluator.Kind]string{evaluator.IntKind: "int", evaluator.FloatKind: "float", evaluator.BottomKind: "bottom", evaluator.TextKind: "text"}[value.Kind()]
 		obs := Observation{Fixture: f.Name, Step: i, Expression: step.Expression, Kind: kind, Value: value.Number(), Warnings: env.warnings}
+		if math.IsInf(obs.Value, 0) {
+			obs.Nonfinite = "positive_infinity"
+			if obs.Value < 0 {
+				obs.Nonfinite = "negative_infinity"
+			}
+			obs.Value = 0 // JSON has no infinity literal; the explicit label carries it.
+		}
 		for index, n := range env.vars {
 			if n != 0 {
 				if obs.Vars == nil {
@@ -56,7 +67,17 @@ func Run(f Fixture) ([]Observation, error) {
 			}
 		}
 		observations = append(observations, obs)
-		if kind != step.Want.Kind || value.Number() != step.Want.Value {
+		want := step.Want.Value
+		switch step.Want.Nonfinite {
+		case "":
+		case "positive_infinity":
+			want = math.Inf(1)
+		case "negative_infinity":
+			want = math.Inf(-1)
+		default:
+			return observations, fmt.Errorf("%s step %d: unknown nonfinite label", f.Name, i)
+		}
+		if kind != step.Want.Kind || value.Number() != want {
 			return observations, fmt.Errorf("%s step %d: got %s %v, want %s %v", f.Name, i, kind, value, step.Want.Kind, step.Want.Value)
 		}
 		for index, want := range step.Vars {

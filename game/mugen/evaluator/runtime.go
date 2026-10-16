@@ -224,18 +224,18 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 		a, b := float32(left.Number()), float32(right.Number())
 		switch e.Operator {
 		case "+":
-			return finite(env, float64(a+b))
+			return floatingResult(env, float64(a+b))
 		case "-":
-			return finite(env, float64(a-b))
+			return floatingResult(env, float64(a-b))
 		case "*":
-			return finite(env, float64(a*b))
+			return floatingResult(env, float64(a*b))
 		case "/":
 			if b == 0 {
 				return failure(env, "division by zero")
 			}
-			return finite(env, float64(a/b))
+			return floatingResult(env, float64(a/b))
 		case "**":
-			return finite(env, math.Pow(float64(a), float64(b)))
+			return floatingResult(env, math.Pow(float64(a), float64(b)))
 		default:
 			return comparison(e.Operator, float64(a), float64(b), env)
 		}
@@ -262,7 +262,7 @@ func binary(e *Binary, env EvaluatorEnvironment) Value {
 			}
 			return Int(int32(result))
 		}
-		return finite(env, result)
+		return floatingResult(env, result)
 	default:
 		return comparison(e.Operator, float64(a), float64(b), env)
 	}
@@ -455,7 +455,7 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 		if base <= 0 || base == 1 || n <= 0 {
 			return failure(env, "Log domain error")
 		}
-		return finite(env, math.Log(n)/math.Log(base))
+		return floatingResult(env, math.Log(n)/math.Log(base))
 	}
 	if len(args) == 1 {
 		v := args[0]
@@ -480,24 +480,24 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 			}
 			return Int(int32(n))
 		case "sin":
-			return finite(env, math.Sin(float64(float32(n))))
+			return floatingResult(env, math.Sin(float64(float32(n))))
 		case "cos":
-			return finite(env, math.Cos(float64(float32(n))))
+			return floatingResult(env, math.Cos(float64(float32(n))))
 		case "tan":
-			return finite(env, math.Tan(float64(float32(n))))
+			return floatingResult(env, math.Tan(float64(float32(n))))
 		case "asin":
-			return finite(env, math.Asin(float64(float32(n))))
+			return floatingResult(env, math.Asin(float64(float32(n))))
 		case "acos":
-			return finite(env, math.Acos(float64(float32(n))))
+			return floatingResult(env, math.Acos(float64(float32(n))))
 		case "atan":
-			return finite(env, math.Atan(float64(float32(n))))
+			return floatingResult(env, math.Atan(float64(float32(n))))
 		case "exp":
-			return finite(env, math.Exp(float64(float32(n))))
+			return floatingResult(env, math.Exp(float64(float32(n))))
 		case "ln":
 			if n <= 0 {
 				return failure(env, "Ln domain error")
 			}
-			return finite(env, math.Log(float64(float32(n))))
+			return floatingResult(env, math.Log(float64(float32(n))))
 		}
 	}
 	return failure(env, "unknown trigger or invalid arguments: %s", e.String())
@@ -569,10 +569,10 @@ func legacy(e *Legacy, env EvaluatorEnvironment) Value {
 	return failure(env, "legacy trigger is unavailable: %s", e.Name)
 }
 
-func finite(env EvaluatorEnvironment, n float64) Value {
+func floatingResult(env EvaluatorEnvironment, n float64) Value {
 	v := Float(float32(n))
 	if v.IsBottom() {
-		return failure(env, "non-finite arithmetic result")
+		return failure(env, "NaN arithmetic result")
 	}
 	return v
 }

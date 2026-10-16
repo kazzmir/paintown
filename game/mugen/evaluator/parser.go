@@ -101,6 +101,15 @@ func tokenize(input string) ([]token, error) {
 			for i < len(chars) && (unicode.IsDigit(chars[i]) || chars[i] == '.') {
 				i++
 			}
+			if strings.ContainsRune(string(chars[start:i]), '.') && i < len(chars) && (chars[i] == 'e' || chars[i] == 'E') {
+				i++
+				if i < len(chars) && (chars[i] == '+' || chars[i] == '-') {
+					i++
+				}
+				for i < len(chars) && unicode.IsDigit(chars[i]) {
+					i++
+				}
+			}
 			tokens = append(tokens, token{tokNumber, string(chars[start:i]), start + 1})
 			continue
 		}

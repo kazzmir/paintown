@@ -245,6 +245,14 @@ guard-end recovery and movement control gates. Three native fixtures match 36
 state/time observations; guard-end replay and full race checks pass. Guard combat
 flags/damage/velocity/pause remain open.
 
+M4e is commit `c410e1b0`. M4f translates received hit vectors/defaults and
+retains common game coordinates. Six native contact cases match, including the
+no-change fall X sentinel becoming infinity. Three language programs confirm
+scientific notation and float/Exp/power overflow; the beta requires a decimal
+point before an exponent. Full races and a native smallgame replay pass. See
+COORDINATES.md/REFERENCE.md. Complete combat/guard rules, selected palettes and
+audio/effects remain next.
+
 Next finish playable match behavior with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

@@ -25,7 +25,7 @@ type Value struct {
 
 func Int(n int32) Value { return Value{kind: IntKind, integer: n} }
 func Float(n float32) Value {
-	if math.IsNaN(float64(n)) || math.IsInf(float64(n), 0) {
+	if math.IsNaN(float64(n)) {
 		return Value{}
 	}
 	return Value{kind: FloatKind, real: n}

@@ -115,6 +115,7 @@ type HitDef struct {
 	Fall             int
 	FallDamage       int
 	FallVel          []float64
+	FallXUnchanged   bool
 	FallRecover      bool
 	YAccel           float64
 }
@@ -560,7 +561,8 @@ func ParseFloatList(s string) []float64 {
 
 func ParseHitDef(params map[string]string) HitDef {
 	hd := HitDef{
-		FallRecover: true,
+		FallRecover:    true,
+		FallXUnchanged: true,
 	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v
@@ -664,6 +666,7 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["fall.xvelocity"]; ok {
 		hd.FallVel = ParseFloatList(v)
+		hd.FallXUnchanged = false
 	}
 	if v, ok := params["fall.yvelocity"]; ok {
 		yvels := ParseFloatList(v)

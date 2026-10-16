@@ -52,8 +52,9 @@ cut suggestions. Mixed character and portrait sizes convert to the drawing
 space. HUD alpha/scale/angle/interpolation, delayed life bars, color/font-height
 variants, shadows, zoom, tall-stage overdraw and precise native camera framing
 remain incomplete. Guard state ownership/recovery and movement Ctrl gates now match focused native
-fixtures. Complete guard entry/combat rules and hit-vector conversion across
-player spaces remain next fixes before calling the M4 game playable. Character/
+fixtures. Received hit vectors/defaults now convert across spaces with focused native
+coverage. Complete guard/combat/default schemas and phase ordering remain next
+fixes before calling the full M4 milestone playable. Character/
 common sounds, fight announcement sounds, BGM and common hit effects are not
 consumed yet.
 

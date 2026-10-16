@@ -153,3 +153,11 @@ Guard/control probes: --fixture guard-end, guard-start or control-gating with
 --mugenversion 1.1 --pages 0 and a fresh --name replay native state/time traces.
 These fixtures wait for round control before entering the measured state; the
 Go runner starts at the corresponding control boundary.
+
+Received hits: --fixture hit-coordinates --case 240-720 and --fixture
+hit-defaults --case smallgame replay local/common coordinate cases. Infinity
+observations use positive_infinity/negative_infinity strings in native JSON;
+JSONL expression traces use a nonfinite field and value=0 as a JSON placeholder.
+float-overflow, float-math-overflow and scientific-accepted are numeric native
+probes (--bank fvar --mugenversion 1.1 --pages 0). scientific-notation instead
+pins the native rejection of 1e2. Decimal forms such as 1.0e2 are supported.

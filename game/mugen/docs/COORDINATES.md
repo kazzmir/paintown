@@ -37,7 +37,15 @@ corner rules, dynamic Width overrides, full airborne cases and query redirection
 remain open. The current Target list still conflates opponents with acquired
 HitDef targets and must be replaced by the match ownership model.
 
-This foundation does not yet translate hit vectors, stage cropping/overdraw,
-camera zoom, custom-state/animation ownership, fight HUD spaces or all storyboard
-drawing. Those conversions must use explicit source and target profiles when the
-Match runtime is connected; these tests are not mixed-resolution gameplay parity.
+Received hit vectors now translate with float32 rounding into the defender's
+local units. Six native contact cases cover explicit/default acceleration/fall
+values and unchanged entry velocity. Source vectors stay immutable. Omitted
+fall X is a no-change sentinel reported as -MaxFloat32 times local/game width;
+it can overflow to negative infinity. Match supplies the common profile and
+helpers/projectiles inherit it. Applying the no-change bounce itself is pending.
+
+Production Match spawn, camera metadata, character/HUD portrait drawing and
+stage crop suggestions use explicit profiles. Exact stage cropping/overdraw,
+zoom, mixed ownership, hit/guard selection and all storyboard spaces still need
+reference-backed conversion and timing. These tests are not full mixed-resolution
+gameplay parity.

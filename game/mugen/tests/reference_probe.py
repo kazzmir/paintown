@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -92,7 +92,10 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
                                           opponent_definition)
         (opponent / 'probeopponent.def').write_text(opponent_definition)
     config = destination / 'data/mugen.cfg'
-    config.write_text(re.sub(r'(?im)^Debug\s*=\s*0\s*$', 'Debug = 1', config.read_text()))
+    settings = re.sub(r'(?im)^Debug\s*=\s*0\s*$', 'Debug = 1', config.read_text())
+    if game_width is not None:
+        settings = re.sub(r'(?im)^GameWidth\s*=.*$', 'GameWidth = ' + str(game_width), settings)
+    config.write_text(settings)
     return source
 
 
@@ -167,7 +170,7 @@ def read_clipboard(path, reference, page):
     glyphs = {}
     for line in data[to:to + ts].decode('latin1').split('[Map]')[1].splitlines():
         fields = line.split()
-        if len(fields) < 3 or fields[0] not in 'PE0123456789:,.+-':
+        if len(fields) < 3 or fields[0] not in 'PEINF#0123456789:,.+-':
             continue
         x, width = map(int, fields[1:3])
         glyphs[fields[0]] = (width, tuple(font.getpixel((x + dx, y)) != 0
@@ -197,11 +200,12 @@ def read_clipboard(path, reference, page):
                 if column + 5 >= image.width:
                     break
             for first in [page, page + 6]:
-                number = r'[+-]?\d+(?:\.\d+)?(?:E[+-]?\d+)?'
+                number = r'(?:[+-]?\d+(?:\.\d+)?(?:E[+-]?\d+)?|[+-]?1\.#INF)'
                 if re.fullmatch('P' + str(first) + ':' + number + '(' + ',' + number + '){5}', text):
                     if first in lines:
                         raise RuntimeError('Ambiguous duplicate clipboard line')
-                    lines[first] = [float(n) if any(c in n for c in '.E') else int(n)
+                    lines[first] = [('negative_infinity' if n.startswith('-') else 'positive_infinity') if '#INF' in n
+                                    else float(n) if any(c in n for c in '.E') else int(n)
                                     for n in text.split(':')[1].split(',')]
     if len(lines) != 2:
         raise RuntimeError('Could not read both numeric clipboard lines exactly; inspect capture')
@@ -226,6 +230,7 @@ def main():
     parser.add_argument('--state-file-order', nargs='+')
     parser.add_argument('--localcoord', help='Override character localcoord: width,height')
     parser.add_argument('--p2-localcoord', help='Use a separate probe opponent with this localcoord')
+    parser.add_argument('--game-width', type=int, help='Override common game-space width for coordinate probes')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     args = parser.parse_args()
     case_expected = None
@@ -246,10 +251,13 @@ def main():
         args.state_file_order = case_expected.get('state_file_order')
         args.localcoord = case_expected.get('localcoord')
         args.p2_localcoord = case_expected.get('p2_localcoord')
+        args.game_width = case_expected.get('game_width')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
         parser.error('Page exceeds the variable bank')
+    if args.game_width is not None and not 1 <= args.game_width <= 8192:
+        parser.error('Game width must be 1 through 8192 for bounded reference probes')
     for profile in (args.localcoord, args.p2_localcoord):
         if profile is not None and (not re.fullmatch(r'[1-9][0-9]*(?:\.[0-9]+)?,[1-9][0-9]*(?:\.[0-9]+)?', profile) or
                                     any(float(value) > 2147483647 for value in profile.split(','))):
@@ -270,7 +278,7 @@ def main():
     if args.state_file_order and (len(set(args.state_file_order)) != len(args.state_file_order) or
                                  any(not re.fullmatch('st[0-9]*', key) for key in args.state_file_order)):
         parser.error('State-file order must contain unique st/stN keys')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
@@ -294,6 +302,8 @@ def main():
         evidence['localcoord'] = args.localcoord
     if args.p2_localcoord is not None:
         evidence['p2_localcoord'] = args.p2_localcoord
+    if args.game_width is not None:
+        evidence['game_width'] = args.game_width
     if fixture.with_suffix('.cmd').exists():
         evidence['cmd_sha256'] = digest(fixture.with_suffix('.cmd'))
     expected_variables = {}
@@ -308,6 +318,8 @@ def main():
             raise RuntimeError('Character localcoord differs from pinned fixture')
         if expected.get('p2_localcoord') != args.p2_localcoord:
             raise RuntimeError('Opponent localcoord differs from pinned fixture')
+        if expected.get('game_width') != args.game_width:
+            raise RuntimeError('Common game-space width differs from pinned fixture')
         if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
         if expected.get('omitted_files', []) != args.omit_file:

@@ -260,3 +260,23 @@ Native runs of the same names with -native suffix show a five-tick action in
 state 11 retaining Ctrl=0 without auto-standing. All 36 values match Character;
 guard-end-replay reproduces the native capture. No guard damage/velocity or
 keyboard-driven entry parity is inferred from these fixtures.
+
+## Received-hit coordinates and overflow
+
+`hit-coordinates` pins explicit received vectors for 320/1280 and 1280/320
+players. `hit-defaults` adds four omitted-default cases, with common width 1280
+and 640. All six contacts compare their captured fvars in Character. Explicit
+X velocity/acceleration/fall vectors convert by defender/attacker width, while
+entry velocity stays zero in the authored idle fixture. Default yaccel=.35 and
+fall Y=-4.5 use 240p units. Omitted fall X returns a common-space no-change
+sentinel; local width greater than game width can expose negative infinity.
+The first smallgame run saved an image but its finite-only reader failed;
+smallgame2 records exact #INF glyphs and hit-defaults-replay reproduces them.
+
+`float-overflow` and `float-math-overflow` demonstrate stored positive/negative
+infinities, comparisons, reciprocal zero, Exp(1000), Exp(90), and float power
+overflow. These supersede the old unmeasured exp(1000)-is-bottom expectation.
+`scientific-accepted` records 1.0e2, 1.0e-2, .5E+1, 2.E2, 3.0E+2 and -2.5e-1.
+`scientific-notation` is a pinned load rejection for 1e2; native requires a decimal
+point. Original source hashes accompany all observations. Remaining numeric
+NaN/domain/coercion cases are not inferred from overflow observations.
