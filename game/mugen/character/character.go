@@ -119,11 +119,13 @@ type Character struct {
 	// Physics/Logic flags
 	GravityActive bool
 	PosFrozen     bool
+	PushDisabled  bool
 
 	// Visuals
 	SprPriority int
 
 	CurrentHitDef     cns.HitDef
+	GuardDistance     float64
 	Specials          map[string]bool
 	ActiveReversalDef map[string]string
 
@@ -224,6 +226,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		MaxLife:             stateFile.Data.Life,
 		Power:               0,
 		MaxPower:            maxPower,
+		GuardDistance:       float64(stateFile.Size.AttackDist),
 		AttackMul:           1.0,
 		DefenceMul:          1.0,
 		X:                   0.0,
@@ -295,6 +298,7 @@ func (c *Character) runStateTick() bool {
 	c.LastCommandMatched = "" // Clear stale match
 	// Clear frame-local specials
 	c.Specials = make(map[string]bool)
+	c.PushDisabled = false
 	c.ActiveReversalDef = make(map[string]string)
 	c.DrawAngle = 0
 	c.DrawOffset = []float64{0, 0}
@@ -460,10 +464,9 @@ func (c *Character) finishTick() {
 			// Push collision
 			c.ResolvePushCollision()
 
-			// Auto-turn:
-			// Continuously face opponent. Now that VelX is negated upon flip
-			// (preserving absolute momentum), this won't cause mid-air oscillation.
-			if !c.Specials["noautoturn"] && len(c.Target) > 0 {
+			// Engine turning belongs to the common idle/crouch/walk states;
+			// custom states retain their facing. Preserve world momentum on flip.
+			if (c.StateNo == 0 || c.StateNo == 11 || c.StateNo == 20) && !c.Specials["noautoturn"] && len(c.Target) > 0 {
 				opponent := c.Target[0]
 				newFacing := c.Facing
 				opponentX, _ := c.PositionOf(opponent)
@@ -715,12 +718,23 @@ func (c *Character) HitDef(params map[string]string) {
 	c.HitDefActive = true
 	// Parse and store the new HitDef
 	c.CurrentHitDef = cns.ParseHitDef(params)
+	if _, specified := params["guard.dist"]; specified {
+		c.GuardDistance = c.CurrentHitDef.GuardDist
+	}
+	c.CurrentHitDef.GuardDist = c.GuardDistance
 	if _, specified := params["yaccel"]; !specified {
 		c.CurrentHitDef.YAccel = float64(float32(0.35) * float32(c.LocalCoordinateWidth()) / 320)
 	}
 	// Entering a HitDef makes the character an attacker
 	c.MoveType = "A"
 }
+
+func (c *Character) SetAttackDistance(distance int) {
+	c.GuardDistance = float64(distance)
+	c.CurrentHitDef.GuardDist = c.GuardDistance
+}
+
+func (c *Character) SetPlayerPush(enabled bool) { c.PushDisabled = !enabled }
 
 func (c *Character) Helper(params map[string]string) {
 	// Helper(id, name, pos, pos_type, facing, stathero, ownpal, keyctrl, anim)
@@ -1124,18 +1138,13 @@ func (c *Character) GetRoundsExisted() int {
 }
 
 func (c *Character) GetInGuardDist() bool {
-	// Guard distance is defined in [Size] in CNS
-	guardDist := 100.0 // Default
-	if c.StateFile != nil {
-		guardDist = float64(c.StateFile.Size.AttackDist)
-	}
-
 	for _, target := range c.Target {
 		if strings.ToUpper(target.MoveType) == "A" {
-			// Calculate relative distance
+			// Range extends in the attacker's facing. The defender may face
+			// away and vertical separation does not affect this query.
 			targetX, _ := c.PositionOf(target)
-			relDist := (targetX - c.X) * float64(c.Facing)
-			if relDist > 0 && relDist < guardDist {
+			relDist := (c.X - targetX) * float64(target.Facing)
+			if relDist >= 0 && relDist < target.GuardDistance*c.ScaleFrom(target) {
 				return true
 			}
 		}
@@ -1533,7 +1542,7 @@ func (c *Character) ApplyFriction() {
 }
 
 func (c *Character) ResolvePushCollision() {
-	if c.StateFile == nil {
+	if c.StateFile == nil || c.PushDisabled {
 		return
 	}
 	// Only push if on ground and not in hit state
@@ -1543,6 +1552,9 @@ func (c *Character) ResolvePushCollision() {
 	}
 
 	for _, other := range c.Target {
+		if other.PushDisabled {
+			continue
+		}
 		othSt := strings.ToUpper(other.StateType)
 		if (othSt == "S" || othSt == "C") && !other.PosFrozen {
 			otherX, _ := c.PositionOf(other)
@@ -1569,6 +1581,12 @@ func (c *Character) ResolvePushCollision() {
 					direction = -1
 				}
 				delta := (pushDist - absDist) / 2 * direction
+				spacing := 10 * float64(c.LocalCoordinateWidth()) / 320
+				if absDist < spacing {
+					// Native near-axis overlap correction has additional spacing
+					// that falls linearly to zero at ten 240p units.
+					delta += (spacing - absDist) / 2 * direction
+				}
 				c.X -= delta
 				other.X += delta / scale
 			}
@@ -1642,6 +1660,7 @@ func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {
 
 func (c *Character) BeginStateEntry(hitdefPersist, movehitPersist, hitcountPersist bool) {
 	if !hitdefPersist {
+		c.GuardDistance = float64(c.StateFile.Size.AttackDist)
 		c.CurrentHitDef = cns.HitDef{}
 		c.HitDefActive = false
 		c.HitGuard = make(map[int]bool)

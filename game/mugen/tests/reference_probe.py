@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None, p2_localcoord=None, game_width=None, fixture_constants=False):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -80,6 +80,8 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
     constants = re.split(r'(?im)^\s*\[statedef', (char / 'kfm.cns').read_text())[0]
     if bare:
         constants = '[Data]\n[Size]\n[Velocity]\n[Movement]\n'
+    if fixture_constants:
+        constants = ''
     source = constants + '\n' + fixture.with_suffix('.cns').read_text()
     if p2_localcoord is not None:
         opponent = destination / 'chars/probeopponent'
@@ -221,6 +223,7 @@ def main():
     parser.add_argument('--fixture', default='animation-loop')
     parser.add_argument('--record', action='store_true', help='Record a new fixture without comparing prior observations')
     parser.add_argument('--bare-constants', action='store_true', help='Use empty constant groups for omission/load-error probes')
+    parser.add_argument('--fixture-constants', action='store_true', help='Use complete constant groups authored in the CNS fixture')
     parser.add_argument('--bank', choices=['var', 'fvar'], default='var')
     parser.add_argument('--mugenversion', choices=['1.0', '1.1'])
     parser.add_argument('--file', action='append', default=[], help='Override one character Files entry: key=value')
@@ -247,6 +250,7 @@ def main():
         args.bank = case_expected.get('bank', 'var')
         args.mugenversion = case_expected.get('mugenversion')
         args.bare_constants = case_expected.get('bare_constants', False)
+        args.fixture_constants = case_expected.get('fixture_constants', False)
         args.pages = [capture['page'] for capture in case_expected.get('captures', [])] or [0]
         args.state_file_order = case_expected.get('state_file_order')
         args.localcoord = case_expected.get('localcoord')
@@ -278,7 +282,9 @@ def main():
     if args.state_file_order and (len(set(args.state_file_order)) != len(args.state_file_order) or
                                  any(not re.fullmatch('st[0-9]*', key) for key in args.state_file_order)):
         parser.error('State-file order must contain unique st/stN keys')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width)
+    if args.bare_constants and args.fixture_constants:
+        parser.error('Bare and fixture-owned constants are mutually exclusive')
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord, args.p2_localcoord, args.game_width, args.fixture_constants)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
@@ -286,6 +292,8 @@ def main():
                 'bank': args.bank, 'bare_constants': args.bare_constants}
     if files:
         evidence['files'] = files
+    if args.fixture_constants:
+        evidence['fixture_constants'] = True
     if args.clipboard_in_cmd:
         evidence['clipboard_in_cmd'] = True
     if args.omit_file:
@@ -312,6 +320,8 @@ def main():
         expected = case_expected or json.loads(fixture.with_suffix('.json').read_text())
         if expected.get('bank', 'var') != args.bank or expected.get('bare_constants', False) != args.bare_constants:
             raise RuntimeError('Variable bank/constants mode differs from pinned fixture')
+        if expected.get('fixture_constants', False) != args.fixture_constants:
+            raise RuntimeError('Fixture constant ownership differs from pinned fixture')
         if expected.get('mugenversion') != args.mugenversion:
             raise RuntimeError('Character version differs from pinned fixture')
         if expected.get('localcoord') != args.localcoord:

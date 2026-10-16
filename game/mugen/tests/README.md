@@ -195,3 +195,12 @@ rejection. Twenty-four accepted programs plus two override posture cases compare
 production group ticks; protect-missing checks compile rejection. A dynamic-pose
 native replay verifies the captured case. Complete invalid-value, pause and
 entity/ownership behavior remains open.
+
+Guard-distance/order/push probes add 23 programs/26 cases for attacker-owned
+range, direction/height/default retention, state-entry reset, AttackDist,
+attack-first state-pass priority, custom facing, PlayerPush reset/suppression,
+near-axis spacing and mixed coordinates. They all use production group ticks.
+--fixture-constants selects complete authored CNS constant groups without a stock
+prefix and is pinned in case metadata; --bare-constants retains its prior empty-
+group mode. Push fixtures use complete numeric KFM defaults with explicit widths.
+Native partial Data rejection still needs dedicated loader-validation coverage.

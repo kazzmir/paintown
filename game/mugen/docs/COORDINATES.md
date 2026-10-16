@@ -49,3 +49,10 @@ stage crop suggestions use explicit profiles. Exact stage cropping/overdraw,
 zoom, mixed ownership, hit/guard selection and all storyboard spaces still need
 reference-backed conversion and timing. These tests are not full mixed-resolution
 gameplay parity.
+
+M4k native guard range is attacker-owned/directional, ignores receiver facing/Y,
+retains explicit overrides until normal state entry, and scales across both
+mixed-profile directions. Body push near axes adds max(0,10-abs(separation)) in
+240p units before splitting the overlap correction. Ordinary/fractional/signed/
+cutoff and mixed cases are pinned; see REFERENCE.md. PlayerPush disables a pair
+for the tick. Complete airborne/corner/Width/pause behavior remains open.

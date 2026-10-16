@@ -1,0 +1,92 @@
+{
+  "cases": {
+    "default": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "6df1eaeb4971acc87d79c0eeba992c2f0087abe5131f0b484b8f90aaef925a48",
+      "air_sha256": "5ed04c47a4a793aeeff0504d947b5ee8b8394649348a5e953613ba8d5533b2aa",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "ed586f6af56039c5ba24cfb59c3af31f5555a0a6e989a4f87e32cd968a384512",
+          "variables": {
+            "0": 0,
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 140,
+            "6": 0,
+            "7": 1,
+            "8": 0,
+            "9": 140,
+            "10": 0,
+            "11": 1
+          }
+        },
+        {
+          "page": 12,
+          "path": "animation-page12.png",
+          "sha256": "221738e8b1c637f02855daf663052b6fe2fae0236fd99ed8ecd6b36c16c6e786",
+          "variables": {
+            "12": 0,
+            "13": 140,
+            "14": 0,
+            "15": 1,
+            "16": 0,
+            "17": 140,
+            "18": 0,
+            "19": 1,
+            "20": 0,
+            "21": 140,
+            "22": 0,
+            "23": 1
+          }
+        },
+        {
+          "page": 24,
+          "path": "animation-page24.png",
+          "sha256": "025230b348c75b12eaae66801857eef82e3f95b892af70731dd6804d3ad44b61",
+          "variables": {
+            "24": 0,
+            "25": 140,
+            "26": 0,
+            "27": 1,
+            "28": 0,
+            "29": 140,
+            "30": 0,
+            "31": 1,
+            "32": 0,
+            "33": 140,
+            "34": 0,
+            "35": 1
+          }
+        },
+        {
+          "page": 28,
+          "path": "animation-page28.png",
+          "sha256": "0b854c1f10126063ac99423acf3f8edde9f510e56b47f6e96e49801cdff704cc",
+          "variables": {
+            "28": 0,
+            "29": 140,
+            "30": 0,
+            "31": 1,
+            "32": 0,
+            "33": 140,
+            "34": 0,
+            "35": 1,
+            "36": 0,
+            "37": 140,
+            "38": 0,
+            "39": 1
+          }
+        }
+      ],
+      "bank": "fvar",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1"
+    }
+  }
+}

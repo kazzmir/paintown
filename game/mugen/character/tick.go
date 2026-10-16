@@ -2,6 +2,7 @@ package character
 
 import (
 	"fmt"
+	"sort"
 
 	"github.com/kazzmir/paintown/game/mugen/cns"
 )
@@ -88,7 +89,13 @@ func TickCharacters(players []*Character) error {
 	}
 	// Previous-tick definitions collide before this tick's state passes.
 	// Timed defence remains active for contact, then can be renewed by CNS.
-	for _, c := range players {
+	// Attackers execute first; root order breaks ties. Changes during a pass
+	// affect the following tick's order, not the already selected sequence.
+	ordered := append([]*Character(nil), players...)
+	sort.SliceStable(ordered, func(i, j int) bool {
+		return ordered[i].MoveType == "A" && ordered[j].MoveType != "A"
+	})
+	for _, c := range ordered {
 		c.ageDefenses()
 		if !c.runStateTick() {
 			return c.RuntimeError

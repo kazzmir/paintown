@@ -81,6 +81,24 @@ func typedHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(En
 func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	name := strings.ToLower(ctrl.Type)
 	switch name {
+	case "playerpush":
+		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, values map[string]evaluator.Value) error {
+			context, ok := env.(interface{ SetPlayerPush(bool) })
+			if !ok {
+				return fmt.Errorf("PlayerPush context is unavailable")
+			}
+			context.SetPlayerPush(values["value"].Bool())
+			return nil
+		})
+	case "attackdist":
+		return typedHandler(ctrl, []argumentSpec{{"value", true, true}}, func(env Environment, values map[string]evaluator.Value) error {
+			context, ok := env.(interface{ SetAttackDistance(int) })
+			if !ok {
+				return fmt.Errorf("AttackDist context is unavailable")
+			}
+			context.SetAttackDistance(int(values["value"].Number()))
+			return nil
+		})
 	case "hitby", "nothitby":
 		return compileHitFilter(ctrl, name == "nothitby")
 	case "hitoverride":

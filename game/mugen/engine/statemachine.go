@@ -174,6 +174,12 @@ func (sm *StateMachine) registerCoreControllers() {
 	sm.controllers["poweradd"] = handlePowerAdd
 	sm.controllers["powerset"] = handlePowerSet
 	sm.controllers["attackmulset"] = handleAttackMulSet
+	sm.controllers["attackdist"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("AttackDist requires compiled parameters")
+	}
+	sm.controllers["playerpush"] = func(*cns.StateController, Environment) error {
+		return fmt.Errorf("PlayerPush requires compiled parameters")
+	}
 	sm.controllers["defencemulset"] = handleDefenceMulSet
 	sm.controllers["sprpriority"] = handleSprPriority
 	sm.controllers["gravity"] = handleGravity

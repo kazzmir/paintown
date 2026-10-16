@@ -7,6 +7,11 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4k binds attacker-owned directional guard range, retained overrides and typed
+AttackDist/PlayerPush. Twenty-three programs cover 26 native cases for range,
+attack-first state passes, custom facing, push spacing and mixed coordinates.
+Full world/pause/entity, dynamic Width, auto-turn and HitDef schemas remain open.
+
 M4j replaces ignored HitBy/NotHitBy maps with two shared timed collision filters.
 Twenty-five native programs cover masks/slots/expiry/omission/precedence; two
 HitOverride programs also establish current attack posture. Typed duration and

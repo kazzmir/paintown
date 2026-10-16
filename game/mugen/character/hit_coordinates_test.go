@@ -16,7 +16,87 @@ import (
 )
 
 func TestReferenceHitCoordinates(t *testing.T) {
-	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause", "override-basic", "override-slots", "override-forceair", "override-clear", "override-expire", "override-lasttick", "override-hitstate", "override-missing-state", "override-missing-attr", "override-default-time", "override-nonmatch", "override-projectile", "contact-activation", "hit-countdown", "guard-contact", "guard-crouch", "guard-air", "guard-wrong-height", "guard-exit-contact", "guard-override", "guard-defaults", "guard-air-defaults", "pause-release", "attacker-pause", "protect-all", "protect-attack-only", "protect-clear", "protect-expire", "protect-hitby-all", "protect-hitby-attack", "protect-hitby-pair", "protect-lasttick", "protect-negative", "protect-pair-attack", "protect-pair-hit", "protect-pair-other", "protect-pair-state", "protect-replace", "protect-slots", "protect-attacker-air", "protect-defender-air", "protect-attr-only", "protect-class-allow", "protect-empty", "protect-dynamic-pose", "protect-missing", "protect-both", "protect-both-first", "protect-both-second", "override-current-pose", "override-authored-pose"} {
+	for _, name := range []string{
+		"hit-coordinates",
+		"hit-defaults",
+		"hit-trade",
+		"hit-trade-phases",
+		"hit-trade-pause",
+		"override-basic",
+		"override-slots",
+		"override-forceair",
+		"override-clear",
+		"override-expire",
+		"override-lasttick",
+		"override-hitstate",
+		"override-missing-state",
+		"override-missing-attr",
+		"override-default-time",
+		"override-nonmatch",
+		"override-projectile",
+		"contact-activation",
+		"hit-countdown",
+		"guard-contact",
+		"guard-crouch",
+		"guard-air",
+		"guard-wrong-height",
+		"guard-exit-contact",
+		"guard-override",
+		"guard-defaults",
+		"guard-air-defaults",
+		"pause-release",
+		"attacker-pause",
+		"protect-all",
+		"protect-attack-only",
+		"protect-clear",
+		"protect-expire",
+		"protect-hitby-all",
+		"protect-hitby-attack",
+		"protect-hitby-pair",
+		"protect-lasttick",
+		"protect-negative",
+		"protect-pair-attack",
+		"protect-pair-hit",
+		"protect-pair-other",
+		"protect-pair-state",
+		"protect-replace",
+		"protect-slots",
+		"protect-attacker-air",
+		"protect-defender-air",
+		"protect-attr-only",
+		"protect-class-allow",
+		"protect-empty",
+		"protect-dynamic-pose",
+		"protect-missing",
+		"protect-both",
+		"protect-both-first",
+		"protect-both-second",
+		"override-current-pose",
+		"override-authored-pose",
+		"guard-distance",
+		"guard-distance-default",
+		"guard-distance-reset",
+		"guard-distance-clock",
+		"guard-distance-no-def",
+		"attack-distance",
+		"state-order-both-attack",
+		"state-order-victim-hit",
+		"guard-distance-height",
+		"guard-distance-defender-turn",
+		"guard-distance-attacker-turn",
+		"guard-distance-cross",
+		"push-standing",
+		"push-disabled",
+		"push-overlap-eight",
+		"push-overlap-five",
+		"push-overlap-fraction",
+		"push-near-axis",
+		"push-negative-axis",
+		"push-gap-four",
+		"push-gap-eight",
+		"push-gap-ten",
+		"push-one-tick",
+	} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			source, err := os.ReadFile(stem + ".cns")
@@ -61,6 +141,17 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						t.Fatal(err)
 					}
 					file.Data.Life = 1000
+					if strings.HasPrefix(name, "guard-distance") || name == "attack-distance" || strings.HasPrefix(name, "state-order-") {
+						data, err := os.ReadFile("../temp/mugen-1.1b1/chars/kfm/kfm.cns")
+						if err != nil {
+							t.Fatal(err)
+						}
+						stock, err := cns.Parse(strings.NewReader(string(data)))
+						if err != nil {
+							t.Fatal(err)
+						}
+						file.Size = stock.Size
+					}
 					if test.ExpectedFail != "" {
 						if err := NewStateMachine().CompileState(file.States[700]); err == nil {
 							t.Fatal("accepted native-rejected protection definition")
@@ -114,8 +205,11 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						}
 					}
 					wantState := 5000
-					if strings.HasPrefix(name, "override-") || strings.HasPrefix(name, "guard-") || strings.HasPrefix(name, "protect-") {
+					if strings.HasPrefix(name, "override-") || (strings.HasPrefix(name, "guard-") && !strings.HasPrefix(name, "guard-distance")) || strings.HasPrefix(name, "protect-") {
 						wantState = int(referenceFloat(t, test.Captures[0].Variables["0"]))
+					}
+					if strings.HasPrefix(name, "guard-distance") || name == "attack-distance" || strings.HasPrefix(name, "state-order-") || strings.HasPrefix(name, "push-") {
+						wantState = 700
 					}
 					if name == "pause-release" {
 						wantState = 150
@@ -143,7 +237,7 @@ func TestReferenceHitCoordinates(t *testing.T) {
 					if name == "attacker-pause" {
 						attacker = players[0]
 					}
-					if !strings.HasPrefix(name, "hit-trade") && attacker.CurrentHitDef.GroundVel[0] != -16 {
+					if !strings.HasPrefix(name, "hit-trade") && !strings.HasPrefix(name, "guard-distance") && name != "attack-distance" && !strings.HasPrefix(name, "state-order-") && !strings.HasPrefix(name, "push-") && attacker.CurrentHitDef.GroundVel[0] != -16 {
 						t.Fatal("shared attacker vectors changed")
 					}
 				})

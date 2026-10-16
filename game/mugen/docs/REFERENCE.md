@@ -382,3 +382,44 @@ pending value seen by contact-state controllers.
 These establish the listed masks/clock edges in ordinary root-player ticks;
 complete malformed-value fallbacks, pause/superpause, custom state ownership,
 helpers/projectiles and the remaining hit/guard/priority rules are not inferred.
+
+## Guard range, state-pass priority and push geometry
+
+The guard-distance family, attack-distance and two state-order-* programs pin
+strict 140/141/139 boundaries at axis separation 140, zero/negative ranges,
+omission/entry reset, no-HitDef attack posture, height and independent facing.
+Ranges use the attacker's facing; turning the defender away still returns 1,
+turning the attacker away returns 0. Heights -500 through +100 still return 1
+with the same horizontal positions. Later omitted guard.dist retains an earlier
+explicit value; entry with hitdefpersist omitted resets size.attack.dist. The
+AttackDist integer expression changes the same value. Named clock cases add
+1280/320 and 320/1280 pairs. No projectile range behavior is inferred.
+
+Guard-clock packets include P2Life as a published Time counter. P2 A executes
+before P1 I/H, whereas both A execute P1 first. When P2 begins a tick I and turns
+A in its pass, P1 observes the prior published value on that tick; the next tick
+returns to attack-first order. These source-pinned observations match the shared
+root scheduler and guard-distance-clock-replay. Global entity/physics/animation
+ordering and ordering among unmeasured mode/team combinations remain open.
+
+The original cross-over first seemed to contradict horizontal-only range.
+guard-distance-cross instead reveals P1 ending at -91 and axis separation 161
+after exact overlap, beyond range 160. Custom state 700 retains facing=1.
+Dedicated push-* fixtures pin complete numeric KFM constant groups with front/
+back widths 10, using the harness's --fixture-constants option. Initial failed
+-virtual/-virtual2 drafts of push-standing/disabled lack interpreted values:
+empty/duplicate or life-only Data constants fail native loading. Final cases use
+-virtual3; later push variants use -virtual. Original distribution is unchanged.
+
+For ordinary overlaps, gap 12 resolves to 20 with P1=-74, and gap 11.5 resolves
+to 20 with P1=-74.25. Near axes have additional spacing: gaps 0, .5, 4, 8, 10
+resolve to 30, 29.5, 26, 22, 20. The negative .5 case mirrors displacement.
+These imply additional separation max(0,10-abs(gap)) before equal splitting,
+within the measured ground-overlap cases. Mixed 1280/320 exact overlap produces
+P1=-325 and P2Dist X=90, confirming 240p-scaled spacing. Always-disabled push
+keeps coincident axes; a Time=0-only controller expires before the later overlap.
+
+All 23 programs/26 cases compare source hashes and captured fields in production
+TickCharacters. Airborne/height collision gating, corner transfer, pause,
+dynamic Width, complete auto-turn eligibility and entity ownership are separate
+open obligations; no complete body-physics parity is inferred.

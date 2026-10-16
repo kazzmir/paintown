@@ -4,6 +4,46 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4k — Guard distance, move-type order and body push
+
+Guard range now belongs to the attacker, in its local units, and extends in the
+attacker's facing. Defender facing and vertical separation do not affect the
+query. The upper boundary is strict; the same axis is eligible. MoveType A is
+sufficient without an active HitDef. Range starts from size.attack.dist, explicit
+HitDef guard.dist/AttackDist changes it, an omitted later guard.dist retains it,
+and ordinary nonpersistent state entry resets it. AttackDist now compiles its
+required integer expression and updates this shared value.
+
+The cross-player clock proves state passes prioritize attackers over idle/hit
+players, retaining P1-first order when both attack. Priority is selected before
+passes: the I-to-A tick still follows the idle order. Production now partitions
+root passes accordingly. This refines M4g/M4i ordering; static contact/life
+observations alone had not established cross-player script order. Complete
+helper/projectile, pause and physics ordering remains open.
+
+Native spatial probes distinguish guard range from push/turn side effects.
+Custom states retain facing instead of turning every tick. PlayerPush now has
+typed boolean control, a per-tick reset, and pair suppression when either player
+disables pushing. Ordinary ground overlaps split equally. For axes less than ten
+240p units apart, the beta adds spacing of ten minus their separation before
+splitting the correction. Exact, small, signed, fractional and cutoff probes
+pin this behavior; a 1280/320 pair confirms its coordinate scaling. Previous
+pure geometry tests had not established this native near-axis correction.
+
+Twenty-three source-pinned programs cover 26 native cases, including two mixed
+range directions and mixed push, and all compare production ticks. Full races
+pass and guard-distance-clock-replay independently reproduces its packets.
+The harness adds explicit fixture-owned constants, preserving existing modes;
+push fixtures pin numeric KFM defaults with ten-pixel body widths. Failed drafts
+with incomplete/duplicate constant groups remain diagnostic-only under temp/.
+The native life-only Data group rejection also needs a dedicated character
+constant-loader validation audit; it is not a state-parser rejection rule.
+
+Complete auto-turn eligibility, airborne/corner/pause push, dynamic Width,
+projectile guard range, HitDef expression/default coverage and full world/entity
+ordering remain open. This is a measured guard/push checkpoint, not the full M4
+gate or a Verified whole-controller/trigger claim.
+
 ## M4j — HitBy/NotHitBy protection slots and attack posture
 
 Replaced unused string flag maps with two shared timed protection slots. HitBy

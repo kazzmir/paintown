@@ -23,6 +23,8 @@ type parameterHost struct {
 	override                   combat.HitOverride
 	filter                     combat.HitFilter
 	filterSlot                 int
+	attackDistance             int
+	pushEnabled                bool
 }
 
 func newParameterHost() *parameterHost {
@@ -61,6 +63,8 @@ func (h *parameterHost) SetHitFilter(slot int, value combat.HitFilter) error {
 	h.filter, h.filterSlot = value, slot
 	return nil
 }
+func (h *parameterHost) SetAttackDistance(value int) { h.attackDistance = value }
+func (h *parameterHost) SetPlayerPush(value bool)    { h.pushEnabled = value }
 func (h *parameterHost) GetHitVar(name string) float64 {
 	if name == "xvel" {
 		return -4
@@ -174,6 +178,19 @@ func TestProtectionCompilationIsTypedAndAtomic(t *testing.T) {
 		if h.filter != before {
 			t.Fatal("invalid protection changed active slot")
 		}
+	}
+}
+
+func TestAttackDistanceEvaluatesBeforeMutation(t *testing.T) {
+	h := newParameterHost()
+	h.vars[0] = 140
+	runController(t, h, "AttackDist", "value=var(0)+1")
+	if h.attackDistance != 141 {
+		t.Fatal("AttackDist expression", h.attackDistance)
+	}
+	state := stateSource(t, "[State 7, invalid distance]\ntype=AttackDist\ntrigger1=1\nvalue=1/0\n")
+	if _, err := NewStateMachine().ExecuteState(state, h); err == nil || h.attackDistance != 141 {
+		t.Fatal("invalid distance mutated range", h.attackDistance, err)
 	}
 }
 

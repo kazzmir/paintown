@@ -291,13 +291,22 @@ Current attacker StateType drives matching, including changes after HitDef.
 GetHitVar(damage) clears after contact damage processing. Complete pause,
 invalid-value, entity and custom-state behavior remains open.
 
+M4j is commit `f8cb21e6`. M4k adds attacker-facing/local guard range, retained
+HitDef overrides and typed AttackDist/PlayerPush, fixes attack-first root state
+passes (stable ties), preserves custom facing, and matches native near-axis push
+spacing. Twenty-three programs/26 cases include mixed range and push. Full races
+and a guard-clock replay pass. See REFERENCE.md for spatial/order evidence and
+failed draft constant setup. Audit native required Data constants separately.
+Dynamic Width, airborne/corner/pause push, projectile range, full auto-turn and
+world ownership remain open.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next measure and implement guard-entry distance, then runtime
-audio/effects for the playable match. Continue complete storyboard/rendering
+Next integrate runtime character/HUD audio and effects for the playable match,
+then continue complete HitDef/protection/priority/entity semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world
