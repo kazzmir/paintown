@@ -1,27 +1,22 @@
 package logger
 
 import (
-	"fmt"
+	"io"
+	"log"
 	"os"
-	"sync"
 )
 
-var (
-	unresolvedLog  *os.File
-	unresolvedOnce sync.Once
-)
+var unresolved = log.New(os.Stderr, "mugen: ", 0)
+
+// SetOutput configures diagnostics without opening a working-directory-relative
+// file. The caller owns the writer. Passing nil disables this diagnostic stream.
+func SetOutput(w io.Writer) {
+	if w == nil {
+		w = io.Discard
+	}
+	unresolved.SetOutput(w)
+}
 
 func LogUnresolved(msg string) {
-	unresolvedOnce.Do(func() {
-		var err error
-		// Use a fixed path relative to project root or provide a way to set it
-		unresolvedLog, err = os.OpenFile("game/mugen/unresolved.log", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0644)
-		if err != nil {
-			fmt.Printf("Error opening unresolved.log: %v\n", err)
-		}
-	})
-
-	if unresolvedLog != nil {
-		fmt.Fprintf(unresolvedLog, "%s\n", msg)
-	}
+	unresolved.Print(msg)
 }

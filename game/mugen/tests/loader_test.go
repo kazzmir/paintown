@@ -8,11 +8,11 @@ import (
 )
 
 func TestParseSystemSFF(t *testing.T) {
-	sffPath := "../../../data-new/mugen/data/system.sff"
+	sffPath := referencePath(t, "data", "system.sff")
 
 	f, err := os.Open(sffPath)
 	if err != nil {
-		t.Skipf("Skipping TestParseSystemSFF, could not open %s: %v", sffPath, err)
+		t.Fatalf("required reference fixture: %v", err)
 	}
 	defer f.Close()
 

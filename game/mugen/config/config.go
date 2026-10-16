@@ -98,6 +98,28 @@ type MugenConfig struct {
 }
 
 func LoadConfig(dataDir string) (*MugenConfig, error) {
+	base := dataDir
+	if filepath.Base(base) == "data" {
+		base = filepath.Dir(base)
+	}
+	homeDir, _ := os.UserHomeDir()
+	paths := []string{
+		filepath.Join(base, "mugen.yaml"),
+		filepath.Join(base, "data", "mugen.yaml"),
+		filepath.Join(homeDir, ".paintown", "mugen.yaml"),
+		"mugen.yaml",
+		"game/mugen/mugen.yaml",
+	}
+	if exePath, err := os.Executable(); err == nil {
+		paths = append(paths, filepath.Join(filepath.Dir(exePath), "mugen.yaml"))
+	}
+	return LoadConfigWithOverrides(dataDir, paths...)
+}
+
+// LoadConfigWithOverrides loads the legacy configuration and the first readable
+// override in paths. An empty list disables ambient user/executable overrides,
+// allowing tools and tests to use reproducible configuration.
+func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, error) {
 	// Robustness: check if dataDir already ends in /data or is the data folder
 	base := dataDir
 	if filepath.Base(dataDir) == "data" {
@@ -273,24 +295,8 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 		}
 	}
 
-	// 2. Load Extended Config (YAML) from multiple locations
-	homeDir, _ := os.UserHomeDir()
-	extPaths := []string{
-		filepath.Join(base, "mugen.yaml"),
-		filepath.Join(base, "data", "mugen.yaml"),
-		filepath.Join(homeDir, ".paintown", "mugen.yaml"),
-		"mugen.yaml",
-		"game/mugen/mugen.yaml",
-	}
-
-	// Also search relative to the executable's location
-	if exePath, err := os.Executable(); err == nil {
-		exeDir := filepath.Dir(exePath)
-		extPaths = append(extPaths, filepath.Join(exeDir, "mugen.yaml"))
-	}
-
 	loaded := false
-	for _, path := range extPaths {
+	for _, path := range paths {
 		if path == "" {
 			continue
 		}
@@ -302,9 +308,9 @@ func LoadConfig(dataDir string) (*MugenConfig, error) {
 		}
 	}
 
-	if !loaded {
+	if !loaded && len(paths) > 0 {
 		fmt.Printf("WARNING: No mugen.yaml found. Searched paths:\n")
-		for _, path := range extPaths {
+		for _, path := range paths {
 			fmt.Printf("  - %s\n", path)
 		}
 		fmt.Printf("Keyboard bindings will use hardcoded defaults.\n")

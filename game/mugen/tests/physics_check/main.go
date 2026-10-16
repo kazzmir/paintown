@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"path/filepath"
@@ -11,8 +12,9 @@ import (
 
 func main() {
 	fmt.Println("--- PHYSICS TEST START ---")
-	dataDir := "data-new/mugen"
-	root := dataDir
+	dataDir := flag.String("data-dir", "game/mugen/temp/mugen-1.1b1", "MUGEN distribution root")
+	flag.Parse()
+	root := *dataDir
 
 	// cfg := &config.MugenConfig{}
 	// input.GlobalManager = input.NewInputManager(cfg)

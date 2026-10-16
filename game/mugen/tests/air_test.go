@@ -8,16 +8,11 @@ import (
 )
 
 func TestParseFightAir(t *testing.T) {
-	// Let's test against fight.def/fight.air equivalent
-	path := "../../../data-new/mugen/data/mugen1/fight.def" // this folder has a fight.def but we really want an air file
-
-	// Looking for any .air file in local data-new directory. system.def is accompanied by system.sff, maybe system.air? No, system.def contains animations internally.
-	// Oh, wait. fightfx.air is standard in data/
-	path = "../../../data-new/mugen/data/fightfx.air"
+	path := referencePath(t, "data", "fightfx.air")
 
 	f, err := os.Open(path)
 	if err != nil {
-		t.Skipf("Skipping TestParseFightAir, could not find %s: %v", path, err)
+		t.Fatalf("required reference fixture: %v", err)
 	}
 	defer f.Close()
 

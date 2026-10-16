@@ -8,11 +8,11 @@ import (
 )
 
 func TestParseKFMCNS(t *testing.T) {
-	path := "../../../data-new/mugen/chars/kfm/kfm.cns"
+	path := referencePath(t, "chars", "kfm", "kfm.cns")
 
 	f, err := os.Open(path)
 	if err != nil {
-		t.Skipf("Skipping TestParseKFMCNS, could not find %s: %v", path, err)
+		t.Fatalf("required reference fixture: %v", err)
 	}
 	defer f.Close()
 

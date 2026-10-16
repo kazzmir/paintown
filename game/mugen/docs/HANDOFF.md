@@ -1,6 +1,6 @@
 # Handoff
 
-Updated: 2026-10-16. Status: implementation approved; starting M0.
+Updated: 2026-10-16. Status: M0a baseline checkpoint implemented and tested.
 
 ## Current authorization
 
@@ -64,9 +64,21 @@ the passing parser tests.
 - No source edits or changes outside the approved project subtree were made.
   Baseline Go tests used their normal disposable temporary directories.
 
+## Current implementation checkpoint
+
+M0a: full test build now passes; tests use the pinned local reference and do not
+skip missing required content. UTF-8 BOM regression, explicit configuration
+override selection, stderr diagnostics, separate physics-check application,
+and the launcher's `--check` are implemented. See CHECKPOINTS.md for validation.
+Reviewed baseline documentation is commit `06cdd9c1`.
+
+Reference help timed out under isolated Wine, but wrote a log identifying the
+binary as 1.1.0 Beta 1 P1 (2013.08.11). A bounded quick match is being checked.
+No gameplay parity or complete M0 semantic harness has been verified yet.
+
 ## Next action
 
-Execute M0 in the plan, then the typed expression and
+Continue reference harness work and the typed expression and
 simulation foundations plus asset support. Reach the first playable KFM match
 at M4 and continue through the complete compatibility gates. Implementation
 choices are delegated after approval; ask only about concrete blockers or

@@ -72,8 +72,12 @@ type Lexer struct {
 }
 
 func NewLexer(r io.Reader) *Lexer {
+	reader := bufio.NewReader(r)
+	if prefix, _ := reader.Peek(3); bytes.Equal(prefix, []byte{0xef, 0xbb, 0xbf}) {
+		_, _ = reader.Discard(3)
+	}
 	return &Lexer{
-		r:    bufio.NewReader(r),
+		r:    reader,
 		line: 1,
 		col:  1,
 	}

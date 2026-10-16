@@ -92,13 +92,11 @@ cns = kfm.cns ; Constants
 }
 
 func TestSystemDef(t *testing.T) {
-	// The user requested testing against paintown-data/mugen/data/big/system.def
-	// Let's use the local data-new directory
-	path := "../../../data-new/mugen/data/big/system.def"
+	path := referencePath(t, "data", "mugen1", "system.def")
 
 	file, err := os.Open(path)
 	if err != nil {
-		t.Skipf("Skipping system.def test, file not found: %v", err)
+		t.Fatalf("required reference fixture: %v", err)
 	}
 	defer file.Close()
 
@@ -114,11 +112,11 @@ func TestSystemDef(t *testing.T) {
 }
 
 func TestAllDefFiles(t *testing.T) {
-	basePath := "../../../data-new/mugen"
+	basePath := referenceRoot(t)
 
 	// Check if directory exists before walking
 	if _, err := os.Stat(basePath); os.IsNotExist(err) {
-		t.Skipf("Skipping TestAllDefFiles, directory %s not found", basePath)
+		t.Fatalf("required reference fixture: %v", err)
 	}
 
 	successCount := 0
@@ -135,9 +133,8 @@ func TestAllDefFiles(t *testing.T) {
 				errCount++
 				return nil
 			}
-			defer file.Close()
-
 			_, parseErr := parsers.Parse(file)
+			file.Close()
 			if parseErr != nil {
 				t.Errorf("Failed to parse %s: %v", path, parseErr)
 				errCount++

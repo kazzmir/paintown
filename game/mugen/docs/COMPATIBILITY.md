@@ -1,6 +1,9 @@
 # M.U.G.E.N 1.1 beta 1 compatibility inventory
 
-Assessment snapshot: 2026-10-16. Implementation has not started. See [ASSESSMENT.md](ASSESSMENT.md) and [PLAN.md](PLAN.md).
+Assessment snapshot: 2026-10-16. The tables below describe the original semantic
+baseline. M0a now fixes the build and pins the reference test corpus; no semantic
+row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
+[ASSESSMENT.md](ASSESSMENT.md), and [PLAN.md](PLAN.md).
 
 ## Evidence and status definitions
 

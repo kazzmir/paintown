@@ -48,8 +48,12 @@ Stretch = 1
 	if err := os.WriteFile(filepath.Join(dataDir, "mugen.cfg"), []byte(cfgContent), 0644); err != nil {
 		t.Fatal(err)
 	}
+	override := filepath.Join(tmpDir, "mugen.yaml")
+	if err := os.WriteFile(override, []byte("video:\n  width: 800\n  height: 600\n"), 0644); err != nil {
+		t.Fatal(err)
+	}
 
-	cfg, err := config.LoadConfig(tmpDir)
+	cfg, err := config.LoadConfigWithOverrides(tmpDir)
 	if err != nil {
 		t.Fatalf("failed to load config: %v", err)
 	}
@@ -71,5 +75,12 @@ Stretch = 1
 	}
 	if cfg.Video.Width != 320 || cfg.Video.Height != 240 {
 		t.Errorf("expected Video 320x240, got %dx%d", cfg.Video.Width, cfg.Video.Height)
+	}
+	withOverride, err := config.LoadConfigWithOverrides(tmpDir, override)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if withOverride.Video.Width != 800 || withOverride.Video.Height != 600 {
+		t.Fatalf("explicit override was not applied: %+v", withOverride.Video)
 	}
 }
