@@ -65,12 +65,14 @@ type Movement struct {
 }
 
 type StateController struct {
-	Line           int
-	Name           string
-	Type           string
-	Persistent     int
-	IgnoreHitPause int
-	Triggers       []string
+	Line                 int
+	Name                 string
+	Type                 string
+	Persistent           int
+	IgnoreHitPause       int
+	PersistentSource     string
+	IgnoreHitPauseSource string
+	Triggers             []string
 	// The rest of the keys we'll store loosely for now, or just provide access to the raw attributes
 	// In a full implementation, each controller type (ChangeState, HitDef, etc) has specific fields.
 	// We'll store them as a string map to avoid creating 50 struct types right now.
@@ -421,8 +423,10 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 					ctrl.Type = getAsString(attr.Value)
 				} else if key == "persistent" {
 					ctrl.Persistent = getAsInt(attr.Value)
+					ctrl.PersistentSource = attributeExpression(attr)
 				} else if key == "ignorehitpause" {
 					ctrl.IgnoreHitPause = getAsInt(attr.Value)
+					ctrl.IgnoreHitPauseSource = attributeExpression(attr)
 				} else if strings.HasPrefix(key, "trigger") {
 					strVal := attributeExpression(attr)
 					ctrl.Triggers = append(ctrl.Triggers, fmt.Sprintf("%s = %s", attr.ID.String(), strVal))

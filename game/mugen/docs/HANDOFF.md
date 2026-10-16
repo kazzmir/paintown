@@ -83,11 +83,17 @@ expression runner is `tests/expressions`; six fixtures assert 15 observations.
 All 1522 stock trigger lines parse. Full tests and headless language race tests
 pass; a bounded fuzz run completed 108219 executions without failure.
 
-The state machine still has its original grouping/persistence/entry/pause defects
-and incomplete controller handlers. World trigger/constant/GetHitVar bindings
-remain partial. Do not call M1 or full M0/M2 complete. Next extract the pure state
-executor into `engine/` with a compatibility alias in `character/`, then test and
-fix execution/compilation semantics without requiring Ebitengine.
+M1b is commit `8e18f717`. M2a extracts the executor into `engine/` with public
+compatibility aliases in `character/`, compiles/validates trigger programs once,
+corrects grouping/persistence, adds Null, and tests pause filtering, transitions,
+validation before mutation and shared-state host isolation. Its headless race
+tests pass. Definitions are immutable after compilation.
+
+Next fix the production Character loop's hitpause/timer handling and replace
+the duplicate entry paths with typed entry application; compile controller
+parameter schemas and extend the pure simulation/trace runner. World trigger/
+constant/GetHitVar bindings and many controller bodies remain partial. Do not
+call M1 or full M0/M2 complete.
 
 The reference quick match loaded successfully through match-loop initialization
 under Wine. The binary identifies itself as 1.1.0 Beta 1 P1 (2013.08.11).

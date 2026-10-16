@@ -15,6 +15,12 @@ State scheduling, parameter compilation, constant/world/GetHitVar bindings and
 reference comparisons are still incomplete. The baseline tables remain a dated
 inventory; these language tests alone do not promote gameplay entries to Verified.
 
+M2a moves the shared executor to `engine/`, compiles trigger groups once,
+rejects invalid states/unknown controller names before effects, corrects group
+order/gaps and persistence, and adds Null. Headless state race tests pass.
+Production pause/timer integration, state entry, typed controller parameters,
+world ownership, and executable reference confirmation are still outstanding.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

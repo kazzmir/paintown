@@ -94,3 +94,31 @@ Remaining: complete constant/GetHitVar/world trigger bindings; compile/validate
 controller parameters and reject invalid trigger groups; correct state entry,
 persistence, pause and ownership; extract a headless state/match core. M1 is not
 declared complete by this checkpoint.
+
+## M2a — Headless state executor and compiled trigger groups
+
+Moved the shared executor/handlers into `engine/`, retaining public aliases in
+`character/`. No Ebitengine/input/render dependency enters the new core. Trigger
+programs compile once from immutable source; synchronized caches allow distinct
+hosts to share programs without sharing variables/persistence.
+
+Unknown controller types, malformed expressions, missing trigger1 and invalid
+persistent/ignorehitpause literals now fail before executing any controller in
+the state, with state/controller/name/type/line context. Compilation errors stay
+errors on repeated execution. Added the explicit Null controller. Triggerall and
+numbered groups execute in documented order, stop at number gaps, and preserve
+repeated-condition AND semantics. Bottom is false at the trigger boundary.
+Persistent N counts successful conditions and activates on each Nth success;
+one-shot persistence resets on host re-entry. Trigger side effects continue to
+evaluate even after a one-shot controller has activated, matching the prior C++
+activation structure; executable reference confirmation is still required.
+
+Validation: headless `go test -race ./game/mugen/engine` passes. Regressions cover
+trigger ordering/gaps/AND/OR, invalid-state atomic validation, persistence across
+intermittent conditions/re-entry, hitpause filtering, self-transition abortion,
+Null, and eight concurrent hosts sharing one compiled state.
+
+Remaining: production Character.Update still skips all paused state passes;
+state entry is still applied in two places, and handlers still need typed
+parameter schemas. These are next, followed by world/entity ownership and the
+full state runner. This checkpoint does not declare M2 complete.
