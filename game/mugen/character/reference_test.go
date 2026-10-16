@@ -11,7 +11,7 @@ import (
 )
 
 func TestCharacterReferenceStatePrograms(t *testing.T) {
-	for _, name := range []string{"state-order", "persistence", "entry-control"} {
+	for _, name := range []string{"state-order", "persistence", "entry-control", "state-binding", "state-orphan"} {
 		t.Run(name, func(t *testing.T) {
 			path := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(path + ".cns")

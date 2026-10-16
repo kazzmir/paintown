@@ -1,9 +1,32 @@
 package cns
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
+
+func TestReferenceStateBlockBinding(t *testing.T) {
+	data, err := os.ReadFile("../tests/testdata/reference/state-binding.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	file, err := ParseNamed(strings.NewReader(string(data)), "state-binding.cns")
+	if err != nil {
+		t.Fatal(err)
+	}
+	state := file.States[0]
+	if len(file.States) != 3 || state == nil || len(state.Controllers) != 2 {
+		t.Fatalf("states=%v state 0=%+v", file.States, state)
+	}
+	if state.Source != "state-binding.cns" || state.Line != 11 || state.Controllers[0].Params["value"] != "111" || state.Controllers[1].Params["value"] != "222" {
+		t.Fatalf("first definition or controller ownership lost: %+v", state)
+	}
+	file, err = Parse(strings.NewReader("[State 123, orphan]\ntype=Null\ntrigger1=1\n"))
+	if err != nil || len(file.States) != 0 {
+		t.Fatalf("orphan invented a state: %+v, %v", file, err)
+	}
+}
 
 func TestStateExpressionsPreserved(t *testing.T) {
 	data, err := Parse(strings.NewReader(`[Statedef 200]

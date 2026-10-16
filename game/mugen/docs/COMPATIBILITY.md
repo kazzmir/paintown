@@ -72,13 +72,18 @@ M3d applies character resource rules with named errors, case/Windows path
 resolution, sound loading and independent common-state definitions. The measured
 state-file precedence is st, numbered slots, CMD, then common; main cns is
 constants-only. All twenty native resource cases now compare directly after
-M2f aligned the common probe with the round control grant. Selected palettes, same-file duplicate states and exact common search order remain open.
+M2f aligned the common probe with the round control grant. Selected palettes and exact common search order remain open.
 
 M2f fixes transition/entry control and animation precedence with executable
 evidence. Transition values apply first, are visible to entry expressions, and
 explicit Statedef values win. All 24 values in an ordinary seven-state sequence
 match both hosts. Production round setup and full entry/owner ordering remain
 incomplete; this does not promote the entire ChangeState controller to Verified.
+
+M1d binds controllers to their preceding Statedef, preserves the first duplicate
+definition and ignores orphan controllers. Native fixtures match both execution
+hosts; no phantom states are created from controller labels. Malformed/edge
+header and negative-state ownership cases remain outstanding.
 
 ## Evidence and status definitions
 

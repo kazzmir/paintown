@@ -86,3 +86,8 @@ Windows/case names and independent common loads have separate regressions.
 `--fixture entry-control --mugenversion 1.1 --pages 0 12` replays transition versus
 entry parameter precedence. Pure engine and Character tests compare all 24
 recorded variables, including incoming-control reads by entry expressions.
+
+`--fixture state-binding --mugenversion 1.1 --clipboard-in-cmd --pages 0`
+checks cosmetic controller labels and first-definition selection; `state-orphan`
+checks controllers before any definition. Both are replayed by pure engine and
+Character tests.

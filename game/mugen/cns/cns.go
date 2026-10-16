@@ -359,7 +359,11 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				currentState.Name = strings.TrimSpace(section.Name[idx+1:])
 			}
 
-			cns.States[stateID] = currentState
+			// First definition wins. Keep parsing a duplicate into its own
+			// detached block so none of its controllers leak into the first.
+			if _, exists := cns.States[stateID]; !exists {
+				cns.States[stateID] = currentState
+			}
 
 			for _, attr := range section.Attributes {
 				key := strings.ToLower(attr.ID.String())
@@ -402,22 +406,8 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				}
 			}
 		} else if strings.HasPrefix(secName, "state ") {
-			stateNoStr := strings.TrimSpace(strings.TrimPrefix(secName, "state "))
-			// Remove comments and metadata from the header line
-			if idx := strings.Index(stateNoStr, ","); idx != -1 {
-				stateNoStr = strings.TrimSpace(stateNoStr[:idx])
-			}
-			stateNo, err := strconv.Atoi(stateNoStr)
-
-			if err == nil {
-				// MUGEN controllers can refer to any state.
-				// If the state doesn't exist, we create a "virtual" StateDef for it.
-				if _, ok := cns.States[stateNo]; !ok {
-					cns.States[stateNo] = NewStateDef(stateNo)
-				}
-				currentState = cns.States[stateNo]
-			}
-
+			// Controller header numbers are labels, not state references.
+			// Before any Statedef there is no block to attach them to.
 			if currentState == nil {
 				continue
 			}

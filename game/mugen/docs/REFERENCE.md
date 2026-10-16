@@ -151,8 +151,8 @@ merge precedence, motif/common fallback and palette behavior still need probes.
 either order, and marker 222 from st0 over st9 with reversed declarations and
 sparse slots. Its main cns marker 900 never runs when only listed as cns.
 `resource-priority` records primary marker 111 over CMD marker 333. These establish
-fixed first-definition precedence across state files. They do not establish the
-handling of duplicate states inside one file. The harness hashes and copies a
+fixed first-definition precedence across state files. Same-file duplicates are established separately by the state-binding fixture
+below. The harness hashes and copies a
 fixture's authored .extra directory and pins --state-file-order on replay.
 
 Additional resource-load cases show blank st9 and blank sound succeed. Common
@@ -181,6 +181,20 @@ and Character match every recorded value after applying transition values before
 entry evaluation. This supersedes the M2b override-wins interpretation. The
 fresh ordinary-entry-parameters-replay run reproduces both pages. These probes
 compare animation IDs, not additional animation-clock boundaries or owner rules.
+
+## State block binding, 2026-10-16
+
+The state-binding fixture defines state 0 twice. In the first block, a controller
+labeled State 999 sets var(0)=111 and State 0 sets var(1)=222. The duplicate block
+attempts 333/444. The reference records 111/222/0, demonstrating cosmetic header
+numbers and first-definition selection. The separate state-orphan fixture puts
+a controller before any Statedef and records zero, showing it is ignored.
+
+CNS parsing now uses the preceding definition instead of indexing by controller
+labels, and keeps duplicate blocks detached. Pure engine and Character tests
+match all recorded variables. The state-binding-replay run reproduces the trace.
+These cases do not establish whether invalid expressions in discarded duplicates
+are diagnosed at load, or every accepted header spelling/range.
 
 ## Next reference work
 

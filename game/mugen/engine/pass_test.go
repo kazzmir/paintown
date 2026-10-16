@@ -114,6 +114,18 @@ func TestEntryParametersReferenceTrace(t *testing.T) {
 	compareReferenceVariables(t, "entry-control", h.vars)
 }
 
+func TestStateBindingReferenceTrace(t *testing.T) {
+	for _, name := range []string{"state-binding", "state-orphan"} {
+		t.Run(name, func(t *testing.T) {
+			h := referencePassHost(t, name)
+			if err := h.sm.RunStatePass(h.states, h); err != nil {
+				t.Fatal(err)
+			}
+			compareReferenceVariables(t, name, h.vars)
+		})
+	}
+}
+
 func TestStatePassRunawayAndMissingState(t *testing.T) {
 	h := &passHost{entryHost: newEntryHost(), sm: NewStateMachine()}
 	h.states = map[int]*cns.StateDef{7: stateSource(t, "[State 7, repeat]\ntype=ChangeState\ntrigger1=1\nvalue=7\n")}

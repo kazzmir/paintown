@@ -4,6 +4,23 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M1d — CNS controller blocks and duplicate-state binding
+
+The reference state-binding fixture records 111/222/0: controllers with cosmetic
+header numbers 999 and 0 both belong to the preceding Statedef 0, and the later
+duplicate Statedef 0 contributes no controllers. A separate orphan fixture shows
+controllers before the first Statedef are ignored. The Go parser now attaches
+to the current block, preserves the first definition, and parses duplicates into
+detached blocks so their controllers cannot leak into the selected state. It no
+longer invents virtual states from controller labels.
+
+Headless and Character state passes match every recorded variable for both
+fixtures. Parser assertions check the absence of phantom states, selected block
+source/line and controller order. The full suite/race checks and a fresh native
+binding replay pass; stock players retain their known 105/108 compilation
+inventory. Malformed duplicate-block validation, unusual header spelling and
+special negative-state ownership/eligibility remain separate reference cases.
+
 ## M2f — Reference-correct transition/entry ordering
 
 An authored ordinary-state sequence records control and animation across seven

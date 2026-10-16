@@ -147,7 +147,8 @@ the global common cache and adds explicit root/motif options plus a shared
 Windows/case-insensitive resolver. Twenty resource cases run through the real
 loader; their initial common-state control difference was later isolated to
 round-control startup by M2f. Blank numbered ST files and blank sound are accepted; primary st remains
-required. Same-file duplicate states and exact common search order need probes.
+required. Exact common search order still needs probes; M1d below fixes
+same-file duplicate/header binding.
 Full tests/races and fresh reversed-order reference replay pass.
 
 M3d is commit `283f5bb5`. M2f corrects ordinary transition parameter ordering:
@@ -159,6 +160,13 @@ at the same controlled point. All twenty resource cases then match directly;
 there is no special common-state ctrl default to invent. Actual production round
 control scheduling remains M4 work. Full regression/race checks and native
 parameter replay pass.
+
+M2f is commit `7f3ab076`. M1d fixes controller binding to the preceding Statedef
+(the numeric controller header is cosmetic), first-definition selection within
+a file and ignored orphan controllers. Native fixtures and both execution hosts
+match every observation; parser tests reject phantom states/controller leakage.
+Full tests/races and native binding replay pass. Malformed duplicate blocks and
+unusual header spellings still need probes; this is not complete CNS validation.
 
 Next integrate selected character palettes, harden non-character resource loading,
 extend the headless world/state runner, and compare authored
