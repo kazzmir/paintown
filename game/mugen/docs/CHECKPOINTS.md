@@ -4,6 +4,22 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4c — Mixed-player geometry foundation
+
+Two hash-pinned native cases use separate 320/1280-localcoord players. Their
+Pos/P2Dist/P2BodyDist observations now match Character: starts -70/-280,
+axis distances 140/560 and front distances 120/480. P2BodyDist formerly reused
+axis distance; it now subtracts the appropriately converted body fronts and
+retains axis-based Y distance. A fresh inverse-case replay matches.
+
+Cross-player positions, facing/guard-distance checks, collision extents and push
+displacement convert into the querying player's units. Authored tests check
+symmetric mixed-resolution collision, separation, equal physical push movement,
+and facing when raw coordinates give the wrong ordering. Collision/push phase
+ordering, airborne/overlap/custom Width semantics, acquired targets, hit-vector
+conversion and camera transforms remain incomplete. Full race tests pass.
+This checkpoint does not yet connect a production Match.
+
 ## M4b — Coordinate profiles and scaled constants
 
 Added width-ratio coordinate spaces, retained character/motif/stage/game profiles,

@@ -37,7 +37,7 @@ type Environment = EvaluatorEnvironment
 // identifiers that require access to combat state and opponent position.
 type CharacterEnvironment interface {
 	EvaluatorEnvironment
-	GetTargetPos() (float64, float64) // opponent position (world space)
+	GetTargetPos() (float64, float64) // opponent position in caller's local units
 	GetMoveHit() int
 	GetMoveContact() int
 	GetMoveGuarded() int
@@ -109,7 +109,16 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 		return y
 	case "facing":
 		return float64(env.GetFacing())
-	case "p2bodydist x", "p2dist x":
+	case "p2bodydist x", "p2bodydist y":
+		if context, ok := env.(interface{ GetOpponentBodyDistance() (float64, float64) }); ok {
+			x, y := context.GetOpponentBodyDistance()
+			if name == "p2bodydist x" {
+				return x
+			}
+			return y
+		}
+		return math.MaxFloat64
+	case "p2dist x":
 		// Distance from this character's axis to P2's axis, in character-local space.
 		// Negative means P2 is behind (crossed over).
 		if charEnv, ok := env.(CharacterEnvironment); ok {
@@ -118,7 +127,7 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 			return (tx - cx) * float64(env.GetFacing())
 		}
 		return 0
-	case "p2bodydist y", "p2dist y":
+	case "p2dist y":
 		if charEnv, ok := env.(CharacterEnvironment); ok {
 			_, ty := charEnv.GetTargetPos()
 			_, cy := env.GetPos()

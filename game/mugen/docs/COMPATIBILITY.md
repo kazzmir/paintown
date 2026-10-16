@@ -7,6 +7,12 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4c corrects P2Dist local-unit conversion and the previous P2BodyDist axis alias.
+Two mixed-player native cases match 24 fvars. Collision/push/facing conversions
+have authored geometry tests; hit-vector conversion and world phase/ownership
+rules remain incomplete. No full trigger/controller row is promoted to Verified.
+
+
 M1a preserves source expressions and locations. M1b implements typed numeric/
 bottom evaluation, operators, assignment, math/special forms and strict legacy/
 redirect syntax. Language regressions and headless JSONL replay pass; all 1522

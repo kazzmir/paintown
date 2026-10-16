@@ -1,0 +1,49 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+physics=N
+anim=9990
+ctrl=0
+[State 0, position x]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=Pos X
+[State 0, position y]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=Pos Y
+[State 0, facing]
+type=VarSet
+trigger1=Time=0
+fv=2
+value=Facing
+[State 0, axis distance x]
+type=VarSet
+trigger1=Time=0
+fv=3
+value=P2Dist X
+[State 0, axis distance y]
+type=VarSet
+trigger1=Time=0
+fv=4
+value=P2Dist Y
+[State 0, body distance x]
+type=VarSet
+trigger1=Time=0
+fv=5
+value=P2BodyDist X
+[State 0, body distance y]
+type=VarSet
+trigger1=Time=0
+fv=6
+value=P2BodyDist Y

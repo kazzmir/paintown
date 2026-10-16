@@ -242,3 +242,12 @@ fixture's source/hash, invocation, observation and interpretation. Use exact
 discrete comparisons and justified numeric/visual tolerances. Do not assume
 control of the reference's RNG: the startup log reports session/match seeds but
 no equivalent seed-setting mechanism has been established.
+
+## Mixed-player distance probes
+
+`player-distance.cns/.air/.json` uses separate probe opponents through
+`--p2-localcoord`. Runs player-distance-720-240 and player-distance-240-720
+record starts -280/-70, P2Dist X 560/140 and P2BodyDist X 480/120; all 24
+recorded fvars match Go. Native replay player-distance-replay checks the inverse
+case. Only disposable copied characters are modified. No hit/camera/timing
+parity is inferred from these static distance observations.

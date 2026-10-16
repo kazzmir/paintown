@@ -75,11 +75,17 @@ func CheckCollision(attacker, defender *Character) bool {
 	if s2y == 0 {
 		s2y = 1
 	}
+	// Compare all boxes in the attacker's local space. AIR and CNS size
+	// scales are character-local; the opponent's axis and extents both convert.
+	defenderX, defenderY := attacker.PositionOf(defender)
+	scale := attacker.ScaleFrom(defender)
+	s2x *= scale
+	s2y *= scale
 
 	for _, b1 := range el1.Clsn1 {
 		ax1, ay1, ax2, ay2 := BoxToWorld(b1, attacker.X, attacker.Y, attacker.Facing, s1x, s1y)
 		for _, b2 := range el2.Clsn2 {
-			bx1, by1, bx2, by2 := BoxToWorld(b2, defender.X, defender.Y, defender.Facing, s2x, s2y)
+			bx1, by1, bx2, by2 := BoxToWorld(b2, defenderX, defenderY, defender.Facing, s2x, s2y)
 			if Intersects(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
 				return true
 			}

@@ -25,8 +25,19 @@ windows use that profile, and drawing uses the actual logical horizontal center.
 The physical window honors Video.Width/Height without the former implicit x2.
 The high-resolution title was inspected in temp/app-runs/hd-menu-centered/.
 
-This foundation does not yet translate mixed-player collision/position contexts,
-stage cropping/overdraw, camera zoom, custom-state/animation ownership, fight HUD
-spaces or all storyboard drawing. Those conversions must use explicit source
-and target profiles when the Match runtime is connected; loaded profiles alone
-are not mixed-resolution gameplay parity.
+Separate-player native probes now pin 1280/320 and 320/1280 pairings. The
+querying player sees its own local units: start -280/-70, P2Dist X 560/140,
+and P2BodyDist X 480/120. Body distance compares body fronts rather than axes;
+Y remains an axis distance. All 24 captured fvars match the Character fixture.
+
+Cross-player position queries, guard range/facing, collision boxes and push
+movement now translate the other player. Authored geometric tests verify equal
+physical extents and displacement across spaces. Push/collision timing and
+corner rules, dynamic Width overrides, full airborne cases and query redirection
+remain open. The current Target list still conflates opponents with acquired
+HitDef targets and must be replaced by the match ownership model.
+
+This foundation does not yet translate hit vectors, stage cropping/overdraw,
+camera zoom, custom-state/animation ownership, fight HUD spaces or all storyboard
+drawing. Those conversions must use explicit source and target profiles when the
+Match runtime is connected; these tests are not mixed-resolution gameplay parity.

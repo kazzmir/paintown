@@ -137,3 +137,9 @@ five native cases. Replay with `--fixture coordinate-constants --case fractional
 and a fresh run name. `--localcoord width,height` is an authored-probe override;
 its value is pinned. Mixed-player geometry and complete camera/rendering parity
 still require Match integration.
+
+Mixed-player geometry: `reference_probe.py --fixture player-distance --case
+240-720 --name UNIQUE_NAME` replays an independent opponent profile. The
+`--p2-localcoord` override copies the authored probe player into a second private
+character directory; the original reference is unchanged. Character tests pin
+both coordinate pairings and compare all recorded float variables.

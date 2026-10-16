@@ -226,6 +226,11 @@ inspected at temp/app-runs/hd-menu-centered/. Full tests/races pass. These profi
 still need wiring into mixed-player geometry/camera and the actual Match loop;
 see COORDINATES.md. No fight-state implementation has landed yet.
 
+M4b is commit `dea6624e`. M4c adds mixed-player coordinate conversion for
+positions, body distances, collision extents, push and facing/guard checks. Two
+separate-player native cases pin 24 fvars and match; full races pass. See
+COORDINATES.md for remaining hit-vector/camera/ownership/phase obligations.
+
 Next reach playable match flow with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

@@ -2,6 +2,7 @@ package character
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -435,9 +436,10 @@ func (c *Character) Update() {
 			if !c.Specials["noautoturn"] && len(c.Target) > 0 {
 				opponent := c.Target[0]
 				newFacing := c.Facing
-				if opponent.X > c.X {
+				opponentX, _ := c.PositionOf(opponent)
+				if opponentX > c.X {
 					newFacing = 1
-				} else if opponent.X < c.X {
+				} else if opponentX < c.X {
 					newFacing = -1
 				}
 				if newFacing != c.Facing {
@@ -1107,7 +1109,8 @@ func (c *Character) GetInGuardDist() bool {
 	for _, target := range c.Target {
 		if strings.ToUpper(target.MoveType) == "A" {
 			// Calculate relative distance
-			relDist := (target.X - c.X) * float64(c.Facing)
+			targetX, _ := c.PositionOf(target)
+			relDist := (targetX - c.X) * float64(c.Facing)
 			if relDist > 0 && relDist < guardDist {
 				return true
 			}
@@ -1254,11 +1257,10 @@ func (c *Character) GetHitVar(name string) float64 {
 	return val
 }
 
-// GetTargetPos returns the world-space position of the first target (opponent).
-// Used for p2bodydist evaluations in the evaluator.
+// GetTargetPos returns the opponent's position in this player's local units.
 func (c *Character) GetTargetPos() (float64, float64) {
 	if len(c.Target) > 0 {
-		return c.Target[0].X, c.Target[0].Y
+		return c.PositionOf(c.Target[0])
 	}
 	return c.X, c.Y // No target: return self (distance = 0)
 }
@@ -1545,38 +1547,32 @@ func (c *Character) ResolvePushCollision() {
 	for _, other := range c.Target {
 		othSt := strings.ToUpper(other.StateType)
 		if (othSt == "S" || othSt == "C") && !other.PosFrozen {
-			dist := other.X - c.X
-			absDist := dist
-			if absDist < 0 {
-				absDist = -absDist
+			otherX, _ := c.PositionOf(other)
+			dist := otherX - c.X
+			front, back := c.bodyWidths()
+			otherFront, otherBack := other.bodyWidths()
+			leftWidth, rightWidth := back, front
+			if c.Facing < 0 {
+				leftWidth, rightWidth = front, back
 			}
-
-			// Combined push width
-			// ground.front/back
-			pushDist := float64(c.StateFile.Size.GroundFront + other.StateFile.Size.GroundBack)
+			otherLeft, otherRight := otherBack, otherFront
+			if other.Facing < 0 {
+				otherLeft, otherRight = otherFront, otherBack
+			}
+			scale := c.ScaleFrom(other)
+			pushDist := rightWidth + otherLeft*scale
 			if dist < 0 {
-				pushDist = float64(c.StateFile.Size.GroundBack + other.StateFile.Size.GroundFront)
+				pushDist = leftWidth + otherRight*scale
 			}
-
+			absDist := math.Abs(dist)
 			if absDist < pushDist {
-				overlap := pushDist - absDist
-				// Push both apart
-				if dist > 0 {
-					c.X -= overlap / 2
-					other.X += overlap / 2
-				} else if dist < 0 {
-					c.X += overlap / 2
-					other.X -= overlap / 2
-				} else {
-					// Perfectly overlapping, push based on player ID
-					if c.PlayerID < other.PlayerID {
-						c.X -= pushDist / 2
-						other.X += pushDist / 2
-					} else {
-						c.X += pushDist / 2
-						other.X -= pushDist / 2
-					}
+				direction := 1.0
+				if dist < 0 || (dist == 0 && c.PlayerID > other.PlayerID) {
+					direction = -1
 				}
+				delta := (pushDist - absDist) / 2 * direction
+				c.X -= delta
+				other.X += delta / scale
 			}
 		}
 	}
@@ -1680,9 +1676,10 @@ func (c *Character) FaceOpponent() {
 		return
 	}
 	facing := c.Facing
-	if c.Target[0].X > c.X {
+	x, _ := c.PositionOf(c.Target[0])
+	if x > c.X {
 		facing = 1
-	} else if c.Target[0].X < c.X {
+	} else if x < c.X {
 		facing = -1
 	}
 	if facing != c.Facing {
@@ -1819,9 +1816,10 @@ func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
 	}
 
 	// Turn to face attacker
-	if attacker.X > c.X {
+	attackerX, _ := c.PositionOf(attacker)
+	if attackerX > c.X {
 		c.Facing = 1
-	} else if attacker.X < c.X {
+	} else if attackerX < c.X {
 		c.Facing = -1
 	}
 
