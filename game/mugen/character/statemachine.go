@@ -2,7 +2,6 @@ package character
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 
@@ -339,92 +338,6 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 
 // evaluateTriggers evaluates the Trigger1 and TriggerAll logic for a controller.
 func (sm *StateMachine) evaluateTriggers(ctrl *cns.StateController, env Environment) bool {
-	evaluator.SetCustomEvaluation(func(name string, env evaluator.Environment) float64 {
-		charEnv, ok := env.(Environment)
-		if !ok {
-			return math.MaxFloat64 // Indicate unknown if not a character environment
-		}
-		switch name { // name is already normalized by Evaluate
-		case "time":
-			return float64(charEnv.GetTime())
-		case "animtime":
-			return float64(charEnv.GetAnimTime())
-		case "animelem":
-			return float64(charEnv.GetAnimElem())
-		case "anim":
-			return float64(charEnv.GetAnim())
-		case "pos x":
-			x, _ := charEnv.GetPos()
-			return x
-		case "pos y":
-			_, y := charEnv.GetPos()
-			return y
-		case "vel x":
-			x, _ := charEnv.GetVel()
-			return x
-		case "vel y":
-			_, y := charEnv.GetVel()
-			return y
-		case "statetype":
-			// MUGEN StateType: A=1, S=2, C=3, L=4
-			switch strings.ToLower(charEnv.GetStateType()) {
-			case "s":
-				return 2
-			case "c":
-				return 3
-			case "a":
-				return 1
-			case "l":
-				return 4
-			default:
-				return 0
-			}
-		case "stateno":
-			return float64(charEnv.GetStateNo())
-		case "ctrl":
-			if charEnv.GetCtrl() {
-				return 1
-			}
-			return 0
-		case "facing":
-			return float64(charEnv.GetFacing())
-		case "movehit":
-			return float64(charEnv.GetMoveHit())
-		case "movecontact":
-			return float64(charEnv.GetMoveContact())
-		case "moveguarded":
-			return float64(charEnv.GetMoveGuarded())
-		case "power":
-			return float64(charEnv.GetPower())
-		case "life":
-			return float64(charEnv.GetLife())
-		case "alive":
-			if charEnv.GetLife() > 0 {
-				return 1
-			}
-			return 0
-		case "canrecover":
-			return 0 // Placeholder
-		case "roundstate":
-			return 2 // Fighting
-		case "s": // Stand (StateType/Physics)
-			return 2
-		case "c": // Crouch (StateType/Physics)
-			return 3
-		case "a": // Air (StateType) / Attack (MoveType)
-			return 1
-		case "l": // Liedown (StateType)
-			return 4
-		case "i": // Idle (MoveType)
-			return 0
-		case "h": // GetHit (MoveType)
-			return 5
-		case "n": // None (Physics)
-			return 0
-		}
-		return math.MaxFloat64 // Mark as unknown
-	})
-
 	if len(ctrl.Triggers) == 0 {
 		return false
 	}

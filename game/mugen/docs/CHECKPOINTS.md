@@ -58,3 +58,39 @@ source fidelity, not expression arithmetic or state execution. Those are next.
 The isolated Wine quick match reached both game-loop and match-loop initialization
 with the stock character/stage/assets loaded. See REFERENCE.md for the observed
 evidence and limits; no Go/reference semantic comparison is claimed yet.
+
+## M1b / M0b foundation — Typed language and headless expression replay
+
+Added distinct int32/float32/bottom values, numeric promotion, integer division,
+strict integer bitwise/modulo operations, bounded exponentiation, assignments,
+all logical operators, math calls/constants, and bottom propagation. IfElse
+evaluates all arguments; Cond evaluates its selected branch. Replaced the
+process-global custom evaluator with environment-local optional interfaces for
+trigger bindings, redirects, animation queries, and warnings. Existing game
+call sites use a numeric facade; preserving bottom through controller parameter
+application is still M2 work.
+
+The expression parser now rejects unknown characters, malformed numbers/strings,
+invalid assignments/intervals, and excessive nesting instead of silently dropping
+tokens. It preserves literal types, implements target operator precedence and
+legacy nullary clauses, and parses redirects of a single trigger. The stock
+corpus revealed `AnimElem = 3, -1`; the signed legacy argument now has a
+regression. All 1522 stock trigger lines parse. This is syntax evidence, not
+verification of their world-bound behavior.
+
+Added `internal/exprfixture` and the `tests/expressions` JSONL runner. Six fixtures
+produce 15 deterministic observations with kind/value/warnings/variables; typed
+results and side effects are asserted. Fixture errors and mismatches exit
+nonzero. It uses the production evaluator and works without DISPLAY.
+
+Validation: the full `mugen --check` suite passes. Display-independent race tests
+pass for evaluator, parsers, CNS, and the expression runner. A three-second
+single-worker expression fuzz run completed 108219 executions without failure.
+The mathematical/precedence expectations come from bundled CNS/trigger docs;
+numeric edge cases and legacy/redirect behavior still need executable reference
+probes. No semantic inventory entry is yet promoted to reference-Verified.
+
+Remaining: complete constant/GetHitVar/world trigger bindings; compile/validate
+controller parameters and reject invalid trigger groups; correct state entry,
+persistence, pause and ownership; extract a headless state/match core. M1 is not
+declared complete by this checkpoint.

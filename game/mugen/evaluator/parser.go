@@ -7,17 +7,15 @@ import (
 	"unicode"
 )
 
-// Parser parses MUGEN CNS expression strings into an AST.
 type Parser struct {
-	tokens []token
-	pos    int
+	tokens      []token
+	pos, depth  int
+	redirecting bool
 }
-
-type tokenType int
+type tokenType uint8
 
 const (
-	tokError tokenType = iota
-	tokEOF
+	tokEOF tokenType = iota
 	tokNumber
 	tokIdentifier
 	tokOperator
@@ -30,164 +28,219 @@ const (
 )
 
 type token struct {
-	typ tokenType
-	lit string
+	typ    tokenType
+	lit    string
+	column int
 }
 
 func Parse(input string) (Expression, error) {
-	tokens := tokenize(input)
+	tokens, err := tokenize(input)
+	if err != nil {
+		return nil, err
+	}
 	p := &Parser{tokens: tokens}
 	expr, err := p.parseExpression(0)
 	if err != nil {
 		return nil, err
 	}
 	if p.peek().typ != tokEOF {
-		return nil, fmt.Errorf("unexpected token at end of expression: %s", p.peek().lit)
+		return nil, p.errorf("unexpected token %q", p.peek().lit)
+	}
+	if err := validateIntervals(expr, false); err != nil {
+		return nil, p.errorf("%s", err)
 	}
 	return expr, nil
 }
 
-func tokenize(input string) []token {
+func validateIntervals(expr Expression, allowed bool) error {
+	switch e := expr.(type) {
+	case *Interval:
+		if !allowed {
+			return fmt.Errorf("an interval requires = or !=")
+		}
+		if err := validateIntervals(e.Left, false); err != nil {
+			return err
+		}
+		return validateIntervals(e.Right, false)
+	case *Group:
+		return validateIntervals(e.Expression, false)
+	case *Unary:
+		return validateIntervals(e.Expression, false)
+	case *Binary:
+		if err := validateIntervals(e.Left, false); err != nil {
+			return err
+		}
+		return validateIntervals(e.Right, e.Operator == "=" || e.Operator == "==" || e.Operator == "!=")
+	case *Call:
+		for _, arg := range e.Arguments {
+			if err := validateIntervals(arg, false); err != nil {
+				return err
+			}
+		}
+	case *Redirect:
+		return validateIntervals(e.Trigger, false)
+	}
+	return nil
+}
+
+func tokenize(input string) ([]token, error) {
 	var tokens []token
 	chars := []rune(input)
-	i := 0
-	for i < len(chars) {
+	for i := 0; i < len(chars); {
+		if len(tokens) >= 16384 {
+			return nil, fmt.Errorf("expression exceeds 16384 tokens")
+		}
 		ch := chars[i]
 		if unicode.IsSpace(ch) {
 			i++
 			continue
 		}
-
+		start := i
 		if unicode.IsDigit(ch) || (ch == '.' && i+1 < len(chars) && unicode.IsDigit(chars[i+1])) {
-			start := i
+			i++
 			for i < len(chars) && (unicode.IsDigit(chars[i]) || chars[i] == '.') {
 				i++
 			}
-			tokens = append(tokens, token{tokNumber, string(chars[start:i])})
+			tokens = append(tokens, token{tokNumber, string(chars[start:i]), start + 1})
 			continue
 		}
-
 		if unicode.IsLetter(ch) || ch == '_' {
-			start := i
-			for i < len(chars) && (unicode.IsLetter(chars[i]) || unicode.IsDigit(chars[i]) || chars[i] == '_' || chars[i] == ' ' || chars[i] == '.') {
-				// Special check for spaces in identifiers like "pos x"
-				// But we should be careful not to consume symbols.
-				// Actually, "pos x" should probably be treated as two tokens or handled specifically.
-				// In MUGEN, identifiers can have spaces between keywords sometimes, but usually lexers are stricter.
-				// Let's allow one space if followed by internal chars.
-				if chars[i] == ' ' && (i+1 >= len(chars) || !unicode.IsLetter(chars[i+1])) {
-					break
-				}
+			i++
+			for i < len(chars) && (unicode.IsLetter(chars[i]) || unicode.IsDigit(chars[i]) || chars[i] == '_' || chars[i] == '.') {
 				i++
 			}
-			lit := strings.TrimSpace(string(chars[start:i]))
-			tokens = append(tokens, token{tokIdentifier, lit})
+			tokens = append(tokens, token{tokIdentifier, string(chars[start:i]), start + 1})
 			continue
 		}
-
 		if ch == '"' {
-			start := i
-			i++ // Skip open quote
+			i++
 			for i < len(chars) && chars[i] != '"' {
 				i++
 			}
-			if i < len(chars) {
-				i++ // Skip close quote
+			if i == len(chars) {
+				return nil, fmt.Errorf("column %d: unterminated string", start+1)
 			}
-			lit := string(chars[start+1 : i-1])
-			tokens = append(tokens, token{tokString, lit})
+			tokens = append(tokens, token{tokString, string(chars[start+1 : i]), start + 1})
+			i++
 			continue
 		}
-
+		typ := tokOperator
 		switch ch {
-		case '[':
-			tokens = append(tokens, token{tokLBracket, "["})
-			i++
-		case ']':
-			tokens = append(tokens, token{tokRBracket, "]"})
-			i++
 		case '(':
-			tokens = append(tokens, token{tokLParen, "("})
-			i++
+			typ = tokLParen
 		case ')':
-			tokens = append(tokens, token{tokRParen, ")"})
-			i++
+			typ = tokRParen
+		case '[':
+			typ = tokLBracket
+		case ']':
+			typ = tokRBracket
 		case ',':
-			tokens = append(tokens, token{tokComma, ","})
-			i++
+			typ = tokComma
 		case '+', '-', '*', '/', '%', '=', '!', '>', '<', '&', '|', '^', '~', ':':
-			i++
-			// Handle multi-char ops like ==, !=, >=, <=, &&, ||, **, :=
-			if i < len(chars) {
-				next := chars[i]
-				combined := string(ch) + string(next)
-				switch combined {
-				case "==", "!=", ">=", "<=", "&&", "||", "**", ":=":
-					tokens = append(tokens, token{tokOperator, combined})
-					i++
-					continue
-				}
-			}
-			// Convert single '=' to "==" behavior if it's a comparison?
-			// MUGEN uses '=' for both assignment and comparison in different contexts.
-			tokens = append(tokens, token{tokOperator, string(ch)})
 		default:
-			i++
+			return nil, fmt.Errorf("column %d: invalid character %q", i+1, ch)
 		}
+		i++
+		if typ == tokOperator && i < len(chars) {
+			pair := string([]rune{ch, chars[i]})
+			switch pair {
+			case "==", "!=", ">=", "<=", "&&", "||", "^^", "**", ":=":
+				i++
+			}
+		}
+		lit := string(chars[start:i])
+		if lit == ":" {
+			return nil, fmt.Errorf("column %d: expected :=", start+1)
+		}
+		tokens = append(tokens, token{typ, lit, start + 1})
 	}
-	tokens = append(tokens, token{tokEOF, ""})
-	return tokens
+	return append(tokens, token{typ: tokEOF, column: len(chars) + 1}), nil
 }
 
 var precedence = map[string]int{
-	"||": 1,
-	"&&": 2,
-	"|":  3,
-	"^":  4,
-	"&":  5,
-	"=":  6, "==": 6, "!=": 6,
-	">": 7, ">=": 7, "<": 7, "<=": 7,
-	"+": 8, "-": 8,
-	"*": 9, "/": 9, "%": 9,
-	"**": 10,
+	"||": 1, "^^": 2, "&&": 3, "|": 4, "^": 5, "&": 6, ":=": 7,
+	"=": 8, "==": 8, "!=": 8, ">": 9, ">=": 9, "<": 9, "<=": 9,
+	"+": 10, "-": 10, "*": 11, "/": 11, "%": 11, "**": 12,
 }
 
-func (p *Parser) parseExpression(minPrecedence int) (Expression, error) {
+func (p *Parser) parseExpression(min int) (Expression, error) {
+	p.depth++
+	defer func() { p.depth-- }()
+	if p.depth > 256 {
+		return nil, p.errorf("expression nesting exceeds 256")
+	}
 	left, err := p.parsePrimary()
 	if err != nil {
 		return nil, err
 	}
-
-	for {
-		tok := p.peek()
-		if tok.typ != tokOperator {
+	for p.peek().typ == tokOperator {
+		op := p.peek().lit
+		prec, ok := precedence[op]
+		if !ok || prec < min {
 			break
 		}
-		prec, ok := precedence[tok.lit]
-		if !ok || prec < minPrecedence {
-			break
+		if ungroupedInterval(left) {
+			return nil, p.errorf("an interval must end its subexpression")
 		}
-
 		p.advance()
-		right, err := p.parseExpression(prec + 1)
+		next := prec + 1
+		if op == ":=" {
+			next = prec
+		}
+		right, err := p.parseExpression(next)
 		if err != nil {
 			return nil, err
 		}
-		left = &Binary{Left: left, Operator: tok.lit, Right: right}
+		if _, ok := right.(*Interval); ok && op != "=" && op != "==" && op != "!=" {
+			return nil, p.errorf("an interval requires = or !=")
+		}
+		if op == ":=" {
+			call, ok := left.(*Call)
+			if !ok || (strings.ToLower(call.Name) != "var" && strings.ToLower(call.Name) != "fvar") || len(call.Arguments) != 1 {
+				return nil, p.errorf("assignment requires an unredirected var(n) or fvar(n)")
+			}
+		}
+		left = &Binary{Left: left, Operator: op, Right: right}
 	}
-
 	return left, nil
+}
+
+func ungroupedInterval(expr Expression) bool {
+	switch e := expr.(type) {
+	case *Interval:
+		return true
+	case *Binary:
+		// Earlier operators already rejected intervals on their left. Following
+		// only the right branch avoids quadratic scans of long arithmetic chains.
+		return ungroupedInterval(e.Right)
+	default:
+		return false
+	}
 }
 
 func (p *Parser) parsePrimary() (Expression, error) {
 	tok := p.advance()
 	switch tok.typ {
 	case tokNumber:
-		val, _ := strconv.ParseFloat(tok.lit, 64)
-		return &Number{Value: val}, nil
+		return p.number(tok, "")
+	case tokString:
+		return &StringExpr{Value: tok.lit}, nil
 	case tokIdentifier:
+		name := strings.ToLower(tok.lit)
+		if isLegacy(name) && p.peek().typ == tokOperator {
+			return p.legacy(tok.lit)
+		}
+		// Only component triggers permit a separate axis word, including tabs.
+		if componentTrigger(name) && p.peek().typ == tokIdentifier {
+			axis := strings.ToLower(p.peek().lit)
+			if axis == "x" || axis == "y" || axis == "z" {
+				tok.lit += " " + axis
+				p.advance()
+			}
+		}
+		var expr Expression = &Identifier{Name: tok.lit}
 		if p.peek().typ == tokLParen {
-			p.advance() // Consume '('
+			p.advance()
 			var args []Expression
 			if p.peek().typ != tokRParen {
 				for {
@@ -199,77 +252,225 @@ func (p *Parser) parsePrimary() (Expression, error) {
 					if p.peek().typ != tokComma {
 						break
 					}
-					p.advance() // Consume ','
+					p.advance()
 				}
 			}
 			if p.peek().typ != tokRParen {
-				return nil, fmt.Errorf("expected ')' after arguments, got %s", p.peek().lit)
+				return nil, p.errorf("expected ')' after %s arguments", tok.lit)
 			}
-			p.advance() // Consume ')'
-			return &Call{Name: tok.lit, Arguments: args}, nil
+			p.advance()
+			expr = &Call{Name: tok.lit, Arguments: args}
 		}
-		return &Identifier{Name: tok.lit}, nil
-	case tokString:
-		return &StringExpr{Value: tok.lit}, nil
-	case tokLBracket:
-		expr, err := p.parseExpression(0)
-		if err != nil {
-			return nil, err
+		if redirectName(name) && p.peek().typ == tokComma {
+			if p.redirecting {
+				return nil, p.errorf("recursive redirection is not supported")
+			}
+			p.advance()
+			p.redirecting = true
+			trigger, err := p.parsePrimary()
+			p.redirecting = false
+			if err != nil {
+				return nil, err
+			}
+			switch trigger.(type) {
+			case *Identifier, *Call, *Legacy, *Binary:
+			default:
+				return nil, p.errorf("redirection requires one trigger; recursive redirection is not supported")
+			}
+			return &Redirect{Selector: expr, Trigger: trigger}, nil
 		}
-		if p.advance().typ != tokComma {
-			return nil, fmt.Errorf("expected ',' in interval")
-		}
-		right, err := p.parseExpression(0)
-		if err != nil {
-			return nil, err
-		}
-		closeTok := p.advance()
-		if closeTok.typ != tokRBracket && closeTok.typ != tokRParen {
-			return nil, fmt.Errorf("expected ']' or ')' to close interval")
-		}
-		return &Interval{Left: expr, Right: right, LeftInc: true, RightInc: closeTok.typ == tokRBracket}, nil
-	case tokLParen:
-		expr, err := p.parseExpression(0)
+		return expr, nil
+	case tokLBracket, tokLParen:
+		first, err := p.parseExpression(0)
 		if err != nil {
 			return nil, err
 		}
 		if p.peek().typ == tokComma {
-			p.advance() // Consume ','
-			right, err := p.parseExpression(0)
+			p.advance()
+			last, err := p.parseExpression(0)
 			if err != nil {
 				return nil, err
 			}
-			closeTok := p.advance()
-			if closeTok.typ != tokRBracket && closeTok.typ != tokRParen {
-				return nil, fmt.Errorf("expected ']' or ')' to close interval")
+			close := p.advance()
+			if close.typ != tokRParen && close.typ != tokRBracket {
+				return nil, p.errorf("expected interval closing delimiter")
 			}
-			return &Interval{Left: expr, Right: right, LeftInc: false, RightInc: closeTok.typ == tokRBracket}, nil
+			return &Interval{Left: first, Right: last, LeftInc: tok.typ == tokLBracket, RightInc: close.typ == tokRBracket}, nil
 		}
-		if p.advance().typ != tokRParen {
-			return nil, fmt.Errorf("expected ')'")
+		if tok.typ == tokLBracket || p.peek().typ != tokRParen {
+			return nil, p.errorf("expected ')'")
 		}
-		return expr, nil
+		p.advance()
+		return &Group{Expression: first}, nil
 	case tokOperator:
-		// Handle unary ops
-		if tok.lit == "-" || tok.lit == "!" || tok.lit == "~" {
-			expr, err := p.parsePrimary()
+		if tok.lit == "-" || tok.lit == "+" || tok.lit == "!" || tok.lit == "~" {
+			if tok.lit == "-" && p.peek().typ == tokNumber && p.peek().lit == "2147483648" {
+				return p.number(p.advance(), "-")
+			}
+			expr, err := p.parseExpression(13)
 			if err != nil {
 				return nil, err
 			}
 			return &Unary{Operator: tok.lit, Expression: expr}, nil
 		}
 	}
-	return nil, fmt.Errorf("unexpected token: %s (%v)", tok.lit, tok.typ)
+	return nil, p.errorf("unexpected token %q", tok.lit)
 }
 
-func (p *Parser) peek() token {
-	return p.tokens[p.pos]
+func (p *Parser) number(tok token, sign string) (Expression, error) {
+	raw := sign + tok.lit
+	isFloat := strings.Contains(raw, ".")
+	var value float64
+	if isFloat {
+		n, err := strconv.ParseFloat(raw, 32)
+		if err != nil {
+			return nil, fmt.Errorf("column %d: invalid float %q", tok.column, raw)
+		}
+		value = n
+	} else {
+		n, err := strconv.ParseInt(raw, 10, 32)
+		if err != nil {
+			return nil, fmt.Errorf("column %d: invalid int32 %q", tok.column, raw)
+		}
+		value = float64(n)
+	}
+	return &Number{Value: value, IsFloat: isFloat, Raw: raw}, nil
 }
 
+func (p *Parser) legacy(name string) (Expression, error) {
+	op := p.advance().lit
+	if op != "=" && op != "!=" && op != "<" && op != ">" && op != "<=" && op != ">=" {
+		return nil, p.errorf("invalid legacy trigger operator %s", op)
+	}
+	lower := strings.ToLower(name)
+	if lower != "timemod" && op != "=" && op != "!=" {
+		return nil, p.errorf("%s requires = or !=", name)
+	}
+	if lower == "command" || lower == "name" || lower == "authorname" || (len(lower) == 6 && lower[0] == 'p' && strings.HasSuffix(lower, "name")) {
+		value := p.advance()
+		if value.typ != tokString {
+			return nil, p.errorf("%s requires a quoted string", name)
+		}
+		return &Binary{Left: &Identifier{Name: name}, Operator: op, Right: &StringExpr{Value: value.lit}}, nil
+	}
+	if lower == "statetype" || lower == "movetype" || lower == "p2statetype" || lower == "p2movetype" || lower == "teammode" {
+		value := p.advance()
+		if value.typ != tokIdentifier {
+			return nil, p.errorf("%s requires a literal type", name)
+		}
+		var rhs Expression = &Identifier{Name: value.lit}
+		if lower == "teammode" {
+			rhs = &StringExpr{Value: strings.ToLower(value.lit)}
+		}
+		return &Binary{Left: &Identifier{Name: name}, Operator: op, Right: rhs}, nil
+	}
+	legacy := &Legacy{Name: name, Operator: op}
+	if lower == "hitdefattr" {
+		for {
+			value := p.advance()
+			if value.typ != tokIdentifier {
+				return nil, p.errorf("HitDefAttr requires literal attributes")
+			}
+			legacy.Arguments = append(legacy.Arguments, &StringExpr{Value: strings.ToUpper(value.lit)})
+			if p.peek().typ != tokComma {
+				break
+			}
+			p.advance()
+		}
+		if len(legacy.Arguments) < 2 {
+			return nil, p.errorf("HitDefAttr requires state and attack attributes")
+		}
+		return legacy, nil
+	}
+	arg, err := p.legacyInteger()
+	if err != nil {
+		return nil, err
+	}
+	legacy.Arguments = []Expression{arg}
+	if p.peek().typ == tokComma {
+		p.advance()
+		comparison := "="
+		if p.peek().typ == tokOperator && isComparison(p.peek().lit) {
+			if lower == "timemod" {
+				return nil, p.errorf("TimeMod's remainder must be an integer literal")
+			}
+			comparison = p.advance().lit
+		}
+		if _, ok := precedence[comparison]; !ok || precedence[comparison] < 8 || precedence[comparison] > 9 {
+			return nil, p.errorf("invalid legacy time comparison")
+		}
+		extra, err := p.legacyInteger()
+		if err != nil {
+			return nil, err
+		}
+		legacy.Arguments = append(legacy.Arguments, extra)
+		legacy.ExtraOperator = comparison
+	}
+	if lower == "timemod" && len(legacy.Arguments) != 2 {
+		return nil, p.errorf("TimeMod requires divisor and remainder")
+	}
+	return legacy, nil
+}
+
+func (p *Parser) legacyInteger() (Expression, error) {
+	sign := ""
+	if p.peek().lit == "-" || p.peek().lit == "+" {
+		sign = p.advance().lit
+	}
+	tok := p.advance()
+	if tok.typ != tokNumber || strings.Contains(tok.lit, ".") {
+		return nil, p.errorf("legacy argument must be an integer literal")
+	}
+	return p.number(tok, sign)
+}
+func isLegacy(name string) bool {
+	switch name {
+	case "animelem", "timemod", "hitdefattr", "command", "name", "authorname", "p1name", "p2name", "p3name", "p4name", "statetype", "movetype", "p2statetype", "p2movetype", "teammode":
+		return true
+	}
+	for _, prefix := range []string{"projhit", "projcontact", "projguarded"} {
+		if strings.HasPrefix(name, prefix) {
+			suffix := strings.TrimPrefix(name, prefix)
+			if suffix == "" {
+				return true
+			}
+			if _, err := strconv.ParseUint(suffix, 10, 31); err == nil {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isComparison(op string) bool {
+	switch op {
+	case "=", "==", "!=", "<", ">", "<=", ">=":
+		return true
+	}
+	return false
+}
+func redirectName(name string) bool {
+	switch name {
+	case "parent", "root", "helper", "target", "partner", "enemy", "enemynear", "playerid":
+		return true
+	}
+	return false
+}
+func componentTrigger(name string) bool {
+	switch name {
+	case "pos", "vel", "p2dist", "p2bodydist", "parentdist", "rootdist", "screenpos", "camerapos", "hitvel":
+		return true
+	}
+	return false
+}
+func (p *Parser) peek() token { return p.tokens[p.pos] }
 func (p *Parser) advance() token {
-	tok := p.tokens[p.pos]
+	tok := p.peek()
 	if p.pos < len(p.tokens)-1 {
 		p.pos++
 	}
 	return tok
+}
+func (p *Parser) errorf(format string, args ...any) error {
+	return fmt.Errorf("column %d: %s", p.peek().column, fmt.Sprintf(format, args...))
 }

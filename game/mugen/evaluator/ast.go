@@ -11,11 +11,50 @@ type Expression interface {
 
 // Number represents a numeric literal.
 type Number struct {
-	Value float64
+	Value   float64
+	IsFloat bool
+	Raw     string
 }
 
 func (n *Number) String() string {
+	if n.Raw != "" {
+		return n.Raw
+	}
 	return fmt.Sprintf("%g", n.Value)
+}
+
+// Group retains subexpression boundaries, including interval placement rules.
+type Group struct{ Expression Expression }
+
+func (g *Group) String() string { return "(" + g.Expression.String() + ")" }
+
+// Redirect changes the environment of one trigger, not the rest of a formula.
+type Redirect struct {
+	Selector Expression
+	Trigger  Expression
+}
+
+func (r *Redirect) String() string { return r.Selector.String() + ", " + r.Trigger.String() }
+
+// Legacy is an old-style nullary trigger clause. Its literal arguments are not
+// ordinary expressions; e.g. AnimElem = 5 + 4 means (AnimElem = 5) + 4.
+type Legacy struct {
+	Name          string
+	Operator      string
+	Arguments     []Expression
+	ExtraOperator string
+}
+
+func (l *Legacy) String() string {
+	s := l.Name + " " + l.Operator + " " + l.Arguments[0].String()
+	for i, arg := range l.Arguments[1:] {
+		s += ", "
+		if i == 0 && l.ExtraOperator != "" {
+			s += l.ExtraOperator + " "
+		}
+		s += arg.String()
+	}
+	return s
 }
 
 // StringExpr represents a string literal.

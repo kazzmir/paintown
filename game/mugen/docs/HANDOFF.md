@@ -1,6 +1,6 @@
 # Handoff
 
-Updated: 2026-10-16. Status: M0a and M1a source-fidelity checkpoints tested.
+Updated: 2026-10-16. Status: M0a, M1a, and typed-language/replay checkpoints tested.
 
 ## Current authorization
 
@@ -74,7 +74,20 @@ Reviewed baseline documentation is commit `06cdd9c1`.
 
 M0a is commit `982c6058`. M1a replaces source-damaging parser reconstruction,
 retains entry/controller expressions and their locations, and adds regressions.
-All tests pass. Numeric/state semantics still use the old implementation.
+All tests pass. M1a is commit `0720070e`.
+
+M1b adds typed numeric/bottom evaluation, strict expression parsing, operators,
+assignments, math/special forms, legacy clauses and environment-local extension
+interfaces. The process-global evaluator hook is removed. The headless JSONL
+expression runner is `tests/expressions`; six fixtures assert 15 observations.
+All 1522 stock trigger lines parse. Full tests and headless language race tests
+pass; a bounded fuzz run completed 108219 executions without failure.
+
+The state machine still has its original grouping/persistence/entry/pause defects
+and incomplete controller handlers. World trigger/constant/GetHitVar bindings
+remain partial. Do not call M1 or full M0/M2 complete. Next extract the pure state
+executor into `engine/` with a compatibility alias in `character/`, then test and
+fix execution/compilation semantics without requiring Ebitengine.
 
 The reference quick match loaded successfully through match-loop initialization
 under Wine. The binary identifies itself as 1.1.0 Beta 1 P1 (2013.08.11).

@@ -5,6 +5,16 @@ baseline. M0a now fixes the build and pins the reference test corpus; no semanti
 row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 [ASSESSMENT.md](ASSESSMENT.md), and [PLAN.md](PLAN.md).
 
+## Implementation progress
+
+M1a preserves source expressions and locations. M1b implements typed numeric/
+bottom evaluation, operators, assignment, math/special forms and strict legacy/
+redirect syntax. Language regressions and headless JSONL replay pass; all 1522
+stock trigger expressions parse. The global custom-evaluation hook is removed.
+State scheduling, parameter compilation, constant/world/GetHitVar bindings and
+reference comparisons are still incomplete. The baseline tables remain a dated
+inventory; these language tests alone do not promote gameplay entries to Verified.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

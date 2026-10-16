@@ -1,0 +1,6 @@
+{"name":"integer-vs-float","steps":[{"expr":"5/6","want":{"kind":"int","value":0}},{"expr":"5.0/2","want":{"kind":"float","value":2.5}},{"expr":"16777217=16777216.0","want":{"kind":"int","value":1}}]}
+{"name":"eager-ifelse","steps":[{"expr":"ifelse(1,7,var(0):=9)","want":{"kind":"int","value":7},"vars":{"0":9}},{"expr":"ifelse(0,1/0,7)","want":{"kind":"int","value":7}}]}
+{"name":"lazy-cond","steps":[{"expr":"cond(1,7,var(0):=9)","want":{"kind":"int","value":7},"vars":{"0":0}},{"expr":"cond(0,1/0,7)","want":{"kind":"int","value":7}}]}
+{"name":"assignment","steps":[{"expr":"var(0):=var(1):=5","want":{"kind":"int","value":5},"vars":{"0":5,"1":5}},{"expr":"var(0):=0||1","want":{"kind":"int","value":1},"vars":{"0":0}}]}
+{"name":"bottom","steps":[{"expr":"1%0","want":{"kind":"bottom","value":0}},{"expr":"1.0&1","want":{"kind":"bottom","value":0}},{"expr":"0&&(1/0)","want":{"kind":"bottom","value":0}}]}
+{"name":"legacy-and-precedence","time":7,"steps":[{"expr":"TimeMod = 4,3","want":{"kind":"int","value":1}},{"expr":"StateType = S + 4","want":{"kind":"int","value":5}},{"expr":"2**3**2","want":{"kind":"int","value":64}}]}

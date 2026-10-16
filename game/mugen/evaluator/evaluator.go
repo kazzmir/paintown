@@ -1,7 +1,6 @@
 package evaluator
 
 import (
-	"fmt"
 	"math"
 	"strings"
 
@@ -57,162 +56,11 @@ type CharacterEnvironment interface {
 	GetRoundsExisted() int
 }
 
-var customEval func(string, EvaluatorEnvironment) float64
-
-// SetCustomEvaluation sets a global hook for extended identifier evaluation.
-func SetCustomEvaluation(f func(string, EvaluatorEnvironment) float64) {
-	customEval = f
-}
-
-// Evaluate recursively computes the value of an expression.
-// In MUGEN, most expressions return a float64 (or bool represented as 0/1).
+// Evaluate is the numeric compatibility facade. Bottom is false/zero at a
+// controller boundary; recursive evaluation uses EvaluateValue so bottom is
+// never accidentally converted to an ordinary zero inside an expression.
 func Evaluate(expr Expression, env EvaluatorEnvironment) float64 {
-	switch e := expr.(type) {
-	case *Number:
-		return e.Value
-	case *Identifier:
-		name := normalizeIdentifier(e.Name)
-		res := evaluateIdentifier(name, env)
-		if res == math.MaxFloat64 && customEval != nil {
-			res = customEval(name, env)
-		}
-		return res
-	case *Unary:
-		val := Evaluate(e.Expression, env)
-		switch e.Operator {
-		case "!":
-			if val == 0 {
-				return 1
-			}
-			return 0
-		case "-":
-			return -val
-		case "~":
-			return float64(^int64(val))
-		}
-	case *Binary:
-		// Special case for command = "string"
-		if id, ok := e.Left.(*Identifier); ok && strings.ToLower(id.Name) == "command" {
-			if str, ok := e.Right.(*StringExpr); ok {
-				if e.Operator == "=" || e.Operator == "==" {
-					matched := env.Command(str.Value)
-					if env.GetStateNo() == 40 && str.Value == "holdfwd" {
-						fmt.Printf("[DEBUG] State 40: eval command = holdfwd -> %v\n", matched)
-					}
-					if matched {
-						return 1
-					}
-					return 0
-				}
-				if e.Operator == "!=" {
-					if !env.Command(str.Value) {
-						return 1
-					}
-					return 0
-				}
-			}
-		}
-
-		left := Evaluate(e.Left, env)
-
-		// Interval evaluation
-		if iv, ok := e.Right.(*Interval); ok {
-			min := Evaluate(iv.Left, env)
-			max := Evaluate(iv.Right, env)
-
-			inRange := true
-			if iv.LeftInc {
-				inRange = inRange && left >= min
-			} else {
-				inRange = inRange && left > min
-			}
-			if iv.RightInc {
-				inRange = inRange && left <= max
-			} else {
-				inRange = inRange && left < max
-			}
-
-			if e.Operator == "=" || e.Operator == "==" {
-				if inRange {
-					return 1
-				}
-				return 0
-			} else if e.Operator == "!=" {
-				if !inRange {
-					return 1
-				}
-				return 0
-			}
-			return 0
-		}
-
-		right := Evaluate(e.Right, env)
-
-		// Hard fix for unknown identifiers defaulting to 0
-		if left == math.MaxFloat64 || right == math.MaxFloat64 {
-			return 0
-		}
-		switch e.Operator {
-		case "=":
-			if left == right {
-				return 1
-			}
-			return 0
-		case "!=":
-			if left != right {
-				return 1
-			}
-			return 0
-		case ">":
-			if left > right {
-				return 1
-			}
-			return 0
-		case ">=":
-			if left >= right {
-				return 1
-			}
-			return 0
-		case "<":
-			if left < right {
-				return 1
-			}
-			return 0
-		case "<=":
-			if left <= right {
-				return 1
-			}
-			return 0
-		case "+":
-			return left + right
-		case "-":
-			return left - right
-		case "*":
-			return left * right
-		case "/":
-			if right == 0 {
-				return 0
-			}
-			return left / right
-		case "%":
-			return float64(int64(left) % int64(right))
-		case "&&":
-			if left != 0 && right != 0 {
-				return 1
-			}
-			return 0
-		case "||":
-			if left != 0 || right != 0 {
-				return 1
-			}
-			return 0
-		case "**":
-			return math.Pow(left, right)
-		}
-	case *Call:
-		return evaluateCall(e, env)
-	}
-	return 0
+	return EvaluateValue(expr, env).Number()
 }
 
 func normalizeIdentifier(name string) string {
@@ -223,6 +71,14 @@ func normalizeIdentifier(name string) string {
 func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 	// name is already normalized here
 	switch name {
+	case "statetype":
+		return enumValue(env.GetStateType())
+	case "movetype":
+		return enumValue(env.GetMoveType())
+	case "physics":
+		return enumValue(env.GetPhysics())
+	case "s", "c", "a", "l", "i", "h", "n":
+		return enumValue(name)
 	case "time":
 		return float64(env.GetTime())
 	case "animtime":
@@ -369,127 +225,73 @@ func evaluateIdentifier(name string, env EvaluatorEnvironment) float64 {
 	return math.MaxFloat64 // Mark as unknown
 }
 
-func evaluateCall(call *Call, env EvaluatorEnvironment) float64 {
-	switch strings.ToLower(call.Name) {
-	case "animexist", "selfanimexist":
-		if len(call.Arguments) > 0 {
-			animNo := int(Evaluate(call.Arguments[0], env))
-			if charEnv, ok := env.(CharacterEnvironment); ok {
-				if charEnv.HasAnim(animNo) {
-					return 1
-				}
-			}
-			return 0
+// legacyConstant adapts the existing Character constant getters. New world
+// environments provide their complete typed constants through LookupFunction.
+func legacyConstant(name string, env EvaluatorEnvironment) (float64, bool) {
+	if strings.HasPrefix(name, "movement.") {
+		m := env.GetCNSMovement()
+		if m == nil {
+			return 0, false
 		}
-	case "gethitvar":
-		if len(call.Arguments) > 0 {
-			if id, ok := call.Arguments[0].(*Identifier); ok {
-				name := strings.ToLower(id.Name)
-				if charEnv, ok := env.(CharacterEnvironment); ok {
-					return charEnv.GetHitVar(name)
-				}
-			}
+		switch name {
+		case "movement.yaccel":
+			return m.YAccel, true
+		case "movement.stand.friction":
+			return m.StandFriction, true
+		case "movement.crouch.friction":
+			return m.CrouchFriction, true
 		}
-	case "var":
-		if len(call.Arguments) > 0 {
-			idx := int(Evaluate(call.Arguments[0], env))
-			return float64(env.GetVar(idx))
-		}
-	case "fvar":
-		if len(call.Arguments) > 0 {
-			idx := int(Evaluate(call.Arguments[0], env))
-			return env.GetFVar(idx)
-		}
-	case "sysvar":
-		if len(call.Arguments) > 0 {
-			idx := int(Evaluate(call.Arguments[0], env))
-			return float64(env.GetSysVar(idx))
-		}
-	case "sysfvar":
-		if len(call.Arguments) > 0 {
-			idx := int(Evaluate(call.Arguments[0], env))
-			return env.GetSysFVar(idx)
-		}
-	case "abs":
-		if len(call.Arguments) > 0 {
-			return math.Abs(Evaluate(call.Arguments[0], env))
-		}
-	case "ifelse":
-		// ifelse(condition, trueValue, falseValue)
-		if len(call.Arguments) == 3 {
-			cond := Evaluate(call.Arguments[0], env)
-			if cond != 0 {
-				return Evaluate(call.Arguments[1], env)
-			}
-			return Evaluate(call.Arguments[2], env)
-		}
-	case "floor":
-		if len(call.Arguments) > 0 {
-			return math.Floor(Evaluate(call.Arguments[0], env))
-		}
-	case "ceil":
-		if len(call.Arguments) > 0 {
-			return math.Ceil(Evaluate(call.Arguments[0], env))
-		}
-	case "const":
-		if len(call.Arguments) > 0 {
-			// const(velocity.walk.fwd)
-			if id, ok := call.Arguments[0].(*Identifier); ok {
-				name := strings.ToLower(id.Name)
-				vel := env.GetCNSVelocity()
-				if vel != nil {
-					switch name {
-					case "velocity.walk.fwd", "velocity.walk.fwd.x":
-						return vel.WalkFwd
-					case "velocity.walk.back", "velocity.walk.back.x":
-						return vel.WalkBack
-					case "velocity.run.fwd.x":
-						if len(vel.RunFwd) >= 1 {
-							return vel.RunFwd[0]
-						}
-					case "velocity.run.fwd.y":
-						if len(vel.RunFwd) >= 2 {
-							return vel.RunFwd[1]
-						}
-					case "velocity.run.back.x":
-						if len(vel.RunBack) >= 1 {
-							return vel.RunBack[0]
-						}
-					case "velocity.run.back.y":
-						if len(vel.RunBack) >= 2 {
-							return vel.RunBack[1]
-						}
-					case "velocity.jump.y", "velocity.jump.neu.y":
-						if len(vel.JumpNeu) >= 2 {
-							return vel.JumpNeu[1]
-						}
-					case "velocity.jump.x", "velocity.jump.neu.x":
-						if len(vel.JumpNeu) >= 1 {
-							return vel.JumpNeu[0]
-						}
-					case "velocity.jump.fwd", "velocity.jump.fwd.x":
-						return vel.JumpFwd
-					case "velocity.jump.back", "velocity.jump.back.x":
-						return vel.JumpBack
-					case "movement.yaccel":
-						m := env.GetCNSMovement()
-						if m != nil {
-							return m.YAccel
-						}
-					case "movement.stand.friction":
-						m := env.GetCNSMovement()
-						if m != nil {
-							return m.StandFriction
-						}
-					case "movement.crouch.friction":
-						m := env.GetCNSMovement()
-						if m != nil {
-							return m.CrouchFriction
-						}
-					}
-				}
-			}
-		}
+		return 0, false
 	}
-	return 0
+	v := env.GetCNSVelocity()
+	if v == nil {
+		return 0, false
+	}
+	component := func(values []float64, index int) (float64, bool) {
+		if index < len(values) {
+			return values[index], true
+		}
+		return 0, false
+	}
+	switch name {
+	case "velocity.walk.fwd", "velocity.walk.fwd.x":
+		return v.WalkFwd, true
+	case "velocity.walk.back", "velocity.walk.back.x":
+		return v.WalkBack, true
+	case "velocity.run.fwd.x":
+		return component(v.RunFwd, 0)
+	case "velocity.run.fwd.y":
+		return component(v.RunFwd, 1)
+	case "velocity.run.back.x":
+		return component(v.RunBack, 0)
+	case "velocity.run.back.y":
+		return component(v.RunBack, 1)
+	case "velocity.jump.x", "velocity.jump.neu.x":
+		return component(v.JumpNeu, 0)
+	case "velocity.jump.y", "velocity.jump.neu.y":
+		return component(v.JumpNeu, 1)
+	case "velocity.jump.fwd", "velocity.jump.fwd.x":
+		return v.JumpFwd, true
+	case "velocity.jump.back", "velocity.jump.back.x":
+		return v.JumpBack, true
+	}
+	return 0, false
+}
+
+func enumValue(name string) float64 {
+	switch strings.ToLower(name) {
+	case "s":
+		return 2
+	case "c":
+		return 3
+	case "a":
+		return 1
+	case "l":
+		return 4
+	case "i", "n":
+		return 0
+	case "h":
+		return 5
+	}
+	return math.MaxFloat64
 }

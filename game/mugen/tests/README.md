@@ -23,3 +23,15 @@ tests. Do not describe the current entire test tree as headless.
 The original reference is never executed in place. Reference experiments use
 copies under `temp/reference-runs/` and a Wine prefix under `temp/wine-reference`.
 Reference-generated files, extracted images and captures stay under `temp/`.
+
+Run headless language fixtures with:
+
+```
+game/mugen/mugen --test expressions --input game/mugen/tests/testdata/expressions.jsonl
+```
+
+Each JSONL fixture has a name, initial state time, and ordered expression steps
+with expected kind/value and optional variable assertions. The runner emits
+deterministic observations (including warnings and variable changes) and exits
+nonzero on malformed fixtures or mismatches. These use the production typed
+evaluator; world-bound trigger semantics require the forthcoming engine runner.
