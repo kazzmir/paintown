@@ -37,7 +37,9 @@ value=AnimTime
 	if c.GetAnimTime() != 0 || c.AnimElem != 1 || c.IntVars[0] != 1 {
 		t.Fatalf("loop boundary: time=%d element=%d events=%d", c.GetAnimTime(), c.AnimElem, c.IntVars[0])
 	}
-	c.ShakeTime = 2
+	// A manually queued timer is decremented at tick start; three keeps the
+	// next two state/animation passes paused, then releases on the third.
+	c.HitPauseTime = 3
 	for i := 0; i < 2; i++ {
 		c.Update()
 	}

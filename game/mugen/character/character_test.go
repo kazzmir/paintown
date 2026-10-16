@@ -55,18 +55,18 @@ ignorehitpause=1
 v=1
 value=1
 `)
-	c.ShakeTime = 1
+	c.HitPauseTime = 1
 	c.HitTime = 5
 	c.Update()
 	if c.RuntimeError != nil {
 		t.Fatal(c.RuntimeError)
 	}
-	if c.Time != 0 || c.ShakeTime != 0 || c.HitTime != 5 || c.IntVars[0] != 0 || c.IntVars[1] != 1 {
-		t.Fatalf("last paused tick: time=%d shake=%d hit=%d vars=%v", c.Time, c.ShakeTime, c.HitTime, c.IntVars[:2])
+	if c.Time != 1 || c.HitPauseTime != 0 || c.HitTime != 4 || c.IntVars[0] != 1 || c.IntVars[1] != 1 {
+		t.Fatalf("released pause: time=%d pause=%d hit=%d vars=%v", c.Time, c.HitPauseTime, c.HitTime, c.IntVars[:2])
 	}
 	c.Update()
-	if c.Time != 1 || c.HitTime != 4 || c.IntVars[0] != 1 || c.IntVars[1] != 2 {
-		t.Fatalf("first unpaused tick: time=%d hit=%d vars=%v", c.Time, c.HitTime, c.IntVars[:2])
+	if c.Time != 2 || c.HitTime != 3 || c.IntVars[0] != 2 || c.IntVars[1] != 2 {
+		t.Fatal("unpaused continuation", c.Time, c.HitTime, c.IntVars[:2])
 	}
 }
 
@@ -76,14 +76,14 @@ func TestEntryOnceDuringHitPause(t *testing.T) {
 	if c.Power != 20 {
 		t.Fatalf("power after explicit reentry=%d", c.Power)
 	}
-	c.ShakeTime = 2
+	c.HitPauseTime = 2
 	for i := 0; i < 3; i++ {
 		c.Update()
 	}
 	if c.RuntimeError != nil {
 		t.Fatal(c.RuntimeError)
 	}
-	if c.Power != 20 || c.Anim != 5 || c.Ctrl || c.Time != 1 {
+	if c.Power != 20 || c.Anim != 5 || c.Ctrl || c.Time != 2 {
 		t.Fatalf("entry repeated or entry parameters lost: power=%d anim=%d ctrl=%v time=%d", c.Power, c.Anim, c.Ctrl, c.Time)
 	}
 }
@@ -123,15 +123,18 @@ func TestContactCountersRespectHitPause(t *testing.T) {
 	c := fixtureCharacter(t, "movetype=A\n[State 7, idle]\ntype=Null\ntrigger1=1\n")
 	c.MoveHit = 1
 	c.MoveContact = 1
-	c.ShakeTime = 2
-	c.Update()
+	c.HitPauseTime = 2
 	c.Update()
 	if c.MoveHit != 1 || c.MoveContact != 1 {
 		t.Fatal("contact counters advanced during hitpause")
 	}
 	c.Update()
 	if c.MoveHit != 2 || c.MoveContact != 2 {
-		t.Fatalf("contact counters did not resume: %d/%d", c.MoveHit, c.MoveContact)
+		t.Fatal("contact counters did not resume on pause release")
+	}
+	c.Update()
+	if c.MoveHit != 3 || c.MoveContact != 3 {
+		t.Fatal("contact counters did not continue")
 	}
 	c.HitGuard[2] = true
 	c.MoveHitReset()

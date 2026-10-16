@@ -54,7 +54,15 @@ value=1
 		t.Fatal(err)
 	}
 	for _, c := range players {
-		if c.IntVars[30] != 1 || c.IntVars[31] != 1 || c.Time != 1 || c.Life != 975 {
+		if c.Life != 1000 {
+			t.Fatal("new HitDef connected before next tick")
+		}
+	}
+	if err := TickCharacters(players); err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range players {
+		if c.IntVars[30] != 2 || c.IntVars[31] != 1 || c.Time != 1 || c.Life != 975 {
 			t.Fatalf("contact duplicated/skipped phases: negative=%d entry=%d time=%d life=%d", c.IntVars[30], c.IntVars[31], c.Time, c.Life)
 		}
 	}
@@ -62,7 +70,7 @@ value=1
 		t.Fatal(err)
 	}
 	for _, c := range players {
-		if c.IntVars[30] != 2 || c.IntVars[31] != 1 || c.Time != 1 {
+		if c.IntVars[30] != 3 || c.IntVars[31] != 1 || c.Time != 2 {
 			t.Fatal("hitpause repeated entry or negative pass", c.IntVars[30], c.IntVars[31], c.Time)
 		}
 	}

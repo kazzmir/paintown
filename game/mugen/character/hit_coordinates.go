@@ -22,6 +22,8 @@ func (c *Character) hitInLocalSpace(attacker *Character, hit cns.HitDef) cns.Hit
 	hit.DownVel = vector(hit.DownVel)
 	hit.FallVel = vector(hit.FallVel)
 	hit.YAccel = float64(float32(hit.YAccel) * scale)
+	hit.GuardVel = float64(float32(hit.GuardVel) * scale)
+	hit.GuardDist = float64(float32(hit.GuardDist) * scale)
 	hit.GroundCornerPush = float64(float32(hit.GroundCornerPush) * scale)
 	hit.AirCornerPush = float64(float32(hit.AirCornerPush) * scale)
 	return hit

@@ -16,7 +16,7 @@ import (
 )
 
 func TestReferenceHitCoordinates(t *testing.T) {
-	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause", "override-basic", "override-slots", "override-forceair", "override-clear", "override-expire", "override-lasttick", "override-hitstate", "override-missing-state", "override-missing-attr", "override-default-time", "override-nonmatch", "override-projectile"} {
+	for _, name := range []string{"hit-coordinates", "hit-defaults", "hit-trade", "hit-trade-phases", "hit-trade-pause", "override-basic", "override-slots", "override-forceair", "override-clear", "override-expire", "override-lasttick", "override-hitstate", "override-missing-state", "override-missing-attr", "override-default-time", "override-nonmatch", "override-projectile", "contact-activation", "hit-countdown", "guard-contact", "guard-crouch", "guard-air", "guard-wrong-height", "guard-exit-contact", "guard-override", "guard-defaults", "guard-air-defaults", "pause-release", "attacker-pause"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			source, err := os.ReadFile(stem + ".cns")
@@ -60,7 +60,7 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						t.Fatal(err)
 					}
 					file.Data.Life = 1000
-					if strings.HasPrefix(name, "override-") {
+					if strings.HasPrefix(name, "override-") || name == "attacker-pause" {
 						data, err := os.ReadFile("../temp/mugen-1.1b1/data/common1.cns")
 						if err != nil {
 							t.Fatal(err)
@@ -107,8 +107,14 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						}
 					}
 					wantState := 5000
-					if strings.HasPrefix(name, "override-") {
+					if strings.HasPrefix(name, "override-") || strings.HasPrefix(name, "guard-") {
 						wantState = int(referenceFloat(t, test.Captures[0].Variables["0"]))
+					}
+					if name == "pause-release" {
+						wantState = 150
+					}
+					if name == "attacker-pause" {
+						wantState = 701
 					}
 					if players[0].StateNo != wantState {
 						t.Fatal("authored contact did not reach victim state", players[0].StateNo)
@@ -126,7 +132,11 @@ func TestReferenceHitCoordinates(t *testing.T) {
 						}
 					}
 					// Converting a received hit must not rewrite the attacker's definition.
-					if !strings.HasPrefix(name, "hit-trade") && players[1].CurrentHitDef.GroundVel[0] != -16 {
+					attacker := players[1]
+					if name == "attacker-pause" {
+						attacker = players[0]
+					}
+					if !strings.HasPrefix(name, "hit-trade") && attacker.CurrentHitDef.GroundVel[0] != -16 {
 						t.Fatal("shared attacker vectors changed")
 					}
 				})

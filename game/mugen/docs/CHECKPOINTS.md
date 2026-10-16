@@ -4,6 +4,40 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4i — Contact activation, separate clocks and guard response
+
+Twelve new source-pinned native programs distinguish contact activation and
+clocks from the earlier static trade observations. A newly defined HitDef first
+connects on the next tick, before negative/positive state passes. Shared roots
+now decrement existing clocks, collect prior definitions, snapshot contacts,
+enter get-hit states, age defenses, run state passes, deduct damage, then finish
+physics/animation/time. This supersedes the state-before-contact assumption in
+M4g. Its trade fixtures still pass but did not discriminate those schedules.
+
+Attacker hitpause and receiver hitshake are separate. Hitpause suppresses normal
+CNS/time/animation and releases when its pre-pass decrement reaches zero. Victim
+CNS and Time advance during hitshake; common CNS decides when recoil begins.
+GetHitVar(hittime) counts down after hitshake reaches zero, stops at -1, and
+HitOver becomes true below zero. Timed HitOverride slots remain active through
+contact before aging/renewal, preserving the measured last-tick behavior. This
+supersedes the unmeasured M2b shared ShakeTime/last-paused-tick interpretation.
+
+Guard response now chooses guard flags by posture, guard damage, guard-specific
+pause/shake, velocities, hit/slide/control times and 150/152/154 states. Guard-end
+140 remains eligible. Matching HitOverride suppresses guard response. Received
+guard vectors scale without mutating attacker data; contact counters distinguish
+MoveGuarded from MoveHit. GetHitVar damage/guarded/hitshaketime are typed integer
+bindings. Air guard reports hittime=-1 and slidetime=0. Omitted guard velocity,
+pause and control defaults match the executable. In this beta guard.slidetime
+inherits ground.slidetime, contradicting the manual's guard.hittime default.
+
+Full tests/races pass, including all new captures and the previous coordinate,
+trade and override cases. A fresh pause-release replay reproduces the six victim
+clock packets. Original guard-end fixtures and reference assets are unchanged.
+Guard entry distance/input timing, multiple contacts, hit flags, damage scaling,
+priority/reversal/HitBy, helpers/projectiles and complete GetHitVar remain open.
+This closes measured clock/guard cases, not all combat or the M4 gate.
+
 ## M4h — Stock HitOverride and get-hit context
 
 Registered/compiled HitOverride with typed state/slot/time/forceair values and
@@ -39,6 +73,9 @@ system package/display configuration was changed. See BUILD.md for provenance
 and environment. The failed early override captures remain as diagnostic evidence.
 
 ## M4g — Shared root-player tick/contact phases
+
+The state-before-contact schedule described here is superseded by M4i. The
+original static trade observations did not distinguish the two schedules.
 
 Production matches and the character diagnostic now use character.TickCharacters:
 all root state passes run before contact collection, eligible contacts are
@@ -714,6 +751,9 @@ parameter schemas. These are next, followed by world/entity ownership and the
 full state runner. This checkpoint does not declare M2 complete.
 
 ## M2b — Single state entry and production hitpause/timer integration
+
+Hitpause/shake clocks and release boundaries below are superseded by the native
+M4i frame traces. Entry precedence is separately corrected by M2g.
 
 Added compiled entry expressions and an explicit EnterState operation. CNS
 defaults now match the documented S/I/N entry defaults and omission sentinels.

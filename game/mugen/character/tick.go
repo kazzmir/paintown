@@ -10,6 +10,7 @@ type contact struct {
 	attacker, defender *Character
 	hit                cns.HitDef
 	guard              map[int]bool
+	guarded            bool
 }
 
 // TickCharacters advances root players through shared state, contact and physics
@@ -27,7 +28,7 @@ func TickCharacters(players []*Character) error {
 		if c == nil {
 			return fmt.Errorf("nil character in tick group")
 		}
-		if !c.beginTick() {
+		if !c.startTick() {
 			return c.RuntimeError
 		}
 	}
@@ -44,7 +45,7 @@ func TickCharacters(players []*Character) error {
 					continue
 				}
 				if CheckCollision(attacker, defender) {
-					contacts = append(contacts, contact{attacker, defender, attacker.CurrentHitDef, attacker.HitGuard})
+					contacts = append(contacts, contact{attacker, defender, attacker.CurrentHitDef, attacker.HitGuard, defender.guardsHit(attacker.CurrentHitDef)})
 					if attacker != c {
 						projectileHits[attacker] = true
 						break
@@ -59,9 +60,16 @@ func TickCharacters(players []*Character) error {
 		event.guard[event.defender.PlayerID] = true
 		c := event.attacker
 		c.MoveHit, c.MoveContact, c.MoveGuarded = 1, 1, 0
+		if event.guarded {
+			c.MoveHit, c.MoveGuarded = 0, 1
+		}
 		c.contactSerial++
-		if len(event.hit.PauseTime) > 0 {
-			c.ShakeTime = event.hit.PauseTime[0]
+		pause := event.hit.PauseTime
+		if event.guarded {
+			pause = event.hit.GuardPauseTime
+		}
+		if len(pause) > 0 {
+			c.HitPauseTime = pause[0]
 		}
 	}
 	type damageEvent struct {
@@ -69,30 +77,22 @@ func TickCharacters(players []*Character) error {
 		damage   int
 	}
 	var damage []damageEvent
-	var victims []*Character
-	seen := map[*Character]bool{}
 	for _, event := range contacts {
-		amount := event.defender.prepareHit(event.attacker, event.hit)
+		amount := event.defender.prepareContact(event.attacker, event.hit, event.guarded)
 		if event.defender.RuntimeError != nil {
 			return event.defender.RuntimeError
 		}
 		damage = append(damage, damageEvent{event.defender, amount})
-		if !seen[event.defender] {
-			victims = append(victims, event.defender)
-			seen[event.defender] = true
+	}
+	// Previous-tick definitions collide before this tick's state passes.
+	// Timed defence remains active for contact, then can be renewed by CNS.
+	for _, c := range players {
+		c.ageDefenses()
+		if !c.runStateTick() {
+			return c.RuntimeError
 		}
 	}
-	// The first get-hit positive pass runs before contact damage, even for a
-	// hit that starts hitpause. HitShakeOver still sees the actual pause value.
-	for _, c := range victims {
-		c.contactStatePass = true
-		err := c.SM.RunPositivePass(c.StateFile.States, c)
-		c.contactStatePass = false
-		if err != nil {
-			c.RuntimeError = err
-			return err
-		}
-	}
+
 	for _, event := range damage {
 		event.defender.applyHitDamage(event.damage)
 	}

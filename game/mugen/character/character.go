@@ -21,11 +21,11 @@ import (
 // Character represents a MUGEN entity running through the State Machine.
 // It implements the Environment interface so the state machine can execute controllers against it.
 type Character struct {
-	RuntimeError      error
-	stateInitialized  bool
-	updateActive      bool
-	pausedThisTick    bool
-	contactStatePass  bool
+	RuntimeError     error
+	stateInitialized bool
+	updateActive     bool
+	pausedThisTick   bool
+
 	JuggleCost        int
 	HitDefActive      bool
 	contactSerial     uint64
@@ -85,8 +85,9 @@ type Character struct {
 	// Player ID (1 or 2)
 	PlayerID int
 
-	// Hit pause/shake time
-	ShakeTime int
+	// Attacker pause suppresses CNS/time; receiver shake does not.
+	ShakeTime    int
+	HitPauseTime int
 	// Facing direction (1 for Right, -1 for Left)
 	Facing int
 
@@ -162,9 +163,10 @@ type Character struct {
 	HitGuard         map[int]bool
 	GetHit           cns.HitDef
 	HitTime          int
-	HitShakeTime     int // Separate from visual ShakeTime? No, reuse ShakeTime.
 	HitFall          bool
 	GetHitAir        bool
+	GetHitGuarded    bool
+	GetHitDamage     int
 	HitFallVelActive bool // Tracks if HitFallVel controller was triggered
 
 	// Input latching to stabilize diagonals (input name -> ticks remaining)
@@ -247,6 +249,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		DrawOffset:          []float64{0, 0},
 		NotHitByFlags:       make(map[string]int),
 		HitByFlags:          make(map[string]int),
+		HitTime:             -1,
 		RoundState:          2,
 		RoundNo:             1,
 		PaletteNo:           1,
@@ -254,18 +257,16 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 	}
 }
 
-// Update ticks the character's state machine forward by one frame.
+// Update advances an isolated entity through the same tick adapter as matches.
+// Multi-player callers must pass all roots to TickCharacters once per tick.
 func (c *Character) Update() {
-	if !c.beginTick() {
-		return
+	if err := TickCharacters([]*Character{c}); err != nil {
+		c.RuntimeError = err
 	}
-	c.ResolveCollisions(c.Target)
-	c.finishTick()
 }
 
-func (c *Character) beginTick() bool {
+func (c *Character) startTick() bool {
 	if c.RuntimeError != nil {
-		c.updateActive = false
 		return false
 	}
 	if !c.stateInitialized {
@@ -275,15 +276,23 @@ func (c *Character) beginTick() bool {
 		}
 	}
 	c.updateActive = true
-	c.pausedThisTick = c.ShakeTime > 0
 	c.tickContactSerial = c.contactSerial
+	if c.HitPauseTime > 0 {
+		c.HitPauseTime--
+	}
+	c.pausedThisTick = c.HitPauseTime > 0
+	if c.ShakeTime > 0 {
+		c.ShakeTime--
+	}
+	if c.ShakeTime == 0 && c.HitTime >= 0 {
+		c.HitTime--
+	}
+	return true
+}
 
-	/*
-		if c.Time%60 == 0 {
-			fmt.Printf("Character.Update: Tick %d, State %d\n", c.Time, c.StateNo)
-		}
-	*/
-
+func (c *Character) runStateTick() bool {
+	c.pausedThisTick = c.HitPauseTime > 0
+	isPaused := c.IsPaused()
 	// 1. Buffer commands once for the start of the tick
 	c.ActiveCommands = make([]string, 0)
 	c.LastCommandMatched = "" // Clear stale match
@@ -298,14 +307,8 @@ func (c *Character) beginTick() bool {
 		input.GlobalManager.LastActionEvent = ""
 	}
 
-	isPaused := c.pausedThisTick
 	if !isPaused {
 		c.PosFrozen = false
-	}
-	if isPaused {
-		c.ShakeTime--
-	} else if c.HitTime > 0 {
-		c.HitTime--
 	}
 
 	if c.Commands != nil && c.CmdFile != nil {
@@ -407,7 +410,7 @@ func (c *Character) finishTick() {
 	// 5. Physics and Time update
 	if !isPaused {
 		c.Time++
-		if c.contactSerial == c.tickContactSerial && c.ShakeTime == 0 {
+		if c.contactSerial == c.tickContactSerial {
 			if c.MoveHit > 0 {
 				c.MoveHit++
 			}
@@ -430,23 +433,6 @@ func (c *Character) finishTick() {
 				yaccel = c.StateFile.Movement.YAccel
 			}
 			c.VelY += yaccel
-		}
-
-		// Tick down protection flags
-		c.tickHitOverrides()
-		for k, v := range c.NotHitByFlags {
-			if v > 0 {
-				c.NotHitByFlags[k] = v - 1
-			} else {
-				delete(c.NotHitByFlags, k)
-			}
-		}
-		for k, v := range c.HitByFlags {
-			if v > 0 {
-				c.HitByFlags[k] = v - 1
-			} else {
-				delete(c.HitByFlags, k)
-			}
 		}
 
 		if !c.PosFrozen {
@@ -1109,7 +1095,7 @@ func (c *Character) GetHitShakeOver() bool {
 }
 
 func (c *Character) GetHitOver() bool {
-	return c.HitTime <= 0
+	return c.HitTime < 0
 }
 
 func (c *Character) GetHitFall() bool {
@@ -1260,7 +1246,13 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = 1
 		}
 	case "xvel":
-		if c.GetHitAir {
+		if c.GetHitGuarded && !c.GetHitAir {
+			val = c.GetHit.GuardVel
+		} else if c.GetHitGuarded {
+			if len(c.GetHit.AirGuardVel) > 0 {
+				val = c.GetHit.AirGuardVel[0]
+			}
+		} else if c.GetHitAir {
 			if len(c.GetHit.AirVel) > 0 {
 				val = c.GetHit.AirVel[0]
 			}
@@ -1268,7 +1260,11 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = c.GetHit.GroundVel[0]
 		}
 	case "yvel":
-		if c.GetHitAir {
+		if c.GetHitGuarded {
+			if c.GetHitAir && len(c.GetHit.AirGuardVel) > 1 {
+				val = c.GetHit.AirGuardVel[1]
+			}
+		} else if c.GetHitAir {
 			if len(c.GetHit.AirVel) > 1 {
 				val = c.GetHit.AirVel[1]
 			} else if len(c.GetHit.GroundVel) > 1 {
@@ -1306,19 +1302,29 @@ func (c *Character) GetHitVar(name string) float64 {
 			val = 1
 		}
 	case "hittime":
-		if c.GetHitAir {
-			val = float64(c.GetHit.AirHitTime)
-		} else {
-			val = float64(c.GetHit.GroundHitTime)
+		val = float64(c.HitTime)
+	case "damage":
+		val = float64(c.GetHitDamage)
+	case "guarded":
+		if c.GetHitGuarded {
+			val = 1
 		}
+	case "hitshaketime":
+		val = float64(c.ShakeTime)
 	case "slidetime":
-		val = float64(c.GetHit.GroundSlide)
-	case "ctrltime":
-		// This is usually GroundHitTime? MUGEN docs say it's same as hittime.
-		if c.GetHitAir {
-			val = float64(c.GetHit.AirHitTime)
+		if c.GetHitGuarded {
+			if !c.GetHitAir {
+				val = float64(c.GetHit.GuardSlide)
+			}
 		} else {
-			val = float64(c.GetHit.GroundHitTime)
+			val = float64(c.GetHit.GroundSlide)
+		}
+	case "ctrltime":
+		if c.GetHitGuarded {
+			val = float64(c.GetHit.GuardCtrlTime)
+			if c.GetHitAir {
+				val = float64(c.GetHit.AirGuardCtrlTime)
+			}
 		}
 	}
 	return val
@@ -1333,13 +1339,10 @@ func (c *Character) GetTargetPos() (float64, float64) {
 }
 
 func (c *Character) IsPaused() bool {
-	if c.contactStatePass {
-		return false
-	}
 	if c.updateActive {
-		return c.pausedThisTick || c.ShakeTime > 0
+		return c.pausedThisTick || c.HitPauseTime > 0
 	}
-	return c.ShakeTime > 0
+	return c.HitPauseTime > 0
 }
 
 func (c *Character) GetPersistence(key string) int {
@@ -1779,14 +1782,22 @@ func (c *Character) HandleHit(other *Character) {
 	c.HitGuard[other.PlayerID] = true
 
 	// 1. Mark attacker results
+	guarded := other.guardsHit(c.CurrentHitDef)
 	c.MoveHit = 1
 	c.MoveContact = 1
 	c.MoveGuarded = 0
+	if guarded {
+		c.MoveHit, c.MoveGuarded = 0, 1
+	}
 	c.contactSerial++
 
 	// Apply HitPause to attacker
-	if len(c.CurrentHitDef.PauseTime) > 0 {
-		c.ShakeTime = c.CurrentHitDef.PauseTime[0]
+	pause := c.CurrentHitDef.PauseTime
+	if guarded {
+		pause = c.CurrentHitDef.GuardPauseTime
+	}
+	if len(pause) > 0 {
+		c.HitPauseTime = pause[0]
 	}
 
 	// 2. Mark defender results
@@ -1809,25 +1820,60 @@ func (c *Character) applyHitDamage(damage int) {
 }
 
 func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
+	return c.prepareContact(attacker, hit, c.guardsHit(hit))
+}
+
+// HitOverride suppresses guarding; guard flags then select eligible postures.
+// Guard end (140) remains eligible even after control has been relinquished.
+func (c *Character) guardsHit(hit cns.HitDef) bool {
+	if _, overridden := c.matchingOverride(hit.Attr); overridden || c.StateNo < 120 || c.StateNo > 155 {
+		return false
+	}
+	flag := strings.ToUpper(hit.GuardFlag)
+	switch c.StateType {
+	case "S":
+		return strings.ContainsAny(flag, "HM")
+	case "C":
+		return strings.ContainsAny(flag, "LM")
+	case "A":
+		return strings.Contains(flag, "A")
+	}
+	return false
+}
+
+func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
 	override, hasOverride := c.matchingOverride(hit.Attr)
 	airHit := c.StateType == "A" || (hasOverride && override.ForceAir)
 	c.GetHitAir = airHit
+	c.GetHitGuarded = guarded
 	hit = c.hitInLocalSpace(attacker, hit)
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
+	c.HitPauseTime = 0
+	c.pausedThisTick = false
 
 	// Life reduction
 	damage := 0
 	if len(hit.Damage) > 0 {
 		damage = hit.Damage[0]
 	}
+	if guarded {
+		damage = 0
+		if len(hit.Damage) > 1 {
+			damage = hit.Damage[1]
+		}
+	}
 	// Apply attack/defence multipliers
 	finalDamage := float64(damage) * attacker.AttackMul / c.DefenceMul
+	c.GetHitDamage = int(finalDamage)
 
 	// Hit Pause/Shake
-	if len(hit.PauseTime) > 1 {
-		c.ShakeTime = hit.PauseTime[1]
-	} else if len(hit.PauseTime) > 0 {
-		c.ShakeTime = hit.PauseTime[0]
+	pause := hit.PauseTime
+	if guarded {
+		pause = hit.GuardPauseTime
+	}
+	c.ShakeTime = 0
+	if len(pause) > 1 {
+		c.ShakeTime = pause[1]
 	}
 
 	// Knockback is stored in GetHit and applied by the get-hit state's
@@ -1842,7 +1888,12 @@ func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
 	}
 
 	// Set HitTime duration based on state
-	if airHit {
+	if guarded {
+		c.HitTime = hit.GuardHitTime
+		if airHit {
+			c.HitTime = -1
+		}
+	} else if airHit {
 		if hit.AirHitTime > 0 {
 			c.HitTime = hit.AirHitTime
 		} else {
@@ -1869,7 +1920,7 @@ func (c *Character) prepareHit(attacker *Character, hit cns.HitDef) int {
 		}
 		c.ChangeState(standard, 0, -1)
 		c.ChangeState(override.StateNo, 0, -1)
-	} else if c.StateNo >= 120 && c.StateNo <= 155 {
+	} else if guarded {
 		// Guard Hit States (150-155)
 		if c.StateType == "S" {
 			c.ChangeState(150, 0, -1)
@@ -1970,4 +2021,27 @@ type ExplodData struct {
 	VelX, VelY  float64
 	Time        int // Ticks remaining (-1 for infinite)
 	CurrentTime int
+}
+
+func (c *Character) ageDefenses() {
+	if c.IsPaused() {
+		return
+	}
+	// Tick down protection flags
+	c.tickHitOverrides()
+	for k, v := range c.NotHitByFlags {
+		if v > 0 {
+			c.NotHitByFlags[k] = v - 1
+		} else {
+			delete(c.NotHitByFlags, k)
+		}
+	}
+	for k, v := range c.HitByFlags {
+		if v > 0 {
+			c.HitByFlags[k] = v - 1
+		} else {
+			delete(c.HitByFlags, k)
+		}
+	}
+
 }

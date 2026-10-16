@@ -297,7 +297,7 @@ need authored executable fixtures.
 observations. First get-hit positive-state execution sees Life/P2Life=1000/1000;
 at Time=1 both are 975 and both states are 5000. Initial contact counters reset
 through get-hit state entry. These values are unchanged with 8,8 hitpause,
-showing the first contact pass occurs before ordinary paused passes. All three
+these snapshots alone do not determine pause duration or contact ordering. All three
 programs match character.TickCharacters, used by production; hit-trade-pause-replay
 reproduces native evidence. Full hitpause duration, priorities, multiple contacts,
 guard/overrides, helper and projectile order are not inferred from these probes.
@@ -321,3 +321,34 @@ The first override-basic-native/native2 captures stalled in initial fade-in as
 all desktop monitor outputs disconnected; they contain no interpreted numeric
 observations. A task-owned Xvfb restored native and Go execution. Original
 reference assets remain untouched; see BUILD.md for the temporary display setup.
+
+## Contact clocks and guard response
+
+The twelve contact-activation, hit-countdown, pause-release, attacker-pause and
+guard-* contact programs have default case JSON with executable/CNS/AIR/capture
+hashes. Runs use NAME-virtual on private :97; pause-release-replay independently
+reproduces all clock packets. Guard-exit-contact is distinct from the original
+M4e guard-end animation fixture, which remains unchanged.
+
+contact-activation observes negative-state clock=2 on first get-hit entry:
+HitDef defined on one tick connects before the next tick's negatives. In
+pause-release, negative-state packets (Time, hitshaketime, hittime, pass count)
+are (0,3,13,0), (1,2,13,1), (2,1,13,2), (3,0,12,3), (4,0,11,4),
+(5,0,10,5). Victim CNS runs during hitshake. Attacker guard pause=2 instead
+holds (Time, pass count, MoveContact)=(1,1,1) for three observations including
+contact, then advances (2,2,2), (3,3,3), (4,4,4). Existing pause decrements before
+pass eligibility. hit-countdown records hittime=2,1,0,-1,-1,-1 and
+HitOver=0,0,0,1,1,1. Earlier M2b/M4g clock/schedule assumptions are superseded.
+
+Ground/crouch/air guards enter 150/152/154, take 3 chip damage from damage=25,3,
+and use guard vectors/pause/timers. Wrong-height standing guard hit by L receives
+normal 25 damage in 5000. Guard end 140 still guards. Matching HitOverride enters
+710 with normal hit data and guarded=0, retaining life because its destination
+movetype is I. Ground guard hittime=13/slide=7/ctrl=11 while air guard uses
+hittime=-1/slide=0/ctrl=11. Native omitted guard.slidetime inherits ground.slidetime
+(5), despite the manual's advertised guard.hittime (11); omitted control inherits
+5. Air guard omitted velocity is (-18,-10) from air.velocity=(-12,-20).
+
+These compare through production TickCharacters. They do not establish all
+GetHitVar fields, damage scaling, input/distance entry, protection filters,
+priority/reversal, multiple contacts or helper/projectile/world ownership.

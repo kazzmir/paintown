@@ -7,6 +7,13 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4i corrects prior-tick HitDef activation/contact-before-state ordering and
+separates attacker hitpause from receiver hitshake. Twelve native programs cover
+clock/countdown boundaries and guard damage/flags/velocity/time/defaults, including
+HitOverride precedence. These supersede earlier M2b/M4g timing assumptions.
+Guard distance/input, complete hit/protection/priority rules and entity phases
+remain open; no whole controller/trigger row is promoted to Verified.
+
 M4h implements the stock HitOverride path with typed parameters, attribute
 filters, timed slots and native-backed entry/forceair/damage behavior. Twelve
 native cases match; both stock characters now compile all 108 states. Complete

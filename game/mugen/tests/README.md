@@ -179,3 +179,11 @@ clipboard output is appended to the negative CMD state so every destination can
 report. The Go suite now gates all 108 stock states compiling and compares twelve
 native override cases. Full controller parity remains open. When desktop outputs
 are disconnected, use the private display environment described in docs/BUILD.md.
+
+Contact/guard reference regressions also cover prior-tick HitDef activation before
+negative states, attacker hitpause versus receiver hitshake, HitOver's -1 edge,
+guard posture/flags/damage/vectors/timers/defaults, guard-end eligibility and
+HitOverride precedence. Twelve source-pinned programs compare production group
+ticks; pause-release-replay repeats native clock packets. M2b/M4g timing
+assumptions are superseded; see docs/REFERENCE.md. These do not establish full
+priority/protection/helper/projectile or GetHitVar parity.

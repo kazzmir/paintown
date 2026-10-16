@@ -88,6 +88,7 @@ type HitDef struct {
 	AirAnimType      string
 	Damage           []int // [hit, guard]
 	PauseTime        []int // [hit, guard]
+	GuardPauseTime   []int // [attacker pause, defender shake]
 	ShakeTime        int
 	SparkNo          int
 	GuardSparkNo     int
@@ -99,6 +100,10 @@ type HitDef struct {
 	GroundHitTime    int
 	GuardSlide       int
 	GuardHitTime     int
+	GuardCtrlTime    int
+	AirGuardCtrlTime int
+	GuardVel         float64
+	GuardDist        float64
 	AirHitTime       int
 	GroundVel        []float64
 	AirVel           []float64
@@ -564,6 +569,7 @@ func ParseHitDef(params map[string]string) HitDef {
 	hd := HitDef{
 		FallRecover:    true,
 		FallXUnchanged: true,
+		HitFlag:        "MAF", AnimType: "Light", GroundType: "High", AirHitTime: 20,
 	}
 	if v, ok := params["attr"]; ok {
 		hd.Attr = v
@@ -587,16 +593,7 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.PauseTime = ParseIntList(v)
 	}
 	if v, ok := params["guard.pausetime"]; ok {
-		// If guard.pausetime is missing, it often defaults to hit pausetime or similar
-		// But let's just parse it if it exists.
-		p := ParseIntList(v)
-		if len(hd.PauseTime) >= 1 {
-			if len(p) == 1 {
-				hd.PauseTime = []int{hd.PauseTime[0], p[0]}
-			} else if len(p) >= 2 {
-				hd.PauseTime = p[:2]
-			}
-		}
+		hd.GuardPauseTime = ParseIntList(v)
 	}
 	if v, ok := params["sparkno"]; ok {
 		hd.SparkNo, _ = strconv.Atoi(v)
@@ -691,6 +688,46 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 	if v, ok := params["yaccel"]; ok {
 		hd.YAccel, _ = strconv.ParseFloat(v, 64)
+	}
+	if _, ok := params["guard.pausetime"]; !ok {
+		hd.GuardPauseTime = append([]int(nil), hd.PauseTime...)
+	}
+	if _, ok := params["guard.hittime"]; !ok {
+		hd.GuardHitTime = hd.GroundHitTime
+	}
+	if _, ok := params["guard.slidetime"]; !ok {
+		// Beta 1 inherits ground.slidetime, despite the manual saying
+		// guard.hittime. Native guard-defaults pins the distinction.
+		hd.GuardSlide = hd.GroundSlide
+	}
+	hd.GuardCtrlTime = hd.GuardSlide
+	if value, ok := params["guard.ctrltime"]; ok {
+		hd.GuardCtrlTime, _ = strconv.Atoi(value)
+	}
+	hd.AirGuardCtrlTime = hd.GuardCtrlTime
+	if value, ok := params["airguard.ctrltime"]; ok {
+		hd.AirGuardCtrlTime, _ = strconv.Atoi(value)
+	}
+	if len(hd.GroundVel) > 0 {
+		hd.GuardVel = hd.GroundVel[0]
+	}
+	if value, ok := params["guard.velocity"]; ok {
+		hd.GuardVel, _ = strconv.ParseFloat(value, 64)
+	}
+	if value, ok := params["guard.dist"]; ok {
+		hd.GuardDist, _ = strconv.ParseFloat(value, 64)
+	}
+	if _, ok := params["airguard.velocity"]; !ok {
+		hd.AirGuardVel = []float64{0, 0}
+		if len(hd.AirVel) > 0 {
+			hd.AirGuardVel[0] = hd.AirVel[0] * 1.5
+		}
+		if len(hd.AirVel) > 1 {
+			hd.AirGuardVel[1] = hd.AirVel[1] / 2
+		}
+	}
+	if _, ok := params["air.animtype"]; !ok {
+		hd.AirAnimType = hd.AnimType
 	}
 
 	return hd

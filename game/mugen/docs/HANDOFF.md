@@ -274,15 +274,23 @@ omissions, forceair, intermediate get-hit entry and damage state behavior. Full
 races and forceair replay pass. Remaining custom-state exclusions, invalid-value
 fallbacks, ownership and pause edges prevent a full HitOverride parity claim.
 
+M4h is commit `a852b04f`. M4i corrects the shared scheduler to collide prior-tick
+HitDefs before state passes, separates attacker hitpause/receiver hitshake, and
+implements guard damage/flags/vectors/timers/defaults. Twelve native programs
+match; full races and pause-release replay pass. M2b/M4g timing interpretations
+are explicitly superseded. Native guard.slidetime defaults to ground.slidetime,
+contrary to the manual. Remaining protection/priority/entity/guard-entry and
+complete GetHitVar behavior prevents a complete combat claim.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next finish playable match behavior with deterministic injected input,
-then integrate selected character palettes, complete storyboard/rendering semantics,
-extend the headless world/state runner, and compare authored
-reference fixtures. The 10-transition loop limit is now diagnosed but remains
+Next measure and implement protection filters/guard-entry distance, then runtime
+audio/effects for the playable match. Continue complete storyboard/rendering
+semantics and world/entity ownership against authored reference fixtures.
+Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world
 behaviors are incomplete. Do not call M1 or full M0/M2 complete.
 
