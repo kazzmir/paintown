@@ -15,9 +15,13 @@ groups run in numeric order through the first gap; repeated conditions are ANDed
 and groups are ORed. Triggerall runs first. Persistence counts successful trigger
 evaluations, while hosts clear positive-state counters on state re-entry.
 
-Current limitations: entry attributes still use the legacy Time=0 execution path,
-many controller bodies remain incomplete, typed parameter compilation is pending,
-and the production Character tick loop still needs its pause/ownership fixes.
+State entry now has a single explicit EnterState path. Entry expressions compile
+once and evaluate on entry, with omission/U semantics and combat persistence.
+Executing controllers at Time=0 does not reapply entry attributes.
+
+Current limitations: many controller bodies remain incomplete, typed controller
+parameter compilation is pending, and the production Character still needs its
+full world/ownership/tick extraction and reference timing comparisons.
 World-level simulation and complete conformance are subsequent work. See the
 checkpoint ledger and compatibility inventory; this extraction does not claim
 full state-machine coverage.

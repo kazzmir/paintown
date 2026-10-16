@@ -246,7 +246,7 @@ func LoadPlayer(baseDir, defFile string) (*Player, error) {
 }
 
 // Update advances the player's state.
-func (p *Player) Update() {
+func (p *Player) Update() error {
 	/*
 		if p.Character.Time == 0 {
 			fmt.Printf("Player.Update: Starting Tick 0\n")
@@ -257,6 +257,7 @@ func (p *Player) Update() {
 	// 2. (Removed redundant AnimDuration sync as it's now handled by ChangeAnim)
 	// 3. Tick character state machine
 	p.Character.Update()
+	return p.Character.RuntimeError
 }
 
 // Draw renders the player to the screen at the specified screen coordinates.

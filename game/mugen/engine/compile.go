@@ -20,6 +20,7 @@ type compiledController struct {
 }
 type stateProgram struct {
 	controllers []compiledController
+	entry       entryProgram
 	err         error
 }
 
@@ -41,6 +42,16 @@ func (sm *StateMachine) compileState(state *cns.StateDef) (*stateProgram, error)
 	}
 	program := &stateProgram{}
 	sm.programs[state] = program
+	if len(state.Controllers) == 0 {
+		program.err = fmt.Errorf("state %d (line %d) has no controllers", state.ID, state.Line)
+		return program, program.err
+	}
+	var entryErr error
+	program.entry, entryErr = compileEntry(state)
+	if entryErr != nil {
+		program.err = fmt.Errorf("state %d entry (line %d): %w", state.ID, state.Line, entryErr)
+		return program, program.err
+	}
 	for i := range state.Controllers {
 		ctrl := &state.Controllers[i]
 		handler, ok := sm.controllers[strings.ToLower(ctrl.Type)]

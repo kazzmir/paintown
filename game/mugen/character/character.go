@@ -9,12 +9,24 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
+	"github.com/kazzmir/paintown/game/mugen/logger"
 )
 
 // Character represents a MUGEN entity running through the State Machine.
 // It implements the Environment interface so the state machine can execute controllers against it.
 type Character struct {
+	RuntimeError     error
+	stateInitialized bool
+	updateActive     bool
+	pausedThisTick   bool
+	JuggleCost       int
+	HitDefActive     bool
+	contactSerial    uint64
+	RuntimeWarnings  []string
+	warningSeen      map[string]bool
+
 	// CNS data containing states and physics globals
 	StateFile *cns.CNS
 
@@ -214,6 +226,20 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 
 // Update ticks the character's state machine forward by one frame.
 func (c *Character) Update() {
+	if c.RuntimeError != nil {
+		return
+	}
+	if !c.stateInitialized {
+		c.ChangeState(c.StateNo, -1, -1)
+		if c.RuntimeError != nil {
+			return
+		}
+	}
+	c.updateActive = true
+	c.pausedThisTick = c.ShakeTime > 0
+	contactAtStart := c.contactSerial
+	defer func() { c.updateActive = false }()
+
 	/*
 		if c.Time%60 == 0 {
 			fmt.Printf("Character.Update: Tick %d, State %d\n", c.Time, c.StateNo)
@@ -234,7 +260,10 @@ func (c *Character) Update() {
 		input.GlobalManager.LastActionEvent = ""
 	}
 
-	isPaused := c.ShakeTime > 0
+	isPaused := c.pausedThisTick
+	if !isPaused {
+		c.PosFrozen = false
+	}
 	if isPaused {
 		c.ShakeTime--
 	} else if c.HitTime > 0 {
@@ -298,25 +327,13 @@ func (c *Character) Update() {
 		}
 	}
 
-	// 2. State Machine Logic
-	if !isPaused {
-		// Reset combat results for the new tick
-		c.MoveHit = 0
-		c.MoveContact = 0
-		c.MoveGuarded = 0
-
-		if c.HitTime > 0 {
-			c.HitTime--
-		}
-	}
-
 	// 3. MUGEN multi-level state processing:
 	// -3, then -2, then -1, then current state level.
 
-	// Reset ChangeState counter to prevent infinite loops
-	changeCount := 0
-
 	processState := func(stateNo int) bool {
+		if c.RuntimeError != nil {
+			return false
+		}
 		/*
 			if sd, ok := c.StateFile.States[stateNo]; ok {
 				fmt.Printf("Tick %d: Processing state %d (%s)\n", c.Time, stateNo, sd.Name)
@@ -324,38 +341,44 @@ func (c *Character) Update() {
 				fmt.Printf("Tick %d: Processing state %d\n", c.Time, stateNo)
 			}
 		*/
-		if changeCount > 100 {
-			fmt.Printf("Tick %d: Recursion limit reached!\n", c.Time)
-			return true // Halt
-		}
 		if stateDef, ok := c.StateFile.States[stateNo]; ok {
 			// Diagnostic: is AnimTime 0?
 
 			changed, err := c.SM.ExecuteState(stateDef, c)
 			if err != nil {
-				fmt.Printf("Tick %d: Error in state %d: %v\n", c.Time, stateNo, err)
+				c.RuntimeError = err
+				return false
 			}
 			if changed {
 				// c.LastStateChange already set in ChangeState
-				changeCount++
 				return true
 			}
 		}
 		return false
 	}
 
-	if !isPaused {
+	{
+		// Paused passes still evaluate controllers with ignorehitpause.
 		// Negative states processing order
 		processState(-3)
 		processState(-2)
 		processState(-1)
+		if c.RuntimeError != nil {
+			return
+		}
 
 		// Process current state (and any new states we transition into)
 		for i := 0; i < 10; i++ { // Limit to 10 transitions per tick
 			if !processState(c.StateNo) {
 				break
 			}
+			if i == 9 {
+				c.RuntimeError = fmt.Errorf("player %d exceeded 10 state transitions in one tick", c.PlayerID)
+			}
 		}
+	}
+	if c.RuntimeError != nil {
+		return
 	}
 
 	// 3.5 Built-in Transitions
@@ -369,6 +392,17 @@ func (c *Character) Update() {
 	// 5. Physics and Time update
 	if !isPaused {
 		c.Time++
+		if c.contactSerial == contactAtStart && c.ShakeTime == 0 {
+			if c.MoveHit > 0 {
+				c.MoveHit++
+			}
+			if c.MoveContact > 0 {
+				c.MoveContact++
+			}
+			if c.MoveGuarded > 0 {
+				c.MoveGuarded++
+			}
+		}
 		c.AnimTime++
 		c.UpdateAnimation()
 
@@ -692,7 +726,9 @@ func (c *Character) SetSprPriority(priority int) {
 }
 
 func (c *Character) SetGravity(active bool) {
-	c.GravityActive = active
+	if active && c.StateFile != nil {
+		c.VelY += c.StateFile.Movement.YAccel
+	}
 }
 
 func (c *Character) VelMul(x, y float64) {
@@ -705,6 +741,7 @@ func (c *Character) PosFreeze(active bool) {
 }
 
 func (c *Character) HitDef(params map[string]string) {
+	c.HitDefActive = true
 	// Parse and store the new HitDef
 	c.CurrentHitDef = cns.ParseHitDef(params)
 	// Entering a HitDef makes the character an attacker
@@ -915,7 +952,9 @@ func (c *Character) ReversalDef(params map[string]string) {
 }
 
 func (c *Character) MoveHitReset() {
-	c.HitGuard = make(map[int]bool)
+	c.MoveHit = 0
+	c.MoveContact = 0
+	c.MoveGuarded = 0
 }
 
 func (c *Character) HitAdd(val int) {
@@ -1278,6 +1317,9 @@ func (c *Character) GetTargetPos() (float64, float64) {
 }
 
 func (c *Character) IsPaused() bool {
+	if c.updateActive {
+		return c.pausedThisTick || c.ShakeTime > 0
+	}
 	return c.ShakeTime > 0
 }
 
@@ -1594,73 +1636,89 @@ func (c *Character) ResolvePushCollision() {
 }
 
 func (c *Character) ChangeState(stateNo int, ctrl int, anim int) {
-	if c.StateNo != stateNo {
-		stateName := ""
-		if sd, ok := c.StateFile.States[stateNo]; ok {
-			stateName = sd.Name
-		}
-		if stateName != "" {
-			c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, stateName)
-		} else {
-			c.LastStateChange = fmt.Sprintf("%d -> %d", c.StateNo, stateNo)
-		}
+	overrides := engine.EntryOverrides{HasCtrl: ctrl != -1, Ctrl: ctrl != 0, HasAnim: anim != -1, Anim: anim}
+	c.changeState(stateNo, overrides)
+}
+
+func (c *Character) changeState(stateNo int, overrides engine.EntryOverrides) {
+	if c.RuntimeError != nil {
+		return
 	}
+	if c.StateFile == nil {
+		c.RuntimeError = fmt.Errorf("state %d: no state file", stateNo)
+		return
+	}
+	next, found := c.StateFile.States[stateNo]
+	if !found || stateNo < 0 {
+		c.RuntimeError = fmt.Errorf("state %d is not defined for player %d", stateNo, c.PlayerID)
+		return
+	}
+	if err := c.SM.CompileState(next); err != nil {
+		c.RuntimeError = err
+		return
+	}
+	c.LastStateChange = fmt.Sprintf("%d -> %d (%s)", c.StateNo, stateNo, next.Name)
 	c.PrevStateNo = c.StateNo
 	c.StateNo = stateNo
-	c.Time = 0                      // Entering a new state resets Time to 0.
-	c.HitFallVelActive = false      // Reset HitFallVel on state change
-	c.PosFrozen = false             // Reset PosFreeze on state change
-	c.HitGuard = make(map[int]bool) // Reset hit memory on state change
-
-	// MUGEN Accuracy: Reseting persistence counters for all POSITIVE states.
-	// Negative states (-3, -2, -1) maintain their persistence across state changes.
-	for k := range c.PersistenceCounters {
-		if strings.HasPrefix(k, "pos") {
-			delete(c.PersistenceCounters, k)
+	c.Time = 0
+	c.HitFallVelActive = false
+	c.PosFrozen = false
+	for key := range c.PersistenceCounters {
+		if strings.HasPrefix(key, "pos") {
+			delete(c.PersistenceCounters, key)
 		}
 	}
-
-	// In MUGEN, jumping to a state automatically sets Anim, Physics, StateType based on [Statedef]
-	if nextState, ok := c.StateFile.States[stateNo]; ok {
-		if nextState.Type != "" {
-			c.StateType = nextState.Type
-		}
-		if nextState.Physics != "" && strings.ToLower(nextState.Physics) != "u" {
-			c.Physics = nextState.Physics
-		}
-		if nextState.MoveType != "" && strings.ToLower(nextState.MoveType) != "u" {
-			c.MoveType = nextState.MoveType
-		}
-
-		// Update Ctrl flag.
-		// 1. Priority: ChangeState(..., ctrl, ...) parameter
-		if ctrl != -1 {
-			c.Ctrl = ctrl != 0
-		} else {
-			// 2. Priority: [Statedef] ctrl parameter
-			if nextState.Ctrl != -1 {
-				c.Ctrl = nextState.Ctrl != 0
-			}
-			// 3. Fallback: remains unchanged (MUGEN behavior)
-		}
-
-		// Update Anim
-		// 1. Priority: ChangeState(..., ..., anim) parameter
-		if anim != -1 {
-			c.ChangeAnim(anim)
-		} else {
-			// 2. Priority: [Statedef] anim parameter
-			if nextState.Anim != -1 {
-				c.ChangeAnim(nextState.Anim)
-			}
-		}
+	if err := c.SM.EnterState(next, c, overrides); err != nil {
+		c.RuntimeError = err
+		return
 	}
+	c.stateInitialized = true
+}
 
-	/*
-		if oldStateNo != stateNo {
-			fmt.Printf("Tick %d: ChangeState %d -> %d, Ctrl=%v, Anim=%d\n", c.Time, oldStateNo, stateNo, c.Ctrl, c.Anim)
-		}
-	*/
+func (c *Character) BeginStateEntry(hitdefPersist, movehitPersist, hitcountPersist bool) {
+	if !hitdefPersist {
+		c.CurrentHitDef = cns.HitDef{}
+		c.HitDefActive = false
+		c.HitGuard = make(map[int]bool)
+	}
+	if !movehitPersist {
+		c.MoveHit = 0
+		c.MoveContact = 0
+		c.MoveGuarded = 0
+	}
+	if !hitcountPersist {
+		c.HitCount = 0
+	}
+}
+
+func (c *Character) EvaluationWarning(message string) {
+	if c.warningSeen == nil {
+		c.warningSeen = make(map[string]bool)
+	}
+	key := fmt.Sprintf("%d:%s", c.StateNo, message)
+	if c.warningSeen[key] || len(c.RuntimeWarnings) >= 256 {
+		return
+	}
+	c.warningSeen[key] = true
+	warning := fmt.Sprintf("player %d state %d: %s", c.PlayerID, c.StateNo, message)
+	c.RuntimeWarnings = append(c.RuntimeWarnings, warning)
+	logger.LogUnresolved(warning)
+}
+func (c *Character) SetJuggleCost(cost int) { c.JuggleCost = cost }
+func (c *Character) FaceOpponent() {
+	if len(c.Target) == 0 {
+		return
+	}
+	facing := c.Facing
+	if c.Target[0].X > c.X {
+		facing = 1
+	} else if c.Target[0].X < c.X {
+		facing = -1
+	}
+	if facing != c.Facing {
+		c.Facing = facing
+		c.VelX = -c.VelX
+	}
 }
 
 func (c *Character) ChangeAnim(animNo int) {
@@ -1738,6 +1796,9 @@ func (c *Character) ResolveCollisions(others []*Character) {
 }
 
 func (c *Character) HandleHit(other *Character) {
+	if !c.HitDefActive {
+		return
+	}
 	// Prevent the same target from being hit multiple times by the same HitDef swing
 	if c.HitGuard == nil {
 		c.HitGuard = make(map[int]bool)
@@ -1750,6 +1811,8 @@ func (c *Character) HandleHit(other *Character) {
 	// 1. Mark attacker results
 	c.MoveHit = 1
 	c.MoveContact = 1
+	c.MoveGuarded = 0
+	c.contactSerial++
 
 	// Apply HitPause to attacker
 	if len(c.CurrentHitDef.PauseTime) > 0 {
@@ -1761,7 +1824,6 @@ func (c *Character) HandleHit(other *Character) {
 }
 
 func (c *Character) ProcessHit(attacker *Character, hit cns.HitDef) {
-	c.MoveContact = 1
 	c.GetHit = hit // Copy by value to avoid stack pointer issues
 
 	// Life reduction

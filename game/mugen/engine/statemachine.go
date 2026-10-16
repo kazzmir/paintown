@@ -251,37 +251,6 @@ func (sm *StateMachine) ExecuteState(state *cns.StateDef, env Environment) (bool
 	}
 	isPaused := env.IsPaused()
 
-	// Applying Statedef attributes on state entry (Time = 0)
-	// This ensures attributes like MoveType or Physics don't "stick" from the previous state.
-	if env.GetTime() == 0 && state.ID >= 0 {
-		if state.Type != "" && strings.ToUpper(state.Type) != "U" {
-			env.SetStateType(state.Type)
-		}
-		if state.MoveType != "" && strings.ToUpper(state.MoveType) != "U" {
-			env.SetMoveType(state.MoveType)
-		}
-		if state.Physics != "" && strings.ToUpper(state.Physics) != "U" {
-			env.SetPhysics(state.Physics)
-		}
-		if state.Ctrl != -1 {
-			env.SetCtrl(state.Ctrl != 0)
-		}
-		if state.SprPriority != -255 { // Default sentinel
-			env.SetSprPriority(state.SprPriority)
-		}
-		if state.Anim != -1 {
-			env.ChangeAnim(state.Anim)
-		}
-		if len(state.VelSet) > 0 {
-			x := state.VelSet[0]
-			y := 0.0
-			if len(state.VelSet) > 1 {
-				y = state.VelSet[1]
-			}
-			env.SetVelocity(x, y)
-		}
-	}
-
 	for i, compiled := range program.controllers {
 		ctrl := compiled.source
 		if isPaused && ctrl.IgnoreHitPause == 0 {

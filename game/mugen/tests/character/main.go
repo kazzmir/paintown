@@ -60,8 +60,12 @@ func (g *Game) Update() error {
 	g.p2.Character.CameraX = g.camX
 	g.p2.Character.ScreenWidth = 320
 
-	g.p1.Update()
-	g.p2.Update()
+	if err := g.p1.Update(); err != nil {
+		return err
+	}
+	if err := g.p2.Update(); err != nil {
+		return err
+	}
 
 	// Rudimentary camera follow (center between players)
 	g.camX = (g.p1.Character.X + g.p2.Character.X) / 2

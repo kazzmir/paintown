@@ -154,6 +154,9 @@ func TestTransitionAbortsControllers(t *testing.T) {
 }
 
 func TestCompilationFailsBeforeSideEffects(t *testing.T) {
+	if err := NewStateMachine().CompileState(cns.NewStateDef(7)); err == nil {
+		t.Fatal("accepted a state with no controllers")
+	}
 	for _, bad := range []string{
 		"type=UnknownController\ntrigger1=1", "type=LifeAdd\ntriggerall=1", "type=LifeAdd\ntrigger1=1\ntrigger1=time @ 1",
 		"type=LifeAdd\ntrigger0=1", "type=LifeAdd\ntriggerwhat=1", "type=LifeAdd\ntrigger1=1\npersistent=time+1",

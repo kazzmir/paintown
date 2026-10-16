@@ -46,7 +46,7 @@ func Intersects(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2 float64) bool {
 // with the defender's hurtboxes (Clsn2).
 func CheckCollision(attacker, defender *Character) bool {
 	// Attaker must have a HitDef active and boxes to check
-	if attacker.MoveType != "A" {
+	if attacker.MoveType != "A" || !attacker.HitDefActive {
 		return false
 	}
 

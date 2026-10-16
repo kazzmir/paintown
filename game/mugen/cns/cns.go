@@ -147,6 +147,10 @@ type CNS struct {
 	States   map[int]*StateDef
 }
 
+func NewStateDef(id int) *StateDef {
+	return &StateDef{ID: id, Type: "S", MoveType: "I", Physics: "N", Anim: -1, Ctrl: -1, SprPriority: -255, Parameters: make(map[string]string)}
+}
+
 func Parse(r io.Reader) (*CNS, error) {
 	ast, err := parsers.Parse(r)
 	if err != nil {
@@ -323,14 +327,8 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				continue
 			}
 
-			currentState = &StateDef{
-				Line:        section.Line,
-				Parameters:  make(map[string]string),
-				ID:          stateID,
-				Controllers: make([]StateController, 0),
-				Anim:        -1, // Default to "no change"
-				Ctrl:        -1, // Default to "no change"
-			}
+			currentState = NewStateDef(stateID)
+			currentState.Line = section.Line
 
 			// Extract name if present: [Statedef 0, Standing]
 			if idx := strings.Index(section.Name, ","); idx != -1 {
@@ -391,10 +389,7 @@ func ParseFromAST(ast *parsers.File) (*CNS, error) {
 				// MUGEN controllers can refer to any state.
 				// If the state doesn't exist, we create a "virtual" StateDef for it.
 				if _, ok := cns.States[stateNo]; !ok {
-					cns.States[stateNo] = &StateDef{
-						ID:          stateNo,
-						Controllers: make([]StateController, 0),
-					}
+					cns.States[stateNo] = NewStateDef(stateNo)
 				}
 				currentState = cns.States[stateNo]
 			}

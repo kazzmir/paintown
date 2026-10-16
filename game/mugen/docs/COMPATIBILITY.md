@@ -21,6 +21,12 @@ order/gaps and persistence, and adds Null. Headless state race tests pass.
 Production pause/timer integration, state entry, typed controller parameters,
 world ownership, and executable reference confirmation are still outstanding.
 
+M2b adds a single typed state-entry path and integrates hitpause passes/timer
+fixes in Character.Update. Regression coverage now includes entry omission/U/
+expressions/overrides/persistence, hitpause boundaries, contact timers, PosFreeze,
+Gravity, active-hit gating and runtime failure propagation. Entry/physics phase
+ordering and exact reference edge cases still require executable comparisons.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

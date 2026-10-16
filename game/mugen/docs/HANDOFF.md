@@ -89,11 +89,17 @@ corrects grouping/persistence, adds Null, and tests pause filtering, transitions
 validation before mutation and shared-state host isolation. Its headless race
 tests pass. Definitions are immutable after compilation.
 
-Next fix the production Character loop's hitpause/timer handling and replace
-the duplicate entry paths with typed entry application; compile controller
-parameter schemas and extend the pure simulation/trace runner. World trigger/
-constant/GetHitVar bindings and many controller bodies remain partial. Do not
-call M1 or full M0/M2 complete.
+M2a is commit `d4d808e7`. M2b implements explicit compiled state entry and
+production hitpause/timer integration, with entry/default/persistence and timing
+regressions. Full tests and engine/character race tests pass. Player.Update now
+returns runtime errors; its existing statement callers still build. See
+CHECKPOINTS.md for details and remaining reference-ordering obligations.
+
+Next compile typed controller parameter schemas, implement animation and complete
+constant bindings, extend the headless world/state runner, and compare authored
+reference fixtures. The 10-transition loop limit is now diagnosed but remains
+provisional. State ownership, match flow, SFF v2/fonts, and many controller/world
+behaviors are incomplete. Do not call M1 or full M0/M2 complete.
 
 The reference quick match loaded successfully through match-loop initialization
 under Wine. The binary identifies itself as 1.1.0 Beta 1 P1 (2013.08.11).

@@ -122,3 +122,40 @@ Remaining: production Character.Update still skips all paused state passes;
 state entry is still applied in two places, and handlers still need typed
 parameter schemas. These are next, followed by world/entity ownership and the
 full state runner. This checkpoint does not declare M2 complete.
+
+## M2b — Single state entry and production hitpause/timer integration
+
+Added compiled entry expressions and an explicit EnterState operation. CNS
+defaults now match the documented S/I/N entry defaults and omission sentinels.
+U preserves prior enums; omitted control/animation/velocity/priority/juggle stay
+unchanged. Entry applies power, juggle, facing and hitdef/movehit/hitcount
+persistence, and keeps transition control/animation overrides through Time=0
+passes. Entry never runs implicitly from ExecuteState. Character initial entry
+and transitions use this same path.
+
+Production state passes now run during hitpause so ignorehitpause can work,
+including the last paused tick; hit-stun decrements once per active tick.
+Contact counters persist and advance on unpaused ticks, with new-contact serials
+preventing immediate extra increments. MoveHitReset clears status rather than
+rearming already-hit targets. PosFreeze resets each active tick; Gravity adds
+acceleration once per activation. Hitboxes require an active HitDef, and default
+state entry disables stale hit definitions. Incoming hits no longer mark the
+defender's own attack as contacting.
+
+State/entry failures stop the affected Character and are returned by
+Player.Update; the combat application propagates them. Expression warnings are
+recorded with player/state context, deduplicated and bounded. Empty states are
+rejected. The old silent transition-loop cutoff now records an error; its
+10-transition cap is provisional and needs comparison with the reference limit.
+
+Validation: full `mugen --check` and focused engine/character race tests pass.
+New regressions cover entry defaults/U/omission/expressions/overrides, tuple
+evaluation order, no repeated entry during hitpause, combat persistence flags,
+last-paused/first-active ticks, contact counters, one-tick freeze, one-shot
+gravity, active-hit gating and stopped execution on missing states.
+
+Reference obligations remain: entry attribute/override evaluation ordering,
+negative-state edge cases, animation boundaries, physics/collision phase order
+and the transition limit. State ownership and world-level Pause/SuperPause are
+still incomplete. Typed controller parameters and animation/constant bindings
+are next; these changes are unit/regression-tested, not executable-parity claims.
