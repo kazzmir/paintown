@@ -8,16 +8,17 @@ import (
 
 type parameterHost struct {
 	*host
-	floats                [40]float64
-	sys                   [5]int
-	sysFloats             [5]float64
-	x, y, px, py          float64
-	defence               float64
-	warnings              []string
-	parent                Environment
-	overrides             EntryOverrides
-	self                  bool
-	quote, removed, combo int
+	floats                     [40]float64
+	sys                        [5]int
+	sysFloats                  [5]float64
+	x, y, px, py               float64
+	defence                    float64
+	warnings                   []string
+	parent                     Environment
+	overrides                  EntryOverrides
+	self                       bool
+	quote, removed, combo      int
+	paletteSource, paletteDest [2]int
 }
 
 func newParameterHost() *parameterHost {
@@ -44,6 +45,10 @@ func (h *parameterHost) ParentEnvironment() Environment { return h.parent }
 func (h *parameterHost) VictoryQuote(n int)             { h.quote = n }
 func (h *parameterHost) RemoveExplod(n int)             { h.removed = n }
 func (h *parameterHost) HitAdd(n int)                   { h.combo += n }
+func (h *parameterHost) SetPaletteMapping(source, dest [2]int) error {
+	h.paletteSource, h.paletteDest = source, dest
+	return nil
+}
 func (h *parameterHost) GetHitVar(name string) float64 {
 	if name == "xvel" {
 		return -4
@@ -86,6 +91,28 @@ func TestVariableExpressions(t *testing.T) {
 	runController(t, h, "VarSet", "sysfvar(4)=2.5")
 	if h.sys[4] != 12 || h.sysFloats[4] != 2.5 {
 		t.Fatal("system variable forms")
+	}
+}
+
+func TestCompiledPaletteParameters(t *testing.T) {
+	h := newParameterHost()
+	h.vars[0] = 3
+	runController(t, h, "RemapPal", "source=1,ifelse(1,2,3)\ndest=1,var(0)+1")
+	if h.paletteSource != [2]int{1, 2} || h.paletteDest != [2]int{1, 4} {
+		t.Fatal("palette expressions/tuple nesting", h.paletteSource, h.paletteDest)
+	}
+	runController(t, h, "RemapPal", "")
+	if h.paletteSource != [2]int{-1, 0} || h.paletteDest != [2]int{-1, 0} {
+		t.Fatal("palette omission defaults")
+	}
+	for _, params := range []string{"source=1\ndest=1,2", "source=1,2,3", "dest=1,1/0"} {
+		state := stateSource(t, "[State 7, bad palette]\ntype=RemapPal\ntrigger1=1\n"+params+"\n")
+		if _, err := NewStateMachine().ExecuteState(state, h); err == nil {
+			t.Fatal("bad palette parameter accepted", params)
+		}
+		if h.paletteSource != [2]int{-1, 0} || h.paletteDest != [2]int{-1, 0} {
+			t.Fatal("bad parameters mutated mapping")
+		}
 	}
 }
 

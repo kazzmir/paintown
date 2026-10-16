@@ -14,6 +14,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/logger"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 )
 
 // Character represents a MUGEN entity running through the State Machine.
@@ -33,6 +34,7 @@ type Character struct {
 	StateFile  *cns.CNS
 	LocalCoord coord.Space
 	GameCoord  coord.Space
+	Palettes   *palette.State
 
 	// AIR data containing animation definitions
 	AirFile   *air.Data
@@ -719,6 +721,10 @@ func (c *Character) Helper(params map[string]string) {
 	h := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	h.LocalCoord = c.LocalCoord
 	h.GameCoord = c.GameCoord
+	h.Palettes = c.Palettes
+	if c.Palettes != nil && params["ownpal"] == "1" {
+		h.Palettes = c.Palettes.Clone()
+	}
 	h.Parent = c
 	h.Root = c.Root
 	if h.Root == nil {
@@ -755,6 +761,10 @@ func (c *Character) Projectile(params map[string]string) {
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
 	p.LocalCoord = c.LocalCoord
 	p.GameCoord = c.GameCoord
+	p.Palettes = c.Palettes
+	if c.Palettes != nil && params["ownpal"] == "1" {
+		p.Palettes = c.Palettes.Clone()
+	}
 	p.Parent = c
 	p.Root = c.Root
 	if p.Root == nil {
@@ -945,8 +955,15 @@ func (c *Character) BGPalFX(params map[string]string) {
 	// Stub: background palette effects
 }
 
-func (c *Character) RemapPal(params map[string]string) {
-	// Stub: palette remapping
+func (c *Character) SetPaletteMapping(source, dest [2]int) error {
+	if c.Palettes == nil {
+		c.EvaluationWarning("RemapPal: palette archive unavailable")
+		return nil
+	}
+	if err := c.Palettes.Remap(palette.ID(source), palette.ID(dest)); err != nil {
+		c.EvaluationWarning("RemapPal: " + err.Error())
+	}
+	return nil
 }
 
 func (c *Character) AngleAdd(angle float64) {

@@ -183,7 +183,7 @@ func (h *FightHUD) Draw(screen *ebiten.Image) {
 		scale := h.values("Face", prefix+".face.scale", 1, 1)
 		facing := h.values("Face", prefix+".face.facing", 1)[0]
 		portraitScale := float64(screen.Bounds().Dx()) / float64(p.LocalCoord.Width)
-		h.sprite(screen, p.FindSprite(int(ids[0]), int(ids[1])), pos[0]+offset[0], pos[1]+offset[1], scale[0]*facing*portraitScale, scale[1]*portraitScale)
+		p.DrawSprite(screen, c, int(ids[0]), int(ids[1]), pos[0]+offset[0], pos[1]+offset[1], scale[0]*facing*portraitScale, scale[1]*portraitScale)
 		pos = h.values("Name", prefix+".pos", 0, 0)
 		name := p.Definition.Info["displayname"]
 		if name == "" {

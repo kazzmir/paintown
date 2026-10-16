@@ -280,3 +280,13 @@ overflow. These supersede the old unmeasured exp(1000)-is-bottom expectation.
 `scientific-notation` is a pinned load rejection for 1e2; native requires a decimal
 point. Original source hashes accompany all observations. Remaining numeric
 NaN/domain/coercion cases are not inferred from overflow observations.
+
+## Palette mapping integration
+
+The supplied sctrls.html RemapPal section specifies non-transitive source/dest
+maps, wildcard/removal behavior, same-depth resources and the eight-map limit.
+These have authored CPU/compiler tests. Both stock SFF archives have selected
+palette pixel tests and production selected-palette-fight captures show distinct
+P2 colors. These are Go rendering/asset checks, not native controller edge or
+screenshot parity. V1 external palettes and exact helper/effect ownership still
+need authored executable fixtures.

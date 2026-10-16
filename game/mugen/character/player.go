@@ -1,12 +1,13 @@
 package character
 
 import (
-	"image"
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
@@ -27,7 +28,7 @@ type Player struct {
 	Dir string
 
 	// Sprite cache for Ebiten
-	spriteCache map[int]map[int]*ebiten.Image
+	spriteCache map[paletteCacheKey]cachedSprite
 
 	// Command buffering
 	Commands *CommandBuffer
@@ -58,6 +59,7 @@ func (p *Player) Draw(screen *ebiten.Image, screenX, screenY float64) {
 
 // DrawScaled renders the player and its subordinates.
 func (p *Player) DrawScaled(screen *ebiten.Image, screenX, screenY, scaleX, scaleY float64) {
+	p.pruneSpriteCache()
 	// 1. Draw main character
 	p.drawEntity(screen, p.Character, screenX, screenY, scaleX, scaleY)
 
@@ -108,7 +110,10 @@ func (p *Player) drawEntity(screen *ebiten.Image, ent *Character, x, y, sx, sy f
 		return
 	}
 
-	ebitenSprite := p.getEbitenImage(currentElement.Group, currentElement.Image, sprite.Image)
+	ebitenSprite := p.getEbitenImage(ent, currentElement.Group, currentElement.Image)
+	if ebitenSprite == nil {
+		return
+	}
 	opts := &ebiten.DrawImageOptions{}
 	opts.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 
@@ -145,7 +150,10 @@ func (p *Player) drawExplod(screen *ebiten.Image, ex *ExplodData, x, y, sx, sy f
 	if sprite == nil {
 		return
 	}
-	ebitenSprite := p.getEbitenImage(el.Group, el.Image, sprite.Image)
+	ebitenSprite := p.getEbitenImage(p.Character, el.Group, el.Image)
+	if ebitenSprite == nil {
+		return
+	}
 	opts := &ebiten.DrawImageOptions{}
 	opts.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
 	if ex.Facing == -1 {
@@ -156,16 +164,90 @@ func (p *Player) drawExplod(screen *ebiten.Image, ex *ExplodData, x, y, sx, sy f
 	screen.DrawImage(ebitenSprite, opts)
 }
 
-func (p *Player) getEbitenImage(g, i int, src image.Image) *ebiten.Image {
-	if p.spriteCache[g] == nil {
-		p.spriteCache[g] = make(map[int]*ebiten.Image)
+type paletteCacheKey struct {
+	state *palette.State
+	index int
+}
+type cachedSprite struct {
+	revision uint64
+	image    *ebiten.Image
+}
+
+func (p *Player) getEbitenImage(entity *Character, g, i int) *ebiten.Image {
+	index := -1
+	for n, sprite := range p.SFF.Sprites {
+		if int(sprite.GroupNumber) == g && int(sprite.ImageNumber) == i {
+			index = n
+			break
+		}
 	}
-	img, ok := p.spriteCache[g][i]
-	if !ok {
-		img = ebiten.NewImageFromImage(src)
-		p.spriteCache[g][i] = img
+	if index < 0 {
+		return nil
 	}
+	state := entity.Palettes
+	key := paletteCacheKey{state, index}
+	revision := uint64(0)
+	if state != nil {
+		revision = state.Revision
+	}
+	if p.spriteCache == nil {
+		p.spriteCache = map[paletteCacheKey]cachedSprite{}
+	}
+	if cached, found := p.spriteCache[key]; found {
+		if cached.revision == revision {
+			return cached.image
+		}
+		cached.image.Dispose()
+		delete(p.spriteCache, key)
+	}
+	pixels := p.SFF.Sprites[index].Image
+	if state != nil {
+		var err error
+		pixels, err = state.Image(index, true)
+		if err != nil {
+			entity.RuntimeError = fmt.Errorf("%s sprite %d,%d: %w", p.DefPath, g, i, err)
+			return nil
+		}
+	}
+	if pixels == nil {
+		return nil
+	}
+	img := ebiten.NewImageFromImage(pixels)
+	p.spriteCache[key] = cachedSprite{revision, img}
 	return img
+}
+
+func (p *Player) pruneSpriteCache() {
+	active := map[*palette.State]bool{p.Character.Palettes: true}
+	for _, entity := range p.Character.Helpers {
+		active[entity.Palettes] = true
+	}
+	for _, entity := range p.Character.Projectiles {
+		active[entity.Palettes] = true
+	}
+	for key, cached := range p.spriteCache {
+		if !active[key.state] || (key.state != nil && key.state.Revision != cached.revision) {
+			cached.image.Dispose()
+			delete(p.spriteCache, key)
+		}
+	}
+}
+
+// DrawSprite uses the entity's remapping and the same cache as its animation.
+func (p *Player) DrawSprite(screen *ebiten.Image, entity *Character, group, item int, x, y, sx, sy float64) {
+	sprite := p.FindSprite(group, item)
+	if sprite == nil {
+		return
+	}
+	img := p.getEbitenImage(entity, group, item)
+	if img == nil {
+		return
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-float64(sprite.XAxis), -float64(sprite.YAxis))
+	op.GeoM.Scale(sx, sy)
+	op.GeoM.Translate(x, y)
+	screen.DrawImage(img, op)
 }
 
 func (p *Player) FindSprite(group, image int) *sff.Sprite {

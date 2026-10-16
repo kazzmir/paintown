@@ -253,6 +253,14 @@ point before an exponent. Full races and a native smallgame replay pass. See
 COORDINATES.md/REFERENCE.md. Complete combat/guard rules, selected palettes and
 audio/effects remain next.
 
+M4f is commit `5583b1a7`. M3i adds compiled RemapPal and instance palette maps,
+stock v2 selected colors in character/HUD rendering, revision-based cache refresh
+and retired-owner pruning. Documented non-transitive/removal/depth/eight-slot
+rules have authored tests; both stock archives have selected-pixel checks. Full
+races pass and selected-palette-fight captures show alternate P2 colors. Native
+RemapPal edge probes, SFF v1 external palN and full effect/helper ownership remain
+open.
+
 Next finish playable match behavior with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -150,8 +150,8 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	merge(common)
 	p := &Player{Dir: baseDir, DefPath: defPath, Definition: def, CMD: commandData,
-		LocalCoord:  local,
-		spriteCache: make(map[int]map[int]*ebiten.Image), Commands: NewCommandBuffer(120), PlayerID: 1}
+		LocalCoord: local,
+		Commands:   NewCommandBuffer(120), PlayerID: 1}
 	spritePath, err := resolve("sprite")
 	if err != nil {
 		return nil, err
@@ -194,6 +194,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	p.Character = NewCharacter(master, nil, p.CMD)
 	p.Character.LocalCoord = local
+	p.Character.Palettes = palette.New(p.SFF)
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR
 	return p, nil
 }

@@ -7,6 +7,12 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M3i applies selected stock v2 palettes through compiled RemapPal and shared
+character/HUD caches. Authored tests cover documented mapping/removal/depth/limit
+rules, pixel selection, cache refresh and round reset. Native controller edge
+probes, external v1 palN and full helper/effect ownership remain open.
+
+
 M4f converts received hit vectors/defaults across local spaces and pins the
 common-space no-change fall X sentinel. Native overflow probes correct the prior
 infinity-as-bottom assumption and scientific-notation lexing. Six contact cases,

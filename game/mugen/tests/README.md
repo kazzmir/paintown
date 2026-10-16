@@ -161,3 +161,9 @@ JSONL expression traces use a nonfinite field and value=0 as a JSON placeholder.
 float-overflow, float-math-overflow and scientific-accepted are numeric native
 probes (--bank fvar --mugenversion 1.1 --pages 0). scientific-notation instead
 pins the native rejection of 1e2. Decimal forms such as 1.0e2 are supported.
+
+Palette integration: palette/ tests cover mapping semantics and selected pixels
+in both stock archives. Character tests cover cache refresh/removal; match tests
+verify common CNS applies PalNo again after reset. selected-palette-fight is an
+owned-window Go capture of the actual renderer; no native remap-edge parity is
+claimed from it.

@@ -81,6 +81,8 @@ func typedHandler(ctrl *cns.StateController, specs []argumentSpec, apply func(En
 func compileCoreController(ctrl *cns.StateController) (ControllerFunc, bool, error) {
 	name := strings.ToLower(ctrl.Type)
 	switch name {
+	case "remappal":
+		return compileRemapPal(ctrl)
 	case "varset", "varadd":
 		return compileVariable(ctrl, name == "varadd", false)
 	case "parentvarset", "parentvaradd":

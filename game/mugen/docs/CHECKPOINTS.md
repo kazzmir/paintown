@@ -4,6 +4,31 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3i — Selected v2 palettes and compiled RemapPal
+
+Added instance-local palette maps over immutable SFF data. RemapPal now compiles
+both literal/expression tuples with documented -1,0 defaults and validates all
+arguments before mutation. Its former raw no-op path is removed. Mapping applies
+one lookup (non-transitive), supports identity/destination removal and wildcard
+reset, enforces eight slots, and checks source/destination depth/existence.
+Invalid resources/capacity failures warn without altering mappings. These rules
+are backed by the supplied controller documentation and authored tests; no full
+native RemapPal conformance claim is made yet.
+
+Common 5900 now applies PalNo to both stock characters, including round reset.
+Character and HUD portrait rendering use the same mapping-aware sprite cache;
+revision changes refresh colors, idempotent remaps preserve cached images, and
+retired round owners are pruned on draw. Current helper/projectile ownpal paths
+share or clone palette state, while their full parameter/lifecycle behavior
+remains open. Tests compare every indexed pixel using the selected palette in
+both stock archives and preserve source pixels/masking.
+
+Full tests/races pass. Owned-window capture selected-palette-fight/ shows P2's
+alternate stock colors at the correct mixed-resolution size. SFF v1 external
+palN selection still uses the old fallback and needs separate native fixtures;
+custom animation ownership, Explod ownpal and the complete helper palette rules
+are pending. This closes the stock v2 selection/rendering gap, not the M3 gate.
+
 ## M4f — Received hit coordinates and native float overflow
 
 Received HitDef vectors now copy/convert into the defender's local units;

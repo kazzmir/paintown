@@ -91,7 +91,6 @@ type Environment interface {
 	PalFX(params map[string]string)
 	AllPalFX(params map[string]string)
 	BGPalFX(params map[string]string)
-	RemapPal(params map[string]string)
 	AngleAdd(angle float64)
 	AngleDraw(angle float64)
 	AngleMul(mul float64)
@@ -1012,8 +1011,7 @@ func handleBGPalFX(ctrl *cns.StateController, env Environment) error {
 }
 
 func handleRemapPal(ctrl *cns.StateController, env Environment) error {
-	env.RemapPal(ctrl.Params)
-	return nil
+	return fmt.Errorf("RemapPal requires compiled palette parameters")
 }
 
 func handleAngleAdd(ctrl *cns.StateController, env Environment) error {

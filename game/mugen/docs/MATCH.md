@@ -4,8 +4,9 @@ The normal launcher now reaches a real FightState through title, character
 selection, stage selection and versus. Confirm both players in versus, then
 choose a stage with P1 left/right and confirm. Start confirms a character;
 a/b/c/x/y/z also select palette numbers 1..6, with Start held selecting 7..12.
-Palette numbers are retained and exposed as PalNo; rendering the chosen palette
-is still pending. Character names, DEFs, selected stage, mode and music override
+Palette numbers are retained and exposed as PalNo. Stock SFF v2 characters now
+apply them through common CNS RemapPal; external SFF v1 palN selection still
+needs its own resource/default fixtures. Character names, DEFs, selected stage, mode and music override
 survive the handoff. Music playback is not implemented yet.
 
 Stock keyboard controls: P1 arrows, comma/period/slash, L/semicolon/quote,

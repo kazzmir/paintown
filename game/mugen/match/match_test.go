@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/palette"
 )
 
 func stockMatch(t *testing.T, time int) *Match {
@@ -38,6 +39,9 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 		t.Fatal("mixed spawn", m.Players[0].Character.X, m.Players[1].Character.X)
 	}
 	advanceUntil(t, m, Active, 600)
+	if m.Players[1].Character.Palettes.Destination(palette.ID{1, 1}) != (palette.ID{1, 2}) {
+		t.Fatal("selected palette did not reach common RemapPal")
+	}
 	for slot, p := range m.Players {
 		if !p.Character.Ctrl || p.Character.RoundState != 2 || p.Character.PlayerID != slot+1 {
 			t.Fatal("control/identity", slot, p.Character)
@@ -58,6 +62,9 @@ func TestStockMixedMatchIntroKOAndReset(t *testing.T) {
 		}
 	}
 	advanceUntil(t, m, Active, 600)
+	if m.Players[1].Character.Palettes.Destination(palette.ID{1, 1}) != (palette.ID{1, 2}) {
+		t.Fatal("round reset lost selected palette")
+	}
 	m.Players[1].Character.SetLife(0)
 	advanceUntil(t, m, Finished, 500)
 	if m.Wins != [2]int{2, 0} || !m.Players[0].Character.IsMatchOver {
