@@ -331,12 +331,20 @@ clears prior choices. Real KFM combat now requires a common cue and audible PCM.
 Continue common hit/guard effects, KO voice/echo and full combat/entity semantics.
 Other HitDef fields remain legacy and complete sound/ownership parity is open.
 
+M4n is commit `99372c03`. M4o adds root KO sound 11,0, KO.echo half/quarter
+voices at counter 20/50, and current global root nokosnd suppression. Four native
+programs (21 segments/25 Go tick checks), full races and a fresh initial-only
+suppression replay pass. Voice isolation uses only a disposable valid original
+empty HUD bank; negative IDs alone retained the spoken announcement. Earlier
+captures remain diagnostic. See AUDIO.md. Complete KO states/kill flags/revival,
+helpers and Pause/SuperPause still need work. Common hit/guard effects are next.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next integrate common hit/guard effects and KO voice/echo for the playable match,
+Next integrate common hit/guard effects for the playable match,
 then continue complete HitDef/protection/priority/entity semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains

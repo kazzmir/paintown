@@ -64,7 +64,8 @@ fixtures. Received hit vectors/defaults now convert across spaces with focused n
 coverage. Complete guard/combat/default schemas and phase ordering remain next
 fixes before calling the full M4 milestone playable. Character/common PlaySnd and fight announcements now reach the production audio
 stream (M4m). Contact hit/guard cues now use typed sound expressions and measured voice
-interruption/panning (M4n). KO voice/echo, BGM and common hit effects remain open;
+interruption/panning (M4n). Root KO voice/echo and global suppression now have focused native audio checks
+(M4o). Full KO state/pause/revival semantics, BGM and common hit effects remain open;
 scene/round cleanup is provisional. See AUDIO.md.
 
 Validation: full regression and race checks pass. Match tests cover stock mixed

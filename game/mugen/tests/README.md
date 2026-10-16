@@ -246,3 +246,11 @@ unchanged. sound_probe.py --common-tone patches only disposable common.snd
 references, pins the modified fight hashes, and automatically repeats the recipe
 on replay. Both override-sound and contact-sound-common-single have fresh passing
 replays. The normal KFM combat test also requires common hit-sound output.
+
+M4o ko-sound* fixtures add 21 isolated native segments and 25 Go tick checks.
+--fixture-constants uses their complete numeric groups. --quiet-hud routes only
+disposable fight announcements to an original valid empty SND; bank/fight hashes
+are recorded. --window-ms/--step-ms are pinned so short KO tones retain their
+plateaus; Go checks can request WindowTicks (default 12). Fresh ko-sound-initial-
+suppressed replay verifies global initial suppression with later echoes. Earlier
+captures containing stock spoken announcements remain diagnostic-only in temp.

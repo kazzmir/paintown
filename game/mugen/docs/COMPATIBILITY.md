@@ -207,6 +207,11 @@ cases. Full races, fresh override/common-bank replays and real KFM contact PCM
 pass. Complete HitDef fields, KO voice/echo, effects, camera/ownership/lifecycle
 and configuration/resampling behavior remain open; no whole-controller promotion.
 
+M4o connects own-bank root KO voice/echo and global nokosnd suppression. Four
+native programs pin 21 segments and 25 Go checks; full races and fresh isolated
+replay pass. Full KO state/kill/revival/helper/pause behavior remains incomplete.
+See AUDIO.md for exact scope and diagnostic announcement-isolation findings.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

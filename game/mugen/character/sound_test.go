@@ -32,8 +32,8 @@ type audioReferenceCase struct {
 		Segments    []struct {
 			Levels map[string][2]float64 `json:"levels"`
 		} `json:"segments"`
-		Checks           []struct{ Tick, Segment int } `json:"checks"`
-		MissingResources int                           `json:"missing_resources"`
+		Checks           []struct{ Tick, Segment, WindowTicks int } `json:"checks"`
+		MissingResources int                                        `json:"missing_resources"`
 	} `json:"audio"`
 }
 
@@ -71,7 +71,7 @@ func audioLevels(data []byte, rate int, frequencies []float64) map[string][2]flo
 }
 
 func TestNativeSoundControllerPCM(t *testing.T) {
-	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio", "contact-sound", "guard-sound", "override-sound", "contact-sound-close", "contact-sound-common", "contact-sound-default", "guard-sound-default", "contact-sound-common-single", "contact-sound-retained"} {
+	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio", "contact-sound", "guard-sound", "override-sound", "contact-sound-close", "contact-sound-common", "contact-sound-default", "guard-sound-default", "contact-sound-common-single", "contact-sound-retained", "ko-sound", "ko-sound-echo", "ko-sound-suppressed", "ko-sound-initial-suppressed"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")
@@ -153,7 +153,14 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 						}
 					}
 					for _, check := range reference.Audio.Checks {
-						levels := audioLevels(pcm[check.Tick*tickBytes:(check.Tick+12)*tickBytes], 44100, reference.Audio.Frequencies)
+						window := check.WindowTicks
+						if window == 0 {
+							window = 12
+						}
+						if window < 1 || window > 12 {
+							t.Fatal("audio check window outside 1..12 ticks")
+						}
+						levels := audioLevels(pcm[check.Tick*tickBytes:(check.Tick+window)*tickBytes], 44100, reference.Audio.Frequencies)
 						for frequency, want := range reference.Audio.Segments[check.Segment].Levels {
 							got := levels[frequency]
 							for channel := 0; channel < 2; channel++ {

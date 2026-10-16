@@ -454,3 +454,11 @@ assignment execution have dedicated captures. Fresh override-sound-replay and
 contact-sound-common-single-replay match numeric packets, levels, relative onsets
 and disposable common-bank recipe hashes. Full races and actual KFM hit-sound
 command/PCM integration pass. Whole HitDef and camera/ownership parity remain open.
+
+M4o adds four KO voice programs (21 native segments, 25 Go tick checks). Original
+quarter-second group-11 tones isolate initial/half/quarter voices and current
+global nokosnd behavior. Native echo/initial-only suppression replay passes with
+100-ms analysis windows and a disposable original empty HUD bank. Its bank/fight
+hashes are pinned. Earlier captures with spoken announcements are diagnostic-only.
+Full races pass. Exact audio onset/world-clock boundaries and complete KO/pause/
+revival/entity state behavior remain open.

@@ -8,11 +8,13 @@ import struct
 import wave
 
 
-def generate(contact=False, common=False):
+def generate(contact=False, common=False, ko=False):
     sounds = []
     definitions = [(1,100,1),(2,100,1),(3,100,1),(4,44100,1),(5,100,2)]
     if contact:
         definitions += [(6,44100,1),(7,44100,1)]
+    if ko:
+        definitions += [(11,11025,1)]
     if common:
         definitions = [(group,44100,1) if group>=5 else (group,frames,channels) for group,frames,channels in definitions]
     for group, frames, channels in definitions:
@@ -43,5 +45,6 @@ if __name__ == '__main__':
     parser.add_argument('destination',type=Path)
     parser.add_argument('--contact', action='store_true', help='Add original one-second hit/guard tones')
     parser.add_argument('--common', action='store_true', help='Use distinct one-second common-bank tones')
+    parser.add_argument('--ko', action='store_true', help='Add an original quarter-second KO voice')
     args = parser.parse_args()
-    args.destination.write_bytes(generate(args.contact,args.common))
+    args.destination.write_bytes(generate(args.contact,args.common,args.ko))

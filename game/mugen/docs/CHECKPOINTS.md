@@ -4,6 +4,38 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4o — Root KO voices, echoes and global suppression
+
+The shared post-damage root tick now plays own-bank sound 11,0 once on KO,
+stopping numbered voice channel 0. KO.echo enables additional voices at native
+KO counter values 20 and 50, with 50% and 25% volume requests. The counter begins
+at one on the detection pass. Echoes use the same measured screen-X panning as
+contact cues. A root's nokosnd assertion suppresses every root's scheduled KO
+voice for that tick; suppressing the initial voice does not cancel later echoes.
+Missing KO samples warn and continue. Full KO state/kill/revival, helper ownership
+and Pause/SuperPause timing remain separate open obligations.
+
+Four authored programs with complete numeric constants pin 21 native segments
+and 25 Go tick checks: basic voice, echoes, continuous opponent suppression and
+initial-only suppression followed by audible echoes. Short 100-ms Fourier
+windows and six-tick Go windows isolate quarter-second original tones. Gain
+matches integer mixer truncation, including 25% producing a ratio below exact
+one quarter at stock SFX gain. Full races pass and a fresh initial-suppression
+replay matches seven segments, source/numeric packets and recipe hashes.
+The fixture windows establish plateaus; exact first-sample world-clock boundary
+parity and pause interactions are not claimed.
+
+Initial captures were contaminated by the stock spoken KO announcement. Setting
+negative announcement IDs alone did not remove it in this distribution. The
+final reproducible recipe routes only the disposable HUD to a valid original
+empty SND bank; its bank/fight hashes are pinned. Original reference files and
+desktop audio routes remain untouched. Earlier captures stay diagnostic-only
+under temp/. Optional --ko generation preserves prior default bank bytes.
+
+Next common hit/guard effects, then complete combat/entity and sound configuration
+edges. Root KO audio does not close full match/KO or sound compatibility gates.
+M4n's reversal point is commit `99372c03`.
+
 ## M4n — HitDef sound schema, contact cues and voice interruption
 
 Hit/guard sound parameters now compile expressions, integer tuples, resource

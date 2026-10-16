@@ -154,9 +154,11 @@ type Character struct {
 	Clipboard string
 
 	// Hierarchy
-	Helpers     []*Character
-	Projectiles []*Character
-	Explods     []*ExplodData
+	Helpers        []*Character
+	Projectiles    []*Character
+	Explods        []*ExplodData
+	koSoundStarted bool
+	koSoundAge     int
 
 	// Constants
 	VictoryQuoteIndex int

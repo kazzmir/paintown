@@ -2,7 +2,7 @@
 
 M4l provides the controller/mixer foundation. M4m connects the production device,
 menu/character commands, match banks and HUD cues. M4n adds contact/guard cues and
-channel-0 interruption. KO voice/echo and complete lifecycle/fidelity remain open. `sound/` has a display-independent ordered command queue and a
+channel-0 interruption. M4o adds root KO voices/echoes; complete KO lifecycle and fidelity remain open. `sound/` has a display-independent ordered command queue and a
 thread-safe signed-16 stereo PCM reader. Character sound controllers now compile
 typed tuples/parameters and emit commands; source banks remain immutable CPU
 assets. Helpers/projectiles receive independent audio owners on the shared
@@ -79,7 +79,7 @@ d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
 Disassembly is disposable under temp/audio-reference/, not source or a modified
 executable. Runtime PCM observations remain the conformance evidence.
 
-Open: KO voice/echo, complete camera/zoom/mixed-coordinate contact panning,
+Open: complete KO/helper/revival/pause lifecycle, camera/zoom/mixed-coordinate contact panning,
 complete helper/entity/custom-state sound ownership and cleanup, capacity
 fallbacks, arbitrary source-rate/libresample fidelity, extreme/bottom parameter
 fallbacks, stereo/reverse/disabled/config edges, BGM and storyboard audio. Queue
@@ -141,3 +141,27 @@ supports the measured behavior; complete camera/zoom/mixed-profile cases remain
 open. Common-bank recipe hashes are pinned after patching only disposable fight
 DEFs; original reference assets remain untouched. Optional --contact/--common
 tone generation preserves the default generator's original bytes.
+
+Root KO audio (M4o): sound 11,0 comes from the player's own bank and uses the
+measured screen-X pan. The post-damage shared pass stops numbered channel 0 and
+emits one initial voice. A KO counter begins at one on that pass; KO.echo schedules
+50% and 25% voices at counter 20/50. The supplied read-only paths 0x43cfec and
+0x43d035 compare those counter values; 0x4fd830/0x4fd8d8 contain .5/.25 scale
+constants. These explain the measured gain, not a full native timing proof.
+Any current root nokosnd assertion suppresses each root's due voice. Releasing
+an initial-only assertion permits the later echoes, as the native manual says.
+
+Four source-pinned complete-constant fixtures produce 21 native segments and
+25 Go tick checks, including opponent/global suppression. The original quarter-
+second KO tone permits independent gain/expiry checks. Capture analysis uses
+100-ms windows/50-ms steps; selected Go windows are six ticks. Full races and a
+fresh initial-suppression replay pass. Exact first-sample/tick boundaries,
+Pause/SuperPause, helper KO behavior, complete kill flags, state transitions and
+revival latching remain open. The current positive-life reset is provisional.
+
+To isolate voices, --quiet-hud now routes disposable fight definitions to a valid
+original empty SND bank and records its hash. Negative announcement IDs alone
+left the spoken KO announcement in initial diagnostic captures; those are not
+the promoted evidence. The reference copy and desktop are unchanged. The sound
+harness also retains analysis-window settings and fixture-owned constants for
+replay. Default tone-bank generation remains byte-identical; --ko adds group 11.

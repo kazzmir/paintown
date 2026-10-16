@@ -105,6 +105,16 @@ func TickCharacters(players []*Character) error {
 	for _, event := range damage {
 		event.defender.applyHitDamage(event.damage)
 	}
+	suppressKO := false
+	for _, c := range players {
+		suppressKO = suppressKO || c.Specials["nokosnd"]
+	}
+	for _, c := range players {
+		if err := c.updateKOSound(suppressKO); err != nil {
+			c.RuntimeError = fmt.Errorf("player %d KO sound: %w", c.PlayerID, err)
+			return c.RuntimeError
+		}
+	}
 	for _, c := range players {
 		var active []*Character
 		for _, p := range c.Projectiles {
