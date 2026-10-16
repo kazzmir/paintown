@@ -13,6 +13,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
 )
@@ -123,7 +124,10 @@ type Motif struct {
 }
 
 func LoadMotif(path string, dataDir string) (*Motif, error) {
-	absPath := background.ResolvePath(path, filepath.Dir(path), dataDir)
+	absPath, err := resource.Resolve(path, dataDir, filepath.Join(dataDir, "data"), ".")
+	if err != nil {
+		return nil, fmt.Errorf("motif DEF: %w", err)
+	}
 	f, err := os.Open(absPath)
 	if err != nil {
 		return nil, err
@@ -132,8 +136,9 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 
 	ast, err := parsers.Parse(f)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", absPath, err)
 	}
+	fileLines := make(map[string]int)
 
 	motif := &Motif{}
 	motif.Files.FontFiles = make([]string, 11) // 1-10
@@ -156,6 +161,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		case "files":
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
+				fileLines[id] = attr.Line
 				val := getString(attr.Value)
 				switch id {
 				case "spr":
@@ -173,9 +179,8 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 				default:
 					if strings.HasPrefix(id, "font") {
 						// e.g. font1
-						var idx int
-						fmt.Sscanf(id, "font%d", &idx)
-						if idx >= 1 && idx <= 10 {
+						idx, err := strconv.Atoi(strings.TrimPrefix(id, "font"))
+						if err == nil && idx >= 1 && idx <= 10 {
 							motif.Files.FontFiles[idx] = val
 						}
 					}
@@ -403,25 +408,52 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		}
 	}
 
-	// Load SFF if available
+	assetError := func(key string, err error) error {
+		return fmt.Errorf("%s [Files] %s (line %d): %w", absPath, key, fileLines[key], err)
+	}
+	resolveAsset := func(key, name string, fontFile bool) (string, error) {
+		directories := []string{motifDir, filepath.Join(dataDir, "data"), dataDir}
+		if fontFile {
+			// The bundled system.def specifies system, program, data, font.
+			directories = []string{motifDir, dataDir, filepath.Join(dataDir, "data"), filepath.Join(dataDir, "font")}
+		}
+		resolved, err := resource.Resolve(name, directories...)
+		if err != nil {
+			return "", assetError(key, err)
+		}
+		return resolved, nil
+	}
+	// Declared assets must load; a partial motif hides a broken installation.
 	if motif.Files.Spr != "" {
-		sprPath := background.ResolvePath(motif.Files.Spr, motifDir, dataDir)
-		if sprFile, err := os.Open(sprPath); err == nil {
-			if sffData, err := sff.Parse(sprFile); err == nil {
-				motif.SpriteData = sffData
-			}
-			sprFile.Close()
+		sprPath, err := resolveAsset("spr", motif.Files.Spr, false)
+		if err != nil {
+			return nil, err
+		}
+		sprFile, err := os.Open(sprPath)
+		if err != nil {
+			return nil, assetError("spr", err)
+		}
+		motif.SpriteData, err = sff.Parse(sprFile)
+		sprFile.Close()
+		if err != nil {
+			return nil, assetError("spr", fmt.Errorf("%s: %w", sprPath, err))
 		}
 	}
 
 	// Load SND if available
 	if motif.Files.Snd != "" {
-		sndPath := background.ResolvePath(motif.Files.Snd, motifDir, dataDir)
-		if sndFile, err := os.Open(sndPath); err == nil {
-			if soundBank, err := snd.Parse(sndFile); err == nil {
-				motif.SoundBank = soundBank
-			}
-			sndFile.Close()
+		sndPath, err := resolveAsset("snd", motif.Files.Snd, false)
+		if err != nil {
+			return nil, err
+		}
+		sndFile, err := os.Open(sndPath)
+		if err != nil {
+			return nil, assetError("snd", err)
+		}
+		motif.SoundBank, err = snd.Parse(sndFile)
+		sndFile.Close()
+		if err != nil {
+			return nil, assetError("snd", fmt.Errorf("%s: %w", sndPath, err))
 		}
 	}
 
@@ -430,20 +462,25 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		if fontFile == "" {
 			continue
 		}
-		fontPath := background.ResolvePath(fontFile, motifDir, dataDir)
-		if f, err := font.LoadFont(fontPath); err == nil {
-			motif.Fonts[i] = f
-			if f.Fallback != "" {
-				logger.LogUnresolved(fmt.Sprintf("font %s: %s", fontFile, f.Fallback))
-			}
-		} else {
-			fmt.Printf("Warning: Failed to load font %s: %v\n", fontFile, err)
+		key := fmt.Sprintf("font%d", i)
+		fontPath, err := resolveAsset(key, fontFile, true)
+		if err != nil {
+			return nil, err
+		}
+		loaded, err := font.LoadFont(fontPath)
+		if err != nil {
+			return nil, assetError(key, fmt.Errorf("%s: %w", fontPath, err))
+		}
+		motif.Fonts[i] = loaded
+		if loaded.Fallback != "" {
+			logger.LogUnresolved(fmt.Sprintf("font %s: %s", fontFile, loaded.Fallback))
 		}
 	}
 
 	// Load System AIR (often embedded in system.def)
-	if airData, err := air.ParseFromAST(ast); err == nil {
-		motif.SystemAIR = airData
+	motif.SystemAIR, err = air.ParseFromAST(ast)
+	if err != nil {
+		return nil, fmt.Errorf("%s embedded AIR: %w", absPath, err)
 	}
 
 	// Load Backgrounds

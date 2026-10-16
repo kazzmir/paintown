@@ -34,3 +34,9 @@ Place the requested licensed font in a configured font directory for accurate
 coverage of its supported characters. Exact Windows rasterizer parity and
 reference text placement have not been demonstrated. No proprietary fonts are
 copied into this repository.
+
+Motif fonts are searched in the order documented by the supplied system.def:
+its own directory, the program root, data/, then font/. Bitmap font SFF children
+resolve relative to their font DEF, honoring Windows separators and case. Declared
+missing/malformed motif fonts now fail loading. A missing Windows TTF referenced
+inside a valid font definition still uses the observable fallback above.

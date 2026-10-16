@@ -45,10 +45,17 @@ menu.itemname.arcade = "ARCADE"
 		t.Fatal(err)
 	}
 
-	// Create dummy SFF and SND to check resolution (not parsing here as it's mocked)
-	// Actually, the loader TRIES to parse them. I should probably just leave them empty for now
-	// or create minimal valid headers if I want to test parsing.
-	// For now, I'll just check if the DEF parsing works.
+	for target, source := range map[string]string{
+		filepath.Join(dataDir, "system.sff"):       referencePath(t, "data", "system.sff"),
+		filepath.Join(dataDir, "system.snd"):       referencePath(t, "data", "system.snd"),
+		filepath.Join(tmpDir, "font", "f-4x6.fnt"): referencePath(t, "font", "f-4x6.fnt"),
+	} {
+		data, err := os.ReadFile(source)
+		if err != nil {
+			t.Fatal(err)
+		}
+		writeResource(t, target, data)
+	}
 
 	m, err := motif.LoadMotif(motifDefPath, tmpDir)
 	if err != nil {
@@ -57,6 +64,9 @@ menu.itemname.arcade = "ARCADE"
 
 	if m.Info.Name != "Test Motif" {
 		t.Errorf("expected Name 'Test Motif', got '%s'", m.Info.Name)
+	}
+	if m.SpriteData == nil || m.SoundBank == nil || m.Fonts[1] == nil {
+		t.Fatal("declared sprite, sound and font assets must actually load")
 	}
 	if m.Files.Spr != "system.sff" {
 		t.Errorf("expected Spr 'system.sff', got '%s'", m.Files.Spr)

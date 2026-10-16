@@ -168,7 +168,16 @@ match every observation; parser tests reject phantom states/controller leakage.
 Full tests/races and native binding replay pass. Malformed duplicate blocks and
 unusual header spellings still need probes; this is not complete CNS validation.
 
-Next integrate selected character palettes, harden non-character resource loading,
+M1d is commit `a73d257e`. M3e makes motif main SFF/SND/font and stage SFF errors
+fatal/contextual, integrates the resolver and bitmap font-child names, and adds
+the documented motif font search order (system, program, data, font). Previously
+font/ was absent and missing assets were swallowed. All four stock motifs and
+three stages now have actual load assertions. fontN.height no longer replaces
+the font filename, but height application remains pending. Full tests/races pass.
+Per-background SFF overrides, storyboards, language sections and complete drawing
+behavior remain open; do not claim full asset integration/rendering parity.
+
+Next integrate selected character palettes, finish per-background/storyboard resources,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

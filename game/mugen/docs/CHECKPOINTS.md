@@ -4,6 +4,33 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3e — Motif/stage resources and font directory integration
+
+Motif main SFF/SND/font and stage SFF loaders now propagate declared-file
+resolution and parsing errors with source path, section/key and line. Embedded
+AIR errors propagate as well. They use the shared resolver for Windows separator
+and case handling. Bitmap FNT v2 child archives resolve relative to the font DEF
+and retain parent/child paths on failure. The legacy ResolvePath wrapper delegates
+to that resolver; strict loaders use its error-returning API directly.
+
+Font search follows the order documented in stock system.def: system directory,
+program root, data/, font/. The old loader omitted font/, so it could silently
+leave all standard motif fonts unavailable. fontN.height no longer overwrites
+fontN's filename; applying the height override itself is still pending. Missing
+Windows TTFs retain the explicit portable fallback described in BUILD.md.
+
+All four stock motifs load their main archives and declared fonts, and all three
+stock stages load sprites/backgrounds. Original regressions cover documented
+font search priority, missing/malformed sprite/sound/font resources, exact error
+locations and mixed-case Windows font-child paths. The old synthetic motif test
+now supplies real temporary assets and asserts loading instead of tolerating
+missing files. Full regression/race checks pass; root module hashes are unchanged.
+
+This is resource integration, not rendering parity. Per-background SFF overrides
+(such as KFM title graphics), storyboard asset/error handling, language-specific
+motif sections, font height overrides, audio playback and full stage/background
+behavior remain incomplete.
+
 ## M1d — CNS controller blocks and duplicate-state binding
 
 The reference state-binding fixture records 111/222/0: controllers with cosmetic

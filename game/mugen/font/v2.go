@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -77,15 +78,18 @@ func loadV2(path string, data []byte) (*Font, error) {
 		if bankType != "palette" && bankType != "sprite" {
 			return nil, fmt.Errorf("%s: invalid BankType %q", path, bankType)
 		}
-		resource := filepath.Join(filepath.Dir(path), filepath.FromSlash(strings.ReplaceAll(file, "\\", "/")))
-		source, err := os.Open(resource)
+		spritePath, err := resource.Resolve(file, filepath.Dir(path))
+		if err != nil {
+			return nil, fmt.Errorf("%s: font sprite file: %w", path, err)
+		}
+		source, err := os.Open(spritePath)
 		if err != nil {
 			return nil, fmt.Errorf("%s: font sprite file: %w", path, err)
 		}
 		defer source.Close()
 		archive, err := sff.Parse(source)
 		if err != nil {
-			return nil, fmt.Errorf("%s: %w", path, err)
+			return nil, fmt.Errorf("%s: font sprite file %s: %w", path, spritePath, err)
 		}
 		if archive.Version[0] != 2 || len(archive.Sprites) == 0 {
 			return nil, fmt.Errorf("%s: bitmap font requires nonempty SFF v2", path)

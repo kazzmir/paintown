@@ -91,3 +91,9 @@ recorded variables, including incoming-control reads by entry expressions.
 checks cosmetic controller labels and first-definition selection; `state-orphan`
 checks controllers before any definition. Both are replayed by pure engine and
 Character tests.
+
+Stock asset-loader tests cover all four motif main archives/fonts and all three
+stages; they assert loaded resources, not merely successful DEF parsing. Separate
+regressions exercise missing/malformed declared assets, source locations, the
+documented motif font search order and Windows/case font-child names. These are
+not screenshot/rendering parity tests or per-background/storyboard coverage.

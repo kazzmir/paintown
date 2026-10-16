@@ -85,6 +85,12 @@ definition and ignores orphan controllers. Native fixtures match both execution
 hosts; no phantom states are created from controller labels. Malformed/edge
 header and negative-state ownership cases remain outstanding.
 
+M3e loads every stock motif's main archives/fonts and all three stock stages,
+with explicit errors for declared missing/malformed resources. Font lookup now
+includes font/ in the documented order, and bitmap child files honor Windows
+names. Per-background overrides, storyboards, language/font overrides and visual
+parity remain pending.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

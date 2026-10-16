@@ -5,7 +5,6 @@ import (
 	"image"
 	"image/color"
 	"math"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -886,17 +886,8 @@ func ResolvePath(path string, motifDir string, dataDir string) string {
 	if path == "" {
 		return ""
 	}
-	p := filepath.Join(motifDir, path)
-	if _, err := os.Stat(p); err == nil {
-		return p
-	}
-	p = filepath.Join(dataDir, "data", path)
-	if _, err := os.Stat(p); err == nil {
-		return p
-	}
-	p = filepath.Join(dataDir, path)
-	if _, err := os.Stat(p); err == nil {
-		return p
+	if resolved, err := resource.Resolve(path, motifDir, filepath.Join(dataDir, "data"), dataDir); err == nil {
+		return resolved
 	}
 	return path
 }

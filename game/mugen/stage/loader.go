@@ -10,11 +10,15 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
 func LoadStage(path string, dataDir string) (*Stage, error) {
-	absPath := background.ResolvePath(path, filepath.Dir(path), dataDir)
+	absPath, err := resource.Resolve(path, dataDir, filepath.Join(dataDir, "data"), ".")
+	if err != nil {
+		return nil, fmt.Errorf("stage DEF: %w", err)
+	}
 	f, err := os.Open(absPath)
 	if err != nil {
 		return nil, err
@@ -23,7 +27,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 
 	ast, err := parsers.Parse(f)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("%s: %w", absPath, err)
 	}
 
 	stage := &Stage{
@@ -155,38 +159,43 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 			}
 		case name == "bgdef":
 			var sprPath string
+			var sprLine int
 			for _, attr := range sec.Attributes {
-				if strings.ToLower(attr.ID.String()) == "spr" {
+				if strings.EqualFold(attr.ID.String(), "spr") {
 					sprPath = background.GetString(attr.Value)
+					sprLine = attr.Line
 				}
 			}
 			if sprPath != "" {
-				fullSprPath := background.ResolvePath(sprPath, stageDir, dataDir)
-				if sprFile, err := os.Open(fullSprPath); err == nil {
-					if sffData, err := sff.Parse(sprFile); err == nil {
-						stage.SpriteData = sffData
-						// Cache sprites
-						for i := range sffData.Sprites {
-							spr := &sffData.Sprites[i]
-							key := fmt.Sprintf("%d-%d", spr.GroupNumber, spr.ImageNumber)
-							if spr.Image != nil {
-								w, h := spr.Image.Bounds().Dx(), spr.Image.Bounds().Dy()
-								fmt.Printf("Cached sprite %s: %dx%d axis=%d,%d\n", key, w, h, spr.XAxis, spr.YAxis)
-								si := &background.SpriteImages{
-									Masked: ebiten.NewImageFromImage(spr.Image),
-								}
-								if spr.ImageOpaque != nil {
-									si.Opaque = ebiten.NewImageFromImage(spr.ImageOpaque)
-								} else {
-									si.Opaque = si.Masked
-								}
-								stage.SpriteImages[key] = si
-							}
-						}
+				assetError := func(err error) error {
+					return fmt.Errorf("%s [BGDef] spr (line %d): %w", absPath, sprLine, err)
+				}
+				fullSprPath, err := resource.Resolve(sprPath, stageDir, filepath.Join(dataDir, "data"), dataDir)
+				if err != nil {
+					return nil, assetError(err)
+				}
+				sprFile, err := os.Open(fullSprPath)
+				if err != nil {
+					return nil, assetError(err)
+				}
+				stage.SpriteData, err = sff.Parse(sprFile)
+				sprFile.Close()
+				if err != nil {
+					return nil, assetError(fmt.Errorf("%s: %w", fullSprPath, err))
+				}
+				for i := range stage.SpriteData.Sprites {
+					spr := &stage.SpriteData.Sprites[i]
+					if spr.Image == nil {
+						continue
 					}
-					sprFile.Close()
-				} else {
-					fmt.Printf("Warning: failed to open sprite file %s for stage\n", fullSprPath)
+					key := fmt.Sprintf("%d-%d", spr.GroupNumber, spr.ImageNumber)
+					si := &background.SpriteImages{Masked: ebiten.NewImageFromImage(spr.Image)}
+					if spr.ImageOpaque != nil {
+						si.Opaque = ebiten.NewImageFromImage(spr.ImageOpaque)
+					} else {
+						si.Opaque = si.Masked
+					}
+					stage.SpriteImages[key] = si
 				}
 			}
 		case strings.HasPrefix(name, "bgctrldef"):
@@ -239,11 +248,9 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	}
 
 	// Parse animation data from AST (stages often embed AIR in .def)
-	airData, _ := air.ParseFromAST(ast)
-	if airData != nil {
-		fmt.Printf("Loaded %d actions from stage AIR data\n", len(airData.Actions))
-	} else {
-		fmt.Printf("No AIR data found in stage AST\n")
+	airData, err := air.ParseFromAST(ast)
+	if err != nil {
+		return nil, fmt.Errorf("%s embedded AIR: %w", absPath, err)
 	}
 
 	// Load background elements
