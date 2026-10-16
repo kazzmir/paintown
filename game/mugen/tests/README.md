@@ -72,5 +72,13 @@ engine rejects incomplete Data groups. It is not a source of valid fallback data
 
 Resource matrix cases run with `--fixture resource-load --case st9-version11`
 and a fresh run name. Authoring options `--file key=value`, `--omit-file key` and
-`--clipboard-in-cmd` are recorded in evidence and checked on replay. The current
-Go loader is still being brought into agreement with these reference rules.
+`--clipboard-in-cmd` are recorded in evidence and checked on replay. The character loader now exercises the pinned load/precedence rules.
+`--fixture resource-order --case merge-numbered-first` verifies declaration-order
+independence. An optional `.extra` directory contains authored auxiliary files;
+its hashes are pinned. `--state-file-order st0 st` records reordered declarations.
+
+`TestReferenceCharacterResources` checks twenty loader cases, including three
+common-state traces with an explicit current Go/reference ctrl difference. Those
+are known-gap inventory tests, not parity claims; see REFERENCE.md. All other
+variables are compared directly. Missing/malformed resources, source filenames,
+Windows/case names and independent common loads have separate regressions.

@@ -43,13 +43,13 @@ func (sm *StateMachine) compileState(state *cns.StateDef) (*stateProgram, error)
 	program := &stateProgram{}
 	sm.programs[state] = program
 	if len(state.Controllers) == 0 {
-		program.err = fmt.Errorf("state %d (line %d) has no controllers", state.ID, state.Line)
+		program.err = stateError(state, fmt.Errorf("state %d (line %d) has no controllers", state.ID, state.Line))
 		return program, program.err
 	}
 	var entryErr error
 	program.entry, entryErr = compileEntry(state)
 	if entryErr != nil {
-		program.err = fmt.Errorf("state %d entry (line %d): %w", state.ID, state.Line, entryErr)
+		program.err = stateError(state, fmt.Errorf("state %d entry (line %d): %w", state.ID, state.Line, entryErr))
 		return program, program.err
 	}
 	for i := range state.Controllers {
@@ -100,7 +100,14 @@ func validateUniversal(ctrl *cns.StateController) error {
 }
 
 func controllerError(state *cns.StateDef, index int, ctrl *cns.StateController, err error) error {
-	return fmt.Errorf("state %d controller %d %q (%s, line %d): %w", state.ID, index, ctrl.Name, ctrl.Type, ctrl.Line, err)
+	return stateError(state, fmt.Errorf("state %d controller %d %q (%s, line %d): %w", state.ID, index, ctrl.Name, ctrl.Type, ctrl.Line, err))
+}
+
+func stateError(state *cns.StateDef, err error) error {
+	if state.Source != "" {
+		return fmt.Errorf("%s: %w", state.Source, err)
+	}
+	return err
 }
 
 func (sm *StateMachine) compileTriggers(ctrl *cns.StateController) (triggerProgram, error) {

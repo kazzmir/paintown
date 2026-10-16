@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -47,7 +47,25 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
                                 lambda match: match.group(1) + '\n' + key + ' = ' + value, definition)
     for key in omitted or []:
         definition = re.sub(r'(?im)^\s*' + re.escape(key) + r'\s*=.*\n?', '', definition)
+    if state_order:
+        sections = re.split(r'(?im)(^\s*\[[^\r\n]+\]\s*$)', definition)
+        for index in range(1, len(sections), 2):
+            if sections[index].strip().lower() != '[files]':
+                continue
+            lines, state_lines = [], {}
+            for line in sections[index + 1].splitlines():
+                match = re.match(r'\s*(st\d*)\s*=', line, re.I)
+                if match:
+                    state_lines[match.group(1).lower()] = line
+                else:
+                    lines.append(line)
+            keys = state_order + [key for key in state_lines if key not in state_order]
+            sections[index + 1] = '\n'.join(lines + [state_lines[key] for key in keys if key in state_lines]) + '\n'
+        definition = ''.join(sections)
     (char / 'kfm.def').write_text(definition)
+    extras = fixture.with_suffix('.extra')
+    if extras.exists():
+        shutil.copytree(extras, char, dirs_exist_ok=True)
     commands = re.split(r'(?im)^\s*\[statedef', (char / 'kfm.cmd').read_text())[0]
     command_fixture = fixture.with_suffix('.cmd')
     commands += ('\n' + command_fixture.read_text() if command_fixture.exists() else
@@ -187,6 +205,7 @@ def main():
     parser.add_argument('--clipboard-in-cmd', action='store_true')
     parser.add_argument('--omit-file', action='append', default=[])
     parser.add_argument('--case', help='Use a pinned named case from the fixture JSON')
+    parser.add_argument('--state-file-order', nargs='+')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     args = parser.parse_args()
     case_expected = None
@@ -204,6 +223,7 @@ def main():
         args.mugenversion = case_expected.get('mugenversion')
         args.bare_constants = case_expected.get('bare_constants', False)
         args.pages = [capture['page'] for capture in case_expected.get('captures', [])] or [0]
+        args.state_file_order = case_expected.get('state_file_order')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
@@ -221,7 +241,10 @@ def main():
     work.mkdir(parents=True, exist_ok=False)
     run = work / 'stock'
     fixture = project / 'tests/testdata/reference' / args.fixture
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file)
+    if args.state_file_order and (len(set(args.state_file_order)) != len(args.state_file_order) or
+                                 any(not re.fullmatch('st[0-9]*', key) for key in args.state_file_order)):
+        parser.error('State-file order must contain unique st/stN keys')
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
@@ -233,6 +256,12 @@ def main():
         evidence['clipboard_in_cmd'] = True
     if args.omit_file:
         evidence['omitted_files'] = args.omit_file
+    if args.state_file_order:
+        evidence['state_file_order'] = args.state_file_order
+    extras = fixture.with_suffix('.extra')
+    if extras.exists():
+        evidence['extra_sha256'] = {str(path.relative_to(extras)): digest(path)
+                                    for path in sorted(extras.rglob('*')) if path.is_file()}
     if args.mugenversion is not None:
         evidence['mugenversion'] = args.mugenversion
     if fixture.with_suffix('.cmd').exists():
@@ -249,6 +278,8 @@ def main():
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
         if expected.get('omitted_files', []) != args.omit_file:
             raise RuntimeError('Omitted files differ from pinned fixture')
+        if expected.get('state_file_order') != args.state_file_order:
+            raise RuntimeError('State-file declaration order differs from pinned fixture')
         for key in [key for key in evidence if key.endswith('_sha256')]:
             if evidence[key] != expected[key]:
                 raise RuntimeError('Pinned reference/fixture hash mismatch: ' + key)

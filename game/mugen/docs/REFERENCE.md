@@ -145,6 +145,33 @@ This evidence corrects the Go loader's arbitrary scan/break behavior: all ten
 recognized extra state-file slots must be considered, even after gaps. Additional
 merge precedence, motif/common fallback and palette behavior still need probes.
 
+## State resource precedence and blank files, 2026-10-16
+
+`resource-order` records marker 111 from primary st with st/st0 declarations in
+either order, and marker 222 from st0 over st9 with reversed declarations and
+sparse slots. Its main cns marker 900 never runs when only listed as cns.
+`resource-priority` records primary marker 111 over CMD marker 333. These establish
+fixed first-definition precedence across state files. They do not establish the
+handling of duplicate states inside one file. The harness hashes and copies a
+fixture's authored .extra directory and pins --state-file-order on replay.
+
+Additional resource-load cases show blank st9 and blank sound succeed. Common
+cases for blank, omitted and explicit stcommon reach common state 0. A forced
+post-intro negative-state transition enters 5900, where ctrl is observed as 0;
+after the transition into common 0, the reference observes ctrl=1 and the current
+Go runner observes ctrl=0. The reason is not yet established. All three cases
+include explicit known_go_differences and remain partial. Do not infer an entry
+or ChangeState default from this interaction; probe ordinary non-special states
+and round/control restoration separately. Native replay checks the actual native
+values, while Go tests assert the documented current difference and fail if the
+inventory becomes stale. All other captured variables are compared directly.
+
+The real character loader consumes these cases and reports missing/malformed
+resources with DEF key/line plus resource/state source. Shared-resource search
+now has explicit roots, but the exact native character/motif/data priority needs
+separate conflicting-file probes. Selected external/internal palettes and
+non-character load failures remain reference work.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed

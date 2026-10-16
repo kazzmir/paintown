@@ -68,6 +68,14 @@ Authored fixtures cover additional PCM widths/channels and malformed archives.
 Runtime audio and non-PCM codecs remain incomplete. New resource probes pin fatal
 missing-file behavior and the st0..st9 range for the upcoming loader changes.
 
+M3d applies character resource rules with named errors, case/Windows path
+resolution, sound loading and independent common-state definitions. The measured
+state-file precedence is st, numbered slots, CMD, then common; main cns is
+constants-only. Twenty native resource cases are exercised: seventeen fully
+match and three retain a diagnosed ctrl-restoration difference after 5900/common
+0. Those three are explicitly inventoried, not promoted to parity. Selected
+palettes, same-file duplicate states and exact common search order remain open.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

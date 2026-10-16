@@ -120,7 +120,8 @@ type HitDef struct {
 }
 
 type StateDef struct {
-	Line int
+	Source string
+	Line   int
 	// Parameters retains entry expressions; numeric fields are legacy accessors.
 	Parameters  map[string]string
 	ID          int
@@ -162,6 +163,18 @@ func Parse(r io.Reader) (*CNS, error) {
 	}
 
 	return ParseFromAST(ast)
+}
+
+// ParseNamed retains the source filename for later compile/runtime diagnostics.
+func ParseNamed(r io.Reader, name string) (*CNS, error) {
+	parsed, err := Parse(r)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", name, err)
+	}
+	for _, state := range parsed.States {
+		state.Source = name
+	}
+	return parsed, nil
 }
 
 func ParseFromAST(ast *parsers.File) (*CNS, error) {

@@ -108,7 +108,7 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 		return err
 	}
 	if state.ID < 0 {
-		return fmt.Errorf("cannot enter special state %d", state.ID)
+		return stateError(state, fmt.Errorf("cannot enter special state %d", state.ID))
 	}
 	program := compiled.entry
 	values := make(map[string][]evaluator.Value)
@@ -116,12 +116,12 @@ func (sm *StateMachine) EnterState(state *cns.StateDef, env EntryEnvironment, ov
 		for _, expr := range program.values[name] {
 			value := evaluator.EvaluateValue(expr, env)
 			if !value.IsNumber() {
-				return fmt.Errorf("state %d entry %s = %s evaluated to %v", state.ID, name, expr.String(), value)
+				return stateError(state, fmt.Errorf("state %d entry %s = %s evaluated to %v", state.ID, name, expr.String(), value))
 			}
 			if name != "velset" {
 				n, err := evaluator.CoerceInt(value, env, "entry "+name)
 				if err != nil {
-					return fmt.Errorf("state %d: %w", state.ID, err)
+					return stateError(state, fmt.Errorf("state %d: %w", state.ID, err))
 				}
 				value = evaluator.Int(n)
 			}

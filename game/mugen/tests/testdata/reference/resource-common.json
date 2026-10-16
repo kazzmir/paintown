@@ -1,0 +1,118 @@
+{
+  "cases": {
+    "common-blank": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "19c2764c8d239ea1013d64de0aa9c7d55ac9dba3d6e061281b24ec4045c9e4c4",
+      "air_sha256": "8aa00b3db52d399f2f1120a9e336494434599fe4afe53eea03979fc66ed671f2",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "682461a2ec864406c7b6dfa02418f6ba42e7207b1969ff6df1886d97cf84ea09",
+          "variables": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 1,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1",
+      "cmd_sha256": "52bca007f57e73d41fa3cb7d799ea67dc7b0d85e8b270f4f1c3c7ddb8cdd63b5",
+      "known_go_differences": {
+        "0": 0
+      },
+      "known_difference_note": "State 5900 observes ctrl=0 in both engines; after its transition to common state 0, the reference observes ctrl=1 and Go observes ctrl=0. Special-state/round control restoration remains M2/M4 work; this is not a verified parity case."
+    },
+    "common-omitted": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "19c2764c8d239ea1013d64de0aa9c7d55ac9dba3d6e061281b24ec4045c9e4c4",
+      "air_sha256": "8aa00b3db52d399f2f1120a9e336494434599fe4afe53eea03979fc66ed671f2",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "b8c3e5d69df1c87dc68bb464b5596c79e7bafb5333b33f7326ed3f7777b7a0d2",
+          "variables": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 1,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "clipboard_in_cmd": true,
+      "omitted_files": [
+        "stcommon"
+      ],
+      "mugenversion": "1.1",
+      "cmd_sha256": "52bca007f57e73d41fa3cb7d799ea67dc7b0d85e8b270f4f1c3c7ddb8cdd63b5",
+      "known_go_differences": {
+        "0": 0
+      },
+      "known_difference_note": "State 5900 observes ctrl=0 in both engines; after its transition to common state 0, the reference observes ctrl=1 and Go observes ctrl=0. Special-state/round control restoration remains M2/M4 work; this is not a verified parity case."
+    },
+    "common-explicit": {
+      "engine_sha256": "d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e",
+      "cns_sha256": "19c2764c8d239ea1013d64de0aa9c7d55ac9dba3d6e061281b24ec4045c9e4c4",
+      "air_sha256": "8aa00b3db52d399f2f1120a9e336494434599fe4afe53eea03979fc66ed671f2",
+      "invocation": "wine mugen.exe kfm kfm -s kfm -nojoy",
+      "captures": [
+        {
+          "page": 0,
+          "path": "animation-page0.png",
+          "sha256": "df949b21999af252b4cf464bc0a3336cf89fe3b215162ebc609bd1e36dc4bdb9",
+          "variables": {
+            "0": 1,
+            "1": 0,
+            "2": 0,
+            "3": 1,
+            "4": 0,
+            "5": 0,
+            "6": 0,
+            "7": 0,
+            "8": 0,
+            "9": 0,
+            "10": 0,
+            "11": 0
+          }
+        }
+      ],
+      "bank": "var",
+      "bare_constants": false,
+      "files": {
+        "stcommon": "common1.cns"
+      },
+      "clipboard_in_cmd": true,
+      "mugenversion": "1.1",
+      "cmd_sha256": "52bca007f57e73d41fa3cb7d799ea67dc7b0d85e8b270f4f1c3c7ddb8cdd63b5",
+      "known_go_differences": {
+        "0": 0
+      },
+      "known_difference_note": "State 5900 observes ctrl=0 in both engines; after its transition to common state 0, the reference observes ctrl=1 and Go observes ctrl=0. Special-state/round control restoration remains M2/M4 work; this is not a verified parity case."
+    }
+  }
+}

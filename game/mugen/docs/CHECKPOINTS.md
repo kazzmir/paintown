@@ -4,6 +4,42 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3d — Character resource loading and measured state-file precedence
+
+Character loading now requires primary cns/st/cmd/sprite/anim files, propagates
+all parse failures, and loads declared sound banks. Errors retain the DEF path,
+Files key/line and failed resource; later state compilation/execution retains
+its CNS/CMD filename. DEF metadata and raw filenames survive parsing. The shared
+resource resolver accepts Windows separators and case-insensitive paths with
+explicit directory order, exact-name preference and ambiguity errors.
+
+Native probes establish first-definition precedence: st, then st0..st9 in numeric
+order, then CMD states, with common states filling remaining IDs. DEF declaration
+order does not change that precedence. The cns entry supplies constants only;
+its states participate only if the file is also listed as a state file. Blank
+numbered st entries are ignored, while primary st is required; blank sound is
+optional. Blank/omitted stcommon uses standard common states. The process-global
+mutable common cache is removed; independent loads see current files without
+mutating earlier players. LoadOptions accepts explicit root/motif directories.
+
+Twenty pinned reference resource cases now run through the real loader and
+state pass. Seventeen match every recorded observation/rejection. Three common
+cases retain an explicit known difference: state 5900 observes ctrl=0 in both
+engines, but after entering common state 0 the reference observes ctrl=1 and Go
+observes ctrl=0. Tests pin the current difference as an inventory that must be
+removed when fixed; these cases are not full parity claims. Other state/animation
+observations match. The control/special-state/round interaction remains M2/M4
+work. Fresh reversed-order replay passes. Missing/malformed resources for all
+seven supported resource groups, case/Windows paths, named runtime errors and
+independent common loads have regression coverage.
+
+Both stock players still load 281 sprites, 117 actions, 12 sounds and 108 states;
+105 states compile, with the existing three HitOverride gaps. Palette selection
+still uses the earlier ACT fallback and needs its own reference-backed integration.
+Same-file duplicate-state/header semantics, exact common search precedence,
+constant required fields and non-character resource validation remain open.
+Full tests and race checks pass; root module hashes stay unchanged.
+
 ## M3c — Bounded sound archives, PCM decoding and resource probes
 
 SND extraction validates counts, offsets, cycles, lengths and each embedded WAV,

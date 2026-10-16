@@ -49,6 +49,29 @@ func lifeController(triggers string) string {
 	return "[State 7, life]\ntype=LifeAdd\nvalue=1\n" + triggers + "\n"
 }
 
+func TestNamedStateDiagnostics(t *testing.T) {
+	for _, test := range []struct{ name, body string }{
+		{"compile", "[State 7, broken]\ntype=Unknown\ntrigger1=1\n"},
+		{"runtime", "[State 7, broken]\ntype=LifeAdd\ntrigger1=1\nvalue=1/0\n"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			file, err := cns.ParseNamed(strings.NewReader("[Statedef 7]\n"+test.body), "fighter/states.cns")
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, err = NewStateMachine().ExecuteState(file.States[7], newHost())
+			if err == nil {
+				t.Fatal("expected diagnosed failure")
+			}
+			for _, want := range []string{"fighter/states.cns", "state 7", "broken", "line 2"} {
+				if !strings.Contains(err.Error(), want) {
+					t.Errorf("missing %q in %v", want, err)
+				}
+			}
+		})
+	}
+}
+
 func TestTriggerGroups(t *testing.T) {
 	cases := []struct {
 		name, triggers string

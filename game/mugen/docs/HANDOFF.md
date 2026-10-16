@@ -140,7 +140,20 @@ Reference resource cases pin required primary st, fatal missing sound/common
 files, and recognized st0..st9 (including gaps); st10/st12 are ignored. The Go
 loader still needs to apply these rules. See resource-load.json and REFERENCE.md.
 
-Next integrate selected character palettes, harden complete resource loading,
+M3c is commit `d796bb58`. M3d applies the measured character resource rules,
+first-definition state-file precedence, constants-only cns handling, strict
+file/parse errors, character SND loading and named state diagnostics. It removes
+the global common cache and adds explicit root/motif options plus a shared
+Windows/case-insensitive resolver. Twenty resource cases run through the real
+loader: seventeen fully match; three common-state cases explicitly inventory
+ctrl=0 in Go versus ctrl=1 in the reference after leaving 5900 for common 0.
+Entry 5900 sees ctrl=0 in both; isolate the subsequent special-state/round
+control behavior before changing entry defaults. See resource-common.json.
+Blank numbered ST files and blank sound are accepted; primary st remains
+required. Same-file duplicate states and exact common search order need probes.
+Full tests/races and fresh reversed-order reference replay pass.
+
+Next integrate selected character palettes, harden non-character resource loading,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world
