@@ -7,6 +7,13 @@ row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 
 ## Implementation progress
 
+M4d connects the real production selection/versus/fight/result/rematch flow to
+one shared match.Match, with stock HUD drawing and mixed-resolution spawn/draw.
+Injected keys and logical combat inputs exercise the same runtime. Round phases,
+combat, palette/audio/effects and camera/HUD details remain incomplete; this is
+not the full M4 acceptance gate. See MATCH.md.
+
+
 M4c corrects P2Dist local-unit conversion and the previous P2BodyDist axis alias.
 Two mixed-player native cases match 24 fvars. Collision/push/facing conversions
 have authored geometry tests; hit-vector conversion and world phase/ownership

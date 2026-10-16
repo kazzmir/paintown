@@ -8,18 +8,21 @@ import (
 )
 
 type Stage struct {
-	Name string
+	Name   string
+	Source string
 
 	Camera struct {
-		StartX         float64
-		StartY         float64
-		BoundLeft      float64
-		BoundRight     float64
-		BoundHigh      float64
-		BoundLow       float64
-		VerticalFollow float64
-		FloorTension   float64
-		Tension        float64
+		StartX                    float64
+		StartY                    float64
+		BoundLeft                 float64
+		BoundRight                float64
+		BoundHigh                 float64
+		BoundLow                  float64
+		VerticalFollow            float64
+		FloorTension              float64
+		Tension                   float64
+		CutHigh, CutLow           float64
+		OverdrawHigh, OverdrawLow float64
 	}
 
 	PlayerInfo struct {
@@ -70,21 +73,9 @@ func (s *Stage) Update() {
 }
 
 func (s *Stage) Draw(screen *ebiten.Image, cameraX, cameraY float64) {
-	// Draw Layer 0 (Background)
-	for _, el := range s.Background.Elements {
-		if el.GetLayerNo() == 0 {
-			el.Draw(screen, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
-		}
-	}
-
-	// Character would be drawn here by the caller (between layers)
+	s.Background.DrawLayer(screen, 0, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
 }
 
 func (s *Stage) DrawForeground(screen *ebiten.Image, cameraX, cameraY float64) {
-	// Draw Layer 1 (Foreground)
-	for _, el := range s.Background.Elements {
-		if el.GetLayerNo() == 1 {
-			el.Draw(screen, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
-		}
-	}
+	s.Background.DrawLayer(screen, 1, cameraX, cameraY, s.StageInfo.ZOffset, s.SpriteImages)
 }

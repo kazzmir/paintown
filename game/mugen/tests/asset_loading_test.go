@@ -39,7 +39,7 @@ func TestStockStageAssets(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if loaded.SpriteData == nil || len(loaded.SpriteData.Sprites) == 0 || len(loaded.SpriteImages) == 0 || len(loaded.Background.Elements) == 0 {
+			if loaded.SpriteData == nil || len(loaded.SpriteData.Sprites) == 0 || loaded.Background.SpriteData != loaded.SpriteData || len(loaded.Background.Elements) == 0 {
 				t.Fatal("stage sprite/background resources were not loaded")
 			}
 			for _, images := range loaded.SpriteImages {

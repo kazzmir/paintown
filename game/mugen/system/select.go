@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 	"path/filepath"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/input"
+	"github.com/kazzmir/paintown/game/mugen/match"
 )
 
 // SelectState handles character and stage selection.
@@ -16,13 +18,18 @@ type SelectState struct {
 	chars  []*CharacterPortrait
 	showP2 bool // whether P2 cursor is active (VS/Team VS/Co-op only)
 
-	p1CursorX int
-	p1CursorY int
-	p2CursorX int
-	p2CursorY int
-	p1Done    bool
-	p2Done    bool
-	ticks     int
+	p1CursorX     int
+	p1CursorY     int
+	p2CursorX     int
+	p2CursorY     int
+	p1Done        bool
+	p2Done        bool
+	ticks         int
+	stages        []string
+	stageIndex    int
+	choosingStage bool
+	loadError     error
+	palettes      [2]int
 }
 
 func NewSelectState(engine *Engine, title string) *SelectState {
@@ -38,7 +45,7 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	}
 	charsDir := filepath.Join(engine.dataDir, "chars")
 
-	chars := loadCharacters(selectDefPath, charsDir)
+	chars, stages, loadError := loadCharacters(selectDefPath, charsDir)
 
 	// Determine if P2 cursor should be shown
 	// Only in modes that involve a second human player
@@ -52,6 +59,9 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 		engine:    engine,
 		title:     title,
 		chars:     chars,
+		stages:    stages,
+		loadError: loadError,
+		palettes:  [2]int{1, 2},
 		showP2:    p2Modes[title],
 		p1CursorX: si.P1StartCell[0],
 		p1CursorY: si.P1StartCell[1],
@@ -120,6 +130,9 @@ func (s *SelectState) charAt(col, row int) *CharacterPortrait {
 }
 
 func (s *SelectState) Update() (State, error) {
+	if s.loadError != nil {
+		return s, s.loadError
+	}
 	s.ticks++
 
 	if s.engine.motif.SelectBG != nil {
@@ -127,6 +140,27 @@ func (s *SelectState) Update() (State, error) {
 	}
 
 	snd := s.engine.motif.SelectInfo
+	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
+		if s.choosingStage {
+			s.choosingStage = false
+			s.p1Done = false
+			s.p2Done = false
+			return s, nil
+		}
+		return NewTitleState(s.engine), nil
+	}
+	if s.choosingStage {
+		if input.GlobalManager.IsJustPressed(1, input.ActionLeftUI) {
+			s.stageIndex = (s.stageIndex + len(s.stages) - 1) % len(s.stages)
+		}
+		if input.GlobalManager.IsJustPressed(1, input.ActionRightUI) {
+			s.stageIndex = (s.stageIndex + 1) % len(s.stages)
+		}
+		if _, ok := s.confirm(1); ok {
+			return s.startMatch()
+		}
+		return s, nil
+	}
 
 	// P1 cursor
 	if !s.p1Done {
@@ -146,8 +180,9 @@ func (s *SelectState) Update() (State, error) {
 			s.p1CursorY = s.wrap(s.p1CursorY+1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if input.GlobalManager.IsJustPressed(1, input.ActionEnter) || input.GlobalManager.IsJustPressed(1, input.ActionZ) {
+		if palette, ok := s.confirm(1); ok && s.charAt(s.p1CursorX, s.p1CursorY) != nil {
 			s.p1Done = true
+			s.palettes[0] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
 	}
@@ -170,8 +205,9 @@ func (s *SelectState) Update() (State, error) {
 			s.p2CursorY = s.wrap(s.p2CursorY+1, s.rows())
 			s.engine.PlaySnd(snd.CursorMoveSnd[0], snd.CursorMoveSnd[1])
 		}
-		if input.GlobalManager.IsJustPressed(2, input.ActionA) || input.GlobalManager.IsJustPressed(2, input.ActionEnter) {
+		if palette, ok := s.confirm(2); ok && s.charAt(s.p2CursorX, s.p2CursorY) != nil {
 			s.p2Done = true
+			s.palettes[1] = palette
 			s.engine.PlaySnd(snd.CursorDoneSnd[0], snd.CursorDoneSnd[1])
 		}
 	}
@@ -183,21 +219,63 @@ func (s *SelectState) Update() (State, error) {
 
 	// Transition to VS when player(s) are done
 	if s.p1Done && (!s.showP2 || s.p2Done) {
-		// In Arcade mode, play the selected character's intro storyboard first
-		if s.title == "Arcade Mode" {
-			ch := s.charAt(s.p1CursorX, s.p1CursorY)
-			if ch != nil && ch.IntroStoryboard != "" {
-				return &StoryboardState{
-					engine:     s.engine,
-					storyboard: ch.IntroStoryboard,
-					nextState:  func() State { return NewVersusState(s.engine) },
-				}, nil
-			}
+		if len(s.stages) == 0 {
+			return s, fmt.Errorf("selection contains no available stages")
 		}
-		return NewVersusState(s.engine), nil
+		s.choosingStage = true
 	}
 
 	return s, nil
+}
+
+func (s *SelectState) confirm(slot int) (int, bool) {
+	for index, action := range []input.Action{input.ActionA, input.ActionB, input.ActionC, input.ActionX, input.ActionY, input.ActionZ, input.ActionEnter} {
+		if input.GlobalManager.IsJustPressed(slot, action) {
+			palette := index + 1
+			if index == 6 {
+				palette = 1
+			}
+			if input.GlobalManager.IsPressed(slot, input.ActionStart) && index < 6 {
+				palette += 6
+			}
+			return palette, true
+		}
+	}
+	return 0, false
+}
+
+func (s *SelectState) chosen(col, row int) *CharacterPortrait {
+	ch := s.charAt(col, row)
+	if ch != nil && ch.DefPath != "" {
+		return ch
+	}
+	var available []*CharacterPortrait
+	for _, candidate := range s.chars {
+		if candidate.DefPath != "" {
+			available = append(available, candidate)
+		}
+	}
+	if len(available) == 0 {
+		return nil
+	}
+	return available[s.ticks%len(available)]
+}
+
+func (s *SelectState) startMatch() (State, error) {
+	p1, p2 := s.chosen(s.p1CursorX, s.p1CursorY), s.chosen(s.p2CursorX, s.p2CursorY)
+	if p1 == nil || p2 == nil {
+		return s, fmt.Errorf("selection has no playable characters")
+	}
+	request := match.Request{Mode: s.title, StagePath: s.stages[s.stageIndex], Music: p2.Entry.Music,
+		Players: [2]match.Selection{{DefPath: p1.DefPath, Name: p1.Name, Palette: s.palettes[0]}, {DefPath: p2.DefPath, Name: p2.Name, Palette: s.palettes[1]}}}
+	if !s.showP2 && s.title != "Training" {
+		request.Players[1].AILevel = max(1, min(8, s.engine.cfg.Options.Difficulty))
+	}
+	versus := NewVersusState(s.engine, request)
+	if s.title == "Arcade Mode" && p1.IntroStoryboard != "" {
+		return &StoryboardState{engine: s.engine, storyboard: p1.IntroStoryboard, nextState: func() State { return versus }}, nil
+	}
+	return versus, nil
 }
 
 func (s *SelectState) Draw(screen *ebiten.Image) {
@@ -306,6 +384,12 @@ func (s *SelectState) Draw(screen *ebiten.Image) {
 	// Layer 1 BG (foreground)
 	if s.engine.motif.SelectBG != nil {
 		s.engine.motif.SelectBG.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
+	}
+	if s.choosingStage {
+		info := si.TitleFont
+		if info[0] > 0 && info[0] < len(s.engine.motif.Fonts) && s.engine.motif.Fonts[info[0]] != nil {
+			s.engine.motif.Fonts[info[0]].Draw(screen, "Stage: "+filepath.Base(s.stages[s.stageIndex]), s.engine.logicalWidth/2, s.engine.logicalHeight-12, info[1], font.AlignCenter)
+		}
 	}
 }
 

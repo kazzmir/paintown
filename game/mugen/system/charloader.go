@@ -1,254 +1,121 @@
 package main
 
 import (
-	"image"
-	"image/color"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
+	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
-// CharacterPortrait holds portrait images and metadata for a character.
 type CharacterPortrait struct {
-	Name            string        // display name
-	DefPath         string        // absolute path to the .def file
-	IntroStoryboard string        // absolute path to intro storyboard (may be empty)
-	SmallPortrait   *ebiten.Image // group 9000, image 0 - used in grid cells
-	BigPortrait     *ebiten.Image // group 9000, image 1 - used in face panel
+	Name, DefPath, IntroStoryboard string
+	Entry                          parsers.CharacterEntry
+	SmallPortrait, BigPortrait     *ebiten.Image
 }
 
-// loadCharacters reads select.def and loads portrait sprites for each character.
-// dataDir is the root mugen data directory (e.g. "data-new/mugen").
-func loadCharacters(selectDefPath string, charsDir string) []*CharacterPortrait {
+func loadCharacters(selectDefPath, charsDir string) ([]*CharacterPortrait, []string, error) {
 	f, err := os.Open(selectDefPath)
 	if err != nil {
-		return nil
+		return nil, nil, err
 	}
 	defer f.Close()
-
 	sd, err := parsers.ParseSelectDef(f)
 	if err != nil {
-		return nil
+		return nil, nil, fmt.Errorf("%s: %w", selectDefPath, err)
 	}
-
 	var chars []*CharacterPortrait
+	var stages []string
+	seen := map[string]bool{}
+	addStage := func(name string) {
+		if name != "" && !strings.EqualFold(name, "random") && !seen[name] {
+			stages = append(stages, name)
+			seen[name] = true
+		}
+	}
 	for _, entry := range sd.Characters {
-		if entry.Name == "randomselect" {
-			chars = append(chars, &CharacterPortrait{Name: "Random"})
-			continue
-		}
-
-		cp := &CharacterPortrait{Name: entry.Name}
-
-		// Resolve path to character .def file
-		charDefPath := resolveCharPath(entry.Name, charsDir)
-		if charDefPath == "" {
+		cp := &CharacterPortrait{Name: entry.Name, Entry: *entry}
+		if strings.EqualFold(entry.Name, "randomselect") {
+			cp.Name = "Random"
 			chars = append(chars, cp)
 			continue
 		}
-		cp.DefPath = charDefPath
-
-		// Parse the character .def to find its SFF file
-		sffPath := findCharSFF(charDefPath)
-		if sffPath == "" {
-			chars = append(chars, cp)
-			continue
+		name := strings.ReplaceAll(entry.Name, `\`, "/")
+		if !strings.EqualFold(filepath.Ext(name), ".def") {
+			name = filepath.Join(name, filepath.Base(name)+".def")
 		}
-
-		// Parse the SFF and extract portraits
-		sffFile, err := os.Open(sffPath)
+		cp.DefPath, err = resource.Resolve(name, charsDir)
 		if err != nil {
-			chars = append(chars, cp)
-			continue
+			return nil, nil, fmt.Errorf("%s character %q: %w", selectDefPath, entry.Name, err)
 		}
-		charSFF, err := sff.Parse(sffFile)
-		sffFile.Close()
+		file, err := os.Open(cp.DefPath)
 		if err != nil {
-			chars = append(chars, cp)
-			continue
+			return nil, nil, err
 		}
-
-		// Read display name and arcade info
-		cp.Name = readCharDisplayName(charDefPath, entry.Name)
-		cp.IntroStoryboard = readCharIntroStoryboard(charDefPath)
-
-		// Extract portrait sprites
-		for i := range charSFF.Sprites {
-			sp := &charSFF.Sprites[i]
-			if sp.GroupNumber != 9000 || sp.Image == nil {
-				continue
-			}
-			img := imageToEbiten(sp.Image)
-			if img == nil {
-				continue
-			}
-			switch sp.ImageNumber {
-			case 0:
-				cp.SmallPortrait = img
-			case 1:
-				cp.BigPortrait = img
+		ast, err := parsers.Parse(file)
+		file.Close()
+		if err != nil {
+			return nil, nil, fmt.Errorf("%s: %w", cp.DefPath, err)
+		}
+		def, err := parsers.ParseDefFromAST(ast)
+		if err != nil {
+			return nil, nil, err
+		}
+		cp.Name = def.Info["displayname"]
+		if cp.Name == "" {
+			cp.Name = def.Info["name"]
+		}
+		if cp.Name == "" {
+			cp.Name = entry.Name
+		}
+		dir := filepath.Dir(cp.DefPath)
+		for _, section := range ast.Sections {
+			if strings.EqualFold(section.Name, "arcade") {
+				for _, a := range section.Attributes {
+					if strings.EqualFold(a.ID.String(), "intro.storyboard") && background.GetString(a.Value) != "" {
+						cp.IntroStoryboard, err = resource.Resolve(background.GetString(a.Value), dir)
+						if err != nil {
+							return nil, nil, fmt.Errorf("%s [Arcade] intro.storyboard (line %d): %w", cp.DefPath, a.Line, err)
+						}
+					}
+				}
 			}
 		}
-
+		path, err := resource.Resolve(def.Files["sprite"], dir)
+		if err != nil {
+			return nil, nil, fmt.Errorf("%s [Files] sprite (line %d): %w", cp.DefPath, def.FileLines["sprite"], err)
+		}
+		file, err = os.Open(path)
+		if err != nil {
+			return nil, nil, err
+		}
+		archive, err := sff.Parse(file)
+		file.Close()
+		if err != nil {
+			return nil, nil, fmt.Errorf("%s: %w", path, err)
+		}
+		for _, sprite := range archive.Sprites {
+			if sprite.GroupNumber == 9000 && sprite.Image != nil {
+				switch sprite.ImageNumber {
+				case 0:
+					cp.SmallPortrait = ebiten.NewImageFromImage(sprite.Image)
+				case 1:
+					cp.BigPortrait = ebiten.NewImageFromImage(sprite.Image)
+				}
+			}
+		}
 		chars = append(chars, cp)
-	}
-	return chars
-}
-
-// resolveCharPath finds the character's .def file path.
-func resolveCharPath(name string, charsDir string) string {
-	// name can be "kfm" or "kfm/alt-kfm.def"
-	if strings.HasSuffix(strings.ToLower(name), ".def") {
-		p := filepath.Join(charsDir, name)
-		if _, err := os.Stat(p); err == nil {
-			return p
-		}
-		return ""
-	}
-	// Try <charsDir>/<name>/<name>.def
-	p := filepath.Join(charsDir, name, name+".def")
-	if _, err := os.Stat(p); err == nil {
-		return p
-	}
-	return ""
-}
-
-// findCharSFF parses a character .def file and returns the resolved SFF path.
-func findCharSFF(defPath string) string {
-	f, err := os.Open(defPath)
-	if err != nil {
-		return ""
-	}
-	defer f.Close()
-
-	ast, err := parsers.Parse(f)
-	if err != nil {
-		return ""
-	}
-
-	charDir := filepath.Dir(defPath)
-	for _, sec := range ast.Sections {
-		if strings.ToLower(strings.TrimSpace(sec.Name)) == "files" {
-			for _, attr := range sec.Attributes {
-				id := strings.ToLower(attr.ID.String())
-				if id == "sprite" || id == "spr" {
-					val := ""
-					if sv, ok := attr.Value.(parsers.StringValue); ok {
-						val = sv.Val
-					} else if kv, ok := attr.Value.(parsers.KeywordValue); ok {
-						val = kv.Val
-					}
-					val = strings.TrimSpace(val)
-					if val == "" {
-						continue
-					}
-					p := filepath.Join(charDir, val)
-					if _, err := os.Stat(p); err == nil {
-						return p
-					}
-				}
-			}
+		if entry.IncludeStage {
+			addStage(entry.Stage)
 		}
 	}
-	return ""
-}
-
-// readCharDisplayName reads the "displayname" or "name" from a character .def.
-func readCharDisplayName(defPath, fallback string) string {
-	f, err := os.Open(defPath)
-	if err != nil {
-		return fallback
+	for _, name := range sd.ExtraStages {
+		addStage(name)
 	}
-	defer f.Close()
-
-	ast, err := parsers.Parse(f)
-	if err != nil {
-		return fallback
-	}
-
-	for _, sec := range ast.Sections {
-		if strings.ToLower(strings.TrimSpace(sec.Name)) == "info" {
-			for _, attr := range sec.Attributes {
-				id := strings.ToLower(attr.ID.String())
-				if id == "displayname" || id == "name" {
-					if sv, ok := attr.Value.(parsers.StringValue); ok && sv.Val != "" {
-						return sv.Val
-					}
-					if kv, ok := attr.Value.(parsers.KeywordValue); ok && kv.Val != "" {
-						return kv.Val
-					}
-				}
-			}
-		}
-	}
-	return fallback
-}
-
-// readCharIntroStoryboard reads the intro.storyboard path from the [Arcade] section.
-// Returns an absolute path, or "" if not found.
-func readCharIntroStoryboard(defPath string) string {
-	f, err := os.Open(defPath)
-	if err != nil {
-		return ""
-	}
-	defer f.Close()
-
-	ast, err := parsers.Parse(f)
-	if err != nil {
-		return ""
-	}
-
-	charDir := filepath.Dir(defPath)
-	for _, sec := range ast.Sections {
-		if strings.ToLower(strings.TrimSpace(sec.Name)) == "arcade" {
-			for _, attr := range sec.Attributes {
-				if strings.ToLower(attr.ID.String()) == "intro.storyboard" {
-					val := ""
-					if sv, ok := attr.Value.(parsers.StringValue); ok {
-						val = sv.Val
-					} else if kv, ok := attr.Value.(parsers.KeywordValue); ok {
-						val = kv.Val
-					}
-					val = strings.TrimSpace(val)
-					if val == "" {
-						continue
-					}
-					p := filepath.Join(charDir, val)
-					if _, err := os.Stat(p); err == nil {
-						return p
-					}
-				}
-			}
-		}
-	}
-	return ""
-}
-
-// imageToEbiten converts a standard image.Image to an *ebiten.Image.
-func imageToEbiten(img image.Image) *ebiten.Image {
-	if img == nil {
-		return nil
-	}
-	b := img.Bounds()
-	if b.Dx() == 0 || b.Dy() == 0 {
-		return nil
-	}
-	result := ebiten.NewImage(b.Dx(), b.Dy())
-	pix := make([]byte, 4*b.Dx()*b.Dy())
-	for y := b.Min.Y; y < b.Max.Y; y++ {
-		for x := b.Min.X; x < b.Max.X; x++ {
-			r, g, B, a := color.RGBAModel.Convert(img.At(x, y)).RGBA()
-			idx := ((y-b.Min.Y)*b.Dx() + (x - b.Min.X)) * 4
-			pix[idx+0] = byte(r >> 8)
-			pix[idx+1] = byte(g >> 8)
-			pix[idx+2] = byte(B >> 8)
-			pix[idx+3] = byte(a >> 8)
-		}
-	}
-	result.WritePixels(pix)
-	return result
+	return chars, stages, nil
 }

@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/coord"
@@ -32,6 +31,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	}
 
 	stage := &Stage{
+		Source:       absPath,
 		SpriteImages: make(map[string]*background.SpriteImages),
 	}
 	stage.StageInfo.LocalCoord = coord.Default()
@@ -74,6 +74,14 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 					stage.Camera.FloorTension = background.GetFloat(attr.Value)
 				case "tension":
 					stage.Camera.Tension = background.GetFloat(attr.Value)
+				case "cuthigh":
+					stage.Camera.CutHigh = background.GetFloat(attr.Value)
+				case "cutlow":
+					stage.Camera.CutLow = background.GetFloat(attr.Value)
+				case "overdrawhigh":
+					stage.Camera.OverdrawHigh = background.GetFloat(attr.Value)
+				case "overdrawlow":
+					stage.Camera.OverdrawLow = background.GetFloat(attr.Value)
 				}
 			}
 		case name == "playerinfo":
@@ -191,20 +199,6 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 				if err != nil {
 					return nil, assetError(fmt.Errorf("%s: %w", fullSprPath, err))
 				}
-				for i := range stage.SpriteData.Sprites {
-					spr := &stage.SpriteData.Sprites[i]
-					if spr.Image == nil {
-						continue
-					}
-					key := fmt.Sprintf("%d-%d", spr.GroupNumber, spr.ImageNumber)
-					si := &background.SpriteImages{Masked: ebiten.NewImageFromImage(spr.Image)}
-					if spr.ImageOpaque != nil {
-						si.Opaque = ebiten.NewImageFromImage(spr.ImageOpaque)
-					} else {
-						si.Opaque = si.Masked
-					}
-					stage.SpriteImages[key] = si
-				}
 			}
 		case strings.HasPrefix(name, "bgctrldef"):
 			currentDef = &background.BGCtrlDef{}
@@ -263,6 +257,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 
 	// Load background elements
 	stage.Background.LocalCoord = stage.StageInfo.LocalCoord
+	stage.Background.SpriteData = stage.SpriteData
 	stage.Background.LoadFromAST(ast, "bg", stage.SpriteData, airData)
 
 	return stage, nil

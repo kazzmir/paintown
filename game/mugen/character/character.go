@@ -69,6 +69,9 @@ type Character struct {
 
 	// Command buffer reference
 	Commands *CommandBuffer
+	// InputSource supplies facing-relative logical input for this entity's tick.
+	// A nil source retains the physical input adapter for existing applications.
+	InputSource func(playerID, facing int) []string
 	// Buffered commands for the current tick
 	ActiveCommands []string
 
@@ -171,6 +174,9 @@ type Character struct {
 
 	// Match state
 	RoundState  int
+	RoundNo     int
+	PaletteNo   int
+	AILevel     int
 	IsMatchOver bool
 }
 
@@ -232,6 +238,8 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		NotHitByFlags:       make(map[string]int),
 		HitByFlags:          make(map[string]int),
 		RoundState:          2,
+		RoundNo:             1,
+		PaletteNo:           1,
 		IsMatchOver:         false,
 	}
 }
@@ -283,7 +291,12 @@ func (c *Character) Update() {
 	}
 
 	if c.Commands != nil && c.CmdFile != nil {
-		physicalRaw := GetRawInputs(c.PlayerID, c.Facing)
+		var physicalRaw []string
+		if c.InputSource != nil {
+			physicalRaw = c.InputSource(c.PlayerID, c.Facing)
+		} else {
+			physicalRaw = GetRawInputs(c.PlayerID, c.Facing)
+		}
 		raw := make([]string, len(physicalRaw))
 		copy(raw, physicalRaw)
 
@@ -1124,7 +1137,7 @@ func (c *Character) GetMatchOver() bool {
 }
 
 func (c *Character) GetRoundNo() int {
-	return 1
+	return c.RoundNo
 }
 
 func (c *Character) GetRoundState() int {
@@ -1495,23 +1508,8 @@ func (c *Character) HandleBuiltinTransitions() {
 		c.AirJumpCount = 0
 	}
 
-	// Match End Transitions (Phase 11)
-	if c.GetRoundState() == 3 { // Match Finished
-		if c.GetLife() <= 0 {
-			if c.StateNo != 170 && c.StateNo != 5150 {
-				c.ChangeState(170, -1, -1) // Lose
-			}
-		} else if c.StateNo != 180 {
-			c.ChangeState(180, -1, -1) // Win
-		}
-	}
-
-	// Intro Transitions (Phase 11)
-	if c.GetRoundState() == 0 && c.StateNo != 190 {
-		c.ChangeState(190, -1, -1)
-	} else if c.GetRoundState() == 1 && c.StateNo != 191 {
-		c.ChangeState(191, -1, -1)
-	}
+	// Intro/round-over entry is owned by the match. Re-entering 191 or 180
+	// here every tick would restart scripted intros and victory pose deciders.
 
 	// Vertical Runs (110, 115) - Very simplified
 	if st == "S" && phys == "S" {

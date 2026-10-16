@@ -26,6 +26,8 @@ def main():
     parser.add_argument('--reference', type=Path, default=project / 'temp/mugen-1.1b1')
     parser.add_argument('--motif', default='data/kfm/system.def')
     parser.add_argument('--seconds', type=int, nargs='+', default=[2, 6, 16])
+    parser.add_argument('--match', nargs=2, help='Quick-match character DEF paths in the disposable distribution')
+    parser.add_argument('--stage', default='stages/kfm.def')
     args = parser.parse_args()
     if not re.fullmatch('[a-z0-9_-]+', args.name):
         parser.error('Use a simple lowercase run name')
@@ -33,6 +35,9 @@ def main():
         parser.error('Capture times must be increasing unique seconds from 1 through 60')
     if Path(args.motif).is_absolute() or '..' in Path(args.motif).parts or not re.fullmatch('[a-zA-Z0-9_./-]+', args.motif):
         parser.error('Motif must be a relative path within the disposable distribution')
+    for path in (args.match or []) + [args.stage]:
+        if Path(path).is_absolute() or '..' in Path(path).parts or not re.fullmatch('[a-zA-Z0-9_./-]+', path):
+            parser.error('Match paths must be relative paths within the disposable distribution')
     work = project / 'temp/app-runs' / args.name
     work.mkdir(parents=True, exist_ok=False)
     stock = work / 'stock'
@@ -59,8 +64,13 @@ def main():
     dirty = bool(subprocess.check_output(['git', 'status', '--porcelain', '--', 'game/mugen'], cwd=project.parents[1], text=True).strip())
     metadata = {'commit': commit, 'dirty': dirty, 'binary_sha256': digest(binary), 'config_sha256': digest(config),
                 'motif': args.motif, 'captures': []}
+    if args.match:
+        metadata.update(players=args.match, stage=args.stage)
     with (work / 'run.log').open('w') as log:
-        process = subprocess.Popen([str(binary), '--data-dir', str(stock)], cwd=project.parents[1], env=env, stdout=log, stderr=log)
+        command = [str(binary), '--data-dir', str(stock)]
+        if args.match:
+            command += ['--quick-match', ','.join(args.match), '--stage', args.stage]
+        process = subprocess.Popen(command, cwd=project.parents[1], env=env, stdout=log, stderr=log)
         started = time.monotonic()
         try:
             for seconds in args.seconds:

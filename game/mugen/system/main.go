@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
@@ -15,6 +16,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/config"
 	"github.com/kazzmir/paintown/game/mugen/input"
+	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
 )
 
@@ -59,7 +61,7 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 }
 
 func (e *Engine) PlaySnd(group, item int) {
-	if e.motif.SoundBank == nil {
+	if e.motif.SoundBank == nil || e.audioCtx == nil {
 		return
 	}
 
@@ -90,6 +92,8 @@ func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	dataDir := flag.String("data-dir", "data-new/mugen", "Path to the MUGEN data directory")
+	quickMatch := flag.String("quick-match", "", "Start a versus match with two character DEF paths, separated by a comma")
+	quickStage := flag.String("stage", "stages/kfm.def", "Stage DEF for --quick-match")
 	flag.Parse()
 
 	// Verify data directory
@@ -176,6 +180,20 @@ func main() {
 	}
 
 	engine.currentState = logoState
+	if *quickMatch != "" {
+		paths := strings.Split(*quickMatch, ",")
+		if len(paths) != 2 {
+			log.Fatal("--quick-match requires two character DEF paths")
+		}
+		request := match.Request{Mode: "Versus Mode", StagePath: *quickStage}
+		for slot, path := range paths {
+			request.Players[slot] = match.Selection{DefPath: filepath.Join(*dataDir, strings.TrimSpace(path)), Palette: slot + 1}
+		}
+		engine.currentState, err = NewFightState(engine, request)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
 
 	fmt.Printf("Starting engine with resolution %dx%d\n", width, height)
 

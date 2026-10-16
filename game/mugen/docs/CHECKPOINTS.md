@@ -4,6 +4,39 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4d — First production fight connection
+
+Selection now retains DEF/name/palette/mode/music metadata, confirms P1/P2
+independently and offers roster/extra stage choices before versus. Missing roster
+resources report paths instead of silently emptying the selection. Versus starts
+FightState rather than returning to title. A shared match.Match loads stock
+players/stage/fight assets, owns round/intro/control/timer/KO/time-over/result
+state, resets characters between rounds and retains wins. Character input can
+come from an instance-local logical source. RoundNo, PalNo, AILevel, LifeMax and
+PowerMax now have real instance data. The former per-tick forced 191/180 entry
+is removed so scripted intro/victory states can finish.
+
+Stage uploads are lazy on the drawing thread. The production fight draws mixed
+character scales, a cropped stage, life/power bars, names/portraits, time, win
+icons and announcements from fight.def. It offers result Start/rematch and
+Esc/menu. A basic deterministic AI policy uses the logical input path in current
+single-player routes; full arcade/team/mode progression is not implemented.
+Quick-match CLI and owned-window smoke captures exercise the production state.
+
+Full tests/races pass, including stock mixed spawn/intros, KO/reset/two-win
+completion, life-fraction time-over, real logical walk/punch/hit/recovery, and an
+injected-key title/select/stage/versus/fight/result/rematch/exit test. The first
+attack assertion incorrectly used KFM's kick button; it was corrected to the
+stock X punch binding. Captures first-mixed-fight show matching character sizes;
+the portrait scale mismatch was corrected for the HUD coordinate space.
+
+This is a connected fight checkpoint, not the completed M4 gate. Native round
+phase/camera ordering, simultaneous combat phases, correct guard/recovery,
+hit-vector scaling, selected palette application, channels/common effects/audio,
+HUD alpha/interpolation and complete mode progression remain open. ResetBG,
+max-draw handling and full aspect/overdraw/zoom rules are not implemented.
+See MATCH.md for controls, validation and concrete limitations.
+
 ## M4c — Mixed-player geometry foundation
 
 Two hash-pinned native cases use separate 320/1280-localcoord players. Their

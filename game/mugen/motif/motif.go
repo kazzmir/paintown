@@ -20,7 +20,8 @@ import (
 )
 
 type Motif struct {
-	Info struct {
+	Source string
+	Info   struct {
 		Name       string
 		Author     string
 		LocalCoord coord.Space
@@ -150,7 +151,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		return nil, fmt.Errorf("%s [Info] localcoord (line %d): %w", absPath, defData.InfoLines["localcoord"], err)
 	}
 
-	motif := &Motif{}
+	motif := &Motif{Source: absPath}
 	motif.Info.LocalCoord = local
 	motif.Files.FontFiles = make([]string, 11) // 1-10
 	motif.Fonts = make([]*font.Font, 11)

@@ -143,3 +143,8 @@ Mixed-player geometry: `reference_probe.py --fixture player-distance --case
 `--p2-localcoord` override copies the authored probe player into a second private
 character directory; the original reference is unchanged. Character tests pin
 both coordinate pairings and compare all recorded float variables.
+
+Production fights: see docs/MATCH.md. The system flow test injects keys through
+title, selection, stage, versus, fight, result, rematch and menu. match tests use
+the same lifecycle with stock KFM/KFM720 and logical walk/punch input. For owned
+window inspection, app_smoke.py accepts --match CHAR_DEF CHAR_DEF and --stage.

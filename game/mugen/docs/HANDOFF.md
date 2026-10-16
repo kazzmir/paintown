@@ -1,7 +1,8 @@
 # Handoff
 
 Updated: 2026-10-16. State/language, sprite/font, and finite animation checkpoints
-are tested. Full compatibility and playable match flow remain unfinished.
+are tested. Full compatibility remains unfinished. The production one-on-one fight path is
+connected; the complete playable M4 gate is still open.
 
 ## Current authorization
 
@@ -231,7 +232,15 @@ positions, body distances, collision extents, push and facing/guard checks. Two
 separate-player native cases pin 24 fvars and match; full races pass. See
 COORDINATES.md for remaining hit-vector/camera/ownership/phase obligations.
 
-Next reach playable match flow with deterministic injected input,
+M4c is commit `5cb382a9`. M4d connects selection/stage/versus to a shared
+match.Match and production FightState with loaded HUD assets, lifecycle, input
+injection, basic AI and result/rematch/menu routes. Full tests/races pass,
+including the complete production state flow and real walk/punch/hit/recovery.
+See MATCH.md for verification and gaps. Round phases/camera/combat timing are
+provisional; guard, hit scaling, selected palettes, audio/effects and mode
+progression still prevent the full M4 gate.
+
+Next finish playable match behavior with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains

@@ -10,5 +10,7 @@ and the handoff for current progress; the assessment describes the original base
 5. [Build and fonts](BUILD.md): scoped dependency metadata and portable font lookup.
 6. [Reference evidence](REFERENCE.md): executable probes and pixel/timing comparisons.
 
+7. [Match runtime](MATCH.md): production flow, controls, tests and current fight limitations.
+
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.
