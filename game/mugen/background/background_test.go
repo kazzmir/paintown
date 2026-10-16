@@ -2,9 +2,12 @@ package background
 
 import (
 	"image"
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/kazzmir/paintown/game/mugen/coord"
+	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -13,6 +16,22 @@ type drawnElement struct {
 	layer int
 	seen  map[string]*SpriteImages
 	calls int
+}
+
+func TestBackgroundDefaultWindowUsesLocalSpace(t *testing.T) {
+	ast, err := parsers.Parse(strings.NewReader("[TitleBG Image]\ntype=normal\nspriteno=0,0\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bg := &Background{LocalCoord: coord.Space{Width: 1280, Height: 720}}
+	bg.LoadFromAST(ast, "titlebg", nil, nil)
+	if len(bg.Elements) != 1 {
+		t.Fatal("background element was not built")
+	}
+	image, ok := bg.Elements[0].(*NormalElement)
+	if !ok || image.Window != [4]int{0, 0, 1279, 719} {
+		t.Fatalf("high-resolution background retained a 320x240 clip: %+v", image)
+	}
 }
 
 func (e *drawnElement) GetLayerNo() int { return e.layer }

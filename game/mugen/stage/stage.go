@@ -3,6 +3,7 @@ package stage
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 )
 
@@ -42,9 +43,10 @@ type Stage struct {
 	}
 
 	StageInfo struct {
-		ZOffset  float64
-		AutoTurn bool
-		ResetBG  bool
+		LocalCoord coord.Space
+		ZOffset    float64
+		AutoTurn   bool
+		ResetBG    bool
 	}
 
 	Shadow struct {

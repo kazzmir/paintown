@@ -42,6 +42,36 @@ func evaluate(t *testing.T, source string, env EvaluatorEnvironment) Value {
 	return EvaluateValue(expr, env)
 }
 
+type coordinateFixture struct {
+	*fixtureEnvironment
+	width int
+}
+
+func (e *coordinateFixture) LocalCoordinateWidth() int { return e.width }
+
+func TestScaledCoordinateConstantKindsAndErrors(t *testing.T) {
+	for _, width := range []int{320, 640, 1280} {
+		env := &coordinateFixture{fixtureEnvironment: &fixtureEnvironment{}, width: width}
+		for _, source := range []string{"Const240p(3)", "Const480p(6)", "Const720p(12)"} {
+			value := evaluate(t, source, env)
+			if value.Kind() != FloatKind || value.Number() != float64(3*width)/320 {
+				t.Fatalf("width=%d %s=%v", width, source, value)
+			}
+		}
+		if value := evaluate(t, "Const240p(1/0)", env); value.Kind() != BottomKind {
+			t.Fatal("bottom did not propagate", value)
+		}
+	}
+	if value := evaluate(t, "Const240p(3)", &fixtureEnvironment{}); value.Kind() != BottomKind {
+		t.Fatal("missing coordinate context invented a value", value)
+	}
+	for _, source := range []string{"Const240p()", "Const480p(1,2)", "Const720p()"} {
+		if _, err := ParseReference(source); err == nil {
+			t.Fatal("invalid scaled-constant arity compiled", source)
+		}
+	}
+}
+
 func TestTypedArithmetic(t *testing.T) {
 	cases := []struct {
 		source string

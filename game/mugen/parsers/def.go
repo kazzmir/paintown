@@ -10,6 +10,7 @@ type DefData struct {
 	Files     map[string]string
 	FileLines map[string]int
 	Info      map[string]string
+	InfoLines map[string]int
 }
 
 // ParseDef parses a .def file and extracts file mappings.
@@ -27,6 +28,7 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 		Files:     make(map[string]string),
 		FileLines: make(map[string]int),
 		Info:      make(map[string]string),
+		InfoLines: make(map[string]int),
 	}
 
 	for _, sec := range file.Sections {
@@ -38,6 +40,7 @@ func ParseDefFromAST(file *File) (*DefData, error) {
 					text = value.Val
 				}
 				data.Info[strings.ToLower(attr.ID.String())] = text
+				data.InfoLines[strings.ToLower(attr.ID.String())] = attr.Line
 			}
 		}
 		if secName == "files" {

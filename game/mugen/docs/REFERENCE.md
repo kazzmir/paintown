@@ -217,6 +217,22 @@ the intended keys and flow through injected-key gameplay tests. This is config/
 adapter evidence, not reference hardware or command-timing parity. SDL WORLD and
 shifted-only symbols, device mappings and full command semantics remain open.
 
+## Coordinate-scaled constants, 2026-10-16
+
+The coordinate-constants fixture records Const240p(3), Const480p(6), Const720p(12),
+float division, negative and fractional arguments. Standard local widths 320,
+640,1280 produce the documented ratios. Fractional width inputs 320.5 and 640.5
+produce the same values as 320/640, establishing truncation rather than rejection
+or unconditional default fallback. The three trigger types return float; the
+Const240p(5)/2 result is 2.5 at width 320. Height coercion is not isolated by these
+width-based numeric queries. All five cases/60 fvars are pinned and match Go at
+float32 precision. A fresh coordinate-constants-replay run verifies fractional640.
+
+The reference runner records --localcoord in case metadata and validates it on
+replay. The Go HD title inspection at temp/app-runs/hd-menu-centered/ verifies
+that the declared motif dimensions, default clip and horizontal origin are
+consumed by production drawing. It is not a native screenshot comparison.
+
 ## Next reference work
 
 Add authored diagnostic characters/animations in disposable run copies, fixed

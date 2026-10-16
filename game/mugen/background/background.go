@@ -11,6 +11,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
@@ -36,6 +37,7 @@ type Background struct {
 	Controllers  []*BGCtrlDef
 	// SpriteData overrides the caller's shared archive for this background.
 	SpriteData *sff.SFF
+	LocalCoord coord.Space
 	sprites    map[string]*SpriteImages
 }
 
@@ -461,7 +463,7 @@ func (e *CommonElement) drawWithBlending(screen *ebiten.Image, img *ebiten.Image
 	offX, offY := e.GetOffset()
 
 	// Coordinate alignment
-	baseDrawX := 160.0 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*e.Delta[0]
+	baseDrawX := float64(screen.Bounds().Dx())/2 + e.Start[0] + e.CurrentPos[0] + offX - cameraX*e.Delta[0]
 	baseDrawY := e.Start[1] + e.CurrentPos[1] + offY - cameraY*e.Delta[1]
 
 	flipX, flipY := 1.0, 1.0
@@ -610,6 +612,10 @@ func (e *ParallaxElement) Draw(screen *ebiten.Image, cameraX, cameraY, zOffset f
 
 func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.SFF, airData *air.Data) {
 	prefix = strings.ToLower(prefix)
+	viewport := b.LocalCoord
+	if viewport.Width == 0 && viewport.Height == 0 {
+		viewport = coord.Default()
+	}
 	for _, sec := range ast.Sections {
 		lowerName := strings.ToLower(sec.Name)
 		if !strings.HasPrefix(lowerName, prefix) || strings.HasSuffix(lowerName, "def") {
@@ -627,7 +633,7 @@ func (b *Background) LoadFromAST(ast *parsers.File, prefix string, sffData *sff.
 			Delta:   [2]float64{1, 1},
 			Spacing: [2]int{0, 0},
 			Trans:   "none",
-			Window:  [4]int{0, 0, 319, 239},
+			Window:  [4]int{0, 0, viewport.Width - 1, viewport.Height - 1},
 			Visible: true,
 			Enabled: true,
 		}

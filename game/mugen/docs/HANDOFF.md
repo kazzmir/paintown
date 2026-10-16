@@ -217,6 +217,15 @@ resources have contextual tests; full tests/races pass. This is the asset side
 of the fight connection; no actual Match/Fight state has been added yet. The
 versus screen still returns to title and selection still drops chosen players.
 
+M3h is commit `32c7aca8`. M4b retains local/game coordinate profiles, implements
+width-ratio math and float Const240p/480p/720p, and matches five native cases.
+Fractional widths truncate; all 60 recorded fvars match (30 nonzero observations).
+Menus now honor motif localcoord, background windows/center scale correctly,
+and physical window dimensions no longer double. The HD title capture is
+inspected at temp/app-runs/hd-menu-centered/. Full tests/races pass. These profiles
+still need wiring into mixed-player geometry/camera and the actual Match loop;
+see COORDINATES.md. No fight-state implementation has landed yet.
+
 Next reach playable match flow with deterministic injected input,
 then integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored

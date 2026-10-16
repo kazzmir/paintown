@@ -32,6 +32,10 @@ type ConstantEnvironment interface {
 	LookupConstant(string) (Value, bool)
 }
 
+type CoordinateEnvironment interface {
+	LocalCoordinateWidth() int
+}
+
 func failure(env EvaluatorEnvironment, format string, args ...any) Value {
 	if sink, ok := env.(WarningEnvironment); ok {
 		sink.EvaluationWarning(fmt.Sprintf(format, args...))
@@ -358,6 +362,22 @@ func call(e *Call, env EvaluatorEnvironment) Value {
 	}
 	if name == "const" {
 		return constant(e, args, env)
+	}
+	if name == "const240p" || name == "const480p" || name == "const720p" {
+		if len(args) != 1 || !args[0].IsNumber() {
+			return failure(env, "%s requires one numeric argument", name)
+		}
+		context, ok := env.(CoordinateEnvironment)
+		if !ok || context.LocalCoordinateWidth() <= 0 {
+			return failure(env, "%s requires a player coordinate space", name)
+		}
+		base := float32(320)
+		if name == "const480p" {
+			base = 640
+		} else if name == "const720p" {
+			base = 1280
+		}
+		return Float(float32(args[0].Number()) * float32(context.LocalCoordinateWidth()) / base)
 	}
 	if name == "gethitvar" {
 		if len(args) != 1 || args[0].kind != TextKind {

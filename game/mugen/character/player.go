@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
@@ -20,6 +21,7 @@ type Player struct {
 	SND        *snd.SoundBank
 	DefPath    string
 	Definition *parsers.DefData
+	LocalCoord coord.Space
 
 	// Path to the character's directory
 	Dir string

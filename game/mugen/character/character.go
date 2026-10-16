@@ -9,6 +9,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/engine"
 	"github.com/kazzmir/paintown/game/mugen/input"
 	"github.com/kazzmir/paintown/game/mugen/logger"
@@ -28,7 +29,8 @@ type Character struct {
 	warningSeen      map[string]bool
 
 	// CNS data containing states and physics globals
-	StateFile *cns.CNS
+	StateFile  *cns.CNS
+	LocalCoord coord.Space
 
 	// AIR data containing animation definitions
 	AirFile   *air.Data
@@ -178,6 +180,7 @@ func NewCharacter(stateFile *cns.CNS, airFile *air.Data, cmdFile *cmd.Data) *Cha
 		maxPower = 3000
 	}
 	return &Character{
+		LocalCoord:          coord.Default(),
 		StateFile:           stateFile,
 		AirFile:             airFile,
 		CmdFile:             cmdFile,
@@ -694,6 +697,7 @@ func (c *Character) Helper(params map[string]string) {
 	// Create a new character as a helper
 	// It shares the same files but has its own state machine
 	h := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+	h.LocalCoord = c.LocalCoord
 	h.Parent = c
 	h.Root = c.Root
 	if h.Root == nil {
@@ -728,6 +732,7 @@ func (c *Character) Projectile(params map[string]string) {
 	}
 
 	p := NewCharacter(c.StateFile, c.AirFile, c.CmdFile)
+	p.LocalCoord = c.LocalCoord
 	p.Parent = c
 	p.Root = c.Root
 	if p.Root == nil {

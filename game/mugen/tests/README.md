@@ -130,3 +130,10 @@ Fight resource tests cover both stock fight definitions, main SFF/SND/fonts,
 embedded AIR, fightfx SFF/AIR, common sounds and retained layout attributes.
 Missing/malformed declared files are checked with source context. HUD drawing
 and live match behavior require separate M4 integration tests.
+
+Coordinate tests retain all stock profiles, distinguish game space from window
+size, verify width-based translation and compare float scaled constants against
+five native cases. Replay with `--fixture coordinate-constants --case fractional640`
+and a fresh run name. `--localcoord width,height` is an authored-probe override;
+its value is pinned. Mixed-player geometry and complete camera/rendering parity
+still require Match integration.

@@ -131,8 +131,8 @@ func main() {
 		dataDir:       *dataDir,
 		screenWidth:   width,
 		screenHeight:  height,
-		logicalWidth:  320, // Standard MUGEN
-		logicalHeight: 240,
+		logicalWidth:  m.Info.LocalCoord.Width,
+		logicalHeight: m.Info.LocalCoord.Height,
 		sprites:       make(map[string]*background.SpriteImages),
 		audioCtx:      audio.NewContext(sampleRate),
 	}
@@ -179,7 +179,7 @@ func main() {
 
 	fmt.Printf("Starting engine with resolution %dx%d\n", width, height)
 
-	ebiten.SetWindowSize(width*2, height*2)
+	ebiten.SetWindowSize(width, height)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 	ebiten.SetWindowTitle("MUGEN Engine")
 

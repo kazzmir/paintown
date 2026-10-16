@@ -25,6 +25,10 @@ func validateConstants(expr Expression) error {
 	var children []Expression
 	switch e := expr.(type) {
 	case *Call:
+		name := strings.ToLower(e.Name)
+		if (name == "const240p" || name == "const480p" || name == "const720p") && len(e.Arguments) != 1 {
+			return fmt.Errorf("%s requires one expression", e.Name)
+		}
 		if strings.EqualFold(e.Name, "const") {
 			if len(e.Arguments) != 1 {
 				return fmt.Errorf("Const requires one constant name")

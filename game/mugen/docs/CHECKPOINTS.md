@@ -4,6 +4,31 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4b — Coordinate profiles and scaled constants
+
+Added width-ratio coordinate spaces, retained character/motif/stage/game profiles,
+and contextual dimension validation. Fractional localcoord width probes show
+320.5 and 640.5 truncate to 320/640; the parser accepts this coercion rather than
+rejecting them. Config.GameWidth/GameHeight are distinct from video window size.
+Helpers/projectiles inherit their creator's local profile.
+
+Const240p/Const480p/Const720p now bind to that profile and return float32. Five
+source-pinned native cases match all 60 captured fvars (30 nonzero conversion/
+type observations); the division case confirms float return behavior. Bad arity
+is rejected in compiled expressions, and bottom/missing context are tested.
+A fresh fractional640 native replay reproduces every value.
+
+Production menu layout honors motif localcoord, background default windows use
+its size, and the drawing origin uses the actual logical horizontal center.
+Physical window dimensions no longer double implicitly. The high-resolution
+MUGEN title now fits and centers correctly in an owned-window inspection; the
+first capture exposed and helped correct the remaining fixed 160-pixel origin.
+Full regression/race checks pass; root module files remain unchanged.
+
+Mixed-player position/collision conversion, game/stage camera/crop/overdraw,
+custom ownership and full fight/storyboard spaces remain open. These are profile
+and expression foundations, not a completed Match/Fight state. See COORDINATES.md.
+
 ## M3h — Fight/HUD resource definitions
 
 Added fight.Load for the stock fight definition, main SFF/SND/fonts, embedded

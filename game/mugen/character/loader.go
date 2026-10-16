@@ -12,6 +12,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/cmd"
 	"github.com/kazzmir/paintown/game/mugen/cns"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -45,6 +46,10 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		return nil, fmt.Errorf("%s: %w", defPath, err)
 	}
 	baseDir = filepath.Dir(defPath)
+	local, err := coord.Parse(def.Info["localcoord"])
+	if err != nil {
+		return nil, fmt.Errorf("%s [Info] localcoord (line %d): %w", defPath, def.InfoLines["localcoord"], err)
+	}
 	if options.RootDir == "" {
 		options.RootDir = filepath.Dir(filepath.Dir(baseDir))
 	}
@@ -145,6 +150,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 	}
 	merge(common)
 	p := &Player{Dir: baseDir, DefPath: defPath, Definition: def, CMD: commandData,
+		LocalCoord:  local,
 		spriteCache: make(map[int]map[int]*ebiten.Image), Commands: NewCommandBuffer(120), PlayerID: 1}
 	spritePath, err := resolve("sprite")
 	if err != nil {
@@ -187,6 +193,7 @@ func LoadPlayerWithOptions(baseDir, defFile string, options LoadOptions) (*Playe
 		}
 	}
 	p.Character = NewCharacter(master, nil, p.CMD)
+	p.Character.LocalCoord = local
 	p.Character.Commands, p.Character.AirFile = p.Commands, p.AIR
 	return p, nil
 }

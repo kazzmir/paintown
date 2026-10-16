@@ -10,6 +10,7 @@ import (
 
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
@@ -20,8 +21,9 @@ import (
 
 type Motif struct {
 	Info struct {
-		Name   string
-		Author string
+		Name       string
+		Author     string
+		LocalCoord coord.Space
 	}
 	Files struct {
 		Spr             string
@@ -139,8 +141,17 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		return nil, fmt.Errorf("%s: %w", absPath, err)
 	}
 	fileLines := make(map[string]int)
+	defData, err := parsers.ParseDefFromAST(ast)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", absPath, err)
+	}
+	local, err := coord.Parse(defData.Info["localcoord"])
+	if err != nil {
+		return nil, fmt.Errorf("%s [Info] localcoord (line %d): %w", absPath, defData.InfoLines["localcoord"], err)
+	}
 
 	motif := &Motif{}
+	motif.Info.LocalCoord = local
 	motif.Files.FontFiles = make([]string, 11) // 1-10
 	motif.Fonts = make([]*font.Font, 11)
 	motif.TitleInfo.ItemNames = make(map[string]string)
@@ -511,6 +522,7 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 			*spec.target = &background.Background{}
 		}
 		bg := *spec.target
+		bg.LocalCoord = local
 		archive := motif.SpriteData
 		var filename string
 		var line int

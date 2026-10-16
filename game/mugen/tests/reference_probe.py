@@ -29,7 +29,7 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None):
+def prepare(reference, destination, fixture, bare=False, version=None, files=None, omitted=None, state_order=None, localcoord=None):
     shutil.copytree(reference, destination)
     char = destination / 'chars/kfm'
     definition = (char / 'kfm.def').read_text(encoding='utf-8-sig')
@@ -39,6 +39,11 @@ def prepare(reference, destination, fixture, bare=False, version=None, files=Non
                             key + ' = ' + value, definition)
     if version is not None:
         definition = re.sub(r'(?im)^\s*mugenversion\s*=.*$', 'mugenversion = ' + version, definition)
+    if localcoord is not None:
+        definition, count = re.subn(r'(?im)^\s*localcoord\s*=.*$', 'localcoord = ' + localcoord, definition)
+        if not count:
+            definition = re.sub(r'(?im)^(\s*\[info\]\s*)$',
+                                lambda match: match.group(1) + '\nlocalcoord = ' + localcoord, definition)
     for key, value in (files or {}).items():
         definition, count = re.subn(r'(?im)^\s*' + re.escape(key) + r'\s*=.*$',
                                     lambda match: key + ' = ' + value, definition)
@@ -206,6 +211,7 @@ def main():
     parser.add_argument('--omit-file', action='append', default=[])
     parser.add_argument('--case', help='Use a pinned named case from the fixture JSON')
     parser.add_argument('--state-file-order', nargs='+')
+    parser.add_argument('--localcoord', help='Override character localcoord: width,height')
     parser.add_argument('--pages', type=int, nargs='+', default=[0, 12, 30, 42])
     args = parser.parse_args()
     case_expected = None
@@ -224,10 +230,14 @@ def main():
         args.bare_constants = case_expected.get('bare_constants', False)
         args.pages = [capture['page'] for capture in case_expected.get('captures', [])] or [0]
         args.state_file_order = case_expected.get('state_file_order')
+        args.localcoord = case_expected.get('localcoord')
     if not all(re.fullmatch('[a-z0-9_-]+', value) for value in [args.name, args.fixture]) or not 3 <= args.seconds <= 30:
         parser.error('Use a simple run name and a capture delay from 3 to 30 seconds')
     if any(page < 0 or page > (28 if args.bank == 'fvar' else 48) for page in args.pages):
         parser.error('Page exceeds the variable bank')
+    if args.localcoord is not None and (not re.fullmatch(r'[1-9][0-9]*(?:\.[0-9]+)?,[1-9][0-9]*(?:\.[0-9]+)?', args.localcoord) or
+                                        any(float(value) > 2147483647 for value in args.localcoord.split(','))):
+        parser.error('Localcoord requires positive numeric width,height')
     reference = args.reference.resolve()
     files = {}
     for item in args.file:
@@ -244,7 +254,7 @@ def main():
     if args.state_file_order and (len(set(args.state_file_order)) != len(args.state_file_order) or
                                  any(not re.fullmatch('st[0-9]*', key) for key in args.state_file_order)):
         parser.error('State-file order must contain unique st/stN keys')
-    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order)
+    base = prepare(reference, run, fixture, args.bare_constants, args.mugenversion, files, args.omit_file, args.state_file_order, args.localcoord)
     evidence = {'engine_sha256': digest(reference / 'mugen.exe'),
                 'cns_sha256': digest(fixture.with_suffix('.cns')),
                 'air_sha256': digest(fixture.with_suffix('.air')),
@@ -264,6 +274,8 @@ def main():
                                     for path in sorted(extras.rglob('*')) if path.is_file()}
     if args.mugenversion is not None:
         evidence['mugenversion'] = args.mugenversion
+    if args.localcoord is not None:
+        evidence['localcoord'] = args.localcoord
     if fixture.with_suffix('.cmd').exists():
         evidence['cmd_sha256'] = digest(fixture.with_suffix('.cmd'))
     expected_variables = {}
@@ -274,6 +286,8 @@ def main():
             raise RuntimeError('Variable bank/constants mode differs from pinned fixture')
         if expected.get('mugenversion') != args.mugenversion:
             raise RuntimeError('Character version differs from pinned fixture')
+        if expected.get('localcoord') != args.localcoord:
+            raise RuntimeError('Character localcoord differs from pinned fixture')
         if expected.get('files', {}) != files or expected.get('clipboard_in_cmd', False) != args.clipboard_in_cmd:
             raise RuntimeError('Files/clipboard mode differs from pinned fixture')
         if expected.get('omitted_files', []) != args.omit_file:

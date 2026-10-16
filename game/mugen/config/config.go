@@ -50,15 +50,16 @@ type MugenConfig struct {
 		SuperTargetDefenceMul       float64
 	}
 	Config struct {
-		GameSpeed           int
-		DrawShadows         bool
-		AfterImageMax       int
-		LayeredSpriteMax    int
-		ExplodMax           int
-		SysExplodMax        int
-		HelperMax           int
-		PlayerProjectileMax int
-		FirstRun            bool
+		GameWidth, GameHeight int
+		GameSpeed             int
+		DrawShadows           bool
+		AfterImageMax         int
+		LayeredSpriteMax      int
+		ExplodMax             int
+		SysExplodMax          int
+		HelperMax             int
+		PlayerProjectileMax   int
+		FirstRun              bool
 	}
 	Debug struct {
 		Debug          bool
@@ -142,6 +143,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	}
 
 	cfg := &MugenConfig{}
+	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
 	// Set some defaults
 	cfg.Config.GameSpeed = 60
 	cfg.Config.DrawShadows = true
@@ -191,6 +193,16 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 			for _, attr := range sec.Attributes {
 				key := strings.ToLower(attr.ID.String())
 				switch key {
+				case "gamewidth", "gameheight":
+					value := getFloat(attr.Value)
+					if value <= 0 || value != float64(int(value)) {
+						return nil, fmt.Errorf("%s [Config] %s (line %d): dimension must be a positive integer", cfgPath, key, attr.Line)
+					}
+					if key == "gamewidth" {
+						cfg.Config.GameWidth = int(value)
+					} else {
+						cfg.Config.GameHeight = int(value)
+					}
 				case "gamespeed":
 					cfg.Config.GameSpeed = int(getFloat(attr.Value))
 				case "drawshadows":

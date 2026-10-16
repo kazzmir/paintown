@@ -9,6 +9,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/resource"
 	"github.com/kazzmir/paintown/game/mugen/sff"
@@ -33,6 +34,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	stage := &Stage{
 		SpriteImages: make(map[string]*background.SpriteImages),
 	}
+	stage.StageInfo.LocalCoord = coord.Default()
 	stageDir := filepath.Dir(absPath)
 
 	var currentDef *background.BGCtrlDef
@@ -110,6 +112,12 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 			for _, attr := range sec.Attributes {
 				id := strings.ToLower(attr.ID.String())
 				switch id {
+				case "localcoord":
+					local, err := coord.Parse(attr.RawValue)
+					if err != nil {
+						return nil, fmt.Errorf("%s [StageInfo] localcoord (line %d): %w", absPath, attr.Line, err)
+					}
+					stage.StageInfo.LocalCoord = local
 				case "zoffset":
 					stage.StageInfo.ZOffset = background.GetFloat(attr.Value)
 				case "autoturn":
@@ -254,6 +262,7 @@ func LoadStage(path string, dataDir string) (*Stage, error) {
 	}
 
 	// Load background elements
+	stage.Background.LocalCoord = stage.StageInfo.LocalCoord
 	stage.Background.LoadFromAST(ast, "bg", stage.SpriteData, airData)
 
 	return stage, nil
