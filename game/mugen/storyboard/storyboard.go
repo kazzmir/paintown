@@ -9,7 +9,9 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
+	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/sff"
+	"github.com/kazzmir/paintown/game/mugen/snd"
 )
 
 // FadeTool handles fade-in and fade-out transitions.
@@ -82,6 +84,7 @@ func (f *FadeTool) Draw(screen *ebiten.Image) {
 
 // Layer is an animated element displayed at a specific time in a scene.
 type Layer struct {
+	Index     int
 	Offset    [2]float64
 	StartTime int
 	Player    *air.Player
@@ -148,6 +151,7 @@ func (l *Layer) Draw(screen *ebiten.Image, defaultX, defaultY float64) {
 
 // Scene is a single scene in a storyboard.
 type Scene struct {
+	Name            string
 	EndTime         int
 	Fader           FadeTool
 	Background      *background.Background
@@ -205,11 +209,7 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 	// Build sprite map for background rendering
 	if s.Background != nil {
 		spriteMap := s.buildSpriteMap(screen)
-		for _, el := range s.Background.Elements {
-			if el.GetLayerNo() == 0 {
-				el.Draw(screen, 0, 0, 0, spriteMap)
-			}
-		}
+		s.Background.DrawLayer(screen, 0, 0, 0, 0, spriteMap)
 	}
 
 	// Draw layers
@@ -220,11 +220,7 @@ func (s *Scene) Draw(screen *ebiten.Image) {
 	// Foreground
 	if s.Background != nil {
 		spriteMap := s.buildSpriteMap(screen)
-		for _, el := range s.Background.Elements {
-			if el.GetLayerNo() == 1 {
-				el.Draw(screen, 0, 0, 0, spriteMap)
-			}
-		}
+		s.Background.DrawLayer(screen, 1, 0, 0, 0, spriteMap)
 	}
 
 	s.Fader.Draw(screen)
@@ -236,6 +232,11 @@ func (s *Scene) buildSpriteMap(screen *ebiten.Image) map[string]*background.Spri
 
 // Storyboard holds all scenes and sprite data for a cutscene.
 type Storyboard struct {
+	Source     string
+	SpriteData *sff.SFF
+	SoundBank  *snd.SoundBank
+	Fonts      [10]*font.Font
+	AIR        *air.Data
 	StartScene int
 	Scenes     []*Scene
 
@@ -243,6 +244,39 @@ type Storyboard struct {
 	Sprites    []*sff.Sprite
 	SpriteMap  map[string]*background.SpriteImages
 	RawSprites map[string]*sff.Sprite
+	prepared   bool
+}
+
+func (s *Storyboard) prepareImages() {
+	if s.prepared {
+		return
+	}
+	if s.SpriteMap == nil {
+		s.SpriteMap = make(map[string]*background.SpriteImages)
+		for _, sprite := range s.Sprites {
+			if sprite.Image == nil {
+				continue
+			}
+			pair := &background.SpriteImages{Masked: ebiten.NewImageFromImage(sprite.Image)}
+			if sprite.ImageOpaque != nil {
+				pair.Opaque = ebiten.NewImageFromImage(sprite.ImageOpaque)
+			} else {
+				pair.Opaque = pair.Masked
+			}
+			s.SpriteMap[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = pair
+		}
+	}
+	for _, scene := range s.Scenes {
+		if scene.SpriteImages == nil {
+			scene.SpriteImages = s.SpriteMap
+		}
+		for _, layer := range scene.Layers {
+			if layer.Sprites == nil {
+				layer.Sprites = s.SpriteMap
+			}
+		}
+	}
+	s.prepared = true
 }
 
 // NewStoryboard creates a Storyboard from parsed data.
@@ -285,13 +319,27 @@ type Player struct {
 	sb         *Storyboard
 	currentIdx int
 	done       bool
+	Error      error
 }
 
 func NewPlayer(sb *Storyboard) *Player {
-	p := &Player{sb: sb, currentIdx: sb.StartScene}
-	if len(sb.Scenes) > 0 {
-		sb.Scenes[p.currentIdx].Reset()
+	p := &Player{sb: sb}
+	if sb == nil || len(sb.Scenes) == 0 {
+		p.Error, p.done = fmt.Errorf("storyboard has no scenes"), true
+		return p
 	}
+	p.currentIdx = sb.StartScene
+	if p.currentIdx < 0 || p.currentIdx >= len(sb.Scenes) {
+		p.Error, p.done = fmt.Errorf("startscene %d invalid for %d scenes", p.currentIdx, len(sb.Scenes)), true
+		return p
+	}
+	for i, scene := range sb.Scenes {
+		if scene == nil {
+			p.Error, p.done = fmt.Errorf("scene %d is nil", i), true
+			return p
+		}
+	}
+	sb.Scenes[p.currentIdx].Reset()
 	return p
 }
 
@@ -313,6 +361,12 @@ func (p *Player) Update(input InputState) bool {
 
 	scene := p.sb.Scenes[p.currentIdx]
 	finished := scene.Update()
+	for _, layer := range scene.Layers {
+		if layer.Player != nil && layer.Player.Error != nil {
+			p.Error, p.done = fmt.Errorf("%s [%s] layer%d: %w", p.sb.Source, scene.Name, layer.Index, layer.Player.Error), true
+			return true
+		}
+	}
 	if finished {
 		p.currentIdx++
 		if p.currentIdx >= len(p.sb.Scenes) {
@@ -330,6 +384,7 @@ func (p *Player) Draw(screen *ebiten.Image) {
 		return
 	}
 	// Fill with black as default
+	p.sb.prepareImages()
 	screen.Fill(color.RGBA{0, 0, 0, 255})
 	p.sb.Scenes[p.currentIdx].Draw(screen)
 }

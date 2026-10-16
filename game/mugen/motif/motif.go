@@ -423,6 +423,22 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		}
 		return resolved, nil
 	}
+	for _, reference := range []struct {
+		key  string
+		path *string
+	}{
+		{"logo.storyboard", &motif.Files.LogoStoryboard}, {"intro.storyboard", &motif.Files.IntroStoryboard},
+		{"select", &motif.Files.Select}, {"fight", &motif.Files.Fight},
+	} {
+		if *reference.path == "" {
+			continue
+		}
+		resolved, err := resolveAsset(reference.key, *reference.path, false)
+		if err != nil {
+			return nil, err
+		}
+		*reference.path = resolved
+	}
 	// Declared assets must load; a partial motif hides a broken installation.
 	if motif.Files.Spr != "" {
 		sprPath, err := resolveAsset("spr", motif.Files.Spr, false)

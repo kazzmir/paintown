@@ -4,6 +4,30 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3g — Shared storyboard resources and application handoff
+
+Storyboard.Load now parses once, constructs CPU sprite/animation/background
+resources, loads declared SND/fonts, and delays GPU uploads until drawing. The
+production storyboard state uses it and returns errors instead of printing and
+skipping failed cutscenes. Runtime animation failures retain file/scene/layer
+context. Motif logo/intro/select/fight paths resolve relative to the motif;
+selection no longer prefixes an already-resolved path with data/ again.
+
+All eight stock storyboards load and finish bounded CPU playback with their
+configured scene durations. Their scene backgrounds are retained, including the
+KFM intro/credits backgrounds previously discarded. Tests cover declared fonts/
+sounds, layer 99 (the documented limit is 100 layers, not the former 10), scene
+inheritance metadata, missing assets/actions/end.time, invalid start indices,
+checked player construction, application failure propagation and selection paths.
+The documented default BGM loop flag is false. Clearcolor=-1 is retained as a
+no-clear flag; actual persistent-framebuffer rendering remains pending.
+
+Full regression/race checks pass; root module hashes remain unchanged. This is
+loading/playback integration, not complete storyboard parity: text, timed sound/
+music playback, window/transform/blend behavior, zero-length scene boundaries,
+first-tick animation ordering, clear persistence and reference screenshots still
+need work. The public legacy Storyboard.Run stub is not used by production.
+
 ## M3f — Per-background sprite archives in production drawing
 
 Motif TitleBGDef/SelectBGDef/VersusBGDef/OptionBGDef spr declarations now load

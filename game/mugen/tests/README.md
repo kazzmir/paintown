@@ -103,3 +103,10 @@ bindings, sprite-ID collisions, masked/opaque caches and foreground selection.
 All four supported motif background override declarations reject missing or
 malformed archives with section/key/line context. Full screenshot parity remains
 separate work.
+
+Storyboard loader tests cover all eight stock cutscenes, CPU-only resource
+construction and bounded playback, plus authored scene/index/action/resource
+failures and layer 99. Application tests cover failure propagation and resolved
+selection paths. Configured-duration assertions are regression checks, not
+native timing or screenshot parity. Text/audio and full scene drawing remain
+incomplete.

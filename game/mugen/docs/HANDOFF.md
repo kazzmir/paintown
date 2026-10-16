@@ -184,7 +184,16 @@ layer ownership when sprite IDs collide. CPU binding and render-route/cache
 regressions pass with full tests/races. Storyboards and full background semantics
 still need work; no screenshot parity is claimed.
 
-Next integrate selected character palettes, finish storyboard resources,
+M3f is commit `219e931f`. M3g introduces Storyboard.Load and replaces the old
+application-only converter. All eight stock cutscenes load and finish bounded
+CPU playback. Scene backgrounds, declared fonts/SND, 100 layers, path handoff,
+contextual errors and safe player start are covered. Motif logo/intro/select/
+fight references are now absolute; selection preserves resolved paths. Tests
+and races pass. Full storyboard rendering/audio/text semantics are still open;
+clearcolor=-1 is metadata only until persistent-framebuffer drawing is implemented.
+No native storyboard timing/screenshot parity is claimed.
+
+Next integrate selected character palettes, complete storyboard/rendering semantics,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

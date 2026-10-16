@@ -96,6 +96,11 @@ and uses them in production draw phases, including the KFM title screen. Archive
 ownership and layer/cache behavior have regressions; full visual/background
 semantics and storyboard integration remain unfinished.
 
+M3g adds the shared storyboard loader and application integration. All eight
+stock storyboards load and complete CPU playback; backgrounds, declared fonts/
+sound banks, 100 animation layers, safe scene indices and error/path handoffs are
+covered. Text, timed audio, full rendering and native timing parity remain open.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

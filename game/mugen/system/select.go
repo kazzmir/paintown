@@ -33,7 +33,9 @@ func NewSelectState(engine *Engine, title string) *SelectState {
 	if selectDefPath == "" {
 		selectDefPath = "select.def"
 	}
-	selectDefPath = filepath.Join(engine.dataDir, "data", selectDefPath)
+	if !filepath.IsAbs(selectDefPath) {
+		selectDefPath = filepath.Join(engine.dataDir, "data", selectDefPath)
+	}
 	charsDir := filepath.Join(engine.dataDir, "chars")
 
 	chars := loadCharacters(selectDefPath, charsDir)

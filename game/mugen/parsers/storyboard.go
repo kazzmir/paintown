@@ -2,20 +2,27 @@ package parsers
 
 import (
 	"io"
+	"strconv"
 	"strings"
 )
 
 // StoryboardDef holds parsed data from a storyboard .def file.
 type StoryboardDef struct {
-	SprFile    string
-	StartScene int
-	Scenes     []*SceneDef
+	SprFile          string
+	SndFile          string
+	SprLine, SndLine int
+	FontFiles        [10]string
+	FontLines        [10]int
+	StartScene       int
+	Scenes           []*SceneDef
 }
 
 // SceneDef holds parsed data for a single scene section.
 type SceneDef struct {
 	Name            string
+	Line            int
 	EndTime         int
+	EndTimeSet      bool
 	FadeInTime      int
 	FadeOutTime     int
 	FadeInColor     [3]int
@@ -33,6 +40,7 @@ type SceneDef struct {
 // LayerDef holds parsed data for a layer within a scene.
 type LayerDef struct {
 	Index     int
+	Line      int
 	AnimNo    int // action number
 	OffsetX   int
 	OffsetY   int
@@ -62,18 +70,29 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 				switch id {
 				case "spr":
 					sb.SprFile = getString(attr.Value)
+					sb.SprLine = attr.Line
+				case "snd":
+					sb.SndFile = getString(attr.Value)
+					sb.SndLine = attr.Line
 				case "startscene":
 					sb.StartScene = int(getFloat(attr.Value))
+				default:
+					if strings.HasPrefix(id, "font") {
+						index, err := strconv.Atoi(strings.TrimPrefix(id, "font"))
+						if err == nil && index >= 0 && index < len(sb.FontFiles) {
+							sb.FontFiles[index], sb.FontLines[index] = getString(attr.Value), attr.Line
+						}
+					}
 				}
 			}
 
 		case strings.HasPrefix(name, "scene"):
 			scene := &SceneDef{
-				Name:      sec.Name,
-				MusicLoop: true,
-				Layers:    make([]*LayerDef, 10),
+				Name:   sec.Name,
+				Line:   sec.Line,
+				Layers: make([]*LayerDef, 100),
 			}
-			// Initialise 10 layers
+			// The 1.1 reference supports layers 0 through 99.
 			for i := range scene.Layers {
 				scene.Layers[i] = &LayerDef{Index: i, AnimNo: -1}
 			}
@@ -83,6 +102,7 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 				switch {
 				case id == "end.time":
 					scene.EndTime = int(getFloat(attr.Value))
+					scene.EndTimeSet = true
 				case id == "fadein.time":
 					scene.FadeInTime = int(getFloat(attr.Value))
 				case id == "fadeout.time":
@@ -111,6 +131,7 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 					// Check for layer0.anim, layer1.offset, layer0.starttime etc
 					if layerIdx, ok := parseLayerAttr(id, "anim"); ok {
 						scene.Layers[layerIdx].AnimNo = int(getFloat(attr.Value))
+						scene.Layers[layerIdx].Line = attr.Line
 					} else if layerIdx, ok := parseLayerAttr(id, "offset"); ok {
 						v := getVector2(attr.Value)
 						scene.Layers[layerIdx].OffsetX = int(v[0])
@@ -130,8 +151,6 @@ func ParseStoryboardFromAST(ast *File) (*StoryboardDef, error) {
 // parseLayerAttr checks if id matches "layer<N>.<suffix>" and returns the layer index.
 func parseLayerAttr(id, suffix string) (int, bool) {
 	prefix := "layer"
-	full := prefix + suffix // e.g. "layeranim" - not used directly
-	_ = full
 	if !strings.HasPrefix(id, prefix) {
 		return -1, false
 	}
@@ -145,14 +164,8 @@ func parseLayerAttr(id, suffix string) (int, bool) {
 	if attrPart != suffix {
 		return -1, false
 	}
-	idx := 0
-	for _, c := range numStr {
-		if c < '0' || c > '9' {
-			return -1, false
-		}
-		idx = idx*10 + int(c-'0')
-	}
-	if idx < 0 || idx >= 10 {
+	idx, err := strconv.Atoi(numStr)
+	if err != nil || idx < 0 || idx >= 100 || strings.HasPrefix(numStr, "+") {
 		return -1, false
 	}
 	return idx, true
