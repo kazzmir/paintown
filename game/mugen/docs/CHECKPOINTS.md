@@ -4,6 +4,29 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3b — Font v2 bitmap banks and TrueType
+
+Font loading now accepts FNT v2 definitions, palette and RGBA sprite banks,
+invalid-bank fallback, ASCII bitmap restrictions and glyph offsets. Rendering
+retains true-color/alpha glyphs and the default indexed palette instead of
+turning them into empty paletted images. Added CPU glyph access and bank-aware
+metrics. TrueType/OpenType/TTC uses x/image, supports UTF-8, optional antialiasing,
+local/configured/system lookup and an observable Go Regular fallback. That
+fallback does not reproduce Windows fonts or supply full CJK coverage.
+
+All 19 runtime font definitions/binaries load, with numeric glyphs and metrics.
+Bank/color/alpha, variable and missing-character widths, UTF-8, blend modes,
+case-insensitive local lookup, missing/corrupt metadata and wrapped binary
+offsets have regressions. Stock f-6x8f's last cell extends into row padding:
+pixels clip to the PCX while its six-pixel advance remains. V1 bank count now
+uses 256/colors instead of colors. Full regression/race tests pass; exact
+reference font metrics, rasterization and placement remain unverified.
+
+Dependency changes are confined to `mugen.mod`/`mugen.sum`, selected by the
+launcher with `-modfile`; direct Go commands need that option. This avoids root
+module writes. Root go.mod/go.sum hashes were checked unchanged. BUILD.md
+records versions, invocation, lookup/fallback and the overlay maintenance cost.
+
 ## M3a — SFF v2/v2.01 decoding and sprite reference comparison
 
 Added CPU-only SFF v2/v2.01 decoding for raw indexed/RGB/RGBA, RLE8, RLE5,

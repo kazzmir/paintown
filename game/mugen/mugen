@@ -12,7 +12,7 @@ mkdir -p "$DIR/temp/go-build" "$DIR/temp/tmp"
 export GOCACHE="$DIR/temp/go-build"
 export GOTMPDIR="$DIR/temp/tmp"
 export TMPDIR="$DIR/temp/tmp"
-export GOFLAGS="${GOFLAGS:+$GOFLAGS }-mod=readonly"
+export GOFLAGS="${GOFLAGS:+$GOFLAGS }-modfile=$DIR/mugen.mod -mod=readonly"
 cd "$DIR/../.."
 
 show_help() {

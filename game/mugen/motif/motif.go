@@ -11,6 +11,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/air"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/font"
+	"github.com/kazzmir/paintown/game/mugen/logger"
 	"github.com/kazzmir/paintown/game/mugen/parsers"
 	"github.com/kazzmir/paintown/game/mugen/sff"
 	"github.com/kazzmir/paintown/game/mugen/snd"
@@ -432,6 +433,9 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		fontPath := background.ResolvePath(fontFile, motifDir, dataDir)
 		if f, err := font.LoadFont(fontPath); err == nil {
 			motif.Fonts[i] = f
+			if f.Fallback != "" {
+				logger.LogUnresolved(fmt.Sprintf("font %s: %s", fontFile, f.Fallback))
+			}
 		} else {
 			fmt.Printf("Warning: Failed to load font %s: %v\n", fontFile, err)
 		}

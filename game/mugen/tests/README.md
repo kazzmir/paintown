@@ -3,6 +3,8 @@
 From any working directory, run `game/mugen/mugen --check` using the launcher's
 absolute path if needed. It keeps build/test temporary files under
 `game/mugen/temp/` and prevents changes to the root Go module.
+It uses scoped `mugen.mod`/`mugen.sum`; direct Go commands need
+`-modfile=game/mugen/mugen.mod -mod=readonly`. See [build notes](../docs/BUILD.md).
 
 Required reference content is the supplied, unmodified M.U.G.E.N 1.1 beta 1
 distribution at `game/mugen/temp/mugen-1.1b1/`. Set `MUGEN_REFERENCE_DIR` to use
@@ -20,9 +22,11 @@ Ebitengine currently require a display even when their tests do not open a
 window; the simulation extraction in M2 will remove that coupling from state
 tests. Do not describe the current entire test tree as headless.
 
-The original reference is never executed in place. Reference experiments use
+The original engine is never executed in place. Engine experiments use
 copies under `temp/reference-runs/` and a Wine prefix under `temp/wine-reference`.
 Reference-generated files, extracted images and captures stay under `temp/`.
+Tiny original reference-compressed fixtures and numerical pixel hashes may be
+committed; Elecbyte art remains untracked.
 
 Run headless language fixtures with:
 

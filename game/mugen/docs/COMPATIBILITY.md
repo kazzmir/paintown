@@ -40,6 +40,11 @@ decode. Every KFM sprite matches Elecbyte SFF2PNG's opaque pixel output; origina
 reference-compressed fixtures cover absent encoding variants. Palette selection
 is available at the decoder boundary; player/font integration remains pending.
 
+M3b loads FNT v2 palette/sprite-bank bitmaps and TrueType/OpenType/TTC. All 19
+runtime font files load. Tests cover banks, alpha, metrics and UTF-8/blend paths;
+Windows fonts use an explicit portable fallback if absent. Reference rendering
+parity is pending. See BUILD.md for dependencies and font lookup.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

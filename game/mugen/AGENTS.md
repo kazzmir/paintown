@@ -32,6 +32,8 @@ Do not modify the reference distribution. Do not commit its binaries/assets.
 - Exercise the complete selection-to-fight path as well as test applications.
 - Run Go with `GOFLAGS=-mod=readonly` so the root module stays unchanged. Build
   artifacts and disposable tools belong in `temp/`, which is not source.
+- Use the launcher or `-modfile=game/mugen/mugen.mod` for the scoped dependency
+  overlay; see `docs/BUILD.md`. Keep it synchronized when dependencies change.
 - Update `docs/COMPATIBILITY.md` and `docs/HANDOFF.md` when behavior or verified
   coverage changes. Do not call the port complete without tests and reference
   evidence covering the advertised compatibility.

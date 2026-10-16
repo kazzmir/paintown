@@ -106,10 +106,15 @@ load, and all 281 KFM sprite pixel hashes match Elecbyte's extractor. Original
 fixtures were encoded with its compressor to cover absent formats. Full race
 tests pass. Asset parity evidence is in CHECKPOINTS.md and REFERENCE.md.
 
-Next integrate font v2/TTF and selected palettes, implement animation and complete
+M3a is commit `b7094832`. M3b adds bitmap/TrueType font loading and bank/alpha
+render support. All 19 runtime font files load; full race tests pass. The scoped
+`mugen.mod`/`mugen.sum` overlay is required for direct Go commands (the launcher
+selects it). Root module files stay unchanged. BUILD.md explains font fallback.
+
+Next integrate selected character palettes, implement animation and complete
 constant bindings, extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
-provisional. State ownership, match flow, fonts, and many controller/world
+provisional. State ownership, match flow, font rendering parity, and many controller/world
 behaviors are incomplete. Do not call M1 or full M0/M2 complete.
 
 The reference quick match loaded successfully through match-loop initialization
