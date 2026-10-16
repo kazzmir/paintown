@@ -228,3 +228,12 @@ Use a new run name. `--record` records a selected case; default replay checks
 source/numeric observations, settings, tone amplitudes and relative onsets.
 It records only the private null sink, never a microphone or desktop audio.
 This is controlled PCM evidence, not full-waveform or device output parity.
+
+M4m adds `hud-sound`: a one-second original tone replaces only disposable native
+fight announcement settings. sound_probe.py --fixture hud-sound replays the
+pinned recipe automatically. The Go HUD test compares stereo amplitudes and
+sample expiry, not absolute round timing. app_smoke.py --audio additionally
+records real Go device PCM from the private null sink; set ALSA_CONFIG_PATH to
+the task-local pulse route described in BUILD.md. Production-flow tests read the
+same mixer without opening a device and verify announcements, bank binding,
+round reset, live volume and cleanup.

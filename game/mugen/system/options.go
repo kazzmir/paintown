@@ -116,14 +116,14 @@ func NewOptionsState(engine *Engine) *OptionsState {
 		},
 		{
 			label:    "Sound Volume",
-			getValue: func() int { return engine.cfg.Options.WavVolume },
-			setValue: func(v int) { engine.cfg.Options.WavVolume = v },
+			getValue: func() int { return engine.cfg.Sound.WavVolume },
+			setValue: func(v int) { engine.cfg.Sound.WavVolume = v },
 			min:      0, max: 100, increment: 5,
 		},
 		{
 			label:    "Music Volume",
-			getValue: func() int { return engine.cfg.Options.MidiVolume },
-			setValue: func(v int) { engine.cfg.Options.MidiVolume = v },
+			getValue: func() int { return engine.cfg.Sound.BGMVolume },
+			setValue: func(v int) { engine.cfg.Sound.BGMVolume = v },
 			min:      0, max: 100, increment: 5,
 		},
 	}

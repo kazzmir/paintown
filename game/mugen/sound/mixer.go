@@ -57,6 +57,10 @@ func (m *Mixer) Apply(command Command) error {
 		return fmt.Errorf("sound mixer is closed")
 	}
 	switch command.Operation {
+	case ClearScene:
+		m.voices = nil
+		m.cache = map[*snd.Sound]*samples{}
+		return nil
 	case StopAll:
 		m.voices = nil
 		return nil
@@ -128,6 +132,17 @@ func (m *Mixer) Apply(command Command) error {
 	} else {
 		m.voices = append(m.voices, &voice{command: command, samples: decoded})
 	}
+	return nil
+}
+
+// SetVolume changes the global SFX gain without restarting active voices.
+func (m *Mixer) SetVolume(volume float32) error {
+	if !finite(volume) || volume < 0 {
+		return fmt.Errorf("invalid sound volume")
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.options.Volume = volume
 	return nil
 }
 

@@ -20,8 +20,11 @@ type FightState struct {
 }
 
 func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
+	if err := engine.ensureSound(); err != nil {
+		return nil, err
+	}
 	game, err := match.New(request, match.Options{RootDir: engine.dataDir, MotifDir: filepath.Dir(engine.motif.Source), FightPath: engine.motif.Files.Fight,
-		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life})
+		GameSpace: coord.Space{Width: engine.cfg.Config.GameWidth, Height: engine.cfg.Config.GameHeight}, RoundTime: engine.cfg.Options.Time, LifePercent: engine.cfg.Options.Life, SoundQueue: engine.sound.queue})
 	if err != nil {
 		return nil, err
 	}
@@ -44,6 +47,9 @@ func NewFightState(engine *Engine, request match.Request) (*FightState, error) {
 
 func (s *FightState) Update() (State, error) {
 	if input.GlobalManager.IsJustPressed(1, input.ActionEscape) {
+		if err := s.match.ClearSounds(); err != nil {
+			return s, err
+		}
 		return NewTitleState(s.engine), nil
 	}
 	if s.match.Phase == match.Finished && input.GlobalManager.IsJustPressed(1, input.ActionEnter) {
@@ -54,7 +60,9 @@ func (s *FightState) Update() (State, error) {
 	if err := s.match.Update(); err != nil {
 		return s, err
 	}
-	s.hud.Update(previousPhase, previousRound)
+	if err := s.hud.Update(previousPhase, previousRound); err != nil {
+		return s, err
+	}
 	return s, nil
 }
 

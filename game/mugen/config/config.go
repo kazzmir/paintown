@@ -78,12 +78,7 @@ type MugenConfig struct {
 		FullScreen bool
 		BlitMode   string
 	}
-	Sound struct {
-		Sound         bool
-		StereoEffects bool
-		PanningWidth  int
-		ReverseStereo bool
-	}
+	Sound  SoundConfig
 	Arcade struct {
 		AIRandomColor bool
 		AICheat       bool
@@ -143,6 +138,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 	}
 
 	cfg := &MugenConfig{}
+	cfg.Sound = DefaultSoundConfig()
 	cfg.Config.GameWidth, cfg.Config.GameHeight = 320, 240
 	// Set some defaults
 	cfg.Config.GameSpeed = 60
@@ -165,6 +161,7 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					cfg.Options.GameSpeed = int(getFloat(attr.Value))
 				case "wavvolume":
 					cfg.Options.WavVolume = int(getFloat(attr.Value))
+					cfg.Sound.WavVolume = cfg.Options.WavVolume
 				case "midivolume":
 					cfg.Options.MidiVolume = int(getFloat(attr.Value))
 				case "team.1vs2life":
@@ -273,6 +270,24 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 					cfg.Sound.PanningWidth = int(getFloat(attr.Value))
 				case "reversestereo":
 					cfg.Sound.ReverseStereo = getBool(attr.Value)
+				case "samplerate":
+					cfg.Sound.SampleRate = int(getFloat(attr.Value))
+				case "buffersize":
+					cfg.Sound.BufferSize = int(getFloat(attr.Value))
+				case "wavchannels":
+					cfg.Sound.WavChannels = int(getFloat(attr.Value))
+				case "mastervolume":
+					cfg.Sound.MasterVolume = int(getFloat(attr.Value))
+				case "wavvolume":
+					cfg.Sound.WavVolume = int(getFloat(attr.Value))
+				case "bgmvolume":
+					cfg.Sound.BGMVolume = int(getFloat(attr.Value))
+				case "sfxresamplemethod":
+					cfg.Sound.SFXResampleMethod = getString(attr.Value)
+				case "sfxresamplequality":
+					cfg.Sound.SFXResampleQuality = int(getFloat(attr.Value))
+				case "bgmresamplequality":
+					cfg.Sound.BGMResampleQuality = int(getFloat(attr.Value))
 				}
 			}
 		case name == "arcade":
@@ -323,6 +338,9 @@ func LoadConfigWithOverrides(dataDir string, paths ...string) (*MugenConfig, err
 
 	if !loaded && len(paths) > 0 {
 		fmt.Printf("No extended configuration found; using mugen.cfg settings.\n")
+	}
+	if err := cfg.Sound.Validate(); err != nil {
+		return nil, fmt.Errorf("%s [Sound]: %w", cfgPath, err)
 	}
 
 	fmt.Printf("P1 Keyboard: Jump=%v Crouch=%v Left=%v Right=%v A=%v B=%v C=%v X=%v Y=%v Z=%v Start=%v\n",
@@ -392,6 +410,14 @@ func parseKeys(sec *parsers.Section, keys *Keys, keyboard bool) {
 }
 
 func mergeExtendedConfig(cfg *MugenConfig, ext *ExtendedConfig) {
+	if ext.Sound.Enabled != nil {
+		cfg.Sound.Sound = *ext.Sound.Enabled
+	}
+	for _, volume := range []struct{ target, source *int }{{&cfg.Sound.MasterVolume, ext.Sound.MasterVolume}, {&cfg.Sound.WavVolume, ext.Sound.WavVolume}, {&cfg.Sound.BGMVolume, ext.Sound.BGMVolume}} {
+		if volume.source != nil {
+			*volume.target = *volume.source
+		}
+	}
 	// Merge Video
 	if ext.Video.Width > 0 {
 		cfg.Video.Width = ext.Video.Width

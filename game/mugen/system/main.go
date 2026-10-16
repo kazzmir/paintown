@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"log"
@@ -10,8 +9,6 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/audio"
-	"github.com/hajimehoshi/ebiten/v2/audio/wav"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/config"
@@ -19,8 +16,6 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/motif"
 )
-
-const sampleRate = 44100
 
 type Engine struct {
 	cfg           *config.MugenConfig
@@ -32,7 +27,7 @@ type Engine struct {
 	logicalHeight int // Game logic height (e.g. 240)
 	currentState  State
 	sprites       map[string]*background.SpriteImages
-	audioCtx      *audio.Context
+	sound         *engineSound
 }
 
 func (e *Engine) Update() error {
@@ -47,7 +42,7 @@ func (e *Engine) Update() error {
 		}
 		e.currentState = next
 	}
-	return nil
+	return e.flushSound()
 }
 
 func (e *Engine) Draw(screen *ebiten.Image) {
@@ -58,32 +53,6 @@ func (e *Engine) Draw(screen *ebiten.Image) {
 			e.dataDir, e.cfg.Options.Motif, e.cfg.Config.GameSpeed, e.cfg.Config.DrawShadows)
 		ebitenutil.DebugPrint(screen, msg)
 	}
-}
-
-func (e *Engine) PlaySnd(group, item int) {
-	if e.motif.SoundBank == nil || e.audioCtx == nil {
-		return
-	}
-
-	key := fmt.Sprintf("%d-%d", group, item)
-	sound, ok := e.motif.SoundBank.Map[key]
-	if !ok {
-		return
-	}
-
-	d, err := wav.DecodeWithSampleRate(sampleRate, bytes.NewReader(sound.Data))
-	if err != nil {
-		fmt.Printf("Warning: failed to decode sound %s: %v\n", key, err)
-		return
-	}
-
-	p, err := e.audioCtx.NewPlayer(d)
-	if err != nil {
-		fmt.Printf("Warning: failed to create audio player for %s: %v\n", key, err)
-		return
-	}
-
-	p.Play()
 }
 
 func (e *Engine) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -138,7 +107,9 @@ func main() {
 		logicalWidth:  m.Info.LocalCoord.Width,
 		logicalHeight: m.Info.LocalCoord.Height,
 		sprites:       make(map[string]*background.SpriteImages),
-		audioCtx:      audio.NewContext(sampleRate),
+	}
+	if err := engine.startSoundDevice(); err != nil {
+		log.Fatal(err)
 	}
 
 	// Cache sprites
@@ -206,7 +177,11 @@ func main() {
 		ebiten.SetTPS(cfg.Config.GameSpeed)
 	}
 
-	if err := ebiten.RunGame(engine); err != nil {
+	err = ebiten.RunGame(engine)
+	if closeErr := engine.closeSound(); err == nil {
+		err = closeErr
+	}
+	if err != nil {
 		log.Fatal(err)
 	}
 }

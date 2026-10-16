@@ -24,6 +24,12 @@ type ExtendedConfig struct {
 		FullScreen bool `yaml:"fullscreen"`
 		VSync      bool `yaml:"vsync"`
 	} `yaml:"video"`
+	Sound struct {
+		Enabled      *bool `yaml:"enabled"`
+		MasterVolume *int  `yaml:"master_volume"`
+		WavVolume    *int  `yaml:"wav_volume"`
+		BGMVolume    *int  `yaml:"bgm_volume"`
+	} `yaml:"sound"`
 }
 
 // LoadExtendedConfig reads and parses the YAML configuration at the given path.

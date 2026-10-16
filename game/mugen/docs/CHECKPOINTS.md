@@ -4,6 +4,45 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4m — Production sound stream, fight banks and HUD cues
+
+Menus and fights now share the CPU mixer through one endless Ebitengine audio
+player. Stock SampleRate, BufferSize, WavChannels, master/SFX/BGM volumes and
+resampling metadata load from [Sound]; the device buffer uses 2^BufferSize
+frames. YAML false/zero overrides retain presence. Live SFX gain changes affect
+active voices, Sound=0 opens no player, and disabled playback drains commands.
+Invalid device resource bounds have contextual errors; these limits are not
+claims about native invalid-config fallbacks. BGM and native-quality resampling
+are retained settings, not implemented playback features.
+
+Each fresh match/round character binds its own SND and the fight's common bank
+before entry controllers. Match resets and leaving a fight issue an ordered
+scene clear that also retires decoded assets. This cleanup is a provisional
+lifecycle policy; complete native round/custom-state behavior remains open.
+HUD round/fight/KO/DKO/time-over and power-level cues use the fight SND, respect
+sound delays, and fire once per event. Exact native announcement offsets and
+complete layout variants still depend on the open round scheduler work.
+
+A new authored HUD-tone recipe patches only disposable fight definitions. The
+native round cue produces the same measured stereo gain as the Go HUD stream;
+two native segments pin a one-second tone and expiry. Recipe/fight/source/bank/
+config/PCM hashes are retained in hud-sound.json. Native replay verifies those
+levels. No absolute announcement start-time parity is claimed.
+
+Full races pass, including production title/select/versus/fight/two-round/result/
+rematch/exit with PCM reads, bank binding, delayed/one-shot HUD cues, power cues,
+live mute/unmute and looping-scene cleanup. Actual device playback is captured
+at temp/app-runs/sound-match-playback through task-local ALSA -> private Pulse
+null sink. The 44100-Hz stereo capture contains 433534 frames (peak 32767, RMS
+1692.49); owned-window images at 2/5/10 seconds were inspected. This establishes
+nonzero production device output, not waveform parity. ALSA's control-device
+enumeration warning did not prevent the explicit private PCM route.
+
+Next: contact/guard/KO voice and effect cues, complete HitDef sound expressions
+and bank selectors, channel-0 interruption, entity/round lifecycle, BGM and
+storyboard audio. The full playable M4 and full sound compatibility gates remain
+open. M4l's reversal point is commit `dfe8ae1b`.
+
 ## M4l — Typed sound commands and native PCM mixer checks
 
 PlaySnd, SndPan and StopSnd now compile typed parameters into an ordered CPU

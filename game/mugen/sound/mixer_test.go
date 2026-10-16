@@ -84,6 +84,39 @@ func TestChannelOwnershipReplacementAndPriority(t *testing.T) {
 	}
 }
 
+func TestLiveVolumeAndSceneCleanupKeepTheStreamOpen(t *testing.T) {
+	m := testMixer(t)
+	command := Command{Operation: Play, Owner: 1, Bank: testBank([]int16{10000}), Group: 1, Channel: 0, Frequency: 1, VolumeScale: 100, Loop: true}
+	if err := m.Apply(command); err != nil {
+		t.Fatal(err)
+	}
+	before := readFrames(t, m, 1)[0]
+	if err := m.SetVolume(0); err != nil {
+		t.Fatal(err)
+	}
+	if got := readFrames(t, m, 1)[0]; got != [2]int16{} {
+		t.Fatal("live mute did not silence active voices", got)
+	}
+	if err := m.SetVolume(.8); err != nil {
+		t.Fatal(err)
+	}
+	if got := readFrames(t, m, 1)[0]; got != before {
+		t.Fatal("unmute lost active voice", got, before)
+	}
+	if err := m.Apply(Command{Operation: ClearScene}); err != nil {
+		t.Fatal(err)
+	}
+	if got := readFrames(t, m, 1)[0]; got != [2]int16{} || len(m.cache) != 0 {
+		t.Fatal("scene retained voices/assets", got, len(m.cache))
+	}
+	if err := m.Apply(command); err != nil {
+		t.Fatal(err)
+	}
+	if got := readFrames(t, m, 1)[0]; got != before {
+		t.Fatal("scene cleanup closed stream", got, before)
+	}
+}
+
 func TestFailedPlaybackRetainsExistingVoice(t *testing.T) {
 	m := testMixer(t)
 	command := Command{Operation: Play, Owner: 1, Bank: testBank([]int16{10000}), Group: 1, Channel: 0, Frequency: 1, VolumeScale: 100, Loop: true}

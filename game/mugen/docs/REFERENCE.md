@@ -437,3 +437,10 @@ onset tolerance 0.35 seconds. Absolute startup and full waveforms are not compar
 A fresh sound-channels-audio-replay reproduces channel isolation, low priority,
 replacement, automatic overlap and global stop with matching measurements.
 Full scoped races pass. Device/frontend cues and lifecycle remain open.
+
+M4m adds hud-sound: the harness patches only a disposable reference's fight DEFs
+to use the authored one-second tone bank. Modified fight hashes are pinned with
+source/executable/settings/audio hashes. Native gain and finite expiry match the
+production Go HUD PCM test; absolute announcement timing is outside this check.
+The private Go device smoke sound-match-playback records nonzero PCM through an
+explicit task-local ALSA/Pulse route and inspects only its owned window.

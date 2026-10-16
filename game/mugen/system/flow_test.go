@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -36,7 +37,13 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	keyboard := &flowKeyboard{}
 	input.GlobalManager.Keyboard = keyboard
 	e := &Engine{dataDir: root, cfg: cfg, motif: m, logicalWidth: m.Info.LocalCoord.Width, logicalHeight: m.Info.LocalCoord.Height}
+	t.Cleanup(func() {
+		if err := e.closeSound(); err != nil {
+			t.Error(err)
+		}
+	})
 	e.currentState = NewTitleState(e)
+	audible := false
 	step := func(keys ...ebiten.Key) {
 		t.Helper()
 		keyboard.keys = map[ebiten.Key]bool{}
@@ -46,6 +53,11 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 		if err := e.Update(); err != nil {
 			t.Fatal(err)
 		}
+		pcm := make([]byte, 735*4)
+		if _, err := e.sound.mixer.Read(pcm); err != nil {
+			t.Fatal(err)
+		}
+		audible = audible || !bytes.Equal(pcm, make([]byte, len(pcm)))
 	}
 	step(ebiten.KeyArrowDown)
 	step(ebiten.KeyEnter)
@@ -84,6 +96,14 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	if f.match.Phase != match.Active {
 		t.Fatal("fight did not grant control")
 	}
+	if !audible || !f.hud.played["round1"] || !f.hud.played["fight"] {
+		t.Fatal("menu/round/fight sound did not reach production PCM", audible, f.hud.played)
+	}
+	for _, p := range f.match.Players {
+		if p.Character.OwnSounds != p.SND || p.Character.CommonSounds != f.match.Fight.CommonSounds || p.Character.SoundQueue != e.sound.queue {
+			t.Fatal("match sound resources were lost")
+		}
+	}
 	// The same lifecycle used by gameplay must finish two rounds and retain wins.
 	for round := 0; round < 2; round++ {
 		f.match.Players[1].Character.SetLife(0)
@@ -96,6 +116,9 @@ func TestTitleSelectionVersusFightResultRematchAndExit(t *testing.T) {
 	}
 	if f.match.Phase != match.Finished {
 		t.Fatal("match did not reach result")
+	}
+	if !f.hud.played["round2"] || !f.hud.played["KO"] {
+		t.Fatal("round reset lost announcement lifecycle", f.hud.played)
 	}
 	step(ebiten.KeyEnter)
 	rematch, ok := e.currentState.(*FightState)

@@ -14,6 +14,7 @@ import math
 import os
 from pathlib import Path
 import re
+import shutil
 import statistics
 import subprocess
 import sys
@@ -77,7 +78,12 @@ def main():
     parser.add_argument('--seconds', type=float, default=12)
     parser.add_argument('--server', default=os.environ.get('PULSE_SERVER', ''))
     parser.add_argument('--frequencies', type=float, nargs='+')
+    parser.add_argument('--hud-tone', action='store_true', help='Replace only disposable fight announcements with the authored one-second tone')
     args = parser.parse_args()
+    expected_case = None
+    if not args.record:
+        expected_case = json.loads((project/'tests/testdata/reference'/(args.fixture+'.json')).read_text())['cases'][args.case]
+        args.hud_tone = expected_case['audio'].get('hud_tone', False)
     # The Pulse client can otherwise silently select the host's default server.
     if not args.server.startswith('unix:') or not Path(args.server[5:]).resolve().is_relative_to(project / 'temp'):
         parser.error('An explicit task-owned Unix audio server under mugen/temp/ is required')
@@ -85,7 +91,7 @@ def main():
                for value in [args.fixture, args.name, args.case]):
         parser.error('Use simple fixture, case and run names')
     if args.frequencies is None:
-        args.frequencies = [441,882,1323] if args.record else json.loads((project/'tests/testdata/reference'/(args.fixture+'.json')).read_text())['cases'][args.case]['audio']['frequencies']
+        args.frequencies = [441,882,1323] if args.record else expected_case['audio']['frequencies']
     if not 3 <= args.seconds <= 30 or not args.frequencies or any(not 1 <= value <= 18000 for value in args.frequencies):
         parser.error('Capture delay is 3..30 seconds; tone frequencies are 1..18000 Hz')
     work = project / 'temp/audio-runs' / args.name
@@ -95,6 +101,22 @@ def main():
     env['PULSE_SERVER'] = args.server
     command = [sys.executable, str(project / 'tests/reference_probe.py'), '--fixture', args.fixture,
                '--name', args.name, '--seconds', str(args.seconds)]
+    hud_hashes = {}
+    if args.hud_tone:
+        # Patch only a task-owned distribution copy. The immutable tone bank is
+        # copied into the character by reference_probe's ordinary extra loader.
+        reference = work / 'reference'
+        shutil.copytree(project / 'temp/mugen-1.1b1', reference)
+        for fight in sorted(reference.glob('data/**/fight.def')):
+            definition = fight.read_text(encoding='utf-8-sig')
+            definition = re.sub(r'(?im)^\s*snd\s*=.*$', 'snd = chars/kfm/probe.snd', definition)
+            definition = re.sub(r'(?im)^\s*(round[1-9]|fight|KO|DKO|TO)\.snd\s*=.*$',
+                                lambda match: match.group(1) + '.snd = ' + ('4,0' if match.group(1).lower() == 'round1' else '-1,0'), definition)
+            fight.write_text(definition)
+            hud_hashes[str(fight.relative_to(reference))] = hashlib.sha256(fight.read_bytes()).hexdigest()
+        if not hud_hashes:
+            raise RuntimeError('No fight definitions available for the HUD tone recipe')
+        command += ['--reference', str(reference)]
     if args.record:
         command += ['--record', '--bank', 'fvar', '--mugenversion', args.mugenversion, '--file', 'sound=probe.snd',
                     '--clipboard-in-cmd', '--pages', '0']
@@ -125,6 +147,8 @@ def main():
     audio['config_sha256'] = hashlib.sha256(configuration).hexdigest()
     audio['settings'] = {key: int(re.search(r'(?im)^\s*' + key + r'\s*=\s*([0-9]+)', text).group(1))
                          for key in ['SampleRate', 'WavChannels', 'MasterVolume', 'WavVolume', 'StereoEffects', 'PanningWidth', 'ReverseStereo', 'GameWidth', 'GameHeight']}
+    if args.hud_tone:
+        audio['hud_tone'], audio['hud_fight_sha256'] = True, hud_hashes
     (work / 'measurements.json').write_text(json.dumps(audio, indent=2) + '\n')
     path = project / 'tests/testdata/reference' / (args.fixture + '.json')
     if args.record:
@@ -141,6 +165,8 @@ def main():
         expected = json.loads(path.read_text())['cases'][args.case]['audio']
         if expected.get('settings') != audio['settings']:
             raise RuntimeError('Native sound configuration differs from pinned evidence')
+        if expected.get('hud_fight_sha256', {}) != hud_hashes:
+            raise RuntimeError('Native HUD tone recipe differs from pinned evidence')
         if expected['frequencies'] != args.frequencies or len(expected['segments']) != len(segments):
             raise RuntimeError('Native audio segment/frequency count differs from pinned evidence')
         for actual, wanted in zip(segments, expected['segments']):

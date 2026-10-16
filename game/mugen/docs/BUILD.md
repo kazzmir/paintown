@@ -73,3 +73,13 @@ and downloaded binaries are ignored temporary artifacts. Check that a display
 number is free before creating a new server and stop only the server created by
 this task when verification work ends. Fully display-independent Character /
 Match extraction remains open; the virtual server is a verification adapter.
+
+For actual audio smoke, the task-owned Pulse server is described in AUDIO.md.
+ALSA_CONFIG_PATH must point to temp/audio-reference/alsa.conf, with task-local
+pcm.!default and ctl.!default pulse definitions whose server is the private Unix
+socket. Set PULSE_SERVER and PULSE_COOKIE to the private paths as well. This
+prevents Oto/ALSA's default PCM selection from reaching a desktop audio route.
+No package installation or system/user audio configuration change is required.
+`tests/app_smoke.py --audio` requires explicit private paths and records only the
+private mugen_reference.monitor. The server uses installed PulseAudio 16.1 and
+Wine's existing 32-bit pulse driver; all runtime/cookie/state files stay in temp.

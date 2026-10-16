@@ -12,17 +12,27 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/match"
 	"github.com/kazzmir/paintown/game/mugen/sff"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 type FightHUD struct {
-	match  *match.Match
-	engine *Engine
-	images map[*sff.Sprite]*ebiten.Image
-	clocks map[string]*air.Player
+	match      *match.Match
+	engine     *Engine
+	images     map[*sff.Sprite]*ebiten.Image
+	clocks     map[string]*air.Player
+	audioOwner uint64
+	played     map[string]bool
+	levels     [2]int
+	cue        string
+	cueTime    int
 }
 
 func NewFightHUD(game *match.Match, engine *Engine) *FightHUD {
-	return &FightHUD{match: game, engine: engine, images: map[*sff.Sprite]*ebiten.Image{}, clocks: map[string]*air.Player{}}
+	h := &FightHUD{match: game, engine: engine, images: map[*sff.Sprite]*ebiten.Image{}, clocks: map[string]*air.Player{}, audioOwner: game.SoundQueue.NewOwner(), played: map[string]bool{}}
+	for slot, p := range game.Players {
+		h.levels[slot] = p.Character.Power / 1000
+	}
+	return h
 }
 
 func (h *FightHUD) values(section, key string, fallback ...float64) []float64 {
@@ -53,7 +63,7 @@ func (h *FightHUD) text(section, key, fallback string) string {
 	return fallback
 }
 
-func (h *FightHUD) Update(previous match.Phase, round int) {
+func (h *FightHUD) Update(previous match.Phase, round int) error {
 	for _, clock := range h.clocks {
 		clock.Update()
 	}
@@ -64,6 +74,61 @@ func (h *FightHUD) Update(previous match.Phase, round int) {
 			}
 		}
 	}
+	if round != h.match.Round {
+		clear(h.played)
+		h.cue = ""
+		for slot, p := range h.match.Players {
+			h.levels[slot] = p.Character.Power / 1000
+		}
+	}
+	var key, timeKey string
+	switch h.match.Phase {
+	case match.RoundCall:
+		key, timeKey = fmt.Sprintf("round%d", h.match.Round), "round.sndtime"
+	case match.FightCall:
+		key, timeKey = "fight", "fight.sndtime"
+	case match.PreOver, match.Over, match.Finished:
+		key, timeKey = "KO", "KO.sndtime"
+		if h.match.TimeOver {
+			key = "TO"
+		} else if h.match.Players[0].Character.Life <= 0 && h.match.Players[1].Character.Life <= 0 {
+			key = "DKO"
+		}
+	}
+	if key != h.cue {
+		h.cue, h.cueTime = key, 0
+	} else {
+		h.cueTime++
+	}
+	if key != "" && !h.played[key] && h.cueTime >= h.match.Setting("Round", timeKey, 0) {
+		h.played[key] = true
+		if err := h.playSound("Round", key+".snd"); err != nil {
+			return err
+		}
+	}
+	for slot, p := range h.match.Players {
+		level := p.Character.Power / 1000
+		if level > h.levels[slot] {
+			if err := h.playSound("Powerbar", fmt.Sprintf("level%d.snd", level)); err != nil {
+				return err
+			}
+		}
+		h.levels[slot] = level
+	}
+	return nil
+}
+
+func (h *FightHUD) playSound(section, key string) error {
+	if h.match.Fight.Attribute(section, key) == nil {
+		return nil
+	}
+	ids := h.values(section, key, -1, 0)
+	group, item := int(ids[0]), int(ids[1])
+	bank := h.match.Fight.Sounds
+	if group < 0 || bank == nil || bank.Map[fmt.Sprintf("%d-%d", group, item)] == nil {
+		return nil
+	}
+	return h.match.SoundQueue.Push(sound.Command{Operation: sound.Play, Owner: h.audioOwner, Bank: bank, Group: group, Item: item, Channel: -1, VolumeScale: 100, Frequency: 1})
 }
 
 func (h *FightHUD) sprite(screen *ebiten.Image, sprite *sff.Sprite, x, y, sx, sy float64) {

@@ -15,6 +15,7 @@ const (
 	Stop
 	StopAll
 	StopOwner
+	ClearScene
 )
 
 // PlayParameters retain controller values until the character resolves its

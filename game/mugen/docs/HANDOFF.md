@@ -311,6 +311,16 @@ bank and fight common bank on the shared queue. Integrate that pipeline next.
 The task-owned private Pulse server runs in exec session 77895, with all state
 under temp/audio-reference/. Do not touch the desktop's audio server.
 
+M4l is commit `dfe8ae1b`. M4m connects one real streaming device player, menu/
+character/HUD queues, own/common fight banks before entry, live volume and scene
+cleanup. Stock sound config and optional YAML volume/disable values now load.
+Full races pass; a native HUD tone matches gain/expiry. Actual private-device
+capture sound-match-playback contains nonzero PCM and inspected fight frames.
+See AUDIO.md/BUILD.md. Contact/guard/KO voice cues, native lifecycle, complete
+sound schemas, BGM/storyboards and resampling fidelity remain open. Continue
+contact sounds/channel-0 interruption and common hit effects next, then full
+HitDef/entity semantics. No desktop audio configuration was changed.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with

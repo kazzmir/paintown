@@ -62,9 +62,9 @@ variants, shadows, zoom, tall-stage overdraw and precise native camera framing
 remain incomplete. Guard state ownership/recovery and movement Ctrl gates now match focused native
 fixtures. Received hit vectors/defaults now convert across spaces with focused native
 coverage. Complete guard/combat/default schemas and phase ordering remain next
-fixes before calling the full M4 milestone playable. Character/
-common sounds, fight announcement sounds, BGM and common hit effects are not
-consumed yet.
+fixes before calling the full M4 milestone playable. Character/common PlaySnd and fight announcements now reach the production audio
+stream (M4m). Contact hit/guard/KO voice cues, BGM and common hit effects remain
+open; scene/round cleanup is provisional. See AUDIO.md.
 
 Validation: full regression and race checks pass. Match tests cover stock mixed
 spawn/intros/control, KO/round reset/two-win completion, life-fraction time-over,
@@ -74,7 +74,8 @@ flow tests inject stock keyboard bindings through title/select/stage/versus/figh
 complete a result, rematch and exit. Owned-window captures under
 `temp/app-runs/first-mixed-fight/` show equal KFM/KFM720 sizes and exposed a
 portrait scaling mismatch, corrected in the following capture. No native match,
-round timing, audio or screenshot parity is claimed.
+round timing or screenshot parity is claimed. Focused native sound behavior is
+recorded separately in AUDIO.md.
 
 HitOverride now closes the stock compile gap: all 108 states compile per KFM
 variant. Native-backed slots/expiry/forceair/basic entry and damage behavior work;

@@ -1,7 +1,8 @@
 # Sound implementation and reference evidence
 
-M4l is committed as the controller/mixer foundation; production playback, HUD
-and contact integration is the next checkpoint. `sound/` has a display-independent ordered command queue and a
+M4l provides the controller/mixer foundation. M4m connects the production device,
+menu/character commands, match banks and HUD cues. Contact/guard/KO voice cues
+and complete lifecycle/fidelity are still open. `sound/` has a display-independent ordered command queue and a
 thread-safe signed-16 stereo PCM reader. Character sound controllers now compile
 typed tuples/parameters and emit commands; source banks remain immutable CPU
 assets. Helpers/projectiles receive independent audio owners on the shared
@@ -78,10 +79,40 @@ d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
 Disassembly is disposable under temp/audio-reference/, not source or a modified
 executable. Runtime PCM observations remain the conformance evidence.
 
-Open: device/production cues, channel-0 interruption on hit versus guard,
+Open: contact/guard/KO voice cues, channel-0 interruption on hit versus guard,
 complete helper/entity/custom-state sound ownership and cleanup, capacity
 fallbacks, arbitrary source-rate/libresample fidelity, extreme/bottom parameter
 fallbacks, stereo/reverse/disabled/config edges, BGM and storyboard audio. Queue
 capacity is a diagnosed provisional 16384 undrained commands; the CPU renderer
 uses linear sample-rate interpolation and a bounded voice pool. None of these
 foundations promote a whole controller/asset row to Verified.
+
+Production integration (M4m): one streaming Ebitengine player consumes the mixer.
+The match queue is bound before entry to each root's own SND plus fight common
+SND; helpers/projectiles inherit bank/queue bindings with independent owners.
+HUD announcements and power-level cues use fight.snd. Ordered scene clears retire
+voices/cache at round reset and fight exit. Native lifecycle parity is pending.
+Live SFX volume changes do not restart active voices. Sound=0 creates no device
+player and discards new Play commands. Missing/unsupported sample playback warns
+without terminating the game; warning text is deduplicated/bounded.
+
+The new hud-sound capture replaces only disposable fight announcement settings
+and the bank reference. Its original one-second 441-Hz tone matches the Go HUD's
+3998.8/3967.8 native amplitudes within eight signed-16 units. Tone expiry is also
+checked. The recipe and modified fight hashes are pinned; absolute phase timing
+is not compared. Replay: sound_probe.py --fixture hud-sound --name NEW --seconds 9.
+
+Actual device smoke uses app_smoke.py --audio with PULSE_SERVER/PULSE_COOKIE and
+ALSA_CONFIG_PATH=temp/audio-reference/alsa.conf. That private ALSA file directs
+pcm.!default and ctl.!default to the private Unix server using the pulse plugin;
+no system ALSA config is changed. The nonzero sound-match-playback capture and
+owned-window images prove the real Go player path runs, without claiming native
+waveform or hardware latency parity. The ordinary Go tests create no device;
+they advance the exact shared mixer by reading PCM per tick.
+
+Stock [Sound] settings now load, including SampleRate=44100, BufferSize=11,
+WavChannels=32, MasterVolume=100 and WavVolume=80. BufferSize means 2^n frames.
+YAML sound.enabled/master_volume/wav_volume/bgm_volume are presence-aware optional
+overrides. BGM volume and resampling method/quality are retained for future work;
+the SFX renderer still uses linear interpolation. Device configuration bounds
+are explicit implementation limits, not measured native fallback rules.

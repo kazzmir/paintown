@@ -12,6 +12,7 @@ import (
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/fight"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 	"github.com/kazzmir/paintown/game/mugen/stage"
 )
 
@@ -34,6 +35,7 @@ type Options struct {
 	GameSpace                    coord.Space
 	RoundTime, LifePercent       int
 	Input                        func(playerID, facing int) []string
+	SoundQueue                   *sound.Queue
 }
 
 type Phase int
@@ -62,6 +64,7 @@ type Match struct {
 	TimeOver               bool
 	TimeLeft               int     // counts; -1 means unlimited
 	CameraX, CameraY       float64 // common game-space units
+	SoundQueue             *sound.Queue
 	timeTicks              int
 	matchDone              bool
 }
@@ -74,6 +77,10 @@ func New(request Request, options Options) (*Match, error) {
 		return nil, fmt.Errorf("invalid match time/life options")
 	}
 	m := &Match{Request: request, Options: options, Round: 1, Winner: -1}
+	m.SoundQueue = options.SoundQueue
+	if m.SoundQueue == nil {
+		m.SoundQueue = &sound.Queue{}
+	}
 	var err error
 	m.Stage, err = stage.LoadStage(request.StagePath, options.RootDir)
 	if err != nil {
@@ -106,6 +113,11 @@ func (m *Match) Setting(section, key string, fallback int) int {
 }
 
 func (m *Match) resetRound() error {
+	// A fresh round retires its voices/cache before new entry controllers emit
+	// commands. Complete native round/custom-state lifecycle remains to verify.
+	if err := m.ClearSounds(); err != nil {
+		return err
+	}
 	m.Phase, m.PhaseTime, m.Winner, m.TimeOver, m.timeTicks = PreIntro, 0, -1, false, 0
 	m.TimeLeft = m.Options.RoundTime
 	s := m.Stage
@@ -114,6 +126,7 @@ func (m *Match) resetRound() error {
 	for slot, p := range m.Players {
 		previous := p.Character
 		c := character.NewCharacter(previous.StateFile, p.AIR, p.CMD)
+		c.BindSound(m.SoundQueue, p.SND, m.Fight.CommonSounds)
 		c.LocalCoord = p.LocalCoord
 		c.GameCoord = m.Options.GameSpace
 		c.Palettes = palette.New(p.SFF)
@@ -160,6 +173,10 @@ func (m *Match) resetRound() error {
 		}
 	}
 	return nil
+}
+
+func (m *Match) ClearSounds() error {
+	return m.SoundQueue.Push(sound.Command{Operation: sound.ClearScene})
 }
 
 func (m *Match) enter(phase Phase) { m.Phase, m.PhaseTime = phase, 0 }
