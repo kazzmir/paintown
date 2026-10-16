@@ -71,7 +71,7 @@ func audioLevels(data []byte, rate int, frequencies []float64) map[string][2]flo
 }
 
 func TestNativeSoundControllerPCM(t *testing.T) {
-	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio"} {
+	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio", "contact-sound", "guard-sound", "override-sound", "contact-sound-close", "contact-sound-common", "contact-sound-default", "guard-sound-default", "contact-sound-common-single", "contact-sound-retained"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")
@@ -90,6 +90,14 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 					bank, err := snd.Parse(bytes.NewReader(bankData))
 					if err != nil {
 						t.Fatal(err)
+					}
+					common := bank
+					if hash, present := reference.ExtraHashes["common-probe.snd"]; present {
+						data := checkedAudioInput(t, stem+".extra/common-probe.snd", hash)
+						common, err = snd.Parse(bytes.NewReader(data))
+						if err != nil {
+							t.Fatal(err)
+						}
 					}
 					file, err := cns.ParseNamed(bytes.NewReader(source), stem+".cns")
 					if err != nil {
@@ -113,7 +121,7 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 					players := []*Character{NewCharacter(file, actions, nil), NewCharacter(file, actions, nil)}
 					for slot, c := range players {
 						c.GameCoord = coord.Space{Width: settings["GameWidth"], Height: settings["GameHeight"]}
-						c.BindSound(queue, bank, bank)
+						c.BindSound(queue, bank, common)
 						c.PlayerID, c.Facing, c.X = slot+1, 1, -70
 						if slot == 1 {
 							c.Facing, c.X = -1, 70
@@ -184,7 +192,7 @@ func TestNativeSoundControllerPCM(t *testing.T) {
 }
 
 func TestNativeSoundParameterGrammar(t *testing.T) {
-	for _, name := range []string{"sound-prefix-paren", "sound-prefix-lower", "sound-prefix-own", "sound-prefix-fvar", "sound-prefix-ffvar", "sound-prefix-facing", "sound-ignored-volume", "sound-both-pan", "sound-missing-value", "sound-pan-missing", "sound-stop-missing", "sound-prefix-protected"} {
+	for _, name := range []string{"sound-prefix-paren", "sound-prefix-lower", "sound-prefix-own", "sound-prefix-fvar", "sound-prefix-ffvar", "sound-prefix-facing", "sound-ignored-volume", "sound-both-pan", "sound-missing-value", "sound-pan-missing", "sound-stop-missing", "sound-prefix-protected", "hit-sound-fprefix", "hit-sound-expression", "hit-sound-single", "hit-sound-invalid", "hit-sound-facing"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")

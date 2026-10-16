@@ -4,6 +4,44 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4n — HitDef sound schema, contact cues and voice interruption
+
+Hit/guard sound parameters now compile expressions, integer tuples, resource
+prefixes and item-zero omission before execution. The shared source map stays
+immutable across hosts. S selects attacker SND, F or omission selects common
+SND. Native leading-prefix consumption also rejects raw Facing as acing;
+parentheses protect expressions. Other HitDef fields still use legacy parsing
+and require the planned complete schema audit.
+
+A successful hit stops the defender's numbered channel 0 before get-hit CNS
+can emit a replacement. HitOverride to an idle state still interrupts it;
+guarding preserves it. Other numbered voices remain. Contact cues play their
+chosen immutable bank and expire naturally. The beta passes defender screen X
+measured from the left edge into its panner: -70 world X gives 90 in 240p space,
+and -40 gives 120. Both symmetric scenes match native PCM. Complete camera/zoom,
+mixed-coordinate and ownership edges remain to measure.
+
+Nine authored audio programs pin 32 native segments and 45 Go tick checks. They
+cover normal hit, guard, override, two positions, distinct common versus own
+tones, group-only F syntax, initial omissions and a later HitDef omitting prior
+choices. Omissions emit no cue in these scenes and clear the earlier choice.
+Five grammar programs add three accepts (including assignments) and two load
+rejections. An assignment expression's native fvar packet confirms execution.
+Full races pass; fresh override-sound and contact-sound-common-single replays
+match levels/relative onsets and the disposable common-bank recipe hashes.
+
+The real stock KFM logical walk/punch/hit/recovery test now also requires a
+common hit command and nonzero shared-mixer PCM. Source banks are bound by M4m
+before state execution. The original bank generator optionally adds one-second
+contact/common tones without changing its prior default output. Initial tests
+ran before the last captures had tick-check metadata and failed on missing
+fixtures/checks; after promoting complete evidence, every comparison passes.
+
+Next: KO voice/echo and sound configuration edges, common hit/guard effects,
+complete HitDef/protection/priority/reversal schemas, and full world/entity
+ownership. None of this promotes a whole controller to Verified or closes M4.
+M4m's reversal point is commit `b616a7e4`.
+
 ## M4m — Production sound stream, fight banks and HUD cues
 
 Menus and fights now share the CPU mixer through one endless Ebitengine audio

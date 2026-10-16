@@ -1,0 +1,112 @@
+[Statedef 5900]
+[State 5900, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 190]
+[State 190, start]
+type=ChangeState
+trigger1=1
+value=0
+[Statedef 0]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 0, start after control grant]
+type=ChangeState
+trigger1=RoundState=2 && ctrl
+value=ifelse(Facing=1,700,701)
+[Statedef 700]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 700, positions]
+type=PosSet
+trigger1=Time=0
+x=ifelse(Facing=1,-40,40)
+[State 700, voice]
+type=PlaySnd
+trigger1=Time=0
+value=1,0
+channel=0
+loop=1
+abspan=0
+[State 700, other channel]
+type=PlaySnd
+trigger1=Time=0
+value=2,0
+channel=1
+loop=1
+abspan=0
+volumescale=25
+[State 700, marker]
+type=VarSet
+trigger1=Time=0
+fv=0
+value=1
+[Statedef 701]
+type=S
+movetype=A
+physics=N
+anim=9991
+ctrl=0
+[State 701, positions]
+type=PosSet
+trigger1=Time=0
+x=ifelse(Facing=1,-40,40)
+[State 701, hit]
+type=HitDef
+trigger1=Time=120
+attr=S,NA
+hitflag=MAF
+guardflag=MA
+damage=25,3
+pausetime=0,0
+guard.pausetime=0,0
+hitsound=S6,0
+guardsound=S7,0
+ground.type=High
+ground.hittime=11
+ground.velocity=0,0
+guard.velocity=0
+[State 701, stop]
+type=StopSnd
+trigger1=Time=300
+channel=-1
+[Statedef 5000]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 5000, marker]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=StateNo
+[Statedef 150]
+type=S
+movetype=H
+physics=N
+anim=9990
+ctrl=0
+[State 150, marker]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=StateNo
+[Statedef 900]
+type=S
+movetype=I
+physics=N
+anim=9990
+ctrl=0
+[State 900, marker]
+type=VarSet
+trigger1=Time=0
+fv=1
+value=StateNo

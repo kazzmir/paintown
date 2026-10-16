@@ -1,8 +1,8 @@
 # Sound implementation and reference evidence
 
 M4l provides the controller/mixer foundation. M4m connects the production device,
-menu/character commands, match banks and HUD cues. Contact/guard/KO voice cues
-and complete lifecycle/fidelity are still open. `sound/` has a display-independent ordered command queue and a
+menu/character commands, match banks and HUD cues. M4n adds contact/guard cues and
+channel-0 interruption. KO voice/echo and complete lifecycle/fidelity remain open. `sound/` has a display-independent ordered command queue and a
 thread-safe signed-16 stereo PCM reader. Character sound controllers now compile
 typed tuples/parameters and emit commands; source banks remain immutable CPU
 assets. Helpers/projectiles receive independent audio owners on the shared
@@ -79,7 +79,7 @@ d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
 Disassembly is disposable under temp/audio-reference/, not source or a modified
 executable. Runtime PCM observations remain the conformance evidence.
 
-Open: contact/guard/KO voice cues, channel-0 interruption on hit versus guard,
+Open: KO voice/echo, complete camera/zoom/mixed-coordinate contact panning,
 complete helper/entity/custom-state sound ownership and cleanup, capacity
 fallbacks, arbitrary source-rate/libresample fidelity, extreme/bottom parameter
 fallbacks, stereo/reverse/disabled/config edges, BGM and storyboard audio. Queue
@@ -116,3 +116,28 @@ YAML sound.enabled/master_volume/wav_volume/bgm_volume are presence-aware option
 overrides. BGM volume and resampling method/quality are retained for future work;
 the SFX renderer still uses linear interpolation. Device configuration bounds
 are explicit implementation limits, not measured native fallback rules.
+
+Contact integration (M4n): hitsound/guardsound compile integer expressions before
+legacy HitDef application. S chooses attacker SND; F/unprefixed chooses common.
+A group alone defaults item zero. Both prefixes are consumed before expression
+parsing, so raw Facing is rejected as acing. Unknown/malformed sound expressions
+fail state compilation before execution. Other HitDef parameters are still a
+separate incomplete schema. The shared source map is never rewritten.
+
+Nine new audio programs (32 native segments, 45 Go tick checks) and five grammar
+programs measure normal hit/guard/HitOverride, cue panning, bank choice, omission,
+assignment and syntax. Initial omitted cues produce no sound; a new HitDef that
+omits an earlier choice clears it in the measured scene. A hit interrupts only
+the defender's numbered voice channel 0 before new get-hit controllers; guard
+preserves it, including while entering MoveType H. An override to MoveType I still
+interrupts channel 0. Fresh override/common-single audio replays pass with full
+races, and real KFM combat now requires the common contact cue and audible PCM.
+
+Contact sound panning uses defender screen X from the left edge, unlike ordinary
+PlaySnd's center-relative position. Symmetric scenes at defender -70 and -40
+produce effective 240p offsets 90 and 120. The beta's read-only paths at 0x43ed37
+and 0x43f9c3 load its cached screen coordinate before calling 0x444b20. This
+supports the measured behavior; complete camera/zoom/mixed-profile cases remain
+open. Common-bank recipe hashes are pinned after patching only disposable fight
+DEFs; original reference assets remain untouched. Optional --contact/--common
+tone generation preserves the default generator's original bytes.

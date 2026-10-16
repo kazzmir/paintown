@@ -79,11 +79,13 @@ def main():
     parser.add_argument('--server', default=os.environ.get('PULSE_SERVER', ''))
     parser.add_argument('--frequencies', type=float, nargs='+')
     parser.add_argument('--hud-tone', action='store_true', help='Replace only disposable fight announcements with the authored one-second tone')
+    parser.add_argument('--common-tone', action='store_true', help='Use the authored common-probe.snd in disposable fight definitions')
     args = parser.parse_args()
     expected_case = None
     if not args.record:
         expected_case = json.loads((project/'tests/testdata/reference'/(args.fixture+'.json')).read_text())['cases'][args.case]
         args.hud_tone = expected_case['audio'].get('hud_tone', False)
+        args.common_tone = expected_case['audio'].get('common_tone', False)
     # The Pulse client can otherwise silently select the host's default server.
     if not args.server.startswith('unix:') or not Path(args.server[5:]).resolve().is_relative_to(project / 'temp'):
         parser.error('An explicit task-owned Unix audio server under mugen/temp/ is required')
@@ -102,20 +104,23 @@ def main():
     command = [sys.executable, str(project / 'tests/reference_probe.py'), '--fixture', args.fixture,
                '--name', args.name, '--seconds', str(args.seconds)]
     hud_hashes = {}
-    if args.hud_tone:
+    if args.hud_tone or args.common_tone:
         # Patch only a task-owned distribution copy. The immutable tone bank is
         # copied into the character by reference_probe's ordinary extra loader.
         reference = work / 'reference'
         shutil.copytree(project / 'temp/mugen-1.1b1', reference)
         for fight in sorted(reference.glob('data/**/fight.def')):
             definition = fight.read_text(encoding='utf-8-sig')
-            definition = re.sub(r'(?im)^\s*snd\s*=.*$', 'snd = chars/kfm/probe.snd', definition)
-            definition = re.sub(r'(?im)^\s*(round[1-9]|fight|KO|DKO|TO)\.snd\s*=.*$',
-                                lambda match: match.group(1) + '.snd = ' + ('4,0' if match.group(1).lower() == 'round1' else '-1,0'), definition)
+            if args.hud_tone:
+                definition = re.sub(r'(?im)^\s*snd\s*=.*$', 'snd = chars/kfm/probe.snd', definition)
+                definition = re.sub(r'(?im)^\s*(round[1-9]|fight|KO|DKO|TO)\.snd\s*=.*$',
+                                    lambda match: match.group(1) + '.snd = ' + ('4,0' if match.group(1).lower() == 'round1' else '-1,0'), definition)
+            if args.common_tone:
+                definition = re.sub(r'(?im)^\s*common\.snd\s*=.*$', 'common.snd = chars/kfm/common-probe.snd', definition)
             fight.write_text(definition)
             hud_hashes[str(fight.relative_to(reference))] = hashlib.sha256(fight.read_bytes()).hexdigest()
         if not hud_hashes:
-            raise RuntimeError('No fight definitions available for the HUD tone recipe')
+            raise RuntimeError('No fight definitions available for the tone recipe')
         command += ['--reference', str(reference)]
     if args.record:
         command += ['--record', '--bank', 'fvar', '--mugenversion', args.mugenversion, '--file', 'sound=probe.snd',
@@ -149,6 +154,8 @@ def main():
                          for key in ['SampleRate', 'WavChannels', 'MasterVolume', 'WavVolume', 'StereoEffects', 'PanningWidth', 'ReverseStereo', 'GameWidth', 'GameHeight']}
     if args.hud_tone:
         audio['hud_tone'], audio['hud_fight_sha256'] = True, hud_hashes
+    if args.common_tone:
+        audio['common_tone'], audio['common_fight_sha256'] = True, hud_hashes
     (work / 'measurements.json').write_text(json.dumps(audio, indent=2) + '\n')
     path = project / 'tests/testdata/reference' / (args.fixture + '.json')
     if args.record:
@@ -165,8 +172,10 @@ def main():
         expected = json.loads(path.read_text())['cases'][args.case]['audio']
         if expected.get('settings') != audio['settings']:
             raise RuntimeError('Native sound configuration differs from pinned evidence')
-        if expected.get('hud_fight_sha256', {}) != hud_hashes:
+        if expected.get('hud_fight_sha256', {}) != (hud_hashes if args.hud_tone else {}):
             raise RuntimeError('Native HUD tone recipe differs from pinned evidence')
+        if expected.get('common_fight_sha256', {}) != (hud_hashes if args.common_tone else {}):
+            raise RuntimeError('Native common tone recipe differs from pinned evidence')
         if expected['frequencies'] != args.frequencies or len(expected['segments']) != len(segments):
             raise RuntimeError('Native audio segment/frequency count differs from pinned evidence')
         for actual, wanted in zip(segments, expected['segments']):

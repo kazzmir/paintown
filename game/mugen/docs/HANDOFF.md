@@ -321,12 +321,22 @@ sound schemas, BGM/storyboards and resampling fidelity remain open. Continue
 contact sounds/channel-0 interruption and common hit effects next, then full
 HitDef/entity semantics. No desktop audio configuration was changed.
 
+M4m is commit `b616a7e4`. M4n adds typed HitDef sound expressions/F/S/group-only
+syntax and production contact/guard cues. Nine audio programs (32 native segments,
+45 Go tick checks) plus five grammar programs match; full races and fresh override/
+common-single replays pass. Normal hit and idle HitOverride stop defender channel
+0 before entry CNS; guarding preserves it. Contact panning uses defender screen
+X from the left edge in the measured scenes. A later HitDef with omitted sound
+clears prior choices. Real KFM combat now requires a common cue and audible PCM.
+Continue common hit/guard effects, KO voice/echo and full combat/entity semantics.
+Other HitDef fields remain legacy and complete sound/ownership parity is open.
+
 The desktop now reports no connected monitors. Tests/probes use private Xvfb
 :97 with XAUTHORITY=game/mugen/temp/virtual-display/Xauthority and software GL;
 see BUILD.md. The server was started by this task (exec session 15800), with
 all extracted files under temp/. Do not reconfigure the desktop.
 
-Next integrate runtime character/HUD audio and effects for the playable match,
+Next integrate common hit/guard effects and KO voice/echo for the playable match,
 then continue complete HitDef/protection/priority/entity semantics. Continue complete storyboard/rendering
 semantics and world/entity ownership against authored reference fixtures.
 Selected stock v2 palettes and the deterministic one-on-one flow are integrated. The 10-transition loop limit is now diagnosed but remains

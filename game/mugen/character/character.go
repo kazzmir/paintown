@@ -1840,6 +1840,10 @@ func (c *Character) guardsHit(hit cns.HitDef) bool {
 }
 
 func (c *Character) prepareContact(attacker *Character, hit cns.HitDef, guarded bool) int {
+	if err := c.contactSound(attacker, hit, guarded); err != nil {
+		c.RuntimeError = fmt.Errorf("player %d contact sound: %w", c.PlayerID, err)
+		return 0
+	}
 	override, hasOverride := c.matchingOverride(hit.Attr)
 	airHit := c.StateType == "A" || (hasOverride && override.ForceAir)
 	c.GetHitAir = airHit

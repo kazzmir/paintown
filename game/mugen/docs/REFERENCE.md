@@ -444,3 +444,13 @@ source/executable/settings/audio hashes. Native gain and finite expiry match the
 production Go HUD PCM test; absolute announcement timing is outside this check.
 The private Go device smoke sound-match-playback records nonzero PCM through an
 explicit task-local ALSA/Pulse route and inspects only its owned window.
+
+M4n adds nine contact audio programs and five HitDef sound grammar programs.
+Thirty-two native segments back 45 Go tick checks. Original one-second own/common
+tones distinguish resource selection, guard versus hit, channel-0 interruption,
+HitOverride and cue expiry. Two symmetric geometries pin defender screen-X
+panning; omitted/later-omitted definitions emit no cue. F/group-only selection and
+assignment execution have dedicated captures. Fresh override-sound-replay and
+contact-sound-common-single-replay match numeric packets, levels, relative onsets
+and disposable common-bank recipe hashes. Full races and actual KFM hit-sound
+command/PCM integration pass. Whole HitDef and camera/ownership parity remain open.

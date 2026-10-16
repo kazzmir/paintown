@@ -200,6 +200,13 @@ expiry and nonzero private device output are covered. Native round scheduling,
 contact/guard/KO voice cues, complete lifecycle, resampler/BGM/storyboard fidelity
 remain open. Scene cleanup and configuration fallback bounds are provisional.
 
+M4n compiles HitDef sound expressions/bank prefixes and connects hit/guard cues
+with native channel-0 interruption and measured contact panning. Fourteen new
+programs cover nine audio cases (32 segments/45 Go tick checks) and five grammar
+cases. Full races, fresh override/common-bank replays and real KFM contact PCM
+pass. Complete HitDef fields, KO voice/echo, effects, camera/ownership/lifecycle
+and configuration/resampling behavior remain open; no whole-controller promotion.
+
 ## Evidence and status definitions
 
 Primary reference: the unmodified [bundled distribution](../temp/mugen-1.1b1/), especially [CNS](../temp/mugen-1.1b1/docs/cns.html), [controllers](../temp/mugen-1.1b1/docs/sctrls.html), [triggers](../temp/mugen-1.1b1/docs/trigger.html), [release history](../temp/mugen-1.1b1/docs/history.html), [fonts](../temp/mugen-1.1b1/docs/fonts.html), [AIR](../temp/mugen-1.1b1/docs/air.html), [backgrounds/stages](../temp/mugen-1.1b1/docs/bgs.html), and [coordinate spaces](../temp/mugen-1.1b1/docs/coordspace.html).

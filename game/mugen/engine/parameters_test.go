@@ -25,6 +25,7 @@ type parameterHost struct {
 	filterSlot                 int
 	attackDistance             int
 	pushEnabled                bool
+	hitParams                  map[string]string
 }
 
 func newParameterHost() *parameterHost {
@@ -63,8 +64,9 @@ func (h *parameterHost) SetHitFilter(slot int, value combat.HitFilter) error {
 	h.filter, h.filterSlot = value, slot
 	return nil
 }
-func (h *parameterHost) SetAttackDistance(value int) { h.attackDistance = value }
-func (h *parameterHost) SetPlayerPush(value bool)    { h.pushEnabled = value }
+func (h *parameterHost) SetAttackDistance(value int)     { h.attackDistance = value }
+func (h *parameterHost) SetPlayerPush(value bool)        { h.pushEnabled = value }
+func (h *parameterHost) HitDef(params map[string]string) { h.hitParams = params }
 func (h *parameterHost) GetHitVar(name string) float64 {
 	if name == "xvel" {
 		return -4
@@ -107,6 +109,29 @@ func TestVariableExpressions(t *testing.T) {
 	runController(t, h, "VarSet", "sysfvar(4)=2.5")
 	if h.sys[4] != 12 || h.sysFloats[4] != 2.5 {
 		t.Fatal("system variable forms")
+	}
+}
+
+func TestHitDefSoundExpressionsAreHostLocalAndCompileBeforeMutation(t *testing.T) {
+	state := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nattr=S,NA\nhitsound=S(var(0):=var(0)+6),var(1):=var(0)+1\nguardsound=F7\n")
+	machine := NewStateMachine()
+	a, b := newParameterHost(), newParameterHost()
+	b.vars[0] = 10
+	for _, h := range []*parameterHost{a, b} {
+		if _, err := machine.ExecuteState(state, h); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if a.hitParams["hitsound"] != "S6,7" || b.hitParams["hitsound"] != "S16,17" || a.hitParams["guardsound"] != "7,0" {
+		t.Fatal("sound tuple values/default/bank", a.hitParams, b.hitParams)
+	}
+	if state.Controllers[0].Params["hitsound"] != "S(var(0):=var(0)+6),var(1):=var(0)+1" {
+		t.Fatal("compiled sound changed shared CNS source")
+	}
+	bad := stateSource(t, "[State 7, hit]\ntype=HitDef\ntrigger1=1\nhitsound=var(0):=99,0\nguardsound=bad(\n")
+	before := a.vars[0]
+	if _, err := machine.ExecuteState(bad, a); err == nil || a.vars[0] != before {
+		t.Fatal("invalid later sound parameter allowed partial execution", err, a.vars[0])
 	}
 }
 

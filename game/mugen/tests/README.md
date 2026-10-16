@@ -237,3 +237,12 @@ records real Go device PCM from the private null sink; set ALSA_CONFIG_PATH to
 the task-local pulse route described in BUILD.md. Production-flow tests read the
 same mixer without opening a device and verify announcements, bank binding,
 round reset, live volume and cleanup.
+
+M4n contact-sound*, guard-sound* and override-sound fixtures add 32 native audio
+segments and 45 Go tick checks. Hit-sound-* grammar probes measure F/S prefixes,
+group-only syntax, assignments and invalid names/expressions. Optional bank
+generator --contact/--common adds original one-second tones; default bytes remain
+unchanged. sound_probe.py --common-tone patches only disposable common.snd
+references, pins the modified fight hashes, and automatically repeats the recipe
+on replay. Both override-sound and contact-sound-common-single have fresh passing
+replays. The normal KFM combat test also requires common hit-sound output.

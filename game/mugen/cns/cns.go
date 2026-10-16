@@ -95,6 +95,8 @@ type HitDef struct {
 	SparkXY          []int
 	HitSound         []int
 	GuardSound       []int
+	HitSoundOwn      bool
+	GuardSoundOwn    bool
 	GroundType       string
 	GroundSlide      int
 	GroundHitTime    int
@@ -605,9 +607,11 @@ func ParseHitDef(params map[string]string) HitDef {
 		hd.SparkXY = ParseIntList(v)
 	}
 	if v, ok := params["hitsound"]; ok {
+		v, hd.HitSoundOwn = literalSoundBank(v)
 		hd.HitSound = ParseIntList(v)
 	}
 	if v, ok := params["guardsound"]; ok {
+		v, hd.GuardSoundOwn = literalSoundBank(v)
 		hd.GuardSound = ParseIntList(v)
 	}
 	if v, ok := params["ground.type"]; ok {
@@ -731,4 +735,17 @@ func ParseHitDef(params map[string]string) HitDef {
 	}
 
 	return hd
+}
+
+// The compiled controller evaluates the tuple before reaching this literal
+// compatibility parser. S selects the attacker's own bank; omission is common.
+func literalSoundBank(value string) (string, bool) {
+	value = strings.TrimSpace(value)
+	if len(value) > 0 && (value[0] == 'S' || value[0] == 's') {
+		return value[1:], true
+	}
+	if len(value) > 0 && (value[0] == 'F' || value[0] == 'f') {
+		return value[1:], false
+	}
+	return value, false
 }

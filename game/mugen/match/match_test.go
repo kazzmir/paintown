@@ -1,11 +1,13 @@
 package match
 
 import (
+	"bytes"
 	"path/filepath"
 	"testing"
 
 	"github.com/kazzmir/paintown/game/mugen/coord"
 	"github.com/kazzmir/paintown/game/mugen/palette"
+	"github.com/kazzmir/paintown/game/mugen/sound"
 )
 
 func stockMatch(t *testing.T, time int) *Match {
@@ -87,6 +89,11 @@ func TestStockMatchTimeOverUsesLifeFraction(t *testing.T) {
 func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 	m := stockMatch(t, 99)
 	advanceUntil(t, m, Active, 600)
+	m.SoundQueue.Drain()
+	mixer, err := sound.NewMixer(sound.Options{SampleRate: 44100, MaxVoices: 32, Volume: .8, Stereo: true, PanningWidth: 240})
+	if err != nil {
+		t.Fatal(err)
+	}
 	source := func(slot, facing int) []string {
 		if slot != 1 {
 			return nil
@@ -103,11 +110,24 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 	for _, p := range m.Players {
 		p.Character.InputSource = source
 	}
-	sawAttack, sawHit := false, false
+	sawAttack, sawHit, sawContactCue, audible := false, false, false, false
 	for tick := 0; tick < 600; tick++ {
 		if err := m.Update(); err != nil {
 			t.Fatal(err)
 		}
+		for _, command := range m.SoundQueue.Drain() {
+			if command.Operation == sound.Play && command.Bank == m.Fight.CommonSounds && command.Group == 5 {
+				sawContactCue = true
+			}
+			if err := mixer.Apply(command); err != nil {
+				t.Fatal(err)
+			}
+		}
+		pcm := make([]byte, 735*4)
+		if _, err := mixer.Read(pcm); err != nil {
+			t.Fatal(err)
+		}
+		audible = audible || !bytes.Equal(pcm, make([]byte, len(pcm)))
 		if m.Players[0].Character.StateNo == 200 {
 			sawAttack = true
 		}
@@ -115,6 +135,9 @@ func TestStockMatchBasicAttackFromLogicalInput(t *testing.T) {
 			sawHit = true
 		}
 		if sawAttack && sawHit && m.Players[1].Character.Ctrl && m.Players[1].Character.Life < m.Players[1].Character.MaxLife {
+			if !sawContactCue || !audible {
+				t.Fatal("real KFM contact did not reach shared sound playback", sawContactCue, audible)
+			}
 			return
 		}
 	}
