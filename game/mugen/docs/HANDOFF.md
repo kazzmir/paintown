@@ -177,7 +177,14 @@ the font filename, but height application remains pending. Full tests/races pass
 Per-background SFF overrides, storyboards, language sections and complete drawing
 behavior remain open; do not claim full asset integration/rendering parity.
 
-Next integrate selected character palettes, finish per-background/storyboard resources,
+M3e is commit `bf03f1ab`. M3f loads per-background SFF declarations for the four
+supported motif screens and routes production drawing through Background.DrawLayer.
+This fixes KFM's separate title archive and preserves masked/opaque images and
+layer ownership when sprite IDs collide. CPU binding and render-route/cache
+regressions pass with full tests/races. Storyboards and full background semantics
+still need work; no screenshot parity is claimed.
+
+Next integrate selected character palettes, finish storyboard resources,
 extend the headless world/state runner, and compare authored
 reference fixtures. The 10-transition loop limit is now diagnosed but remains
 provisional. State ownership, match flow, font rendering parity, and many controller/world

@@ -483,26 +483,52 @@ func LoadMotif(path string, dataDir string) (*Motif, error) {
 		return nil, fmt.Errorf("%s embedded AIR: %w", absPath, err)
 	}
 
-	// Load Backgrounds
-	if motif.TitleBG == nil {
-		motif.TitleBG = &background.Background{}
+	// Each motif background may declare a separate sprite archive.
+	for _, spec := range []struct {
+		prefix string
+		target **background.Background
+	}{
+		{"titlebg", &motif.TitleBG}, {"selectbg", &motif.SelectBG},
+		{"versusbg", &motif.VsBG}, {"optionbg", &motif.OptionBG},
+	} {
+		if *spec.target == nil {
+			*spec.target = &background.Background{}
+		}
+		bg := *spec.target
+		archive := motif.SpriteData
+		var filename string
+		var line int
+		for _, section := range ast.Sections {
+			if !strings.EqualFold(section.Name, spec.prefix+"def") {
+				continue
+			}
+			for _, attr := range section.Attributes {
+				if strings.EqualFold(attr.ID.String(), "spr") {
+					filename, line = getString(attr.Value), attr.Line
+				}
+			}
+		}
+		if filename != "" {
+			loadError := func(err error) error {
+				return fmt.Errorf("%s [%sdef] spr (line %d): %w", absPath, spec.prefix, line, err)
+			}
+			spritePath, err := resource.Resolve(filename, motifDir, filepath.Join(dataDir, "data"), dataDir)
+			if err != nil {
+				return nil, loadError(err)
+			}
+			file, err := os.Open(spritePath)
+			if err != nil {
+				return nil, loadError(err)
+			}
+			archive, err = sff.Parse(file)
+			file.Close()
+			if err != nil {
+				return nil, loadError(fmt.Errorf("%s: %w", spritePath, err))
+			}
+			bg.SpriteData = archive
+		}
+		bg.LoadFromAST(ast, spec.prefix, archive, motif.SystemAIR)
 	}
-	motif.TitleBG.LoadFromAST(ast, "titlebg", motif.SpriteData, motif.SystemAIR)
-
-	if motif.SelectBG == nil {
-		motif.SelectBG = &background.Background{}
-	}
-	motif.SelectBG.LoadFromAST(ast, "selectbg", motif.SpriteData, motif.SystemAIR)
-
-	if motif.VsBG == nil {
-		motif.VsBG = &background.Background{}
-	}
-	motif.VsBG.LoadFromAST(ast, "versusbg", motif.SpriteData, motif.SystemAIR)
-
-	if motif.OptionBG == nil {
-		motif.OptionBG = &background.Background{}
-	}
-	motif.OptionBG.LoadFromAST(ast, "optionbg", motif.SpriteData, motif.SystemAIR)
 
 	return motif, nil
 }

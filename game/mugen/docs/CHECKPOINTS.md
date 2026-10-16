@@ -4,6 +4,22 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M3f — Per-background sprite archives in production drawing
+
+Motif TitleBGDef/SelectBGDef/VersusBGDef/OptionBGDef spr declarations now load
+independent archives with contextual errors. Elements bind to that archive, and
+all production title/select/options/versus draw phases select the same background's
+images. A shared DrawLayer path retains masked/opaque variants, foreground order
+and lazy GPU upload on the drawing thread. Backgrounds without an override still
+use the motif's shared archive.
+
+The KFM motif's separate kfmtitle.sff is loaded and its title elements reference
+those sprites. Original tests cover archive ownership when sprite IDs collide,
+layer selection, cache reuse, shared fallback, and missing/malformed overrides
+for all four supported screen backgrounds. Full regression/race checks pass and
+root module hashes remain unchanged. Screenshot parity, complete background
+controller/transform behavior and storyboard resource handling remain open.
+
 ## M3e — Motif/stage resources and font directory integration
 
 Motif main SFF/SND/font and stage SFF loaders now propagate declared-file

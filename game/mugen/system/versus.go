@@ -49,11 +49,7 @@ func (s *VersusState) Draw(screen *ebiten.Image) {
 
 	// Draw Layer 0 BG
 	if s.engine.motif.VsBG != nil {
-		for _, el := range s.engine.motif.VsBG.Elements {
-			if el.GetLayerNo() == 0 {
-				el.Draw(screen, 0, 0, 0, s.engine.sprites)
-			}
-		}
+		s.engine.motif.VsBG.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)
 	}
 
 	vs := s.engine.motif.VSScreen
@@ -68,10 +64,6 @@ func (s *VersusState) Draw(screen *ebiten.Image) {
 
 	// Draw Layer 1 BG (foreground)
 	if s.engine.motif.VsBG != nil {
-		for _, el := range s.engine.motif.VsBG.Elements {
-			if el.GetLayerNo() == 1 {
-				el.Draw(screen, 0, 0, 0, s.engine.sprites)
-			}
-		}
+		s.engine.motif.VsBG.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
 	}
 }

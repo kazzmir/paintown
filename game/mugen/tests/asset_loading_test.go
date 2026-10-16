@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kazzmir/paintown/game/mugen/background"
 	"github.com/kazzmir/paintown/game/mugen/font"
 	"github.com/kazzmir/paintown/game/mugen/motif"
 	"github.com/kazzmir/paintown/game/mugen/stage"
@@ -129,5 +130,48 @@ func TestBitmapFontChildResourceNamesAndErrors(t *testing.T) {
 	_, err = font.LoadFont(path)
 	if err == nil || !strings.Contains(err.Error(), path) || !strings.Contains(err.Error(), child) {
 		t.Fatalf("lost parent/child context: %v", err)
+	}
+}
+
+func TestKFMTitleBackgroundArchive(t *testing.T) {
+	loaded, err := motif.LoadMotif("data/kfm/system.def", referenceRoot(t))
+	if err != nil {
+		t.Fatal(err)
+	}
+	bg := loaded.TitleBG
+	if bg == nil || bg.SpriteData == nil || bg.SpriteData == loaded.SpriteData || len(bg.Elements) == 0 {
+		t.Fatal("KFM title override was not loaded independently")
+	}
+	first, ok := bg.Elements[0].(*background.NormalElement)
+	if !ok || first.Sprite == nil {
+		t.Fatal("title image did not bind its override sprite")
+	}
+	found := false
+	for i := range bg.SpriteData.Sprites {
+		if first.Sprite == &bg.SpriteData.Sprites[i] {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatal("title element references an archive belonging to another screen")
+	}
+}
+
+func TestMotifBackgroundResourceErrors(t *testing.T) {
+	for _, prefix := range []string{"TitleBG", "SelectBG", "VersusBG", "OptionBG"} {
+		for _, mode := range []string{"missing", "malformed"} {
+			t.Run(prefix+"/"+mode, func(t *testing.T) {
+				dir := t.TempDir()
+				path := filepath.Join(dir, "system.def")
+				writeResource(t, path, []byte("["+prefix+"Def]\nspr=broken.sff\n"))
+				if mode == "malformed" {
+					writeResource(t, filepath.Join(dir, "broken.sff"), []byte("invalid archive"))
+				}
+				_, err := motif.LoadMotif(path, dir)
+				if err == nil || !strings.Contains(err.Error(), path) || !strings.Contains(strings.ToLower(err.Error()), strings.ToLower(prefix+"def")) || !strings.Contains(err.Error(), "line 2") || !strings.Contains(err.Error(), "broken.sff") {
+					t.Fatalf("missing background resource context: %v", err)
+				}
+			})
+		}
 	}
 }

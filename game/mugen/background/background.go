@@ -34,6 +34,38 @@ type Background struct {
 	Elements     []Element
 	BGClearColor color.Color
 	Controllers  []*BGCtrlDef
+	// SpriteData overrides the caller's shared archive for this background.
+	SpriteData *sff.SFF
+	sprites    map[string]*SpriteImages
+}
+
+// DrawLayer selects this background's optional archive before drawing. GPU
+// images are created lazily on the drawing thread, independently of file loading.
+func (b *Background) DrawLayer(screen *ebiten.Image, layer int, cameraX, cameraY, zOffset float64, shared map[string]*SpriteImages) {
+	images := shared
+	if b.SpriteData != nil {
+		if b.sprites == nil {
+			b.sprites = make(map[string]*SpriteImages)
+			for _, sprite := range b.SpriteData.Sprites {
+				if sprite.Image == nil {
+					continue
+				}
+				images := &SpriteImages{Masked: ebiten.NewImageFromImage(sprite.Image)}
+				if sprite.ImageOpaque != nil {
+					images.Opaque = ebiten.NewImageFromImage(sprite.ImageOpaque)
+				} else {
+					images.Opaque = images.Masked
+				}
+				b.sprites[fmt.Sprintf("%d-%d", sprite.GroupNumber, sprite.ImageNumber)] = images
+			}
+		}
+		images = b.sprites
+	}
+	for _, element := range b.Elements {
+		if element.GetLayerNo() == layer {
+			element.Draw(screen, cameraX, cameraY, zOffset, images)
+		}
+	}
 }
 
 // Update advances all background elements by one tick (velocity, animation frames).

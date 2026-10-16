@@ -97,3 +97,9 @@ stages; they assert loaded resources, not merely successful DEF parsing. Separat
 regressions exercise missing/malformed declared assets, source locations, the
 documented motif font search order and Windows/case font-child names. These are
 not screenshot/rendering parity tests or per-background/storyboard coverage.
+
+Background archive tests check KFM's separate title archive, matching CPU element
+bindings, sprite-ID collisions, masked/opaque caches and foreground selection.
+All four supported motif background override declarations reject missing or
+malformed archives with section/key/line context. Full screenshot parity remains
+separate work.

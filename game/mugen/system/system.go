@@ -127,11 +127,7 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 
 	// 1. Draw Layer 0 Backgrounds
 	if s.engine.motif.TitleBG != nil {
-		for _, el := range s.engine.motif.TitleBG.Elements {
-			if el.GetLayerNo() == 0 {
-				el.Draw(screen, 0, 0, 0, s.engine.sprites)
-			}
-		}
+		s.engine.motif.TitleBG.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)
 	}
 
 	menuX := s.engine.motif.TitleInfo.MenuPos[0]
@@ -216,10 +212,6 @@ func (s *TitleState) Draw(screen *ebiten.Image) {
 
 	// 4. Draw Layer 1 Backgrounds
 	if s.engine.motif.TitleBG != nil {
-		for _, el := range s.engine.motif.TitleBG.Elements {
-			if el.GetLayerNo() == 1 {
-				el.Draw(screen, 0, 0, 0, s.engine.sprites)
-			}
-		}
+		s.engine.motif.TitleBG.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
 	}
 }

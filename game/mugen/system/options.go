@@ -201,11 +201,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 
 	// Draw Layer 0 BG
 	if s.engine.motif.OptionBG != nil {
-		for _, el := range s.engine.motif.OptionBG.Elements {
-			if el.GetLayerNo() == 0 {
-				el.Draw(screen, 0, 0, 0, s.engine.sprites)
-			}
-		}
+		s.engine.motif.OptionBG.DrawLayer(screen, 0, 0, 0, 0, s.engine.sprites)
 	}
 
 	// Use the same font setup as the title menu
@@ -266,11 +262,7 @@ func (s *OptionsState) Draw(screen *ebiten.Image) {
 
 	// Draw Layer 1 BG (foreground)
 	if s.engine.motif.OptionBG != nil {
-		for _, el := range s.engine.motif.OptionBG.Elements {
-			if el.GetLayerNo() == 1 {
-				el.Draw(screen, 0, 0, 0, s.engine.sprites)
-			}
-		}
+		s.engine.motif.OptionBG.DrawLayer(screen, 1, 0, 0, 0, s.engine.sprites)
 	}
 }
 
