@@ -1,8 +1,74 @@
 # Current handoff
 
-Updated 2026-10-17. Continuous implementation and local commits are authorized.
-Do not ask to continue, stop at a checkpoint, push, or call the whole port
-complete. All authored changes stay under game/mugen/. Read ../AGENTS.md.
+Updated 2026-10-17. **Pause after committing M4bd and the progress assessment.**
+The user's latest instruction requests a review of progress and remaining work
+before more token spending. It supersedes continuous iteration and any historical
+"next" instructions below. Do not start another implementation batch until the
+user explicitly resumes. Local commits were authorized; never push. All authored
+changes stay under `game/mugen/`. Read [../AGENTS.md](../AGENTS.md) and
+[PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+
+## M4bd checkpoint: cue/pause evidence, with open raster failures
+
+Predecessor/reversal: `54d8c86e`. M4bd changes only authored fixtures, tests and
+docs; there is no production behavior change. Read FATAL-GUARD-CUES.md.
+Twelve native programs (four each audio/spark/pause) record 144 numeric
+observations and 40 source hashes. Fatal guard matches ordinary fatal hit for
+sound, spark selection and pause; safe/protected guard retain guard behavior.
+All original sources/goldens are frozen; never rerun their authors.
+
+All new semantic replays pass: four PCM programs (20 windows / 160 stereo
+amplitudes), four spark programs (11 total cases) and four Match pause programs.
+Focused logs are m4bd-audio-integrated.log and m4bd-cues-integrated.log.
+Full Character race regression passes in m4bd-character-race.log (11.149s).
+The latest full scoped suite remains M4bb (Match 618.564s); M4bc production/stock
+scoped checks also pass. No full Match rerun was needed for this test/data-only
+checkpoint.
+
+Validation pipeline93682 exited0: m4bd-validation.log. Fresh native fatal audio,
+protected spark and fatal pause reproduce the pinned goldens. Four final apps /
+four captures pass prepared-resource/config/binary/PNG/runtime provenance audit.
+Two private-device PCM outputs match all 16 selected stereo amplitudes exactly
+at the recorded precision. Binary SHA256:
+48624d81792daa306e8c9b4af585877014a51e7f581d9f46d85ed7cb659d1b9e.
+The source/production audit is temp/m4bd-final-app-audit.json.
+
+**Two production spark raster gates fail and remain unwaived.** Selection and
+anchors match, but each native 276-pixel core differs at all 276 pixels, max
+channel delta8; Go has an extra left core column (288 pixels). Native hash
+5b077cf1947ce2dbe811076af1f3549be4013f1becd5a8148108fc8237a1c238;
+Go hash2c55c6b0e790d626fa7c7a6ff42ae51c0fa5969efc45a19b843be1974ef94753.
+Cause not investigated. These add to M4az's six alpha precision failures.
+Final audio apps end -go-m4bd-verified (5s), spark apps -go-m4bd-cue (3s).
+Longer fatal pilots reach missing winner state180 in the minimal fixtures and
+are retained only as diagnostics. Shorter captures do not prove their full
+lifecycle. Stock lifecycle evidence is separate. Fatal spark was visually read.
+
+No GUI test/native/app client remains. Root module integrity and original native
+executable SHA checks pass. Native SHA remains
+d5508f77f2a86f12358e669f91c64ba5e4a789d4b71262e8a758814384303a4e.
+All disposable scripts/captures/reference copies stay ignored under temp.
+The private display/audio infrastructure may be reused only after checking it
+is still live and that no GUI/audio clients overlap; never affect host focus or
+routing. The environment is documented in BUILD.md/AUDIO.md.
+
+## Review and resume decision
+
+PROGRESS-ASSESSMENT.md distinguishes working stock flow from full compatibility,
+relates progress to M0-M8, lists known failures and suggests bounded allocations.
+Do not infer a whole-engine percentage from fixture or checkpoint counts.
+The current HitDef audit is 36 expression-routed keys out of 81 documented keys;
+45 literal/absent keys include enums and require appropriate schemas. That is
+not a complete-feature count. KO/round clocks, remaining combat/language,
+projectiles/reversals/teams, BGM, modes, rendering/assets and final conformance
+remain substantial. The controller/trigger tables are dated baseline data, not
+an updated completion ledger. Refresh a concise evidence ledger if the user
+resumes, then stop at the agreed next batch boundary. **Currently paused.**
+
+## Historical checkpoint evidence
+
+The sections below preserve prior verification details. Their suggested next
+actions are historical and do not authorize work during the current pause.
 
 ## Latest verified checkpoint: M4bc
 

@@ -145,7 +145,8 @@ func replayNativeExplodMarkers(t *testing.T, pattern string, count int) {
 }
 
 func TestNativeSparkGeometryAndResourceSelection(t *testing.T) {
-	for _, name := range []string{"spark-own", "guard-spark-own", "spark-own-offset", "spark-common", "spark-common-default", "spark-disabled", "spark-common-missing"} {
+	for _, name := range []string{"spark-own", "guard-spark-own", "spark-own-offset", "spark-common", "spark-common-default", "spark-disabled", "spark-common-missing",
+		"guardcue-spark-fatal", "guardcue-spark-hit", "guardcue-spark-safe", "guardcue-spark-protected"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")
@@ -155,6 +156,7 @@ func TestNativeSparkGeometryAndResourceSelection(t *testing.T) {
 			var reference struct {
 				CNSHash  string            `json:"cns_sha256"`
 				AIRHash  string            `json:"air_sha256"`
+				Version  string            `json:"mugenversion"`
 				Extra    map[string]string `json:"extra_sha256"`
 				Captures []struct{ Variables map[string]float64 }
 				Spark    struct {
@@ -173,6 +175,7 @@ func TestNativeSparkGeometryAndResourceSelection(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			file.SetLanguageVersion(reference.Version)
 			actions, err := air.Parse(bytes.NewReader(frames))
 			if err != nil {
 				t.Fatal(err)

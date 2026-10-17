@@ -76,7 +76,8 @@ func audioLevels(data []byte, rate int, frequencies []float64) map[string][2]flo
 
 func TestNativeSoundControllerPCM(t *testing.T) {
 	for _, name := range []string{"sound-pan", "sound-pan-ramp", "sound-pan-options", "sound-volume", "sound-channels", "sound-pan-start", "sound-frequency", "sound-frequency-invalid", "sound-pan-common-units", "sound-stereo", "sound-prefix-audio", "contact-sound", "guard-sound", "override-sound", "contact-sound-close", "contact-sound-common", "contact-sound-default", "guard-sound-default", "contact-sound-common-single", "contact-sound-retained", "ko-sound", "ko-sound-echo", "ko-sound-suppressed", "ko-sound-initial-suppressed",
-		"superpause-sound-own", "superpause-sound-common", "superpause-sound-common-single", "helperaudio-ordinary", "helperaudio-recursive"} {
+		"superpause-sound-own", "superpause-sound-common", "superpause-sound-common-single", "helperaudio-ordinary", "helperaudio-recursive",
+		"guardcue-audio-fatal", "guardcue-audio-hit", "guardcue-audio-safe", "guardcue-audio-protected"} {
 		t.Run(name, func(t *testing.T) {
 			stem := "../tests/testdata/reference/" + name
 			data, err := os.ReadFile(stem + ".json")

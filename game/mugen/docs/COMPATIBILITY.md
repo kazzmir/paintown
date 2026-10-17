@@ -5,7 +5,22 @@ baseline. M0a now fixes the build and pins the reference test corpus; no semanti
 row is promoted to Verified. See [CHECKPOINTS.md](CHECKPOINTS.md),
 [ASSESSMENT.md](ASSESSMENT.md), and [PLAN.md](PLAN.md).
 
+For the current review, use [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+The controller/trigger tables remain dated baseline evidence; they are not a
+current completion ledger or a whole-engine coverage percentage.
+
 ## Implementation progress
+
+M4bd adds native fatal/hit/safe/protected cue/pause controls without changing
+production behavior. Twelve programs compare 144 observations and 40 source
+hashes. All new sound/spark-selection/pause semantic replays pass, as does the
+full Character race suite (11.149s). Three fresh native replays and four app
+provenance checks pass; two private-device PCM captures match all 16 selected
+stereo amplitudes. Two spark raster gates fail despite correct selection and
+anchors: all 276 pixels in each native core differ (max channel delta 8), with
+an additional Go core column. These and M4az's six alpha gates remain unwaived.
+See [FATAL-GUARD-CUES.md](FATAL-GUARD-CUES.md). Implementation pauses here at the
+user's request for progress/token review; full engine/assets/modes remain open.
 
 M4bc implements native BGDef.debugbg clear before stage layer0, shared by
 production and the standalone viewer. Numeric values truncate toward zero before

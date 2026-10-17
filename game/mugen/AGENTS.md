@@ -7,6 +7,12 @@ local commits at each milestone or coherent checkpoint. Record findings,
 validation, and remaining work with each checkpoint. Stage/commit only changes
 under `game/mugen/`; preserve unrelated work and never push without instruction.
 
+Latest instruction: finish M4bd, commit the checkpoint and progress assessment,
+then pause for the user's review and token-budget decision. This supersedes the
+earlier instruction to iterate continuously. After that checkpoint, do not begin
+another implementation batch until the user explicitly resumes work. Read
+`docs/PROGRESS-ASSESSMENT.md` and the current handoff before resuming.
+
 ## Scope
 
 All project changes for this effort belong under `game/mugen/`. Do not modify

@@ -1,5 +1,8 @@
 # Go MUGEN port assessment
 
+Historical baseline. For current progress and remaining work at the M4bd review
+pause, read [PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md).
+
 Assessment date: 2026-10-16. Latest commit touching the port: `7df33761`
 (2026-04-14). Status: assessment and planning only; implementation awaits review.
 

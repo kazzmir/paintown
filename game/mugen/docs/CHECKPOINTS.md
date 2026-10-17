@@ -4,6 +4,25 @@ The user approved PLAN.md on 2026-10-16 and authorized local commits for
 milestones/checkpoints. No remote push is authorized. All source, fixtures,
 documentation, and tooling stay under `game/mugen/`.
 
+## M4bd — Fatal guard cue and pause verification; review pause
+
+This test/evidence checkpoint adds no production behavior. Twelve original
+native programs compare fatal/hit/safe/protected sound, spark selection and
+pause: 144 numeric observations and 40 authored hashes. New semantic replays
+pass; full Character races pass (11.149s). Three fresh native reproductions
+pass. Four apps/captures pass provenance/runtime checks; two private PCM
+captures match all 16 selected stereo amplitudes at recorded precision.
+Two strict spark raster checks fail: anchors/actions match, but each native
+276-pixel core differs at all pixels (max channel delta 8) and Go has an extra
+left column. These remain open alongside the six M4az alpha cases. No golden
+or tolerance was changed. See [FATAL-GUARD-CUES.md](FATAL-GUARD-CUES.md).
+Reversal: `54d8c86e`. Root module/native integrity checks pass.
+
+The user requested a pause after this checkpoint for progress/token review.
+[PROGRESS-ASSESSMENT.md](PROGRESS-ASSESSMENT.md) records current working behavior,
+remaining M0-M8 gates and suggested bounded allocations. Do not start the next
+implementation batch until the user resumes.
+
 ## M4bc — Diagnostic stage background fill
 
 M4bc implements native BGDef.debugbg clear before stage layer0, shared by

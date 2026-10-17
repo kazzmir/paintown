@@ -1,7 +1,10 @@
 # MUGEN Go port review documents
 
-Current status: implementation approved. See [checkpoint history](CHECKPOINTS.md)
-and the handoff for current progress; the assessment describes the original baseline.
+Current status: paused after M4bd for the user's progress and token-budget
+review. Read the [current progress assessment](PROGRESS-ASSESSMENT.md) for
+working behavior, remaining gates and proposed bounded allocations. See the
+[checkpoint history](CHECKPOINTS.md) and handoff for evidence; the original
+assessment describes the baseline.
 
 1. [Assessment](ASSESSMENT.md): source-confirmed gaps, baseline tests, and comparison with the C++ engine and bundled M.U.G.E.N 1.1 beta 1.
 2. [Implementation plan](PLAN.md): architecture, scope, milestones, dependencies, and acceptance gates.
@@ -73,6 +76,10 @@ and the handoff for current progress; the assessment describes the original base
 37. [Physical corner push](CORNER-PUSH.md): common-pixel proximity, independent world impulses, precision and lifetime.
 
 38. [Fractional sprite sampling](SPRITE-SAMPLING.md): original RGB/indexed patterns, pixel centers, clamped filtering and exact raster controls.
+
+39. [Lethality](HIT-LETHALITY.md), [diagnostic stage fill](STAGE-CLEAR.md) and
+    [fatal guard cues](FATAL-GUARD-CUES.md): recent behavior/evidence checkpoints
+    and unwaived production raster failures.
 
 Project instructions: [AGENTS.md](../AGENTS.md). All project changes for this
 effort stay under `game/mugen/`.
